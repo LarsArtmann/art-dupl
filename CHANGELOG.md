@@ -11,6 +11,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 _Nothing yet._
 
+## [0.5.1] - 2026-07-26
+
+Patch release fixing version embedding, a silent error swallow in `.gitignore` parsing, and release process gaps identified in the v0.5.0 self-review.
+
+### Fixed
+
+- **Version string now prints the release version**: `art-dupl version` reports `0.5.1` instead of a commit hash. The `flake.nix` version is now an explicit string bumped per release (was `self.rev`, which always resolved to the commit hash).
+- **`.gitignore` scanner error no longer silently swallowed**: `parseGitignoreFile` now checks `scanner.Err()` after the scan loop and propagates errors. Previously, a `.gitignore` with a line exceeding the 64 KiB buffer would silently drop all patterns after the error. The caller (`LoadGitignore`) now prints a warning to stderr.
+- **Lint config drift (again)**: The auto-commit daemon re-enabled `exhaustruct` and `tagliatelle` in `.golangci.yml` (the documented recurring regression). Re-disabled both for the third time.
+
+### Added
+
+- **Pre-commit hook guard**: `scripts/install-hooks.sh` appends the `check-disabled-linters.sh` guard to `.git/hooks/pre-commit` after the buildflow step. The guard fails the commit if `exhaustruct` or `tagliatelle` are re-added, stopping the daemon regression at the source. Idempotent and re-runnable.
+- **`--include-ignored` documented in HOW_TO_USE.md**: The `.gitignore` override flag was the only v0.5.0 flag missing from the usage guide.
+- **RELEASE.md process improvements**: Added quality-gate reminders for version-string verification, docs-coverage check (`grep -F -- '--flag' HOW_TO_USE.md`), manual release commits (`chore(release): cut vX.Y.Z`), `git push --follow-tags`, and pre-commit hook re-installation.
+
+### Changed
+
+- **FEATURES.md version header**: Updated from "Analysis of fork branch" to explicit version tagging (`v0.5.1`).
+
 ## [0.5.0] - 2026-07-26
 
 **Fork stabilization sprint (2026-07-24 to 2026-07-26)**, headlined by inline `//art-dupl:accept` directives, diff-report baseline comparison, selective actionability pattern control, and `.gitignore` honoring.
@@ -310,7 +330,8 @@ _Nothing yet._
 
 ---
 
-[Unreleased]: https://github.com/LarsArtmann/art-dupl/compare/v0.5.0...HEAD
+[Unreleased]: https://github.com/LarsArtmann/art-dupl/compare/v0.5.1...HEAD
+[0.5.1]: https://github.com/LarsArtmann/art-dupl/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/LarsArtmann/art-dupl/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/LarsArtmann/art-dupl/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/LarsArtmann/art-dupl/compare/v0.2.0...v0.3.0
