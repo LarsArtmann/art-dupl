@@ -57,16 +57,17 @@ func isRAIIDeferCall(node *domain.CloneNode) bool {
 	return false
 }
 
+// cleanupMethodNames are method names that release resources in RAII-style
+// defer patterns (defer x.Unlock(), defer x.Close(), etc.).
+var cleanupMethodNames = []string{ //nolint:gochecknoglobals // static name set
+	cleanupMethodName, "RUnlock",
+	"Close", "Done", "Cancel", "Release", "Finish", "Disconnect", "Free",
+	"Stop", "Shutdown", "Cleanup", "Reset", "Put", "Drop", "Abort", "Teardown",
+}
+
 // isCleanupMethod reports whether a method name is a known RAII cleanup.
 func isCleanupMethod(name string) bool {
-	switch name {
-	case cleanupMethodName, "RUnlock",
-		"Close", "Done", "Cancel", "Release", "Finish", "Disconnect", "Free",
-		"Stop", "Shutdown", "Cleanup", "Reset", "Put", "Drop", "Abort", "Teardown":
-		return true
-	default:
-		return false
-	}
+	return slices.Contains(cleanupMethodNames, name)
 }
 
 // isAcquireCall reports whether a statement is a call to a known acquire
@@ -199,16 +200,16 @@ func isLogOrPrintStmt(node *domain.CloneNode) bool {
 	return false
 }
 
+// loggingMethodNames are method names for logging/print functions.
+var loggingMethodNames = []string{ //nolint:gochecknoglobals // static name set
+	"Print", "Printf", "Println",
+	"Error", calleeErrorf, "Warn", "Warnf", "Info", "Infof", "Debug", "Debugf",
+	"Fatal", "Fatalf", "Panic", "Panicf",
+}
+
 // isLoggingMethod reports whether a method name is a known logging/print function.
 func isLoggingMethod(name string) bool {
-	switch name {
-	case "Print", "Printf", "Println",
-		"Error", calleeErrorf, "Warn", "Warnf", "Info", "Infof", "Debug", "Debugf",
-		"Fatal", "Fatalf", "Panic", "Panicf":
-		return true
-	default:
-		return false
-	}
+	return slices.Contains(loggingMethodNames, name)
 }
 
 // isGuardClause reports whether every clone is a single IfStmt used as a guard

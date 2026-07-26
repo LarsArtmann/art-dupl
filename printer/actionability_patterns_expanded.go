@@ -12,14 +12,15 @@ const calleeErrorf = "Errorf"
 
 // isAssertionMethod reports whether a method name belongs to a test assertion
 // framework (Ginkgo/testify/testify). These indicate non-actionable test
+// assertionMethodNames are test assertion method names (Ginkgo/Gomega, testify, etc.).
+var assertionMethodNames = []string{ //nolint:gochecknoglobals // static name set
+	"Expect", "Assert", "Require", "Should", "Must", "So",
+}
+
+// isAssertionMethod reports whether a method name belongs to a test assertion
 // boilerplate when they appear in chains of 3+.
 func isAssertionMethod(name string) bool {
-	switch name {
-	case "Expect", "Assert", "Require", "Should", "Must", "So":
-		return true
-	default:
-		return false
-	}
+	return slices.Contains(assertionMethodNames, name)
 }
 
 // isAssertionChain reports whether every clone is dominated by test assertion
@@ -175,14 +176,15 @@ func hasErrorWrappingCall(block *domain.CloneNode) bool {
 }
 
 // isWrappingCallName reports whether a method name belongs to a known
+// wrappingCallNames are method names for error-wrapping functions.
+var wrappingCallNames = []string{ //nolint:gochecknoglobals // static name set
+	calleeErrorf, "Wrap", "Errorw", "Wrapf", "Wrapr",
+}
+
+// isWrappingCallName reports whether a method name belongs to a known
 // error-wrapping function (errors.Wrap, fmt.Errorf, etc.).
 func isWrappingCallName(name string) bool {
-	switch name {
-	case calleeErrorf, "Wrap", "Errorw", "Wrapf", "Wrapr":
-		return true
-	default:
-		return false
-	}
+	return slices.Contains(wrappingCallNames, name)
 }
 
 // isWrappingCall checks if a node is a CallExpr to a known error-wrapping function.
