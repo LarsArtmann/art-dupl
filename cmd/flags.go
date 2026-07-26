@@ -138,6 +138,9 @@ func AddFlags(rootCmd *cobra.Command) {
 
 	rootCmd.Flags().
 		Bool("list-patterns", false, "list all actionability pattern labels and exit")
+
+	rootCmd.Flags().
+		Bool("recommend-threshold", false, "suggest a threshold based on codebase size and exit")
 }
 
 // addDeprecatedIncludeGeneratedFlags registers the old per-generator --include-*
