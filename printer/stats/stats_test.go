@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/LarsArtmann/art-dupl/internal/testutil"
+	"github.com/LarsArtmann/art-dupl/printer"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 

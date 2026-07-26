@@ -5,6 +5,7 @@ import (
 
 	"github.com/LarsArtmann/art-dupl/config"
 	"github.com/LarsArtmann/art-dupl/printer"
+	"github.com/LarsArtmann/art-dupl/printer/stats"
 )
 
 // printerConstructor is the function signature for creating a Printer.
@@ -47,7 +48,7 @@ func createPrinter(
 			})
 		}
 	case config.OutputFormatCSV:
-		return withThreshold(printer.NewStats, threshold)
+		return withThreshold(stats.NewStats, threshold)
 	case config.OutputFormatText:
 		return printer.NewText
 	default:

@@ -9,6 +9,7 @@ import (
 	"strconv"
 
 	"github.com/LarsArtmann/art-dupl/config"
+	"github.com/LarsArtmann/art-dupl/printer"
 )
 
 // roundFloat rounds a float64 to the specified number of decimal places.

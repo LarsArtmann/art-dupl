@@ -12,6 +12,7 @@ import (
 	"github.com/LarsArtmann/art-dupl/internal/utils"
 	"github.com/LarsArtmann/art-dupl/job"
 	"github.com/LarsArtmann/art-dupl/printer"
+	"github.com/LarsArtmann/art-dupl/printer/stats"
 	"github.com/LarsArtmann/gogenfilter/v3"
 	"github.com/spf13/cobra"
 )
@@ -118,7 +119,7 @@ func runStats(c *cobra.Command, arguments []string) error {
 
 	defer cleanup()
 
-	p := printer.NewStats(writer, os.ReadFile, mergedConfig.Threshold)
+	p := stats.NewStats(writer, os.ReadFile, mergedConfig.Threshold)
 
 	configureStatsPrinter(p, format, mergedConfig, parseStats, filterStats, duration)
 

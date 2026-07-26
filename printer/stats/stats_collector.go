@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/LarsArtmann/art-dupl/config"
+	"github.com/LarsArtmann/art-dupl/printer"
 )
 
 // ApplyStatsConfig applies all statistics configuration in one call.
