@@ -8,6 +8,13 @@ import (
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
+const (
+	healthSmall  = "small"
+	healthMedium = "medium"
+	healthLarge  = "large"
+	healthHuge   = "huge"
+)
+
 func TestGetCloneSize(t *testing.T) {
 	t.Parallel()
 

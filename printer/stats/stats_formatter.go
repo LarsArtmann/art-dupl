@@ -66,7 +66,7 @@ type jsonStatsOutput struct {
 		Test       int `json:"test,omitempty"`
 	} `json:"testVsProduction"`
 	TopClones []printer.TopCloneGroup `json:"topClones,omitempty"`
-	TopFiles  []jsonTopFile   `json:"topFiles"`
+	TopFiles  []jsonTopFile           `json:"topFiles"`
 }
 
 type jsonTopFile struct {

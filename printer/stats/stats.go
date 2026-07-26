@@ -8,7 +8,8 @@ import (
 	"charm.land/lipgloss/v2"
 	"github.com/LarsArtmann/art-dupl/config"
 	"github.com/LarsArtmann/art-dupl/domain"
-	"github.com/LarsArtmann/art-dupl/printer")
+	"github.com/LarsArtmann/art-dupl/printer"
+)
 
 // stats provides aggregated statistics about code duplication.
 type stats struct {
