@@ -18,30 +18,30 @@ func TestIsInterfaceMethodBody(t *testing.T) {
 		{
 			name: "String method with small body",
 			seqs: [][]*domain.CloneNode{
-				mustFuncDeclWithBody("String", 2),
-				mustFuncDeclWithBody("String", 2),
+				mustInterfaceMethodNode("String", 2),
+				mustInterfaceMethodNode("String", 2),
 			},
 			expected: true,
 		},
 		{
 			name: "Read method with body at limit (4)",
 			seqs: [][]*domain.CloneNode{
-				mustFuncDeclWithBody("Read", maxInterfaceMethodBodyNodes),
+				mustInterfaceMethodNode("Read", maxInterfaceMethodBodyNodes),
 			},
 			expected: true,
 		},
 		{
 			name: "non-interface method name",
 			seqs: [][]*domain.CloneNode{
-				mustFuncDeclWithBody("ProcessData", 2),
-				mustFuncDeclWithBody("ProcessData", 2),
+				mustInterfaceMethodNode("ProcessData", 2),
+				mustInterfaceMethodNode("ProcessData", 2),
 			},
 			expected: false,
 		},
 		{
 			name: "body too large (5 nodes)",
 			seqs: [][]*domain.CloneNode{
-				mustFuncDeclWithBody("String", maxInterfaceMethodBodyNodes+1),
+				mustInterfaceMethodNode("String", maxInterfaceMethodBodyNodes+1),
 			},
 			expected: false,
 		},
@@ -71,7 +71,7 @@ func TestIsInterfaceMethodBody(t *testing.T) {
 	}
 }
 
-func mustFuncDeclWithBody(methodName string, bodyChildCount int) []*domain.CloneNode {
+func mustInterfaceMethodNode(methodName string, bodyChildCount int) []*domain.CloneNode {
 	children := make([]*domain.CloneNode, 0, bodyChildCount)
 	for range bodyChildCount {
 		children = append(children, &domain.CloneNode{BaseType: golang.ReturnStmt})

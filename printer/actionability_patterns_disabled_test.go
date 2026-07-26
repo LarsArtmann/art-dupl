@@ -1,0 +1,131 @@
+package printer
+
+import (
+	"strings"
+	"testing"
+
+	"github.com/LarsArtmann/art-dupl/domain"
+	"github.com/LarsArtmann/art-dupl/syntax/golang"
+)
+
+func TestAllActionabilityPatterns_Count(t *testing.T) {
+	t.Parallel()
+
+	patterns := AllActionabilityPatterns()
+	if len(patterns) != 20 {
+		t.Errorf("AllActionabilityPatterns() returned %d patterns, want 20", len(patterns))
+	}
+}
+
+func TestAllActionabilityPatterns_ContainsLabels(t *testing.T) {
+	t.Parallel()
+
+	patterns := AllActionabilityPatterns()
+	seen := make(map[PatternLabel]bool, len(patterns))
+	for _, p := range patterns {
+		seen[p] = true
+	}
+
+	required := []PatternLabel{
+		PatternSignatureOnly,
+		PatternInterfaceImpl,
+		PatternInterfaceMethod,
+		PatternRAIIDefer,
+		PatternErrorPropagation,
+		PatternGuardClause,
+		PatternAssignErrorCheck,
+		PatternSingleCallExpr,
+		PatternSingleSimpleStmt,
+		PatternSingleDeclaration,
+		PatternTestHelperDelegate,
+		PatternErrorWrapping,
+		PatternAssertionChain,
+		PatternCobraBoilerplate,
+		PatternTestData,
+		PatternTableDrivenTest,
+		PatternTestScaffolding,
+		PatternDataDominated,
+		PatternDescribeTable,
+		PatternBuilderCallback,
+	}
+
+	for _, label := range required {
+		if !seen[label] {
+			t.Errorf("AllActionabilityPatterns() missing pattern %q", label)
+		}
+	}
+}
+
+func TestListActionabilityPatterns(t *testing.T) {
+	t.Parallel()
+
+	var buf strings.Builder
+	ListActionabilityPatterns(&buf)
+
+	output := buf.String()
+	patterns := AllActionabilityPatterns()
+	lines := strings.Split(strings.TrimSpace(output), "\n")
+
+	if len(lines) != len(patterns) {
+		t.Errorf("ListActionabilityPatterns wrote %d lines, want %d", len(lines), len(patterns))
+	}
+
+	for i, p := range patterns {
+		if lines[i] != string(p) {
+			t.Errorf("line %d: got %q, want %q", i, lines[i], p)
+		}
+	}
+}
+
+func TestEvaluateActionabilityWithDisabled(t *testing.T) {
+	t.Parallel()
+
+	// A guard clause pattern: single IfStmt with return-only body, no else
+	guardClause := mustGuardClauseSeq()
+	seqs := [][]*domain.CloneNode{guardClause, guardClause}
+
+	t.Run("without disable - suppressed", func(t *testing.T) {
+		t.Parallel()
+
+		result := EvaluateActionabilityWithDisabled(seqs, nil)
+		if result != domain.NonActionable {
+			t.Errorf("expected NonActionable, got %q", result)
+		}
+	})
+
+	t.Run("disable guard-clause - becomes actionable", func(t *testing.T) {
+		t.Parallel()
+
+		disabled := map[PatternLabel]bool{PatternGuardClause: true}
+		result := EvaluateActionabilityWithDisabled(seqs, disabled)
+		if result != domain.Actionable {
+			t.Errorf("expected Actionable after disabling guard-clause, got %q", result)
+		}
+	})
+
+	t.Run("disable unrelated pattern - still suppressed", func(t *testing.T) {
+		t.Parallel()
+
+		disabled := map[PatternLabel]bool{PatternRAIIDefer: true}
+		result := EvaluateActionabilityWithDisabled(seqs, disabled)
+		if result != domain.NonActionable {
+			t.Errorf("expected NonActionable (guard-clause not disabled), got %q", result)
+		}
+	})
+}
+
+func mustGuardClauseSeq() []*domain.CloneNode {
+	return []*domain.CloneNode{
+		{
+			BaseType: golang.IfStmt,
+			Children: []*domain.CloneNode{
+				{
+					BaseType: golang.BlockStmt,
+					Children: []*domain.CloneNode{
+						{BaseType: golang.ReturnStmt},
+					},
+				},
+			},
+		},
+	}
+}
