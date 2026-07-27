@@ -266,18 +266,9 @@ func warnStructural(cmd *cobra.Command) {
 	}
 }
 
-// warnTypeAwareIncremental prints a warning when both --type-aware and
-// --incremental are set. The incremental parser does not support preloaded type
-// data, so type-aware mode is silently ignored in incremental mode.
-func warnTypeAwareIncremental(cmd *cobra.Command) {
-	if cmd.Flags().Changed("type-aware") && cmd.Flags().Changed("incremental") {
-		fmt.Fprintf(
-			os.Stderr,
-			"Warning: --type-aware is not compatible with --incremental. "+
-				"Type-aware mode will be ignored; falling back to syntax-only detection.\n",
-		)
-	}
-}
+// warnTypeAwareIncremental is now a no-op — type-aware mode IS compatible with
+// incremental mode since M07 (IncrementalParser threads typeInfos via SetTypeAwareData).
+func warnTypeAwareIncremental(_ *cobra.Command) {}
 
 // warnSemanticDeprecation prints a gentle notice when --semantic is explicitly
 // used. Semantic is the default mode, so the flag is redundant.

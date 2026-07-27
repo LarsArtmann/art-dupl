@@ -28,6 +28,7 @@ type IncrementalParser struct {
 	maxChildren     int
 	maxCacheEntries int
 	group           singleflight.Group
+	typeInfos       golang.TypeAwareData
 }
 
 // NewIncrementalParser creates a new IncrementalParser.
@@ -55,6 +56,13 @@ func NewIncrementalParser(
 		maxChildren:     maxChildren,
 		maxCacheEntries: maxCacheEntries,
 	}
+}
+
+// SetTypeAwareData configures the incremental parser to use pre-loaded type
+// information for type-aware detection. When set, parseFile passes the
+// pre-loaded AST + TypeInfo to the transformer instead of nil.
+func (ip *IncrementalParser) SetTypeAwareData(td golang.TypeAwareData) {
+	ip.typeInfos = td
 }
 
 // ParseStatsMixin provides common fields for parsing statistics.
@@ -278,7 +286,7 @@ func (ip *IncrementalParser) parseFile(file string) ([]*syntax.Node, int, bool) 
 			return cachedNodes, nil
 		}
 
-		ast, _, parseErr := ParseFileByExtensionWithConfig(file, ip.mode, nil)
+		ast, _, parseErr := ParseFileByExtensionWithConfig(file, ip.mode, ip.typeInfos.LookupPreloaded(file))
 		if parseErr != nil {
 			return nil, fmt.Errorf("parse file: %w", parseErr)
 		}

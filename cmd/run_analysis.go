@@ -149,6 +149,14 @@ func buildSuffixTreeIncremental(params buildParams) treeBuildResult {
 	filesChan := params.getFilesChan()
 	filesChan = progressFilesChan(params.ctx, filesChan, params.cfg, params.outputFormat, os.Stderr)
 
+	// Load type-aware data if enabled (supports --type-aware + --incremental)
+	var typeInfos golang.TypeAwareData
+
+	if params.cfg.TypeAware {
+		typeInfos, filesChan = loadTypeAwareData(params.ctx, filesChan)
+		incParser.SetTypeAwareData(typeInfos)
+	}
+
 	var (
 		schan        chan []*syntax.Node
 		incStatsChan chan job.IncrementalStats

@@ -100,9 +100,9 @@ func TestWarnTypeAwareIncremental(t *testing.T) {
 		wantWarning bool
 	}{
 		{
-			name:        "type-aware plus incremental warns",
+			name:        "type-aware plus incremental is now compatible (no warning)",
 			args:        []string{"--type-aware", "--incremental"},
-			wantWarning: true,
+			wantWarning: false,
 		},
 		{
 			name:        "type-aware alone does not warn",
