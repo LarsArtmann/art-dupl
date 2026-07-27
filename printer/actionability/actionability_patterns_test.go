@@ -785,3 +785,157 @@ func mustGuardClauseIf(_ int32, ret *domain.CloneNode) *domain.CloneNode {
 func mustReturnNil() *domain.CloneNode {
 	return &domain.CloneNode{BaseType: golang.ReturnStmt}
 }
+
+func TestIsTemplRenderingIdiom(t *testing.T) {
+	runBoolTests(t, isTemplRenderingIdiom, []boolTestCase{
+		{
+			name:     "if len(x) == 0 { text } else { for range } — canonical",
+			seqs:     [][]*domain.CloneNode{{mustTemplEmptyStateIf()}},
+			expected: true,
+		},
+		{
+			name:     "len call on right side (0 == len(x))",
+			seqs:     [][]*domain.CloneNode{{mustTemplEmptyStateIfLenRight()}},
+			expected: true,
+		},
+		{
+			name: "both sequences match",
+			seqs: [][]*domain.CloneNode{
+				{mustTemplEmptyStateIf()},
+				{mustTemplEmptyStateIf()},
+			},
+			expected: true,
+		},
+		{
+			name: "no else branch (guard-like) — not templ idiom",
+			seqs: [][]*domain.CloneNode{{
+				{BaseType: golang.IfStmt, Children: []*domain.CloneNode{
+					mustLenComparison(),
+					{BaseType: golang.BlockStmt, Children: []*domain.CloneNode{
+						{BaseType: golang.ExprStmt},
+					}},
+				}},
+			}},
+			expected: false,
+		},
+		{
+			name: "else-if chain — not simple empty-state",
+			seqs: [][]*domain.CloneNode{{
+				{BaseType: golang.IfStmt, Children: []*domain.CloneNode{
+					mustLenComparison(),
+					{BaseType: golang.BlockStmt},
+					{BaseType: golang.IfStmt},
+				}},
+			}},
+			expected: false,
+		},
+		{
+			name: "condition has no len call (x == 0)",
+			seqs: [][]*domain.CloneNode{{
+				{BaseType: golang.IfStmt, Children: []*domain.CloneNode{
+					{BaseType: golang.BinaryExpr, Children: []*domain.CloneNode{
+						{BaseType: golang.Ident, Name: "x"},
+						{BaseType: golang.BasicLit},
+					}},
+					{BaseType: golang.BlockStmt},
+					{BaseType: golang.BlockStmt, Children: []*domain.CloneNode{
+						{BaseType: golang.RangeStmt},
+					}},
+				}},
+			}},
+			expected: false,
+		},
+		{
+			name: "else branch has no range loop",
+			seqs: [][]*domain.CloneNode{{
+				{BaseType: golang.IfStmt, Children: []*domain.CloneNode{
+					mustLenComparison(),
+					{BaseType: golang.BlockStmt},
+					{BaseType: golang.BlockStmt, Children: []*domain.CloneNode{
+						{BaseType: golang.ReturnStmt},
+					}},
+				}},
+			}},
+			expected: false,
+		},
+		{
+			name: "not an IfStmt (ForStmt)",
+			seqs: [][]*domain.CloneNode{{
+				{BaseType: golang.ForStmt},
+			}},
+			expected: false,
+		},
+		{
+			name: "multi-node sequence — not single-rooted",
+			seqs: [][]*domain.CloneNode{{
+				mustTemplEmptyStateIf(),
+				mustTemplEmptyStateIf(),
+			}},
+			expected: false,
+		},
+		{
+			name: "one sequence matches, other does not",
+			seqs: [][]*domain.CloneNode{
+				{mustTemplEmptyStateIf()},
+				{{BaseType: golang.ForStmt}},
+			},
+			expected: false,
+		},
+		{
+			name:     "empty (vacuous true)",
+			seqs:     [][]*domain.CloneNode{},
+			expected: true,
+		},
+	})
+}
+
+func mustLenComparison() *domain.CloneNode {
+	return &domain.CloneNode{
+		BaseType: golang.BinaryExpr,
+		Children: []*domain.CloneNode{
+			mustLenCall("items"),
+			{BaseType: golang.BasicLit},
+		},
+	}
+}
+
+func mustLenCall(argName string) *domain.CloneNode {
+	return &domain.CloneNode{
+		BaseType: golang.CallExpr,
+		Children: []*domain.CloneNode{
+			{BaseType: golang.Ident, Name: "len"},
+			{BaseType: golang.Ident, Name: argName},
+		},
+	}
+}
+
+func mustTemplEmptyStateIf() *domain.CloneNode {
+	return &domain.CloneNode{
+		BaseType: golang.IfStmt,
+		Children: []*domain.CloneNode{
+			mustLenComparison(),
+			{BaseType: golang.BlockStmt, Children: []*domain.CloneNode{
+				{BaseType: golang.ExprStmt},
+			}},
+			{BaseType: golang.BlockStmt, Children: []*domain.CloneNode{
+				{BaseType: golang.RangeStmt},
+			}},
+		},
+	}
+}
+
+func mustTemplEmptyStateIfLenRight() *domain.CloneNode {
+	return &domain.CloneNode{
+		BaseType: golang.IfStmt,
+		Children: []*domain.CloneNode{
+			{BaseType: golang.BinaryExpr, Children: []*domain.CloneNode{
+				{BaseType: golang.BasicLit},
+				mustLenCall("items"),
+			}},
+			{BaseType: golang.BlockStmt},
+			{BaseType: golang.BlockStmt, Children: []*domain.CloneNode{
+				{BaseType: golang.RangeStmt},
+			}},
+		},
+	}
+}

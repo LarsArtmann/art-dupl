@@ -349,3 +349,101 @@ func isReturnOnlyBody(block *domain.CloneNode) bool {
 
 	return true
 }
+
+// isTemplRenderingIdiom reports whether every clone is the templ/HTML
+// empty-state rendering convention:
+//
+//	if len(items) == 0 {
+//	    <empty-state text / markup>
+//	} else {
+//	    for _, item := range items {
+//	        <render each item>
+//	    }
+//	}
+//
+// This is irreducible boilerplate: extracting it would require passing the
+// per-item rendering callback, which obscures the template. It is not
+// actionable duplication.
+func isTemplRenderingIdiom(nodeSeqs [][]*domain.CloneNode) bool {
+	return everySequenceMatch(nodeSeqs, func(seq []*domain.CloneNode) bool {
+		if len(seq) != 1 {
+			return false
+		}
+
+		root := seq[0]
+		if root.BaseType != golang.IfStmt {
+			return false
+		}
+
+		return isTemplEmptyStateIf(root)
+	})
+}
+
+// isTemplEmptyStateIf checks if an IfStmt has the templ empty-state shape:
+//   - A BinaryExpr condition that invokes len(...) (the empty check)
+//   - A BlockStmt then-body (the empty-state rendering)
+//   - A BlockStmt else-body containing a RangeStmt (iterate the collection)
+//   - No else-if chain
+func isTemplEmptyStateIf(node *domain.CloneNode) bool {
+	var (
+		hasLenCheck  bool
+		sawThenBody  bool
+		hasRangeElse bool
+	)
+
+	for _, child := range node.Children {
+		switch child.BaseType {
+		case golang.BinaryExpr:
+			if conditionInvokesLen(child) {
+				hasLenCheck = true
+			}
+		case golang.BlockStmt:
+			if !sawThenBody {
+				sawThenBody = true
+			} else {
+				hasRangeElse = blockHasRangeLoop(child)
+			}
+		case golang.IfStmt:
+			return false
+		}
+	}
+
+	return hasLenCheck && sawThenBody && hasRangeElse
+}
+
+// conditionInvokesLen reports whether a BinaryExpr condition has a len(...)
+// call on either side. The builtin len is package-level and is NOT
+// alpha-normalized, so its Name stays "len".
+func conditionInvokesLen(cond *domain.CloneNode) bool {
+	for _, side := range cond.Children {
+		if side.BaseType == golang.CallExpr && callInvokesBuiltin(side, "len") {
+			return true
+		}
+	}
+
+	return false
+}
+
+// callInvokesBuiltin reports whether a CallExpr calls the named builtin
+// identifier (e.g., "len", "cap"). The called function is the first child
+// of a CallExpr.
+func callInvokesBuiltin(call *domain.CloneNode, name string) bool {
+	if len(call.Children) == 0 {
+		return false
+	}
+
+	fn := call.Children[0]
+
+	return fn.BaseType == golang.Ident && fn.Name == name
+}
+
+// blockHasRangeLoop reports whether a BlockStmt contains a RangeStmt.
+func blockHasRangeLoop(block *domain.CloneNode) bool {
+	for _, child := range block.Children {
+		if child.BaseType == golang.RangeStmt {
+			return true
+		}
+	}
+
+	return false
+}
