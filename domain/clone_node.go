@@ -19,6 +19,17 @@ type CloneNode struct {
 	// Filename is the source file this node originated from.
 	Filename string
 
+	// VarType is the go/types type string for Ident nodes when type-aware
+	// mode is active. Empty string means no type info available. The
+	// actionability layer uses this for type-aware false-positive detection.
+	VarType string
+
+	// EnclosingReturnArity is the number of return values in the enclosing
+	// function (0 for void, >0 for functions returning values). Used by the
+	// property engine to detect control-flow traps where bare returns are
+	// forced by the function signature (e.g., http.HandlerFunc).
+	EnclosingReturnArity int32
+
 	// Children are the direct sub-nodes in tree order.
 	Children []*CloneNode
 }

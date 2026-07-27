@@ -15,6 +15,7 @@ func (t *transformer) trans(
 ) (o *syntax.Node) {
 	o = syntax.NewNode()
 	o.Filename = t.filename
+	o.EnclosingReturnArity = t.enclosingReturnArity
 	st, end := node.Pos(), node.End()
 	o.Pos, o.End = int32(
 		t.fileset.File(st).Offset(st),
@@ -214,6 +215,7 @@ func (t *transformer) trans(
 			if t.typeInfo != nil && t.norm.isLocal(n.Name) {
 				if typeStr := identTypeString(t.typeInfo, n); typeStr != "" {
 					nameForHash += "\x00" + typeStr
+					o.VarType = typeStr
 				}
 			}
 		}

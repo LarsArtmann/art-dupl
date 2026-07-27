@@ -69,16 +69,28 @@ const maxChildrenSerial = 10_000
 // entire subtree into a single composite Type token instead of emitting
 // each descendant individually. This makes threshold mean "N duplicated
 // statements" rather than "N arbitrary AST nodes.".
+//
+// The VarType field stores the go/types type string for Ident nodes when
+// type-aware mode is active. Empty string means no type info available.
+// The actionability layer uses this to detect helper-dominance and
+// type-aware false positives.
+//
+// The EnclosingReturnArity field stores the number of return values in the
+// enclosing function (0 for void, >0 for functions returning values).
+// The property engine uses this to detect control-flow traps where bare
+// returns are forced by the function signature (e.g., http.HandlerFunc).
 type Node struct {
-	Type        int32
-	Pos         int32
-	End         int32
-	Owns        int32
-	Children    []*Node
-	Filename    string
-	Name        string
-	Statement   bool
-	Fingerprint int32
+	Type                  int32
+	Pos                   int32
+	End                   int32
+	Owns                  int32
+	Children              []*Node
+	Filename              string
+	Name                  string
+	VarType               string
+	Statement             bool
+	Fingerprint           int32
+	EnclosingReturnArity  int32
 }
 
 func NewNode() *Node {
@@ -98,15 +110,17 @@ func (n *Node) Clone() *Node {
 	}
 
 	clone := &Node{
-		Type:        n.Type,
-		Pos:         n.Pos,
-		End:         n.End,
-		Owns:        n.Owns,
-		Children:    n.Children,
-		Filename:    n.Filename,
-		Name:        n.Name,
-		Statement:   n.Statement,
-		Fingerprint: n.Fingerprint,
+		Type:                 n.Type,
+		Pos:                  n.Pos,
+		End:                  n.End,
+		Owns:                 n.Owns,
+		Children:             n.Children,
+		Filename:             n.Filename,
+		Name:                 n.Name,
+		VarType:              n.VarType,
+		Statement:            n.Statement,
+		Fingerprint:          n.Fingerprint,
+		EnclosingReturnArity: n.EnclosingReturnArity,
 	}
 	if len(n.Children) > 0 {
 		clone.Children = make([]*Node, len(n.Children))

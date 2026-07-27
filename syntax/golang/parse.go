@@ -77,12 +77,13 @@ func parsePreloaded(filename string, cfg ParseConfig) (*syntax.Node, int, error)
 }
 
 type transformer struct {
-	fileset     *token.FileSet
-	filename    string
-	config      ParseConfig
-	inInterface bool
-	norm        *normalizer
-	typeInfo    *types.Info
+	fileset              *token.FileSet
+	filename             string
+	config               ParseConfig
+	inInterface          bool
+	norm                 *normalizer
+	typeInfo             *types.Info
+	enclosingReturnArity int32
 }
 
 // addWithNilCheck adds a child to o if not nil and valid.

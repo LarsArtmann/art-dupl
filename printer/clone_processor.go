@@ -47,9 +47,11 @@ func toCloneNodeSeqs(dups [][]*syntax.Node) [][]*domain.CloneNode {
 // encoding.
 func syntaxToCloneNode(n *syntax.Node) *domain.CloneNode {
 	cn := &domain.CloneNode{
-		BaseType: golang.DecodeBaseType(n.Type),
-		Name:     n.Name,
-		Filename: n.Filename,
+		BaseType:             golang.DecodeBaseType(n.Type),
+		Name:                 n.Name,
+		Filename:             n.Filename,
+		VarType:              n.VarType,
+		EnclosingReturnArity: n.EnclosingReturnArity,
 	}
 	if len(n.Children) > 0 {
 		cn.Children = make([]*domain.CloneNode, len(n.Children))
