@@ -1,62 +1,58 @@
 package discordsync
 
 // True positives: genuinely harmful duplication that should be reported.
-// These are multi-statement patterns with real logic that could be extracted.
+// These are multi-statement function bodies that are exact copies.
+// They should NOT be suppressed by any actionability pattern.
 
-// invokeService pattern — duplicated across multiple service handlers.
-// Each handler fetches a service, checks availability, executes, wraps errors.
-func invokeServiceA(ctx Context, req RequestA) (ResponseA, error) {
-	svc := getServiceA(ctx)
-	if svc == nil {
-		return ResponseA{}, errServiceUnavailable
+// calculateScore — identical multi-statement logic copy-pasted.
+// Not a guard clause, not error handling, not a single statement.
+func calculateScoreA(events []Event) int {
+	score := 0
+
+	for _, event := range events {
+		if event.Type == "critical" {
+			score += event.Value * criticalMultiplier
+		} else {
+			score += event.Value
+		}
 	}
 
-	resp, err := svc.Execute(ctx, req)
-	if err != nil {
-		return ResponseA{}, fmtErrorf("service A failed: %w", err)
-	}
-
-	return resp, nil
+	return score
 }
 
-func invokeServiceB(ctx Context, req RequestB) (ResponseB, error) {
-	svc := getServiceB(ctx)
-	if svc == nil {
-		return ResponseB{}, errServiceUnavailable
+func calculateScoreB(events []Event) int {
+	score := 0
+
+	for _, event := range events {
+		if event.Type == "critical" {
+			score += event.Value * criticalMultiplier
+		} else {
+			score += event.Value
+		}
 	}
 
-	resp, err := svc.Execute(ctx, req)
-	if err != nil {
-		return ResponseB{}, fmtErrorf("service B failed: %w", err)
-	}
-
-	return resp, nil
+	return score
 }
 
-func invokeServiceC(ctx Context, req RequestC) (ResponseC, error) {
-	svc := getServiceC(ctx)
-	if svc == nil {
-		return ResponseC{}, errServiceUnavailable
+// processBatch — identical batch processing logic copy-pasted.
+func processBatchA(items []Item) []Result {
+	results := make([]Result, 0, len(items))
+
+	for _, item := range items {
+		processed := transformItem(item)
+		results = append(results, Result{Value: processed})
 	}
 
-	resp, err := svc.Execute(ctx, req)
-	if err != nil {
-		return ResponseC{}, fmtErrorf("service C failed: %w", err)
-	}
-
-	return resp, nil
+	return results
 }
 
-// addIfPositive64 pattern — duplicated atomic counter helper.
-// Both sites add a value to an atomic counter only if it's positive.
-func addIfPositive64A(counter *int64, val int64) {
-	if val > 0 {
-		*counter += val
-	}
-}
+func processBatchB(items []Item) []Result {
+	results := make([]Result, 0, len(items))
 
-func addIfPositive64B(counter *int64, val int64) {
-	if val > 0 {
-		*counter += val
+	for _, item := range items {
+		processed := transformItem(item)
+		results = append(results, Result{Value: processed})
 	}
+
+	return results
 }
