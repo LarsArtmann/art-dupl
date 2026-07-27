@@ -61,6 +61,39 @@ Patterns are checked in this order (first match wins):
 18. Data-dominated
 19. Describe table
 20. Builder callback
+21. Bool-guard (`X, ok := helper(); if !ok { return }`)
+22. Templ-rendering-idiom (`if len(x) == 0 { text } else { for ... }`)
+
+## Property-Based Classification Engine (Second Pass)
+
+After the 22 pattern-table checks run, a **property-based extractability engine** runs as a second-pass fallback. It evaluates four computable properties that define "harmful duplication" from first principles, catching false positives that the pattern table misses.
+
+See `docs/adr/0017-property-based-classification.md` for the full design.
+
+### The Four Properties
+
+| #   | Property                        | What it checks                                                    | Example false positives killed                 |
+| --- | ------------------------------- | ----------------------------------------------------------------- | ---------------------------------------------- |
+| 1   | **Control-flow extractability** | Clone contains `return`/`break`/`continue` forced by caller sig   | HTTP handler void-return error guards          |
+| 2   | **ROI positive**                | >60% of tokens inside a single CallExpr = helper invocation       | `queryError` wrappers, `defer cancel()`        |
+| 3   | **Parameterizable**             | Clones differ only in string-literal domain values                | bool-to-string funcs, format specifier variants |
+| 4   | **Mechanical extractability**   | Always true (any code can be wrapped in a function)               | —                                              |
+
+### Confidence Tiers
+
+The engine produces a confidence score (0.0-1.0) that maps to three tiers:
+
+| Tier           | Confidence | Meaning                                                      |
+| -------------- | ---------- | ----------------------------------------------------------- |
+| `actionable`   | >= 0.8     | Genuinely harmful duplication — extract it                  |
+| `low-confidence` | 0.5-0.8  | Ambiguous — review manually, may need `//art-dupl:accept`  |
+| `non-actionable` | < 0.5    | Idiomatic boilerplate — suppressed from default output      |
+
+The `low-confidence` tier is shown in `--explain` output and included as `confidence` in JSON.
+
+### Architecture
+
+The property engine runs **after** the pattern table (not as a pre-filter). Patterns are specific and well-tested; the property engine catches what they miss. This prevents the engine from stealing labels from existing patterns.
 
 ## Key Design Decisions
 

@@ -9,6 +9,13 @@ This file is OPEN work only — no completed, rejected, or resolved items.
 
 ## HIGH Priority
 
+### Property Engine Follow-up
+
+- [ ] **Calibrate confidence values against real-world data**: The property engine uses hardcoded thresholds (0.8 actionable, 0.5 low-confidence, 60% helper-dominance ratio). Run on 3-5 OSS Go projects, measure FP/FN rates, and tune thresholds empirically.
+- [ ] **Broaden `findOkVarName` beyond "ok"**: Currently only matches the literal string "ok". Should accept common bool variable names (`found`, `exists`, `success`, `present`).
+- [ ] **Add property engine labels to `--list-patterns`**: The 4 property labels (`property-engine`, `property-control-flow`, `property-roi`, `property-parameterizable`) are invisible to `AllActionabilityPatterns()`. Either register them or document as internal-only.
+- [ ] **Fix `isFormatSpecifierDifference` edge cases**: Only checks the character after `%`. Doesn't handle `%%` (literal percent), width specifiers (`%5d` vs `%3d`), or argument indices (`%[1]d`).
+
 ### Correctness
 
 - [x] **Repo-wide audit for duplicated `errors.New("...")` sentinels**: COMPLETED 2026-07-26. Found 2 semantic duplicates in `pkg/artdupl/`: `ErrCloneLineEndBeforeStart` (was a distinct pointer from `domain.ErrLineEndBeforeStart`) and `ErrUnsupportedMethod` (was distinct from `domain.ErrInvalidDetectionMethod`). Both now aliased to domain. Added AST-based auto-scanner test (`TestNoDuplicateErrorNewMessages`) that scans ALL production `.go` files for duplicate `errors.New("literal")` messages — self-maintaining, no hardcoded list. Expanded `TestAliasedSentinelsAreIdentical` from 10 to 12 cases.

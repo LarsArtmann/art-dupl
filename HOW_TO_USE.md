@@ -325,10 +325,12 @@ art-dupl --type-aware -t 30 ./src
 **Tradeoffs:**
 
 - 10-100x slower than syntax-only analysis (full type checking via `go/packages`)
-- Not compatible with `--incremental` (type data cannot be cached incrementally)
+- Compatible with `--incremental` (type data is threaded through the incremental parser)
 - Falls back gracefully to syntax-only if type checking fails (missing dependencies, etc.)
 
 ## Accepting Clone Groups
+
+> See [`docs/WORKFLOW.md`](docs/WORKFLOW.md) for the full zero-false-positive workflow guide, including confidence tiers and accept-directive best practices.
 
 When you review a clone group and decide it is intentional (not harmful duplication),
 you can suppress it permanently by adding an inline directive in the source code:

@@ -111,8 +111,10 @@
 | **Actionability Verdict**     | FULLY_FUNCTIONAL | Labels clones actionable vs non-actionable (test boilerplate, idioms, etc.)                          |
 | **Actionability Override**    | FULLY_FUNCTIONAL | `--no-actionability` disables filtering, showing ALL clones including boilerplate                    |
 | **Disable Specific Pattern**  | FULLY_FUNCTIONAL | `--disable-pattern <label>` selectively re-enables a single boilerplate pattern                      |
-| **List Patterns**             | FULLY_FUNCTIONAL | `--list-patterns` prints all 20 pattern labels in priority order                                     |
+| **List Patterns**             | FULLY_FUNCTIONAL | `--list-patterns` prints all 22 pattern labels in priority order                                     |
 | **Explain Mode**              | FULLY_FUNCTIONAL | `--explain` prints why each clone group was reported (type, actionability, category, extractability) |
+| **Property-Based Extractability Engine** | PARTIALLY_DONE | Second-pass analysis using 4 computable properties (control-flow, ROI, parameterizability, confidence). Patterns run first, engine catches misses. See ADR-0017 |
+| **Confidence Tiers**          | PARTIALLY_DONE | Three-tier output: actionable / low-confidence / non-actionable with `confidence` field in JSON  |
 | **Pattern in JSON**           | FULLY_FUNCTIONAL | `non_actionable_pattern` field in JSON/SARIF output identifies which boilerplate pattern matched     |
 | **Overlap Elimination**       | FULLY_FUNCTIONAL | Suppresses nested clone groups; only the largest match is reported                                   |
 | **Test Noise Suppression**    | FULLY_FUNCTIONAL | `--ignore-tests` excludes test files; `--include-tests` overrides                                    |
