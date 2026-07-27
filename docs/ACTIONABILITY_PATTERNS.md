@@ -28,10 +28,12 @@ These patterns represent Go idioms that cannot be eliminated without breaking se
 | Data-dominated       | `data-dominated`           | 60%+ BasicLit/KeyValueExpr nodes                                                                               | Config fixtures, struct init                |
 | Describe table       | `describe-table`           | Ginkgo `DescribeTable`/`Entry` patterns                                                                        | Ginkgo parametrized tests                   |
 | Builder callback     | `builder-callback`         | 3+ chained calls on 2+ different receivers                                                                     | Builder/fluent API pattern                  |
+| Bool-guard           | `bool-guard`               | 2-stmt: `X, ok := helper(); if !ok { return }` (assign + guard on same variable)                               | `v, ok := m[key]; if !ok { return }`        |
+| Templ rendering      | `templ-rendering-idiom`    | `if len(x) == 0 { ... } else { for ... }` (templ/HTML empty-state convention; `.go` files, not `.templ` source) | Generated `_templ.go` empty-state rendering |
 
 ## How It Works
 
-1. `EvaluateActionabilityWithLabel` runs 20 pattern checks in priority order.
+1. `EvaluateActionabilityWithLabel` runs 22 pattern checks in priority order.
 2. The first matching pattern wins (returns its `PatternLabel`).
 3. If no pattern matches, the group is **Actionable**.
 4. Only `semantic` detection mode runs actionability checks. `exact` and `structural` skip them.

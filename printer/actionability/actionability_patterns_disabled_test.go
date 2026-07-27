@@ -13,8 +13,9 @@ func TestAllActionabilityPatterns_Count(t *testing.T) {
 	t.Parallel()
 
 	patterns := AllActionabilityPatterns()
-	if len(patterns) != 22 {
-		t.Errorf("AllActionabilityPatterns() returned %d patterns, want 22", len(patterns))
+	if len(patterns) != len(actionabilityPatternTable) {
+		t.Errorf("AllActionabilityPatterns() returned %d patterns, want %d (len(actionabilityPatternTable))",
+			len(patterns), len(actionabilityPatternTable))
 	}
 }
 
@@ -44,6 +45,8 @@ func TestAllActionabilityPatterns_ContainsLabels(t *testing.T) {
 		PatternDataDominated,
 		PatternDescribeTable,
 		PatternBuilderCallback,
+		PatternBoolGuard,
+		PatternTemplRenderingIdiom,
 	}
 
 	for _, label := range required {
