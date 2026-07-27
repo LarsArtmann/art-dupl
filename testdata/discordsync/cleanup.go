@@ -3,51 +3,54 @@ package discordsync
 // Finding 3: defer cleanup — 12 groups in real codebase.
 // Three variants: bare cancel(), FuncLit wrapping rows.Close(), FuncLit tx.Rollback().
 // Expected actionability: raii-defer (suppressed).
+//
+// Fixture design: each function has unique trailing code so the clone detector
+// isolates just the defer/cancel pattern.
 
 func handleEventA(ctx Context) {
 	ctx, cancel := newHandlerContext()
 	defer cancel()
-	processEvent(ctx)
+	dispatchEventA(ctx)
 }
 
 func handleEventB(ctx Context) {
 	ctx, cancel := newHandlerContext()
 	defer cancel()
-	processEvent(ctx)
+	dispatchEventB(ctx)
 }
 
 func handleEventC(ctx Context) {
 	ctx, cancel := newHandlerContext()
 	defer cancel()
-	processEvent(ctx)
+	dispatchEventC(ctx)
 }
 
 func processAttachmentRows(rows Rows) {
 	defer func() { _ = rows.Close() }()
-	scanRows(rows)
+	scanAttachments(rows)
 }
 
 func processMessageRows(rows Rows) {
 	defer func() { _ = rows.Close() }()
-	scanRows(rows)
+	scanMessages(rows)
 }
 
 func processMemberRows(rows Rows) {
 	defer func() { _ = rows.Close() }()
-	scanRows(rows)
+	scanMembers(rows)
 }
 
 func transactionalInsertA(tx Tx) {
 	defer func() { _ = tx.Rollback() }()
-	insertRecord(tx)
+	insertRecordA(tx)
 }
 
 func transactionalInsertB(tx Tx) {
 	defer func() { _ = tx.Rollback() }()
-	insertRecord(tx)
+	insertRecordB(tx)
 }
 
 func transactionalInsertC(tx Tx) {
 	defer func() { _ = tx.Rollback() }()
-	insertRecord(tx)
+	insertRecordC(tx)
 }

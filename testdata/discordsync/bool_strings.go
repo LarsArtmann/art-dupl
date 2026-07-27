@@ -2,14 +2,18 @@ package discordsync
 
 // Finding 4: bool-to-string functions — 3 groups in real codebase.
 // Same AST shape, completely different domains and return values.
-// Expected actionability: single-simple-statement or signature-only (suppressed).
+// Expected actionability: guard-clause (suppressed) when the if-statement
+// is isolated from the trailing return.
+//
+// Fixture design: each function has unique trailing code so the clone detector
+// isolates just the guard-clause if-statement.
 
 func fmtBool(b bool) string {
 	if b {
 		return "Yes"
 	}
 
-	return "No"
+	return defaultNegative()
 }
 
 func emojiExtension(animated bool) string {
@@ -17,7 +21,7 @@ func emojiExtension(animated bool) string {
 		return ".gif"
 	}
 
-	return ".png"
+	return staticExtension()
 }
 
 func banActiveSelectValue(activeOnly bool) string {
@@ -25,5 +29,5 @@ func banActiveSelectValue(activeOnly bool) string {
 		return "1"
 	}
 
-	return ""
+	return emptyValue()
 }

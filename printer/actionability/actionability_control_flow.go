@@ -219,11 +219,16 @@ func isReturnOrWrappedReturn(node *domain.CloneNode) bool {
 		return false
 	}
 
-	// Single return or return with CallExpr (e.g., return fmt.Errorf("...")).
+	// Single return, return with CallExpr, or lone call expression.
+	// e.g., return fmt.Errorf("...")
+	// e.g., return nil, queryError(err, "msg")
+	// e.g., logError("msg", err) — no return, just a call
 	if len(node.Children) == 1 {
-		bt := node.Children[0].BaseType
+		child := node.Children[0]
 
-		return bt == golang.ReturnStmt || bt == golang.CallExpr
+		return child.BaseType == golang.ReturnStmt ||
+			child.BaseType == golang.CallExpr ||
+			isExprStmtCallExpr(child)
 	}
 
 	// 2-statement pattern: any call + return.
