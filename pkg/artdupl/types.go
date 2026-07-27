@@ -68,6 +68,15 @@ type CloneGroup struct {
 	Size      int             `json:"size"`             // Size in tokens/bytes
 	LineCount int             `json:"line_count"`       // Number of lines
 	Method    DetectionMethod `json:"detection_method"` // Method that found this group
+
+	// Analysis holds the property-based extractability analysis results.
+//	Populated when the detector pipeline includes actionability analysis
+//	(currently CLI-only; the SDK returns nil here). When non-nil, the
+//	Confidence field reflects the property engine's confidence score
+//	(0.0-1.0, where >=0.8 is actionable, 0.5-0.8 is low-confidence, <0.5
+//	is non-actionable).
+	Analysis   *ExtractabilityAnalysis `json:"analysis,omitempty"`
+	Confidence float64                 `json:"confidence,omitempty"`
 }
 
 // Clone represents a single occurrence of duplicated code.

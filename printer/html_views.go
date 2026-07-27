@@ -118,6 +118,11 @@ func toCloneGroupView(
 		occurrenceData = append(occurrenceData, toCloneOccurrenceView(cl))
 	}
 
+	var confidence float64
+	if len(clones) > 0 && clones[0].Classification.Analysis != nil {
+		confidence = clones[0].Classification.Analysis.Confidence
+	}
+
 	return CloneGroupView{
 		GroupNum:    groupNum,
 		Hash:        hash,
@@ -128,6 +133,7 @@ func toCloneGroupView(
 		TotalTokens: totalTokens,
 		BadgesHTML:  badgesHTML,
 		Suggestion:  suggestion,
+		Confidence:  confidence,
 		Clones:      occurrenceData,
 	}
 }
