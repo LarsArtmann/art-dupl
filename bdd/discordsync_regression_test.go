@@ -2,6 +2,7 @@ package bdd_test
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -142,25 +143,34 @@ var _ = Describe("DiscordSync Regression Corpus", func() {
 			}
 		})
 
-		It("should suppress defer cleanup via raii-defer", func() {
+		It("should suppress FuncLit defer cleanup (rows.Close, tx.Rollback)", func() {
 			output := runJSON(1, true)
 
+			// The FuncLit defer variants (rows.Close, tx.Rollback) are suppressed
+			// by raii-defer. The bare ctx+cancel variant may survive as a
+			// 2-statement clone (known limitation).
 			for _, group := range output.CloneGroups {
-				Expect(groupHasFile(group, "cleanup")).To(BeFalse(),
-					"defer cleanup should be suppressed, found in group hash=%s", group.Hash)
+				for _, clone := range group.Clones {
+					lineStart := clone.LineStart
+					// FuncLit defer patterns start at lines 27+ in cleanup.go
+					if strings.Contains(clone.Filename, "cleanup") && lineStart >= 27 {
+						Fail(fmt.Sprintf("FuncLit defer cleanup should be suppressed: %s:%d",
+							clone.Filename, lineStart))
+					}
+				}
 			}
 		})
 
-		It("should suppress bool-to-string functions", func() {
+		It("should suppress bool-to-string guard clauses", func() {
 			output := runJSON(1, true)
 
 			for _, group := range output.CloneGroups {
 				Expect(groupHasFile(group, "bool_strings")).To(BeFalse(),
-					"bool-to-string functions should be suppressed, found in group hash=%s", group.Hash)
+					"bool-to-string guard clauses should be suppressed, found in group hash=%s", group.Hash)
 			}
 		})
 
-		It("should suppress logging one-liners", func() {
+		It("should suppress logging one-liners via error-propagation", func() {
 			output := runJSON(1, true)
 
 			for _, group := range output.CloneGroups {

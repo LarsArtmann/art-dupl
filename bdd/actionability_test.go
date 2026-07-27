@@ -84,21 +84,21 @@ var _ = Describe("Rich Text Output", func() {
 		err := setup.CreateTestFiles(map[string]string{
 			"dup1.go": `package main
 
-import "fmt"
-
-func handleError(err error) {
-	if err != nil {
-		fmt.Println(err)
+func processData(data []int) int {
+	sum := 0
+	for _, v := range data {
+		sum += v
 	}
+	return sum
 }`,
 			"dup2.go": `package main
 
-import "fmt"
-
-func logError(err error) {
-	if err != nil {
-		fmt.Println(err)
+func aggregateValues(values []int) int {
+	sum := 0
+	for _, v := range values {
+		sum += v
 	}
+	return sum
 }`,
 		})
 		Expect(err).NotTo(HaveOccurred())
