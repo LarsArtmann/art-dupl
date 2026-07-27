@@ -57,7 +57,11 @@ func TestDiscordSync_HTTPErrorGuardWithSlog(t *testing.T) {
 		{mustIfErrSlogAndReturn()},
 		{mustIfErrSlogAndReturn()},
 	}
-	assertNonActionable(t, "if err != nil { slog.Error(...); return } should be non-actionable (error-propagation)", seqs)
+	assertNonActionable(
+		t,
+		"if err != nil { slog.Error(...); return } should be non-actionable (error-propagation)",
+		seqs,
+	)
 }
 
 func TestDiscordSync_QueryErrorWrapping(t *testing.T) {

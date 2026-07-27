@@ -74,9 +74,9 @@ func isBoolGuardIf(assign *domain.CloneNode, ifStmt *domain.CloneNode) bool {
 	}
 
 	var (
-		hasGuard    bool
-		hasBody     bool
-		hasElse     bool
+		hasGuard bool
+		hasBody  bool
+		hasElse  bool
 	)
 
 	for _, child := range ifStmt.Children {

@@ -94,7 +94,7 @@ func isCleanupIdentName(name string) bool {
 }
 
 // hasCleanupInFuncLit checks if a CallExpr wraps a FuncLit whose body
-// contains a cleanup call. Handles: defer func() { _ = rows.Close() }()
+// contains a cleanup call. Handles: defer func() { _ = rows.Close() }().
 func hasCleanupInFuncLit(call *domain.CloneNode) bool {
 	for _, child := range call.Children {
 		if child.BaseType == golang.FuncLit {
@@ -113,13 +113,7 @@ func subtreeHasCleanupCall(node *domain.CloneNode) bool {
 		return true
 	}
 
-	for _, child := range node.Children {
-		if subtreeHasCleanupCall(child) {
-			return true
-		}
-	}
-
-	return false
+	return slices.ContainsFunc(node.Children, subtreeHasCleanupCall)
 }
 
 // cleanupMethodNames are method names that release resources in RAII-style
@@ -257,7 +251,7 @@ func isExprStmtCallExpr(node *domain.CloneNode) bool {
 // loggingMethodNames are method names for logging/print functions.
 var loggingMethodNames = []string{ //nolint:gochecknoglobals // static name set
 	"Print", "Printf", "Println",
-	"Error", calleeErrorf, "Warn", "Warnf", "Info", "Infof", "Debug", "Debugf",
+	"Error", calleeErrorf, "Warn", "Warnf", "Info", "Infof", "Debug", "Debugf", //nolint:goconst // logging method name, not a domain constant
 	"Fatal", "Fatalf", "Panic", "Panicf",
 }
 

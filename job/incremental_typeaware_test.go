@@ -31,6 +31,7 @@ func handler() {
 
 	fchan := make(chan string, 1)
 	fchan <- setup.GetFilePath("handler.go")
+
 	close(fchan)
 
 	schan, statsChan := parser.ParseIncremental(ctx, fchan)
@@ -73,6 +74,7 @@ func compute() (int, error) {
 
 	fchan := make(chan string, 1)
 	fchan <- setup.GetFilePath("values.go")
+
 	close(fchan)
 
 	schan, statsChan := parser.ParseIncremental(ctx, fchan)

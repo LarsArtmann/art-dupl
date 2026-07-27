@@ -45,6 +45,7 @@ func EvaluateExtractability(nodeSeqs [][]*domain.CloneNode) domain.Extractabilit
 	roi := checkROI(nodeSeqs)
 	if !roi.ROIPositive {
 		analysis.ROIPositive = false
+
 		analysis.Confidence = minConfidence(analysis.Confidence, roi.Confidence)
 		if analysis.ControlFlowExtractable {
 			analysis.Reason = roi.Reason
@@ -54,6 +55,7 @@ func EvaluateExtractability(nodeSeqs [][]*domain.CloneNode) domain.Extractabilit
 	param := checkParameterizability(nodeSeqs)
 	if !param.Parameterizable {
 		analysis.Parameterizable = false
+
 		analysis.Confidence = minConfidence(analysis.Confidence, param.Confidence)
 		if analysis.ControlFlowExtractable && analysis.ROIPositive {
 			analysis.Reason = param.Reason
@@ -212,6 +214,7 @@ func findLargestCallExprSize(node *domain.CloneNode) int {
 	}
 
 	largest := 0
+
 	for _, child := range node.Children {
 		size := findLargestCallExprSize(child)
 		if size > largest {
@@ -300,6 +303,7 @@ func literalsDifferOnlyInValues(literals [][]string) bool {
 
 	for pos := range literals[0] {
 		values := make(map[string]bool)
+
 		for _, clone := range literals {
 			if pos < len(clone) {
 				values[clone[pos]] = true
