@@ -22,11 +22,11 @@ art-dupl --type-aware --semantic -t 3 .
 
 ## The Three Confidence Tiers
 
-| Tier | Confidence | Meaning | Action |
-| --- | --- | --- | --- |
-| **Actionable** | ≥ 0.8 | Real duplication — extract it | Extract to shared helper |
-| **LowConfidence** | 0.5–0.8 | Ambiguous — needs human judgment | Review, then accept or extract |
-| **NonActionable** | < 0.5 | Go idiom/boilerplate | Automatically suppressed |
+| Tier              | Confidence | Meaning                          | Action                         |
+| ----------------- | ---------- | -------------------------------- | ------------------------------ |
+| **Actionable**    | ≥ 0.8      | Real duplication — extract it    | Extract to shared helper       |
+| **LowConfidence** | 0.5–0.8    | Ambiguous — needs human judgment | Review, then accept or extract |
+| **NonActionable** | < 0.5      | Go idiom/boilerplate             | Automatically suppressed       |
 
 ## The Accept Directive
 

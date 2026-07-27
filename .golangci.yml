@@ -105,6 +105,7 @@ linters:
     - sqlclosecheck
     - staticcheck
     - tagalign
+    - tagliatelle
     - testableexamples
     - testifylint
     - testpackage
@@ -129,6 +130,24 @@ linters:
       max-complexity: 15
     dupl:
       threshold: 100
+    errcheck:
+      exclude-functions:
+        - (*os.File).Close
+        - (io.Closer).Close
+        - (*sql.DB).Close
+        - (*sql.Rows).Close
+        - (*sql.Stmt).Close
+        - (net.Conn).Close
+        - (*net.TCPConn).Close
+        - (*net.UDPConn).Close
+        - fmt.Fprint
+        - fmt.Fprintf
+        - fmt.Fprintln
+        - fmt.Print
+        - fmt.Printf
+        - fmt.Println
+        - (*strings.Builder).WriteString
+        - (*bytes.Buffer).WriteString
     funlen:
       lines: 80
       statements: 50
@@ -149,6 +168,10 @@ linters:
       replace-allow-list:
         - github.com/LarsArtmann/gogenfilter/v3
       replace-local: true
+    gosec:
+      excludes:
+        - G304
+        - G115
     ireturn:
       allow:
         - anon

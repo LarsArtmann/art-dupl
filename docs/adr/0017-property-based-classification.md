@@ -13,6 +13,7 @@ codebase reveals new idioms not in the list. Adding patterns is whack-a-mole.
 The root cause: type information loaded by `--type-aware` was destroyed in the
 transformer (hashed into `Node.Type` and never stored). The actionability layer
 operated on pure AST shape with no access to:
+
 - Enclosing function signatures (return arity)
 - Variable types (helper detection)
 - Error references in call arguments
@@ -44,6 +45,7 @@ cases the patterns miss.
 ### Graceful degradation
 
 When type info is unavailable (syntax-only mode):
+
 - `EnclosingReturnArity` is still computed structurally from AST
 - `VarType` is empty (only populated with `--type-aware`)
 - Property engine runs conservatively (defaults to "harmful" when uncertain)

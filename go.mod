@@ -81,7 +81,7 @@ require (
 	github.com/LarsArtmann/gogenfilter/v3 v3.3.2
 	github.com/a-h/templ v0.3.1020
 	github.com/charmbracelet/fang v1.0.0
-	github.com/charmbracelet/x/exp/golden v0.0.0-20260726004341-482a56510f1b
+	github.com/charmbracelet/x/exp/golden v0.0.0-20260727090823-41c9e6be3365
 	github.com/go-faster/yaml v0.4.6
 	github.com/onsi/ginkgo/v2 v2.32.0
 	github.com/onsi/gomega v1.42.1
@@ -100,7 +100,7 @@ require (
 	github.com/charmbracelet/colorprofile v0.4.3 // indirect
 	github.com/charmbracelet/ultraviolet v0.0.0-20260720091822-7cc6674724ac // indirect
 	github.com/charmbracelet/x/ansi v0.11.7 // indirect
-	github.com/charmbracelet/x/exp/charmtone v0.0.0-20260726004341-482a56510f1b // indirect
+	github.com/charmbracelet/x/exp/charmtone v0.0.0-20260727090823-41c9e6be3365 // indirect
 	github.com/charmbracelet/x/term v0.2.2 // indirect
 	github.com/charmbracelet/x/termios v0.1.1 // indirect
 	github.com/charmbracelet/x/windows v0.2.2 // indirect

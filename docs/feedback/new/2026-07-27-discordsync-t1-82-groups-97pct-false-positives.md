@@ -9,20 +9,20 @@
 
 ## Results
 
-| Category | Groups | Decision | Tool feedback |
-| --- | --- | --- | --- |
-| `if err != nil` + `writeError` + bare `return` (HTTP handler) | 12 | Accept | **Suppress: forced by `http.HandlerFunc` void signature** |
-| `if err != nil` + `return X, queryError(err, uniqueOp)` (DB layer) | 27 | Accept | **Down-rank: unique operation strings are parameters** |
-| `defer cancel()` / `defer rows.Close()` / `defer tx.Rollback()` | 12 | Accept | **Suppress: universal Go resource cleanup** |
-| `t.Parallel()` (test boilerplate) | 8 | Accept | Already documented; confirm suppression works at `-t 1` |
-| `ctx, cancel := helper()` (calling extracted helper) | 3 | Accept | **Down-rank: the call IS the extraction** |
-| `if bool { return STR_A }; return STR_B` (different domains) | 3 | Accept | **False positive: same AST, different return values** |
-| `fmt.Sprintf("#%06x", color)` vs `fmt.Sprintf("#%06X", color)` | 1 | Accept | **False positive: different format specifiers** |
-| Calling shared helpers (`requireQueryParam`, `loadGuildsAndParams`) | 5 | Accept | **Down-rank: helper invocation, not duplication** |
-| `if id == nil { return "" }; return id.String()` (3-line cross-package utils) | 1 | Accept | Borderline — too small to extract across packages |
-| Single-site `if err != nil { log/slog }` one-liners | several | Accept | **Suppress: unique messages, single-line logging** |
-| `.templ` render blocks (empty-state vs populated loop) | 4 | Accept | **No change needed** — hand-written source, correctly surfaced, correctly accepted |
-| **Genuinely harmful (extracted)** | **2** | **Extracted** | — |
+| Category                                                                      | Groups  | Decision      | Tool feedback                                                                      |
+| ----------------------------------------------------------------------------- | ------- | ------------- | ---------------------------------------------------------------------------------- |
+| `if err != nil` + `writeError` + bare `return` (HTTP handler)                 | 12      | Accept        | **Suppress: forced by `http.HandlerFunc` void signature**                          |
+| `if err != nil` + `return X, queryError(err, uniqueOp)` (DB layer)            | 27      | Accept        | **Down-rank: unique operation strings are parameters**                             |
+| `defer cancel()` / `defer rows.Close()` / `defer tx.Rollback()`               | 12      | Accept        | **Suppress: universal Go resource cleanup**                                        |
+| `t.Parallel()` (test boilerplate)                                             | 8       | Accept        | Already documented; confirm suppression works at `-t 1`                            |
+| `ctx, cancel := helper()` (calling extracted helper)                          | 3       | Accept        | **Down-rank: the call IS the extraction**                                          |
+| `if bool { return STR_A }; return STR_B` (different domains)                  | 3       | Accept        | **False positive: same AST, different return values**                              |
+| `fmt.Sprintf("#%06x", color)` vs `fmt.Sprintf("#%06X", color)`                | 1       | Accept        | **False positive: different format specifiers**                                    |
+| Calling shared helpers (`requireQueryParam`, `loadGuildsAndParams`)           | 5       | Accept        | **Down-rank: helper invocation, not duplication**                                  |
+| `if id == nil { return "" }; return id.String()` (3-line cross-package utils) | 1       | Accept        | Borderline — too small to extract across packages                                  |
+| Single-site `if err != nil { log/slog }` one-liners                           | several | Accept        | **Suppress: unique messages, single-line logging**                                 |
+| `.templ` render blocks (empty-state vs populated loop)                        | 4       | Accept        | **No change needed** — hand-written source, correctly surfaced, correctly accepted |
+| **Genuinely harmful (extracted)**                                             | **2**   | **Extracted** | —                                                                                  |
 
 ---
 
@@ -80,7 +80,7 @@ IfStmt {
 }
 ```
 
-Classification: `go-http-error-guard`. Priority: **suppressed by default** at all thresholds, or informational-only. Suggestion: *"Forced by http.HandlerFunc void signature — cannot be extracted without a callback wrapper that still requires a bare return."*
+Classification: `go-http-error-guard`. Priority: **suppressed by default** at all thresholds, or informational-only. Suggestion: _"Forced by http.HandlerFunc void signature — cannot be extracted without a callback wrapper that still requires a bare return."_
 
 ---
 
@@ -106,7 +106,7 @@ return progress, nil
 
 ### Why this is not harmful
 
-Per the dedup skill's own guidance: *"Unique values are parameters, not duplication."* Every site calls a **different** operation with a **unique** error message (`"failed to query stale backfill progress"` vs `"failed to query backfill progress"` vs `"failed to get guild member"`...). The `queryError` / `errkit.Transient` wrapper **IS** the already-extracted helper. The return arity (`return nil, err` vs `return nil, nil, err` vs `return 0, err`) and not-found semantics (`isErrNoRows` guard present or absent) also differ per site.
+Per the dedup skill's own guidance: _"Unique values are parameters, not duplication."_ Every site calls a **different** operation with a **unique** error message (`"failed to query stale backfill progress"` vs `"failed to query backfill progress"` vs `"failed to get guild member"`...). The `queryError` / `errkit.Transient` wrapper **IS** the already-extracted helper. The return arity (`return nil, err` vs `return nil, nil, err` vs `return 0, err`) and not-found semantics (`isErrNoRows` guard present or absent) also differ per site.
 
 ### Tool feedback
 
@@ -181,6 +181,7 @@ Three completely different domains (UI yes/no formatting, Discord CDN file exten
 ### Tool feedback
 
 **Type-aware mode should flag this as a false positive** when:
+
 - The cloned block is a complete function (not a fragment),
 - The function body is `if <bool param> { return <string literal A> }; return <string literal B>`,
 - The string literals differ between clone instances.
@@ -227,7 +228,7 @@ if !ok { return }
 
 ### Why this is not harmful
 
-`requireQueryParam` and `loadGuildsAndParams` **ARE** the extractions. Calling a shared helper N times is the *goal* of deduplication, not duplication itself. The `"guild_id"` string is intentionally repeated — every guild endpoint needs it, and it's the parameter name from the HTTP query string.
+`requireQueryParam` and `loadGuildsAndParams` **ARE** the extractions. Calling a shared helper N times is the _goal_ of deduplication, not duplication itself. The `"guild_id"` string is intentionally repeated — every guild endpoint needs it, and it's the parameter name from the HTTP query string.
 
 ### Tool feedback
 
@@ -319,16 +320,16 @@ Each site has a unique message, unique context keys, and unique severity (`Debug
 
 ## Summary: what suppressing these patterns would achieve
 
-| Suppression rule | Groups eliminated | New report size |
-| --- | --- | --- |
-| (baseline) | 0 | 82 |
-| Finding 1: http-error-guard | -12 | 70 |
-| Finding 2: error-wrap-idiom (down-rank) | -27 (to informational) | 43 actionable |
-| Finding 3: defer cleanup (3 rules) | -12 | 31 |
-| Finding 4: bool-to-string-func | -3 | 28 |
-| Finding 6: helper-invocation (down-rank) | -5 (to informational) | 23 |
-| Finding 9: error-log-one-liner | -4 | 19 |
-| **Total** | **~63 suppressed/down-ranked** | **~19 actionable** |
+| Suppression rule                         | Groups eliminated              | New report size    |
+| ---------------------------------------- | ------------------------------ | ------------------ |
+| (baseline)                               | 0                              | 82                 |
+| Finding 1: http-error-guard              | -12                            | 70                 |
+| Finding 2: error-wrap-idiom (down-rank)  | -27 (to informational)         | 43 actionable      |
+| Finding 3: defer cleanup (3 rules)       | -12                            | 31                 |
+| Finding 4: bool-to-string-func           | -3                             | 28                 |
+| Finding 6: helper-invocation (down-rank) | -5 (to informational)          | 23                 |
+| Finding 9: error-log-one-liner           | -4                             | 19                 |
+| **Total**                                | **~63 suppressed/down-ranked** | **~19 actionable** |
 
 Suppressing these built-in Go idioms would take this report from **82 groups (2 harmful, 97.5% noise)** to **~19 actionable groups (2 harmful, 17 worth reviewing)** — a **4x improvement in signal-to-noise ratio** at `-t 1`.
 
