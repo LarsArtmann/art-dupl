@@ -26,6 +26,7 @@ type CloneGroupView struct {
 	TotalTokens int
 	BadgesHTML  string
 	Suggestion  string
+	Confidence  float64
 	Clones      []CloneOccurrenceView
 }
 

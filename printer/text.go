@@ -252,6 +252,13 @@ func (p *TextPrinter) writeExplanation(cls domain.CloneClassification, cloneCoun
 		}
 
 		parts = append(parts, "non-actionable ("+reason+")")
+	} else if cls.Actionability == domain.LowConfidence {
+		reason := cls.NonActionablePattern
+		if reason == "" {
+			reason = "property engine"
+		}
+
+		parts = append(parts, "low-confidence ("+reason+")")
 	} else {
 		parts = append(parts, "actionable")
 	}

@@ -39,6 +39,7 @@ type JSONClone struct {
 	CloneType            domain.CloneType          `json:"clone_type,omitzero"`
 	LinesSaved           int                       `json:"lines_saved,omitempty"`
 	Extractable          bool                      `json:"extractable,omitempty"`
+	Confidence           float64                   `json:"confidence,omitempty"`
 }
 
 type Summary struct {
@@ -51,7 +52,7 @@ type Summary struct {
 // toJSONClone converts a domain.ProcessedClone to a JSONClone DTO.
 // This is the single conversion point — all JSON output paths use it.
 func toJSONClone(cl domain.ProcessedClone) JSONClone {
-	return JSONClone{
+	jc := JSONClone{
 		CloneRef:             cl.CloneRef,
 		Category:             cl.Classification.Category,
 		Priority:             cl.Classification.Priority,
@@ -61,6 +62,12 @@ func toJSONClone(cl domain.ProcessedClone) JSONClone {
 		LinesSaved:           cl.Classification.Extractability.EstimatedLinesSaved,
 		Extractable:          cl.Classification.Extractability.CanExtract,
 	}
+
+	if cl.Classification.Analysis != nil {
+		jc.Confidence = cl.Classification.Analysis.Confidence
+	}
+
+	return jc
 }
 
 type simpleJSONClone struct {
