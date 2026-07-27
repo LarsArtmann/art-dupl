@@ -80,17 +80,17 @@ const maxChildrenSerial = 10_000
 // The property engine uses this to detect control-flow traps where bare
 // returns are forced by the function signature (e.g., http.HandlerFunc).
 type Node struct {
-	Type                  int32
-	Pos                   int32
-	End                   int32
-	Owns                  int32
-	Children              []*Node
-	Filename              string
-	Name                  string
-	VarType               string
-	Statement             bool
-	Fingerprint           int32
-	EnclosingReturnArity  int32
+	Type                 int32
+	Pos                  int32
+	End                  int32
+	Owns                 int32
+	Children             []*Node
+	Filename             string
+	Name                 string
+	VarType              string
+	Statement            bool
+	Fingerprint          int32
+	EnclosingReturnArity int32
 }
 
 func NewNode() *Node {

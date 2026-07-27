@@ -52,7 +52,7 @@ type Summary struct {
 // toJSONClone converts a domain.ProcessedClone to a JSONClone DTO.
 // This is the single conversion point — all JSON output paths use it.
 func toJSONClone(cl domain.ProcessedClone) JSONClone {
-	jc := JSONClone{
+	clone := JSONClone{
 		CloneRef:             cl.CloneRef,
 		Category:             cl.Classification.Category,
 		Priority:             cl.Classification.Priority,
@@ -64,10 +64,10 @@ func toJSONClone(cl domain.ProcessedClone) JSONClone {
 	}
 
 	if cl.Classification.Analysis != nil {
-		jc.Confidence = cl.Classification.Analysis.Confidence
+		clone.Confidence = cl.Classification.Analysis.Confidence
 	}
 
-	return jc
+	return clone
 }
 
 type simpleJSONClone struct {

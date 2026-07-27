@@ -245,21 +245,24 @@ func (p *TextPrinter) writeRichGroupHeader(count int, cls domain.CloneClassifica
 func (p *TextPrinter) writeExplanation(cls domain.CloneClassification, cloneCount int) error {
 	parts := []string{string(cls.CloneType)}
 
-	if cls.Actionability == domain.NonActionable {
+	switch cls.Actionability {
+	case domain.NonActionable:
 		reason := cls.NonActionablePattern
 		if reason == "" {
 			reason = "boilerplate"
 		}
 
 		parts = append(parts, "non-actionable ("+reason+")")
-	} else if cls.Actionability == domain.LowConfidence {
+	case domain.LowConfidence:
 		reason := cls.NonActionablePattern
 		if reason == "" {
 			reason = "property engine"
 		}
 
 		parts = append(parts, "low-confidence ("+reason+")")
-	} else {
+	case domain.Actionable:
+		parts = append(parts, "actionable")
+	default:
 		parts = append(parts, "actionable")
 	}
 

@@ -9,10 +9,9 @@ import (
 	"strconv"
 	"strings"
 
+	. "github.com/LarsArtmann/art-dupl/bdd"
 	"github.com/LarsArtmann/art-dupl/internal/testutil"
 	"github.com/LarsArtmann/art-dupl/printer"
-
-	. "github.com/LarsArtmann/art-dupl/bdd"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 )
@@ -23,8 +22,10 @@ import (
 // copies them to a temp dir so the testdata-pair actionability pattern does not
 // suppress everything.
 var _ = Describe("DiscordSync Regression Corpus", func() {
-	var setup *testutil.BDDTestSetup
-	var tmpDir string
+	var (
+		setup  *testutil.BDDTestSetup
+		tmpDir string
+	)
 
 	BeforeEach(func() {
 		setup = CreateBDDTestSetup()
@@ -88,6 +89,7 @@ var _ = Describe("DiscordSync Regression Corpus", func() {
 			for _, group := range output.CloneGroups {
 				if groupHasFile(group, "http_handlers") {
 					found = true
+
 					break
 				}
 			}
@@ -102,6 +104,7 @@ var _ = Describe("DiscordSync Regression Corpus", func() {
 			for _, group := range output.CloneGroups {
 				if groupHasFile(group, "db_queries") {
 					found = true
+
 					break
 				}
 			}
@@ -116,6 +119,7 @@ var _ = Describe("DiscordSync Regression Corpus", func() {
 			for _, group := range output.CloneGroups {
 				if groupHasFile(group, "cleanup") {
 					found = true
+
 					break
 				}
 			}
