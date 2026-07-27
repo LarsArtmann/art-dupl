@@ -21,7 +21,7 @@
 | Calling shared helpers (`requireQueryParam`, `loadGuildsAndParams`) | 5 | Accept | **Down-rank: helper invocation, not duplication** |
 | `if id == nil { return "" }; return id.String()` (3-line cross-package utils) | 1 | Accept | Borderline — too small to extract across packages |
 | Single-site `if err != nil { log/slog }` one-liners | several | Accept | **Suppress: unique messages, single-line logging** |
-| `.templ` render blocks (empty-state vs populated loop) | 4 | Accept | **Exclude: templ-generated AST noise** |
+| `.templ` render blocks (empty-state vs populated loop) | 4 | Accept | **No change needed** — hand-written source, correctly surfaced, correctly accepted |
 | **Genuinely harmful (extracted)** | **2** | **Extracted** | — |
 
 ---
@@ -267,7 +267,7 @@ This is a **borderline true positive** — the first two ARE semantic clones. Bu
 
 ---
 
-## Finding 8 (LOW): `.templ` render blocks — generated AST noise
+## Finding 8 (LOW): `.templ` render blocks — correctly reported, correctly accepted
 
 **4 groups** matched `.templ` source blocks like:
 
@@ -283,11 +283,11 @@ if len(channels) == 0 {
 
 ### Why accepted
 
-These are `.templ` source files (not generated `*_templ.go`). The "clones" are templ rendering blocks with different entities, different inner calls, and different empty-state messages. The AST shape (`if empty { text } else { loop }`) is a templ/HTML convention.
+These are `.templ` source files (hand-written, not generated). The clones are templ rendering blocks with different entities, different inner calls, and different empty-state messages. The AST shape (`if empty { text } else { loop }`) is a templ/HTML rendering convention. Each was reviewed and accepted on its own merits.
 
 ### Tool feedback
 
-**Exclude `.templ` source files** from analysis by default (the same way generated `*_templ.go` files are excluded). The `.templ` format produces repetitive control-flow shapes that are rendering conventions, not logic duplication. Alternatively, if `.templ` analysis is valuable, develop templ-specific heuristics that recognize empty-state-vs-loop as a rendering idiom.
+**No change needed.** `.templ` files are hand-written source code and SHOULD be analyzed — excluding them would hide real duplication. The tool correctly distinguishes `.templ` (source, analyzed) from `*_templ.go` (generated, excluded). The 4 groups surfaced here were genuine true-positive candidates that happened to be accepted after review. This is the system working as designed: surface the clone, let the human decide.
 
 ---
 
@@ -327,11 +327,10 @@ Each site has a unique message, unique context keys, and unique severity (`Debug
 | Finding 3: defer cleanup (3 rules) | -12 | 31 |
 | Finding 4: bool-to-string-func | -3 | 28 |
 | Finding 6: helper-invocation (down-rank) | -5 (to informational) | 23 |
-| Finding 8: .templ source exclude | -4 | 19 |
-| Finding 9: error-log-one-liner | -4 | 15 |
-| **Total** | **~67 suppressed/down-ranked** | **~15 actionable** |
+| Finding 9: error-log-one-liner | -4 | 19 |
+| **Total** | **~63 suppressed/down-ranked** | **~19 actionable** |
 
-Suppressing these built-in Go idioms would take this report from **82 groups (2 harmful, 97.5% noise)** to **~15 actionable groups (2 harmful, 13 worth reviewing)** — a **5x improvement in signal-to-noise ratio** at `-t 1`.
+Suppressing these built-in Go idioms would take this report from **82 groups (2 harmful, 97.5% noise)** to **~19 actionable groups (2 harmful, 17 worth reviewing)** — a **4x improvement in signal-to-noise ratio** at `-t 1`.
 
 The two genuinely harmful clones (`invokeService[T]` and `addIfPositive64`) would still be reported and extracted. No true positive would be lost.
 
