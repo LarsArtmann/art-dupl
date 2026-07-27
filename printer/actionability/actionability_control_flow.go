@@ -249,9 +249,9 @@ func isExprStmtCallExpr(node *domain.CloneNode) bool {
 }
 
 // loggingMethodNames are method names for logging/print functions.
-var loggingMethodNames = []string{ //nolint:gochecknoglobals // static name set
+var loggingMethodNames = []string{ //nolint:gochecknoglobals,goconst // static name set, not a domain constant
 	"Print", "Printf", "Println",
-	"Error", calleeErrorf, "Warn", "Warnf", "Info", "Infof", "Debug", "Debugf", //nolint:goconst // logging method name, not a domain constant
+	"Error", calleeErrorf, "Warn", "Warnf", "Info", "Infof", "Debug", "Debugf",
 	"Fatal", "Fatalf", "Panic", "Panicf",
 }
 
