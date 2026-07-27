@@ -13,8 +13,8 @@ func TestAllActionabilityPatterns_Count(t *testing.T) {
 	t.Parallel()
 
 	patterns := AllActionabilityPatterns()
-	if len(patterns) != 20 {
-		t.Errorf("AllActionabilityPatterns() returned %d patterns, want 20", len(patterns))
+	if len(patterns) != 21 {
+		t.Errorf("AllActionabilityPatterns() returned %d patterns, want 21", len(patterns))
 	}
 }
 

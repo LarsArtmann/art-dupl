@@ -23,6 +23,7 @@ var actionabilityPatternTable = []patternEntry{ //nolint:gochecknoglobals // sta
 	{isPureErrorPropagation, PatternErrorPropagation},
 	{isGuardClause, PatternGuardClause},
 	{isAssignWithErrorCheck, PatternAssignErrorCheck},
+	{isAssignWithBoolGuard, PatternBoolGuard},
 	{isSingleCallExpression, PatternSingleCallExpr},
 	{isSingleSimpleStatement, PatternSingleSimpleStmt},
 	{isSingleDeclaration, PatternSingleDeclaration},
@@ -141,6 +142,7 @@ const (
 	PatternGuardClause        PatternLabel = "guard-clause"
 	PatternTestHelperDelegate PatternLabel = "test-helper-delegate"
 	PatternInterfaceMethod    PatternLabel = "interface-method"
+	PatternBoolGuard          PatternLabel = "bool-guard"
 )
 
 // EvaluateActionabilityWithLabel returns both the actionability and the

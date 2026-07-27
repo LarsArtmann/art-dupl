@@ -284,7 +284,7 @@ func TestIsReturnOrWrappedReturn_TwoStmt(t *testing.T) {
 			expected: true,
 		},
 		{
-			name: "non-log call + return (2-stmt, should fail)",
+			name: "non-log call + return (2-stmt, now matches — broadened to any CallExpr)",
 			block: &domain.CloneNode{
 				BaseType: golang.BlockStmt,
 				Children: []*domain.CloneNode{
@@ -292,7 +292,7 @@ func TestIsReturnOrWrappedReturn_TwoStmt(t *testing.T) {
 					{BaseType: golang.ReturnStmt},
 				},
 			},
-			expected: false,
+			expected: true,
 		},
 		{
 			name: "single return (1-stmt)",

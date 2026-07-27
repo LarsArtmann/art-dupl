@@ -128,6 +128,7 @@ var cleanupMethodNames = []string{ //nolint:gochecknoglobals // static name set
 	cleanupMethodName, "RUnlock",
 	"Close", "Done", "Cancel", "Release", "Finish", "Disconnect", "Free",
 	"Stop", "Shutdown", "Cleanup", "Reset", "Put", "Drop", "Abort", "Teardown",
+	"Rollback",
 }
 
 // isAcquireCall reports whether a statement is a call to a known acquire

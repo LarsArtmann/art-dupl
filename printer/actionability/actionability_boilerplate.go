@@ -37,6 +37,103 @@ func isAssignWithErrorCheck(nodeSeqs [][]*domain.CloneNode) bool {
 	})
 }
 
+// isAssignWithBoolGuard reports whether every clone is a 2-statement sequence
+// of an assignment that produces a bool ok value followed by a guard IfStmt:
+//
+//	X, ok := helper()
+//	if !ok { return }
+//
+// This is the Go comma-ok idiom boilerplate. The helper call IS the extraction;
+// the ok guard is irreducible control flow. Extracting the guard into a helper
+// would require passing in the return type, obscuring the intent.
+func isAssignWithBoolGuard(nodeSeqs [][]*domain.CloneNode) bool {
+	return everySequenceMatch(nodeSeqs, func(seq []*domain.CloneNode) bool {
+		if len(seq) != 2 {
+			return false
+		}
+
+		if seq[0].BaseType != golang.AssignStmt {
+			return false
+		}
+
+		if seq[1].BaseType != golang.IfStmt {
+			return false
+		}
+
+		return isBoolGuardIf(seq[0], seq[1])
+	})
+}
+
+// isBoolGuardIf checks if an IfStmt is a bool-ok guard: condition is !ok
+// (UnaryExpr wrapping an Ident assigned in the preceding AssignStmt),
+// body is return-only, and no else branch.
+func isBoolGuardIf(assign *domain.CloneNode, ifStmt *domain.CloneNode) bool {
+	okName := findOkVarName(assign)
+	if okName == "" {
+		return false
+	}
+
+	var (
+		hasGuard    bool
+		hasBody     bool
+		hasElse     bool
+	)
+
+	for _, child := range ifStmt.Children {
+		switch child.BaseType {
+		case golang.UnaryExpr:
+			if isNotOkExpr(child, okName) {
+				hasGuard = true
+			}
+
+		case golang.BlockStmt:
+			if isReturnOnlyBody(child) {
+				hasBody = true
+			}
+
+		case golang.IfStmt:
+			return false
+
+		case golang.BinaryExpr, golang.Ident, golang.CallExpr,
+			golang.SelectorExpr, golang.BasicLit,
+			golang.ParenExpr, golang.IndexExpr:
+			// Other condition shapes — not a simple !ok guard
+
+		default:
+			if child.BaseType == golang.AssignStmt || child.BaseType == golang.DeclStmt {
+				continue
+			}
+
+			hasElse = true
+		}
+	}
+
+	return hasGuard && hasBody && !hasElse
+}
+
+// findOkVarName returns the name of the bool-ok variable in an AssignStmt,
+// or empty string if none found. Looks for Ident children named "ok".
+func findOkVarName(assign *domain.CloneNode) string {
+	for _, child := range assign.Children {
+		if child.BaseType == golang.Ident && child.Name == "ok" {
+			return child.Name
+		}
+	}
+
+	return ""
+}
+
+// isNotOkExpr checks if a UnaryExpr is !ok (negation of the ok identifier).
+func isNotOkExpr(node *domain.CloneNode, okName string) bool {
+	for _, child := range node.Children {
+		if child.BaseType == golang.Ident && child.Name == okName {
+			return true
+		}
+	}
+
+	return false
+}
+
 // isSingleCallExpression reports whether every clone is exactly one CallExpr
 // node, either as a bare CallExpr (non-statement match) or as an ExprStmt
 // wrapping a single CallExpr (statement-level match). Single function calls
