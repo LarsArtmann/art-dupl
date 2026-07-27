@@ -79,6 +79,10 @@ type Clone struct {
 	Size     int `json:"size"`      // Size in bytes/tokens
 }
 
+// ExtractabilityAnalysis mirrors domain.ExtractabilityAnalysis so SDK consumers
+// can inspect the property-based classification results without importing domain.
+type ExtractabilityAnalysis = domain.ExtractabilityAnalysis
+
 // IsValid validates the clone data and returns an error if invalid.
 // A valid clone must have LineEnd >= LineStart and EndPos > StartPos.
 func (c Clone) IsValid() error {
