@@ -66,12 +66,13 @@ var _ = Describe("Type-Aware Detection", func() {
 	})
 
 	Context("when using --type-aware with --incremental", func() {
-		It("should warn that type-aware is not compatible with incremental", func() {
+		It("should work without warning (compatible since M07)", func() {
 			err := setup.CreateTestFile("dummy.go", "package main\n")
 			Expect(err).NotTo(HaveOccurred())
 
-			output, _ := setup.RunArtDupl("--type-aware", "--incremental", "--threshold", "5")
-			Expect(string(output)).To(ContainSubstring("type-aware"))
+			output, err := setup.RunArtDupl("--type-aware", "--incremental", "--threshold", "5")
+			Expect(err).NotTo(HaveOccurred())
+			Expect(string(output)).NotTo(ContainSubstring("not compatible"))
 		})
 	})
 
