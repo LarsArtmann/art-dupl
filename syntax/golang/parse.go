@@ -86,6 +86,16 @@ type transformer struct {
 	enclosingReturnArity int32
 }
 
+// funcReturnArity returns the number of return values in a function type.
+// Returns 0 for nil types or functions with no return values (void).
+func funcReturnArity(ft *ast.FuncType) int32 {
+	if ft == nil || ft.Results == nil {
+		return 0
+	}
+
+	return int32(ft.Results.NumFields()) // #nosec G115 -- return arity is bounded by field count
+}
+
 // addWithNilCheck adds a child to o if not nil and valid.
 func (t *transformer) addWithNilCheck(o *syntax.Node, node ast.Node) {
 	if node != nil {

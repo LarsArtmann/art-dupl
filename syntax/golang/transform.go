@@ -170,11 +170,19 @@ func (t *transformer) trans(
 		)
 		t.addWithNilCheck(o, n.Recv)
 		o.AddChildren(t.trans(n.Name), t.trans(n.Type))
+
+		// Track enclosing return arity for property engine
+		savedArity := t.enclosingReturnArity
+		t.enclosingReturnArity = funcReturnArity(n.Type)
 		t.addWithNilCheck(o, n.Body)
+		t.enclosingReturnArity = savedArity
 
 	case *ast.FuncLit:
 		o.Type = FuncLit
+		savedArity := t.enclosingReturnArity
+		t.enclosingReturnArity = funcReturnArity(n.Type)
 		o.AddChildren(t.trans(n.Type), t.trans(n.Body))
+		t.enclosingReturnArity = savedArity
 
 	case *ast.FuncType:
 		if t.config.Mode.HashesIdentifiers() && t.inInterface {

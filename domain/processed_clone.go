@@ -55,6 +55,10 @@ const (
 	// NonActionable clones are idiomatic patterns that cannot be deduplicated
 	// without breaking Go semantics, interfaces, or standard conventions.
 	NonActionable CloneActionability = "non-actionable"
+	// LowConfidence clones are ambiguous — the property engine could not
+	// definitively classify them as actionable or non-actionable. These should
+	// be reviewed by the user and accepted via //art-dupl:accept if not harmful.
+	LowConfidence CloneActionability = "low-confidence"
 )
 
 // CloneType represents the standard code clone taxonomy (Bellon et al.).
@@ -184,7 +188,7 @@ func (c CloneCategory) GetCategoryEmoji() string {
 // IsValid returns true if the actionability is one of the defined constants.
 func (a CloneActionability) IsValid() bool {
 	switch a {
-	case Actionable, NonActionable:
+	case Actionable, NonActionable, LowConfidence:
 		return true
 	default:
 		return false
@@ -286,6 +290,7 @@ type CloneClassification struct {
 	NonActionablePattern string
 	CloneType            CloneType
 	Extractability       Extractability
+	Analysis             *ExtractabilityAnalysis
 	Tokens               int
 	Lines                int
 	Suggestion           string
