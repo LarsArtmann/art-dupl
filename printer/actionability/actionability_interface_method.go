@@ -17,7 +17,7 @@ var commonInterfaceMethodNames = []string{ //nolint:gochecknoglobals // static n
 	// fmt.Formatter
 	"Format",
 	// error interface
-	"Error", //nolint:goconst // error interface method name, not a domain constant
+	"Error", //nolint:goconst
 	// io.Reader/Writer/Closer/Seeker
 	"Read", "Write", "Close", "Seek",
 	// sort.Interface
