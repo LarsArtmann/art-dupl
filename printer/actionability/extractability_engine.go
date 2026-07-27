@@ -110,7 +110,7 @@ func checkControlFlow(nodeSeqs [][]*domain.CloneNode) domain.ExtractabilityAnaly
 
 	return domain.ExtractabilityAnalysis{
 		ControlFlowExtractable: true,
-		Confidence:             0.9,
+		Confidence:             confidenceHigh,
 	}
 }
 
@@ -130,6 +130,15 @@ func subtreeHasNodeType(node *domain.CloneNode, nodeType int32) bool {
 }
 
 // --- Property 3: ROI + helper-dominance ---
+
+// Confidence values for property analysis results.
+const (
+	confidenceHigh   = 0.9
+	confidenceMedium = 0.85
+	confidenceLow    = 0.8
+	confidenceLower  = 0.75
+	confidenceMin    = 0.7
+)
 
 // minCloneTokens is the minimum token count for extraction to be worthwhile.
 // Single-statement clones are almost always too small to benefit.
@@ -179,7 +188,7 @@ func checkROI(nodeSeqs [][]*domain.CloneNode) domain.ExtractabilityAnalysis {
 
 	return domain.ExtractabilityAnalysis{
 		ROIPositive: true,
-		Confidence:  0.85,
+		Confidence:  confidenceMedium,
 	}
 }
 
@@ -231,7 +240,7 @@ func checkParameterizability(nodeSeqs [][]*domain.CloneNode) domain.Extractabili
 	if len(nodeSeqs) < 2 {
 		return domain.ExtractabilityAnalysis{
 			Parameterizable: true,
-			Confidence:      0.9,
+			Confidence:      confidenceHigh,
 		}
 	}
 
@@ -248,7 +257,7 @@ func checkParameterizability(nodeSeqs [][]*domain.CloneNode) domain.Extractabili
 	if !sameLiteralCount(literalsPerClone) {
 		return domain.ExtractabilityAnalysis{
 			Parameterizable: true,
-			Confidence:      0.9,
+			Confidence:      confidenceHigh,
 		}
 	}
 
@@ -258,20 +267,20 @@ func checkParameterizability(nodeSeqs [][]*domain.CloneNode) domain.Extractabili
 		if hasFormatSpecifierDifferences(literalsPerClone) {
 			return domain.ExtractabilityAnalysis{
 				Parameterizable: true,
-				Confidence:      0.7,
+				Confidence:      confidenceMin,
 			}
 		}
 
 		return domain.ExtractabilityAnalysis{
 			Parameterizable: false,
-			Confidence:      0.75,
+			Confidence:      confidenceLower,
 			Reason:          "clones differ only in string-literal values — already parameterized, not duplicated",
 		}
 	}
 
 	return domain.ExtractabilityAnalysis{
 		Parameterizable: true,
-		Confidence:      0.9,
+		Confidence:      confidenceHigh,
 	}
 }
 

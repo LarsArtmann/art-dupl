@@ -179,7 +179,7 @@ func evaluateActionabilityWithDisabled(
 	// Property-based pre-filter: runs before the denylist patterns
 	analysis := EvaluateExtractability(nodeSeqs)
 	if !domain.IsHarmful(analysis) {
-		label := PatternLabel(propertyLabelForReason(analysis.Reason))
+		label := propertyLabelForReason(analysis.Reason)
 		if disabled == nil || !disabled[label] {
 			return label, domain.NonActionable
 		}
@@ -200,7 +200,7 @@ func evaluateActionabilityWithDisabled(
 
 // propertyLabelForReason converts an extractability analysis reason to a
 // PatternLabel for consistent display in --explain output.
-func propertyLabelForReason(reason string) string {
+func propertyLabelForReason(reason string) PatternLabel {
 	switch {
 	case strings.Contains(reason, "void function") || strings.Contains(reason, "break/continue"):
 		return PatternPropertyControlFlow
