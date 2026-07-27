@@ -131,8 +131,17 @@ func isErrorWrappingReturn(nodeSeqs [][]*domain.CloneNode) bool {
 }
 
 // isErrorWrappingBody checks if an IfStmt body contains only error wrapping.
-// Must have: nil comparison, body with return calling Errorf/Wrap/Errorw.
+// Uses structural matching: extracts the error variable name from the nil
+// comparison, then checks if the body contains a return that wraps that
+// variable in a call. This replaces the former name allowlist
+// (Errorf/Wrap/Errorw/...) with a general principle: any call that takes the
+// error variable as an argument is wrapping it.
 func isErrorWrappingBody(node *domain.CloneNode) bool {
+	errVar := errorVarNameFromComparison(node)
+	if errVar == "" {
+		return false
+	}
+
 	var (
 		hasNilCompare bool
 		hasErrorWrap  bool
@@ -146,7 +155,7 @@ func isErrorWrappingBody(node *domain.CloneNode) bool {
 			}
 
 		case golang.BlockStmt:
-			if hasErrorWrappingCall(child) {
+			if hasErrorWrappingCall(child, errVar) {
 				hasErrorWrap = true
 			}
 
@@ -158,16 +167,20 @@ func isErrorWrappingBody(node *domain.CloneNode) bool {
 	return hasNilCompare && hasErrorWrap
 }
 
-// hasErrorWrappingCall checks if a BlockStmt contains a return with an
-// error-wrapping function call (Errorf, Wrap, Errorw, Wrapf).
-func hasErrorWrappingCall(block *domain.CloneNode) bool {
+// hasErrorWrappingCall checks if a BlockStmt contains a return whose
+// CallExpr argument references the error variable by name.
+func hasErrorWrappingCall(block *domain.CloneNode, errVar string) bool {
 	if len(block.Children) == 0 {
 		return false
 	}
 
 	for _, child := range block.Children {
-		if child.BaseType == golang.ReturnStmt {
-			if slices.ContainsFunc(child.Children, isWrappingCall) {
+		if child.BaseType != golang.ReturnStmt {
+			continue
+		}
+
+		for _, retChild := range child.Children {
+			if retChild.BaseType == golang.CallExpr && callReferencesIdent(retChild, errVar) {
 				return true
 			}
 		}
@@ -176,26 +189,40 @@ func hasErrorWrappingCall(block *domain.CloneNode) bool {
 	return false
 }
 
-// isWrappingCallName reports whether a method name belongs to a known
-// wrappingCallNames are method names for error-wrapping functions.
-var wrappingCallNames = []string{ //nolint:gochecknoglobals // static name set
-	calleeErrorf, "Wrap", "Errorw", "Wrapf", "Wrapr",
+// errorVarNameFromComparison extracts the error variable name from a nil-
+// comparison BinaryExpr child of an IfStmt (e.g., the "err" in "err != nil").
+// Returns empty string if no comparison is found.
+func errorVarNameFromComparison(ifNode *domain.CloneNode) string {
+	for _, child := range ifNode.Children {
+		if child.BaseType != golang.BinaryExpr {
+			continue
+		}
+
+		for _, operand := range child.Children {
+			if operand.BaseType == golang.Ident && operand.Name != "nil" {
+				return operand.Name
+			}
+		}
+	}
+
+	return ""
 }
 
-// isWrappingCallName reports whether a method name belongs to a known
-// error-wrapping function (errors.Wrap, fmt.Errorf, etc.).
-func isWrappingCallName(name string) bool {
-	return slices.Contains(wrappingCallNames, name)
-}
-
-// isWrappingCall checks if a node is a CallExpr to a known error-wrapping function.
-func isWrappingCall(node *domain.CloneNode) bool {
-	if node.BaseType != golang.CallExpr {
+// callReferencesIdent walks a CloneNode subtree recursively and returns true
+// if any Ident node matches the given name. Used to detect structural error
+// wrapping: a call that takes the error variable as an argument is wrapping it,
+// regardless of the callee name.
+func callReferencesIdent(node *domain.CloneNode, name string) bool {
+	if name == "" {
 		return false
 	}
 
+	if node.BaseType == golang.Ident && node.Name == name {
+		return true
+	}
+
 	for _, child := range node.Children {
-		if child.BaseType == golang.SelectorExpr && isWrappingCallName(child.Name) {
+		if callReferencesIdent(child, name) {
 			return true
 		}
 	}
