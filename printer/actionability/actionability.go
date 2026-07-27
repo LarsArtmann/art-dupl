@@ -176,15 +176,8 @@ func evaluateActionabilityWithDisabled(
 		return PatternNone, domain.Actionable
 	}
 
-	// Property-based pre-filter: runs before the denylist patterns
-	analysis := EvaluateExtractability(nodeSeqs)
-	if !domain.IsHarmful(analysis) {
-		label := propertyLabelForReason(analysis.Reason)
-		if disabled == nil || !disabled[label] {
-			return label, domain.NonActionable
-		}
-	}
-
+	// Pattern table: specific, well-tested denylist patterns run first.
+	// This preserves existing behavior and labels.
 	for _, p := range actionabilityPatternTable {
 		if disabled != nil && disabled[p.pattern] {
 			continue
@@ -192,6 +185,18 @@ func evaluateActionabilityWithDisabled(
 
 		if p.check(nodeSeqs) {
 			return p.pattern, domain.NonActionable
+		}
+	}
+
+	// Property-based fallback: the extractability engine runs as a second-pass
+	// filter for clones the denylist doesn't cover. When type info is available
+	// (EnclosingReturnArity > 0 or VarType populated), the engine can suppress
+	// clones that are structurally non-harmful (void-function traps, etc.).
+	analysis := EvaluateExtractability(nodeSeqs)
+	if !domain.IsHarmful(analysis) {
+		label := propertyLabelForReason(analysis.Reason)
+		if disabled == nil || !disabled[label] {
+			return label, domain.NonActionable
 		}
 	}
 

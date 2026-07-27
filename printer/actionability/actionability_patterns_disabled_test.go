@@ -116,7 +116,8 @@ func TestEvaluateActionabilityWithDisabled(t *testing.T) {
 func mustGuardClauseSeq() []*domain.CloneNode {
 	return []*domain.CloneNode{
 		{
-			BaseType: golang.IfStmt,
+			BaseType:             golang.IfStmt,
+			EnclosingReturnArity: 1, // value-returning function — guard clause is extractable
 			Children: []*domain.CloneNode{
 				{
 					BaseType: golang.BlockStmt,
