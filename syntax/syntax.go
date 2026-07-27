@@ -189,15 +189,17 @@ func serial(n *Node, stream *[]*Node, maxChildren int) int {
 	// never corrupt the original tree. This makes Serialize idempotent and
 	// safe for concurrent access to cached trees.
 	node := &Node{
-		Type:        n.Type,
-		Pos:         n.Pos,
-		End:         n.End,
-		Owns:        n.Owns,
-		Children:    n.Children,
-		Filename:    n.Filename,
-		Name:        n.Name,
-		Statement:   n.Statement,
-		Fingerprint: n.Fingerprint,
+		Type:                 n.Type,
+		Pos:                  n.Pos,
+		End:                  n.End,
+		Owns:                 n.Owns,
+		Children:             n.Children,
+		Filename:             n.Filename,
+		Name:                 n.Name,
+		VarType:              n.VarType,
+		Statement:            n.Statement,
+		Fingerprint:          n.Fingerprint,
+		EnclosingReturnArity: n.EnclosingReturnArity,
 	}
 	*stream = append(*stream, node)
 

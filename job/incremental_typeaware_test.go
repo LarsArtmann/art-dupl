@@ -4,112 +4,115 @@ import (
 	"context"
 	"testing"
 
+	"github.com/LarsArtmann/art-dupl/internal/testutil"
 	"github.com/LarsArtmann/art-dupl/syntax/golang"
 )
 
-func TestIncrementalTypeAware_EnclosingReturnArityPopulated(t *testing.T) {
+func TestIncrementalTypeAware_EnclosingReturnArityVoid(t *testing.T) {
 	t.Parallel()
 
-	setup := newIncrementalTestSetup(t)
-	defer setup.cleanup()
+	setup := testutil.NewTestFileSetup(t)
+	cacheDir := setup.TmpDir + "/cache"
 
-	// Write a file with a void-return function (arity 0)
-	err := setup.writeFile("handler.go", `package main
+	err := setup.CreateTestFile("handler.go", `package main
 
-import "net/http"
-
-func handler(w http.ResponseWriter, r *http.Request) {
-	if r == nil {
+func handler() {
+	if true {
 		return
 	}
-	_ = w
 }
 `)
 	if err != nil {
-		t.Fatal(err)
+		t.Fatalf("Failed to create test file: %v", err)
 	}
 
-	parser := NewIncrementalParser(setup.TmpDir+"/cache", false, golang.DetectionModeSemantic, 0, 0)
-
+	parser := NewIncrementalParser(cacheDir, false, golang.DetectionModeSemantic, 0, 0)
 	ctx := context.Background()
+
 	fchan := make(chan string, 1)
-	fchan <- setup.TmpDir + "/handler.go"
+	fchan <- setup.GetFilePath("handler.go")
 	close(fchan)
 
 	schan, statsChan := parser.ParseIncremental(ctx, fchan)
-	nodes := collectNodes(schan)
-	<-statsChan
 
-	if len(nodes) == 0 {
-		t.Fatal("expected at least one node sequence")
-	}
+	var foundVoidArity bool
 
-	// Verify EnclosingReturnArity was computed on at least some nodes.
-	// In void functions (handler), arity should be 0.
-	foundAny := false
-	for _, seq := range nodes {
+	for seq := range schan {
 		for _, n := range seq {
 			if n.EnclosingReturnArity == 0 {
-				foundAny = true
-				break
+				foundVoidArity = true
 			}
-		}
-		if foundAny {
-			break
 		}
 	}
 
-	if !foundAny {
-		t.Error("expected EnclosingReturnArity to be 0 for void function nodes")
+	<-statsChan
+
+	if !foundVoidArity {
+		t.Error("expected EnclosingReturnArity == 0 for void function body nodes")
 	}
 }
 
-func TestIncrementalTypeAware_NonVoidFunctionHasArity(t *testing.T) {
+func TestIncrementalTypeAware_EnclosingReturnArityNonVoid(t *testing.T) {
 	t.Parallel()
 
-	setup := newIncrementalTestSetup(t)
-	defer setup.cleanup()
+	setup := testutil.NewTestFileSetup(t)
+	cacheDir := setup.TmpDir + "/cache"
 
-	err := setup.writeFile("values.go", `package main
+	err := setup.CreateTestFile("values.go", `package main
 
 func compute() (int, error) {
 	return 42, nil
 }
 `)
 	if err != nil {
-		t.Fatal(err)
+		t.Fatalf("Failed to create test file: %v", err)
 	}
 
-	parser := NewIncrementalParser(setup.TmpDir+"/cache", false, golang.DetectionModeSemantic, 0, 0)
-
+	parser := NewIncrementalParser(cacheDir, false, golang.DetectionModeSemantic, 0, 0)
 	ctx := context.Background()
+
 	fchan := make(chan string, 1)
-	fchan <- setup.TmpDir + "/values.go"
+	fchan <- setup.GetFilePath("values.go")
 	close(fchan)
 
 	schan, statsChan := parser.ParseIncremental(ctx, fchan)
-	nodes := collectNodes(schan)
-	<-statsChan
 
-	if len(nodes) == 0 {
-		t.Fatal("expected at least one node sequence")
-	}
+	var foundArityTwo bool
 
-	// Verify that at least some nodes inside compute() have EnclosingReturnArity == 2
-	foundArity := false
-	for _, seq := range nodes {
+	for seq := range schan {
 		for _, n := range seq {
 			if n.EnclosingReturnArity == 2 {
-				foundArity = true
-				break
+				foundArityTwo = true
 			}
-		}
-		if foundArity {
-			break
 		}
 	}
 
-	if !foundArity {
+	<-statsChan
+
+	if !foundArityTwo {
 		t.Error("expected EnclosingReturnArity == 2 for (int, error) function body nodes")
 	}
+}
+
+func TestIncrementalTypeAware_SetTypeAwareData(t *testing.T) {
+	t.Parallel()
+
+	setup := testutil.NewTestFileSetup(t)
+	cacheDir := setup.TmpDir + "/cache"
+
+	err := setup.CreateTestFile("test.go", `package main
+
+func main() {}
+`)
+	if err != nil {
+		t.Fatalf("Failed to create test file: %v", err)
+	}
+
+	parser := NewIncrementalParser(cacheDir, false, golang.DetectionModeSemantic, 0, 0)
+
+	// SetTypeAwareData with nil should not panic and should be a no-op
+	parser.SetTypeAwareData(nil)
+
+	// SetTypeAwareData with empty map should also be safe
+	parser.SetTypeAwareData(golang.TypeAwareData{})
 }

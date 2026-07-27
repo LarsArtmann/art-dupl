@@ -38,6 +38,7 @@ var actionabilityPatternTable = []patternEntry{ //nolint:gochecknoglobals // sta
 	{isDataDominated, PatternDataDominated},
 	{isDescribeTablePattern, PatternDescribeTable},
 	{isBuilderCallbackPattern, PatternBuilderCallback},
+	{isTemplRenderingIdiom, PatternTemplRenderingIdiom},
 }
 
 // AllActionabilityPatterns returns all registered pattern labels in priority order.
@@ -148,6 +149,7 @@ const (
 	PatternPropertyControlFlow   PatternLabel = "property-control-flow"
 	PatternPropertyROI           PatternLabel = "property-roi"
 	PatternPropertyParameterizable PatternLabel = "property-parameterizable"
+	PatternTemplRenderingIdiom    PatternLabel = "templ-rendering-idiom"
 )
 
 // EvaluateActionabilityWithLabel returns both the actionability and the
