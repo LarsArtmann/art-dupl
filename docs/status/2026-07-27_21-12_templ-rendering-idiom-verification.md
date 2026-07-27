@@ -9,6 +9,7 @@
 ## a) FULLY DONE (Verified This Session)
 
 ### Build & CI
+
 - [x] `go build ./...` — exits 0 (28 packages)
 - [x] `go test ./... -count=1` — all 28 packages PASS (no cache), including `bdd/`
 - [x] `go test -race ./printer/actionability/` — PASS
@@ -18,14 +19,17 @@
 - [x] BDD tests pass (`go test ./bdd/ -count=1`)
 
 ### End-to-End Verification
+
 - [x] **Wrote `TestIsTemplRenderingIdiom_RealGoSource`** — parses actual Go source through `golang.Parse()`, converts to `domain.CloneNode`, confirms `isTemplRenderingIdiom` returns true. **The pattern is NOT dead code.** It fires on real `.go` files.
 - [x] **Wrote `TestIsTemplRenderingIdiom_TemplSourceDoesNotMatch`** — parses actual `.templ` source through `templ.ParseBytes()`, confirms the pattern does NOT fire on `.templ` files (because templ uses `ComponentIfStatement`=11, not `golang.IfStmt`=31, and drops the condition expression entirely). Documents this as intentional behavior.
 
 ### Documentation Fixes
+
 - [x] `docs/ACTIONABILITY_PATTERNS.md` — Added missing table rows for `bool-guard` and `templ-rendering-idiom` (were bare one-liners while other 20 patterns had full rows). Fixed "20 pattern checks" → "22 pattern checks".
 - [x] `AGENTS.md` — Clarified the `templ-rendering-idiom` scope: fires on `.go` files (incl. generated `_templ.go`), NOT on `.templ` source, with the technical reason (node type mismatch + dropped condition).
 
 ### Test Hardening
+
 - [x] `actionability_patterns_disabled_test.go` — Replaced hardcoded `!= 22` with `len(actionabilityPatternTable)` (prevents future table/function drift). Added `PatternBoolGuard` + `PatternTemplRenderingIdiom` to the required-labels list (were missing from `TestAllActionabilityPatterns_ContainsLabels`).
 
 ---
@@ -33,7 +37,9 @@
 ## b) PARTIALLY DONE
 
 ### End-to-End Coverage of the Pattern
+
 The e2e test uses hand-written Go source that mimics the templ empty-state idiom. It does NOT test with:
+
 - Actual **generated `_templ.go`** files (the most realistic scenario where the pattern should fire)
 - The `--include-generated templ` CLI flag path
 - A full `art-dupl` binary run on a directory containing such clones
@@ -126,6 +132,7 @@ The unit-level proof is solid (real AST → real CloneNode → pattern matches),
 ### 1. Should the pattern be extended to fire on `.templ` source?
 
 Currently `templ-rendering-idiom` only fires on `.go` files. The templ transform (`transformIfExpression`) drops the condition expression, so `ComponentIfStatement` has no `len()` call to check. Options:
+
 - **A:** Leave as-is (`.go`-only). Rename to avoid confusion.
 - **B:** Extend `transformIfExpression` to encode conditions (affects ALL templ if-statements, bigger change).
 - **C:** Add a second pattern variant matching `ComponentIfStatement + ComponentForStatement` structurally (no condition check, higher false-positive risk).
@@ -135,6 +142,7 @@ This is a design decision with real tradeoffs — your call.
 ### 2. Should I update the previous status report or leave it as a historical artifact?
 
 `docs/status/2026-07-27_20-55_templ-rendering-idiom-fix.md` documents the investigation with open questions. Now that verification is complete, should I:
+
 - **A:** Append a resolution section to that file (non-destructive annotation)
 - **B:** Leave it as-is (historical point-in-time snapshot)
 - **C:** Mark it as resolved and point readers to this report instead

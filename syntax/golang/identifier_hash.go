@@ -87,7 +87,7 @@ func combineIdentifierHashes(hash1, hash2 int32) int32 {
 
 	const fnvPrime uint32 = 16777619
 
-	combined := uint32(hash1)*fnvPrime ^ uint32(hash2) //nolint:gosec // G115: hash values are bounded to 24-bit range
+	combined := uint32(hash1)*fnvPrime ^ uint32(hash2)
 
 	return int32(combined & 0x00FFFFFF)
 }

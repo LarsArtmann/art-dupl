@@ -28,8 +28,8 @@ nix-hash-fix, erraudit, go-auto-upgrade, go-fix, govalid-generate, test-race).
    - a then-body BlockStmt,
    - an else-body BlockStmt containing a RangeStmt,
    - rejects else-if chains.
-   Added 4 helpers: `isTemplEmptyStateIf`, `conditionInvokesLen`,
-   `callInvokesBuiltin`, `blockHasRangeLoop`.
+     Added 4 helpers: `isTemplEmptyStateIf`, `conditionInvokesLen`,
+     `callInvokesBuiltin`, `blockHasRangeLoop`.
 
 3. **Added 11 unit tests** (`TestIsTemplRenderingIdiom`) in
    `actionability_patterns_test.go`: canonical match, len-on-either-side,
@@ -49,14 +49,14 @@ nix-hash-fix, erraudit, go-auto-upgrade, go-fix, govalid-generate, test-race).
 ## b) PARTIALLY DONE
 
 1. **`nix build` verification — NOT run.** I ran `go build` + `go test` + lint, which
-   resolves the *compile* break that caused the cascade. But I did **not** re-run
+   resolves the _compile_ break that caused the cascade. But I did **not** re-run
    `nix build`, the exact command that originally failed. The buildflow also flagged an
    **independent** `vendorHash` staleness warning (`flake.nix:53: vendorHash may be
-   stale — go.sum was modified after the hash was last set`). Compilation will now
+stale — go.sum was modified after the hash was last set`). Compilation will now
    succeed, but the FOD hash check may still fail separately. **Status: unverified.**
 
 2. **Pattern documentation.** AGENTS.md and ACTIONABILITY_PATTERNS.md both already
-   mention templ-rendering-idiom (docs were ahead of code), so no doc *gap* was
+   mention templ-rendering-idiom (docs were ahead of code), so no doc _gap_ was
    introduced. But `docs/ACTIONABILITY_PATTERNS.md` is **inconsistent**: the other 21
    patterns have full markdown-table rows (Label / Description / Example); pattern #22
    is only a bare one-liner at the bottom (line 65). I noticed this but did not fix it.
@@ -107,7 +107,7 @@ consistent with the changes I authored.
 1. **I invented the implementation from a one-line doc description** without
    confirming the real AST shape that templ code produces. I should have traced a
    concrete `.templ` file through `syntax/templ/` → `syntaxToCloneNode` to verify
-   the node-type assumptions *before* writing the matcher. Risk: the pattern may be
+   the node-type assumptions _before_ writing the matcher. Risk: the pattern may be
    structurally correct but never fire on real input.
 
 2. **`callInvokesBuiltin` is generic but only used for `"len"`.** Mild YAGNI tension.
@@ -135,6 +135,7 @@ consistent with the changes I authored.
 ## f) Up to 50 things to get done next
 
 ### High priority — verify the fix is real
+
 1. Run `nix build` to confirm the original failure is gone (and check the FOD/vendorHash).
 2. Trace a real `.templ` file with `if len(x) == 0 { ... } else { for range }` through the pipeline; confirm it reaches actionability as `golang.IfStmt` + `golang.RangeStmt`.
 3. If templ nodes do NOT map to Go node types, either (a) gate the pattern to `.go` files only and document it, or (b) extend detection to templ node types.
@@ -142,6 +143,7 @@ consistent with the changes I authored.
 5. Add a BDD scenario in `bdd/` for the templ-rendering-idiom suppression.
 
 ### Correctness & robustness
+
 6. Add a test for IfStmt **with an Init statement** (`if n := len(x); n == 0 { ... } else { for ... }`) — my matcher tolerates extra children but this is untested.
 7. Add a test where the condition is a bare `CallExpr` returning bool (e.g. `if x.IsEmpty() { ... }`) — currently rejected (no `len`); confirm this is desired.
 8. Add a test for nested range in else-body (`else { { for ... } }` double-block).
@@ -149,11 +151,13 @@ consistent with the changes I authored.
 10. Document the false-positive behavior on non-templ Go empty-state checks in `docs/ACTIONABILITY_PATTERNS.md`.
 
 ### Documentation
+
 11. Add a full table row for templ-rendering-idiom in `docs/ACTIONABILITY_PATTERNS.md` (Label / Description / Example) to match the other 21 patterns.
 12. Add a "Limitations" note: pattern is structural, not templ-specific; matches any Go empty-state idiom.
 13. Verify AGENTS.md "22 patterns" count stays accurate as patterns evolve (it's a manual number in two places).
 
 ### Pre-existing buildflow findings (out of scope this session, but visible)
+
 14. Pin GitHub Actions to commit SHAs instead of tags (45 findings across 4 workflow files) — `go-structure-linter`.
 15. Add `dist/` to the go.mod ignore list (gomod-check finding).
 16. Separate direct vs indirect require blocks in `go.mod` (Go 1.17+ convention).
@@ -161,6 +165,7 @@ consistent with the changes I authored.
 18. Extract inlined `vendorHash` to a dedicated `vendorHash.nix` file for cleaner diffs.
 
 ### Pattern-engine hardening (general)
+
 19. Add a meta-test that every entry in `actionabilityPatternTable` has a corresponding `func` defined (compile-time guarantee — would have caught THIS bug before it shipped).
 20. Add a meta-test that every `Pattern*` label constant appears exactly once in the table.
 21. Add a meta-test that `AllActionabilityPatterns()` count matches `len(actionabilityPatternTable)` (currently hardcoded `!= 22`).
@@ -168,17 +173,20 @@ consistent with the changes I authored.
 23. Consider a `go:generate`-driven table builder to prevent table/function drift.
 
 ### Testing infrastructure
+
 24. Add property-based / fuzz tests for actionability predicates (random CloneNode trees should not panic).
 25. Add golden-file tests for `--explain` output on each pattern label.
 26. Add a test that `--no-actionability` shows templ-rendering-idiom clones (wiring test).
 27. Add coverage tracking for `actionability_control_flow.go` (currently only unit-tested for a few predicates).
 
 ### Code quality
+
 28. Consider whether `callInvokesBuiltin` belongs in a shared `asthelpers.go` (reused by future patterns).
 29. The `sawThenBody` boolean could be replaced by explicit index-based child resolution for clarity.
 30. Add a doc comment to `isTemplEmptyStateIf` noting the IfStmt child-ordering assumption.
 
 ### Pipeline / CI
+
 31. Add a CI gate that runs `go build ./...` before `nix build` to fail fast on compile errors (cheaper than a full FOD build).
 32. The buildflow `nix-hash-fix` substeps each re-ran the full nix build on failure — consider caching.
 
@@ -189,12 +197,12 @@ consistent with the changes I authored.
 ## g) Questions I cannot figure out myself
 
 1. **False-positive policy.** My `isTemplRenderingIdiom` is purely structural — it
-   matches *any* Go code shaped like `if len(x) == 0 { ... } else { for range x {} }`,
+   matches _any_ Go code shaped like `if len(x) == 0 { ... } else { for range x {} }`,
    not just templ-generated code. Is that acceptable (suppress all such boilerplate
    regardless of source), or should detection be **gated to `.templ`/`_templ.go` files
    only**? This is a design judgment I cannot infer from the codebase — the other 21
    patterns are all source-agnostic, which suggests "structural is fine," but the
-   pattern *name* implies templ-specificity.
+   pattern _name_ implies templ-specificity.
 
 2. **Scope of this session.** The buildflow surfaced 4 **pre-existing, unrelated**
    findings (Actions SHA-pinning, `dist/` ignore, mixed go.mod requires, stale
@@ -211,9 +219,9 @@ consistent with the changes I authored.
 
 ## Files changed this session
 
-| File | Change |
-| --- | --- |
-| `printer/actionability/actionability_control_flow.go` | +98 lines: `isTemplRenderingIdiom` + 4 helpers |
+| File                                                   | Change                                               |
+| ------------------------------------------------------ | ---------------------------------------------------- |
+| `printer/actionability/actionability_control_flow.go`  | +98 lines: `isTemplRenderingIdiom` + 4 helpers       |
 | `printer/actionability/actionability_patterns_test.go` | +154 lines: `TestIsTemplRenderingIdiom` + 4 fixtures |
 
 **Total:** `+252`, `−0`. No other files modified.

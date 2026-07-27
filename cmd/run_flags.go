@@ -243,7 +243,7 @@ func openHTMLOutput(cmd *cobra.Command) (io.Writer, func(), error) {
 		return os.Stdout, nil, nil
 	}
 
-	f, err := os.Create(htmlOut) //nolint:gosec // user-provided path is intentional
+	f, err := os.Create(htmlOut)
 	if err != nil {
 		return nil, nil, duplerrors.Wrap(err, duplerrors.IOError, "creating HTML output file "+htmlOut)
 	}

@@ -150,7 +150,7 @@ func (n *Node) Val() suffixtree.TokenValue {
 // This is used for file-level duplicate detection where we want to match
 // entire files rather than specific code fragments.
 //
-//nolint:gosec // G115: Size is validated to be within reasonable bounds before this point
+
 func NewSyntheticFileNode(filename string, size int) *Node {
 	return &Node{
 		Filename: InternFilename(filename),
@@ -243,11 +243,11 @@ func serial(n *Node, stream *[]*Node, maxChildren int) int {
 // identical fingerprints, enabling Type 1/Type 2 clone detection at statement
 // granularity.
 func fingerprintSubtree(n *Node) int32 {
-	return int32(fingerprintSubtreeInto(n, fnvOffset32)) //nolint:gosec // FNV hash intentionally wraps
+	return int32(fingerprintSubtreeInto(n, fnvOffset32))
 }
 
 func fingerprintSubtreeInto(n *Node, hash uint32) uint32 {
-	hash = fnvStep32(hash, uint32(n.Type)) //nolint:gosec // G115: hash uses bit patterns
+	hash = fnvStep32(hash, uint32(n.Type))
 
 	for _, child := range n.Children {
 		hash = fingerprintSubtreeInto(child, hash)

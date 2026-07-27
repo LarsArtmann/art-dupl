@@ -18,7 +18,6 @@ func (t *transformer) createNode(nodeType int32, start, end int64) *syntax.Node 
 
 // createNodeFromRange creates a new syntax.Node from a templ Range.
 func (t *transformer) createNodeFromRange(nodeType int, r templparser.Range) *syntax.Node {
-	//nolint:gosec // G115: nodeType is always within valid range for templ node types
 	return t.createNode(
 		int32(nodeType),
 		r.From.Index,
