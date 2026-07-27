@@ -45,7 +45,9 @@ func TestDiscordSync_HTTPErrorGuard(t *testing.T) {
 		{mustHTTPErrorGuard()},
 		{mustHTTPErrorGuard()},
 	}
-	assertNonActionable(t, "HTTP error guard (writeError + bare return) should be non-actionable (error-propagation)", seqs)
+	assertNonActionable(t,
+		"HTTP error guard (writeError + bare return) should be non-actionable (error-propagation)",
+		seqs)
 }
 
 func TestDiscordSync_HTTPErrorGuardWithSlog(t *testing.T) {
