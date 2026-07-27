@@ -95,7 +95,7 @@ func checkControlFlow(nodeSeqs [][]*domain.CloneNode) domain.ExtractabilityAnaly
 			return domain.ExtractabilityAnalysis{
 				ControlFlowExtractable: false,
 				Confidence:             confidenceMedium,
-				Reason:                  "clone contains return in void function — extraction cannot issue return on behalf of caller",
+				Reason:                 "clone contains return in void function — extraction cannot issue return on behalf of caller",
 			}
 		}
 	}
@@ -176,7 +176,7 @@ func checkROI(nodeSeqs [][]*domain.CloneNode) domain.ExtractabilityAnalysis {
 			return domain.ExtractabilityAnalysis{
 				ROIPositive: false,
 				Confidence:  confidenceLower,
-				Reason:       "clone dominated by single call expression — the call IS the extraction",
+				Reason:      "clone dominated by single call expression — the call IS the extraction",
 			}
 		}
 	}

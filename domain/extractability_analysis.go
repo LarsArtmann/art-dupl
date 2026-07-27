@@ -48,7 +48,7 @@ func DefaultExtractabilityAnalysis() ExtractabilityAnalysis {
 		ControlFlowExtractable:  true,
 		ROIPositive:             true,
 		Parameterizable:         true,
-		Confidence:              0.5,
+		Confidence:              0.5, //nolint:mnd // conservative default confidence
 		Reason:                  "no type info available — treating as potentially harmful",
 	}
 }
@@ -65,11 +65,11 @@ func IsHarmful(e ExtractabilityAnalysis) bool {
 
 // ActionabilityTier converts a confidence score to a CloneActionability tier.
 func ActionabilityTier(confidence float64) CloneActionability {
-	if confidence >= 0.8 {
+	if confidence >= 0.8 { //nolint:mnd // actionable threshold
 		return Actionable
 	}
 
-	if confidence >= 0.5 {
+	if confidence >= 0.5 { //nolint:mnd // low-confidence threshold
 		return LowConfidence
 	}
 

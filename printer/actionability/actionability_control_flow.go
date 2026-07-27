@@ -245,29 +245,9 @@ func isReturnOrWrappedReturn(node *domain.CloneNode) bool {
 	return false
 }
 
-// isLogOrPrintStmt checks if a statement is a logging or print call
-// (log.Print/Errorf/Warnf, fmt.Println/Printf, slog.Error/Warn/Info).
-func isLogOrPrintStmt(node *domain.CloneNode) bool {
-	if node.BaseType != golang.ExprStmt {
-		return false
-	}
-
-	for _, child := range node.Children {
-		if child.BaseType == golang.CallExpr {
-			for _, callChild := range child.Children {
-				if callChild.BaseType == golang.SelectorExpr && slices.Contains(loggingMethodNames, callChild.Name) {
-					return true
-				}
-			}
-		}
-	}
-
-	return false
-}
-
 // isExprStmtCallExpr checks if a node is an ExprStmt wrapping a CallExpr.
-// This is the broader form of isLogOrPrintStmt that accepts ANY function call
-// as a statement (writeError, queryError, custom helpers, etc.).
+// This accepts ANY function call as a statement (writeError, queryError,
+// slog.Error, custom helpers, etc.).
 func isExprStmtCallExpr(node *domain.CloneNode) bool {
 	return node.BaseType == golang.ExprStmt &&
 		len(node.Children) > 0 &&
