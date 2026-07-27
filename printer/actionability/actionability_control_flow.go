@@ -2,6 +2,7 @@ package actionability
 
 import (
 	"slices"
+	"strings"
 
 	"github.com/LarsArtmann/art-dupl/domain"
 	"github.com/LarsArtmann/art-dupl/syntax/golang"
@@ -43,14 +44,78 @@ func isPureDeferPattern(nodeSeqs [][]*domain.CloneNode) bool {
 }
 
 // isRAIIDeferCall checks if a DeferStmt wraps a known RAII cleanup method.
+// Handles three forms:
+//  1. Direct method call: defer x.Close()
+//  2. Direct function call: defer cancel() (bare Ident callee)
+//  3. FuncLit wrapping: defer func() { _ = rows.Close() }()
 func isRAIIDeferCall(node *domain.CloneNode) bool {
 	for _, child := range node.Children {
 		if child.BaseType == golang.CallExpr {
-			for _, arg := range child.Children {
-				if arg.BaseType == golang.SelectorExpr && slices.Contains(cleanupMethodNames, arg.Name) {
-					return true
-				}
+			if callIsRAIICleanup(child) {
+				return true
 			}
+
+			if hasCleanupInFuncLit(child) {
+				return true
+			}
+		}
+	}
+
+	return false
+}
+
+// callIsRAIICleanup checks if a CallExpr is a direct cleanup call:// either x.Close() (SelectorExpr) or cancel() (bare Ident).
+func callIsRAIICleanup(call *domain.CloneNode) bool {
+	for _, child := range call.Children {
+		if child.BaseType == golang.SelectorExpr && slices.Contains(cleanupMethodNames, child.Name) {
+			return true
+		}
+
+		if child.BaseType == golang.Ident && isCleanupIdentName(child.Name) {
+			return true
+		}
+	}
+
+	return false
+}
+
+// isCleanupIdentName checks if a bare ident name (like "cancel") matches
+// a cleanup method name case-insensitively. This catches context.CancelFunc
+// variables named cancel, done, etc.
+func isCleanupIdentName(name string) bool {
+	lname := strings.ToLower(name)
+	for _, cn := range cleanupMethodNames {
+		if strings.ToLower(cn) == lname {
+			return true
+		}
+	}
+
+	return false
+}
+
+// hasCleanupInFuncLit checks if a CallExpr wraps a FuncLit whose body
+// contains a cleanup call. Handles: defer func() { _ = rows.Close() }()
+func hasCleanupInFuncLit(call *domain.CloneNode) bool {
+	for _, child := range call.Children {
+		if child.BaseType == golang.FuncLit {
+			if subtreeHasCleanupCall(child) {
+				return true
+			}
+		}
+	}
+
+	return false
+}
+
+// subtreeHasCleanupCall recursively searches a subtree for any cleanup CallExpr.
+func subtreeHasCleanupCall(node *domain.CloneNode) bool {
+	if node.BaseType == golang.CallExpr && callIsRAIICleanup(node) {
+		return true
+	}
+
+	for _, child := range node.Children {
+		if subtreeHasCleanupCall(child) {
+			return true
 		}
 	}
 
@@ -166,10 +231,14 @@ func isReturnOrWrappedReturn(node *domain.CloneNode) bool {
 		return bt == golang.ReturnStmt || bt == golang.CallExpr
 	}
 
-	// 2-statement pattern: log/print error, then return.
+	// 2-statement pattern: any call + return.
+	// e.g., writeError(w, r, err, ""); return
 	// e.g., log.Print(err); return err
+	// e.g., slog.Error("msg", err); return
+	// In the context of if err != nil, any call followed by a bare return
+	// is the error-handling idiom (HTTP handler guard, logging+return, etc.).
 	if len(node.Children) == 2 {
-		return isLogOrPrintStmt(node.Children[0]) && node.Children[1].BaseType == golang.ReturnStmt
+		return isExprStmtCallExpr(node.Children[0]) && node.Children[1].BaseType == golang.ReturnStmt
 	}
 
 	return false
@@ -193,6 +262,15 @@ func isLogOrPrintStmt(node *domain.CloneNode) bool {
 	}
 
 	return false
+}
+
+// isExprStmtCallExpr checks if a node is an ExprStmt wrapping a CallExpr.
+// This is the broader form of isLogOrPrintStmt that accepts ANY function call
+// as a statement (writeError, queryError, custom helpers, etc.).
+func isExprStmtCallExpr(node *domain.CloneNode) bool {
+	return node.BaseType == golang.ExprStmt &&
+		len(node.Children) > 0 &&
+		node.Children[0].BaseType == golang.CallExpr
 }
 
 // loggingMethodNames are method names for logging/print functions.
