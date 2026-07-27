@@ -123,6 +123,10 @@ func TestCloneActionability_IsValid(t *testing.T) {
 		t.Error("NonActionable should be valid")
 	}
 
+	if !LowConfidence.IsValid() {
+		t.Error("LowConfidence should be valid")
+	}
+
 	if CloneActionability("maybe").IsValid() {
 		t.Error("'maybe' should be invalid")
 	}
@@ -135,6 +139,10 @@ func TestCloneActionability_String(t *testing.T) {
 
 	if NonActionable.String() != "non-actionable" {
 		t.Errorf("NonActionable.String() = %q", NonActionable.String())
+	}
+
+	if LowConfidence.String() != "low-confidence" {
+		t.Errorf("LowConfidence.String() = %q", LowConfidence.String())
 	}
 }
 

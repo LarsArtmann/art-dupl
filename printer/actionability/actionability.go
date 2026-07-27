@@ -3,6 +3,7 @@ package actionability
 import (
 	"fmt"
 	"io"
+	"strings"
 
 	"github.com/LarsArtmann/art-dupl/domain"
 	"github.com/LarsArtmann/art-dupl/syntax/golang"
@@ -140,9 +141,13 @@ const (
 	PatternSingleSimpleStmt   PatternLabel = "single-simple-statement"
 	PatternSingleDeclaration  PatternLabel = "single-declaration"
 	PatternGuardClause        PatternLabel = "guard-clause"
-	PatternTestHelperDelegate PatternLabel = "test-helper-delegate"
-	PatternInterfaceMethod    PatternLabel = "interface-method"
-	PatternBoolGuard          PatternLabel = "bool-guard"
+	PatternTestHelperDelegate    PatternLabel = "test-helper-delegate"
+	PatternInterfaceMethod       PatternLabel = "interface-method"
+	PatternBoolGuard             PatternLabel = "bool-guard"
+	PatternPropertyEngine        PatternLabel = "property-engine"
+	PatternPropertyControlFlow   PatternLabel = "property-control-flow"
+	PatternPropertyROI           PatternLabel = "property-roi"
+	PatternPropertyParameterizable PatternLabel = "property-parameterizable"
 )
 
 // EvaluateActionabilityWithLabel returns both the actionability and the
@@ -158,12 +163,26 @@ func evaluateActionabilityDetailed(nodeSeqs [][]*domain.CloneNode) (PatternLabel
 
 // evaluateActionabilityWithDisabled checks actionability patterns in priority
 // order, skipping any pattern whose label is in the disabled set.
+//
+// The property-based extractability engine runs FIRST as a pre-filter. If it
+// determines the clone is not harmful (any property fails), the clone is
+// NonActionable with a property-specific reason. The denylist patterns then
+// run as a fallback for cases the property engine doesn't cover.
 func evaluateActionabilityWithDisabled(
 	nodeSeqs [][]*domain.CloneNode,
 	disabled map[PatternLabel]bool,
 ) (PatternLabel, domain.CloneActionability) {
 	if len(nodeSeqs) == 0 {
 		return PatternNone, domain.Actionable
+	}
+
+	// Property-based pre-filter: runs before the denylist patterns
+	analysis := EvaluateExtractability(nodeSeqs)
+	if !domain.IsHarmful(analysis) {
+		label := PatternLabel(propertyLabelForReason(analysis.Reason))
+		if disabled == nil || !disabled[label] {
+			return label, domain.NonActionable
+		}
 	}
 
 	for _, p := range actionabilityPatternTable {
@@ -177,6 +196,21 @@ func evaluateActionabilityWithDisabled(
 	}
 
 	return PatternNone, domain.Actionable
+}
+
+// propertyLabelForReason converts an extractability analysis reason to a
+// PatternLabel for consistent display in --explain output.
+func propertyLabelForReason(reason string) string {
+	switch {
+	case strings.Contains(reason, "void function") || strings.Contains(reason, "break/continue"):
+		return PatternPropertyControlFlow
+	case strings.Contains(reason, "too small") || strings.Contains(reason, "single call expression"):
+		return PatternPropertyROI
+	case strings.Contains(reason, "string-literal values"):
+		return PatternPropertyParameterizable
+	default:
+		return PatternPropertyEngine
+	}
 }
 
 // isSignatureOnlyMatch reports whether every clone is a single FuncDecl node
