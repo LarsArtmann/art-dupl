@@ -36,10 +36,12 @@ func findNodesByBaseType(root *syntax.Node, target int32) []*syntax.Node {
 	var result []*syntax.Node
 
 	var walk func(n *syntax.Node)
+
 	walk = func(n *syntax.Node) {
 		if golang.DecodeBaseType(n.Type) == target {
 			result = append(result, n)
 		}
+
 		for _, c := range n.Children {
 			walk(c)
 		}
@@ -100,6 +102,7 @@ func renderItems(items []string) string {
 `
 
 	path := writeTempGo(t, "fixture.go", src)
+
 	root, err := golang.Parse(path)
 	if err != nil {
 		t.Fatalf("parse: %v", err)
@@ -112,6 +115,7 @@ func renderItems(items []string) string {
 
 	// Filter to IfStmts that look like the templ idiom (have len in condition).
 	var idiomNodes []*domain.CloneNode
+
 	for _, n := range ifStmts {
 		cn := cloneNodeFromSyntax(n)
 		if isTemplEmptyStateIf(cn) {
