@@ -48,8 +48,8 @@ func TestHandleMarshalingError(t *testing.T) {
 			t.Fatal("Should return error")
 		}
 
-		_, ok := errors.AsType[*MarshalError](result)
-		if !ok {
+		var marshalErr *MarshalError
+		if !errors.As(result, &marshalErr) {
 			t.Error("Should return MarshalError")
 		}
 	})
@@ -219,8 +219,8 @@ func TestSafeUnmarshal(t *testing.T) {
 			t.Error("Should error for invalid JSON")
 		}
 
-		_, ok := errors.AsType[*MarshalError](err)
-		if !ok {
+		var marshalErr *MarshalError
+		if !errors.As(err, &marshalErr) {
 			t.Error("Should return MarshalError")
 		}
 	})
