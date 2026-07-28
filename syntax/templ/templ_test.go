@@ -612,17 +612,22 @@ func TestParseWithLineCountNonexistent(t *testing.T) {
 	}
 }
 
-func countAllNodes(n *syntax.Node) int {
-	if n == nil {
+func countAllNodes(root *syntax.Node) int {
+	if root == nil {
 		return 0
 	}
 
-	count := 1
-	for _, child := range n.Children {
-		count += countAllNodes(child)
+	total := 0
+	queue := []*syntax.Node{root}
+
+	for len(queue) > 0 {
+		current := queue[0]
+		queue = queue[1:]
+		total++
+		queue = append(queue, current.Children...)
 	}
 
-	return count
+	return total
 }
 
 // TestParseChildrenCount tests parsing of various templ constructs with expected children counts.

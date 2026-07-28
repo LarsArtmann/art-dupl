@@ -8,91 +8,75 @@ import (
 	"github.com/LarsArtmann/art-dupl/syntax/golang"
 )
 
-func TestIncrementalTypeAware_EnclosingReturnArityVoid(t *testing.T) {
+func TestIncrementalTypeAware_EnclosingReturnArity(t *testing.T) {
 	t.Parallel()
 
-	setup := testutil.NewTestFileSetup(t)
-	cacheDir := setup.TmpDir + "/cache"
-
-	err := setup.CreateTestFile("handler.go", `package main
+	tests := []struct {
+		name     string
+		filename string
+		source   string
+		arity    int32
+	}{
+		{
+			name:     "void",
+			filename: "handler.go",
+			source: `package main
 
 func handler() {
 	if true {
 		return
 	}
 }
-`)
-	if err != nil {
-		t.Fatalf("Failed to create test file: %v", err)
-	}
-
-	parser := NewIncrementalParser(cacheDir, false, golang.DetectionModeSemantic, 0, 0)
-	ctx := context.Background()
-
-	fchan := make(chan string, 1)
-	fchan <- setup.GetFilePath("handler.go")
-
-	close(fchan)
-
-	schan, statsChan := parser.ParseIncremental(ctx, fchan)
-
-	var foundVoidArity bool
-
-	for seq := range schan {
-		for _, n := range seq {
-			if n.EnclosingReturnArity == 0 {
-				foundVoidArity = true
-			}
-		}
-	}
-
-	<-statsChan
-
-	if !foundVoidArity {
-		t.Error("expected EnclosingReturnArity == 0 for void function body nodes")
-	}
-}
-
-func TestIncrementalTypeAware_EnclosingReturnArityNonVoid(t *testing.T) {
-	t.Parallel()
-
-	setup := testutil.NewTestFileSetup(t)
-	cacheDir := setup.TmpDir + "/cache"
-
-	err := setup.CreateTestFile("values.go", `package main
+`,
+			arity: 0,
+		},
+		{
+			name:     "non-void",
+			filename: "values.go",
+			source: `package main
 
 func compute() (int, error) {
 	return 42, nil
 }
-`)
-	if err != nil {
-		t.Fatalf("Failed to create test file: %v", err)
+`,
+			arity: 2,
+		},
 	}
 
-	parser := NewIncrementalParser(cacheDir, false, golang.DetectionModeSemantic, 0, 0)
-	ctx := context.Background()
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
 
-	fchan := make(chan string, 1)
-	fchan <- setup.GetFilePath("values.go")
+			setup := testutil.NewTestFileSetup(t)
+			cacheDir := setup.TmpDir + "/cache"
 
-	close(fchan)
-
-	schan, statsChan := parser.ParseIncremental(ctx, fchan)
-
-	var foundArityTwo bool
-
-	for seq := range schan {
-		for _, n := range seq {
-			if n.EnclosingReturnArity == 2 {
-				foundArityTwo = true
+			if err := setup.CreateTestFile(tt.filename, tt.source); err != nil {
+				t.Fatalf("Failed to create test file: %v", err)
 			}
-		}
-	}
 
-	<-statsChan
+			parser := NewIncrementalParser(cacheDir, false, golang.DetectionModeSemantic, 0, 0)
+			ctx := context.Background()
 
-	if !foundArityTwo {
-		t.Error("expected EnclosingReturnArity == 2 for (int, error) function body nodes")
+			fchan := make(chan string, 1)
+			fchan <- setup.GetFilePath(tt.filename)
+			close(fchan)
+
+			schan, statsChan := parser.ParseIncremental(ctx, fchan)
+
+			found := false
+			for seq := range schan {
+				for _, n := range seq {
+					if n.EnclosingReturnArity == tt.arity {
+						found = true
+					}
+				}
+			}
+			<-statsChan
+
+			if !found {
+				t.Errorf("expected EnclosingReturnArity == %d", tt.arity)
+			}
+		})
 	}
 }
 
