@@ -11,6 +11,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 _Nothing yet._
 
+## [0.6.0] - 2026-07-28
+
+Minor release headlined by the **extractability analysis engine**, **7 new actionability patterns** (including templ-rendering-idiom and structural error-wrapping), and a **DiscordSync false-positive regression suite** based on a real-world corpus (82 groups, 97% false positives at threshold 1).
+
+### Added
+
+- **Extractability analysis engine** (`printer/actionability/extractability_engine.go`): Estimates whether a detected clone group is ROI-positive for extraction by analyzing group size, clone count, category, and AST structure. Results surface as a new `confidence` field on JSON clones and as `low-confidence`/`actionable` labels in `--explain` text output. The engine classifies clones into `Actionable`, `LowConfidence`, and `NonActionable` tiers.
+- **7 new actionability patterns** (`printer/actionability/actionability_patterns_expanded.go`, `actionability_control_flow.go`):
+  - **`templ-rendering-idiom`**: Suppresses templ/HTML empty-state rendering convention (`if len(x) == 0 { text } else { for ... }`). Fires on `.go` files including generated `_templ.go` with `--include-generated templ`.
+  - **Structural `error-wrapping`**: Any `CallExpr` referencing the error variable matches, no name allowlist needed (`if err != nil { return ..., wrap(err) }`).
+  - **`single-call-expression`**: Lone `CallExpr` or `ExprStmt(CallExpr)` (e.g., `t.Parallel()`, `errors.New("foo")`).
+  - **`single-simple-statement`**: Lone terminal statement (`return nil`, `x := 0`, `break`, `i++`).
+  - **`single-declaration`**: Lone const/type alias re-export (`Foo = pkg.Foo`, `type Mode = domain.Mode`).
+  - **`bool-guard`**: 2-statement assign + guard pattern (`X, ok := helper(); if !ok { return }`).
+  - **`test-helper-delegate`**: 2-statement `t.Helper()` + single delegate call (irreducible Go test boilerplate).
+- **`confidence` field in JSON output**: New `confidence` float field on `printer.JSONClone`, populated when extractability analysis is active.
+- **Actionability label in `--explain`**: Text output now shows `low-confidence (<pattern>)` or `actionable` alongside existing clone type and category info.
+- **DiscordSync false-positive regression suite** (`bdd/discordsync_regression_test.go`): 9 BDD specs against a real-world corpus extracted from a DiscordSync feedback session. Covers HTTP error guards, queryError wrapping, FuncLit defer cleanup, bool-to-string guards, and logging one-liners — validates both raw detection and actionability suppression.
+- **Extractability benchmarks** (`printer/actionability/extractability_bench_test.go`): Performance regression tests for the extractability engine.
+- **GitHub Actions distribution planning docs** (`docs/`): Research and planning for CI-based binary distribution.
+
+### Changed
+
+- **Renamed "denylist" to "actionability"** throughout codebase and workflow documentation, reflecting the shift from simple suppression lists to a richer classification engine.
+- **Unified output formatting** across HTML, JSON, and text printers — shared `toJSONClone` conversion point, consistent field naming.
+- **Restructured clone detection pipeline** across `domain`, `printer`, and `syntax` layers for clearer separation of concerns.
+- **Improved hash sequence generation** (`syntax/golang/transform.go`): Better encoding of distinguishing AST tokens to reduce false-positive collisions.
+
+### Fixed
+
+- **Lint config drift (4th time)**: The auto-commit daemon re-enabled `tagliatelle` in `.golangci.yml`. Re-disabled.
+- **`runtime.Caller(0)` path resolution broke under nix `-trimpath`**: BDD discordsync tests and bench tests used `runtime.Caller(0)` to locate testdata, which returns module-relative paths (not filesystem paths) under `-trimpath`. Fixed to use working-directory-relative paths (`filepath.Join("..", "testdata", ...)`).
+- **Stale vendorHash**: Updated `flake.nix` vendorHash after Go module dependency update.
+- **Self-test duplication**: Resolved cross-package `countNodes`/`countAllNodes` duplication and test boilerplate duplication that caused the nix self-test check to fail at threshold 1.
+
 ## [0.5.1] - 2026-07-26
 
 Patch release fixing version embedding, a silent error swallow in `.gitignore` parsing, and release process gaps identified in the v0.5.0 self-review.
@@ -330,7 +365,8 @@ Patch release fixing version embedding, a silent error swallow in `.gitignore` p
 
 ---
 
-[Unreleased]: https://github.com/LarsArtmann/art-dupl/compare/v0.5.1...HEAD
+[Unreleased]: https://github.com/LarsArtmann/art-dupl/compare/v0.6.0...HEAD
+[0.6.0]: https://github.com/LarsArtmann/art-dupl/compare/v0.5.1...v0.6.0
 [0.5.1]: https://github.com/LarsArtmann/art-dupl/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/LarsArtmann/art-dupl/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/LarsArtmann/art-dupl/compare/v0.3.0...v0.4.0
