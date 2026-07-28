@@ -50,20 +50,20 @@ Patterns are checked in this order (first match wins):
 5. Error propagation
 6. Guard clause
 7. Assign+error-check
-8. Single call expression
-9. Single simple statement
-10. Single declaration
-11. Test helper delegate
-12. Error wrapping
-13. Assertion chain
-14. Cobra boilerplate
-15. Test data pair
-16. Table-driven test
-17. Test scaffolding
-18. Data-dominated
-19. Describe table
-20. Builder callback
-21. Bool-guard (`X, ok := helper(); if !ok { return }`)
+8. Bool-guard (`X, ok := helper(); if !ok { return }`)
+9. Single call expression
+10. Single simple statement
+11. Single declaration
+12. Test helper delegate
+13. Error wrapping
+14. Assertion chain
+15. Cobra boilerplate
+16. Test data pair
+17. Table-driven test
+18. Test scaffolding
+19. Data-dominated
+20. Describe table
+21. Builder callback
 22. Templ-rendering-idiom (`if len(x) == 0 { text } else { for ... }`)
 
 ## Property-Based Classification Engine (Second Pass)
