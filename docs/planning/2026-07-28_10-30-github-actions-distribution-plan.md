@@ -14,10 +14,11 @@ After this plan, a user can add this to any repo (Go or not) and get clone-gated
 ```yaml
 - uses: LarsArtmann/art-dupl@v1
   with:
-    threshold: '15'
+    threshold: "15"
 ```
 
 **Done when:**
+
 - [ ] `action.yml` exists at repo root and passes `actionlint`.
 - [ ] The action installs the pinned binary (checksum-verified) on ubuntu/macos × x64/arm64 runners in <5 s warm, <10 s cold.
 - [ ] Fallback to `go install @<tag>` works when a release has no assets (loud warning, same pinned version — no drift).
@@ -31,27 +32,29 @@ After this plan, a user can add this to any repo (Go or not) and get clone-gated
 
 ## Phases (Pareto-ordered)
 
-| Phase | What | Impact | Effort | Dependency |
-| --- | --- | --- | --- | --- |
-| 0 | Unblock releases (publish assets again) | 🔴 Blocker for everything binary-based | S (30 min) | None |
-| 1 | Ship the composite action (`action.yml` + install script) | 🟢 90% of the value | M (~3–4 h) | Phase 0 for full speed |
-| 2 | Validate in CI (`actionlint` + smoke test matrix) | 🟢 trust | S | Phase 1 |
-| 3 | Reusable workflow + README + Marketplace metadata | 🟡 reach/UX | S | Phase 1 |
-| 4 | Dogfood in own repo; deprecate `go install @latest` templates | 🟢 consistency | S | Phase 1 |
+| Phase | What                                                          | Impact                                 | Effort     | Dependency             |
+| ----- | ------------------------------------------------------------- | -------------------------------------- | ---------- | ---------------------- |
+| 0     | Unblock releases (publish assets again)                       | 🔴 Blocker for everything binary-based | S (30 min) | None                   |
+| 1     | Ship the composite action (`action.yml` + install script)     | 🟢 90% of the value                    | M (~3–4 h) | Phase 0 for full speed |
+| 2     | Validate in CI (`actionlint` + smoke test matrix)             | 🟢 trust                               | S          | Phase 1                |
+| 3     | Reusable workflow + README + Marketplace metadata             | 🟡 reach/UX                            | S          | Phase 1                |
+| 4     | Dogfood in own repo; deprecate `go install @latest` templates | 🟢 consistency                         | S          | Phase 1                |
 
 ---
 
 ## Phase 0 — Unblock releases (prerequisite)
 
-**Problem:** `RELEASE.md` step 6 (line 51) cuts releases with `gh release create … --generate-notes`, which creates an **empty** release. The tag then exists, so `release.yml`'s `on: push: tags: v*` *may* still fire goreleaser — but if goreleaser's `release:` step finds the release already exists, behavior is version-dependent (often it errors or skips asset upload). Net result: `v0.4.0`/`v0.5.0`/`v0.5.1` have `{"assets":[]}`.
+**Problem:** `RELEASE.md` step 6 (line 51) cuts releases with `gh release create … --generate-notes`, which creates an **empty** release. The tag then exists, so `release.yml`'s `on: push: tags: v*` _may_ still fire goreleaser — but if goreleaser's `release:` step finds the release already exists, behavior is version-dependent (often it errors or skips asset upload). Net result: `v0.4.0`/`v0.5.0`/`v0.5.1` have `{"assets":[]}`.
 
 **Fix (choose one — Option A recommended):**
 
 **A. Let goreleaser own tag releases (canonical).**
+
 - Edit `RELEASE.md` step 6: replace `gh release create …` with just **pushing the signed tag** (`git push --follow-tags`). goreleaser (triggered by `release.yml`) creates the release + uploads all assets automatically.
 - Verify the `release.yml` job has `permissions: contents: write` (it does — confirmed).
 
 **B. Keep manual releases but upload assets.**
+
 - After `gh release create …`, also run:
   ```bash
   goreleaser release --clean --skip=docker --skip=validate   # or full, if secrets are set
@@ -60,6 +63,7 @@ After this plan, a user can add this to any repo (Go or not) and get clone-gated
   ```
 
 **Steps:**
+
 1. [ ] Decide A vs B; update `RELEASE.md` accordingly.
 2. [ ] Cut a patch release (e.g. `v0.5.2`) using the new flow.
 3. [ ] **Verify:** `gh release view v0.5.2 --json assets --jq '.assets[].name'` lists `art-dupl_0.5.2_Linux_x86_64.tar.gz`, `…Darwin_arm64.tar.gz`, `…Windows_x86_64.zip`, `checksums.txt`, etc.
@@ -93,28 +97,28 @@ inputs:
     default: check
   threshold:
     description: Clone threshold (-t). Empty = art-dupl default (5).
-    default: ''
+    default: ""
   args:
     description: Extra args appended to the command.
-    default: ''
+    default: ""
   working-directory:
     description: Directory to analyze.
     default: .
   install-only:
     description: If 'true', only install art-dupl onto PATH and skip running it.
-    default: 'false'
+    default: "false"
   create-baseline-if-missing:
     description: If 'true' and no baseline exists, record one (commit .art-dupl-baseline.json).
-    default: 'true'
+    default: "true"
   fail-on-new-clones:
     description: If 'true', a non-zero `check` exit fails the step.
-    default: 'true'
+    default: "true"
   upload-report:
     description: Upload reports/ as an artifact (always, for debugging).
-    default: 'true'
+    default: "true"
   verify-signature:
     description: Cosign-verify the archive against its .sig+.pem (requires cosign on PATH; opt-in).
-    default: 'false'
+    default: "false"
 
 outputs:
   version:
@@ -288,6 +292,7 @@ log "art-dupl ready" "v$VER at $DEST"
 ```
 
 **Verification steps (Phase 1):**
+
 1. [ ] `chmod +x scripts/install-art-dupl.sh`
 2. [ ] `bash -n scripts/install-art-dupl.sh` (syntax check)
 3. [ ] ShellCheck: `shellcheck -S warning scripts/install-art-dupl.sh` → clean (or `# shellcheck disable` with reason)
@@ -303,9 +308,9 @@ Add `.github/workflows/action-validation.yml`:
 name: Action Validation
 on:
   push:
-    paths: ['action.yml', 'scripts/install-art-dupl.sh', '.github/workflows/action-validation.yml']
+    paths: ["action.yml", "scripts/install-art-dupl.sh", ".github/workflows/action-validation.yml"]
   pull_request:
-    paths: ['action.yml', 'scripts/install-art-dupl.sh']
+    paths: ["action.yml", "scripts/install-art-dupl.sh"]
 jobs:
   actionlint:
     runs-on: ubuntu-latest
@@ -330,10 +335,10 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
-      - uses: ./                # exercises the action itself
+      - uses: ./ # exercises the action itself
         with:
-          version: v0.1.0       # known-good assets
-          install-only: 'true'
+          version: v0.1.0 # known-good assets
+          install-only: "true"
       - run: art-dupl version
 ```
 
@@ -350,8 +355,8 @@ name: art-dupl
 on:
   workflow_call:
     inputs:
-      threshold: { required: false, type: string, default: '15' }
-      version:   { required: false, type: string, default: 'latest' }
+      threshold: { required: false, type: string, default: "15" }
+      version: { required: false, type: string, default: "latest" }
 jobs:
   check:
     runs-on: ubuntu-latest
@@ -364,15 +369,20 @@ jobs:
 ```
 
 **3.2 README** — rewrite `## CI/CD Integration` (`README.md:91`) to lead with the action:
-```markdown
+
+````markdown
 ## CI/CD Integration
 
 **GitHub Action (recommended):**
+
 ```yaml
 - uses: LarsArtmann/art-dupl@v1
-  with: { threshold: '15' }
+  with: { threshold: "15" }
 ```
+````
+
 **Reusable workflow · Pre-commit · SARIF · SDK** — see [docs](docs/research/github-actions-distribution-options.md).
+
 ```
 Keep the existing baseline/SARIF prose below it.
 
@@ -409,3 +419,4 @@ Keep the existing baseline/SARIF prose below it.
 - Auto-bumping the `v1` tag via bot — manual, deliberate re-point on each stable release.
 - Replacing Homebrew/Nix/Scoop/deb/rpm distribution.
 - Marketplace listing before `v1` is battle-tested in the repo's own CI.
+```

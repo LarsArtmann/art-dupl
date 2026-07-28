@@ -2,7 +2,7 @@
 
 **Created:** 2026-07-28
 **Author:** Parakletos (research)
-**Question:** *How can we make art-dupl easily and superbly available in GitHub Actions?*
+**Question:** _How can we make art-dupl easily and superbly available in GitHub Actions?_
 **Status:** Research complete — recommendation locked (see bottom).
 
 ---
@@ -17,18 +17,18 @@ art-dupl is **already distributed everywhere** (goreleaser binaries, Docker mult
 
 ## Current state (verified facts)
 
-| Artifact | Where | Status |
-| --- | --- | --- |
-| Goreleaser config | `.goreleaser.yaml` | ✅ Full: binaries (linux/darwin/windows × amd64/arm64), archives, `checksums.txt`, cosign sigs, SBOMs, Docker manifests, deb/rpm/apk, Nix, Brew, Scoop |
-| Tag release workflow | `.github/workflows/release.yml` | ✅ Exists, triggers on `v*` tags, runs goreleaser |
-| Releases cut | GitHub Releases | ⚠️ **Broken** — v0.4.0/v0.5.0/v0.5.1 created manually with **no assets**; only v0.1.0 has binaries |
-| Docker image | `ghcr.io/larsartmann/art-dupl` | ⚠️ Likely not pushed for recent tags (goreleaser didn't run). Distroless nonroot (`Dockerfile`) |
-| GA workflow template | `templates/github-actions-duplicate-check.yml` | ⚠️ Uses `go install @latest` (slow + version drift) |
-| Self-check workflow | `.github/workflows/art-dupl-check.yml` | ⚠️ Same `go install @latest` problem |
-| **Reusable `action.yml`** | — | ❌ **Does not exist** — the gap |
-| README CI section | `README.md:91` | Points only at the template, not at a `uses:` action |
+| Artifact                  | Where                                          | Status                                                                                                                                                 |
+| ------------------------- | ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Goreleaser config         | `.goreleaser.yaml`                             | ✅ Full: binaries (linux/darwin/windows × amd64/arm64), archives, `checksums.txt`, cosign sigs, SBOMs, Docker manifests, deb/rpm/apk, Nix, Brew, Scoop |
+| Tag release workflow      | `.github/workflows/release.yml`                | ✅ Exists, triggers on `v*` tags, runs goreleaser                                                                                                      |
+| Releases cut              | GitHub Releases                                | ⚠️ **Broken** — v0.4.0/v0.5.0/v0.5.1 created manually with **no assets**; only v0.1.0 has binaries                                                     |
+| Docker image              | `ghcr.io/larsartmann/art-dupl`                 | ⚠️ Likely not pushed for recent tags (goreleaser didn't run). Distroless nonroot (`Dockerfile`)                                                        |
+| GA workflow template      | `templates/github-actions-duplicate-check.yml` | ⚠️ Uses `go install @latest` (slow + version drift)                                                                                                    |
+| Self-check workflow       | `.github/workflows/art-dupl-check.yml`         | ⚠️ Same `go install @latest` problem                                                                                                                   |
+| **Reusable `action.yml`** | —                                              | ❌ **Does not exist** — the gap                                                                                                                        |
+| README CI section         | `README.md:91`                                 | Points only at the template, not at a `uses:` action                                                                                                   |
 
-**Asset naming** (from v0.1.0): `art-dupl_<version>_<OsTitle>_<arch>.tar.gz` where `OsTitle ∈ {Linux,Darwin,Windows}`, `arch ∈ {x86_64,arm64}` (Windows uses `.zip`). *Caveat (verified):* the v0.1.0 archive is named `art-dupl_.0.1.0_Linux_x86_64.tar.gz` in the release, but the **same file appears in `checksums.txt` as `art-dupl_ 0.1.0_Linux_x86_64.tar.gz`** — a **space** before the version in `checksums.txt` vs a **dot** in the asset URL. Name reconstruction from the version string is therefore unreliable; the action must **discover the exact asset via the Releases API and match the checksum by suffix**.
+**Asset naming** (from v0.1.0): `art-dupl_<version>_<OsTitle>_<arch>.tar.gz` where `OsTitle ∈ {Linux,Darwin,Windows}`, `arch ∈ {x86_64,arm64}` (Windows uses `.zip`). _Caveat (verified):_ the v0.1.0 archive is named `art-dupl_.0.1.0_Linux_x86_64.tar.gz` in the release, but the **same file appears in `checksums.txt` as `art-dupl_ 0.1.0_Linux_x86_64.tar.gz`** — a **space** before the version in `checksums.txt` vs a **dot** in the asset URL. Name reconstruction from the version string is therefore unreliable; the action must **discover the exact asset via the Releases API and match the checksum by suffix**.
 
 ---
 
@@ -36,16 +36,16 @@ art-dupl is **already distributed everywhere** (goreleaser binaries, Docker mult
 
 Legend: 🟢 strong · 🟡 acceptable · 🔴 weak.
 
-| # | Option | One-line UX | Cold-start speed | Version pin / reproducible | No Go toolchain needed | Cross-runner (linux/darwin × x64/arm64) | Supply-chain (checksum/cosign) | Auto-tracks releases | Maintenance effort | Verdict |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| **1** | **Composite action — download prebuilt binary** | 🟢 `uses: LarsArtmann/art-dupl@v1` | 🟢 ~2–4 s | 🟢 pin by tag + sha256 | 🟢 yes | 🟢 all GH-hosted runners | 🟢 verify vs `checksums.txt` (cosign opt-in) | 🟢 via tags | 🟡 one script + `action.yml` | **✅ RECOMMENDED** |
-| 2 | Docker container action | 🟢 `uses:` | 🟡 image pull ~10–30 s | 🟢 image digest | 🟢 yes | 🔴 Linux only (container actions can't run on macOS/Windows runners) | 🟢 signed image | 🟡 rebuild manifests | 🟡 low | Good alt if you only need Linux; lose macOS/Windows |
-| 3 | `go install` in composite/template (status quo) | 🟡 copy template | 🔴 30–60 s compile | 🔴 `@latest` drifts (fixable with `@<tag>`) | 🔴 needs Go | 🟢 yes | 🔴 none | 🟡 manual | 🟢 none | What we have today. Slow + brittle |
-| 4 | Reusable workflow (`workflow_call`) | 🟡 `uses: …/art-dupl/.github/workflows/…yml@v1` | 🟢 (if it uses #1) | 🟢 | 🟢 | 🟢 | 🟢 | 🟢 | 🟡 low | **Pair with #1** for "batteries-included" job; less flexible than an action |
-| 5 | Homebrew install step | 🔴 multi-line, brew overhead | 🔴 ~30–60 s | 🟡 tap pin | 🟢 | 🟡 macOS native; Linuxbrew on Linux | 🟡 formula checksum | 🔴 manual formula bump | 🟡 med | Overkill for CI; great for local dev (already shipped) |
-| 6 | Nix install step (`cachix/install-nix-action` + flake) | 🟡 multi-line | 🔴 Nix setup heavy | 🟢 flake lock | 🟢 | 🟢 | 🟢 reproducible/hermetic | 🟢 flake follows repo | 🟡 med | Superb for Nix shops; too heavy for general CI |
-| 7 | Raw `curl` binary in user's own workflow | 🔴 DIY every repo | 🟢 fast | 🟢 by URL | 🟢 | 🟢 | 🟡 manual checksum | 🔴 DIY | n/a | What #1 automates — don't ask users to do this |
-| 8 | Go SDK (`pkg/artdupl`) in a Go-based action/job | 🟡 import + write code | 🔴 build cost | 🟢 go.mod pin | 🔴 Go project | 🟢 | 🟢 | 🟡 | 🔴 high | Already exists for programmatic use; not a CI UX |
+| #     | Option                                                 | One-line UX                                     | Cold-start speed       | Version pin / reproducible                  | No Go toolchain needed | Cross-runner (linux/darwin × x64/arm64)                              | Supply-chain (checksum/cosign)               | Auto-tracks releases   | Maintenance effort           | Verdict                                                                     |
+| ----- | ------------------------------------------------------ | ----------------------------------------------- | ---------------------- | ------------------------------------------- | ---------------------- | -------------------------------------------------------------------- | -------------------------------------------- | ---------------------- | ---------------------------- | --------------------------------------------------------------------------- |
+| **1** | **Composite action — download prebuilt binary**        | 🟢 `uses: LarsArtmann/art-dupl@v1`              | 🟢 ~2–4 s              | 🟢 pin by tag + sha256                      | 🟢 yes                 | 🟢 all GH-hosted runners                                             | 🟢 verify vs `checksums.txt` (cosign opt-in) | 🟢 via tags            | 🟡 one script + `action.yml` | **✅ RECOMMENDED**                                                          |
+| 2     | Docker container action                                | 🟢 `uses:`                                      | 🟡 image pull ~10–30 s | 🟢 image digest                             | 🟢 yes                 | 🔴 Linux only (container actions can't run on macOS/Windows runners) | 🟢 signed image                              | 🟡 rebuild manifests   | 🟡 low                       | Good alt if you only need Linux; lose macOS/Windows                         |
+| 3     | `go install` in composite/template (status quo)        | 🟡 copy template                                | 🔴 30–60 s compile     | 🔴 `@latest` drifts (fixable with `@<tag>`) | 🔴 needs Go            | 🟢 yes                                                               | 🔴 none                                      | 🟡 manual              | 🟢 none                      | What we have today. Slow + brittle                                          |
+| 4     | Reusable workflow (`workflow_call`)                    | 🟡 `uses: …/art-dupl/.github/workflows/…yml@v1` | 🟢 (if it uses #1)     | 🟢                                          | 🟢                     | 🟢                                                                   | 🟢                                           | 🟢                     | 🟡 low                       | **Pair with #1** for "batteries-included" job; less flexible than an action |
+| 5     | Homebrew install step                                  | 🔴 multi-line, brew overhead                    | 🔴 ~30–60 s            | 🟡 tap pin                                  | 🟢                     | 🟡 macOS native; Linuxbrew on Linux                                  | 🟡 formula checksum                          | 🔴 manual formula bump | 🟡 med                       | Overkill for CI; great for local dev (already shipped)                      |
+| 6     | Nix install step (`cachix/install-nix-action` + flake) | 🟡 multi-line                                   | 🔴 Nix setup heavy     | 🟢 flake lock                               | 🟢                     | 🟢                                                                   | 🟢 reproducible/hermetic                     | 🟢 flake follows repo  | 🟡 med                       | Superb for Nix shops; too heavy for general CI                              |
+| 7     | Raw `curl` binary in user's own workflow               | 🔴 DIY every repo                               | 🟢 fast                | 🟢 by URL                                   | 🟢                     | 🟢                                                                   | 🟡 manual checksum                           | 🔴 DIY                 | n/a                          | What #1 automates — don't ask users to do this                              |
+| 8     | Go SDK (`pkg/artdupl`) in a Go-based action/job        | 🟡 import + write code                          | 🔴 build cost          | 🟢 go.mod pin                               | 🔴 Go project          | 🟢                                                                   | 🟢                                           | 🟡                     | 🔴 high                      | Already exists for programmatic use; not a CI UX                            |
 
 ---
 
@@ -56,14 +56,16 @@ Legend: 🟢 strong · 🟡 acceptable · 🔴 weak.
 **Shape:** `action.yml` at repo root + `scripts/install-art-dupl.sh`. The script maps `RUNNER_OS` × `RUNNER_ARCH` → archive, downloads `checksums.txt`, finds the exact asset name by parsing the checksum file (robust to goreleaser naming quirks), verifies sha256, extracts into `$RUNNER_TOOL_CACHE/art-dupl/<version>/<arch>` (free caching across runs), prepends to `$GITHUB_PATH`. Graceful fallback to `go install …@<tag>` if the release has no assets (keeps it working today, with a loud warning).
 
 **User experience (the goal):**
+
 ```yaml
 - uses: LarsArtmann/art-dupl@v1
   with:
-    threshold: '15'
+    threshold: "15"
     # command: check (default) · working-directory: . (default)
 ```
 
 **Pros**
+
 - One line, discoverable, Marketplace-listable, version-pinned by git ref + checksum-verified.
 - Runs on **all** GitHub-hosted runners (ubuntu/macos × x64/arm64, windows).
 - No Go toolchain in the consumer repo → usable by non-Go projects (art-dupl supports `.go` + `.templ`).
@@ -71,6 +73,7 @@ Legend: 🟢 strong · 🟡 acceptable · 🔴 weak.
 - Reuses the existing goreleaser output (no new build pipeline).
 
 **Cons / risks**
+
 - Requires recent releases to actually publish assets (the blocker above).
 - Composite actions can't run post-step cleanup as elegantly as JS/Docker actions (fine here).
 - Needs `actionlint` in CI to keep `action.yml` valid.
@@ -97,6 +100,7 @@ Already shipped in `templates/github-actions-duplicate-check.yml` and `.github/w
 > **Option 1 (composite action) as the flagship**, **Option 4 (reusable workflow) as a convenience layer**, and **Option 3 (`go install@<tag>`) only as the action's internal fallback** when a release lacks binaries. Option 2 (Docker) and 6 (Nix) stay available for users who want them — no extra work, they already exist.
 
 This gives every audience the best path:
+
 - **Most users:** `uses: LarsArtmann/art-dupl@v1` → fast, pinned, verified.
 - **"Just give me a job" users:** `uses: …/art-dupl/.github/workflows/art-dupl.yml@v1` (reusable).
 - **Nix shops:** flake (existing).

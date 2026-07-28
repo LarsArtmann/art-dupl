@@ -14,6 +14,7 @@ This session was a **verification & hardening** pass over two docs produced earl
 2. `docs/planning/2026-07-28_10-30-github-actions-distribution-plan.md` — 5-phase execution plan with embedded `action.yml` + `install-art-dupl.sh` + CI workflow.
 
 **Actions performed this session:**
+
 - Re-read both docs in full.
 - Re-confirmed load-bearing facts via `gh` and `fetch`:
   - `v0.5.1` → 0 assets (confirmed).
@@ -31,31 +32,31 @@ This session was a **verification & hardening** pass over two docs produced earl
 
 ## 2. a) FULLY DONE ✅
 
-| Item | Evidence |
-| --- | --- |
-| Comparison report written and fact-checked | `docs/research/github-actions-distribution-options.md`, all claims re-verified |
-| Execution plan written and fact-checked | `docs/planning/2026-07-28_10-30-github-actions-distribution-plan.md` |
-| Release-asset blocker documented with proof | `gh release view v0.5.1 --json assets` → `0` |
-| checksums.txt space/dot quirk documented accurately | fetched live file, both forms shown |
-| Embedded `action.yml` parses as valid YAML | `python3 yaml.safe_load` |
-| Embedded `install-art-dupl.sh` passes `bash -n` | syntax clean |
-| Citation errors fixed (3 edits) | grep confirms no stale refs |
-| Cross-doc consistency | both docs agree on Phase 0 blocker, cosign issuer, asset discovery strategy |
+| Item                                                | Evidence                                                                       |
+| --------------------------------------------------- | ------------------------------------------------------------------------------ |
+| Comparison report written and fact-checked          | `docs/research/github-actions-distribution-options.md`, all claims re-verified |
+| Execution plan written and fact-checked             | `docs/planning/2026-07-28_10-30-github-actions-distribution-plan.md`           |
+| Release-asset blocker documented with proof         | `gh release view v0.5.1 --json assets` → `0`                                   |
+| checksums.txt space/dot quirk documented accurately | fetched live file, both forms shown                                            |
+| Embedded `action.yml` parses as valid YAML          | `python3 yaml.safe_load`                                                       |
+| Embedded `install-art-dupl.sh` passes `bash -n`     | syntax clean                                                                   |
+| Citation errors fixed (3 edits)                     | grep confirms no stale refs                                                    |
+| Cross-doc consistency                               | both docs agree on Phase 0 blocker, cosign issuer, asset discovery strategy    |
 
 ---
 
 ## 3. b) PARTIALLY DONE ⚠️
 
-| Item | What's done | What's missing |
-| --- | --- | --- |
-| Static validation of embedded code | `bash -n` + YAML parse | **shellcheck not run** (not installed locally; I noted CI will run it but didn't try `nix run`/docker to get it) |
-| Cosign verification design | goreleaser issuer confirmed, flags cited | **cosign `verify-blob` CLI flags not version-checked** against current cosign releases (flag names drift) |
-| Install script happy-path | documented local dry-run command | **NOT actually executed** — the dry-run `RUNNER_OS=Linux … bash scripts/install-art-dupl.sh` was suggested but never run this session |
-| `actionlint` validation | YAML structure valid | **actionlint not run** (semantic GA checks like expression syntax, `runs.steps` schema not validated) |
+| Item                               | What's done                              | What's missing                                                                                                                        |
+| ---------------------------------- | ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| Static validation of embedded code | `bash -n` + YAML parse                   | **shellcheck not run** (not installed locally; I noted CI will run it but didn't try `nix run`/docker to get it)                      |
+| Cosign verification design         | goreleaser issuer confirmed, flags cited | **cosign `verify-blob` CLI flags not version-checked** against current cosign releases (flag names drift)                             |
+| Install script happy-path          | documented local dry-run command         | **NOT actually executed** — the dry-run `RUNNER_OS=Linux … bash scripts/install-art-dupl.sh` was suggested but never run this session |
+| `actionlint` validation            | YAML structure valid                     | **actionlint not run** (semantic GA checks like expression syntax, `runs.steps` schema not validated)                                 |
 
 ---
 
-## 4. d) TOTALLY FUCKED UP? (honest call) 
+## 4. d) TOTALLY FUCKED UP? (honest call)
 
 Nothing destructive. No files lost, no git damage, no broken state. But two **quality defects slipped through from the prior session that I caught and fixed this session**:
 
@@ -84,6 +85,7 @@ These were not catastrophic, but they are exactly the kind of "name that lies" f
 Pareto-ordered. Items 1–8 are the plan's own phases; the rest are gaps/improvements surfaced this session.
 
 ### Execute the plan (the real work)
+
 1. **Phase 0:** Decide release-flow fix (A: goreleaser owns tag releases; B: manual `gh release upload`).
 2. **Phase 0:** Update `RELEASE.md` step 6 accordingly.
 3. **Phase 0:** Cut `v0.5.2` and verify assets via `gh release view v0.5.2 --json assets`.
@@ -102,6 +104,7 @@ Pareto-ordered. Items 1–8 are the plan's own phases; the rest are gaps/improve
 16. **Phase 4:** Mark `templates/github-actions-duplicate-check.yml` as legacy.
 
 ### Hardening & correctness gaps from this session
+
 17. **Pin/verify cosign version** and test `verify-blob` flags against it.
 18. **Replace `unzip` with runner-native decompression** (or document the dep).
 19. **Verify `RUNNER_TOOL_CACHE` reuse actually works** for a custom composite action.
@@ -116,12 +119,14 @@ Pareto-ordered. Items 1–8 are the plan's own phases; the rest are gaps/improve
 28. **Concurrency:** if two jobs run the action, tool-cache write race? (unlikely but document.)
 
 ### Supply chain & trust
+
 29. **cosign `--certificate-identity-regexp`** — confirm regex matches goreleaser's cert identity format.
 30. **SBOM verification** — plan ignores `.sbom.json` assets; consider optional SBOM validation.
 31. **Signature file extensions** — plan assumes `.sig` + `.pem`; v0.1.0 confirms these exist, but verify goreleaser keeps the convention.
 32. **Checksum file itself is signed** (`checksums.txt.sig`) — plan verifies archive sigs but not the checksum file. Consider verifying `checksums.txt` via cosign first.
 
 ### Docs & discoverability
+
 33. **`HOW_TO_USE.md`** — add a GitHub Actions section pointing at the action.
 34. **`CHANGELOG.md`** — entry for the action when shipped.
 35. **`FEATURES.md`** — add "GitHub Action" to distribution surfaces once live.
@@ -130,6 +135,7 @@ Pareto-ordered. Items 1–8 are the plan's own phases; the rest are gaps/improve
 38. **Versioning policy doc** — how `v1`/`v1.2` moving tags are maintained.
 
 ### Testing
+
 39. **BDD/integration test** for the action via `act` or a test repo.
 40. **Matrix: add `windows-11-arm`** when available (ARM Windows).
 41. **Test `version: latest` resolution** (redirect-follow) not just pinned.
@@ -137,6 +143,7 @@ Pareto-ordered. Items 1–8 are the plan's own phases; the rest are gaps/improve
 43. **Test offline/cache-hit path** (second run, tool-cache warm).
 
 ### Maintenance
+
 44. **Renovate/dependabot** for `actions/upload-artifact@v4` etc. in the action's own workflows.
 45. **Tag `v1` re-point runbook** — documented, scripted.
 46. **Deprecation notice** for `--include-sqlc`-style legacy flags if action replaces templates.
