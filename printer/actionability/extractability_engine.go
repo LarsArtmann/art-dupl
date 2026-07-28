@@ -190,6 +190,7 @@ func checkROI(nodeSeqs [][]*domain.CloneNode) domain.ExtractabilityAnalysis {
 }
 
 // countNodes recursively counts all nodes in a subtree (proxy for token count).
+// art-dupl:accept different type than syntax.Node variant; cannot share code without generics overhead
 func countNodes(node *domain.CloneNode) int {
 	if node == nil {
 		return 0

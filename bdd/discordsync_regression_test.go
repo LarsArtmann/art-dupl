@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"runtime"
 	"strconv"
 	"strings"
 
@@ -30,8 +29,7 @@ var _ = Describe("DiscordSync Regression Corpus", func() {
 	BeforeEach(func() {
 		setup = CreateBDDTestSetup()
 
-		_, filename, _, _ := runtime.Caller(0)
-		fixturesDir := filepath.Join(filepath.Dir(filename), "..", "testdata", "discordsync")
+		fixturesDir := filepath.Join("..", "testdata", "discordsync")
 
 		tmpDir = GinkgoT().TempDir()
 

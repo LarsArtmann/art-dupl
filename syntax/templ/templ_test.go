@@ -271,7 +271,16 @@ func testParseAndVerifyNodeCount(t *testing.T, input string, expectedMin int) {
 		t.Fatal("ParseBytes() returned nil node")
 	}
 
-	nodeCount := countAllNodes(node)
+	nodeCount := 0
+	queue := []*syntax.Node{node}
+
+	for len(queue) > 0 {
+		current := queue[0]
+		queue = queue[1:]
+		queue = append(queue, current.Children...)
+		nodeCount++
+	}
+
 	if nodeCount < expectedMin {
 		t.Errorf("Expected at least %d nodes, got %d", expectedMin, nodeCount)
 	}
@@ -610,24 +619,6 @@ func TestParseWithLineCountNonexistent(t *testing.T) {
 	if err == nil {
 		t.Error("Expected error for nonexistent file")
 	}
-}
-
-func countAllNodes(root *syntax.Node) int {
-	if root == nil {
-		return 0
-	}
-
-	total := 0
-	queue := []*syntax.Node{root}
-
-	for len(queue) > 0 {
-		current := queue[0]
-		queue = queue[1:]
-		total++
-		queue = append(queue, current.Children...)
-	}
-
-	return total
 }
 
 // TestParseChildrenCount tests parsing of various templ constructs with expected children counts.

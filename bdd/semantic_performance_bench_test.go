@@ -39,10 +39,12 @@ func runBenchBinary(b *testing.B, binaryPath, target, threshold string, extraArg
 }
 
 func getProjectRoot() string {
-	//nolint:dogsled // runtime.Caller returns (pc, file, line, function) - we only need file
-	_, currentFile, _, _ := runtime.Caller(0)
+	wd, err := os.Getwd()
+	if err != nil {
+		return "."
+	}
 
-	return filepath.Join(filepath.Dir(currentFile), "..")
+	return filepath.Join(wd, "..")
 }
 
 func writeBenchFiles(b *testing.B, dir string, count int, content string) {
