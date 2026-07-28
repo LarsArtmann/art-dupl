@@ -77,6 +77,7 @@ Nothing was explicitly scoped that we didn't attempt.
 ## f) Up to 50 Things We Should Get Done Next
 
 ### High Priority (Build Infrastructure)
+
 1. Set `GOCACHE` to a project-local path in `flake.nix` devShell and all checks (not just `lint`)
 2. Add `GOCACHE=/tmp/art-dupl-go-cache` to the `devShells.default.env` in flake.nix
 3. File an issue/request to throttle `crush-daily` concurrency to avoid system-wide OOM
@@ -86,6 +87,7 @@ Nothing was explicitly scoped that we didn't attempt.
 7. Document the project-local GOCACHE pattern in `AGENTS.md`
 
 ### Medium Priority (Test Quality)
+
 8. Audit all test files for recursive tree-counting helpers — there may be more `countNodes` variants
 9. Extract a shared `testutil.CountNodes(*syntax.Node)` helper if multiple test packages need it
 10. Add `golangci-lint run` as a local pre-commit hook (fast feedback before Nix)
@@ -93,6 +95,7 @@ Nothing was explicitly scoped that we didn't attempt.
 12. Run `buildflow -s go-fix -v` to confirm the buildflow pipeline passes end-to-end (not just individual steps)
 
 ### Lower Priority (Nice to Have)
+
 13. Add a `flake.nix` check that verifies `vendorHash` matches actual dependencies
 14. Investigate whether `nix flake check` can run checks sequentially (`--keep-going` already helps)
 15. Consider `nix flake check --no-link` to avoid creating GC roots during CI
