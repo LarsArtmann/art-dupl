@@ -1,7 +1,7 @@
 # art-dupl Feature Documentation
 
-> **Last Updated:** 2026-07-26
-> **Version:** v0.5.1
+> **Last Updated:** 2026-07-28
+> **Version:** v0.6.0
 
 ## Overview
 
