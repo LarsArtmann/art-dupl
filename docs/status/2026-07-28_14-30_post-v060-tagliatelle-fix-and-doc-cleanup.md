@@ -18,44 +18,44 @@ This session was told: "break it down, execute, verify, repeat until done."
 
 ## A) FULLY DONE
 
-| # | Item | Verification |
-|---|------|-------------|
-| 1 | **Removed `tagliatelle` from `.golangci.yml` enable list** | `grep tagliatelle .golangci.yml` returns nothing |
-| 2 | **Daemon committed the fix** as `e2401ae6 chore(lint): update golangci-lint configuration` | `git show e2401ae6 --stat` confirms 1 deletion |
-| 3 | **Disabled-linters guard passes** | `scripts/check-disabled-linters.sh` prints "OK: no disabled linters" |
-| 4 | **Lint passes** | `golangci-lint run --timeout 5m ./...` — 0 issues |
-| 5 | **Build passes** | `templ generate && go build ./...` — exit 0 |
-| 6 | **Full test suite passes** | `go test ./...` — all 27 packages OK |
-| 7 | **Race detector clean** | `CGO_ENABLED=1 go test -race ./...` — all packages OK |
-| 8 | **All 10 nix flake checks pass** | `nix flake check` — "all checks passed!" |
-| 9 | **Fixed `docs/ACTIONABILITY_PATTERNS.md` priority order** | Bool-guard moved from position 21 → 8 to match `actionabilityPatternTable` in code |
-| 10 | **Verified `HOW_TO_USE.md` covers new features** | `--explain`, `--no-actionability`, `--list-patterns`, `--disable-pattern` all documented; references `docs/WORKFLOW.md` for confidence tiers |
-| 11 | **Verified `ROADMAP.md` accuracy** | All checked items correct; SARIF validation correctly still `[ ]` |
-| 12 | **Verified `AGENTS.md` "22 patterns" count** | `actionabilityPatternTable` has exactly 22 entries; 4 additional property-* labels are a separate engine, not denylist patterns. Count is accurate. |
+| #   | Item                                                                                       | Verification                                                                                                                                        |
+| --- | ------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | **Removed `tagliatelle` from `.golangci.yml` enable list**                                 | `grep tagliatelle .golangci.yml` returns nothing                                                                                                    |
+| 2   | **Daemon committed the fix** as `e2401ae6 chore(lint): update golangci-lint configuration` | `git show e2401ae6 --stat` confirms 1 deletion                                                                                                      |
+| 3   | **Disabled-linters guard passes**                                                          | `scripts/check-disabled-linters.sh` prints "OK: no disabled linters"                                                                                |
+| 4   | **Lint passes**                                                                            | `golangci-lint run --timeout 5m ./...` — 0 issues                                                                                                   |
+| 5   | **Build passes**                                                                           | `templ generate && go build ./...` — exit 0                                                                                                         |
+| 6   | **Full test suite passes**                                                                 | `go test ./...` — all 27 packages OK                                                                                                                |
+| 7   | **Race detector clean**                                                                    | `CGO_ENABLED=1 go test -race ./...` — all packages OK                                                                                               |
+| 8   | **All 10 nix flake checks pass**                                                           | `nix flake check` — "all checks passed!"                                                                                                            |
+| 9   | **Fixed `docs/ACTIONABILITY_PATTERNS.md` priority order**                                  | Bool-guard moved from position 21 → 8 to match `actionabilityPatternTable` in code                                                                  |
+| 10  | **Verified `HOW_TO_USE.md` covers new features**                                           | `--explain`, `--no-actionability`, `--list-patterns`, `--disable-pattern` all documented; references `docs/WORKFLOW.md` for confidence tiers        |
+| 11  | **Verified `ROADMAP.md` accuracy**                                                         | All checked items correct; SARIF validation correctly still `[ ]`                                                                                   |
+| 12  | **Verified `AGENTS.md` "22 patterns" count**                                               | `actionabilityPatternTable` has exactly 22 entries; 4 additional property-* labels are a separate engine, not denylist patterns. Count is accurate. |
 
 ---
 
 ## B) PARTIALLY DONE
 
-| # | Item | What's done | What's missing |
-|---|------|-------------|----------------|
-| 1 | **Push fix to origin/fork** | Fix committed locally (`e2401ae6`) | `origin/fork` still at `52d677d2` (has tagliatelle). Not pushed — per project rules, never push without explicit user request. |
-| 2 | **`docs/ACTIONABILITY_PATTERNS.md` fix** | Priority order corrected (bool-guard position 8) | File is uncommitted in working tree. Daemon may commit it. |
-| 3 | **HEAD is clean** | `e2401ae6` passes all checks | The broken commit `7b1e5e60` is still in history between `v0.6.0` tag and HEAD. It's a permanent artifact. |
+| #   | Item                                     | What's done                                      | What's missing                                                                                                                 |
+| --- | ---------------------------------------- | ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------ |
+| 1   | **Push fix to origin/fork**              | Fix committed locally (`e2401ae6`)               | `origin/fork` still at `52d677d2` (has tagliatelle). Not pushed — per project rules, never push without explicit user request. |
+| 2   | **`docs/ACTIONABILITY_PATTERNS.md` fix** | Priority order corrected (bool-guard position 8) | File is uncommitted in working tree. Daemon may commit it.                                                                     |
+| 3   | **HEAD is clean**                        | `e2401ae6` passes all checks                     | The broken commit `7b1e5e60` is still in history between `v0.6.0` tag and HEAD. It's a permanent artifact.                     |
 
 ---
 
 ## C) NOT STARTED
 
-| # | Item | Why it matters |
-|---|------|---------------|
-| 1 | **CHANGELOG `[Unreleased]` entry for tagliatelle fix** | Post-release fix should be recorded. Currently `[Unreleased]` section is empty/absent. |
-| 2 | **TODO_LIST.md update** | "Last Updated: 2026-07-26" — stale by 2 days and a release. Several items shipped in v0.6.0 (property engine, actionability patterns, denylist rename). The `interface-method` TODO says "pattern #20" but it's actually #3 in the table. |
-| 3 | **Push to origin/fork** | Anyone building from origin HEAD gets broken lint. |
-| 4 | **Tag strategy decision** | v0.6.0 tag sits on daemon commit `131464da`, not a clean `chore(release)` commit. HEAD is now clean but post-tag. Cut v0.6.1? Move tag? Neither? |
-| 5 | **Root cause of daemon re-enabling linters** | 5th occurrence. The `scripts/check-disabled-linters.sh` guard is a nix check AND a pre-commit hook, but the daemon bypasses hooks. No investigation of daemon config attempted. |
-| 6 | **Extractability engine feature flag** | Self-review asked if it should be behind a flag. Not investigated. |
-| 7 | **Binary artifact for GitHub release** | v0.6.0 GitHub release has 0 binary artifacts. Users must build from source/nix. |
+| #   | Item                                                   | Why it matters                                                                                                                                                                                                                            |
+| --- | ------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | **CHANGELOG `[Unreleased]` entry for tagliatelle fix** | Post-release fix should be recorded. Currently `[Unreleased]` section is empty/absent.                                                                                                                                                    |
+| 2   | **TODO_LIST.md update**                                | "Last Updated: 2026-07-26" — stale by 2 days and a release. Several items shipped in v0.6.0 (property engine, actionability patterns, denylist rename). The `interface-method` TODO says "pattern #20" but it's actually #3 in the table. |
+| 3   | **Push to origin/fork**                                | Anyone building from origin HEAD gets broken lint.                                                                                                                                                                                        |
+| 4   | **Tag strategy decision**                              | v0.6.0 tag sits on daemon commit `131464da`, not a clean `chore(release)` commit. HEAD is now clean but post-tag. Cut v0.6.1? Move tag? Neither?                                                                                          |
+| 5   | **Root cause of daemon re-enabling linters**           | 5th occurrence. The `scripts/check-disabled-linters.sh` guard is a nix check AND a pre-commit hook, but the daemon bypasses hooks. No investigation of daemon config attempted.                                                           |
+| 6   | **Extractability engine feature flag**                 | Self-review asked if it should be behind a flag. Not investigated.                                                                                                                                                                        |
+| 7   | **Binary artifact for GitHub release**                 | v0.6.0 GitHub release has 0 binary artifacts. Users must build from source/nix.                                                                                                                                                           |
 
 ---
 
@@ -184,6 +184,7 @@ Nothing in this session was destructive or incorrect. However, here are honest s
 ### 1. Tag strategy: cut v0.6.1 or leave HEAD as post-release cleanup?
 
 The v0.6.0 tag (`131464da`) is clean — no lint failures. But HEAD now has 4 post-tag commits, including the tagliatelle fix. Options:
+
 - **Cut v0.6.1**: Formal patch release with just the tagliatelle fix. Clean but heavyweight for a 1-line YAML deletion.
 - **Leave as-is**: v0.6.0 is clean, HEAD will be fixed in v0.7.0. Anyone building from HEAD gets the fix.
 - **Move v0.6.0 tag**: Generally bad practice (rewrites release history). Not recommended.
@@ -193,6 +194,7 @@ I cannot decide this because it depends on whether external consumers are buildi
 ### 2. How do I stop the daemon from re-enabling disabled linters?
 
 The daemon has re-added `tagliatelle` 5 times. The `scripts/check-disabled-linters.sh` guard is installed as a pre-commit hook AND runs as a nix check, but the daemon bypasses hooks. I don't know:
+
 - Where the daemon runs (local process? CI? GitHub Actions?)
 - Whether it has a config file I can modify
 - Whether it uses `golangci-lint config` or similar to regenerate `.golangci.yml`
