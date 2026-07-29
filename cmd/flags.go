@@ -52,6 +52,16 @@ func addSharedFlags(cmd *cobra.Command) {
 		BoolP("quiet", "q", false, "suppress non-essential status output (progress messages, profiling notices)")
 	cmd.Flags().Bool("no-color", false, "disable colored output")
 
+	// Suppression control (shared with stats subcommand for feature parity)
+	cmd.Flags().
+		Bool("no-actionability", false, "show all clones including non-actionable boilerplate (disable actionability filtering)")
+	cmd.Flags().
+		Bool("no-accept-directives", false, "ignore //art-dupl:accept directives in source code (show all clones)")
+	cmd.Flags().
+		Int("min-lines", 0, "suppress clone groups spanning fewer than N source lines (0 = disabled)")
+	cmd.Flags().
+		StringSlice("disable-pattern", nil, "suppress a specific actionability pattern by label (repeatable, use --list-patterns for labels)")
+
 	// File type filter
 	cmd.Flags().
 		String("only", "", "only analyze specific file type: 'go' or 'templ' (default: both)")
@@ -117,13 +127,7 @@ func AddFlags(rootCmd *cobra.Command) {
 	rootCmd.Flags().
 		Bool("dump-tokens", false, "dump the serialized token stream for debugging (skip clone detection)")
 	rootCmd.Flags().
-		Int("min-lines", 0, "suppress clone groups spanning fewer than N source lines (0 = disabled)")
-	rootCmd.Flags().
-		Bool("no-actionability", false, "show all clones including non-actionable boilerplate (disable actionability filtering)")
-	rootCmd.Flags().
 		Bool("explain", false, "explain why each clone group was reported (type, actionability, category, extractability)")
-	rootCmd.Flags().
-		Bool("no-accept-directives", false, "ignore //art-dupl:accept directives in source code (show all clones)")
 	rootCmd.Flags().
 		Bool("include-ignored", false, "include gitignored files in analysis (default: honor .gitignore)")
 
@@ -133,8 +137,7 @@ func AddFlags(rootCmd *cobra.Command) {
 	rootCmd.Flags().
 		String("html-out", "", "write HTML report to a file instead of stdout (use with --html)")
 
-	rootCmd.Flags().
-		StringSlice("disable-pattern", nil, "suppress a specific actionability pattern by label (repeatable, use --list-patterns for labels)")
+
 
 	rootCmd.Flags().
 		Bool("list-patterns", false, "list all actionability pattern labels and exit")
