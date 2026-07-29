@@ -61,6 +61,7 @@ func TestBaselineRecordHonorsAcceptDirectives(t *testing.T) {
 
 	// Without accept directives: baseline should record the clone group.
 	baselineNoAccept := filepath.Join(t.TempDir(), "baseline-no-accept.json")
+
 	output, err := executeTestCommand(t, []string{
 		binaryName, "baseline",
 		"--baseline-path", baselineNoAccept,
@@ -79,6 +80,7 @@ func TestBaselineRecordHonorsAcceptDirectives(t *testing.T) {
 
 	// With accept directives: baseline should record 0 groups.
 	baselineWithAccept := filepath.Join(t.TempDir(), "baseline-with-accept.json")
+
 	output, err = executeTestCommand(t, []string{
 		binaryName, "baseline",
 		"--baseline-path", baselineWithAccept,
