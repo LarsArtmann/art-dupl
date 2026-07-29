@@ -11,6 +11,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 _Nothing yet._
 
+## [0.6.1] - 2026-07-29
+
+Patch release fixing a silent regression where `//art-dupl:accept` directives
+were ignored in `stats`, `baseline record`, `check`, and `--all` subcommands.
+
+### Fixed
+
+- **Accept directives honored in all subcommands**: The `stats`, `baseline record`,
+  `check`, and `--all` modes constructed truncated `SuppressionConfig` literals
+  missing the `AcceptDirectives`, `NoActionability`, and `DisabledPatterns` fields.
+  Go zero-values made `nil` `AcceptDirectives` mean "skip the check entirely"
+  rather than "no directives found," silently bypassing every `//art-dupl:accept`
+  directive in source code. Extracted `buildSuppressionConfig()` as the single
+  construction path so future fields cannot be silently omitted.
+
+### Changed
+
+- **Hoisted `buildSuppressionConfig` outside the `--all` format loop**: All output
+  formats now share a single `AcceptedSet` cache, scanning each source file once
+  instead of once per format.
+
+### Added
+
+- **Regression tests for accept-directive behavior** (`cmd/accept_directive_integration_test.go`):
+  Integration tests verifying that `stats` and `baseline record` honor
+  `//art-dupl:accept` directives, plus a unit test (`cmd/suppression_config_test.go`)
+  asserting `buildSuppressionConfig` populates all struct fields.
+
 ## [0.6.0] - 2026-07-28
 
 Minor release headlined by the **extractability analysis engine**, **7 new actionability patterns** (including templ-rendering-idiom and structural error-wrapping), and a **DiscordSync false-positive regression suite** based on a real-world corpus (82 groups, 97% false positives at threshold 1).
