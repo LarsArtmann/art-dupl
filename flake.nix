@@ -32,7 +32,7 @@
 
       # Bump this for each release (see RELEASE.md step 3).
       # go build without ldflags still reports "dev"; nix build injects this.
-      version = "0.6.0";
+      version = "0.6.1";
 
       gogenfilterGoMod = builtins.readFile "${gogenfilter}/go.mod";
       gogenfilterGoSum = builtins.readFile "${gogenfilter}/go.sum";

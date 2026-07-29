@@ -185,7 +185,10 @@ func TestStatsCommandErrorCases(t *testing.T) {
 }
 
 func TestStatsOutputFormat(t *testing.T) {
-	output, err := executeTestCommand(t, []string{binaryName, statsSubCommand, "-t", "1", "--no-accept-directives", "./printer"})
+	output, err := executeTestCommand(
+		t,
+		[]string{binaryName, statsSubCommand, "-t", "1", "--no-accept-directives", "./printer"},
+	)
 	if err != nil {
 		t.Fatalf("Stats command failed: %v", err)
 	}

@@ -310,6 +310,7 @@ func TestWriteFormatFile(t *testing.T) {
 			filename,
 			sortByEnum,
 			binaryName,
+			buildSuppressionConfig(cfg),
 		)
 		if err != nil {
 			t.Fatalf("writeFormatFile() error = %v", err)

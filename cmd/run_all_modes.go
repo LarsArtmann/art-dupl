@@ -72,6 +72,10 @@ func runAllModes(ctx context.Context, cfg *config.Config, sortBy, outputDir stri
 	// Convert detection methods to comma-separated string
 	detectionMethodStr := detectionMethodsToString(cfg.DetectionMethods)
 
+	// Build suppression config once so all formats share a single AcceptedSet
+	// cache (files scanned once instead of once-per-format).
+	suppression := buildSuppressionConfig(cfg)
+
 	for _, format := range formats {
 		filename := filepath.Join(outputDir, "report."+string(format))
 
@@ -84,6 +88,7 @@ func runAllModes(ctx context.Context, cfg *config.Config, sortBy, outputDir stri
 			filename,
 			sortByEnum,
 			detectionMethodStr,
+			suppression,
 		)
 		if err != nil {
 			return fmt.Errorf(
@@ -116,6 +121,7 @@ func writeFormatFile(
 	filename string,
 	sortByEnum config.SortCriteria,
 	detectionMethodStr string,
+	suppression SuppressionConfig,
 ) error {
 	// #nosec G304 -- filename is constructed from controlled config output dir and format
 	file, err := os.Create(filename)
@@ -170,7 +176,7 @@ func writeFormatFile(
 		cfg.Threshold,
 		detectionMethodStr,
 		cfg.DetectionMode.IsSemantic(),
-		buildSuppressionConfig(cfg),
+		suppression,
 	)
 	if err != nil {
 		return fmt.Errorf(
