@@ -137,8 +137,6 @@ func AddFlags(rootCmd *cobra.Command) {
 	rootCmd.Flags().
 		String("html-out", "", "write HTML report to a file instead of stdout (use with --html)")
 
-
-
 	rootCmd.Flags().
 		Bool("list-patterns", false, "list all actionability pattern labels and exit")
 

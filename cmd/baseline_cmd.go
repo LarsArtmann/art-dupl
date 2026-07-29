@@ -86,11 +86,7 @@ func runBaseline(c *cobra.Command, arguments []string) error {
 
 	err = printCloneGroups(recorder, os.ReadFile, groups, keys, config.SortByHash,
 		mergedConfig.DetectionMode.IsSemantic(),
-		SuppressionConfig{
-			SuppressTestLow: mergedConfig.EffectiveSuppressTestLow(),
-			TestThreshold:   mergedConfig.EffectiveTestThreshold(),
-			MinLines:        mergedConfig.MinLines,
-		})
+		buildSuppressionConfig(mergedConfig))
 	if err != nil {
 		return duplerrors.Wrap(err, duplerrors.AnalysisError, "recording baseline")
 	}
@@ -159,11 +155,7 @@ func runCheck(c *cobra.Command, arguments []string) error {
 
 	err = printCloneGroups(filter, os.ReadFile, groups, keys, config.SortByHash,
 		mergedConfig.DetectionMode.IsSemantic(),
-		SuppressionConfig{
-			SuppressTestLow: mergedConfig.EffectiveSuppressTestLow(),
-			TestThreshold:   mergedConfig.EffectiveTestThreshold(),
-			MinLines:        mergedConfig.MinLines,
-		})
+		buildSuppressionConfig(mergedConfig))
 	if err != nil {
 		return duplerrors.Wrap(err, duplerrors.AnalysisError, "check output")
 	}

@@ -170,11 +170,7 @@ func writeFormatFile(
 		cfg.Threshold,
 		detectionMethodStr,
 		cfg.DetectionMode.IsSemantic(),
-		SuppressionConfig{
-			SuppressTestLow: cfg.EffectiveSuppressTestLow(),
-			TestThreshold:   cfg.EffectiveTestThreshold(),
-			MinLines:        cfg.MinLines,
-		},
+		buildSuppressionConfig(cfg),
 	)
 	if err != nil {
 		return fmt.Errorf(

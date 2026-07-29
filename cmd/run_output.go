@@ -24,6 +24,22 @@ type SuppressionConfig struct {
 	DisabledPatterns map[actionability.PatternLabel]bool
 }
 
+// buildSuppressionConfig constructs a complete SuppressionConfig from the
+// effective configuration. Every subcommand that calls printCloneGroups or
+// printDupls MUST use this helper instead of building a struct literal —
+// a truncated literal silently disables accept directives, actionability
+// filtering, and disabled-pattern suppression.
+func buildSuppressionConfig(cfg *config.Config) SuppressionConfig {
+	return SuppressionConfig{
+		SuppressTestLow:  cfg.EffectiveSuppressTestLow(),
+		TestThreshold:    cfg.EffectiveTestThreshold(),
+		MinLines:         cfg.MinLines,
+		AcceptDirectives: newAcceptSet(cfg),
+		NoActionability:  cfg.NoActionability,
+		DisabledPatterns: buildDisabledPatternSet(cfg.DisabledPatterns),
+	}
+}
+
 func printDupls(
 	ctx context.Context,
 	p printer.Printer,

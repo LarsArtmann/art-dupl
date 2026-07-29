@@ -134,14 +134,7 @@ func runStats(c *cobra.Command, arguments []string) error {
 	}
 
 	err = printCloneGroups(p, os.ReadFile, groups, keys, config.SortByHash, mergedConfig.DetectionMode.IsSemantic(),
-		SuppressionConfig{
-			SuppressTestLow:  mergedConfig.EffectiveSuppressTestLow(),
-			TestThreshold:    mergedConfig.EffectiveTestThreshold(),
-			MinLines:         mergedConfig.MinLines,
-			AcceptDirectives: newAcceptSet(mergedConfig),
-			NoActionability:  mergedConfig.NoActionability,
-			DisabledPatterns: buildDisabledPatternSet(mergedConfig.DisabledPatterns),
-		})
+		buildSuppressionConfig(mergedConfig))
 	if err != nil {
 		return err
 	}
