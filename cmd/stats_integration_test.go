@@ -46,6 +46,9 @@ const (
 
 // executeTestCommand runs art-dupl in-process with the given arguments.
 // It resolves relative paths against the repo root and captures output via fd duplication.
+//
+// Output capture mutates the process-global os.Stdout/os.Stderr, so tests that
+// call this helper MUST be serial (no t.Parallel): see testutil.CaptureStdoutStderr.
 func executeTestCommand(t *testing.T, args []string) ([]byte, error) {
 	t.Helper()
 

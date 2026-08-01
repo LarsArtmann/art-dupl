@@ -11,9 +11,9 @@
 
 ## Results at a Glance
 
-| Threshold | Clone Groups | Truly Actionable | Accepted (baseline) | Test Boilerplate |
-| --------- | ------------ | ---------------- | ------------------- | ---------------- |
-| `-t 3`    | 2            | 0                | 2                   | 0                |
+| Threshold | Clone Groups | Truly Actionable | Accepted (baseline) | Test Boilerplate       |
+| --------- | ------------ | ---------------- | ------------------- | ---------------------- |
+| `-t 3`    | 2            | 0                | 2                   | 0                      |
 | `-t 2`    | 48           | ~24              | 15                  | 9 groups (~190 clones) |
 
 The `-t 3` gate (`nix run .#check-duplication`) is clean. The `-t 2` frontier has real work but is 80% noise by volume.
@@ -49,6 +49,7 @@ When `art-dupl` detects a clone group that has BOTH a baseline entry AND an `//a
 ```
 
 Additionally, `art-dupl baseline` should either:
+
 - Refuse to run when `//art-dupl:accept` directives exist (require `--force`), OR
 - Record directives as a separate `"directive_accepted": true` field so the baseline tracks the full picture.
 
@@ -135,10 +136,10 @@ The right default for triage — highest-impact groups first. This put the 16-fi
 
 ## Summary of Suggestions
 
-| Priority | Suggestion                                                        | Effort  |
-| -------- | ----------------------------------------------------------------- | ------- |
-| HIGH     | Warn on baseline + directive conflict (split-brain detection)     | Small   |
-| HIGH     | `art-dupl baseline` should detect directives and warn/merge       | Medium  |
-| MEDIUM   | Suppress `t.Parallel()` + single-setup-line as test-boilerplate   | Small   |
-| LOW      | Detect and down-rank `TestMain` + library-required `Clean` calls  | Small   |
+| Priority | Suggestion                                                                 | Effort |
+| -------- | -------------------------------------------------------------------------- | ------ |
+| HIGH     | Warn on baseline + directive conflict (split-brain detection)              | Small  |
+| HIGH     | `art-dupl baseline` should detect directives and warn/merge                | Medium |
+| MEDIUM   | Suppress `t.Parallel()` + single-setup-line as test-boilerplate            | Small  |
+| LOW      | Detect and down-rank `TestMain` + library-required `Clean` calls           | Small  |
 | LOW      | Consider a `--diff-baseline` mode showing what changed since last baseline | Medium |

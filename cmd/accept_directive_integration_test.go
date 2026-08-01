@@ -18,9 +18,12 @@ const acceptFixtureDir = "./testdata/accept_fixture"
 // duplicated block. --no-actionability is used to isolate accept-directive
 // behavior from the actionability engine (the small 2-file clone is otherwise
 // classified as non-actionable, which would mask the directive check).
+//
+// NOTE: This test is intentionally NOT t.Parallel(): executeTestCommand ->
+// CaptureStdoutStderr mutates the process-global os.Stdout/os.Stderr, which
+// races with parallel sibling tests that read those globals directly (e.g.
+// fmt.Printf in PrintVersion, fmt.Fprintln(os.Stderr) in printBuildingStatus).
 func TestStatsHonorsAcceptDirectives(t *testing.T) {
-	t.Parallel()
-
 	// Without accept directives: the clone group must appear.
 	output, err := executeTestCommand(t, []string{
 		binaryName, statsSubCommand,
@@ -56,9 +59,11 @@ func TestStatsHonorsAcceptDirectives(t *testing.T) {
 // TestBaselineRecordHonorsAcceptDirectives verifies that the baseline record
 // subcommand honors //art-dupl:accept directives — another site that had a
 // truncated SuppressionConfig before the fix.
+//
+// NOTE: This test is intentionally NOT t.Parallel(): executeTestCommand ->
+// CaptureStdoutStderr mutates the process-global os.Stdout/os.Stderr, which
+// races with parallel sibling tests that read those globals directly.
 func TestBaselineRecordHonorsAcceptDirectives(t *testing.T) {
-	t.Parallel()
-
 	// Without accept directives: baseline should record the clone group.
 	baselineNoAccept := filepath.Join(t.TempDir(), "baseline-no-accept.json")
 

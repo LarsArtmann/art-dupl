@@ -42,6 +42,27 @@ func TestFunction(t *testing.T) {
 }
 ```
 
+### Global state and `t.Parallel()` — do not mix
+
+`t.Parallel()` is for tests that touch **only their own** state. A test that
+mutates **process-global** state must be serial, because the race detector flags
+the unsynchronized read/write of the shared global even when the mutation is
+"correct."
+
+The main offender is `os.Stdout`/`os.Stderr`:
+
+- `testutil.CaptureStdoutStderr` (and `CaptureCombinedOutput`, `cmd.executeTestCommand`)
+  swap the global `os.Stdout`/`os.Stderr` pointers. A mutex serializes captures
+  against **each other**, but NOT against sibling tests that read those globals
+  directly (e.g. `fmt.Printf` → `os.Stdout`, `fmt.Fprintln(os.Stderr, …)`).
+- So while a capture test is parallel, any parallel sibling that reads
+  `os.Stdout`/`os.Stderr` races on the global pointer.
+
+Rule: **a test that captures or reassigns `os.Stdout`/`os.Stderr` must NOT call
+`t.Parallel()`** (or must guarantee no sibling test in the package reads those
+globals directly). Prefer keeping such tests serial — the parallelism win on a
+fast capture test is negligible and the race is silent and intermittent.
+
 ## BDD Tests (Ginkgo/Gomega)
 
 Location: `bdd/` directory. Helpers in `internal/testutil/bdd.go`.
