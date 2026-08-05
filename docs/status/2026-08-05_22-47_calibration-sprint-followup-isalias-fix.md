@@ -9,6 +9,7 @@
 ## A) FULLY DONE
 
 ### 1. Fixed type-alias-block false-negative risk (IsAlias field)
+
 - **Problem:** The `type-alias-block` and `single-declaration` actionability patterns suppressed ALL non-composite TypeSpec nodes, regardless of whether they were true aliases (`type X = pkg.Y`) or named type definitions (`type X pkg.Y`). The `ast.TypeSpec.Assign` token position was discarded during transformation, making the two indistinguishable.
 - **Fix:** Added `IsAlias bool` field through the full pipeline:
   - `syntax.Node.IsAlias` — set by transformer from `n.Assign != token.NoPos` (`syntax/golang/transform.go:361`)
@@ -22,12 +23,14 @@
 - **Tests updated:** `pkgAlias` helper now sets `IsAlias: true`. Added negative test case for named type definition (`type Mode pkg.Mode` — should NOT be suppressed by `isSingleDeclaration`). Updated `TestIsTypeAliasBlock` non-alias case to explicitly set `IsAlias: false`.
 
 ### 2. Added missing isTerminalStatement ExprStmt(UnaryExpr) test
+
 - **Problem:** The `isTerminalStatement` function was extended to match `ExprStmt` wrapping a single `UnaryExpr` (catches `<-ch` channel receive) but no test verified this behavior.
 - **Fix:** Added two test cases in `TestIsSingleSimpleStatement`:
   - `ExprStmt wrapping UnaryExpr (<-ch channel receive)` — expected: true
   - `ExprStmt wrapping CallExpr` — expected: false (verifies the `len(Children) == 1` guard)
 
 ### 3. Updated docs/ACTIONABILITY_PATTERNS.md with 2 new patterns
+
 - **Problem:** The patterns doc claimed "23 pattern checks" but the table actually has 25 (interface-assertion and type-alias-block were added in the prior sprint but not documented).
 - **Fix:**
   - Updated pattern count: 23 → 25 (both in "How It Works" and "Property-Based" sections)
@@ -38,16 +41,19 @@
   - Updated `test-helper-delegate` row: now mentions "matches t/b/tb receivers"
 
 ### 4. Added ShowSuppressed support to cmd/diff_report.go
+
 - **Problem:** `diff_report.go` had duplicate suppression gates (actionability + shouldSuppressGroup) that were NOT updated with `&& !suppression.ShowSuppressed`. So `--show-suppressed` had no effect with `--diff-report`.
 - **Fix:** Added `&& !suppression.ShowSuppressed` to both `continue` gates in `collectCurrentGroups` (`cmd/diff_report.go:94` and `:106`). Now `--diff-report --show-suppressed` surfaces suppressed groups in diff output.
 
 ### 5. Updated HOW_TO_USE.md with new CLI flags
+
 - **Problem:** Neither `--include-examples` nor `--show-suppressed` were documented in the user guide.
 - **Fix:** Added two new sections after ".gitignore Honoring":
   - "Example/Demo Directory Exclusion" — explains `examples/`, `demo/`, `demos/` exclusion and `--include-examples` override
   - "Showing Suppressed Groups" — explains `--show-suppressed` for calibration and recall measurement
 
 ### 6. Added --show-suppressed behavioral tests (BDD)
+
 - **Problem:** No integration test verified that `--show-suppressed` actually surfaces suppressed clone groups.
 - **Fix:** Added 3 BDD tests in `bdd/actionability_test.go` using the guard-clause pattern (already proven to be suppressed by actionability):
   - "should surface suppressed guard-clause clones when flag is set" — verifies `guard1.go` and `guard2.go` appear in output with `--show-suppressed`
@@ -55,11 +61,13 @@
   - "should show at least as many clones as default mode" — verifies `--show-suppressed` >= default count
 
 ### 7. Full verification
+
 - `go build ./...` — clean
 - `go test ./...` — 27 packages pass, 0 failures (305 BDD specs pass)
 - `golangci-lint` — **pre-existing issue** (see D) section below
 
 ### 8. Deliberately skipped: --show-suppressed in addSharedFlags
+
 - **Decision:** Kept `--show-suppressed` root-only (not in `addSharedFlags`). The AGENTS.md explicitly says `--explain` and `--no-actionability` are "intentionally root-only (main analysis) — stats/baseline/check have different output semantics where per-clone actionability filtering doesn't apply." `--show-suppressed` follows the same pattern. The `stats` subcommand shows aggregate statistics, not individual clones. The `baseline` subcommand records clones for CI comparison.
 - **Risk:** Low. If a user wants to see suppressed groups in stats output, they can use `--no-actionability` on the root command instead.
 
@@ -68,6 +76,7 @@
 ## B) PARTIALLY DONE
 
 ### 1. SDK Options for IncludeExamples and ShowSuppressed
+
 - **Finding:** The SDK (`pkg/artdupl/`) takes explicit file lists (no crawling), so `IncludeExamples` is irrelevant — callers filter directories themselves. `ShowSuppressed` is a CLI-only concern because the SDK doesn't run actionability filtering at all (the `detectorConfig` has no suppression fields, and the SDK pipeline has no actionability evaluation step).
 - **What was done:** Investigated the SDK architecture. Decided not to add fields that would be dead code.
 - **What remains:** If SDK consumers want programmatic calibration (actionability analysis + ShowSuppressed), that requires wiring the full actionability engine into the SDK pipeline — a much larger change beyond this sprint's scope.
@@ -88,12 +97,14 @@
 ## D) TOTALLY FUCKED UP
 
 ### 1. Pre-existing: tagliatelle linter re-added by auto-commit daemon
+
 - **Problem:** Commit `6c4cabc7` (blank message, auto-commit daemon) re-added `tagliatelle` to `.golangci.yml` line 108. The AGENTS.md explicitly says: "tagliatelle is NOT in the `.golangci.yml` enable list (codebase has mixed snake_case/camelCase JSON conventions per ADR-0016)."
 - **Impact:** `golangci-lint run` now reports 50 tagliatelle issues (all pre-existing snake_case JSON tags in `printer/stats_data.go` and other files).
 - **Root cause:** The auto-commit daemon appears to have reverted the `ebd6a474` commit that removed tagliatelle. This is NOT from my changes — I did not touch `.golangci.yml`.
 - **Fix needed:** Remove `- tagliatelle` from `.golangci.yml` enable list, or let the `scripts/check-disabled-linters.sh` guard handle it.
 
 ### 2. No mistakes in my own work
+
 - All edits used exact matches via `edit`/`multiedit` tools (no sed/Python hacks).
 - All test fixtures were updated correctly for the `IsAlias` field change.
 - Build and tests pass cleanly.
@@ -117,6 +128,7 @@
 ## F) Up to 50 Things to Get Done Next
 
 ### High Priority (precision/safety)
+
 1. Remove `tagliatelle` from `.golangci.yml` (pre-existing regression from auto-commit daemon)
 2. Re-run calibration on 6 projects to verify precision improvement after IsAlias fix
 3. Commit 87 labeled clone groups as machine-readable regression dataset (JSON/YAML)
@@ -129,6 +141,7 @@
 10. Verify the Nix self-test (`art-dupl -t 1 --plumbing .`) still passes after IsAlias change
 
 ### Medium Priority (completeness)
+
 11. Wire actionability engine into SDK pipeline (enables `ShowSuppressed` + `IncludeExamples` in SDK)
 12. Add `ShowSuppressed` to SDK `Options` struct (requires #11)
 13. Refactor `shouldSkipPath` to use a `PathFilter` struct instead of 4 bools
@@ -146,6 +159,7 @@
 25. Add test for the `interface-assertion` pattern when ValueSpec has multiple names (`var _, x I = ...`)
 
 ### Architecture / Refactoring
+
 26. Consider making actionability patterns extensible via plugins (the pattern table is now 25 entries)
 27. Move `exampleDirNames` from a global var to a config field
 28. Consider a `SkipConfig` or `CrawlFilter` struct that bundles all skip-related fields
@@ -155,6 +169,7 @@
 32. Consider whether `IsAlias` should be encoded into the semantic Type hash (so alias and non-alias TypeSpecs produce different tokens and don't match as clones at all)
 
 ### Testing
+
 33. Add fuzz test for actionability pattern evaluation (never panics on arbitrary CloneNode trees)
 34. Add test verifying `--show-suppressed` surfaces min-lines suppressed groups
 35. Add test verifying `--show-suppressed` surfaces accept-directive suppressed groups
@@ -167,6 +182,7 @@
 42. Add race test for `IsAlias` field in concurrent cache-hit scenarios
 
 ### Documentation
+
 43. Update `SDK_DESIGN.md` with note about actionability being CLI-only (and why)
 44. Add ADR for the `IsAlias` field addition and its impact on alias vs named type detection
 45. Update the calibration report with post-fix precision numbers
