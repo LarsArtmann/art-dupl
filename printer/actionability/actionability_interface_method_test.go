@@ -122,5 +122,6 @@ func mustInterfaceMethodNode(methodName string, bodyChildCount int) []*domain.Cl
 func mustTypeAwareInterfaceMethodNode(methodName string, bodyChildCount int) []*domain.CloneNode {
 	seq := mustInterfaceMethodNode(methodName, bodyChildCount)
 	seq[0].InterfaceMethod = true
+
 	return seq
 }

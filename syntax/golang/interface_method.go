@@ -85,8 +85,8 @@ func IsInterfaceMethod(info *types.Info, fn *ast.FuncDecl) bool {
 // interfaceHasMethod reports whether the interface declares a method with the
 // given name (including embedded methods, which go/types flattens).
 func interfaceHasMethod(iface *types.Interface, name string) bool {
-	for i := range iface.NumMethods() {
-		if iface.Method(i).Name() == name {
+	for m := range iface.Methods() {
+		if m.Name() == name {
 			return true
 		}
 	}

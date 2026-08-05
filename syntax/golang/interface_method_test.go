@@ -267,18 +267,23 @@ func findFuncDeclNode(t *testing.T, root *syntax.Node, name string) *syntax.Node
 	var found *syntax.Node
 
 	var walk func(n *syntax.Node)
+
 	walk = func(n *syntax.Node) {
 		if found != nil {
 			return
 		}
+
 		if DecodeBaseType(n.Type) == FuncDecl && n.Name == name {
 			found = n
+
 			return
 		}
+
 		for _, c := range n.Children {
 			walk(c)
 		}
 	}
+
 	walk(root)
 
 	if found == nil {
