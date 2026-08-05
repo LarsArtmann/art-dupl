@@ -163,10 +163,6 @@ linters:
         - ifElseChain
     gocyclo:
       min-complexity: 15
-    gomoddirectives:
-      replace-allow-list:
-        - github.com/LarsArtmann/gogenfilter/v3
-      replace-local: true
     gosec:
       excludes:
         - G304

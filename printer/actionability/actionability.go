@@ -69,19 +69,10 @@ var propertyLabels = []PatternLabel{ //nolint:gochecknoglobals // static list
 }
 
 // ListActionabilityPatterns writes all pattern labels to the writer, one per
-// line. Denylist patterns are listed first, followed by a comment line and the
-// property-engine labels.
+// line. Denylist patterns are listed first (in priority order), followed by
+// property-engine labels. All labels are valid --disable-pattern arguments.
 func ListActionabilityPatterns(w io.Writer) {
-	patterns := AllActionabilityPatterns()
-	denylistCount := len(actionabilityPatternTable)
-
-	for i, label := range patterns {
-		if i == denylistCount {
-			if _, err := fmt.Fprintln(w, "# property-engine labels (from extractability analysis)"); err != nil {
-				return
-			}
-		}
-
+	for _, label := range AllActionabilityPatterns() {
 		if _, err := fmt.Fprintln(w, label); err != nil {
 			return
 		}

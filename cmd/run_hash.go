@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"os"
 
 	"github.com/LarsArtmann/art-dupl/config"
 	"github.com/LarsArtmann/art-dupl/hash"
@@ -59,7 +58,7 @@ func executeHashOnlyAnalysis(
 		gitignore,
 	)
 
-	filesChan = progressFilesChan(ctx, filesChan, cfg, outputFormat, os.Stderr)
+	filesChan = progressFilesChan(ctx, filesChan, cfg, outputFormat, stderr)
 
 	files, err := collectFilesFromChannel(ctx, filesChan)
 	if err != nil {
