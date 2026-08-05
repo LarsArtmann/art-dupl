@@ -1,6 +1,6 @@
 # TODO List
 
-**Last Updated:** 2026-08-05
+**Last Updated:** 2026-08-05 (lazy content reading completed, tagliatelle recurring issue added, lazy-read regression test gap added)
 
 Actionable items planned for the next 2-4 weeks. Completed work is in `CHANGELOG.md` (`[Unreleased]`).
 This file is OPEN work only — no completed, rejected, or resolved items.
@@ -16,10 +16,12 @@ This file is OPEN work only — no completed, rejected, or resolved items.
 
 ### Correctness
 
+- [ ] **Add regression test for lazy-read nil-content invariant**: `FilterDetailedAndContent` returns `nil` content when phase-1 filename detection catches a file. This is the core performance guarantee of the v3.4.0 migration but has no test that directly asserts it. If someone reverts to `FilterDetailedWithContent`, no test catches the regression.
 - [x] **Repo-wide audit for duplicated `errors.New("...")` sentinels**: COMPLETED 2026-07-26. Found 2 semantic duplicates in `pkg/artdupl/`: `ErrCloneLineEndBeforeStart` (was a distinct pointer from `domain.ErrLineEndBeforeStart`) and `ErrUnsupportedMethod` (was distinct from `domain.ErrInvalidDetectionMethod`). Both now aliased to domain. Added AST-based auto-scanner test (`TestNoDuplicateErrorNewMessages`) that scans ALL production `.go` files for duplicate `errors.New("literal")` messages — self-maintaining, no hardcoded list. Expanded `TestAliasedSentinelsAreIdentical` from 10 to 12 cases.
 
 ### Code Quality
 
+- [ ] **Remove `tagliatelle` from `.golangci.yml` enable list (recurring)**: The auto-committer keeps re-adding `tagliatelle` (and possibly `exhaustruct`) to `.golangci.yml:108`. The project's own guard script (`scripts/check-disabled-linters.sh`) bans it and fails `nix flake check`. This is a recurring whack-a-mole — investigate the root cause (why does the auto-committer re-add it?) and consider making the guard script auto-fix instead of just failing.
 - [x] **Extract format printers into sub-packages (Phase 4)**: EVALUATED AND DEFERRED 2026-07-26. Root `printer/` is 3,830 LOC (excluding generated `report_templ.go`). Coupling too tight for safe extraction: `json.go` alone has 25 refs to shared types (`CloneGroup`, `JSONClone`, `toJSONClone`, `SortCloneGroups`). Extraction would require a `printer/types/` package for shared infra (~1,300 LOC churn across every format file). Format set (text/json/html/sarif/plumbing) is stable — YAGNI. Re-evaluate if: root exceeds 5,000 LOC, a new format is added, or shared types stabilize.
 
 ---
@@ -29,7 +31,7 @@ This file is OPEN work only — no completed, rejected, or resolved items.
 ### Filtering and Generated Code
 
 - [x] **Push defense-in-depth into gogenfilter**: COMPLETED 2026-08-05. gogenfilter's detector `checkContent` field is now content-only (no filename gate) for SQLC/templ/protobuf/go-enum (gogenfilter v3.4.0+). Phase-2 detection catches generated files by content even without the expected filename suffix. Removed `filterExcludedGenerated` and `FilterSourceDefenseInDepth` from art-dupl — the gap is now fixed at the source. The `matchedGeneratedCategory` and `allowsContent` helpers remain for the generic-override path (`--include-generated` flags).
-- [ ] **Lazy content reading**: `shouldIncludeFile` reads content upfront for every file when includes are active, even if the filename-based filter would catch it. **Blocked**: `gogenfilter.FilterDetailed` reads content internally but doesn't return it, so avoiding the upfront read causes a double-read for regular files (~90% case). Fix requires an upstream gogenfilter API change. The marker-matching path already early-exits on files lacking the `"Code generated"` header via `bytes.Contains`.
+- [x] **Lazy content reading**: COMPLETED 2026-08-05. Upgraded gogenfilter to v3.4.0 (`flake.nix` rev `300b93e0`) and adopted `FilterDetailedAndContent` in `cmd/util.go`. Files caught by phase-1 filename/pattern detection are no longer read from disk; content is only opened when phase-2 content detection runs, and the returned bytes are reused for the `ReasonGeneric` override classification. No double read.
 
 ### Detection and Filtering
 
