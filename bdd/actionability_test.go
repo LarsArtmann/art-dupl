@@ -256,3 +256,57 @@ func formatWarning(err error) string {
 			"explanation should include actionability verdict")
 	})
 })
+
+var _ = Describe("bool-accumulator-initializer suppression", func() {
+	var setup *testutil.BDDTestSetup
+
+	BeforeEach(func() {
+		setup = CreateBDDTestSetup()
+
+		err := setup.CreateTestFiles(map[string]string{
+			"pattern_a.go": `package main
+
+func detectA() bool {
+	hasFloatFormat := false
+	hasSeparatorLoop := false
+	return hasFloatFormat && !hasSeparatorLoop
+}
+`,
+			"pattern_b.go": `package main
+
+func detectB() bool {
+	hasAll := false
+	hasLinter := false
+	return hasAll || hasLinter
+}
+`,
+		})
+		Expect(err).NotTo(HaveOccurred())
+	})
+
+	It("should suppress bool-flag initializer pairs at threshold 1", func() {
+		output, err := setup.RunArtDupl("--quiet", "--semantic", "--threshold", "1")
+		if err != nil {
+			fmt.Printf("Command failed with output: %s\n", string(output))
+		}
+
+		Expect(err).ToNot(HaveOccurred())
+
+		outputStr := string(output)
+		Expect(outputStr).To(ContainSubstring("Found total 0 clone groups"),
+			"bool-accumulator-initializer pattern should suppress the flag pair")
+	})
+
+	It("should show the clones when --no-actionability is set", func() {
+		output, err := setup.RunArtDupl("--quiet", "--semantic", "--no-actionability", "--threshold", "1")
+		if err != nil {
+			fmt.Printf("Command failed with output: %s\n", string(output))
+		}
+
+		Expect(err).ToNot(HaveOccurred())
+
+		outputStr := string(output)
+		Expect(outputStr).To(ContainSubstring("pattern_a.go"),
+			"--no-actionability should reveal the suppressed bool-init clone")
+	})
+})

@@ -34,6 +34,7 @@ func TestAllActionabilityPatterns_ContainsLabels(t *testing.T) {
 		PatternAssignErrorCheck,
 		PatternSingleCallExpr,
 		PatternSingleSimpleStmt,
+		PatternBoolAccumulatorInitializer,
 		PatternSingleDeclaration,
 		PatternTestHelperDelegate,
 		PatternErrorWrapping,
@@ -131,4 +132,49 @@ func mustGuardClauseSeq() []*domain.CloneNode {
 			},
 		},
 	}
+}
+
+func mustBoolAccumulatorSeq() []*domain.CloneNode {
+	return []*domain.CloneNode{
+		{
+			BaseType: golang.AssignStmt,
+			Children: []*domain.CloneNode{
+				{BaseType: golang.Ident, Name: "false"},
+				{BaseType: golang.Ident, Name: "hasX"},
+			},
+		},
+		{
+			BaseType: golang.AssignStmt,
+			Children: []*domain.CloneNode{
+				{BaseType: golang.Ident, Name: "false"},
+				{BaseType: golang.Ident, Name: "hasY"},
+			},
+		},
+	}
+}
+
+func TestEvaluateActionabilityWithDisabled_BoolAccumulator(t *testing.T) {
+	t.Parallel()
+
+	seqs := [][]*domain.CloneNode{mustBoolAccumulatorSeq(), mustBoolAccumulatorSeq()}
+
+	t.Run("without disable - suppressed", func(t *testing.T) {
+		t.Parallel()
+
+		result := EvaluateActionabilityWithDisabled(seqs, nil)
+		if result != domain.NonActionable {
+			t.Errorf("expected NonActionable, got %q", result)
+		}
+	})
+
+	t.Run("disable bool-accumulator-initializer - becomes actionable", func(t *testing.T) {
+		t.Parallel()
+
+		disabled := map[PatternLabel]bool{PatternBoolAccumulatorInitializer: true}
+
+		result := EvaluateActionabilityWithDisabled(seqs, disabled)
+		if result != domain.Actionable {
+			t.Errorf("expected Actionable after disabling bool-accumulator-initializer, got %q", result)
+		}
+	})
 }
