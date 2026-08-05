@@ -202,6 +202,12 @@
               touch $out
             '';
 
+            arch-lint = pkgs.runCommand "art-dupl-arch-lint" { nativeBuildInputs = [ pkgs.go-arch-lint ]; } ''
+              cd ${pkgs.lib.cleanSource ./.}
+              go-arch-lint check
+              touch $out
+            '';
+
             self-test =
               pkgs.runCommand "art-dupl-self-test"
                 {

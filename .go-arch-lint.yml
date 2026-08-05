@@ -76,6 +76,10 @@ components:
   cache:
     in: cache/**
 
+  # Baseline recording and CI check
+  baseline:
+    in: baseline/**
+
   # Utility packages
   pkg-utils:
     in:
@@ -108,9 +112,11 @@ deps:
       - hash
       - suffixtree
       - syntax
+      - syntax-golang
       - errors
       - domain
       - cache
+      - baseline
       - pkg-utils
 
   detection:
@@ -135,6 +141,7 @@ deps:
   syntax-golang:
     mayDependOn:
       - syntax
+      - domain
       - errors
       - pkg-utils
 
@@ -175,6 +182,7 @@ deps:
       - pkg-utils
       - domain
       - actionability
+      - baseline
 
   sdk:
     mayDependOn:
@@ -183,6 +191,7 @@ deps:
       - hash
       - suffixtree
       - syntax
+      - syntax-golang
       - errors
       - pkg-utils
       - domain
@@ -194,6 +203,12 @@ deps:
 
   domain:
     mayDependOn:
+      - pkg-utils
+
+  baseline:
+    mayDependOn:
+      - domain
+      - errors
       - pkg-utils
 
   errors:

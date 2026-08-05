@@ -8,7 +8,6 @@ import (
 	"path/filepath"
 
 	"github.com/LarsArtmann/art-dupl/config"
-	"github.com/LarsArtmann/art-dupl/internal/testutil"
 	"github.com/LarsArtmann/art-dupl/job"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
@@ -64,7 +63,10 @@ func runAllModes(ctx context.Context, cfg *config.Config, sortBy, outputDir stri
 	}
 
 	// Convert channel to slice for reuse
-	matches := testutil.CollectMatches(duplChan)
+	var matches []syntax.Match
+	for match := range duplChan {
+		matches = append(matches, match)
+	}
 
 	// Generate all output formats
 	formats := config.AllOutputFormats()
