@@ -310,7 +310,9 @@ func TestPrintVersion(t *testing.T) {
 
 func TestCrawlPaths(t *testing.T) {
 	t.Run("empty paths", func(t *testing.T) {
-		result := crawlPaths(context.Background(), []string{}, nil, nil, generatorIncludes{}, false, false, nil, io.Discard)
+		result := crawlPaths(
+			context.Background(), []string{}, nil, nil, generatorIncludes{}, false, false, nil, io.Discard,
+		)
 		if result == nil {
 			t.Fatal("crawlPaths() returned nil")
 		}
@@ -335,7 +337,9 @@ func TestCrawlPaths(t *testing.T) {
 			t.Fatalf("Failed to create test file: %v", err)
 		}
 
-		result := crawlPaths(context.Background(), []string{tmpFile}, nil, nil, generatorIncludes{}, false, false, nil, io.Discard)
+		result := crawlPaths(
+			context.Background(), []string{tmpFile}, nil, nil, generatorIncludes{}, false, false, nil, io.Discard,
+		)
 		if result == nil {
 			t.Fatal("crawlPaths() returned nil")
 		}

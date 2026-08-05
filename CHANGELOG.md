@@ -17,6 +17,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`humanize.IBytes` for byte formatting**: Text printer byte sizes now use `github.com/dustin/go-humanize` for correct IEC unit labels (KiB/MiB/GiB) instead of hand-rolled SI labels with binary divisors (KB/MB/GB).
 - **BDD tests for interface-method suppression** (`bdd/type_aware_test.go`): 3 Ginkgo specs verifying suppression with `--type-aware`, classification with `--explain`, and non-suppression without `--type-aware`.
 - **BDD test for bool-accumulator-initializer** (`bdd/actionability_test.go`): Verifies suppression at threshold 1 and revelation with `--no-actionability`.
+- **Output writer injection (100%)**: All `os.Stderr` writes in production `cmd/` code now accept injectable `io.Writer` parameters threaded from cobra's `cmd.ErrOrStderr()`. Eliminates the `CaptureStdoutStderr` global-state race surface entirely, making all cmd tests safely parallelizable. `CrawlOptions` struct gained a `Stderr io.Writer` field for crawl-path error reporting.
+- **Parallel search fuzz tests** (`suffixtree/fuzz_test.go`): `FuzzFindDuplOverParallel` and `FuzzCtxCancelFindDuplOverParallel` verify no panic and channel-always-closes on arbitrary input.
+- **Property tests parameterized for parallel search**: All 6 `TestProperty_*` tests now run against both sequential and parallel `FindDuplOver` paths via a `searchMode` parameter.
+- **BDD tests for `--search-workers`** (`bdd/search_workers_test.go`): 3 Ginkgo specs verifying identical results to sequential, workers=1 fallback, and graceful cancellation.
+- **FuncLit flag-reset test**: Verifies closures inside interface method bodies don't inherit the `InterfaceMethod` flag (FuncLit resets it).
+- **SDK InterfaceMethod pipeline test**: Verifies `InterfaceMethod` flows through the SDK boundary to `pkg/artdupl.Clone`.
+- **Extractability engine integration test**: End-to-end `EvaluateExtractability` test with format-specifier-differing `CloneNode` trees (4 subtests).
+- **Property engine labels in `--list-patterns`**: The 4 property labels are now included in `AllActionabilityPatterns()` and listed flat by `--list-patterns` (no comment separator).
+- **Lazy-read nil-content regression test**: Directly asserts phase-1 filename detection returns nil content (the core performance guarantee of the v3.4.0 migration).
+- **Calibration harness** (`scripts/calibrate-confidence.sh`): Reusable script for running art-dupl on Go projects to measure false-positive rates. Initial calibration on 8 projects: 24 clones, 0 false positives.
+- **go-arch-lint CI integration**: `nix flake check` now runs `go-arch-lint check` to enforce the `.go-arch-lint.yml` component boundaries. All 13 pre-existing violations resolved.
+- **`--search-workers` documented in HOW_TO_USE.md**: Parallel search section added to the user guide.
 
 ### Changed
 
@@ -24,6 +36,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Format specifier parser rewritten**: `isFormatSpecifierDifference` now properly handles `%%` (escaped percent), width specifiers (`%5d` vs `%3d`), precision (`%.2f`), flags, and argument indices (`%[1]d`). Was a naive char-after-`%` comparison.
 - **Lazy content reading**: `shouldIncludeFile` now uses `FilterDetailedAndContent` (gogenfilter v3.4.0). Files caught by phase-1 filename/pattern detection are never opened; content is only read when phase-2 content detection runs, and the returned bytes are reused for the `ReasonGeneric` override classification. No double read.
 - **Text printer byte labels**: `KB/MB/GB` changed to `KiB/MiB/GiB` (correct IEC labels for binary divisors — the old labels were technically wrong).
+- **go.mod gogenfilter upgraded to v3.4.0**: No local replace directive needed. The dependency is now a real tagged version.
+- **Auto-fix guard script**: `scripts/check-disabled-linters.sh` now auto-removes banned linters via `sed -i` when the file is writable, instead of just failing.
+- **`--list-patterns` output format**: All patterns listed flat (denylist first, then property labels), no comment separator line. Non-breaking for existing consumers.
 
 ### Fixed
 
@@ -31,11 +46,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **FuncDecl `Name` not set by transformer**: The `syntax.Node` docstring claimed `Name` stores the function name for FuncDecl nodes, but the transformer never set it. This made the static interface-method name list silently non-functional. Fixed by adding `o.Name = funcName` in the transformer's `FuncDecl` case.
 - **interface-method pattern was dead code for Go files**: The pattern exclusively checked FuncDecl-rooted clones, but FuncDecl is not a Statement node, and `FindSyntaxUnits` rejects non-Statement clone roots in `.go` files. The pattern could never fire on real Go code. Fixed by propagating the `InterfaceMethod` flag from FuncDecl to body statement nodes and rewriting the pattern matcher with two paths (FuncDecl root for edge cases, statement root for normal Go files).
 - **`godox` lint trigger**: `cmd/suppression_config_test.go` contained the word "bug" in a doc comment, triggering the `godox` linter (which flags TODO/BUG/FIXME keywords). Changed to "issue".
+- **run_hash.go stderr bypass**: `progressFilesChan` call used `os.Stderr` directly instead of the injected `stderr` parameter. Fixed.
 
 ### Removed
 
 - **`filterExcludedGenerated` defense-in-depth workaround**: Eliminated (~160 lines net). gogenfilter v3.4.0+ handles content-only detection natively via its `checkContent` field. The `matchedGeneratedCategory` and `allowsContent` helpers remain for the generic-override path (`--include-generated` flags).
 - **`FilterSourceDefenseInDepth` constant**: `FilterStats.Record()` now always uses `FilterSourceGogenfilter`. The `SourceBreakdown()` plumbing remains for future extensibility.
+- **Stale "defense-in-depth" comments**: 4 references in `bdd/filter_features_test.go` and 2 in production code updated to reflect content-only detection.
+- **Stale gomoddirectives config**: `replace-allow-list` for gogenfilter and `replace-local: true` removed from `.golangci.yml` (no replace directives remain in go.mod).
+- **go.mod local replace directive**: Removed `replace github.com/LarsArtmann/gogenfilter/v3 => /home/lars/...`.
 
 ## [0.6.1] - 2026-07-29
 
