@@ -82,8 +82,10 @@ const maxChildrenSerial = 10_000
 //
 // The InterfaceMethod field is set on FuncDecl nodes when type-aware mode is
 // active and go/types confirms the method satisfies an interface declared in
-// the same package. The actionability layer uses this to suppress
-// interface-contract boilerplate beyond the static stdlib name list.
+// the same package. The flag is also propagated to body statement nodes by the
+// transformer (same save/restore pattern as EnclosingReturnArity) because
+// FuncDecl nodes are never clone roots in Go files. The actionability layer
+// uses this to suppress interface-contract boilerplate.
 type Node struct {
 	Type                 int32
 	Pos                  int32

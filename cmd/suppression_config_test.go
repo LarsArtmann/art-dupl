@@ -7,7 +7,7 @@ import (
 )
 
 // TestBuildSuppressionConfigPopulatesAllFields is a regression guard for the
-// bug where 3 of 6 SuppressionConfig construction sites used truncated struct
+// issue where 3 of 6 SuppressionConfig construction sites used truncated struct
 // literals, silently omitting AcceptDirectives, NoActionability, and
 // DisabledPatterns. A nil AcceptDirectives means "skip the check entirely"
 // (never suppress), which caused //art-dupl:accept directives to be ignored.
