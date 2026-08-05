@@ -214,6 +214,7 @@ func detectB(tokens []string) bool {
 `
 
 	path := writeTempGo(t, "fixture.go", src)
+
 	root, err := golang.Parse(path)
 	if err != nil {
 		t.Fatalf("parse: %v", err)

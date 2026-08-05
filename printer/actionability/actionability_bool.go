@@ -5,6 +5,11 @@ import (
 	"github.com/LarsArtmann/art-dupl/syntax/golang"
 )
 
+const (
+	boolLiteralFalse = "false"
+	boolLiteralTrue  = "true"
+)
+
 // isBoolAccumulatorInitializer reports whether every clone is a sequence of two
 // or more simple boolean variable initializations such as:
 //
@@ -77,5 +82,5 @@ func isBoolVariableInitialization(node *domain.CloneNode) bool {
 
 // isBoolLiteralName reports whether a name is one of the Go boolean literals.
 func isBoolLiteralName(name string) bool {
-	return name == "true" || name == "false"
+	return name == boolLiteralTrue || name == boolLiteralFalse
 }
