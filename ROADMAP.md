@@ -24,7 +24,7 @@
 
 ## Quality and Intelligence
 
-- [ ] **Interface-aware suppression**: Detect method signatures that implement an interface contract and suppress them as structural duplication, not actionable cloning. Needs call-graph analysis or `go/types`. (Type-aware mode itself is implemented; the property-based engine provides control-flow extractability as a first step. Deep interface-awareness is the next layer.)
+- [~] **Interface-aware suppression**: Detect method signatures that implement an interface contract and suppress them as structural duplication, not actionable cloning. Same-package interface detection via `go/types` is implemented (the `interface-method` pattern checks the `InterfaceMethod` flag set by the transformer when `--type-aware` is active). Cross-package and stdlib interfaces still rely on the static name list (`commonInterfaceMethodNames`). Full call-graph analysis remains future work.
 - [x] **Configurable actionability patterns**: `--disable-pattern <label>` and `--list-patterns` implemented. 22 patterns currently active; property engine adds second-pass analysis.
 - [ ] **ML-based actionability classification**: Train a model on labeled clone data to predict whether a clone is actionable, replacing the rule-based actionability patterns. Would handle edge cases the 22 current patterns miss.
 - [~] **Fixability score**: Property-based extractability engine implemented (ADR-0017) with 4 properties + confidence scoring. Three-tier output (actionable / low-confidence / non-actionable). Confidence values need calibration against real-world data.

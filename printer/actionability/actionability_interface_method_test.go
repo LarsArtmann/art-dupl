@@ -39,6 +39,37 @@ func TestIsInterfaceMethodBody(t *testing.T) {
 			expected: false,
 		},
 		{
+			name: "type-aware: custom interface method suppressed via flag",
+			seqs: [][]*domain.CloneNode{
+				mustTypeAwareInterfaceMethodNode("Validate", 2),
+				mustTypeAwareInterfaceMethodNode("Validate", 2),
+			},
+			expected: true,
+		},
+		{
+			name: "type-aware: custom interface method with large body not suppressed",
+			seqs: [][]*domain.CloneNode{
+				mustTypeAwareInterfaceMethodNode("Validate", maxInterfaceMethodBodyNodes+1),
+			},
+			expected: false,
+		},
+		{
+			name: "type-aware: flag takes priority over non-matching static name",
+			seqs: [][]*domain.CloneNode{
+				mustTypeAwareInterfaceMethodNode("DoCustomThing", 1),
+				mustTypeAwareInterfaceMethodNode("DoCustomThing", 1),
+			},
+			expected: true,
+		},
+		{
+			name: "mixed: one type-aware flagged, one static name (both suppress)",
+			seqs: [][]*domain.CloneNode{
+				mustTypeAwareInterfaceMethodNode("Validate", 2),
+				mustInterfaceMethodNode("String", 2),
+			},
+			expected: true,
+		},
+		{
 			name: "body too large (5 nodes)",
 			seqs: [][]*domain.CloneNode{
 				mustInterfaceMethodNode("String", maxInterfaceMethodBodyNodes+1),
@@ -86,4 +117,10 @@ func mustInterfaceMethodNode(methodName string, bodyChildCount int) []*domain.Cl
 			},
 		},
 	}
+}
+
+func mustTypeAwareInterfaceMethodNode(methodName string, bodyChildCount int) []*domain.CloneNode {
+	seq := mustInterfaceMethodNode(methodName, bodyChildCount)
+	seq[0].InterfaceMethod = true
+	return seq
 }

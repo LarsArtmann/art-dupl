@@ -162,6 +162,7 @@ func (t *transformer) trans(
 		// reducing false positives for template patterns like enums.
 		receiverType := extractReceiverTypeName(n.Recv)
 		funcName := n.Name.Name
+		o.Name = funcName
 		o.Type = encodeSemanticTypeMulti(
 			FuncDecl,
 			t.config.Mode.HashesIdentifiers(),
