@@ -262,6 +262,14 @@ var patternLabelConfigs = map[PatternLabel]patternLabelConfig{ //nolint:gocheckn
 		suggestion: "consecutive boolean flag initializers (name := true/false) — independent accumulators, not shared logic",
 		priority:   domain.PriorityLow,
 	},
+	PatternInterfaceAssertion: {
+		suggestion: "compile-time interface assertion (var _ I = (*T)(nil)) — intentional idiom, one per type",
+		priority:   domain.PriorityLow,
+	},
+	PatternTypeAliasBlock: {
+		suggestion: "type-alias re-export block (type X = pkg.Y) — intentional re-export shims",
+		priority:   domain.PriorityLow,
+	},
 	PatternGuardClause: {
 		suggestion: "guard clause (if cond { return }) — boilerplate control flow",
 		priority:   domain.PriorityLow,

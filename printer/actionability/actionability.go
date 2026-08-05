@@ -28,7 +28,9 @@ var actionabilityPatternTable = []patternEntry{ //nolint:gochecknoglobals // sta
 	{isSingleCallExpression, PatternSingleCallExpr},
 	{isSingleSimpleStatement, PatternSingleSimpleStmt},
 	{isBoolAccumulatorInitializer, PatternBoolAccumulatorInitializer},
+	{isInterfaceAssertion, PatternInterfaceAssertion},
 	{isSingleDeclaration, PatternSingleDeclaration},
+	{isTypeAliasBlock, PatternTypeAliasBlock},
 	{isTestHelperDelegate, PatternTestHelperDelegate},
 	{isErrorWrappingReturn, PatternErrorWrapping},
 	{isAssertionChain, PatternAssertionChain},
@@ -161,6 +163,8 @@ const (
 	PatternSingleSimpleStmt           PatternLabel = "single-simple-statement"
 	PatternSingleDeclaration          PatternLabel = "single-declaration"
 	PatternBoolAccumulatorInitializer PatternLabel = "bool-accumulator-initializer"
+	PatternInterfaceAssertion          PatternLabel = "interface-assertion"
+	PatternTypeAliasBlock              PatternLabel = "type-alias-block"
 	PatternGuardClause                PatternLabel = "guard-clause"
 	PatternTestHelperDelegate         PatternLabel = "test-helper-delegate"
 	PatternInterfaceMethod            PatternLabel = "interface-method"

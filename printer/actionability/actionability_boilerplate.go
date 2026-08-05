@@ -287,6 +287,98 @@ func subtreeHasCompositeType(n *domain.CloneNode) bool {
 	return slices.ContainsFunc(n.Children, subtreeHasCompositeType)
 }
 
+// subtreeHasType recursively checks whether any node in the subtree has the
+// given base type. Used by isTypeAliasBlock to detect SelectorExpr references
+// to external package types (type X = pkg.Y aliases).
+func subtreeHasType(n *domain.CloneNode, typ int32) bool {
+	if n.BaseType == typ {
+		return true
+	}
+
+	return slices.ContainsFunc(n.Children, func(c *domain.CloneNode) bool {
+		return subtreeHasType(c, typ)
+	})
+}
+
+// isInterfaceAssertion reports whether every clone is a single ValueSpec with a
+// blank-identifier name. This is the compile-time interface-assertion idiom:
+//
+//	var _ Interface = (*Type)(nil)
+//
+// These declarations exist solely to make the compiler verify that *Type
+// satisfies Interface. They are duplicated across types by design (each type
+// needs its own assertion) and are never actionable duplication.
+func isInterfaceAssertion(nodeSeqs [][]*domain.CloneNode) bool {
+	return everySequenceMatch(nodeSeqs, func(seq []*domain.CloneNode) bool {
+		if len(seq) != 1 {
+			return false
+		}
+
+		n := seq[0]
+
+		if n.BaseType != golang.ValueSpec {
+			return false
+		}
+
+		// The transformer adds spec names as Ident children. The blank
+		// identifier _ is the first name for var _ I = (*T)(nil).
+		if len(n.Children) == 0 {
+			return false
+		}
+
+		first := n.Children[0]
+
+		return first.BaseType == golang.Ident && first.Name == "_"
+	})
+}
+
+// isTypeAliasBlock reports whether every clone is a multi-node block where all
+// nodes are package-type aliases (type X = pkg.Y). These are re-export shims,
+// not actionable duplication:
+//
+//	type (
+//	    ToolCall   = protocoltypes.ToolCall
+//	    ToolResult = protocoltypes.ToolResult
+//	)
+//
+// The heuristic: every node is a non-composite TypeSpec that contains a
+// SelectorExpr child (indicating a reference to an external package type).
+// Single-node aliases are already handled by single-declaration; this pattern
+// catches 2+ alias blocks that slip past it.
+func isTypeAliasBlock(nodeSeqs [][]*domain.CloneNode) bool {
+	return everySequenceMatch(nodeSeqs, func(seq []*domain.CloneNode) bool {
+		if len(seq) < 2 {
+			return false
+		}
+
+		for _, n := range seq {
+			if !isPackageTypeAlias(n) {
+				return false
+			}
+		}
+
+		return true
+	})
+}
+
+// isPackageTypeAlias reports whether a CloneNode is a TypeSpec aliasing an
+// external package type (type X = pkg.Y). The node must be a non-composite
+// TypeSpec containing a SelectorExpr in its subtree.
+func isPackageTypeAlias(n *domain.CloneNode) bool {
+	if n.BaseType != golang.TypeSpec {
+		return false
+	}
+
+	// Composite types (struct, interface, etc.) carry real structure.
+	if subtreeHasCompositeType(n) {
+		return false
+	}
+
+	// A SelectorExpr child (pkg.Y) indicates a reference to an external
+	// package type, which is the signature of a re-export alias.
+	return subtreeHasType(n, golang.SelectorExpr)
+}
+
 // isTestHelperDelegate reports whether every clone is a 2-statement test helper
 // body: t.Helper() as the first statement, followed by a single delegate call
 // to a shared assertion function. This is irreducible Go boilerplate:
