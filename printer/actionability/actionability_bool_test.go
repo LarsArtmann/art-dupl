@@ -18,16 +18,28 @@ func TestIsBoolAccumulatorInitializer(t *testing.T) {
 		{
 			name: "two bool initializer pairs across files",
 			seqs: [][]*domain.CloneNode{
-				{boolAssign("hasFloatFormat", "false"), boolAssign("hasSeparatorLoop", "false")},
-				{boolAssign("hasAll", "false"), boolAssign("hasLinter", "false")},
+				{
+					boolAssign("hasFloatFormat", "false"),
+					boolAssign("hasSeparatorLoop", "false"),
+				},
+				{
+					boolAssign("hasAll", "false"),
+					boolAssign("hasLinter", "false"),
+				},
 			},
 			expected: true,
 		},
 		{
 			name: "two bool initializer pairs with true values",
 			seqs: [][]*domain.CloneNode{
-				{boolAssign("enabled", "true"), boolAssign("ready", "true")},
-				{boolAssign("found", "true"), boolAssign("valid", "true")},
+				{
+					boolAssign("enabled", "true"),
+					boolAssign("ready", "true"),
+				},
+				{
+					boolAssign("found", "true"),
+					boolAssign("valid", "true"),
+				},
 			},
 			expected: true,
 		},
@@ -42,16 +54,28 @@ func TestIsBoolAccumulatorInitializer(t *testing.T) {
 		{
 			name: "mixed with non-bool assignment",
 			seqs: [][]*domain.CloneNode{
-				{boolAssign("hasX", "false"), boolAssign("hasY", "false")},
-				{boolAssign("count", "0"), boolAssign("hasY", "false")},
+				{
+					boolAssign("hasX", "false"),
+					boolAssign("hasY", "false"),
+				},
+				{
+					boolAssign("count", "0"),
+					boolAssign("hasY", "false"),
+				},
 			},
 			expected: false,
 		},
 		{
 			name: "assignment between boolean variables is not a literal init",
 			seqs: [][]*domain.CloneNode{
-				{boolAssign("hasX", "false"), boolAssign("hasY", "false")},
-				{boolAssign("hasA", "otherBool"), boolAssign("hasB", "anotherBool")},
+				{
+					boolAssign("hasX", "false"),
+					boolAssign("hasY", "false"),
+				},
+				{
+					boolAssign("hasA", "otherBool"),
+					boolAssign("hasB", "anotherBool"),
+				},
 			},
 			expected: false,
 		},
@@ -117,8 +141,11 @@ func TestIsBoolVariableInitialization(t *testing.T) {
 			expected: false,
 		},
 		{
-			name:     "CallExpr children are not a literal init",
-			node:     &domain.CloneNode{BaseType: golang.AssignStmt, Children: []*domain.CloneNode{{BaseType: golang.CallExpr}}},
+			name: "CallExpr children are not a literal init",
+			node: &domain.CloneNode{
+				BaseType: golang.AssignStmt,
+				Children: []*domain.CloneNode{{BaseType: golang.CallExpr}},
+			},
 			expected: false,
 		},
 		{
@@ -168,6 +195,50 @@ func TestIsBoolLiteralName(t *testing.T) {
 	}
 }
 
+func TestBoolAccumulatorInitializer_RealGoSource(t *testing.T) {
+	t.Parallel()
+
+	src := `package fixture
+
+func detectA(fn *ast.FuncDecl) bool {
+	hasFloatFormat := false
+	hasSeparatorLoop := false
+	return hasFloatFormat || hasSeparatorLoop
+}
+
+func detectB(tokens []string) bool {
+	hasAll := false
+	hasLinter := false
+	return hasAll || hasLinter
+}
+`
+
+	path := writeTempGo(t, "fixture.go", src)
+	root, err := golang.Parse(path)
+	if err != nil {
+		t.Fatalf("parse: %v", err)
+	}
+
+	assignStmts := findNodesByBaseType(root, golang.AssignStmt)
+	if len(assignStmts) < 4 {
+		t.Fatalf("expected at least 4 AssignStmt nodes, got %d", len(assignStmts))
+	}
+
+	seqs := [][]*domain.CloneNode{
+		{cloneNodeFromSyntax(assignStmts[0]), cloneNodeFromSyntax(assignStmts[1])},
+		{cloneNodeFromSyntax(assignStmts[2]), cloneNodeFromSyntax(assignStmts[3])},
+	}
+
+	label, action := EvaluateActionabilityWithLabel(seqs)
+	if action != domain.NonActionable {
+		t.Errorf("action = %q, want %q", action, domain.NonActionable)
+	}
+
+	if label != PatternBoolAccumulatorInitializer {
+		t.Errorf("label = %q, want %q", label, PatternBoolAccumulatorInitializer)
+	}
+}
+
 func boolAssign(lhs, rhs string) *domain.CloneNode {
 	return &domain.CloneNode{
 		BaseType: golang.AssignStmt,
@@ -177,9 +248,11 @@ func boolAssign(lhs, rhs string) *domain.CloneNode {
 
 func multiBoolAssign(lhs, rhs []string) *domain.CloneNode {
 	children := make([]*domain.CloneNode, 0, len(lhs)+len(rhs))
+
 	for _, r := range rhs {
 		children = append(children, ident(r))
 	}
+
 	for _, l := range lhs {
 		children = append(children, ident(l))
 	}

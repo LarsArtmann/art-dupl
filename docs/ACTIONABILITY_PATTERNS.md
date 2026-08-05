@@ -15,7 +15,8 @@ These patterns represent Go idioms that cannot be eliminated without breaking se
 | Error propagation    | `error-propagation`        | `if err != nil { return err }`                                                                                  | Pure error forwarding                       |
 | Assign+error-check   | `assign-error-check`       | 2-stmt: `err := f(); if err != nil { return }`                                                                  | Most common Go boilerplate                  |
 | Single call          | `single-call-expression`   | Lone CallExpr or ExprStmt(CallExpr) (different data, same API)                                                  | `t.Parallel()`, `errors.New("foo")`         |
-| Single simple stmt   | `single-simple-statement`  | Lone terminal statement (return, assignment, var declaration, etc.)                                             | `return nil`, `x := 0`, `var buf []byte`    |
+| Single simple stmt   | `single-simple-statement`  | Lone terminal statement (return, assignment, var declaration, etc.)                                         | `return nil`, `x := 0`, `var buf []byte`    |
+| Bool accumulator init | `bool-accumulator-initializer` | Two or more consecutive `name := true/false` assignments (independent boolean flags)                       | `hasX := false` / `hasY := false`           |
 | Single declaration   | `single-declaration`       | Lone package-level ValueSpec/TypeSpec-alias (re-export, const alias, iota starter)                              | `type Mode = domain.Mode`, `BadNode = iota` |
 | Test helper delegate | `test-helper-delegate`     | 2-stmt body: `t.Helper()` + single delegate call (irreducible Go test boilerplate)                              | `t.Helper()` + `failIfNilf(t, got, ...)`    |
 | Guard clause         | `guard-clause`             | IfStmt with return-only body and no else (boolean/value guard)                                                  | `if !enabled { return }`                    |
@@ -33,7 +34,7 @@ These patterns represent Go idioms that cannot be eliminated without breaking se
 
 ## How It Works
 
-1. `EvaluateActionabilityWithLabel` runs 22 pattern checks in priority order.
+1. `EvaluateActionabilityWithLabel` runs 23 pattern checks in priority order.
 2. The first matching pattern wins (returns its `PatternLabel`).
 3. If no pattern matches, the group is **Actionable**.
 4. Only `semantic` detection mode runs actionability checks. `exact` and `structural` skip them.
@@ -53,7 +54,8 @@ Patterns are checked in this order (first match wins):
 8. Bool-guard (`X, ok := helper(); if !ok { return }`)
 9. Single call expression
 10. Single simple statement
-11. Single declaration
+11. Bool accumulator init (`name := true/false` pairs)
+12. Single declaration
 12. Test helper delegate
 13. Error wrapping
 14. Assertion chain
@@ -68,7 +70,7 @@ Patterns are checked in this order (first match wins):
 
 ## Property-Based Classification Engine (Second Pass)
 
-After the 22 pattern-table checks run, a **property-based extractability engine** runs as a second-pass fallback. It evaluates four computable properties that define "harmful duplication" from first principles, catching false positives that the pattern table misses.
+After the 23 pattern-table checks run, a **property-based extractability engine** runs as a second-pass fallback. It evaluates four computable properties that define "harmful duplication" from first principles, catching false positives that the pattern table misses.
 
 See `docs/adr/0017-property-based-classification.md` for the full design.
 

@@ -7,6 +7,8 @@
 
 > **Verdict:** The report found **1 clone group / 2 occurrences**, but it is a structural false positive. The matched code is two independent pairs of local boolean flags initialized to `false` before unrelated `ast.Inspect` walks. There is zero shared logic and no sensible extraction.
 
+> **Status:** ADDRESSED (2026-08-05) — art-dupl now classifies consecutive `name := true/false` / `name = true/false` assignments as the `bool-accumulator-initializer` non-actionable pattern. Re-running the same command no longer reports the `hasFloatFormat := false` / `hasAll := false` pair.
+
 ---
 
 ## Results
