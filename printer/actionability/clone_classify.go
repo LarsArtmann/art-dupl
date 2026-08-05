@@ -258,6 +258,10 @@ var patternLabelConfigs = map[PatternLabel]patternLabelConfig{ //nolint:gocheckn
 		suggestion: "single terminal statement (return, assignment, var declaration)",
 		priority:   domain.PriorityLow,
 	},
+	PatternBoolAccumulatorInitializer: {
+		suggestion: "consecutive boolean flag initializers (name := true/false) — independent accumulators, not shared logic",
+		priority:   domain.PriorityLow,
+	},
 	PatternGuardClause: {
 		suggestion: "guard clause (if cond { return }) — boilerplate control flow",
 		priority:   domain.PriorityLow,
