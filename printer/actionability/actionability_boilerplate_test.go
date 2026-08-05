@@ -380,12 +380,22 @@ func TestIsSingleDeclaration(t *testing.T) {
 		{
 			name: "TypeSpec alias referencing named type (type Mode = domain.Mode)",
 			seqs: [][]*domain.CloneNode{{
-				{BaseType: golang.TypeSpec, Children: []*domain.CloneNode{
+				{BaseType: golang.TypeSpec, IsAlias: true, Children: []*domain.CloneNode{
 					{BaseType: golang.Ident},
 					{BaseType: golang.SelectorExpr},
 				}},
 			}},
 			expected: true,
+		},
+		{
+			name: "TypeSpec named type definition (type Mode pkg.Mode) — NOT suppressed",
+			seqs: [][]*domain.CloneNode{{
+				{BaseType: golang.TypeSpec, IsAlias: false, Children: []*domain.CloneNode{
+					{BaseType: golang.Ident},
+					{BaseType: golang.SelectorExpr},
+				}},
+			}},
+			expected: false,
 		},
 		{
 			name: "TypeSpec struct definition — NOT suppressed",
@@ -532,6 +542,7 @@ func TestIsTypeAliasBlock(t *testing.T) {
 	pkgAlias := func(name, pkg, typ string) *domain.CloneNode {
 		return &domain.CloneNode{
 			BaseType: golang.TypeSpec,
+			IsAlias:  true,
 			Children: []*domain.CloneNode{
 				{BaseType: golang.Ident, Name: name},
 				{BaseType: golang.SelectorExpr, Name: pkg + "." + typ, Children: []*domain.CloneNode{
@@ -585,11 +596,11 @@ func TestIsTypeAliasBlock(t *testing.T) {
 		{
 			name: "block with non-alias TypeSpec (type X string) — NOT suppressed",
 			seqs: [][]*domain.CloneNode{{
-				{BaseType: golang.TypeSpec, Children: []*domain.CloneNode{
+				{BaseType: golang.TypeSpec, IsAlias: false, Children: []*domain.CloneNode{
 					{BaseType: golang.Ident, Name: "Severity"},
 					{BaseType: golang.Ident, Name: "string"},
 				}},
-				{BaseType: golang.TypeSpec, Children: []*domain.CloneNode{
+				{BaseType: golang.TypeSpec, IsAlias: false, Children: []*domain.CloneNode{
 					{BaseType: golang.Ident, Name: "Priority"},
 					{BaseType: golang.Ident, Name: "string"},
 				}},
