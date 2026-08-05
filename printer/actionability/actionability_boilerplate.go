@@ -111,11 +111,16 @@ func isBoolGuardIf(assign *domain.CloneNode, ifStmt *domain.CloneNode) bool {
 	return hasGuard && hasBody && !hasElse
 }
 
-// findOkVarName returns the name of the bool-ok variable in an AssignStmt,
-// or empty string if none found. Looks for Ident children named "ok".
+// boolGuardVarNames are conventional names for comma-ok / bool-result
+// variables in Go's comma-ok idiom and existence-check patterns.
+var boolGuardVarNames = []string{"ok", "found", "exists", "success", "present"}
+
+// findOkVarName returns the name of the bool-guard variable in an AssignStmt,
+// or empty string if none found. Looks for Ident children with a conventional
+// bool-guard name (ok, found, exists, success, present).
 func findOkVarName(assign *domain.CloneNode) string {
 	for _, child := range assign.Children {
-		if child.BaseType == golang.Ident && child.Name == "ok" {
+		if child.BaseType == golang.Ident && slices.Contains(boolGuardVarNames, child.Name) {
 			return child.Name
 		}
 	}

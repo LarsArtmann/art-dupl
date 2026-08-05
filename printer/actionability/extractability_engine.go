@@ -331,12 +331,109 @@ func hasFormatSpecifierDifferences(literals [][]string) bool {
 	return false
 }
 
+// isFormatSpecifierDifference reports whether two string literals differ in
+// their Go fmt verbs. Returns true when the format specifiers differ (e.g.
+// "%d" vs "%s", "%5d" vs "%3d", "%[1]d" vs "%[2]d"), indicating the clones
+// have genuinely different formatting behavior.
+//
+// "%%" (literal percent) is not a real specifier and is ignored, so two
+// strings that differ only around "%%" are not flagged as format differences.
 func isFormatSpecifierDifference(a, b string) bool {
-	for i := 0; i < len(a) && i < len(b); i++ {
-		if a[i] != b[i] && i > 0 && a[i-1] == '%' {
+	specsA := extractFormatSpecifiers(a)
+	specsB := extractFormatSpecifiers(b)
+
+	if len(specsA) != len(specsB) {
+		return true
+	}
+
+	for i, spec := range specsA {
+		if spec != specsB[i] {
 			return true
 		}
 	}
 
 	return false
+}
+
+// extractFormatSpecifiers parses Go fmt verbs from a string literal and returns
+// each complete specifier (e.g. "%d", "%5.2f", "%[1]s", "%-#7.3v"). "%%" (literal
+// percent) is excluded since it does not consume an argument.
+func extractFormatSpecifiers(s string) []string {
+	var specs []string
+
+	for i := 0; i < len(s); i++ {
+		if s[i] != '%' {
+			continue
+		}
+
+		spec, end := scanFormatSpecifier(s, i)
+		if spec != "" {
+			specs = append(specs, spec)
+		}
+
+		i = end
+	}
+
+	return specs
+}
+
+// scanFormatSpecifier parses a single Go fmt verb starting at s[start] (which
+// must be '%'). Returns the specifier substring and the index of the last
+// consumed byte. Returns ("", start) for "%%" or malformed input.
+func scanFormatSpecifier(s string, start int) (spec string, end int) {
+	i := start + 1
+	if i >= len(s) {
+		return "", start
+	}
+
+	// "%%" is a literal percent, not a real specifier.
+	if s[i] == '%' {
+		return "", i
+	}
+
+	// Optional argument index: %[1]
+	if s[i] == '[' {
+		j := i + 1
+		for j < len(s) && s[j] != ']' {
+			j++
+		}
+		if j >= len(s) {
+			return "", start // malformed: no closing ]
+		}
+		i = j + 1
+	}
+
+	// Optional flags: + - # 0 space
+	for i < len(s) && isFmtFlag(s[i]) {
+		i++
+	}
+
+	// Optional width: digits
+	for i < len(s) && s[i] >= '0' && s[i] <= '9' {
+		i++
+	}
+
+	// Optional precision: . digits
+	if i < len(s) && s[i] == '.' {
+		i++
+		for i < len(s) && s[i] >= '0' && s[i] <= '9' {
+			i++
+		}
+	}
+
+	// Verb character
+	if i >= len(s) {
+		return "", start
+	}
+
+	return s[start : i+1], i
+}
+
+func isFmtFlag(c byte) bool {
+	switch c {
+	case '+', '-', '#', '0', ' ':
+		return true
+	default:
+		return false
+	}
 }
