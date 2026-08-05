@@ -13,9 +13,10 @@ func TestAllActionabilityPatterns_Count(t *testing.T) {
 	t.Parallel()
 
 	patterns := AllActionabilityPatterns()
-	if len(patterns) != len(actionabilityPatternTable) {
-		t.Errorf("AllActionabilityPatterns() returned %d patterns, want %d (len(actionabilityPatternTable))",
-			len(patterns), len(actionabilityPatternTable))
+	want := len(actionabilityPatternTable) + len(propertyLabels)
+	if len(patterns) != want {
+		t.Errorf("AllActionabilityPatterns() returned %d patterns, want %d (denylist + property labels)",
+			len(patterns), want)
 	}
 }
 

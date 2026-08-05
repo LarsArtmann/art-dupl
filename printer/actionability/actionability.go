@@ -42,19 +42,46 @@ var actionabilityPatternTable = []patternEntry{ //nolint:gochecknoglobals // sta
 	{isTemplRenderingIdiom, PatternTemplRenderingIdiom},
 }
 
-// AllActionabilityPatterns returns all registered pattern labels in priority order.
+// AllActionabilityPatterns returns all pattern labels that can appear in
+// clone classification output: denylist patterns (from the priority table)
+// followed by property-engine labels (assigned by the extractability analysis).
+// All labels are valid arguments to --disable-pattern.
 func AllActionabilityPatterns() []PatternLabel {
-	labels := make([]PatternLabel, 0, len(actionabilityPatternTable))
+	labels := make([]PatternLabel, 0, len(actionabilityPatternTable)+len(propertyLabels))
 	for _, entry := range actionabilityPatternTable {
 		labels = append(labels, entry.pattern)
 	}
 
+	labels = append(labels, propertyLabels...)
+
 	return labels
 }
 
-// ListActionabilityPatterns writes all pattern labels to the writer, one per line.
+// propertyLabels are the labels assigned by the extractability engine's
+// second-pass analysis (propertyLabelForReason). They are not in the
+// actionabilityPatternTable because they have no check function — they are
+// assigned AFTER the extractability analysis determines non-actionability.
+var propertyLabels = []PatternLabel{ //nolint:gochecknoglobals // static list
+	PatternPropertyEngine,
+	PatternPropertyControlFlow,
+	PatternPropertyROI,
+	PatternPropertyParameterizable,
+}
+
+// ListActionabilityPatterns writes all pattern labels to the writer, one per
+// line. Denylist patterns are listed first, followed by a comment line and the
+// property-engine labels.
 func ListActionabilityPatterns(w io.Writer) {
-	for _, label := range AllActionabilityPatterns() {
+	patterns := AllActionabilityPatterns()
+	denylistCount := len(actionabilityPatternTable)
+
+	for i, label := range patterns {
+		if i == denylistCount {
+			if _, err := fmt.Fprintln(w, "# property-engine labels (from extractability analysis)"); err != nil {
+				return
+			}
+		}
+
 		if _, err := fmt.Fprintln(w, label); err != nil {
 			return
 		}
