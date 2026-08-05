@@ -275,6 +275,24 @@ func TestIsSingleSimpleStatement(t *testing.T) {
 			expected: false,
 		},
 		{
+			name: "ExprStmt wrapping UnaryExpr (<-ch channel receive)",
+			seqs: [][]*domain.CloneNode{{
+				{BaseType: golang.ExprStmt, Children: []*domain.CloneNode{
+					{BaseType: golang.UnaryExpr},
+				}},
+			}},
+			expected: true,
+		},
+		{
+			name: "ExprStmt wrapping CallExpr — not handled here (isSingleCallExpression)",
+			seqs: [][]*domain.CloneNode{{
+				{BaseType: golang.ExprStmt, Children: []*domain.CloneNode{
+					{BaseType: golang.CallExpr},
+				}},
+			}},
+			expected: false,
+		},
+		{
 			name: "two statements — not single",
 			seqs: [][]*domain.CloneNode{{
 				{BaseType: golang.ReturnStmt},
