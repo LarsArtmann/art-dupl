@@ -69,7 +69,7 @@ func runBaseline(c *cobra.Command, arguments []string) error {
 	startProfile := job.StartProfile()
 
 	duplChan, parseStats, filterStats, err := executeAnalysis(
-		ctx, mergedConfig, mergedConfig.Paths, config.OutputFormatText,
+		ctx, mergedConfig, mergedConfig.Paths, config.OutputFormatText, c.ErrOrStderr(),
 	)
 	if err != nil {
 		return wrapAnalysisError(err, mergedConfig.Paths)
@@ -98,7 +98,7 @@ func runBaseline(c *cobra.Command, arguments []string) error {
 		return duplerrors.Wrap(err, duplerrors.IOError, "saving baseline to "+path)
 	}
 
-	fmt.Fprintf(os.Stderr,
+	fmt.Fprintf(c.ErrOrStderr(),
 		"Recorded %d clone groups (%d files, %d filtered) to %s\n",
 		bf.Len(), parseStats.FilesCount, filteredCount(filterStats), path)
 
@@ -129,7 +129,7 @@ func runCheck(c *cobra.Command, arguments []string) error {
 	defer cancel()
 
 	duplChan, _, _, err := executeAnalysis(
-		ctx, mergedConfig, mergedConfig.Paths, config.OutputFormatText,
+		ctx, mergedConfig, mergedConfig.Paths, config.OutputFormatText, c.ErrOrStderr(),
 	)
 	if err != nil {
 		return wrapAnalysisError(err, mergedConfig.Paths)
@@ -166,7 +166,7 @@ func runCheck(c *cobra.Command, arguments []string) error {
 	}
 
 	if filter.newCloneCount > 0 {
-		fmt.Fprintf(os.Stderr,
+		fmt.Fprintf(c.ErrOrStderr(),
 			"\n\U0001f534 %d new clone group(s) detected (baseline had %d). "+
 				"Run `art-dupl baseline` to update.\n",
 			filter.newCloneCount, bf.Len())
@@ -177,7 +177,7 @@ func runCheck(c *cobra.Command, arguments []string) error {
 		)
 	}
 
-	fmt.Fprintf(os.Stderr, "\n\u2705 No new clones detected (baseline: %d groups).\n", bf.Len())
+	fmt.Fprintf(c.ErrOrStderr(), "\n\u2705 No new clones detected (baseline: %d groups).\n", bf.Len())
 
 	return nil
 }
