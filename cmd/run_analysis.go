@@ -3,6 +3,7 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"io"
 	"os"
 	"strings"
 
@@ -33,6 +34,7 @@ type buildParams struct {
 	filterParam  *gogenfilter.Filter
 	filterStats  *FilterStats
 	outputFormat config.OutputFormat
+	stderr       io.Writer
 }
 
 // getFilesChan creates a channel of file paths based on the build parameters.
@@ -57,20 +59,21 @@ func (p buildParams) getFilesChan() chan string {
 }
 
 // printSearchStatus outputs the status message after tree building completes.
-func printSearchStatus(cfg *config.Config, outputFormat config.OutputFormat) {
+func printSearchStatus(w io.Writer, cfg *config.Config, outputFormat config.OutputFormat) {
 	if cfg.Quiet {
 		return
 	}
 
 	if cfg.Verbose {
-		_, _ = fmt.Fprintln(os.Stderr, "Searching for clones")
+		_, _ = fmt.Fprintln(w, "Searching for clones")
 	} else if outputFormat == config.OutputFormatText {
-		_, _ = fmt.Fprintln(os.Stderr, " ✅")
+		_, _ = fmt.Fprintln(w, " ✅")
 	}
 }
 
 // printBuildingStatus outputs the status message before tree building starts.
 func printBuildingStatus(
+	w io.Writer,
 	cfg *config.Config,
 	outputFormat config.OutputFormat,
 	verboseMsg string,
@@ -81,9 +84,9 @@ func printBuildingStatus(
 	}
 
 	if cfg.Verbose {
-		_, _ = fmt.Fprintln(os.Stderr, verboseMsg)
+		_, _ = fmt.Fprintln(w, verboseMsg)
 	} else if outputFormat == config.OutputFormatText {
-		_, _ = fmt.Fprintln(os.Stderr, textMsg)
+		_, _ = fmt.Fprintln(w, textMsg)
 	}
 }
 
@@ -107,7 +110,7 @@ func finalizeTreeBuild(
 		logger.Default.Error("suffix tree terminator update failed", "err", err)
 	}
 
-	printSearchStatus(params.cfg, params.outputFormat)
+	printSearchStatus(params.stderr, params.cfg, params.outputFormat)
 
 	return treeBuildResult{tree: tree, data: *data, parseStats: parseStats}
 }
@@ -115,6 +118,7 @@ func finalizeTreeBuild(
 // buildSuffixTree builds a suffix tree from provided paths.
 func buildSuffixTree(params buildParams) treeBuildResult {
 	printBuildingStatus(
+		params.stderr,
 		params.cfg,
 		params.outputFormat,
 		"Building suffix tree",
@@ -147,13 +151,13 @@ func buildSuffixTreeIncremental(params buildParams) treeBuildResult {
 	)
 
 	filesChan := params.getFilesChan()
-	filesChan = progressFilesChan(params.ctx, filesChan, params.cfg, params.outputFormat, os.Stderr)
+	filesChan = progressFilesChan(params.ctx, filesChan, params.cfg, params.outputFormat, params.stderr)
 
 	// Load type-aware data if enabled (supports --type-aware + --incremental)
 	var typeInfos golang.TypeAwareData
 
 	if params.cfg.TypeAware {
-		typeInfos, filesChan = loadTypeAwareData(params.ctx, filesChan)
+		typeInfos, filesChan = loadTypeAwareData(params.ctx, filesChan, params.stderr)
 		incParser.SetTypeAwareData(typeInfos)
 	}
 
@@ -248,9 +252,9 @@ func validatePaths(paths []string, filesFromStdin bool) error {
 }
 
 // verboseFprintf prints a message to stderr if verbose mode is enabled.
-func verboseFprintf(cfg *config.Config, msg string) {
+func verboseFprintf(w io.Writer, cfg *config.Config, msg string) {
 	if cfg.Verbose {
-		_, _ = fmt.Fprintf(os.Stderr, "%s\n", msg)
+		_, _ = fmt.Fprintf(w, "%s\n", msg)
 	}
 }
 
@@ -336,13 +340,13 @@ func buildExcludePatterns(cfg *config.Config) []string {
 }
 
 // startProfiling begins profiling if enabled in config, returning the profile result.
-func startProfiling(cfg *config.Config) job.ProfileResult {
+func startProfiling(w io.Writer, cfg *config.Config) job.ProfileResult {
 	if !cfg.Profile {
 		return job.ProfileResult{}
 	}
 
 	profile := job.StartProfile()
-	_, _ = fmt.Fprintln(os.Stderr, "📊 Performance profiling enabled")
+	_, _ = fmt.Fprintln(w, "📊 Performance profiling enabled")
 
 	return profile
 }
