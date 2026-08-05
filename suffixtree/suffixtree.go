@@ -64,6 +64,7 @@ func (t *STree) Update(data ...Token) error {
 	for _, tok := range data {
 		t.data = append(t.data, tok.Val())
 	}
+
 	for range data {
 		t.update()
 
