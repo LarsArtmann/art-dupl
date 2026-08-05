@@ -501,6 +501,7 @@ func TestCrawlPathsAllFiles(t *testing.T) {
 				true,
 				"",
 				nil,
+				io.Discard,
 			),
 		)
 

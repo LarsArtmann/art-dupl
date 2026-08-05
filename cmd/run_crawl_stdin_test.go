@@ -30,7 +30,7 @@ func TestStdinFeed_CancelUnblocksScanner(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	t.Cleanup(cancel)
 
-	ch := feedFromStdin(ctx, r, nil, nil, generatorIncludes{}, "")
+	ch := feedFromStdin(ctx, r, nil, nil, generatorIncludes{}, "", io.Discard)
 
 	cancel()
 
@@ -66,7 +66,7 @@ func TestStdinFeed_ReadsPaths(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	t.Cleanup(cancel)
 
-	ch := feedFromStdin(ctx, r, nil, nil, generatorIncludes{}, "")
+	ch := feedFromStdin(ctx, r, nil, nil, generatorIncludes{}, "", io.Discard)
 
 	var got []string
 	for p := range ch {
@@ -95,7 +95,7 @@ func TestStdinFeed_PartialReadThenCancel(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	t.Cleanup(cancel)
 
-	ch := feedFromStdin(ctx, r, nil, nil, generatorIncludes{}, "")
+	ch := feedFromStdin(ctx, r, nil, nil, generatorIncludes{}, "", io.Discard)
 
 	if _, err := w.WriteString("first.go\n"); err != nil {
 		t.Fatalf("WriteString error: %v", err)
@@ -147,7 +147,7 @@ func TestStdinFeed_TimeoutUnblocksScanner(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 50*time.Millisecond)
 	t.Cleanup(cancel)
 
-	ch := feedFromStdin(ctx, r, nil, nil, generatorIncludes{}, "")
+	ch := feedFromStdin(ctx, r, nil, nil, generatorIncludes{}, "", io.Discard)
 
 	select {
 	case _, ok := <-ch:
@@ -216,7 +216,7 @@ func TestStdinFeed_FiltersGeneratedCode(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	t.Cleanup(cancel)
 
-	ch := feedFromStdin(ctx, r, fltr, stats, generatorIncludes{}, config.FileTypeGo)
+	ch := feedFromStdin(ctx, r, fltr, stats, generatorIncludes{}, config.FileTypeGo, io.Discard)
 
 	var got []string
 	for p := range ch {
@@ -266,7 +266,7 @@ func TestStdinFeed_StderrSuppressedOnCancel(t *testing.T) {
 
 	ctx, cancel := context.WithCancel(context.Background())
 
-	ch := feedFromStdin(ctx, r, nil, nil, generatorIncludes{}, "")
+	ch := feedFromStdin(ctx, r, nil, nil, generatorIncludes{}, "", io.Discard)
 
 	cancel()
 
