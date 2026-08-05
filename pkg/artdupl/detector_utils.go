@@ -40,6 +40,7 @@ type detectorConfig struct {
 	Semantic          bool
 	TypeAware         bool
 	MaxChildrenSerial int
+	SearchWorkers     int
 }
 
 // toDetectionMode maps the SDK's Semantic bool to a golang.DetectionMode.
@@ -61,5 +62,6 @@ func convertOptionsToConfig(opts *Options) *detectorConfig {
 		DetectionMethods: opts.DetectionMethods,
 		Semantic:         true,
 		TypeAware:        opts.TypeAware,
+		SearchWorkers:    opts.SearchWorkers,
 	}
 }

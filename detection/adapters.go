@@ -11,8 +11,9 @@ import (
 
 // suffixTreeAdapter wraps the suffix tree algorithm as a MethodDetector.
 type suffixTreeAdapter struct {
-	tree *suffixtree.STree
-	data []*syntax.Node
+	tree         *suffixtree.STree
+	data         []*syntax.Node
+	searchWorkers int
 }
 
 func (a *suffixTreeAdapter) FindDuplOver(
@@ -24,7 +25,12 @@ func (a *suffixTreeAdapter) FindDuplOver(
 	go func() {
 		defer close(resultChan)
 
-		suffixMatches := a.tree.FindDuplOver(ctx, threshold)
+		var suffixMatches <-chan suffixtree.Match
+		if a.searchWorkers > 1 {
+			suffixMatches = a.tree.FindDuplOverParallel(ctx, threshold, a.searchWorkers)
+		} else {
+			suffixMatches = a.tree.FindDuplOver(ctx, threshold)
+		}
 
 		for match := range suffixMatches {
 			if ctx.Err() != nil {
@@ -96,7 +102,7 @@ func (md *MultiDetector) buildCloneDetectors() []MethodDetector {
 	var detectors []MethodDetector
 
 	if len(md.cfg.Methods) == 0 || slices.Contains(md.cfg.Methods, MethodArtDupl) {
-		detectors = append(detectors, &suffixTreeAdapter{tree: md.tree, data: md.data})
+		detectors = append(detectors, &suffixTreeAdapter{tree: md.tree, data: md.data, searchWorkers: md.cfg.SearchWorkers})
 	}
 
 	if slices.Contains(md.cfg.Methods, MethodHash) {

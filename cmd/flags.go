@@ -107,6 +107,10 @@ func AddFlags(rootCmd *cobra.Command) {
 	rootCmd.Flags().
 		Int("workers", 0, "number of concurrent workers for file parsing (0 = auto-detect based on CPU cores)")
 
+	// Root-only: parallel suffix tree search workers
+	rootCmd.Flags().
+		Int("search-workers", 0, "number of concurrent workers for suffix tree search (0 or 1 = sequential, >1 = parallel)")
+
 	// Root-only: diff mode flag for HTML output
 	rootCmd.Flags().
 		String("diff", "", "enable diff visualization for HTML output (values: side-by-side, inline, or true for side-by-side)")

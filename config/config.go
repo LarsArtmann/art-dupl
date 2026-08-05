@@ -135,6 +135,10 @@ type Config struct {
 	// 1 means sequential processing (same as Parse()).
 	Workers int `json:"workers,omitempty"`
 
+	// SearchWorkers controls suffix tree search parallelism.
+	// 0 or 1 = sequential (default), >1 = parallel DFS with N workers.
+	SearchWorkers int `json:"searchWorkers,omitempty"`
+
 	// DiffMode enables diff visualization for HTML output.
 	// When enabled, duplicate occurrences are shown with visual diff highlighting.
 	DiffMode DiffMode `json:"diffMode,omitzero"`
@@ -237,6 +241,7 @@ func DefaultConfig() *Config {
 		ClearCache:         false,
 		DetectionMode:      DetectionModeSemantic,
 		Workers:            0,
+		SearchWorkers:      0,
 		DiffMode:           DiffModeDisabled,
 		RichText:           false,
 		SuppressTestLow:    false,

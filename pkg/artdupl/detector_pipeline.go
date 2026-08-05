@@ -162,8 +162,9 @@ func (d *detector) createMultiDetector(
 	tree *suffixtree.STree,
 ) *detection.MultiDetector {
 	return detection.NewMultiDetector(detection.Config{
-		Methods: d.cfg.DetectionMethods,
-		Verbose: d.opts.Verbose,
+		Methods:      d.cfg.DetectionMethods,
+		Verbose:      d.opts.Verbose,
+		SearchWorkers: d.cfg.SearchWorkers,
 	}, data, tree)
 }
 

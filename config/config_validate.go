@@ -26,6 +26,7 @@ func ValidateConfig(cfg *Config) error {
 		func() error { return validateCacheFlags(cfg.CacheDir, cfg.ClearCache, cfg.Incremental) },
 		func() error { return validateOnly(cfg.Only) },
 		func() error { return validateNonNegative("workers", cfg.Workers) },
+		func() error { return validateNonNegative("search-workers", cfg.SearchWorkers) },
 		func() error { return validateNonNegative("min-lines", cfg.MinLines) },
 		func() error { return validateNonNegative("max-cache-entries", cfg.MaxCacheEntries) },
 	}

@@ -164,6 +164,11 @@ func applyChangedIntFlags(cmd *cobra.Command, cfg *config.Config) {
 		cfg.Workers = val
 	}
 
+	if cmd.Flags().Changed("search-workers") {
+		val, _ := cmd.Flags().GetInt("search-workers")
+		cfg.SearchWorkers = val
+	}
+
 	if cmd.Flags().Changed("test-threshold") {
 		val, _ := cmd.Flags().GetInt("test-threshold")
 		cfg.TestThreshold = val
