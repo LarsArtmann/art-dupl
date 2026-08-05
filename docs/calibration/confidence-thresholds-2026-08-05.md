@@ -1,19 +1,25 @@
 # Confidence Calibration Report
 
+> **SUPERSEDED** by `confidence-calibration-large-2026-08-05.md`, which manually
+> labeled 87 clone groups and found the "0% false positives" claim below was
+> incorrect (actual precision: 86.2%). This report is retained for historical
+> context — it shows the initial small-sample results before verification.
+
 **Date:** 2026-08-05
 **Tool:** art-dupl v0.6.x
 **Threshold:** 5 (default)
 
 ## Current Thresholds
 
-| Parameter | Value | Purpose |
-|-----------|-------|---------|
-| `confidenceHigh` | 0.9 | Used when analysis is highly confident |
-| `confidenceMedium` | 0.85 | Used when there's moderate uncertainty |
-| `confidenceLower` | 0.75 | Used when analysis is less certain |
-| `helperDominanceRatio` | 0.6 | >60% of clone tokens in a single CallExpr → helper-dominated |
+| Parameter              | Value | Purpose                                                      |
+| ---------------------- | ----- | ------------------------------------------------------------ |
+| `confidenceHigh`       | 0.9   | Used when analysis is highly confident                       |
+| `confidenceMedium`     | 0.85  | Used when there's moderate uncertainty                       |
+| `confidenceLower`      | 0.75  | Used when analysis is less certain                           |
+| `helperDominanceRatio` | 0.6   | >60% of clone tokens in a single CallExpr → helper-dominated |
 
 **Confidence tiers (from AGENTS.md):**
+
 - `>= 0.8` → Actionable
 - `0.5–0.8` → LowConfidence
 - `< 0.5` → NonActionable
@@ -26,17 +32,17 @@ values via `--explain` output.
 
 ## Results (8 projects)
 
-| Project | Clone Groups | Actionable | Non-Actionable |
-|---------|-------------|------------|----------------|
-| go-branded-id | 1 | 1 | 0 |
-| go-cqrs-lite | 22 | 22 | 0 |
-| go-workflow-auditlog | 1 | 1 | 0 |
-| go-atomic-write | 0 | 0 | 0 |
-| go-output | 0 | 0 | 0 |
-| gogenfilter | 0 | 0 | 0 |
-| go-commit | 0 | 0 | 0 |
-| go-appkit | 0 | 0 | 0 |
-| **Total** | **24** | **24** | **0** |
+| Project              | Clone Groups | Actionable | Non-Actionable |
+| -------------------- | ------------ | ---------- | -------------- |
+| go-branded-id        | 1            | 1          | 0              |
+| go-cqrs-lite         | 22           | 22         | 0              |
+| go-workflow-auditlog | 1            | 1          | 0              |
+| go-atomic-write      | 0            | 0          | 0              |
+| go-output            | 0            | 0          | 0              |
+| gogenfilter          | 0            | 0          | 0              |
+| go-commit            | 0            | 0          | 0              |
+| go-appkit            | 0            | 0          | 0              |
+| **Total**            | **24**       | **24**     | **0**          |
 
 ## Findings
 

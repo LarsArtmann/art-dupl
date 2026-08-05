@@ -105,6 +105,7 @@ linters:
     - sqlclosecheck
     - staticcheck
     - tagalign
+    - tagliatelle
     - testableexamples
     - testifylint
     - testpackage
@@ -163,6 +164,8 @@ linters:
         - ifElseChain
     gocyclo:
       min-complexity: 15
+    gomoddirectives:
+      replace-local: true
     gosec:
       excludes:
         - G304

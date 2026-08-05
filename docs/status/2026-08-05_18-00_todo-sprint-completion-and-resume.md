@@ -10,23 +10,23 @@
 
 ## a) FULLY DONE (15 items)
 
-| # | Item | Key Files | Verified |
-|---|------|-----------|----------|
-| 1 | Fix `run_hash.go:62` stderr bypass bug | `cmd/run_hash.go` | Build + test |
-| 2 | Remove stale `gomoddirectives` config | `.golangci.yml` | Lint passes |
-| 3 | Remove `# property-engine labels` comment from `--list-patterns` | `printer/actionability/actionability.go`, test updated | Actionability tests pass |
-| 4 | Thread stderr through `config_builder.go` (2 sites → `cmd.ErrOrStderr()`) | `cmd/config_builder.go` | Build |
-| 5 | Thread stderr through `dump_tokens.go` (2 sites) | `cmd/dump_tokens.go`, `cmd/run_flags.go`, `cmd/dump_tokens_test.go` | Build + test |
-| 6 | Thread stderr through `gitignore.go` (1 site) | `cmd/gitignore.go`, `cmd/run_analysis.go`, `cmd/run_hash.go`, `cmd/gitignore_test.go` | Build + test |
-| 7 | Thread stderr through `run_all_modes.go` writeFormatFile (1 site) | `cmd/run_all_modes.go`, `cmd/cmd_utils_test.go` | Build + test |
-| 8 | Thread stderr through `run_crawl.go` (3 sites + CrawlOptions.Stderr field) | `cmd/run_crawl.go`, `cmd/run_analysis.go`, `cmd/run_hash.go`, tests | Build + test |
-| 9 | Thread stderr through `stats.go` createOutputWriter (1 site) | `cmd/stats.go`, `cmd/stats_integration_test.go` | Build + test |
-| 10 | Update CHANGELOG.md `[Unreleased]` (all completed work) | `CHANGELOG.md` | Reviewed |
-| 11 | Update TODO_LIST.md (removed 12 completed, kept 3 open) | `TODO_LIST.md` | Reviewed |
-| 12 | Update AGENTS.md (writer injection, auto-fix guard, gomoddirectives, CrawlOptions) | `AGENTS.md` | Reviewed |
-| 13 | Update FEATURES.md (`--list-patterns` count) | `FEATURES.md` | Reviewed |
-| 14 | Full golangci-lint (0 issues) + go-arch-lint (0 violations) + gofmt (clean) | All | Verified |
-| 15 | nix flake check passes (after removing arch-lint derivation) | `flake.nix` | All 9 checks pass |
+| #   | Item                                                                               | Key Files                                                                             | Verified                 |
+| --- | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- | ------------------------ |
+| 1   | Fix `run_hash.go:62` stderr bypass bug                                             | `cmd/run_hash.go`                                                                     | Build + test             |
+| 2   | Remove stale `gomoddirectives` config                                              | `.golangci.yml`                                                                       | Lint passes              |
+| 3   | Remove `# property-engine labels` comment from `--list-patterns`                   | `printer/actionability/actionability.go`, test updated                                | Actionability tests pass |
+| 4   | Thread stderr through `config_builder.go` (2 sites → `cmd.ErrOrStderr()`)          | `cmd/config_builder.go`                                                               | Build                    |
+| 5   | Thread stderr through `dump_tokens.go` (2 sites)                                   | `cmd/dump_tokens.go`, `cmd/run_flags.go`, `cmd/dump_tokens_test.go`                   | Build + test             |
+| 6   | Thread stderr through `gitignore.go` (1 site)                                      | `cmd/gitignore.go`, `cmd/run_analysis.go`, `cmd/run_hash.go`, `cmd/gitignore_test.go` | Build + test             |
+| 7   | Thread stderr through `run_all_modes.go` writeFormatFile (1 site)                  | `cmd/run_all_modes.go`, `cmd/cmd_utils_test.go`                                       | Build + test             |
+| 8   | Thread stderr through `run_crawl.go` (3 sites + CrawlOptions.Stderr field)         | `cmd/run_crawl.go`, `cmd/run_analysis.go`, `cmd/run_hash.go`, tests                   | Build + test             |
+| 9   | Thread stderr through `stats.go` createOutputWriter (1 site)                       | `cmd/stats.go`, `cmd/stats_integration_test.go`                                       | Build + test             |
+| 10  | Update CHANGELOG.md `[Unreleased]` (all completed work)                            | `CHANGELOG.md`                                                                        | Reviewed                 |
+| 11  | Update TODO_LIST.md (removed 12 completed, kept 3 open)                            | `TODO_LIST.md`                                                                        | Reviewed                 |
+| 12  | Update AGENTS.md (writer injection, auto-fix guard, gomoddirectives, CrawlOptions) | `AGENTS.md`                                                                           | Reviewed                 |
+| 13  | Update FEATURES.md (`--list-patterns` count)                                       | `FEATURES.md`                                                                         | Reviewed                 |
+| 14  | Full golangci-lint (0 issues) + go-arch-lint (0 violations) + gofmt (clean)        | All                                                                                   | Verified                 |
+| 15  | nix flake check passes (after removing arch-lint derivation)                       | `flake.nix`                                                                           | All 9 checks pass        |
 
 ### Verification Summary
 
@@ -49,11 +49,13 @@ All 11 sites from the previous session's status report are now eliminated. The `
 ### Calibration of confidence values — ~50% (unchanged from previous session)
 
 **What exists:**
+
 - `scripts/calibrate-confidence.sh` calibration harness
 - `docs/calibration/confidence-thresholds-2026-08-05.md` initial report (8 projects, 24 clones, 0 FP)
 - `.go-arch-lint.yml` component boundaries verified enforceable
 
 **What remains:**
+
 - Sample size too small (only 1 of 8 projects produced meaningful clone data)
 - No manual ground-truth labeling (50+ clone groups needed)
 - No precision/recall metrics computed
@@ -77,6 +79,7 @@ All 18 planned tasks were executed.
 **This is the most serious issue.** I added a `Stderr io.Writer` field to `CrawlOptions` and use it via `fmt.Fprintf(opts.Stderr, ...)` in `crawlSinglePathWithOpts` and `crawlDirectoryWithOpts`. But TWO test construction sites in `cmd/cmd_utils_test.go` (lines 532 and 606) create `CrawlOptions{}` WITHOUT setting `Stderr`. If an error path triggers in those tests (stat failure, walk error), `fmt.Fprintf(nil, ...)` will panic with nil pointer dereference.
 
 The tests currently pass because no error paths are exercised, but this is a latent bug. The fix is either:
+
 1. Add `Stderr: io.Discard` to the test construction sites, OR
 2. Make the error-reporting code nil-safe: `if opts.Stderr != nil { fmt.Fprintf(...) }`
 
@@ -87,6 +90,7 @@ Option 1 is simpler and consistent with the rest of the codebase.
 ### F2: Never documented the output writer injection pattern in TESTING.md
 
 The entire output writer injection refactor (threading `io.Writer` through 11 production call sites) is undocumented in `TESTING.md`. Future test authors need to know:
+
 - All `cmd/` functions that produce output now accept `stderr io.Writer`
 - Tests should pass `io.Discard`, not use `CaptureStdoutStderr`
 - The `CrawlOptions` struct requires a `Stderr` field
@@ -99,6 +103,7 @@ This is critical for preventing regression — someone will add a new test using
 ### F3: Previous status report is now stale and misleading
 
 `docs/status/2026-08-05_17-33_todo-list-execution-sprint.md` still says:
+
 - "11 remaining direct os.Stderr writes in production code" (now 0)
 - "TODO_LIST.md was NEVER updated" (now updated)
 - "CHANGELOG.md was NEVER updated" (now updated)
@@ -115,6 +120,7 @@ Anyone reading that report will think the work is incomplete. It should either b
 ### E1: Used fragile bulk-edit scripts instead of precise edits
 
 I used `sed -i` and a Python script to batch-update function signatures across test files. This approach:
+
 - Risked corrupting file structure (the Python script initially botched indentation, requiring `gofmt -w`)
 - Made it hard to verify each change was correct
 - Could have introduced subtle bugs in string literals or comments
@@ -140,6 +146,7 @@ During the session, the function `filesFeedWithContext` appeared in some views a
 ### E4: Removed arch-lint from Nix without exploring alternatives
 
 I removed the `arch-lint` derivation from `flake.nix` because `go-arch-lint` panics in the pure Nix sandbox (it uses `go/packages` which needs Go modules at runtime). But I didn't explore:
+
 - Using `nix develop` + a shell alias
 - Running it as a GitHub Actions step (the `.github/workflows/` directory exists)
 - Using `buildGoModule` to provide the Go toolchain inside the derivation
@@ -241,20 +248,20 @@ The initial calibration (8 projects, 0 FP) is encouraging but statistically weak
 
 ## Session Metrics
 
-| Metric | Value |
-|--------|-------|
-| Tasks planned | 18 |
-| Tasks completed | 18 |
-| Files changed | 24 |
-| Lines added | 372 |
-| Lines removed | 110 |
-| Commits (auto-committed) | ~10 |
-| Test packages passing | 26/26 |
-| Lint issues | 0 |
-| arch-lint violations | 0 |
-| os.Stderr writes remaining in production | 0 |
-| nix flake checks passing | 9/9 |
-| Latent bugs introduced | 1 (CrawlOptions.Stderr nil-safety) |
-| Docs updated | 4 (CHANGELOG, TODO_LIST, AGENTS, FEATURES) |
-| Docs NOT updated | 2 (TESTING.md, previous status report) |
-| Embarrassing oversights | 1 (nil-safety bug in test construction sites) |
+| Metric                                   | Value                                         |
+| ---------------------------------------- | --------------------------------------------- |
+| Tasks planned                            | 18                                            |
+| Tasks completed                          | 18                                            |
+| Files changed                            | 24                                            |
+| Lines added                              | 372                                           |
+| Lines removed                            | 110                                           |
+| Commits (auto-committed)                 | ~10                                           |
+| Test packages passing                    | 26/26                                         |
+| Lint issues                              | 0                                             |
+| arch-lint violations                     | 0                                             |
+| os.Stderr writes remaining in production | 0                                             |
+| nix flake checks passing                 | 9/9                                           |
+| Latent bugs introduced                   | 1 (CrawlOptions.Stderr nil-safety)            |
+| Docs updated                             | 4 (CHANGELOG, TODO_LIST, AGENTS, FEATURES)    |
+| Docs NOT updated                         | 2 (TESTING.md, previous status report)        |
+| Embarrassing oversights                  | 1 (nil-safety bug in test construction sites) |

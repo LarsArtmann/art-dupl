@@ -12,20 +12,20 @@
 
 These items are complete, tested, and verified:
 
-| # | Item | Key Files |
-|---|------|-----------|
-| 1 | Remove stale defense-in-depth comments | `bdd/filter_features_test.go`, `printer/stats_data.go`, `printer/stats/stats_collector.go` |
-| 2 | Remove tagliatelle + auto-fix guard script | `.golangci.yml`, `scripts/check-disabled-linters.sh` |
-| 3 | Remove go.mod local replace (→ v3.4.0) | `go.mod`, `go.sum` |
-| 4 | Document `--search-workers` | `HOW_TO_USE.md` |
-| 5 | Lazy-read nil-content regression test | `cmd/filter_includes_test.go` |
-| 6 | FuzzFindDuplOverParallel + ctx-cancel fuzz | `suffixtree/fuzz_test.go` |
-| 7 | Parameterize property tests for parallel search | `suffixtree/dupl_property_test.go` |
-| 8 | BDD test for `--search-workers` | `bdd/search_workers_test.go` |
-| 9 | FuncLit flag-reset test | `syntax/golang/interface_method_test.go` |
-| 10 | SDK InterfaceMethod pipeline test | `pkg/artdupl/detector_type_aware_test.go` |
-| 11 | Extractability engine integration test | `printer/actionability/extractability_integration_test.go` |
-| 12 | Property engine labels in `--list-patterns` | `printer/actionability/actionability.go` |
+| #   | Item                                            | Key Files                                                                                  |
+| --- | ----------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| 1   | Remove stale defense-in-depth comments          | `bdd/filter_features_test.go`, `printer/stats_data.go`, `printer/stats/stats_collector.go` |
+| 2   | Remove tagliatelle + auto-fix guard script      | `.golangci.yml`, `scripts/check-disabled-linters.sh`                                       |
+| 3   | Remove go.mod local replace (→ v3.4.0)          | `go.mod`, `go.sum`                                                                         |
+| 4   | Document `--search-workers`                     | `HOW_TO_USE.md`                                                                            |
+| 5   | Lazy-read nil-content regression test           | `cmd/filter_includes_test.go`                                                              |
+| 6   | FuzzFindDuplOverParallel + ctx-cancel fuzz      | `suffixtree/fuzz_test.go`                                                                  |
+| 7   | Parameterize property tests for parallel search | `suffixtree/dupl_property_test.go`                                                         |
+| 8   | BDD test for `--search-workers`                 | `bdd/search_workers_test.go`                                                               |
+| 9   | FuncLit flag-reset test                         | `syntax/golang/interface_method_test.go`                                                   |
+| 10  | SDK InterfaceMethod pipeline test               | `pkg/artdupl/detector_type_aware_test.go`                                                  |
+| 11  | Extractability engine integration test          | `printer/actionability/extractability_integration_test.go`                                 |
+| 12  | Property engine labels in `--list-patterns`     | `printer/actionability/actionability.go`                                                   |
 
 All 26 packages pass `go test ./... -count=1` (zero failures).
 
@@ -36,6 +36,7 @@ All 26 packages pass `go test ./... -count=1` (zero failures).
 ### 13. Inject output writers into production code — ~70% done
 
 **What was done:**
+
 - `executeAnalysis()` now accepts `stderr io.Writer` param
 - `buildParams` struct carries `stderr io.Writer`
 - Core print functions (`printSearchStatus`, `printBuildingStatus`, `verboseFprintf`, `startProfiling`, `printFileCollectionStatus`) all accept `io.Writer`
@@ -49,27 +50,29 @@ All 26 packages pass `go test ./... -count=1` (zero failures).
 
 **What was NOT done — 11 remaining direct `os.Stderr` writes in production code:**
 
-| File | Line | Code | Issue |
-|------|------|------|-------|
-| `cmd/config_builder.go` | 268, 283 | `os.Stderr` passed to `progressFilesChan` | Not threaded from cobra |
-| `cmd/dump_tokens.go` | 31, 48 | `setupFilter(os.Stderr, cfg)` + `buildParams{stderr: os.Stderr}` | `dumpTokensOutput` has `w io.Writer` for stdout but not stderr |
-| `cmd/gitignore.go` | 61 | `fmt.Fprintf(os.Stderr, "warning: %v\n", err)` | Deep in gitignore parsing, no writer threading |
-| `cmd/run_all_modes.go` | 138 | `fmt.Fprintf(os.Stderr, "warning: failed to close file...")` | In `writeFormatFile` helper, not threaded |
-| `cmd/run_crawl.go` | 85, 231, 266 | 3x `fmt.Fprintf(os.Stderr, ...)` | In `feedFromStdin`, `crawlSinglePath`, `crawlDirectory` — deep call chains |
-| `cmd/run_hash.go` | 62 | `progressFilesChan(..., os.Stderr)` | `executeHashOnlyAnalysis` has `stderr` param but this call site bypasses it |
-| `cmd/stats.go` | 202 | `fmt.Fprintf(os.Stderr, "warning: failed to close file...")` | In `configureStatsPrinter`, no writer param |
+| File                    | Line         | Code                                                             | Issue                                                                       |
+| ----------------------- | ------------ | ---------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| `cmd/config_builder.go` | 268, 283     | `os.Stderr` passed to `progressFilesChan`                        | Not threaded from cobra                                                     |
+| `cmd/dump_tokens.go`    | 31, 48       | `setupFilter(os.Stderr, cfg)` + `buildParams{stderr: os.Stderr}` | `dumpTokensOutput` has `w io.Writer` for stdout but not stderr              |
+| `cmd/gitignore.go`      | 61           | `fmt.Fprintf(os.Stderr, "warning: %v\n", err)`                   | Deep in gitignore parsing, no writer threading                              |
+| `cmd/run_all_modes.go`  | 138          | `fmt.Fprintf(os.Stderr, "warning: failed to close file...")`     | In `writeFormatFile` helper, not threaded                                   |
+| `cmd/run_crawl.go`      | 85, 231, 266 | 3x `fmt.Fprintf(os.Stderr, ...)`                                 | In `feedFromStdin`, `crawlSinglePath`, `crawlDirectory` — deep call chains  |
+| `cmd/run_hash.go`       | 62           | `progressFilesChan(..., os.Stderr)`                              | `executeHashOnlyAnalysis` has `stderr` param but this call site bypasses it |
+| `cmd/stats.go`          | 202          | `fmt.Fprintf(os.Stderr, "warning: failed to close file...")`     | In `configureStatsPrinter`, no writer param                                 |
 
 **Impact:** The `CaptureStdoutStderr` race surface is reduced (core analysis path is now injectable) but NOT fully eliminated. The remaining writes are in helper/goroutine code (gitignore parsing, file crawling, file close warnings) that is harder to thread without larger refactoring.
 
 ### 14. Calibrate property engine confidence values — ~50% done
 
 **What was done:**
+
 - Created `scripts/calibrate-confidence.sh` (reusable calibration harness)
 - Ran on 8 Go projects: go-branded-id, go-cqrs-lite, go-workflow-auditlog, go-atomic-write, go-output, gogenfilter, go-commit, go-appkit
 - Results: 24 clones total, 0 false positives, 100% actionable classification
 - Wrote calibration report at `docs/calibration/confidence-thresholds-2026-08-05.md`
 
 **What was NOT done:**
+
 - Only 1 of 8 projects produced meaningful clone data (go-cqrs-lite: 22 of 24 clones). The sample size is too small for statistical confidence.
 - No manual labeling of clone groups as actionable/non-actionable (no ground truth)
 - No precision/recall metrics computed
@@ -130,6 +133,7 @@ I added the `arch-lint` derivation to `flake.nix` but never ran `nix flake check
 ### E6: AGENTS.md was not updated with key discoveries
 
 Several important discoveries from this session were not recorded in AGENTS.md:
+
 - The auto-fix guard script behavior (scripts/check-disabled-linters.sh now auto-removes banned linters)
 - go-arch-lint is now CI-enforced via Nix
 - The gogenfilter replace directive is gone (v3.4.0 is a real tagged dep now)
@@ -232,17 +236,17 @@ The comment line could break scripts that parse `--list-patterns` output line-by
 
 ## Session Metrics
 
-| Metric | Value |
-|--------|-------|
-| Items attempted | 15 |
-| Items fully done | 12 |
-| Items partially done | 2 |
-| Items not started | 0 |
-| Files changed | 51 |
-| Lines added | 1845 |
-| Lines removed | 207 |
-| Commits (auto-committed) | 10 |
-| Tests added | 8 new test functions + 4 subtests |
-| Test packages passing | 26/26 |
-| False claims | 0 (all verified before reporting) |
-| Embarrassing oversights | 2 (TODO_LIST + CHANGELOG not updated) |
+| Metric                   | Value                                 |
+| ------------------------ | ------------------------------------- |
+| Items attempted          | 15                                    |
+| Items fully done         | 12                                    |
+| Items partially done     | 2                                     |
+| Items not started        | 0                                     |
+| Files changed            | 51                                    |
+| Lines added              | 1845                                  |
+| Lines removed            | 207                                   |
+| Commits (auto-committed) | 10                                    |
+| Tests added              | 8 new test functions + 4 subtests     |
+| Test packages passing    | 26/26                                 |
+| False claims             | 0 (all verified before reporting)     |
+| Embarrassing oversights  | 2 (TODO_LIST + CHANGELOG not updated) |

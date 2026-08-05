@@ -18,18 +18,6 @@ This file is OPEN work only — no completed, rejected, or resolved items.
 
 ---
 
-## MEDIUM Priority
-
-### CI and Infrastructure
-
-- [ ] **Integrate go-arch-lint into CI**: The `arch-lint` derivation was removed from `nix flake check` because `go-arch-lint` panics in the pure Nix sandbox (it uses `go/packages` which needs a Go toolchain + module cache at runtime). Options: (1) run it as a GitHub Actions step, (2) use a Nix devShell alias, or (3) add it to a pre-commit hook. The `.go-arch-lint.yml` config is complete and `go-arch-lint check` passes locally with 0 violations.
-
-### Testing
-
-- [ ] **Add test for the auto-fix guard script**: Verify `scripts/check-disabled-linters.sh` actually removes banned linters via `sed -i` when the file is writable.
-
----
-
 ## DEFERRED: Architecturally Constrained
 
 Blocked by fundamental design constraints. Cannot be resolved without significant architectural changes.

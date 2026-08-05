@@ -22,9 +22,9 @@
 
 ### Labeling Criteria
 
-| Label | Meaning |
-|-------|---------|
-| **TP** | Duplicated logic worth extracting — copy-pasted function bodies, processing patterns, **duplicated type/constant definitions** (divergence risk), substantial repeated test setup (3+ sites) |
+| Label  | Meaning                                                                                                                                                                                                     |
+| ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **TP** | Duplicated logic worth extracting — copy-pasted function bodies, processing patterns, **duplicated type/constant definitions** (divergence risk), substantial repeated test setup (3+ sites)                |
 | **FP** | Not worth acting on — type-alias re-exports (`type X = pkg.Y`), coincidental single-struct-field overlap, throwaway demo/example code, coincidental report string writes, compile-time interface assertions |
 
 **Key distinction:** A duplicated `type Severity string` + `const(...)` block
@@ -36,15 +36,15 @@ idiomatic re-export).
 
 ### Per-Project Precision
 
-| Project | Go Files | Clone Groups | TP | FP | Precision |
-|---------|----------|-------------|-----|-----|-----------|
-| picoclaw | 614 | 32 | 30 | 2 | 93.8% |
-| CreditReformBilanzampel | 928 | 21 | 19 | 2 | 90.5% |
-| ast-state-analyzer | 694 | 23 | 19 | 4 | 82.6% |
-| KeyCountdown | 657 | 4 | 3 | 1 | 75.0% |
-| Kernovia | 924 | 6 | 3 | 3 | 50.0% |
-| BuildFlow | 947 | 1 | 1 | 0 | 100.0% |
-| **Total** | **4,764** | **87** | **75** | **12** | **86.2%** |
+| Project                 | Go Files  | Clone Groups | TP     | FP     | Precision |
+| ----------------------- | --------- | ------------ | ------ | ------ | --------- |
+| picoclaw                | 614       | 32           | 30     | 2      | 93.8%     |
+| CreditReformBilanzampel | 928       | 21           | 19     | 2      | 90.5%     |
+| ast-state-analyzer      | 694       | 23           | 19     | 4      | 82.6%     |
+| KeyCountdown            | 657       | 4            | 3      | 1      | 75.0%     |
+| Kernovia                | 924       | 6            | 3      | 3      | 50.0%     |
+| BuildFlow               | 947       | 1            | 1      | 0      | 100.0%    |
+| **Total**               | **4,764** | **87**       | **75** | **12** | **86.2%** |
 
 Projects with mostly production code (picoclaw, CreditReformBilanzampel) score
 highest. Projects with many example/demo directories (Kernovia) and duplicated
@@ -62,12 +62,12 @@ flagged as TP after verification.
 
 ## False Positive Analysis (12 cases)
 
-| Category | Count | Example | Fixable? |
-|----------|-------|---------|----------|
-| Throwaway demo/example code | 4 | `examples/`, `test_plugin/`, `test_temp/` — `fmt.Println` demo scripts | **Yes** — exclude demo dirs by default |
-| Type-alias re-exports | 3 | `type ToolCall = protocoltypes.ToolCall` (multi-alias block) | **Yes** — extend single-declaration pattern to alias blocks |
-| Coincidental report WriteString | 3 | Two report generators writing different strings, same shape | **Hard** — borderline, low priority |
-| Test/compile-time boilerplate | 2 | `b.Helper()` delegate, `_ I = (*T)(nil)` assertion | **Partly** — add interface-assertion pattern |
+| Category                        | Count | Example                                                                | Fixable?                                                    |
+| ------------------------------- | ----- | ---------------------------------------------------------------------- | ----------------------------------------------------------- |
+| Throwaway demo/example code     | 4     | `examples/`, `test_plugin/`, `test_temp/` — `fmt.Println` demo scripts | **Yes** — exclude demo dirs by default                      |
+| Type-alias re-exports           | 3     | `type ToolCall = protocoltypes.ToolCall` (multi-alias block)           | **Yes** — extend single-declaration pattern to alias blocks |
+| Coincidental report WriteString | 3     | Two report generators writing different strings, same shape            | **Hard** — borderline, low priority                         |
+| Test/compile-time boilerplate   | 2     | `b.Helper()` delegate, `_ I = (*T)(nil)` assertion                     | **Partly** — add interface-assertion pattern                |
 
 ### Notable True Positives Found
 
