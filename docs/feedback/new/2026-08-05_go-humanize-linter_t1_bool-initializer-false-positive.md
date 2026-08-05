@@ -13,9 +13,9 @@
 
 ## Results
 
-| Group              | Locations                                                    | Report category | Actual category               | Decision |
-| ------------------ | ------------------------------------------------------------ | --------------- | ----------------------------- | -------- |
-| Boolean flag pair  | `pattern_commaf.go:37-38`, `pattern_helpers.go:399-400`      | `unknown`, low  | Go AST-traversal accumulator idiom | Accept   |
+| Group             | Locations                                               | Report category | Actual category                    | Decision |
+| ----------------- | ------------------------------------------------------- | --------------- | ---------------------------------- | -------- |
+| Boolean flag pair | `pattern_commaf.go:37-38`, `pattern_helpers.go:399-400` | `unknown`, low  | Go AST-traversal accumulator idiom | Accept   |
 
 No source files were modified.
 
@@ -96,10 +96,10 @@ With only one group this was not decisive, but sorting by total tokens is the ri
 
 ## Summary of suggestions
 
-| Priority | Suggestion                                                                        | Effort |
-| -------- | --------------------------------------------------------------------------------- | ------ |
+| Priority | Suggestion                                                                         | Effort |
+| -------- | ---------------------------------------------------------------------------------- | ------ |
 | MEDIUM   | Suppress or down-rank `name := false` / `name := true` initializer pairs at `-t 1` | Small  |
-| LOW      | Add an `idiom` category for accumulator-flag declarations in Go                     | Small  |
-| LOW      | Default minimum threshold recommendation should be higher than `1` for Go           | Small  |
+| LOW      | Add an `idiom` category for accumulator-flag declarations in Go                    | Small  |
+| LOW      | Default minimum threshold recommendation should be higher than `1` for Go          | Small  |
 
 The `go-humanize-linter` codebase has no actionable duplication from this scan. The single reported group should be treated as a known low-threshold artifact, not as a refactoring opportunity.
