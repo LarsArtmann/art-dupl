@@ -92,6 +92,8 @@ func AddFlags(rootCmd *cobra.Command) {
 	// Root-only: scope flags
 	rootCmd.Flags().
 		Bool("include-node-modules", false, "include node_modules directory in hash-based detection (excluded by default)")
+	rootCmd.Flags().
+		Bool("include-examples", false, "include example/demo directories (examples/, demo/, etc.) in analysis (excluded by default)")
 
 	// Root-only: incremental analysis flags
 	rootCmd.Flags().

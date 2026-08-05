@@ -32,6 +32,16 @@ const (
 	NodeModulesDirInPath = string(filepath.Separator) + NodeModulesDirPrefix
 )
 
+// exampleDirNames are directory names excluded by default because they contain
+// throwaway demo/example code that inflates false-positive counts. Override
+// with --include-examples.
+var exampleDirNames = map[string]bool{
+	"examples": true,
+	"example":  true,
+	"demo":     true,
+	"demos":    true,
+}
+
 // feedFromStdin reads newline-delimited file paths from rc, applies filters,
 // and sends matching paths on the returned channel. When ctx is cancelled, the
 // reader is closed to unblock the inherently blocking bufio.Scanner.Scan call.
@@ -98,7 +108,7 @@ func filesFeedWithOptions(
 	filter *gogenfilter.Filter,
 	filterStats *FilterStats,
 	includes generatorIncludes,
-	includeVendor, includeNodeModules bool,
+	includeVendor, includeNodeModules, includeExamples bool,
 	only config.FileType,
 	gitignore *GitignoreMatcher,
 	stderr io.Writer,
@@ -118,7 +128,7 @@ func filesFeedWithOptions(
 	return crawlPathsWithFileCheck(
 		ctx,
 		paths, filter, filterStats, includes,
-		includeVendor, includeNodeModules, fileCheck,
+		includeVendor, includeNodeModules, includeExamples, fileCheck,
 		gitignore,
 		stderr,
 	)
@@ -131,14 +141,14 @@ func crawlPaths(
 	filter *gogenfilter.Filter,
 	filterStats *FilterStats,
 	includes generatorIncludes,
-	includeVendor, includeNodeModules bool,
+	includeVendor, includeNodeModules, includeExamples bool,
 	gitignore *GitignoreMatcher,
 	stderr io.Writer,
 ) chan string {
 	return crawlPathsWithFileCheck(
 		ctx,
 		paths, filter, filterStats, includes,
-		includeVendor, includeNodeModules, isSourceFile,
+		includeVendor, includeNodeModules, includeExamples, isSourceFile,
 		gitignore,
 		stderr,
 	)
@@ -188,6 +198,7 @@ type CrawlOptions struct {
 	Includes        generatorIncludes
 	IncludeVendor   bool
 	IncludeNodeMods bool
+	IncludeExamples bool
 	FileCheck       fileCheckFunc
 	Gitignore       *GitignoreMatcher
 	FChan           chan string
@@ -202,6 +213,7 @@ func crawlPathsWithFileCheck(
 	includes generatorIncludes,
 	includeVendor bool,
 	includeNodeModules bool,
+	includeExamples bool,
 	fileCheck fileCheckFunc,
 	gitignore *GitignoreMatcher,
 	stderr io.Writer,
@@ -221,6 +233,7 @@ func crawlPathsWithFileCheck(
 				Includes:        includes,
 				IncludeVendor:   includeVendor,
 				IncludeNodeMods: includeNodeModules,
+				IncludeExamples: includeExamples,
 				FileCheck:       fileCheck,
 				Gitignore:       gitignore,
 				FChan:           fchan,
@@ -287,7 +300,7 @@ func handleWalkEntry(opts CrawlOptions, path string, info os.FileInfo) error {
 		return nil
 	}
 
-	if shouldSkipPath(path, opts.IncludeVendor, opts.IncludeNodeMods) {
+	if shouldSkipPath(path, opts.IncludeVendor, opts.IncludeNodeMods, opts.IncludeExamples) {
 		return nil
 	}
 
@@ -318,7 +331,7 @@ func isSourceFile(name string) bool {
 }
 
 // shouldSkipPath returns true if the path should be skipped due to being a vendor, git, or node_modules directory.
-func shouldSkipPath(path string, includeVendor, includeNodeModules bool) bool {
+func shouldSkipPath(path string, includeVendor, includeNodeModules, includeExamples bool) bool {
 	if !includeVendor && (strings.HasPrefix(path, VendorDirPrefix) ||
 		strings.Contains(path, VendorDirInPath)) {
 		return true
@@ -335,6 +348,25 @@ func shouldSkipPath(path string, includeVendor, includeNodeModules bool) bool {
 	if !includeNodeModules && (strings.HasPrefix(path, NodeModulesDirPrefix) ||
 		strings.Contains(path, NodeModulesDirInPath)) {
 		return true
+	}
+
+	// Skip example/demo directories (configurable, excluded by default)
+	if !includeExamples && pathContainsExampleDir(path) {
+		return true
+	}
+
+	return false
+}
+
+// pathContainsExampleDir reports whether any path component matches a known
+// example/demo directory name. This excludes throwaway demo code by default.
+func pathContainsExampleDir(path string) bool {
+	sep := string(filepath.Separator)
+
+	for dir := range exampleDirNames {
+		if strings.HasPrefix(path, dir+sep) || strings.Contains(path, sep+dir+sep) {
+			return true
+		}
 	}
 
 	return false

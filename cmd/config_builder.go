@@ -112,6 +112,7 @@ func applyChangedBoolFlags(cmd *cobra.Command, cfg *config.Config) {
 	mappings := map[string]*bool{
 		"vendor":               &cfg.IncludeVendor,
 		"include-node-modules": &cfg.IncludeNodeModules,
+		"include-examples":     &cfg.IncludeExamples,
 		"files":                &cfg.FilesFromStdin,
 		"profile":              &cfg.Profile,
 		"include-sqlc":         &cfg.IncludeSQLC,

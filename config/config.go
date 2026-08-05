@@ -46,6 +46,11 @@ type Config struct {
 	// processing large dependency directories. Set to true to include them.
 	IncludeNodeModules bool `json:"includeNodeModules,omitempty"`
 
+	// IncludeExamples includes example/demo directories in analysis.
+	// By default, directories named examples/, example/, demo/, demos/ are
+	// excluded to avoid inflating false-positive counts with throwaway code.
+	IncludeExamples bool `json:"includeExamples,omitempty"`
+
 	// FilesFromStdin reads file paths from stdin when true
 	FilesFromStdin bool `json:"filesFromStdin,omitempty"`
 
