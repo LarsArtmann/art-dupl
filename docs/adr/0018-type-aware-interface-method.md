@@ -47,22 +47,38 @@ embedded methods in `Interface.NumMethods()`.
 ```
 Transformer (FuncDecl case, typeInfo != nil)
   → golang.IsInterfaceMethod(typeInfo, fn)
-  → o.InterfaceMethod = true/false
-  → syntax.Node.InterfaceMethod
+  → o.InterfaceMethod = true/false (on FuncDecl node)
+  → t.enclosingInterfaceMethod = o.InterfaceMethod (save for body)
+  → body statement nodes inherit flag via trans() stamp
+  → syntax.Node.InterfaceMethod (on FuncDecl AND body statements)
   → serial() shallow copy
   → syntaxToCloneNode() → domain.CloneNode.InterfaceMethod
-  → actionability: isInterfaceMethodBody() checks flag OR static name list
+  → actionability: isInterfaceMethodBody() path 1 (FuncDecl root) OR path 2 (statement root)
 ```
 
-### Belt-and-Suspenders Design
+### Statement-Level Propagation
 
-The actionability pattern checks `root.InterfaceMethod || slices.Contains(commonInterfaceMethodNames, root.Name)`.
+FuncDecl nodes are never clone roots in real Go files because the structural
+filter in `FindSyntaxUnits` rejects non-Statement clone roots (when the file
+contains any statements, which all real Go files do). This makes the
+FuncDecl-root path unreachable for standard Go code.
 
-- When `--type-aware` is active and the method satisfies a same-package interface:
-  `InterfaceMethod` is true, suppression fires.
-- When `--type-aware` is NOT active (or the interface is cross-package): the static
-  name list catches known stdlib methods.
-- Both paths apply the same body-size limit (<=4 statements).
+To fix this, the transformer propagates `InterfaceMethod` from the FuncDecl
+to its body statement nodes using the same save/restore pattern as
+`EnclosingReturnArity`: the FuncDecl case sets
+`t.enclosingInterfaceMethod = o.InterfaceMethod` before processing the body,
+and `trans()` stamps `o.InterfaceMethod = t.enclosingInterfaceMethod` on every
+node. FuncLit resets the flag to `false` (closures are not interface methods).
+
+This means the `interface-method` pattern has two paths:
+
+- **Path 1 (FuncDecl root)**: Edge case for files without statements. Uses the
+  static name list OR the `InterfaceMethod` flag. Body size checked via the
+  BlockStmt child.
+- **Path 2 (statement root)**: Normal Go files. Uses the propagated
+  `InterfaceMethod` flag. Body size is `len(seq)` (number of clone units).
+  Requires `--type-aware` mode (the flag is only set when type info is
+  available).
 
 ### Bug Fix: FuncDecl Name Field
 
@@ -95,4 +111,7 @@ precise than checking method name + signature alone.
 ## Status
 
 Implemented. Same-package interface detection is active with `--type-aware`.
-Cross-package interface scanning remains future work (ROADMAP).
+The `InterfaceMethod` flag propagates from FuncDecl to body statement nodes so
+the `interface-method` pattern fires on real detected clones (statement-level
+clones, not FuncDecl-level clones which are structurally unreachable in Go
+files). Cross-package interface scanning remains future work (ROADMAP).
