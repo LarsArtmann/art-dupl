@@ -34,7 +34,7 @@ These patterns represent Go idioms that cannot be eliminated without breaking se
 
 ## How It Works
 
-1. `EvaluateActionabilityWithLabel` runs 23 pattern checks in priority order.
+1. `EvaluateActionabilityWithLabel` runs 25 pattern checks in priority order.
 2. The first matching pattern wins (returns its `PatternLabel`).
 3. If no pattern matches, the group is **Actionable**.
 4. Only `semantic` detection mode runs actionability checks. `exact` and `structural` skip them.
@@ -55,22 +55,24 @@ Patterns are checked in this order (first match wins):
 9. Single call expression
 10. Single simple statement
 11. Bool accumulator init (`name := true/false` pairs)
-12. Single declaration
-13. Test helper delegate
-14. Error wrapping
-15. Assertion chain
-16. Cobra boilerplate
-17. Test data pair
-18. Table-driven test
-19. Test scaffolding
-20. Data-dominated
-21. Describe table
-22. Builder callback
-23. Templ-rendering-idiom (`if len(x) == 0 { text } else { for ... }`)
+12. Interface assertion (`var _ I = (*T)(nil)`)
+13. Single declaration (true aliases only: `type X = pkg.Y`)
+14. Type alias block (2+ consecutive `type X = pkg.Y` re-export shims)
+15. Test helper delegate (`t.Helper()` + delegate call)
+16. Error wrapping
+17. Assertion chain
+18. Cobra boilerplate
+19. Test data pair
+20. Table-driven test
+21. Test scaffolding
+22. Data-dominated
+23. Describe table
+24. Builder callback
+25. Templ-rendering-idiom (`if len(x) == 0 { text } else { for ... }`)
 
 ## Property-Based Classification Engine (Second Pass)
 
-After the 23 pattern-table checks run, a **property-based extractability engine** runs as a second-pass fallback. It evaluates four computable properties that define "harmful duplication" from first principles, catching false positives that the pattern table misses.
+After the 25 pattern-table checks run, a **property-based extractability engine** runs as a second-pass fallback. It evaluates four computable properties that define "harmful duplication" from first principles, catching false positives that the pattern table misses.
 
 See `docs/adr/0017-property-based-classification.md` for the full design.
 

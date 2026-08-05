@@ -91,7 +91,7 @@ func collectCurrentGroups(
 			result := actionability.EvaluateActionabilityWithDisabled(
 				printer.ToCloneNodeSeqs(uniq), suppression.DisabledPatterns,
 			)
-			if result == domain.NonActionable {
+			if result == domain.NonActionable && !suppression.ShowSuppressed {
 				continue
 			}
 		}
@@ -103,7 +103,7 @@ func collectCurrentGroups(
 
 		group := domain.NewProcessedCloneGroup(k, clones)
 
-		if shouldSuppressGroup(group, suppression) {
+		if shouldSuppressGroup(group, suppression) && !suppression.ShowSuppressed {
 			continue
 		}
 
