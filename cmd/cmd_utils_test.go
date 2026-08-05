@@ -418,29 +418,38 @@ func TestShouldSkipPath(t *testing.T) {
 		path               string
 		includeVendor      bool
 		includeNodeModules bool
+		includeExamples    bool
 		want               bool
 	}{
 		// Vendor directory tests
-		{"vendor prefix excluded", "vendor/github.com/foo/bar.go", false, false, true},
-		{"vendor in path excluded", "project/vendor/github.com/foo", false, false, true},
-		{"vendor prefix included", "vendor/github.com/foo/bar.go", true, false, false},
-		{"regular path no vendor", "project/src/main.go", false, false, false},
+		{"vendor prefix excluded", "vendor/github.com/foo/bar.go", false, false, false, true},
+		{"vendor in path excluded", "project/vendor/github.com/foo", false, false, false, true},
+		{"vendor prefix included", "vendor/github.com/foo/bar.go", true, false, false, false},
+		{"regular path no vendor", "project/src/main.go", false, false, false, false},
 
 		// Git directory tests
-		{"git prefix excluded", ".git/config", false, false, true},
-		{"git in path excluded", "project/.git/objects", false, false, true},
-		{"regular path no git", "project/src/main.go", false, false, false},
+		{"git prefix excluded", ".git/config", false, false, false, true},
+		{"git in path excluded", "project/.git/objects", false, false, false, true},
+		{"regular path no git", "project/src/main.go", false, false, false, false},
 
 		// node_modules tests
-		{"node_modules prefix excluded", "node_modules/lodash/index.js", false, false, true},
-		{"node_modules in path excluded", "project/node_modules/react", false, false, true},
-		{"node_modules included", "node_modules/lodash/index.js", false, true, false},
+		{"node_modules prefix excluded", "node_modules/lodash/index.js", false, false, false, true},
+		{"node_modules in path excluded", "project/node_modules/react", false, false, false, true},
+		{"node_modules included", "node_modules/lodash/index.js", false, true, false, false},
+
+		// Example directory tests
+		{"examples prefix excluded", "examples/foo/main.go", false, false, false, true},
+		{"examples in path excluded", "project/examples/demo.go", false, false, false, true},
+		{"demo prefix excluded", "demo/app.go", false, false, false, true},
+		{"demo in path excluded", "pkg/demo/test.go", false, false, false, true},
+		{"examples included", "examples/foo/main.go", false, false, true, false},
 
 		// Edge cases
-		{"empty path", "", false, false, false},
+		{"empty path", "", false, false, false, false},
 		{
 			"just vendor (exact match)",
 			"vendor",
+			false,
 			false,
 			false,
 			false,
@@ -451,15 +460,16 @@ func TestShouldSkipPath(t *testing.T) {
 			false,
 			false,
 			false,
+			false,
 		}, // Note: exact match doesn't have separator
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := shouldSkipPath(tt.path, tt.includeVendor, tt.includeNodeModules, false)
+			got := shouldSkipPath(tt.path, tt.includeVendor, tt.includeNodeModules, tt.includeExamples)
 			if got != tt.want {
-				t.Errorf("shouldSkipPath(%q, vendor=%v, node_modules=%v) = %v, want %v",
-					tt.path, tt.includeVendor, tt.includeNodeModules, got, tt.want)
+				t.Errorf("shouldSkipPath(%q, vendor=%v, node_modules=%v, examples=%v) = %v, want %v",
+					tt.path, tt.includeVendor, tt.includeNodeModules, tt.includeExamples, got, tt.want)
 			}
 		})
 	}
@@ -497,11 +507,9 @@ func TestCrawlPathsAllFiles(t *testing.T) {
 				f,
 				nil,
 				generatorIncludes{},
-		true,
-		true,
-		false,
 				true,
 				true,
+				false,
 				"",
 				nil,
 				io.Discard,

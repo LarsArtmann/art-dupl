@@ -136,6 +136,8 @@ func AddFlags(rootCmd *cobra.Command) {
 		Bool("explain", false, "explain why each clone group was reported (type, actionability, category, extractability)")
 	rootCmd.Flags().
 		Bool("include-ignored", false, "include gitignored files in analysis (default: honor .gitignore)")
+	rootCmd.Flags().
+		Bool("show-suppressed", false, "show clone groups that would normally be suppressed (actionability, min-lines, test-threshold) for calibration")
 
 	rootCmd.Flags().
 		String("diff-report", "", "compare current scan against a baseline file and show new/suppressed/resolved clones")

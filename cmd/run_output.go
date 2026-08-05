@@ -21,6 +21,7 @@ type SuppressionConfig struct {
 	MinLines         int
 	AcceptDirectives *AcceptedSet
 	NoActionability  bool
+	ShowSuppressed   bool
 	DisabledPatterns map[actionability.PatternLabel]bool
 }
 
@@ -36,6 +37,7 @@ func buildSuppressionConfig(cfg *config.Config) SuppressionConfig {
 		MinLines:         cfg.MinLines,
 		AcceptDirectives: newAcceptSet(cfg),
 		NoActionability:  cfg.NoActionability,
+		ShowSuppressed:   cfg.ShowSuppressed,
 		DisabledPatterns: buildDisabledPatternSet(cfg.DisabledPatterns),
 	}
 }
@@ -136,7 +138,7 @@ func printCloneGroups(
 			result := actionability.EvaluateActionabilityWithDisabled(
 				printer.ToCloneNodeSeqs(uniq), suppression.DisabledPatterns,
 			)
-			if result == domain.NonActionable {
+			if result == domain.NonActionable && !suppression.ShowSuppressed {
 				continue
 			}
 		}
@@ -153,7 +155,7 @@ func printCloneGroups(
 
 		group := domain.NewProcessedCloneGroup(k, clones)
 
-		if shouldSuppressGroup(group, suppression) {
+		if shouldSuppressGroup(group, suppression) && !suppression.ShowSuppressed {
 			continue
 		}
 

@@ -35,9 +35,8 @@ const (
 // exampleDirNames are directory names excluded by default because they contain
 // throwaway demo/example code that inflates false-positive counts. Override
 // with --include-examples.
-var exampleDirNames = map[string]bool{
+var exampleDirNames = map[string]bool{ //nolint:gochecknoglobals // static exclusion set
 	"examples": true,
-	"example":  true,
 	"demo":     true,
 	"demos":    true,
 }

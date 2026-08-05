@@ -206,6 +206,11 @@ type Config struct {
 	// IncludeIgnored disables .gitignore honoring during file enumeration.
 	// When true, gitignored files are included in the analysis.
 	IncludeIgnored bool `json:"includeIgnored,omitempty"`
+
+	// ShowSuppressed surfaces clone groups that would normally be filtered by
+	// actionability patterns, min-lines, test-threshold, or accept directives.
+	// Used for calibration to measure recall (false negatives).
+	ShowSuppressed bool `json:"showSuppressed,omitempty"`
 }
 
 // DefaultThreshold is the default minimum number of duplicated statements to report.
