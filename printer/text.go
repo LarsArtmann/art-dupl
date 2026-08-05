@@ -370,6 +370,7 @@ func formatBytes(bytes int) string {
 	if bytes < 0 {
 		bytes = -bytes
 	}
+
 	return humanize.IBytes(uint64(bytes))
 }
 
