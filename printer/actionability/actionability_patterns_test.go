@@ -345,6 +345,13 @@ func TestApplyPatternLabel(t *testing.T) {
 			wantPriority: domain.PriorityLow,
 		},
 		{
+			name:         "bool accumulator initializer lowers priority",
+			input:        domain.CloneClassification{Category: domain.CategoryFunction, Priority: domain.PriorityHigh},
+			label:        PatternBoolAccumulatorInitializer,
+			wantCategory: domain.CategoryFunction,
+			wantPriority: domain.PriorityLow,
+		},
+		{
 			name:         "no label keeps original classification",
 			input:        domain.CloneClassification{Category: domain.CategoryFunction, Priority: domain.PriorityHigh},
 			label:        PatternNone,
