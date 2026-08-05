@@ -7,7 +7,7 @@
 
 The DiscordSync feedback (82 clone groups at `-t 1`, 97.5% false positives) exposed
 a fundamental ceiling in the pattern-denylist approach to actionability classification.
-The denylist of 20 patterns cannot converge on zero false positives because every new
+The denylist of 23 patterns cannot converge on zero false positives because every new
 codebase reveals new idioms not in the list. Adding patterns is whack-a-mole.
 
 The root cause: type information loaded by `--type-aware` was destroyed in the

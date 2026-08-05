@@ -1,422 +1,423 @@
 version: "2"
 run:
-  timeout: 5m
-  go: 1.26.5
-  build-tags:
-    - goexperiment.arenas
-    - goexperiment.goroutineleakprofile
-    - goexperiment.jsonv2
-    - goexperiment.runtimesecret
-    - goexperiment.simd
-  allow-parallel-runners: true
-  allow-serial-runners: true
-  issues-exit-code: 1
-  tests: true
+    timeout: 5m
+    go: 1.26.5
+    build-tags:
+        - goexperiment.arenas
+        - goexperiment.goroutineleakprofile
+        - goexperiment.jsonv2
+        - goexperiment.runtimesecret
+        - goexperiment.simd
+    allow-parallel-runners: true
+    allow-serial-runners: true
+    issues-exit-code: 1
+    tests: true
 output:
-  formats: {}
+    formats: {}
 linters:
-  enable:
-    - arangolint
-    - asasalint
-    - asciicheck
-    - bidichk
-    - bodyclose
-    - canonicalheader
-    - clickhouselint
-    - containedctx
-    - contextcheck
-    - copyloopvar
-    - cyclop
-    - decorder
-    - dogsled
-    - dupl
-    - dupword
-    - durationcheck
-    - embeddedstructfieldcheck
-    - err113
-    - errcheck
-    - errchkjson
-    - errname
-    - errorlint
-    - exhaustive
-    - exptostd
-    - fatcontext
-    - forbidigo
-    - forcetypeassert
-    - funlen
-    - ginkgolinter
-    - gocheckcompilerdirectives
-    - gochecknoglobals
-    - gochecknoinits
-    - gochecksumtype
-    - gocognit
-    - goconst
-    - gocritic
-    - gocyclo
-    - godoclint
-    - godot
-    - godox
-    - goheader
-    - gomoddirectives
-    - gomodguard_v2
-    - goprintffuncname
-    - gosec
-    - gosmopolitan
-    - govet
-    - grouper
-    - iface
-    - importas
-    - inamedparam
-    - ineffassign
-    - interfacebloat
-    - intrange
-    - iotamixing
-    - ireturn
-    - loggercheck
-    - maintidx
-    - makezero
-    - mirror
-    - misspell
-    - mnd
-    - modernize
-    - musttag
-    - nakedret
-    - nestif
-    - nilerr
-    - nilnesserr
-    - nilnil
-    - nlreturn
-    - noctx
-    - nolintlint
-    - nonamedreturns
-    - nosprintfhostport
-    - paralleltest
-    - perfsprint
-    - prealloc
-    - predeclared
-    - promlinter
-    - protogetter
-    - reassign
-    - recvcheck
-    - revive
-    - rowserrcheck
-    - sloglint
-    - spancheck
-    - sqlclosecheck
-    - staticcheck
-    - tagalign
-    - testableexamples
-    - testifylint
-    - testpackage
-    - thelper
-    - tparallel
-    - unconvert
-    - unparam
-    - unqueryvet
-    - unused
-    - usestdlibvars
-    - usetesting
-    - varnamelen
-    - wastedassign
-    - whitespace
-    - wrapcheck
-    - wsl_v5
-    - zerologlint
-  disable:
-    - depguard
-  settings:
-    cyclop:
-      max-complexity: 15
-    dupl:
-      threshold: 100
-    errcheck:
-      exclude-functions:
-        - (*os.File).Close
-        - (io.Closer).Close
-        - (*sql.DB).Close
-        - (*sql.Rows).Close
-        - (*sql.Stmt).Close
-        - (net.Conn).Close
-        - (*net.TCPConn).Close
-        - (*net.UDPConn).Close
-        - fmt.Fprint
-        - fmt.Fprintf
-        - fmt.Fprintln
-        - fmt.Print
-        - fmt.Printf
-        - fmt.Println
-        - (*strings.Builder).WriteString
-        - (*bytes.Buffer).WriteString
-    funlen:
-      lines: 80
-      statements: 50
-    ginkgolinter:
-      forbid-focus-container: true
-      forbid-spec-pollution: true
-    gocognit:
-      min-complexity: 35
-    goconst:
-      min-len: 5
-      min-occurrences: 5
-    gocritic:
-      disabled-checks:
-        - ifElseChain
-    gocyclo:
-      min-complexity: 15
-    gomoddirectives:
-      replace-allow-list:
-        - github.com/LarsArtmann/gogenfilter/v3
-      replace-local: true
-    gosec:
-      excludes:
-        - G304
-        - G115
-    ireturn:
-      allow:
-        - anon
-        - error
-        - empty
-        - stdlib
-        - generic
-        - Printer
-        - Hasher
-        - Detector
-        - Token
-    makezero:
-      always: false
-    mnd:
-      ignored-numbers:
-        - "0"
-        - "1"
-        - "2"
-        - "3"
-        - "4"
-        - "5"
-        - "8"
-        - "10"
-        - "12"
-        - "15"
-        - "16"
-        - "20"
-        - "30"
-        - "50"
-        - "60"
-        - "70"
-        - "90"
-        - "100"
-        - "1000"
-        - "1024"
-        - "40_000"
-        - "1000000"
-        - "3.0"
-        - "10.0"
-        - "10000.0"
-        - "0xFF"
-        - "0xFFFFFF"
-        - "0x00FFFFFF"
-        - "0o750"
-    revive:
-      rules:
-        - disabled: true
-          name: exported
-        - disabled: true
-          name: package-comments
-        - disabled: true
-          name: var-naming
-        - disabled: true
-          name: unused-parameter
-    testifylint:
-      disable:
-        - go-require
-      enable-all: true
-    varnamelen:
-      ignore-map-index-ok: true
-      ignore-names:
-        - err
-        - ok
-        - tt
-        - fn
-        - t
-        - i
-        - m
-        - g
-        - a
-        - b
-        - v
-        - "n"
-        - p
-        - c
-        - r
-        - w
-        - s
-        - f
-        - d
-        - o
-        - j
-        - q
-        - k
-        - h
-        - e
-        - x
-        - "y"
-        - z
-        - l
-        - u
-        - tc
-        - ch
-        - fc
-        - cl
-        - hp
-        - sp
-        - tp
-        - wg
-        - fd
-        - md
-        - jp
-        - fp
-        - bf
-        - tr
-        - tf
-        - sb
-        - pg
-        - se
-        - sc
-        - rv
-        - rc
-        - pl
-        - f1
-        - f2
-        - s1
-        - s2
-        - p1
-        - p2
-        - nB
-        - ip
-        - cn
-        - dp
-        - fr
-        - kb
-        - KB
-        - MB
-        - ie
-        - ka
-      ignore-type-assert-ok: true
-    wrapcheck:
-      ignore-package-globs:
-        - github.com/LarsArtmann/art-dupl/pkg/enum
-      ignore-sigs:
-        - errors.Wrap
-        - errors.Wrapf
-        - errors.WrapFile
-        - fmt.Errorf(
-        - errors.New(
-        - stderrors.New(
-        - domain.NewValidationError(
-        - errors.HandleMarshalingError(
-        - errors.WrapIO(
-        - .Err(
-  exclusions:
-    generated: lax
-    rules:
-      - path: _test\.go
-        linters:
-          - funlen
-          - cyclop
-          - gocognit
-          - gocyclo
-          - maintidx
-          - dupl
-          - gosec
-          - err113
-          - paralleltest
-          - testpackage
-          - forcetypeassert
-          - forbidigo
-          - nestif
-          - wrapcheck
-          - unparam
-          - unused
-          - gochecknoglobals
-          - mnd
-          - varnamelen
-          - goconst
-      - path: bdd/
-        linters:
-          - funlen
-          - cyclop
-          - gocognit
-          - gocyclo
-          - maintidx
-          - dupl
-          - gosec
-          - err113
-          - paralleltest
-          - testpackage
-          - forcetypeassert
-          - forbidigo
-          - nestif
-          - wrapcheck
-          - depguard
-          - gochecknoglobals
-          - mnd
-          - varnamelen
-      - path: examples/
-        linters:
-          - revive
-          - varnamelen
-          - mnd
-          - depguard
-      - path: internal/testutil/
-        linters:
-          - revive
-          - gosec
-          - wrapcheck
-          - depguard
-          - mnd
-          - godox
-      - path: printer/
-        linters:
-          - wrapcheck
-          - funlen
-          - predeclared
-      - path: cmd/
-        linters:
-          - containedctx
-      - path: job/
-        linters:
-          - wrapcheck
-      - path: syntax/
-        linters:
-          - cyclop
-          - gocyclo
-      - path: syntax/templ/
-        linters:
-          - depguard
-      - path: _test\.go
-        text: unused
-        linters:
-          - unused
-    paths:
-      - \.gen\.go$
-      - _mock\.go$
-      - _templ\.go$
-      - config/
-      - vendor/
+    enable:
+        - arangolint
+        - asasalint
+        - asciicheck
+        - bidichk
+        - bodyclose
+        - canonicalheader
+        - clickhouselint
+        - containedctx
+        - contextcheck
+        - copyloopvar
+        - cyclop
+        - decorder
+        - dogsled
+        - dupl
+        - dupword
+        - durationcheck
+        - embeddedstructfieldcheck
+        - err113
+        - errcheck
+        - errchkjson
+        - errname
+        - errorlint
+        - exhaustive
+        - exptostd
+        - fatcontext
+        - forbidigo
+        - forcetypeassert
+        - funlen
+        - ginkgolinter
+        - gocheckcompilerdirectives
+        - gochecknoglobals
+        - gochecknoinits
+        - gochecksumtype
+        - gocognit
+        - goconst
+        - gocritic
+        - gocyclo
+        - godoclint
+        - godot
+        - godox
+        - goheader
+        - gomoddirectives
+        - gomodguard_v2
+        - goprintffuncname
+        - gosec
+        - gosmopolitan
+        - govet
+        - grouper
+        - iface
+        - importas
+        - inamedparam
+        - ineffassign
+        - interfacebloat
+        - intrange
+        - iotamixing
+        - ireturn
+        - loggercheck
+        - maintidx
+        - makezero
+        - mirror
+        - misspell
+        - mnd
+        - modernize
+        - musttag
+        - nakedret
+        - nestif
+        - nilerr
+        - nilnesserr
+        - nilnil
+        - nlreturn
+        - noctx
+        - nolintlint
+        - nonamedreturns
+        - nosprintfhostport
+        - paralleltest
+        - perfsprint
+        - prealloc
+        - predeclared
+        - promlinter
+        - protogetter
+        - reassign
+        - recvcheck
+        - revive
+        - rowserrcheck
+        - sloglint
+        - spancheck
+        - sqlclosecheck
+        - staticcheck
+        - tagalign
+        - tagliatelle
+        - testableexamples
+        - testifylint
+        - testpackage
+        - thelper
+        - tparallel
+        - unconvert
+        - unparam
+        - unqueryvet
+        - unused
+        - usestdlibvars
+        - usetesting
+        - varnamelen
+        - wastedassign
+        - whitespace
+        - wrapcheck
+        - wsl_v5
+        - zerologlint
+    disable:
+        - depguard
+    settings:
+        cyclop:
+            max-complexity: 15
+        dupl:
+            threshold: 100
+        errcheck:
+            exclude-functions:
+                - (*os.File).Close
+                - (io.Closer).Close
+                - (*sql.DB).Close
+                - (*sql.Rows).Close
+                - (*sql.Stmt).Close
+                - (net.Conn).Close
+                - (*net.TCPConn).Close
+                - (*net.UDPConn).Close
+                - fmt.Fprint
+                - fmt.Fprintf
+                - fmt.Fprintln
+                - fmt.Print
+                - fmt.Printf
+                - fmt.Println
+                - (*strings.Builder).WriteString
+                - (*bytes.Buffer).WriteString
+        funlen:
+            lines: 80
+            statements: 50
+        ginkgolinter:
+            forbid-focus-container: true
+            forbid-spec-pollution: true
+        gocognit:
+            min-complexity: 35
+        goconst:
+            min-len: 5
+            min-occurrences: 5
+        gocritic:
+            disabled-checks:
+                - ifElseChain
+        gocyclo:
+            min-complexity: 15
+        gomoddirectives:
+            replace-allow-list:
+                - github.com/LarsArtmann/gogenfilter/v3
+            replace-local: true
+        gosec:
+            excludes:
+                - G304
+                - G115
+        ireturn:
+            allow:
+                - anon
+                - error
+                - empty
+                - stdlib
+                - generic
+                - Printer
+                - Hasher
+                - Detector
+                - Token
+        makezero:
+            always: false
+        mnd:
+            ignored-numbers:
+                - "0"
+                - "1"
+                - "2"
+                - "3"
+                - "4"
+                - "5"
+                - "8"
+                - "10"
+                - "12"
+                - "15"
+                - "16"
+                - "20"
+                - "30"
+                - "50"
+                - "60"
+                - "70"
+                - "90"
+                - "100"
+                - "1000"
+                - "1024"
+                - "40_000"
+                - "1000000"
+                - "3.0"
+                - "10.0"
+                - "10000.0"
+                - "0xFF"
+                - "0xFFFFFF"
+                - "0x00FFFFFF"
+                - "0o750"
+        revive:
+            rules:
+                - disabled: true
+                  name: exported
+                - disabled: true
+                  name: package-comments
+                - disabled: true
+                  name: var-naming
+                - disabled: true
+                  name: unused-parameter
+        testifylint:
+            disable:
+                - go-require
+            enable-all: true
+        varnamelen:
+            ignore-map-index-ok: true
+            ignore-names:
+                - err
+                - ok
+                - tt
+                - fn
+                - t
+                - i
+                - m
+                - g
+                - a
+                - b
+                - v
+                - "n"
+                - p
+                - c
+                - r
+                - w
+                - s
+                - f
+                - d
+                - o
+                - j
+                - q
+                - k
+                - h
+                - e
+                - x
+                - "y"
+                - z
+                - l
+                - u
+                - tc
+                - ch
+                - fc
+                - cl
+                - hp
+                - sp
+                - tp
+                - wg
+                - fd
+                - md
+                - jp
+                - fp
+                - bf
+                - tr
+                - tf
+                - sb
+                - pg
+                - se
+                - sc
+                - rv
+                - rc
+                - pl
+                - f1
+                - f2
+                - s1
+                - s2
+                - p1
+                - p2
+                - nB
+                - ip
+                - cn
+                - dp
+                - fr
+                - kb
+                - KB
+                - MB
+                - ie
+                - ka
+            ignore-type-assert-ok: true
+        wrapcheck:
+            ignore-package-globs:
+                - github.com/LarsArtmann/art-dupl/pkg/enum
+            ignore-sigs:
+                - errors.Wrap
+                - errors.Wrapf
+                - errors.WrapFile
+                - fmt.Errorf(
+                - errors.New(
+                - stderrors.New(
+                - domain.NewValidationError(
+                - errors.HandleMarshalingError(
+                - errors.WrapIO(
+                - .Err(
+    exclusions:
+        generated: lax
+        rules:
+            - path: _test\.go
+              linters:
+                - funlen
+                - cyclop
+                - gocognit
+                - gocyclo
+                - maintidx
+                - dupl
+                - gosec
+                - err113
+                - paralleltest
+                - testpackage
+                - forcetypeassert
+                - forbidigo
+                - nestif
+                - wrapcheck
+                - unparam
+                - unused
+                - gochecknoglobals
+                - mnd
+                - varnamelen
+                - goconst
+            - path: bdd/
+              linters:
+                - funlen
+                - cyclop
+                - gocognit
+                - gocyclo
+                - maintidx
+                - dupl
+                - gosec
+                - err113
+                - paralleltest
+                - testpackage
+                - forcetypeassert
+                - forbidigo
+                - nestif
+                - wrapcheck
+                - depguard
+                - gochecknoglobals
+                - mnd
+                - varnamelen
+            - path: examples/
+              linters:
+                - revive
+                - varnamelen
+                - mnd
+                - depguard
+            - path: internal/testutil/
+              linters:
+                - revive
+                - gosec
+                - wrapcheck
+                - depguard
+                - mnd
+                - godox
+            - path: printer/
+              linters:
+                - wrapcheck
+                - funlen
+                - predeclared
+            - path: cmd/
+              linters:
+                - containedctx
+            - path: job/
+              linters:
+                - wrapcheck
+            - path: syntax/
+              linters:
+                - cyclop
+                - gocyclo
+            - path: syntax/templ/
+              linters:
+                - depguard
+            - path: _test\.go
+              text: unused
+              linters:
+                - unused
+        paths:
+            - \.gen\.go$
+            - _mock\.go$
+            - _templ\.go$
+            - config/
+            - vendor/
 formatters:
-  enable:
-    - gci
-    - goimports
-    - gofumpt
-    - golines
-  settings:
-    golines:
-      max-len: 120
-  exclusions:
-    generated: lax
-    paths:
-      - _mock\.go$
-      - _templ\.go$
-      - config/
+    enable:
+        - gci
+        - goimports
+        - gofumpt
+        - golines
+    settings:
+        golines:
+            max-len: 120
+    exclusions:
+        generated: lax
+        paths:
+            - _mock\.go$
+            - _templ\.go$
+            - config/
 issues:
-  max-issues-per-linter: 50
-  max-same-issues: 10
+    max-issues-per-linter: 50
+    max-same-issues: 10
