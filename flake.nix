@@ -202,11 +202,10 @@
               touch $out
             '';
 
-            arch-lint = pkgs.runCommand "art-dupl-arch-lint" { nativeBuildInputs = [ pkgs.go-arch-lint ]; } ''
-              cd ${pkgs.lib.cleanSource ./.}
-              go-arch-lint check
-              touch $out
-            '';
+            # arch-lint cannot run in the pure Nix sandbox because go-arch-lint
+            # uses go/packages which needs a Go toolchain + module cache at runtime.
+            # Run `go-arch-lint check` manually in the devShell instead.
+            # See docs/status/2026-08-05_17-33_todo-list-execution-sprint.md section E4.
 
             self-test =
               pkgs.runCommand "art-dupl-self-test"
