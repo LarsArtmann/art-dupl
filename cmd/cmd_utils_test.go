@@ -456,7 +456,7 @@ func TestShouldSkipPath(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := shouldSkipPath(tt.path, tt.includeVendor, tt.includeNodeModules)
+			got := shouldSkipPath(tt.path, tt.includeVendor, tt.includeNodeModules, false)
 			if got != tt.want {
 				t.Errorf("shouldSkipPath(%q, vendor=%v, node_modules=%v) = %v, want %v",
 					tt.path, tt.includeVendor, tt.includeNodeModules, got, tt.want)
@@ -497,6 +497,9 @@ func TestCrawlPathsAllFiles(t *testing.T) {
 				f,
 				nil,
 				generatorIncludes{},
+		true,
+		true,
+		false,
 				true,
 				true,
 				"",

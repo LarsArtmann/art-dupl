@@ -54,6 +54,7 @@ func executeHashOnlyAnalysis(
 		newGeneratorIncludes(cfg),
 		cfg.IncludeVendor,
 		cfg.IncludeNodeModules,
+		cfg.IncludeExamples,
 		cfg.Only,
 		gitignore,
 		stderr,

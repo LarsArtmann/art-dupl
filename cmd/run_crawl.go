@@ -165,7 +165,7 @@ func crawlPathsAllFiles(
 	filter *gogenfilter.Filter,
 	filterStats *FilterStats,
 	includes generatorIncludes,
-	includeVendor, includeNodeModules bool,
+	includeVendor, includeNodeModules, includeExamples bool,
 	only config.FileType,
 	gitignore *GitignoreMatcher,
 	stderr io.Writer,
@@ -180,7 +180,7 @@ func crawlPathsAllFiles(
 	return crawlPathsWithFileCheck(
 		ctx,
 		paths, filter, filterStats, includes,
-		includeVendor, includeNodeModules, fileCheck,
+		includeVendor, includeNodeModules, includeExamples, fileCheck,
 		gitignore,
 		stderr,
 	)

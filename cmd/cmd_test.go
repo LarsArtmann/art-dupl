@@ -79,6 +79,7 @@ func testFilesFeedWithExtension(t *testing.T, tmpDir, ext string, expectedCount 
 		generatorIncludes{},
 		false,
 		false,
+		false,
 		config.FileType(ext),
 		nil,
 		io.Discard,
@@ -311,7 +312,7 @@ func TestPrintVersion(t *testing.T) {
 func TestCrawlPaths(t *testing.T) {
 	t.Run("empty paths", func(t *testing.T) {
 		result := crawlPaths(
-			context.Background(), []string{}, nil, nil, generatorIncludes{}, false, false, nil, io.Discard,
+			context.Background(), []string{}, nil, nil, generatorIncludes{}, false, false, false, nil, io.Discard,
 		)
 		if result == nil {
 			t.Fatal("crawlPaths() returned nil")
@@ -338,7 +339,7 @@ func TestCrawlPaths(t *testing.T) {
 		}
 
 		result := crawlPaths(
-			context.Background(), []string{tmpFile}, nil, nil, generatorIncludes{}, false, false, nil, io.Discard,
+			context.Background(), []string{tmpFile}, nil, nil, generatorIncludes{}, false, false, false, nil, io.Discard,
 		)
 		if result == nil {
 			t.Fatal("crawlPaths() returned nil")

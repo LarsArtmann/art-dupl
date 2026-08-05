@@ -53,6 +53,7 @@ func (p buildParams) getFilesChan() chan string {
 		newGeneratorIncludes(p.cfg),
 		p.cfg.IncludeVendor,
 		p.cfg.IncludeNodeModules,
+		p.cfg.IncludeExamples,
 		p.cfg.Only,
 		gitignore,
 		p.stderr,
