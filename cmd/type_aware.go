@@ -3,7 +3,7 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"os"
+	"io"
 	"path/filepath"
 
 	"github.com/LarsArtmann/art-dupl/pkg/logger"
@@ -20,6 +20,7 @@ import (
 func loadTypeAwareData(
 	ctx context.Context,
 	filesChan chan string,
+	stderr io.Writer,
 ) (golang.TypeAwareData, chan string) {
 	var allFiles []string
 
@@ -53,7 +54,7 @@ func loadTypeAwareData(
 		return nil, newChan
 	}
 
-	fmt.Fprintf(os.Stderr, "🔍 Type-aware mode: loading type information for %d Go files...\n", len(goFiles))
+	fmt.Fprintf(stderr, "🔍 Type-aware mode: loading type information for %d Go files...\n", len(goFiles))
 
 	typeData, err := golang.LoadTypeAwareData(goFiles)
 	if err != nil {

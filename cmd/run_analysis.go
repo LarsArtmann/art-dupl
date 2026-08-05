@@ -259,7 +259,7 @@ func verboseFprintf(w io.Writer, cfg *config.Config, msg string) {
 }
 
 // setupFilter creates a filter based on config settings.
-func setupFilter(cfg *config.Config) (*gogenfilter.Filter, error) {
+func setupFilter(stderr io.Writer, cfg *config.Config) (*gogenfilter.Filter, error) {
 	type filterEntry struct {
 		enabled bool
 		option  gogenfilter.FilterOption
@@ -288,7 +288,7 @@ func setupFilter(cfg *config.Config) (*gogenfilter.Filter, error) {
 		}
 	}
 
-	excludePatterns := buildExcludePatterns(cfg)
+	excludePatterns := buildExcludePatterns(stderr, cfg)
 
 	if len(filterOptions) > 0 || len(excludePatterns) > 0 || len(cfg.IncludePatterns) > 0 {
 		configs := []gogenfilter.FilterConfig{
@@ -325,7 +325,7 @@ func setupFilter(cfg *config.Config) (*gogenfilter.Filter, error) {
 
 // buildExcludePatterns collects all file exclusion patterns from config,
 // including IgnoreFiles, ExcludePatterns, and *_test.go when IgnoreTests is set.
-func buildExcludePatterns(cfg *config.Config) []string {
+func buildExcludePatterns(stderr io.Writer, cfg *config.Config) []string {
 	patterns := make([]string, 0, len(cfg.ExcludePatterns)+len(cfg.IgnoreFiles)+1)
 	patterns = append(patterns, cfg.ExcludePatterns...)
 	patterns = append(patterns, cfg.IgnoreFiles...)
@@ -367,6 +367,7 @@ func executeAnalysis(
 	cfg *config.Config,
 	paths []string,
 	outputFormat config.OutputFormat,
+	stderr io.Writer,
 ) (chan syntax.Match, job.ParseStats, *FilterStats, error) {
 	err := validatePaths(paths, cfg.FilesFromStdin)
 	if err != nil {
@@ -375,7 +376,7 @@ func executeAnalysis(
 
 	startProfile := startProfiling(stderr, cfg)
 
-	filterParam, err := setupFilter(cfg)
+	filterParam, err := setupFilter(stderr, cfg)
 	if err != nil {
 		return nil, job.ParseStats{}, nil, duplerrors.Wrap(
 			err,
@@ -402,6 +403,7 @@ func executeAnalysis(
 		filterParam:  filterParam,
 		filterStats:  filterStats,
 		outputFormat: outputFormat,
+		stderr:       stderr,
 	})
 	if result.err != nil {
 		return nil, job.ParseStats{}, nil, duplerrors.Wrap(
