@@ -14,11 +14,6 @@ const (
 	// FilterSourceGogenfilter: caught by gogenfilter's standard filename-gated
 	// or content-based checks.
 	FilterSourceGogenfilter FilterSource = "gogenfilter"
-
-	// FilterSourceDefenseInDepth: caught by the content-based defense-in-depth
-	// check (filterExcludedGenerated) that catches generated files lacking the
-	// expected filename suffix (_templ.go, _sqlc.go, *.pb.go).
-	FilterSourceDefenseInDepth FilterSource = "defense-in-depth"
 )
 
 // FilterStats holds aggregated filter statistics.
@@ -62,8 +57,8 @@ func (s *FilterStats) Record(result gogenfilter.FilterResult) {
 	s.RecordWithSource(result, FilterSourceGogenfilter)
 }
 
-// RecordWithSource records a filter result with its source (gogenfilter or
-// defense-in-depth), allowing stats output to distinguish how each file was caught.
+// RecordWithSource records a filter result with its source, allowing stats
+// output to distinguish how each file was caught.
 func (s *FilterStats) RecordWithSource(result gogenfilter.FilterResult, source FilterSource) {
 	if s == nil {
 		return
@@ -100,7 +95,7 @@ func (s *FilterStats) Breakdown() map[string]int {
 }
 
 // SourceBreakdown returns a defensive copy of the per-source breakdown,
-// distinguishing files caught by gogenfilter vs the defense-in-depth content check.
+// showing how many files were caught by each filtering mechanism.
 func (s *FilterStats) SourceBreakdown() map[string]int {
 	return withLock(s, nil, func() map[string]int {
 		result := make(map[string]int, len(s.bySource))

@@ -42,17 +42,13 @@ func TestRecordDefaultsToGogenfilterSource(t *testing.T) {
 	if got[string(FilterSourceGogenfilter)] != 1 {
 		t.Errorf("Record() should attribute to %s, got %v", FilterSourceGogenfilter, got)
 	}
-
-	if got[string(FilterSourceDefenseInDepth)] != 0 {
-		t.Errorf("Record() should not attribute to %s, got %v", FilterSourceDefenseInDepth, got)
-	}
 }
 
 func TestRecordDoesNotCountUnfiltered(t *testing.T) {
 	s := NewFilterStats(nil)
 
 	s.Record(gogenfilter.FilterResult{Filtered: false, Reason: gogenfilter.ReasonNotFiltered})
-	s.RecordWithSource(gogenfilter.FilterResult{Filtered: false}, FilterSourceDefenseInDepth)
+	s.RecordWithSource(gogenfilter.FilterResult{Filtered: false}, FilterSource("test-source"))
 
 	if got := s.TotalFiltered(); got != 0 {
 		t.Errorf("TotalFiltered() = %d, want 0 when no results are filtered", got)
@@ -74,7 +70,7 @@ func TestRecordWithSourceAndBreakdown(t *testing.T) {
 	}, FilterSourceGogenfilter)
 	s.RecordWithSource(gogenfilter.FilterResult{
 		Filtered: true, Reason: gogenfilter.ReasonSQLC, Path: "c_sqlc.go",
-	}, FilterSourceDefenseInDepth)
+	}, FilterSource("test-source"))
 	// Unfiltered results must not move any counter.
 	s.RecordWithSource(gogenfilter.FilterResult{
 		Filtered: false, Reason: gogenfilter.ReasonNotFiltered, Path: "regular.go",
@@ -150,5 +146,5 @@ func TestFilterStatsNilReceiverSafe(t *testing.T) {
 
 	// Recording on a nil receiver must be a no-op, not a panic.
 	s.Record(gogenfilter.FilterResult{Filtered: true, Reason: gogenfilter.ReasonTempl})
-	s.RecordWithSource(gogenfilter.FilterResult{Filtered: true}, FilterSourceDefenseInDepth)
+	s.RecordWithSource(gogenfilter.FilterResult{Filtered: true}, FilterSource("test-source"))
 }
