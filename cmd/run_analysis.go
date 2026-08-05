@@ -55,6 +55,7 @@ func (p buildParams) getFilesChan() chan string {
 		p.cfg.IncludeNodeModules,
 		p.cfg.Only,
 		gitignore,
+		p.stderr,
 	)
 }
 

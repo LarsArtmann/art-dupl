@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"io"
 	"os"
 	"path/filepath"
 	"strings"
@@ -243,7 +244,7 @@ func TestStatsOutputFormat(t *testing.T) {
 
 func TestCreateOutputWriter(t *testing.T) {
 	t.Run("empty filename returns stdout", func(t *testing.T) {
-		w, cleanup, err := createOutputWriter("")
+		w, cleanup, err := createOutputWriter("", io.Discard)
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
@@ -259,7 +260,7 @@ func TestCreateOutputWriter(t *testing.T) {
 		tmpDir := t.TempDir()
 		path := filepath.Join(tmpDir, "stats-output.txt")
 
-		w, cleanup, err := createOutputWriter(path)
+		w, cleanup, err := createOutputWriter(path, io.Discard)
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
@@ -282,7 +283,7 @@ func TestCreateOutputWriter(t *testing.T) {
 	})
 
 	t.Run("invalid path returns error", func(t *testing.T) {
-		_, _, err := createOutputWriter("/nonexistent/dir/output.txt")
+		_, _, err := createOutputWriter("/nonexistent/dir/output.txt", io.Discard)
 		if err == nil {
 			t.Error("expected error for invalid path")
 		}

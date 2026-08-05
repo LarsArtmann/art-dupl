@@ -56,6 +56,7 @@ func executeHashOnlyAnalysis(
 		cfg.IncludeNodeModules,
 		cfg.Only,
 		gitignore,
+		stderr,
 	)
 
 	filesChan = progressFilesChan(ctx, filesChan, cfg, outputFormat, stderr)

@@ -113,7 +113,7 @@ func runStats(c *cobra.Command, arguments []string) error {
 	duration := endProfile.Duration
 
 	// Create stats printer
-	writer, cleanup, err := createOutputWriter(outputFile)
+	writer, cleanup, err := createOutputWriter(outputFile, c.ErrOrStderr())
 	if err != nil {
 		return err
 	}
@@ -185,7 +185,7 @@ func parseDuration(s string) (time.Duration, error) {
 // createOutputWriter returns an io.Writer for stats output.
 // If filename is empty, it returns os.Stdout with a no-op cleanup.
 // Otherwise it creates the file and returns a cleanup function that closes it.
-func createOutputWriter(filename string) (io.Writer, func(), error) {
+func createOutputWriter(filename string, stderr io.Writer) (io.Writer, func(), error) {
 	if filename == "" {
 		return os.Stdout, func() {}, nil
 	}
@@ -199,7 +199,7 @@ func createOutputWriter(filename string) (io.Writer, func(), error) {
 	cleanup := func() {
 		closeErr := f.Close()
 		if closeErr != nil {
-			fmt.Fprintf(os.Stderr, "warning: failed to close file %q: %v\n", filename, closeErr)
+			fmt.Fprintf(stderr, "warning: failed to close file %q: %v\n", filename, closeErr)
 		}
 	}
 

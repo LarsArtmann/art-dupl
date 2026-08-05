@@ -101,9 +101,10 @@ func filesFeedWithOptions(
 	includeVendor, includeNodeModules bool,
 	only config.FileType,
 	gitignore *GitignoreMatcher,
+	stderr io.Writer,
 ) chan string {
 	if fromStdin {
-		return feedFromStdin(ctx, os.Stdin, filter, filterStats, includes, only)
+		return feedFromStdin(ctx, os.Stdin, filter, filterStats, includes, only, stderr)
 	}
 
 	fileCheck := func(name string) bool {
@@ -119,6 +120,7 @@ func filesFeedWithOptions(
 		paths, filter, filterStats, includes,
 		includeVendor, includeNodeModules, fileCheck,
 		gitignore,
+		stderr,
 	)
 }
 
