@@ -28,7 +28,7 @@ This file is OPEN work only — no completed, rejected, or resolved items.
 
 ### Filtering and Generated Code
 
-- [ ] **Push defense-in-depth into gogenfilter**: `filterExcludedGenerated` in `cmd/util.go` patches a gap where filename-gated category filters miss files without expected patterns. The proper fix is making gogenfilter's category filters content-based as a fallback. Track: upstream issue/PR against `github.com/LarsArtmann/gogenfilter`.
+- [x] **Push defense-in-depth into gogenfilter**: COMPLETED 2026-08-05. gogenfilter's detector `checkContent` field is now content-only (no filename gate) for SQLC/templ/protobuf/go-enum (gogenfilter v3.4.0+). Phase-2 detection catches generated files by content even without the expected filename suffix. Removed `filterExcludedGenerated` and `FilterSourceDefenseInDepth` from art-dupl — the gap is now fixed at the source. The `matchedGeneratedCategory` and `allowsContent` helpers remain for the generic-override path (`--include-generated` flags).
 - [ ] **Lazy content reading**: `shouldIncludeFile` reads content upfront for every file when includes are active, even if the filename-based filter would catch it. **Blocked**: `gogenfilter.FilterDetailed` reads content internally but doesn't return it, so avoiding the upfront read causes a double-read for regular files (~90% case). Fix requires an upstream gogenfilter API change. The marker-matching path already early-exits on files lacking the `"Code generated"` header via `bytes.Contains`.
 
 ### Detection and Filtering
