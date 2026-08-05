@@ -214,6 +214,11 @@ func isTerminalStatement(n *domain.CloneNode) bool {
 	case golang.DeclStmt:
 		return !subtreeContainsTypeSpec(n)
 
+	case golang.ExprStmt:
+		// Standalone unary expression statements (<-ch, *ptr, etc.) are
+		// synchronization/trivial operations, not actionable duplication.
+		return len(n.Children) == 1 && n.Children[0].BaseType == golang.UnaryExpr
+
 	default:
 		return false
 	}

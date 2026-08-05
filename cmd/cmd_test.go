@@ -339,7 +339,8 @@ func TestCrawlPaths(t *testing.T) {
 		}
 
 		result := crawlPaths(
-			context.Background(), []string{tmpFile}, nil, nil, generatorIncludes{}, false, false, false, nil, io.Discard,
+			context.Background(), []string{tmpFile}, nil, nil,
+			generatorIncludes{}, false, false, false, nil, io.Discard,
 		)
 		if result == nil {
 			t.Fatal("crawlPaths() returned nil")
