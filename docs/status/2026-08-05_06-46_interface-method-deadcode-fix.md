@@ -1,5 +1,7 @@
 # Status: Interface-Method Dead-Code Fix + CI Cleanup — 2026-08-05 06:46
 
+> **Post-session annotation (2026-08-05):** All work complete. The dead-code bug is fixed, BDD tests added, CI blockers resolved (tagliatelle removed — though it recurs; godox fixed). `nix flake check` passed all 10 checks at time of writing. Recorded in CHANGELOG `[Unreleased]`. The ROADMAP `[~]` for interface-aware suppression is accurate (same-package done, cross-package remains). Key open items harvested into TODO_LIST: FuncLit flag-reset test, SDK InterfaceMethod test.
+
 ## Summary
 
 Discovered and fixed a **critical architectural bug**: the `interface-method`

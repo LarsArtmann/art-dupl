@@ -1,5 +1,7 @@
 # Status: Push Defense-in-Depth into gogenfilter — COMPLETE
 
+> **Post-session annotation (2026-08-05):** Core implementation complete in both repos. gogenfilter v3.4.0 tagged and adopted in art-dupl (see `2026-08-05_10-39`). The `filterExcludedGenerated` workaround and `FilterSourceDefenseInDepth` are removed. The `go.mod` local replace directive remains (TODO_LIST item). Stale "defense-in-depth" comments in `bdd/`, `printer/stats_data.go`, and `printer/stats/stats_collector.go` remain (TODO_LIST item). Recorded in CHANGELOG `[Unreleased]`.
+
 > **Date:** 2026-08-05 07:30
 > **Session scope:** Resolve TODO_LIST item "Push defense-in-depth into gogenfilter" by making gogenfilter's category detectors content-only, then removing the art-dupl workaround.
 

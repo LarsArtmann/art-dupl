@@ -81,3 +81,72 @@ func FuzzCtxCancelFindDuplOver(f *testing.F) {
 		}
 	})
 }
+
+// FuzzFindDuplOverParallel tests that FindDuplOverParallel never panics on
+// arbitrary input and always closes the output channel. Mirrors FuzzFindDuplOver
+// for the parallel search path.
+func FuzzFindDuplOverParallel(f *testing.F) {
+	f.Add([]byte("abcabc"))
+	f.Add([]byte("aaaa"))
+	f.Add([]byte(""))
+	f.Add([]byte("x"))
+
+	f.Fuzz(func(t *testing.T, data []byte) {
+		if len(data) > 1000 {
+			return // keep test fast
+		}
+
+		tree := New()
+
+		tokens := make([]Token, 0, len(data))
+		for _, b := range data {
+			tokens = append(tokens, simpleToken(TokenValue(b)))
+		}
+
+		mustUpdate(tree, tokens...)
+
+		ctx, cancel := context.WithCancel(context.Background())
+		defer cancel()
+
+		ch := tree.FindDuplOverParallel(ctx, 2, 4)
+
+		count := 0
+		for range ch {
+			count++
+			if count > 10000 {
+				cancel()
+
+				break
+			}
+		}
+	})
+}
+
+// FuzzCtxCancelFindDuplOverParallel tests that context cancellation properly
+// stops the parallel walk and closes the channel.
+func FuzzCtxCancelFindDuplOverParallel(f *testing.F) {
+	f.Add([]byte("abcdefghij"))
+
+	f.Fuzz(func(t *testing.T, data []byte) {
+		if len(data) < 2 {
+			return
+		}
+
+		tree := New()
+
+		tokens := make([]Token, 0, len(data))
+		for _, b := range data {
+			tokens = append(tokens, simpleToken(TokenValue(b+1)))
+		}
+
+		mustUpdate(tree, tokens...)
+
+		ctx, cancel := context.WithCancel(context.Background())
+		cancel() // cancel immediately
+
+		ch := tree.FindDuplOverParallel(ctx, 1, 4)
+
+		for range ch {
+		}
+	})
+}

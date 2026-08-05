@@ -28,7 +28,7 @@
 ## Quality and Intelligence
 
 - [~] **Interface-aware suppression**: Detect method signatures that implement an interface contract and suppress them as structural duplication, not actionable cloning. Same-package interface detection via `go/types` is implemented (the `interface-method` pattern checks the `InterfaceMethod` flag set by the transformer when `--type-aware` is active). Cross-package and stdlib interfaces still rely on the static name list (`commonInterfaceMethodNames`). Full call-graph analysis remains future work.
-- [x] **Configurable actionability patterns**: `--disable-pattern <label>` and `--list-patterns` implemented. 22 patterns currently active; property engine adds second-pass analysis.
+- [x] **Configurable actionability patterns**: `--disable-pattern <label>` and `--list-patterns` implemented. 23 patterns currently active; property engine adds second-pass analysis.
 - [ ] **ML-based actionability classification**: Train a model on labeled clone data to predict whether a clone is actionable, replacing the rule-based actionability patterns. Would handle edge cases the 22 current patterns miss.
 - [~] **Fixability score**: Property-based extractability engine implemented (ADR-0017) with 4 properties + confidence scoring. Three-tier output (actionable / low-confidence / non-actionable). Confidence values need calibration against real-world data.
 - [ ] **Nested-scope shadowing in alpha-normalization**: Current symbol table is flat (no nested-scope shadowing). Proper lexical scoping would improve Type-2 clone accuracy in deeply nested code.
@@ -43,7 +43,7 @@
 ## Documentation and Adoption
 
 - [ ] **SARIF output validation**: Validate emitted SARIF JSON against GitHub's official schema validator library in CI.
-- [ ] **Performance optimization guide**: Document `--workers`, `--incremental`, `--cache-dir` tuning for different codebase sizes.
+- [ ] **Performance optimization guide**: Document `--workers`, `--search-workers`, `--incremental`, `--cache-dir` tuning for different codebase sizes.
 - [ ] **awesome-go submission**: Submit to awesome-go list once stable v1.0 is tagged.
 
 ---

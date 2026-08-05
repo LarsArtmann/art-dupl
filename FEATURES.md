@@ -1,7 +1,7 @@
 # art-dupl Feature Documentation
 
-> **Last Updated:** 2026-07-28
-> **Version:** v0.6.0
+> **Last Updated:** 2026-08-05
+> **Version:** v0.6.1
 
 ## Overview
 
@@ -137,18 +137,19 @@
 
 ## 🛡️ Smart Filtering
 
-| Feature                       | Status           | Description                                                                                                         |
-| ----------------------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------- |
-| **SQLC Detection**            | FULLY_FUNCTIONAL | Auto-detects `sqlc.yaml` in parent dirs, filters generated `.go`                                                    |
-| **Templ Filtering**           | FULLY_FUNCTIONAL | `.templ` source files included by default; `*_templ.go` filtered by default                                         |
-| **Protobuf Filtering**        | FULLY_FUNCTIONAL | Filters `.pb.go`, `_grpc.pb.go` files                                                                               |
-| **Mockgen Filtering**         | FULLY_FUNCTIONAL | Filters mockgen generated files                                                                                     |
-| **Stringer Filtering**        | FULLY_FUNCTIONAL | Filters stringer generated files                                                                                    |
-| **Include Overrides**         | FULLY_FUNCTIONAL | `--include-generated <category>` to override (`sqlc`, `templ`, `protobuf`, `mockgen`, `stringer`, `generic`, `all`) |
-| **Custom Include/Exclude**    | FULLY_FUNCTIONAL | `--include-pattern` / `--exclude-pattern` glob patterns                                                             |
-| **Directory Exclusions**      | FULLY_FUNCTIONAL | `vendor/`, `.git/`, `node_modules/` excluded by default                                                             |
-| **Node Modules**              | FULLY_FUNCTIONAL | `--include-node-modules` includes for hash detection                                                                |
-| **File Type Filter (--only)** | FULLY_FUNCTIONAL | Restrict to `go` or `templ` file types                                                                              |
+| Feature                       | Status           | Description                                                                                                                                         |
+| ----------------------------- | ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **SQLC Detection**            | FULLY_FUNCTIONAL | Auto-detects `sqlc.yaml` in parent dirs, filters generated `.go`                                                                                    |
+| **Templ Filtering**           | FULLY_FUNCTIONAL | `.templ` source files included by default; `*_templ.go` filtered by default                                                                         |
+| **Lazy Content Reading**      | FULLY_FUNCTIONAL | gogenfilter v3.4.0 `FilterDetailedAndContent` reads file content only when phase-2 detection runs. Phase-1 filename catches skip disk I/O entirely. |
+| **Protobuf Filtering**        | FULLY_FUNCTIONAL | Filters `.pb.go`, `_grpc.pb.go` files                                                                                                               |
+| **Mockgen Filtering**         | FULLY_FUNCTIONAL | Filters mockgen generated files                                                                                                                     |
+| **Stringer Filtering**        | FULLY_FUNCTIONAL | Filters stringer generated files                                                                                                                    |
+| **Include Overrides**         | FULLY_FUNCTIONAL | `--include-generated <category>` to override (`sqlc`, `templ`, `protobuf`, `mockgen`, `stringer`, `generic`, `all`)                                 |
+| **Custom Include/Exclude**    | FULLY_FUNCTIONAL | `--include-pattern` / `--exclude-pattern` glob patterns                                                                                             |
+| **Directory Exclusions**      | FULLY_FUNCTIONAL | `vendor/`, `.git/`, `node_modules/` excluded by default                                                                                             |
+| **Node Modules**              | FULLY_FUNCTIONAL | `--include-node-modules` includes for hash detection                                                                                                |
+| **File Type Filter (--only)** | FULLY_FUNCTIONAL | Restrict to `go` or `templ` file types                                                                                                              |
 
 ---
 
@@ -157,6 +158,8 @@
 | Feature                   | Status           | Description                                                                                                                                         |
 | ------------------------- | ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Parallel Parsing**      | FULLY_FUNCTIONAL | Worker pool via `--workers` flag (0=auto, NumCPU)                                                                                                   |
+| **Parallel Search**       | FULLY_FUNCTIONAL | `--search-workers` flag parallelizes suffix tree DFS across root subtrees (0/1=sequential, >1=N workers). 1.5-3.4x speedup.                         |
+| **Memory-Compact Tree**   | FULLY_FUNCTIONAL | Suffix tree data stored as `[]TokenValue` (int32, 4 bytes) instead of `[]Token` (interface, 16 bytes). 75% pointer-array memory reduction.          |
 | **Incremental Analysis**  | FULLY_FUNCTIONAL | SHA-256 content-hash AST caching, `--incremental` flag, CacheVersion 2                                                                              |
 | **Git-Aware Incremental** | REMOVED          | `--since` flag removed (was a dead stub, never read). Only content-hash caching via `--incremental` works. Git-diff file selection not implemented. |
 | **Cache Management**      | FULLY_FUNCTIONAL | `--cache-dir`, `--clear-cache`, `--max-cache-entries`, file-based gob serialization, LRU-style `Prune` eviction                                     |
@@ -169,31 +172,32 @@
 
 ## 🖥️ Professional CLI (via Fang)
 
-| Feature                      | Status           | Description                                                                        |
-| ---------------------------- | ---------------- | ---------------------------------------------------------------------------------- |
-| **Styled Help Output**       | FULLY_FUNCTIONAL | Rich, themed help text via Fang framework                                          |
-| **Shell Completion**         | FULLY_FUNCTIONAL | bash, zsh, fish, PowerShell with `--no-descriptions` option                        |
-| **Man Page Generation**      | FULLY_FUNCTIONAL | `art-dupl man` generates manual pages                                              |
-| **Version Information**      | FULLY_FUNCTIONAL | Version, commit, build date; `version --json`, `version --short`                   |
-| **Configurable Verbosity**   | FULLY_FUNCTIONAL | `-v` (verbose), `-vv` (extra verbose), `--quiet`/`-q` (suppress status)            |
-| **Color Control**            | FULLY_FUNCTIONAL | `--no-color` flag, `NO_COLOR` env var (lipgloss native)                            |
-| **Typed Exit Codes**         | FULLY_FUNCTIONAL | 0=success, 1=general, 2=config/validation, 3=internal, 130=interrupted (ADR-0013)  |
-| **Line-Count Filtering**     | FULLY_FUNCTIONAL | `--min-lines` suppresses clone groups with fewer lines (minimum across all clones) |
-| **Test Threshold**           | FULLY_FUNCTIONAL | `--test-threshold` sets a separate (higher) threshold for test files               |
-| **Test Suppression**         | FULLY_FUNCTIONAL | `--suppress-test-low` suppresses low-priority clones in test files                 |
-| **Token Dump**               | FULLY_FUNCTIONAL | `--dump-tokens` outputs serialized token stream for debugging false positives      |
-| **Rich Text Output**         | FULLY_FUNCTIONAL | `--rich-text` adds priority/category/actionability badges to text output           |
-| **Explain Mode**             | FULLY_FUNCTIONAL | `--explain` prints a per-group rationale (type, actionability, category, savings)  |
-| **Actionability Toggle**     | FULLY_FUNCTIONAL | `--no-actionability` shows all clones, including non-actionable boilerplate        |
-| **Disable Pattern**          | FULLY_FUNCTIONAL | `--disable-pattern <label>` re-enables a specific boilerplate pattern              |
-| **List Patterns**            | FULLY_FUNCTIONAL | `--list-patterns` prints all 23 pattern labels                                     |
-| **Threshold Recommendation** | FULLY_FUNCTIONAL | `--recommend-threshold` suggests a threshold based on codebase size                |
-| **Diff Report**              | FULLY_FUNCTIONAL | `--diff-report <baseline>` shows new/suppressed/resolved clones                    |
-| **HTML to File**             | FULLY_FUNCTIONAL | `--html-out <file>` writes HTML report to file with auto-open                      |
-| **Quiet Mode**               | FULLY_FUNCTIONAL | `--quiet`/`-q` suppresses progress and status output                               |
-| **Color Control**            | FULLY_FUNCTIONAL | `--no-color` disables colored output                                               |
-| **Type-Aware Mode**          | FULLY_FUNCTIONAL | `--type-aware` encodes variable types into hashes via `go/types` (see Semantic)    |
-| **Version Subcommand**       | FULLY_FUNCTIONAL | `art-dupl version [--json                                                          | --short]` prints structured version info |
+| Feature                      | Status           | Description                                                                         |
+| ---------------------------- | ---------------- | ----------------------------------------------------------------------------------- |
+| **Styled Help Output**       | FULLY_FUNCTIONAL | Rich, themed help text via Fang framework                                           |
+| **Shell Completion**         | FULLY_FUNCTIONAL | bash, zsh, fish, PowerShell with `--no-descriptions` option                         |
+| **Man Page Generation**      | FULLY_FUNCTIONAL | `art-dupl man` generates manual pages                                               |
+| **Version Information**      | FULLY_FUNCTIONAL | Version, commit, build date; `version --json`, `version --short`                    |
+| **Configurable Verbosity**   | FULLY_FUNCTIONAL | `-v` (verbose), `-vv` (extra verbose), `--quiet`/`-q` (suppress status)             |
+| **Color Control**            | FULLY_FUNCTIONAL | `--no-color` flag, `NO_COLOR` env var (lipgloss native)                             |
+| **Typed Exit Codes**         | FULLY_FUNCTIONAL | 0=success, 1=general, 2=config/validation, 3=internal, 130=interrupted (ADR-0013)   |
+| **Line-Count Filtering**     | FULLY_FUNCTIONAL | `--min-lines` suppresses clone groups with fewer lines (minimum across all clones)  |
+| **Test Threshold**           | FULLY_FUNCTIONAL | `--test-threshold` sets a separate (higher) threshold for test files                |
+| **Test Suppression**         | FULLY_FUNCTIONAL | `--suppress-test-low` suppresses low-priority clones in test files                  |
+| **Token Dump**               | FULLY_FUNCTIONAL | `--dump-tokens` outputs serialized token stream for debugging false positives       |
+| **Rich Text Output**         | FULLY_FUNCTIONAL | `--rich-text` adds priority/category/actionability badges to text output            |
+| **Explain Mode**             | FULLY_FUNCTIONAL | `--explain` prints a per-group rationale (type, actionability, category, savings)   |
+| **Actionability Toggle**     | FULLY_FUNCTIONAL | `--no-actionability` shows all clones, including non-actionable boilerplate         |
+| **Disable Pattern**          | FULLY_FUNCTIONAL | `--disable-pattern <label>` re-enables a specific boilerplate pattern               |
+| **List Patterns**            | FULLY_FUNCTIONAL | `--list-patterns` prints all 23 pattern labels                                      |
+| **Threshold Recommendation** | FULLY_FUNCTIONAL | `--recommend-threshold` suggests a threshold based on codebase size                 |
+| **Diff Report**              | FULLY_FUNCTIONAL | `--diff-report <baseline>` shows new/suppressed/resolved clones                     |
+| **HTML to File**             | FULLY_FUNCTIONAL | `--html-out <file>` writes HTML report to file with auto-open                       |
+| **Quiet Mode**               | FULLY_FUNCTIONAL | `--quiet`/`-q` suppresses progress and status output                                |
+| **Color Control**            | FULLY_FUNCTIONAL | `--no-color` disables colored output                                                |
+| **Type-Aware Mode**          | FULLY_FUNCTIONAL | `--type-aware` encodes variable types into hashes via `go/types` (see Semantic)     |
+| **Parallel Search**          | FULLY_FUNCTIONAL | `--search-workers N` parallelizes suffix tree search (0/1=sequential, >1=N workers) |
+| **Version Subcommand**       | FULLY_FUNCTIONAL | `art-dupl version [--json                                                           | --short]` prints structured version info |
 
 ---
 
@@ -241,19 +245,19 @@
 
 ## 🏗️ Architecture Components
 
-| Component        | Status           | Description                                                             |
-| ---------------- | ---------------- | ----------------------------------------------------------------------- |
-| **suffixtree/**  | FULLY_FUNCTIONAL | Core Ukkonen's suffix tree, O(1) map transitions                        |
-| **syntax/**      | FULLY_FUNCTIONAL | AST handling, Go + Templ parsers, serialization                         |
-| **job/**         | FULLY_FUNCTIONAL | Parsing pipeline, parallel workers, incremental                         |
-| **printer/**     | FULLY_FUNCTIONAL | 7 output formats, sorting, classification, templ-based HTML             |
-| **hash/**        | FULLY_FUNCTIONAL | XXH3 streaming hash detection                                           |
-| **config/**      | FULLY_FUNCTIONAL | Multi-source config with validation                                     |
-| **detection/**   | FULLY_FUNCTIONAL | Multi-detector coordination via goroutines                              |
-| **cache/**       | FULLY_FUNCTIONAL | File-based AST caching with SHA-256 content hashing                     |
-| **domain/**      | FULLY_FUNCTIONAL | Value objects: ProcessedClone, enums, validation sentinels              |
-| **errors/**      | FULLY_FUNCTIONAL | 7 error categories (ErrorType), single DuplError struct, typed wrapping |
-| **pkg/artdupl/** | FULLY_FUNCTIONAL | Public SDK with Detector interface, comprehensive godoc                 |
+| Component        | Status           | Description                                                                                              |
+| ---------------- | ---------------- | -------------------------------------------------------------------------------------------------------- |
+| **suffixtree/**  | FULLY_FUNCTIONAL | Core Ukkonen's suffix tree, O(1) map transitions, memory-compact `[]TokenValue` storage, parallel search |
+| **syntax/**      | FULLY_FUNCTIONAL | AST handling, Go + Templ parsers, serialization                                                          |
+| **job/**         | FULLY_FUNCTIONAL | Parsing pipeline, parallel workers, incremental                                                          |
+| **printer/**     | FULLY_FUNCTIONAL | 7 output formats, sorting, classification, templ-based HTML                                              |
+| **hash/**        | FULLY_FUNCTIONAL | XXH3 streaming hash detection                                                                            |
+| **config/**      | FULLY_FUNCTIONAL | Multi-source config with validation                                                                      |
+| **detection/**   | FULLY_FUNCTIONAL | Multi-detector coordination via goroutines                                                               |
+| **cache/**       | FULLY_FUNCTIONAL | File-based AST caching with SHA-256 content hashing                                                      |
+| **domain/**      | FULLY_FUNCTIONAL | Value objects: ProcessedClone, enums, validation sentinels                                               |
+| **errors/**      | FULLY_FUNCTIONAL | 7 error categories (ErrorType), single DuplError struct, typed wrapping                                  |
+| **pkg/artdupl/** | FULLY_FUNCTIONAL | Public SDK with Detector interface, comprehensive godoc                                                  |
 
 ---
 
@@ -316,7 +320,7 @@ art-dupl --recommend-threshold ./src
 ### Pattern Control
 
 ```bash
-# List all 20 actionability pattern labels
+# List all 23 actionability pattern labels
 art-dupl --list-patterns
 
 # Re-enable a specific boilerplate pattern
@@ -334,7 +338,8 @@ art-dupl --include-pattern "gen/*" --exclude-pattern "mock_*"
 ### Performance
 
 ```bash
-art-dupl --workers 8           # 8 parallel workers
+art-dupl --workers 8           # 8 parallel parsing workers
+art-dupl --search-workers 4    # 4 parallel search workers
 art-dupl --incremental         # AST caching
 art-dupl --cache-dir /tmp/cache
 art-dupl --clear-cache

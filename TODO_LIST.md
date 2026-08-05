@@ -1,6 +1,6 @@
 # TODO List
 
-**Last Updated:** 2026-08-05 (lazy content reading completed, tagliatelle recurring issue added, lazy-read regression test gap added)
+**Last Updated:** 2026-08-05
 
 Actionable items planned for the next 2-4 weeks. Completed work is in `CHANGELOG.md` (`[Unreleased]`).
 This file is OPEN work only — no completed, rejected, or resolved items.
@@ -8,6 +8,10 @@ This file is OPEN work only — no completed, rejected, or resolved items.
 ---
 
 ## HIGH Priority
+
+### Architecture
+
+- [ ] **Inject output writers into production code**: The root cause of the `cmd` test race condition (2026-08-02). 23+ direct `fmt.Fprintf(os.Stderr, ...)` calls and 2 `fmt.Printf` calls in `cmd/` bypass cobra's injectable writer system. Route through `cmd.OutOrStdout()`/`cmd.ErrOrStderr()` or accept `io.Writer` params. Eliminates the `CaptureStdoutStderr` global-state race surface and makes all tests safely parallelizable. Source: `docs/status/2026-08-02_01-05_race-condition-fix-cmd-tests.md` section E1.
 
 ### Property Engine Follow-up
 
@@ -17,30 +21,36 @@ This file is OPEN work only — no completed, rejected, or resolved items.
 ### Correctness
 
 - [ ] **Add regression test for lazy-read nil-content invariant**: `FilterDetailedAndContent` returns `nil` content when phase-1 filename detection catches a file. This is the core performance guarantee of the v3.4.0 migration but has no test that directly asserts it. If someone reverts to `FilterDetailedWithContent`, no test catches the regression.
-- [x] **Repo-wide audit for duplicated `errors.New("...")` sentinels**: COMPLETED 2026-07-26. Found 2 semantic duplicates in `pkg/artdupl/`: `ErrCloneLineEndBeforeStart` (was a distinct pointer from `domain.ErrLineEndBeforeStart`) and `ErrUnsupportedMethod` (was distinct from `domain.ErrInvalidDetectionMethod`). Both now aliased to domain. Added AST-based auto-scanner test (`TestNoDuplicateErrorNewMessages`) that scans ALL production `.go` files for duplicate `errors.New("literal")` messages — self-maintaining, no hardcoded list. Expanded `TestAliasedSentinelsAreIdentical` from 10 to 12 cases.
 
 ### Code Quality
 
 - [ ] **Remove `tagliatelle` from `.golangci.yml` enable list (recurring)**: The auto-committer keeps re-adding `tagliatelle` (and possibly `exhaustruct`) to `.golangci.yml:108`. The project's own guard script (`scripts/check-disabled-linters.sh`) bans it and fails `nix flake check`. This is a recurring whack-a-mole — investigate the root cause (why does the auto-committer re-add it?) and consider making the guard script auto-fix instead of just failing.
-- [x] **Extract format printers into sub-packages (Phase 4)**: EVALUATED AND DEFERRED 2026-07-26. Root `printer/` is 3,830 LOC (excluding generated `report_templ.go`). Coupling too tight for safe extraction: `json.go` alone has 25 refs to shared types (`CloneGroup`, `JSONClone`, `toJSONClone`, `SortCloneGroups`). Extraction would require a `printer/types/` package for shared infra (~1,300 LOC churn across every format file). Format set (text/json/html/sarif/plumbing) is stable — YAGNI. Re-evaluate if: root exceeds 5,000 LOC, a new format is added, or shared types stabilize.
 
 ---
 
 ## MEDIUM Priority
 
-### Filtering and Generated Code
+### Testing
 
-- [x] **Push defense-in-depth into gogenfilter**: COMPLETED 2026-08-05. gogenfilter's detector `checkContent` field is now content-only (no filename gate) for SQLC/templ/protobuf/go-enum (gogenfilter v3.4.0+). Phase-2 detection catches generated files by content even without the expected filename suffix. Removed `filterExcludedGenerated` and `FilterSourceDefenseInDepth` from art-dupl — the gap is now fixed at the source. The `matchedGeneratedCategory` and `allowsContent` helpers remain for the generic-override path (`--include-generated` flags).
-- [x] **Lazy content reading**: COMPLETED 2026-08-05. Upgraded gogenfilter to v3.4.0 (`flake.nix` rev `300b93e0`) and adopted `FilterDetailedAndContent` in `cmd/util.go`. Files caught by phase-1 filename/pattern detection are no longer read from disk; content is only opened when phase-2 content detection runs, and the returned bytes are reused for the `ReasonGeneric` override classification. No double read.
+- [ ] **Add `FuzzFindDuplOverParallel` fuzz test**: The parallel suffix tree search path has correctness and property tests but no randomized fuzz test. Mirror the existing `FuzzFindDuplOver` to ensure no panic and channel-always-closes on arbitrary input.
+- [ ] **Parameterize property tests for parallel search**: The property tests (`TestProperty_*`) only test sequential `FindDuplOver`. Extend them to also run against `FindDuplOverParallel` to guarantee the mathematical invariants hold for both paths.
+- [ ] **Add BDD test exercising `--search-workers`**: No end-to-end test covers parallel search. Add a scenario to `bdd/` that runs analysis with `--search-workers 4` and verifies identical results to sequential.
+- [ ] **Add dedicated FuncLit flag-reset test**: The transformer resets `enclosingInterfaceMethod = false` in the FuncLit case (closures are not interface methods), but no test verifies closures inside interface method bodies don't inherit the flag.
+- [ ] **Add SDK test for `InterfaceMethod` flag**: `pkg/artdupl` has `detector_type_aware_test.go` but no test verifies `InterfaceMethod` flows through the SDK boundary to `pkg/artdupl.Clone`.
+- [ ] **Add extractability engine integration test**: `isFormatSpecifierDifference` unit tests call the function directly. No integration test exercises `EvaluateExtractability` end-to-end with format-specifier-differing `CloneNode` trees.
 
-### Detection and Filtering
+### Documentation
 
-- [x] **Type-aware interface-method detection**: COMPLETED 2026-08-05. The `interface-method` actionability pattern now uses `go/types` to verify a FuncDecl satisfies a same-package interface when `--type-aware` is active. The `golang.IsInterfaceMethod()` function scans the package scope for interfaces with a matching method name and checks `types.Implements` for both value and pointer receivers. The `InterfaceMethod` flag is propagated from FuncDecl to body statement nodes via the transformer (same save/restore pattern as `EnclosingReturnArity`) because FuncDecl nodes are never clone roots in Go files (structural filter in `FindSyntaxUnits` rejects non-Statement roots). The pattern matcher has two paths: path 1 checks FuncDecl roots (edge case, uses static name list), path 2 checks statement-level roots (normal Go files, uses propagated flag). The static stdlib name list (`commonInterfaceMethodNames`) remains as a fallback. Also fixed a pre-existing bug where FuncDecl nodes did not have `Name` set by the transformer. Cross-package interface scanning remains future work (ROADMAP).
+- [ ] **Document `--search-workers` in HOW_TO_USE.md**: The flag is registered, functional, and wired through CLI → config → detection → SDK, but not documented in the user guide.
 
 ### CI and Infrastructure
 
-- [x] **Local pre-commit git hook**: COMPLETED 2026-07-26. The `scripts/check-disabled-linters.sh` guard is now appended to `.git/hooks/pre-commit` after the buildflow step via `scripts/install-hooks.sh` (idempotent, re-run if buildflow overwrites the hook). The guard fails the commit if `exhaustruct` or `tagliatelle` are re-added to `.golangci.yml`.
 - [ ] **Wire `go-arch-lint` into `nix flake check`**: `.go-arch-lint.yml` defines the `actionability`/`stats` printer sub-package boundaries (verified enforceable via negative test), but **no Nix check actually runs `go-arch-lint`** — the boundaries are config-only, not CI-enforced. Standalone `go-arch-lint check` exits 1 due to **13 pre-existing violations** unrelated to the printer split (missing `baseline` component; undeclared deps: `cli-commands`→`baseline`/`testutil`/`syntax-golang`, `sdk`→`syntax-golang`, `printer`→`baseline`, `syntax-golang`→`domain`). Adding the CI check requires either fixing these config gaps (mostly legitimate couplings to add to `mayDependOn`) or refactoring the one smell (`cmd/run_all_modes.go` prod file imports `internal/testutil`).
+
+### Code Cleanup
+
+- [ ] **Remove stale "defense-in-depth" comments**: 4 references in `bdd/filter_features_test.go` (lines 461, 477, 502, 535) and 2 in production code (`printer/stats_data.go:87`, `printer/stats/stats_collector.go:42`) describe a mechanism removed in the gogenfilter v3.4.0 migration. The tests pass but the comments are misleading.
+- [ ] **Remove `go.mod` local replace directive**: `replace github.com/LarsArtmann/gogenfilter/v3 => /home/lars/projects/gogenfilter` works for Nix (which overrides it) and local dev, but breaks for anyone cloning the repo without the local path. Should point to the tagged `v3.4.0` version.
 
 ---
 

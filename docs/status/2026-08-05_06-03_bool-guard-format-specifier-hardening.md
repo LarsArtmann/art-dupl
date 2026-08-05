@@ -1,5 +1,7 @@
 # Status: 2026-08-05 06:03 — Bool Guard & Format Specifier Hardening
 
+> **Post-session annotation (2026-08-05):** Both TODO items fully completed and removed from TODO_LIST. Recorded in CHANGELOG `[Unreleased]`. Remaining section C items (calibrate confidence, property engine labels) are in TODO_LIST. The AGENTS.md/ACTIONABILITY_PATTERNS.md bool-guard description drift (section E items 6-7) is a known minor gap. Section F is a brainstorm — key items harvested into TODO_LIST.
+
 ## Context
 
 Two TODO items from `TODO_LIST.md` (Property Engine Follow-up section):

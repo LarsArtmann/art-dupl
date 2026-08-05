@@ -1,5 +1,7 @@
 # Status Report: 2026-08-05 06:40 — Parallel Suffix Tree Search + Memory Optimization
 
+> **Post-session annotation (2026-08-05):** Both features complete and committed. `--search-workers`, memory-compact `[]TokenValue`, and ADR-0019 all shipped. Recorded in CHANGELOG `[Unreleased]` and ROADMAP (both items marked `[x]`). Key gaps from section C remain open: no fuzz test for parallel search, HOW_TO_USE.md missing `--search-workers`, no BDD coverage. These are harvested into TODO_LIST.md. The `detection/coverage_test.go` typecheck error (section D) was pre-existing from the interface-method work and resolved in `06-46`.
+
 ## Session Goal
 
 Implement two ROADMAP items:

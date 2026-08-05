@@ -1,5 +1,7 @@
 # Status Report: go-humanize-linter H001 Fix
 
+> **Post-session annotation (2026-08-05):** All work complete and committed. The `KB`→`KiB` output change was accepted as correct (IEC labels for binary divisors). The `go-humanize` dependency is now a direct dep. Recorded in CHANGELOG `[Unreleased]`. Section C/N items are out-of-scope notes; section F is a brainstorm — key items harvested into TODO_LIST/ROADMAP.
+
 **Date:** 2026-08-05 03:34
 **Session scope:** Single finding (`H001` manual byte formatting) in `printer/text.go:364`, fixed end-to-end.
 **Branch:** `fork` (3 commits ahead of `origin/fork`)

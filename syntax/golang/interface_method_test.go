@@ -357,3 +357,107 @@ func findFuncDeclNode(t *testing.T, root *syntax.Node, name string) *syntax.Node
 
 	return found
 }
+
+// findFuncLitNodes walks the syntax.Node subtree and returns all FuncLit nodes.
+func findFuncLitNodes(root *syntax.Node) []*syntax.Node {
+	var found []*syntax.Node
+
+	var walk func(n *syntax.Node)
+
+	walk = func(n *syntax.Node) {
+		if DecodeBaseType(n.Type) == FuncLit {
+			found = append(found, n)
+		}
+
+		for _, c := range n.Children {
+			walk(c)
+		}
+	}
+
+	walk(root)
+
+	return found
+}
+
+// TestTransformer_FuncLitResetsInterfaceMethodFlag verifies that closures
+// (FuncLit) inside interface method bodies do NOT inherit the
+// InterfaceMethod flag. The transformer resets enclosingInterfaceMethod to
+// false in the FuncLit case because closures are not interface methods.
+func TestTransformer_FuncLitResetsInterfaceMethodFlag(t *testing.T) {
+	t.Parallel()
+
+	src := `package testpkg
+
+type Handler interface {
+	Process(data []byte) error
+}
+
+type Worker struct{}
+
+func (w Worker) Process(data []byte) error {
+	check := func(b byte) bool {
+		return b > 0
+	}
+	for _, b := range data {
+		if check(b) {
+			return nil
+		}
+	}
+	return nil
+}`
+	dir := t.TempDir()
+	path := dir + "/src.go"
+	writeFile(t, path, src)
+
+	typeData, err := LoadTypeAwareData([]string{path})
+	if err != nil {
+		t.Fatalf("LoadTypeAwareData failed: %v", err)
+	}
+
+	pre := typeData.LookupPreloaded(path)
+	if pre == nil {
+		t.Fatal("LookupPreloaded returned nil")
+	}
+
+	root := parsePreloadedTest(t, path, pre)
+
+	// Find the Process FuncDecl — it satisfies Handler, so InterfaceMethod=true.
+	processNode := findFuncDeclNode(t, root, "Process")
+	if !processNode.InterfaceMethod {
+		t.Fatal("Process FuncDecl should have InterfaceMethod=true")
+	}
+
+	// Body statements of Process should inherit InterfaceMethod=true.
+	processBodyStmts := findBodyStatements(processNode)
+	if len(processBodyStmts) == 0 {
+		t.Fatal("Process body has no statements")
+	}
+
+	for _, stmt := range processBodyStmts {
+		if !stmt.InterfaceMethod {
+			t.Error("body statement of interface method Process should have InterfaceMethod=true")
+		}
+	}
+
+	// Find the FuncLit (closure) inside Process.
+	funcLits := findFuncLitNodes(processNode)
+	if len(funcLits) == 0 {
+		t.Fatal("no FuncLit found inside Process body")
+	}
+
+	for _, fl := range funcLits {
+		// The FuncLit node itself inherits the flag from its parent context
+		// (set at line 19 before the case-specific reset). The reset to false
+		// only applies to the FuncLit's CHILDREN — body statements, params, etc.
+		// This is correct: the actionability layer matches at the statement level,
+		// and the FuncLit's body statements must NOT be flagged as interface methods.
+
+		// The FuncLit's body statements should have InterfaceMethod=false.
+		for _, stmt := range findBodyStatements(fl) {
+			if stmt.InterfaceMethod {
+				t.Error("FuncLit body statement should have InterfaceMethod=false " +
+					"(closures inside interface methods are not themselves interface methods)")
+			}
+		}
+	}
+}

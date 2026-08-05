@@ -9,7 +9,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-_Nothing yet._
+- **`bool-accumulator-initializer` actionability pattern**: Suppresses consecutive boolean flag initializers (`hasX := false`, `hasY := false`) as non-actionable boilerplate. Handles `:=`, `var x bool = false`, and package-level `var x = false` forms. Triggered by go-humanize-linter `-t 1` false-positive feedback. Total actionability patterns: 22 to 23.
+- **Type-aware interface-method detection**: `--type-aware` now uses `go/types` to verify whether a FuncDecl satisfies a same-package interface, suppressing custom interface method boilerplate beyond the static stdlib name list (`commonInterfaceMethodNames`). The `golang.IsInterfaceMethod()` function scans the package scope for interfaces with a matching method name and checks `types.Implements` for both value and pointer receivers. The `InterfaceMethod` flag is propagated from FuncDecl to body statement nodes via the transformer (same save/restore pattern as `EnclosingReturnArity`). See ADR-0018.
+- **Parallel suffix tree search** (`--search-workers`): `FindDuplOverParallel` dispatches root-level subtrees to concurrent goroutines via a semaphore-limited worker pool. Root subtrees are disjoint, so results are identical to sequential (only output order differs). Benchmarks: 1.5-3.4x speedup (1K-10K tokens). CLI: `--search-workers N` (0 or 1 = sequential, >1 = N workers). SDK: `Options.SearchWorkers`. See ADR-0019.
+- **Memory-compact suffix tree storage**: `STree.data` changed from `[]Token` (interface, 16 bytes/elem) to `[]TokenValue` (int32, 4 bytes/elem), reducing pointer-array memory by 75%. The tree no longer retains references to original `Token` objects. See ADR-0019.
+- **gogenfilter v3.4.0 content-only detection**: gogenfilter's detector `checkContent` field is now content-only (no filename gate) for SQLC/templ/protobuf/go-enum. Phase-2 detection catches generated files by content even without the expected filename suffix. This eliminates the need for art-dupl's former `filterExcludedGenerated` defense-in-depth workaround.
+- **`humanize.IBytes` for byte formatting**: Text printer byte sizes now use `github.com/dustin/go-humanize` for correct IEC unit labels (KiB/MiB/GiB) instead of hand-rolled SI labels with binary divisors (KB/MB/GB).
+- **BDD tests for interface-method suppression** (`bdd/type_aware_test.go`): 3 Ginkgo specs verifying suppression with `--type-aware`, classification with `--explain`, and non-suppression without `--type-aware`.
+- **BDD test for bool-accumulator-initializer** (`bdd/actionability_test.go`): Verifies suppression at threshold 1 and revelation with `--no-actionability`.
+
+### Changed
+
+- **Bool-guard name set broadened**: `findOkVarName` now accepts `ok`, `found`, `exists`, `success`, `present` (was `ok` only) via the new `isBoolGuardVarName` helper function.
+- **Format specifier parser rewritten**: `isFormatSpecifierDifference` now properly handles `%%` (escaped percent), width specifiers (`%5d` vs `%3d`), precision (`%.2f`), flags, and argument indices (`%[1]d`). Was a naive char-after-`%` comparison.
+- **Lazy content reading**: `shouldIncludeFile` now uses `FilterDetailedAndContent` (gogenfilter v3.4.0). Files caught by phase-1 filename/pattern detection are never opened; content is only read when phase-2 content detection runs, and the returned bytes are reused for the `ReasonGeneric` override classification. No double read.
+- **Text printer byte labels**: `KB/MB/GB` changed to `KiB/MiB/GiB` (correct IEC labels for binary divisors — the old labels were technically wrong).
+
+### Fixed
+
+- **Race condition in `cmd` tests**: `TestStatsHonorsAcceptDirectives` and `TestBaselineRecordHonorsAcceptDirectives` had `t.Parallel()` while using `CaptureStdoutStderr` (which mutates process-global `os.Stdout`/`os.Stderr`). Two parallel sibling tests reading those globals directly caused a data race on the pointer. Removed `t.Parallel()` from the 2 racing tests; codified the serial-capture rule in `TESTING.md`.
+- **FuncDecl `Name` not set by transformer**: The `syntax.Node` docstring claimed `Name` stores the function name for FuncDecl nodes, but the transformer never set it. This made the static interface-method name list silently non-functional. Fixed by adding `o.Name = funcName` in the transformer's `FuncDecl` case.
+- **interface-method pattern was dead code for Go files**: The pattern exclusively checked FuncDecl-rooted clones, but FuncDecl is not a Statement node, and `FindSyntaxUnits` rejects non-Statement clone roots in `.go` files. The pattern could never fire on real Go code. Fixed by propagating the `InterfaceMethod` flag from FuncDecl to body statement nodes and rewriting the pattern matcher with two paths (FuncDecl root for edge cases, statement root for normal Go files).
+- **`godox` lint trigger**: `cmd/suppression_config_test.go` contained the word "bug" in a doc comment, triggering the `godox` linter (which flags TODO/BUG/FIXME keywords). Changed to "issue".
+
+### Removed
+
+- **`filterExcludedGenerated` defense-in-depth workaround**: Eliminated (~160 lines net). gogenfilter v3.4.0+ handles content-only detection natively via its `checkContent` field. The `matchedGeneratedCategory` and `allowsContent` helpers remain for the generic-override path (`--include-generated` flags).
+- **`FilterSourceDefenseInDepth` constant**: `FilterStats.Record()` now always uses `FilterSourceGogenfilter`. The `SourceBreakdown()` plumbing remains for future extensibility.
 
 ## [0.6.1] - 2026-07-29
 
@@ -393,7 +419,8 @@ Patch release fixing version embedding, a silent error swallow in `.gitignore` p
 
 ---
 
-[Unreleased]: https://github.com/LarsArtmann/art-dupl/compare/v0.6.0...HEAD
+[Unreleased]: https://github.com/LarsArtmann/art-dupl/compare/v0.6.1...HEAD
+[0.6.1]: https://github.com/LarsArtmann/art-dupl/compare/v0.6.0...v0.6.1
 [0.6.0]: https://github.com/LarsArtmann/art-dupl/compare/v0.5.1...v0.6.0
 [0.5.1]: https://github.com/LarsArtmann/art-dupl/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/LarsArtmann/art-dupl/compare/v0.4.0...v0.5.0

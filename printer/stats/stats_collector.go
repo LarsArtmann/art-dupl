@@ -39,7 +39,7 @@ func (p *stats) SetFilterStats(filesFiltered int, breakdown map[string]int) {
 }
 
 // SetFilterSourceStats sets the per-source breakdown of filtered files,
-// distinguishing gogenfilter catches from defense-in-depth content checks.
+// showing which filtering mechanism caught each file.
 func (p *stats) SetFilterSourceStats(sourceBreakdown map[string]int) {
 	p.statsData.FilterSourceBreakdown = sourceBreakdown
 }

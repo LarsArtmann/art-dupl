@@ -1,5 +1,7 @@
 # Status: Type-Aware Interface-Method Detection — 2026-08-05 06:13
 
+> **Post-session annotation (2026-08-05):** This report claimed the feature was "fully done," but **`2026-08-05_06-46` discovered it was dead code** — the `interface-method` pattern exclusively checked FuncDecl-rooted clones, which can never be clone roots in Go files (the structural filter in `FindSyntaxUnits` rejects non-Statement roots). The unit tests passed because they constructed `CloneNode` sequences directly, bypassing the pipeline. The dead-code bug was fixed in 06-46 by propagating the `InterfaceMethod` flag to body statement nodes and rewriting the pattern matcher with two paths. The BDD test gap (section C item 1) was also addressed in 06-46. The Node.Name blast-radius concern (section E item 2) was audited and found safe in 06-46.
+
 ## Summary
 
 Implemented type-aware interface-method detection for the `interface-method`

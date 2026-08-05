@@ -26,6 +26,23 @@ func tokensAt(data []Token, pos, length Pos) []TokenValue {
 	return result
 }
 
+// searchMode is a named search function (sequential or parallel).
+type searchMode struct {
+	name   string
+	search func(ctx context.Context, threshold int) <-chan Match
+}
+
+// searchModes returns both sequential and parallel search functions for the
+// given tree, so property tests can verify invariants hold for both paths.
+func searchModes(tree *STree) []searchMode {
+	return []searchMode{
+		{"sequential", tree.FindDuplOver},
+		{"parallel", func(ctx context.Context, threshold int) <-chan Match {
+			return tree.FindDuplOverParallel(ctx, threshold, 4)
+		}},
+	}
+}
+
 // Property: every reported match contains positions whose token subsequences
 // are identical. If any pair of positions has differing tokens, the suffix tree
 // reported a false positive.
@@ -43,17 +60,19 @@ func TestProperty_EveryMatchIsARealRepeat(t *testing.T) {
 		tree := New()
 		mustUpdate(tree, data...)
 
-		matches := collectMatches(tree.FindDuplOver(context.Background(), 2))
+		for _, mode := range searchModes(tree) {
+			matches := collectMatches(mode.search(context.Background(), 2))
 
-		for _, m := range matches {
-			ref := tokensAt(data, m.Ps[0], m.Len)
+			for _, m := range matches {
+				ref := tokensAt(data, m.Ps[0], m.Len)
 
-			for _, pos := range m.Ps[1:] {
-				got := tokensAt(data, pos, m.Len)
-				for i := range ref {
-					if ref[i] != got[i] {
-						t.Errorf("seq %q match Ps=%v Len=%d: pos %d differs at offset %d (%v vs %v)",
-							seq, m.Ps, m.Len, pos, i, ref[i], got[i])
+				for _, pos := range m.Ps[1:] {
+					got := tokensAt(data, pos, m.Len)
+					for i := range ref {
+						if ref[i] != got[i] {
+							t.Errorf("seq %q [%s] match Ps=%v Len=%d: pos %d differs at offset %d (%v vs %v)",
+								seq, mode.name, m.Ps, m.Len, pos, i, ref[i], got[i])
+						}
 					}
 				}
 			}
@@ -69,11 +88,13 @@ func TestProperty_AllMatchesMeetThreshold(t *testing.T) {
 	tree := New()
 	mustUpdate(tree, data...)
 
-	for _, threshold := range []int{2, 3, 4, 5, 6} {
-		matches := collectMatches(tree.FindDuplOver(context.Background(), threshold))
-		for _, m := range matches {
-			if int(m.Len) < threshold {
-				t.Errorf("threshold %d: match Len=%d below threshold", threshold, m.Len)
+	for _, mode := range searchModes(tree) {
+		for _, threshold := range []int{2, 3, 4, 5, 6} {
+			matches := collectMatches(mode.search(context.Background(), threshold))
+			for _, m := range matches {
+				if int(m.Len) < threshold {
+					t.Errorf("[%s] threshold %d: match Len=%d below threshold", mode.name, threshold, m.Len)
+				}
 			}
 		}
 	}
@@ -88,10 +109,12 @@ func TestProperty_MatchesHaveMultiplePositions(t *testing.T) {
 	tree := New()
 	mustUpdate(tree, data...)
 
-	matches := collectMatches(tree.FindDuplOver(context.Background(), 2))
-	for _, m := range matches {
-		if len(m.Ps) < 2 {
-			t.Errorf("match Ps=%v Len=%d has fewer than 2 positions", m.Ps, m.Len)
+	for _, mode := range searchModes(tree) {
+		matches := collectMatches(mode.search(context.Background(), 2))
+		for _, m := range matches {
+			if len(m.Ps) < 2 {
+				t.Errorf("[%s] match Ps=%v Len=%d has fewer than 2 positions", mode.name, m.Ps, m.Len)
+			}
 		}
 	}
 }
@@ -110,12 +133,14 @@ func TestProperty_NoFalsePositivesOnUniqueInput(t *testing.T) {
 	tree := New()
 	mustUpdate(tree, data...)
 
-	matches := collectMatches(tree.FindDuplOver(context.Background(), 2))
-	if len(matches) != 0 {
-		t.Errorf("unique input produced %d matches (expected 0)", len(matches))
+	for _, mode := range searchModes(tree) {
+		matches := collectMatches(mode.search(context.Background(), 2))
+		if len(matches) != 0 {
+			t.Errorf("[%s] unique input produced %d matches (expected 0)", mode.name, len(matches))
 
-		for _, m := range matches {
-			t.Logf("  spurious: Ps=%v Len=%d", m.Ps, m.Len)
+			for _, m := range matches {
+				t.Logf("  [%s] spurious: Ps=%v Len=%d", mode.name, m.Ps, m.Len)
+			}
 		}
 	}
 }
@@ -131,24 +156,27 @@ func TestProperty_DuplicateDetected(t *testing.T) {
 	tree := New()
 	mustUpdate(tree, data...)
 
-	matches := collectMatches(tree.FindDuplOver(context.Background(), 5))
-	if len(matches) == 0 {
-		t.Fatal("duplicated sequence produced no matches")
-	}
+	for _, mode := range searchModes(tree) {
+		matches := collectMatches(mode.search(context.Background(), 5))
+		if len(matches) == 0 {
+			t.Errorf("[%s] duplicated sequence produced no matches", mode.name)
 
-	// Verify at least one match has length >= 10 (the full half).
-	found := false
-
-	for _, m := range matches {
-		if int(m.Len) >= 10 {
-			found = true
-
-			break
+			continue
 		}
-	}
 
-	if !found {
-		t.Errorf("no match of length >= 10; got %v", matches)
+		found := false
+
+		for _, m := range matches {
+			if int(m.Len) >= 10 {
+				found = true
+
+				break
+			}
+		}
+
+		if !found {
+			t.Errorf("[%s] no match of length >= 10; got %v", mode.name, matches)
+		}
 	}
 }
 
@@ -162,12 +190,12 @@ func TestProperty_MatchesAreMaximal(t *testing.T) {
 	tree := New()
 	mustUpdate(tree, data...)
 
-	matches := collectMatches(tree.FindDuplOver(context.Background(), 3))
-	for _, m := range matches {
-		// canExtendLeft returns true when the match CAN be extended left for all
-		// position pairs — meaning it was NOT maximal and should have been longer.
-		if canExtendLeft(data, m) {
-			t.Errorf("non-maximal match Ps=%v Len=%d: left-extendable for all pairs", m.Ps, m.Len)
+	for _, mode := range searchModes(tree) {
+		matches := collectMatches(mode.search(context.Background(), 3))
+		for _, m := range matches {
+			if canExtendLeft(data, m) {
+				t.Errorf("[%s] non-maximal match Ps=%v Len=%d: left-extendable for all pairs", mode.name, m.Ps, m.Len)
+			}
 		}
 	}
 }

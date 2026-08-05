@@ -175,6 +175,31 @@ art-dupl --no-color ./src
 NO_COLOR=1 art-dupl ./src
 ```
 
+### Parallel Search
+
+Art-dupl offers two levels of parallelism controlled independently:
+
+```bash
+# --workers: parallel file parsing (0 = auto-detect CPU cores, default)
+art-dupl --workers 0 ./src
+
+# --search-workers: parallel suffix tree search (0 or 1 = sequential, default)
+#                 Values >1 dispatch root-level subtrees to concurrent goroutines.
+#                 Results are identical to sequential mode (only output order may differ).
+art-dupl --search-workers 4 ./src
+
+# Combine both for maximum throughput on large codebases
+art-dupl --workers 0 --search-workers 4 ./large-monorepo
+```
+
+**When to use `--search-workers`:** The suffix tree search phase can be CPU-intensive
+on large codebases. Setting `--search-workers` to 2-8 (matching available cores)
+typically speeds up analysis without changing results. Use `0` or `1` for sequential
+mode, which has lower memory overhead and is easier to profile.
+
+> **Note:** Ukkonen's suffix tree construction is inherently sequential and cannot
+> be parallelized. Only the search phase benefits from `--search-workers`.
+
 ### Exit Codes
 
 | Code | Meaning                                             |

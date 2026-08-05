@@ -1,5 +1,7 @@
 # Status Report: 2026-08-02 Race Condition Fix in `cmd` Tests
 
+> **Post-session annotation (2026-08-05):** Race fix is stable — `go test -race ./...` passes across all packages. The **root architectural cause remains open** (section C/E1: inject output writers into production code). Harvested into TODO_LIST.md as HIGH priority. The `nix flake check` loop was closed in later sessions (CI is green except for the recurring tagliatelle issue). Section F items are brainstorms — key actionable ones harvested into TODO_LIST/ROADMAP.
+
 > **Session**: Single-session race-condition investigation and fix
 > **Date**: 2026-08-02 01:05 CEST
 > **Trigger**: `nix flake check` → `test-race` failure (4 named tests + ~20 collateral FAILs)
