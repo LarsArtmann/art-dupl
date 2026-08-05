@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"bytes"
+	"io"
 	"os"
 	"path/filepath"
 	"testing"
@@ -38,6 +39,7 @@ func buildSuffixTreeWithFile(
 		cfg:          cfg,
 		filterParam:  nil,
 		outputFormat: config.OutputFormatText,
+		stderr:       io.Discard,
 	})
 	if result.err != nil {
 		t.Fatalf("buildSuffixTree() error = %v", result.err)
@@ -342,6 +344,7 @@ func TestExecuteAnalysis_Integration(t *testing.T) {
 			cfg,
 			[]string{tmpDir},
 			config.OutputFormatText,
+			io.Discard,
 		)
 		if err != nil {
 			t.Fatalf("executeAnalysis() error = %v", err)
@@ -376,7 +379,7 @@ func TestExecuteAnalysis_Integration(t *testing.T) {
 
 		ctx := t.Context()
 
-		duplChan, _, _, err := executeAnalysis(ctx, cfg, []string{tmpDir}, config.OutputFormatText)
+		duplChan, _, _, err := executeAnalysis(ctx, cfg, []string{tmpDir}, config.OutputFormatText, io.Discard)
 		if err != nil {
 			t.Fatalf("executeAnalysis() error = %v", err)
 		}

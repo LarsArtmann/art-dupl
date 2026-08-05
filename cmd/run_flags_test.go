@@ -5,6 +5,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io"
 	"strconv"
 	"testing"
 
@@ -18,7 +19,7 @@ func TestPrintBuildingStatus_QuietSuppresses(t *testing.T) {
 
 	cfg := &config.Config{Quiet: true}
 
-	printBuildingStatus(cfg, config.OutputFormatText, "verbose msg", "text msg")
+	printBuildingStatus(io.Discard, cfg, config.OutputFormatText, "verbose msg", "text msg")
 }
 
 func TestPrintBuildingStatus_NonQuietVerbose(t *testing.T) {
@@ -26,7 +27,7 @@ func TestPrintBuildingStatus_NonQuietVerbose(t *testing.T) {
 
 	cfg := &config.Config{Quiet: false, Verbose: true}
 
-	printBuildingStatus(cfg, config.OutputFormatText, "verbose msg", "text msg")
+	printBuildingStatus(io.Discard, cfg, config.OutputFormatText, "verbose msg", "text msg")
 }
 
 func TestPrintBuildingStatus_NonQuietNonVerboseText(t *testing.T) {
@@ -34,7 +35,7 @@ func TestPrintBuildingStatus_NonQuietNonVerboseText(t *testing.T) {
 
 	cfg := &config.Config{Quiet: false, Verbose: false}
 
-	printBuildingStatus(cfg, config.OutputFormatText, "verbose msg", "text msg")
+	printBuildingStatus(io.Discard, cfg, config.OutputFormatText, "verbose msg", "text msg")
 }
 
 func TestPrintBuildingStatus_NonQuietNonVerboseNonText(t *testing.T) {
@@ -42,7 +43,7 @@ func TestPrintBuildingStatus_NonQuietNonVerboseNonText(t *testing.T) {
 
 	cfg := &config.Config{Quiet: false, Verbose: false}
 
-	printBuildingStatus(cfg, config.OutputFormatJSON, "verbose msg", "text msg")
+	printBuildingStatus(io.Discard, cfg, config.OutputFormatJSON, "verbose msg", "text msg")
 }
 
 func newVersionCmdWithFlags(t *testing.T, flags map[string]bool) *cobra.Command {

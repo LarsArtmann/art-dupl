@@ -69,14 +69,30 @@ func TestListActionabilityPatterns(t *testing.T) {
 	patterns := AllActionabilityPatterns()
 	lines := strings.Split(strings.TrimSpace(output), "\n")
 
-	if len(lines) != len(patterns) {
-		t.Errorf("ListActionabilityPatterns wrote %d lines, want %d", len(lines), len(patterns))
+	// One extra line for the "# property-engine labels" comment separator.
+	wantLines := len(patterns) + 1
+
+	if len(lines) != wantLines {
+		t.Errorf("ListActionabilityPatterns wrote %d lines, want %d", len(lines), wantLines)
 	}
 
-	for i, p := range patterns {
-		if lines[i] != string(p) {
-			t.Errorf("line %d: got %q, want %q", i, lines[i], p)
+	lineIdx := 0
+
+	for _, p := range patterns {
+		if lineIdx >= len(lines) {
+			break
 		}
+
+		// Skip the comment line that separates denylist from property labels.
+		if strings.HasPrefix(lines[lineIdx], "#") {
+			lineIdx++
+		}
+
+		if lineIdx < len(lines) && lines[lineIdx] != string(p) {
+			t.Errorf("pattern %q: got line %q", p, lines[lineIdx])
+		}
+
+		lineIdx++
 	}
 }
 
