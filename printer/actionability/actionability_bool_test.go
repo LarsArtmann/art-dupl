@@ -248,8 +248,14 @@ func TestIsBoolVariableInitialization(t *testing.T) {
 			expected: false,
 		},
 		{
-			name:     "DeclStmt wrapping TypeSpec is not matched",
-			node:     &domain.CloneNode{BaseType: golang.DeclStmt, Children: []*domain.CloneNode{{BaseType: golang.GenDecl, Children: []*domain.CloneNode{{BaseType: golang.TypeSpec}}}}},
+			name: "DeclStmt wrapping TypeSpec is not matched",
+			node: &domain.CloneNode{
+				BaseType: golang.DeclStmt,
+				Children: []*domain.CloneNode{{
+					BaseType: golang.GenDecl,
+					Children: []*domain.CloneNode{{BaseType: golang.TypeSpec}},
+				}},
+			},
 			expected: false,
 		},
 	}
