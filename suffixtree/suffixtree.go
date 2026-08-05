@@ -28,8 +28,14 @@ type Token interface {
 }
 
 // STree is a struct representing a suffix tree.
+//
+// The data slice stores TokenValue (int32) rather than Token (interface)
+// to minimize memory pressure on large codebases. Each position in data
+// corresponds 1:1 to a position in the caller's []*syntax.Node slice, so
+// callers can index back into their own typed slice using suffix tree
+// positions.
 type STree struct {
-	data     []Token
+	data     []TokenValue
 	root     *state
 	auxState *state // auxiliary state
 
@@ -41,7 +47,7 @@ type STree struct {
 // New creates new suffix tree.
 func New() *STree {
 	t := new(STree)
-	t.data = make([]Token, 0, 50)
+	t.data = make([]TokenValue, 0, 50)
 	t.root = newState(t)
 	t.auxState = newState(t)
 	t.root.linkState = t.auxState
@@ -50,9 +56,14 @@ func New() *STree {
 	return t
 }
 
-// Update refreshes the suffix tree to by new data.
+// Update refreshes the suffix tree by new data.
+// Tokens are converted to TokenValue immediately and stored compactly;
+// the original Token objects are not retained, reducing memory by 75%
+// compared to storing interface values.
 func (t *STree) Update(data ...Token) error {
-	t.data = append(t.data, data...)
+	for _, tok := range data {
+		t.data = append(t.data, tok.Val())
+	}
 	for range data {
 		t.update()
 
@@ -118,14 +129,14 @@ func (t *STree) update() {
 // a c-transition. If not, then state (exs, (start, end)) is made
 // explicit (if not already so).
 //
-//nolint:funcorder,nonamedreturns
+//nolint:nonamedreturns
 func (t *STree) testAndSplit(s *state, start, end Pos) (exs *state, endPoint bool) {
 	c := t.data[t.end]
 	if start <= end {
 		tr := s.findTran(t.data[start])
 
 		splitPoint := tr.start + end - start + 1
-		if t.data[splitPoint].Val() == c.Val() {
+		if t.data[splitPoint] == c {
 			return s, true
 		}
 		// make the (s, (start, end)) state explicit
@@ -166,7 +177,7 @@ func (t *STree) canonize(s *state, start, end Pos) (*state, Pos, error) {
 			if tr == nil {
 				return nil, 0, errors.NewInternalError(
 					fmt.Sprintf("no transition for token '%d' at position %d",
-						t.data[start].Val(), start), nil,
+						t.data[start], start), nil,
 				)
 			}
 		}
@@ -188,11 +199,12 @@ func (t *STree) canonize(s *state, start, end Pos) (*state, Pos, error) {
 	return s, start, nil
 }
 
-func (t *STree) At(p Pos) Token {
+// At returns the TokenValue at position p, or 0 if p is out of range.
+func (t *STree) At(p Pos) TokenValue {
 	// Safe conversion: len(t.data) will not overflow Pos in practice
 	// #nosec G115 -- Data size won't exceed MaxInt32
 	if p < 0 || p >= Pos(len(t.data)) {
-		return nil
+		return 0
 	}
 
 	return t.data[p]
@@ -215,7 +227,7 @@ func newState(t *STree) *state {
 
 func (s *state) addTran(start, end Pos, r *state) {
 	// Key is the token value at the transition's start position
-	key := s.tree.data[start].Val()
+	key := s.tree.data[start]
 	s.trans[key] = newTran(start, end, r)
 }
 
@@ -240,6 +252,11 @@ func newTran(start, end Pos, s *state) *tran {
 //nolint:funcorder
 func (t *tran) len() int {
 	return int(t.end - t.start + 1)
+}
+
+// DataLen returns the number of tokens stored in the tree.
+func (t *STree) DataLen() int {
+	return len(t.data)
 }
 
 // ActEnd returns actual end position as consistent with

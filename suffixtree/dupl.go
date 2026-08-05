@@ -107,7 +107,7 @@ func walkTrans(
 		ch := TokenValue(0)
 		// Bounds check: ensure start-1 is within data slice bounds
 		if start > 0 && int(start-1) < len(s.tree.data) {
-			ch = s.tree.data[start-1].Val()
+			ch = s.tree.data[start-1]
 		}
 
 		cl.lists[ch] = pl
