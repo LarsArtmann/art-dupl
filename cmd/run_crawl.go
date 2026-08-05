@@ -43,6 +43,7 @@ func feedFromStdin(
 	filterStats *FilterStats,
 	includes generatorIncludes,
 	only config.FileType,
+	stderr io.Writer,
 ) chan string {
 	fchan := make(chan string)
 
@@ -82,7 +83,7 @@ func feedFromStdin(
 		close(done)
 
 		if err := sc.Err(); err != nil && ctx.Err() == nil {
-			fmt.Fprintf(os.Stderr, "reading stdin: %v\n", err)
+			fmt.Fprintf(stderr, "reading stdin: %v\n", err)
 		}
 	}()
 
@@ -130,12 +131,14 @@ func crawlPaths(
 	includes generatorIncludes,
 	includeVendor, includeNodeModules bool,
 	gitignore *GitignoreMatcher,
+	stderr io.Writer,
 ) chan string {
 	return crawlPathsWithFileCheck(
 		ctx,
 		paths, filter, filterStats, includes,
 		includeVendor, includeNodeModules, isSourceFile,
 		gitignore,
+		stderr,
 	)
 }
 
@@ -153,6 +156,7 @@ func crawlPathsAllFiles(
 	includeVendor, includeNodeModules bool,
 	only config.FileType,
 	gitignore *GitignoreMatcher,
+	stderr io.Writer,
 ) chan string {
 	var fileCheck fileCheckFunc
 	if only != config.FileTypeAll {
@@ -166,6 +170,7 @@ func crawlPathsAllFiles(
 		paths, filter, filterStats, includes,
 		includeVendor, includeNodeModules, fileCheck,
 		gitignore,
+		stderr,
 	)
 }
 
@@ -184,6 +189,7 @@ type CrawlOptions struct {
 	FileCheck       fileCheckFunc
 	Gitignore       *GitignoreMatcher
 	FChan           chan string
+	Stderr          io.Writer
 }
 
 func crawlPathsWithFileCheck(
@@ -196,6 +202,7 @@ func crawlPathsWithFileCheck(
 	includeNodeModules bool,
 	fileCheck fileCheckFunc,
 	gitignore *GitignoreMatcher,
+	stderr io.Writer,
 ) chan string {
 	fchan := make(chan string)
 
@@ -215,6 +222,7 @@ func crawlPathsWithFileCheck(
 				FileCheck:       fileCheck,
 				Gitignore:       gitignore,
 				FChan:           fchan,
+				Stderr:          stderr,
 			}, path)
 		}
 
@@ -228,7 +236,7 @@ func crawlPathsWithFileCheck(
 func crawlSinglePathWithOpts(opts CrawlOptions, path string) {
 	info, err := os.Lstat(path)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "error: cannot stat %s: %v\n", path, err)
+		fmt.Fprintf(opts.Stderr, "error: cannot stat %s: %v\n", path, err)
 
 		return
 	}
@@ -263,7 +271,7 @@ func crawlDirectoryWithOpts(opts CrawlOptions, path string) {
 		return handleWalkEntry(opts, p, info)
 	})
 	if err != nil && !errors.Is(err, context.Canceled) && !errors.Is(err, context.DeadlineExceeded) {
-		fmt.Fprintf(os.Stderr, "error: walking %s: %v\n", path, err)
+		fmt.Fprintf(opts.Stderr, "error: walking %s: %v\n", path, err)
 	}
 }
 

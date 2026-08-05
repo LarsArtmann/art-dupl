@@ -3,6 +3,7 @@ package cmd
 import (
 	"bytes"
 	"context"
+	"io"
 	"os"
 	"testing"
 	"time"
@@ -311,6 +312,7 @@ func TestWriteFormatFile(t *testing.T) {
 			sortByEnum,
 			binaryName,
 			buildSuppressionConfig(cfg),
+			io.Discard,
 		)
 		if err != nil {
 			t.Fatalf("writeFormatFile() error = %v", err)

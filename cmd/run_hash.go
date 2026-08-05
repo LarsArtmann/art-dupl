@@ -43,7 +43,7 @@ func executeHashOnlyAnalysis(
 
 	var gitignore *GitignoreMatcher
 	if !cfg.IncludeIgnored {
-		gitignore = LoadGitignore(paths)
+		gitignore = LoadGitignore(paths, stderr)
 	}
 
 	filesChan := crawlPathsAllFiles(

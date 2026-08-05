@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"io"
 	"os"
 	"path/filepath"
 	"strings"
@@ -28,7 +29,7 @@ func TestGitignoreBasicExclusion(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	matcher := LoadGitignore([]string{tmpDir})
+	matcher := LoadGitignore([]string{tmpDir}, io.Discard)
 	if matcher == nil {
 		t.Fatal("LoadGitignore returned nil despite .gitignore existing")
 	}
@@ -66,7 +67,7 @@ func TestGitignoreDirectoryExclusion(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	matcher := LoadGitignore([]string{tmpDir})
+	matcher := LoadGitignore([]string{tmpDir}, io.Discard)
 	if matcher == nil {
 		t.Fatal("LoadGitignore returned nil")
 	}
@@ -101,7 +102,7 @@ func TestGitignoreNegation(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	matcher := LoadGitignore([]string{tmpDir})
+	matcher := LoadGitignore([]string{tmpDir}, io.Discard)
 	if matcher == nil {
 		t.Fatal("LoadGitignore returned nil")
 	}
@@ -133,7 +134,7 @@ func TestGitignoreNoGitignoreFile(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	matcher := LoadGitignore([]string{tmpDir})
+	matcher := LoadGitignore([]string{tmpDir}, io.Discard)
 	if matcher != nil {
 		t.Error("expected nil matcher when no .gitignore exists")
 	}
@@ -160,7 +161,7 @@ func TestGitignoreExcludesTemplGenerated(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	matcher := LoadGitignore([]string{tmpDir})
+	matcher := LoadGitignore([]string{tmpDir}, io.Discard)
 	if matcher == nil {
 		t.Fatal("LoadGitignore returned nil")
 	}

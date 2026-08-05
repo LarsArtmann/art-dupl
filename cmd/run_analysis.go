@@ -41,7 +41,7 @@ type buildParams struct {
 func (p buildParams) getFilesChan() chan string {
 	var gitignore *GitignoreMatcher
 	if !p.cfg.IncludeIgnored {
-		gitignore = LoadGitignore(p.paths)
+		gitignore = LoadGitignore(p.paths, p.stderr)
 	}
 
 	return filesFeedWithOptions(

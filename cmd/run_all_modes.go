@@ -92,6 +92,7 @@ func runAllModes(ctx context.Context, cfg *config.Config, sortBy, outputDir stri
 			sortByEnum,
 			detectionMethodStr,
 			suppression,
+			stderr,
 		)
 		if err != nil {
 			return fmt.Errorf(
@@ -125,6 +126,7 @@ func writeFormatFile(
 	sortByEnum config.SortCriteria,
 	detectionMethodStr string,
 	suppression SuppressionConfig,
+	stderr io.Writer,
 ) error {
 	// #nosec G304 -- filename is constructed from controlled config output dir and format
 	file, err := os.Create(filename)
@@ -135,7 +137,7 @@ func writeFormatFile(
 	defer func() {
 		closeErr := file.Close()
 		if closeErr != nil {
-			fmt.Fprintf(os.Stderr, "warning: failed to close file %q: %v\n", filename, closeErr)
+			fmt.Fprintf(stderr, "warning: failed to close file %q: %v\n", filename, closeErr)
 		}
 	}()
 

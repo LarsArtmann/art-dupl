@@ -38,7 +38,7 @@ type gitignorePattern struct {
 // LoadGitignore walks up from startDir to find .gitignore files, then walks
 // down through the analyzed paths to find nested ones. Returns nil if no
 // .gitignore files are found.
-func LoadGitignore(paths []string) *GitignoreMatcher {
+func LoadGitignore(paths []string, stderr io.Writer) *GitignoreMatcher {
 	var rules []gitignoreRule
 
 	seen := make(map[string]bool)
@@ -59,7 +59,7 @@ func LoadGitignore(paths []string) *GitignoreMatcher {
 					seen[dir] = true
 
 					if pats, err := parseGitignoreFile(gitignorePath); err != nil {
-						fmt.Fprintf(os.Stderr, "warning: %v\n", err)
+						fmt.Fprintf(stderr, "warning: %v\n", err)
 					} else if len(pats) > 0 {
 						rules = append(rules, gitignoreRule{baseDir: dir, patterns: pats})
 					}
