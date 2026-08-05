@@ -358,6 +358,7 @@ func (t *transformer) trans(
 	case *ast.TypeSpec:
 		o.Name = n.Name.Name
 		o.Type = encodeSemanticType(TypeSpec, n.Name.Name, t.config.Mode.HashesIdentifiers())
+		o.IsAlias = n.Assign != token.NoPos
 		o.AddChildren(t.trans(n.Name))
 		t.addWithNilCheck(o, n.TypeParams)
 		o.AddChildren(t.trans(n.Type))

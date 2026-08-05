@@ -271,7 +271,11 @@ func isAtomicDeclaration(n *domain.CloneNode) bool {
 		return true
 
 	case golang.TypeSpec:
-		return !subtreeHasCompositeType(n)
+		// Only suppress true aliases (type X = pkg.Y), not named type
+		// definitions (type X Y). Duplicated named type definitions can
+		// represent real actionable cloning (e.g., type Severity string
+		// with divergent const values).
+		return n.IsAlias && !subtreeHasCompositeType(n)
 
 	default:
 		return false
@@ -367,10 +371,18 @@ func isTypeAliasBlock(nodeSeqs [][]*domain.CloneNode) bool {
 }
 
 // isPackageTypeAlias reports whether a CloneNode is a TypeSpec aliasing an
-// external package type (type X = pkg.Y). The node must be a non-composite
-// TypeSpec containing a SelectorExpr in its subtree.
+// external package type (type X = pkg.Y). The node must be a true alias
+// (IsAlias set by the transformer when TypeSpec.Assign is present), have no
+// composite type body, and contain a SelectorExpr in its subtree.
 func isPackageTypeAlias(n *domain.CloneNode) bool {
 	if n.BaseType != golang.TypeSpec {
+		return false
+	}
+
+	// Only suppress true aliases (type X = pkg.Y), not named type definitions
+	// (type X pkg.Y). The IsAlias field is set by the transformer from
+	// ast.TypeSpec.Assign != token.NoPos.
+	if !n.IsAlias {
 		return false
 	}
 

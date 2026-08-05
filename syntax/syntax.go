@@ -99,6 +99,12 @@ type Node struct {
 	Fingerprint          int32
 	EnclosingReturnArity int32
 	InterfaceMethod      bool
+
+	// IsAlias is set on TypeSpec nodes when the source uses `type X = Y`
+	// (alias syntax) rather than `type X Y` (named type definition). The
+	// actionability layer uses this to distinguish re-export shims (aliases,
+	// non-actionable) from named type definitions (potentially actionable).
+	IsAlias bool
 }
 
 func NewNode() *Node {
@@ -130,6 +136,7 @@ func (n *Node) Clone() *Node {
 		Fingerprint:          n.Fingerprint,
 		EnclosingReturnArity: n.EnclosingReturnArity,
 		InterfaceMethod:      n.InterfaceMethod,
+		IsAlias:              n.IsAlias,
 	}
 	if len(n.Children) > 0 {
 		clone.Children = make([]*Node, len(n.Children))

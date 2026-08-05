@@ -10,6 +10,7 @@
 ### Task 1 (HIGH): Large-Scale Confidence Calibration
 
 **What was done:**
+
 - Built art-dupl binary and ran `--threshold 5 --semantic --explain` on **6 projects with 4,764 Go files**
 - Captured all **87 clone groups** with file locations and first-line previews
 - **Manually labeled every single group** as TRUE POSITIVE or FALSE POSITIVE by reading source code
@@ -19,9 +20,10 @@
 - Corrected the old report's false "0% false positives" claim with a SUPERSEDED header
 - Converted 4 specific findings into actionable TODO items
 
-**Key result:** **86.2% precision** (75 TP / 12 FP). The initial "0% FPs" claim was wrong — it assumed all "actionable" classifications were correct without manual verification. Confidence *values* are well-calibrated; the fix opportunity is in suppression *patterns*, not thresholds.
+**Key result:** **86.2% precision** (75 TP / 12 FP). The initial "0% FPs" claim was wrong — it assumed all "actionable" classifications were correct without manual verification. Confidence _values_ are well-calibrated; the fix opportunity is in suppression _patterns_, not thresholds.
 
 **Files created/modified:**
+
 - `docs/calibration/confidence-calibration-large-2026-08-05.md` (new, comprehensive)
 - `docs/calibration/confidence-thresholds-2026-08-05.md` (SUPERSEDED header added)
 - `TODO_LIST.md` (calibration item replaced with 4 new HIGH items)
@@ -30,6 +32,7 @@
 ### Task 2 (MEDIUM): go-arch-lint CI Integration
 
 **What was done:**
+
 - Created `.github/workflows/arch-lint.yml` — GitHub Actions workflow that installs go-arch-lint v1.16.0 and runs `go-arch-lint check`
 - Triggers on push/PR to main/master/fork when `.go` files, `.go-arch-lint.yml`, or the workflow itself changes
 - Includes templ generation + module download steps (go-arch-lint needs compiled packages)
@@ -38,6 +41,7 @@
 - Fixed stale CHANGELOG entry that falsely claimed go-arch-lint ran in `nix flake check`
 
 **Files created/modified:**
+
 - `.github/workflows/arch-lint.yml` (new)
 - `flake.nix` (comment updated, 2 lines)
 - `CHANGELOG.md` (corrected entry)
@@ -45,6 +49,7 @@
 ### Task 3 (MEDIUM): Auto-Fix Guard Script Test
 
 **What was done:**
+
 - Created `scripts/check_disabled_linters_test.go` with **6 test cases**:
   1. `TestAutoFixRemovesBannedLinters` — core TODO: verifies `sed -i` removes exhaustruct+tagliatelle, preserves valid linters, exits 0
   2. `TestAutoFixRemovesSettingsBlock` — verifies orphaned `exhaustruct:` settings key is stripped
@@ -56,6 +61,7 @@
 - All tests pass, 0 lint issues
 
 **Files created:**
+
 - `scripts/check_disabled_linters_test.go` (new, 200 lines)
 
 ### Bonus: Fixed Broken `nix flake check`
@@ -217,14 +223,14 @@ The manual labels (75 TP / 12 FP with per-group rationale) are valuable as a reg
 
 ## Verification Summary
 
-| Check | Status |
-|-------|--------|
-| `go build ./...` | PASS |
-| `go test ./scripts/...` | PASS (6/6 tests) |
-| `go test ./cmd/...` | PASS |
-| `golangci-lint run ./...` | PASS (0 issues) |
-| `nix build .#checks.x86_64-linux.disabled-linters` | PASS |
-| `go-arch-lint check` (local) | PASS (0 violations) |
-| `bash scripts/check-disabled-linters.sh` | PASS |
+| Check                                              | Status              |
+| -------------------------------------------------- | ------------------- |
+| `go build ./...`                                   | PASS                |
+| `go test ./scripts/...`                            | PASS (6/6 tests)    |
+| `go test ./cmd/...`                                | PASS                |
+| `golangci-lint run ./...`                          | PASS (0 issues)     |
+| `nix build .#checks.x86_64-linux.disabled-linters` | PASS                |
+| `go-arch-lint check` (local)                       | PASS (0 violations) |
+| `bash scripts/check-disabled-linters.sh`           | PASS                |
 
 All green after fixing the tagliatelle regression mid-session.

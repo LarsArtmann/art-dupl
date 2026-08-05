@@ -37,6 +37,12 @@ type CloneNode struct {
 	// type-aware mode is not active.
 	InterfaceMethod bool
 
+	// IsAlias is set on TypeSpec nodes when the source uses `type X = Y`
+	// (alias syntax) rather than `type X Y` (named type definition). The
+	// actionability layer uses this to distinguish re-export shims (aliases,
+	// non-actionable) from named type definitions (potentially actionable).
+	IsAlias bool
+
 	// Children are the direct sub-nodes in tree order.
 	Children []*CloneNode
 }
