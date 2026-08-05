@@ -447,3 +447,262 @@ func TestIsSingleDeclaration(t *testing.T) {
 		})
 	}
 }
+
+func TestIsInterfaceAssertion(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name     string
+		seqs     [][]*domain.CloneNode
+		expected bool
+	}{
+		{
+			name: "var _ I = (*T)(nil) — blank ident ValueSpec",
+			seqs: [][]*domain.CloneNode{{
+				{BaseType: golang.ValueSpec, Children: []*domain.CloneNode{
+					{BaseType: golang.Ident, Name: "_"},
+					{BaseType: golang.Ident, Name: "Reader"},
+					{BaseType: golang.CallExpr, Children: []*domain.CloneNode{
+						{BaseType: golang.StarExpr, Children: []*domain.CloneNode{
+							{BaseType: golang.Ident, Name: "MyReader"},
+						}},
+						{BaseType: golang.Ident, Name: "nil"},
+					}},
+				}},
+			}},
+			expected: true,
+		},
+		{
+			name: "two blank-ident assertions (different types) — still match",
+			seqs: [][]*domain.CloneNode{
+				{{BaseType: golang.ValueSpec, Children: []*domain.CloneNode{
+					{BaseType: golang.Ident, Name: "_"},
+				}}},
+				{{BaseType: golang.ValueSpec, Children: []*domain.CloneNode{
+					{BaseType: golang.Ident, Name: "_"},
+				}}},
+			},
+			expected: true,
+		},
+		{
+			name: "named ValueSpec — NOT suppressed",
+			seqs: [][]*domain.CloneNode{{
+				{BaseType: golang.ValueSpec, Children: []*domain.CloneNode{
+					{BaseType: golang.Ident, Name: "foo"},
+				}},
+			}},
+			expected: false,
+		},
+		{
+			name: "single AssignStmt — not a ValueSpec",
+			seqs: [][]*domain.CloneNode{{
+				{BaseType: golang.AssignStmt},
+			}},
+			expected: false,
+		},
+		{
+			name: "multi-node sequence — not single",
+			seqs: [][]*domain.CloneNode{{
+				{BaseType: golang.ValueSpec, Children: []*domain.CloneNode{
+					{BaseType: golang.Ident, Name: "_"},
+				}},
+				{BaseType: golang.ValueSpec, Children: []*domain.CloneNode{
+					{BaseType: golang.Ident, Name: "_"},
+				}},
+			}},
+			expected: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			result := isInterfaceAssertion(tt.seqs)
+			if result != tt.expected {
+				t.Errorf("isInterfaceAssertion() = %v, want %v", result, tt.expected)
+			}
+		})
+	}
+}
+
+func TestIsTypeAliasBlock(t *testing.T) {
+	t.Parallel()
+
+	pkgAlias := func(name, pkg, typ string) *domain.CloneNode {
+		return &domain.CloneNode{
+			BaseType: golang.TypeSpec,
+			Children: []*domain.CloneNode{
+				{BaseType: golang.Ident, Name: name},
+				{BaseType: golang.SelectorExpr, Name: pkg + "." + typ, Children: []*domain.CloneNode{
+					{BaseType: golang.Ident, Name: pkg},
+					{BaseType: golang.Ident, Name: typ},
+				}},
+			},
+		}
+	}
+
+	tests := []struct {
+		name     string
+		seqs     [][]*domain.CloneNode
+		expected bool
+	}{
+		{
+			name: "2-alias block (type ToolCall/ToolResult = pkg.ToolCall/ToolResult)",
+			seqs: [][]*domain.CloneNode{{
+				pkgAlias("ToolCall", "protocoltypes", "ToolCall"),
+				pkgAlias("ToolResult", "protocoltypes", "ToolResult"),
+			}},
+			expected: true,
+		},
+		{
+			name: "3-alias block — still matches",
+			seqs: [][]*domain.CloneNode{{
+				pkgAlias("A", "pkg", "A"),
+				pkgAlias("B", "pkg", "B"),
+				pkgAlias("C", "pkg", "C"),
+			}},
+			expected: true,
+		},
+		{
+			name: "single alias — NOT matched (handled by single-declaration)",
+			seqs: [][]*domain.CloneNode{{
+				pkgAlias("Mode", "domain", "Mode"),
+			}},
+			expected: false,
+		},
+		{
+			name: "block with one composite type — NOT suppressed",
+			seqs: [][]*domain.CloneNode{{
+				pkgAlias("A", "pkg", "A"),
+				{BaseType: golang.TypeSpec, Children: []*domain.CloneNode{
+					{BaseType: golang.Ident, Name: "Config"},
+					{BaseType: golang.StructType},
+				}},
+			}},
+			expected: false,
+		},
+		{
+			name: "block with non-alias TypeSpec (type X string) — NOT suppressed",
+			seqs: [][]*domain.CloneNode{{
+				{BaseType: golang.TypeSpec, Children: []*domain.CloneNode{
+					{BaseType: golang.Ident, Name: "Severity"},
+					{BaseType: golang.Ident, Name: "string"},
+				}},
+				{BaseType: golang.TypeSpec, Children: []*domain.CloneNode{
+					{BaseType: golang.Ident, Name: "Priority"},
+					{BaseType: golang.Ident, Name: "string"},
+				}},
+			}},
+			expected: false,
+		},
+		{
+			name:     "empty (vacuous true, guarded by caller)",
+			seqs:     [][]*domain.CloneNode{},
+			expected: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			result := isTypeAliasBlock(tt.seqs)
+			if result != tt.expected {
+				t.Errorf("isTypeAliasBlock() = %v, want %v", result, tt.expected)
+			}
+		})
+	}
+}
+
+func TestIsTestHelperDelegate(t *testing.T) {
+	t.Parallel()
+
+	helperDelegate := func(receiver string) []*domain.CloneNode {
+		return []*domain.CloneNode{
+			{
+				BaseType: golang.ExprStmt,
+				Children: []*domain.CloneNode{
+					{
+						BaseType: golang.CallExpr,
+						Children: []*domain.CloneNode{
+							{
+								BaseType: golang.SelectorExpr,
+								Name:     "Helper",
+								Children: []*domain.CloneNode{
+									{BaseType: golang.Ident, Name: receiver},
+									{BaseType: golang.Ident, Name: "Helper"},
+								},
+							},
+						},
+					},
+				},
+			},
+			{
+				BaseType: golang.ExprStmt,
+				Children: []*domain.CloneNode{
+					{BaseType: golang.CallExpr},
+				},
+			},
+		}
+	}
+
+	tests := []struct {
+		name     string
+		seqs     [][]*domain.CloneNode
+		expected bool
+	}{
+		{
+			name:     "t.Helper() + delegate (testing.T)",
+			seqs:     [][]*domain.CloneNode{helperDelegate("t")},
+			expected: true,
+		},
+		{
+			name:     "b.Helper() + delegate (testing.B)",
+			seqs:     [][]*domain.CloneNode{helperDelegate("b")},
+			expected: true,
+		},
+		{
+			name:     "tb.Helper() + delegate (testing.TB)",
+			seqs:     [][]*domain.CloneNode{helperDelegate("tb")},
+			expected: true,
+		},
+		{
+			name: "not a helper call — first stmt is not .Helper()",
+			seqs: [][]*domain.CloneNode{{
+				{BaseType: golang.ExprStmt, Children: []*domain.CloneNode{
+					{BaseType: golang.CallExpr, Children: []*domain.CloneNode{
+						{BaseType: golang.SelectorExpr, Name: "Setup", Children: []*domain.CloneNode{
+							{BaseType: golang.Ident, Name: "t"},
+							{BaseType: golang.Ident, Name: "Setup"},
+						}},
+					}},
+				}},
+				{BaseType: golang.ExprStmt, Children: []*domain.CloneNode{
+					{BaseType: golang.CallExpr},
+				}},
+			}},
+			expected: false,
+		},
+		{
+			name: "3-statement body — too many statements",
+			seqs: [][]*domain.CloneNode{{
+				{BaseType: golang.ExprStmt},
+				{BaseType: golang.AssignStmt},
+				{BaseType: golang.ReturnStmt},
+			}},
+			expected: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			result := isTestHelperDelegate(tt.seqs)
+			if result != tt.expected {
+				t.Errorf("isTestHelperDelegate() = %v, want %v", result, tt.expected)
+			}
+		})
+	}
+}
