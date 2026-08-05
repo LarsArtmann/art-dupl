@@ -172,6 +172,7 @@ Nothing. The core implementation is clean, correct, and well-tested. The auto-co
 ### Q1: When should gogenfilter v3.4.0 be tagged and pushed?
 
 The `go.mod` replace directive makes art-dupl unbuildable without the local gogenfilter checkout. Should I:
+
 - **(a)** Tag v3.4.0 now, update art-dupl go.mod + flake.nix, remove replace — full release now?
 - **(b)** Keep the replace directive, defer the release to a separate session?
 
@@ -184,6 +185,7 @@ The test requires `generators.mdx` to be committed (the file was regenerated bec
 ### Q3: Should I also remove the `SourceBreakdown()` method from FilterStats?
 
 With `FilterSourceDefenseInDepth` gone, `SourceBreakdown()` can only ever return `{"gogenfilter": N}`. The method and its plumbing (`RecordWithSource`, `bySource` map, `FilterSource` type) are now dead infrastructure — they exist but provide no distinguishing information. Should I:
+
 - **(a)** Remove `SourceBreakdown()`, `RecordWithSource()`, `bySource`, `FilterSource` type entirely (simplify)?
 - **(b)** Keep them for future extensibility (e.g., gitignore vs gogenfilter source tracking)?
 
@@ -193,22 +195,22 @@ With `FilterSourceDefenseInDepth` gone, `SourceBreakdown()` can only ever return
 
 ### gogenfilter (4 files, +225/-28)
 
-| File | Change |
-|------|--------|
-| `detection.go` | Detector table `checkContent` → content-only wrappers; new constants; new wrapper functions |
-| `filter_content_only_test.go` | NEW: 161 lines, 3 test functions |
-| `website/src/content/docs/generators.mdx` | Regenerated (content descriptions updated) |
-| `AGENTS.md` | Design decision documented |
+| File                                      | Change                                                                                      |
+| ----------------------------------------- | ------------------------------------------------------------------------------------------- |
+| `detection.go`                            | Detector table `checkContent` → content-only wrappers; new constants; new wrapper functions |
+| `filter_content_only_test.go`             | NEW: 161 lines, 3 test functions                                                            |
+| `website/src/content/docs/generators.mdx` | Regenerated (content descriptions updated)                                                  |
+| `AGENTS.md`                               | Design decision documented                                                                  |
 
 ### art-dupl (8 files, +46/-206)
 
-| File | Change |
-|------|--------|
-| `cmd/util.go` | `filterExcludedGenerated` removed; `shouldIncludeFile` simplified; comments updated |
-| `cmd/filter_stats.go` | `FilterSourceDefenseInDepth` removed; comments updated |
-| `cmd/filter_stats_test.go` | References to `FilterSourceDefenseInDepth` replaced |
-| `cmd/filter_includes_test.go` | `TestFilterExcludedGenerated` removed; tests renamed/updated |
-| `cmd/filter_bench_test.go` | 2 benchmark functions removed |
-| `go.mod` | Replace directive added (temporary) |
-| `AGENTS.md` | 2 bullets rewritten |
-| `TODO_LIST.md` | Item marked COMPLETED |
+| File                          | Change                                                                              |
+| ----------------------------- | ----------------------------------------------------------------------------------- |
+| `cmd/util.go`                 | `filterExcludedGenerated` removed; `shouldIncludeFile` simplified; comments updated |
+| `cmd/filter_stats.go`         | `FilterSourceDefenseInDepth` removed; comments updated                              |
+| `cmd/filter_stats_test.go`    | References to `FilterSourceDefenseInDepth` replaced                                 |
+| `cmd/filter_includes_test.go` | `TestFilterExcludedGenerated` removed; tests renamed/updated                        |
+| `cmd/filter_bench_test.go`    | 2 benchmark functions removed                                                       |
+| `go.mod`                      | Replace directive added (temporary)                                                 |
+| `AGENTS.md`                   | 2 bullets rewritten                                                                 |
+| `TODO_LIST.md`                | Item marked COMPLETED                                                               |

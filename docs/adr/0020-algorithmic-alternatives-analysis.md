@@ -9,6 +9,7 @@ Accepted (research decision — no code change, documents the analysis for futur
 After implementing parallel search and memory-compact storage (ADR-0019), the question arose: **are there fundamentally better algorithms than Ukkonen's suffix tree for clone detection?** The original ROADMAP items ("parallel suffix tree construction" and "streaming suffix tree") were reframed, but the algorithmic question remained open.
 
 A thorough literature review was conducted covering:
+
 - Suffix arrays (SA-IS, DC3/skew) and Enhanced Suffix Arrays (ESA)
 - Parallel suffix array construction (Shun-Blelloch, Labeit et al., CaPS-SA)
 - Winnowing/fingerprinting (Schleimer et al., MOSS)
@@ -46,6 +47,7 @@ Full analysis: `docs/research/algorithmic-alternatives-for-clone-detection.md`
 Implement SA-IS + LCP + maximal-repeat scan as a **new `MethodDetector`** alongside the existing suffix tree. The `detection.MethodDetector` interface makes this a clean addition, not a replacement. Benchmark both on real codebases. Switch when SA proves superior.
 
 The migration is low-risk because:
+
 - SA positions index into the same `[]*syntax.Node` array
 - `FindSyntaxUnits` works unchanged (it takes `suffixtree.Match{Ps, Len}` — the `Ps` values are just positions)
 - The `MethodDetector` interface abstracts the implementation
