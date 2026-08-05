@@ -320,7 +320,7 @@ art-dupl --recommend-threshold ./src
 ### Pattern Control
 
 ```bash
-# List all 23 actionability pattern labels
+# List all 23 actionability pattern labels (plus 4 property-engine labels)
 art-dupl --list-patterns
 
 # Re-enable a specific boilerplate pattern
