@@ -16,6 +16,17 @@ func (c char) Val() TokenValue {
 	return TokenValue(c)
 }
 
+func str2vals(str string) []TokenValue {
+	// Use utf8.RuneCountInString to get actual character count for Unicode support
+	vals := make([]TokenValue, 0, utf8.RuneCountInString(str))
+
+	for _, c := range str {
+		vals = append(vals, TokenValue(c))
+	}
+
+	return vals
+}
+
 func str2tok(str string) []Token {
 	// Use utf8.RuneCountInString to get actual character count for Unicode support
 	toks := make([]Token, 0, utf8.RuneCountInString(str))
@@ -100,7 +111,7 @@ func compareTrees(t *testing.T, expected, actual *state) {
 
 		if etran.start != atran.start || etran.ActEnd() != atran.ActEnd() {
 			t.Errorf(
-				"got transition (%d, %d) '%s', want (%d, %d) '%s'",
+				"got transition (%d, %d) %v, want (%d, %d) %v",
 				atran.start, atran.ActEnd(), actual.tree.data[atran.start:atran.ActEnd()+1],
 				etran.start, etran.ActEnd(), expected.tree.data[etran.start:etran.ActEnd()+1],
 			)
@@ -139,7 +150,7 @@ func walk(s *state, ch chan<- *tran) {
 
 func genStates(count int, data string) (*STree, []*state) {
 	t := new(STree)
-	t.data = str2tok(data)
+	t.data = str2vals(data)
 
 	states := make([]*state, 0, count)
 	for range count {
@@ -209,7 +220,7 @@ func TestSplitting(t *testing.T) {
 	t.Parallel()
 
 	tree := new(STree)
-	tree.data = str2tok("banana|cbao")
+	tree.data = str2vals("banana|cbao")
 	s1 := newState(tree)
 	s2 := newState(tree)
 	s1.addTran(0, 3, s2)
@@ -249,14 +260,14 @@ func TestSplitting(t *testing.T) {
 	tree.end = 10 // o
 	rets, end = tree.testAndSplit(s1, 0, 2)
 
-	tr := s1.findTran(char('b'))
+	tr := s1.findTran(TokenValue('b'))
 	if tr == nil {
 		t.Error("should have a b-transition")
 	} else if tr.state != rets {
 		t.Errorf("got state %p, want %p", tr.state, rets)
 	}
 
-	tr2 := rets.findTran(char('a'))
+	tr2 := rets.findTran(TokenValue('a'))
 	if tr2 == nil {
 		t.Error("should have an a-transition")
 	} else if tr2.state != s2 {
@@ -317,11 +328,11 @@ func FuzzSuffixTreeUpdate(f *testing.F) {
 
 		// Verify data is stored correctly
 		for i, token := range tokens {
-			if tree.data[i].Val() != token.Val() {
+			if tree.data[i] != token.Val() {
 				t.Errorf(
 					"Data mismatch at index %d: got %d, want %d",
 					i,
-					tree.data[i].Val(),
+					tree.data[i],
 					token.Val(),
 				)
 			}

@@ -11,6 +11,11 @@ type Config struct {
 
 	// Verbose enables detailed logging during detection.
 	Verbose bool
+
+	// SearchWorkers controls suffix tree search parallelism.
+	// 0 or 1 = sequential (default), >1 = parallel DFS with N workers.
+	// Parallel search dispatches root-level subtrees to goroutines.
+	SearchWorkers int
 }
 
 // Detection method name constants — aliases for domain.DetectionMethod
