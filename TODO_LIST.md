@@ -33,7 +33,7 @@ This file is OPEN work only — no completed, rejected, or resolved items.
 
 ### Detection and Filtering
 
-- [ ] **Type-aware interface-method detection**: The `interface-method` actionability pattern (pattern #20) currently uses a static name list. The deeper, type-aware variant (using `go/types` to verify a FuncDecl actually implements an interface method) is tracked in ROADMAP.
+- [x] **Type-aware interface-method detection**: COMPLETED 2026-08-05. The `interface-method` actionability pattern now uses `go/types` to verify a FuncDecl satisfies a same-package interface when `--type-aware` is active. The `golang.IsInterfaceMethod()` function scans the package scope for interfaces with a matching method name and checks `types.Implements` for both value and pointer receivers. The `InterfaceMethod` flag on `domain.CloneNode` carries this to the actionability layer. The static stdlib name list (`commonInterfaceMethodNames`) remains as a fallback for cross-package interfaces. Also fixed a pre-existing bug where FuncDecl nodes did not have `Name` set by the transformer.
 
 ### CI and Infrastructure
 
