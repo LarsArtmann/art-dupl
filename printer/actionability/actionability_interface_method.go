@@ -39,39 +39,54 @@ var commonInterfaceMethodNames = []string{ //nolint:gochecknoglobals // static n
 // extracting.
 const maxInterfaceMethodBodyNodes = 4
 
-// isInterfaceMethodBody reports whether every clone is a FuncDecl that
-// implements an interface contract AND whose body is small (≤4 nodes).
+// isInterfaceMethodBody reports whether every clone is the body of a function
+// that implements an interface contract AND whose body is small (≤4 nodes).
 //
-// Detection has two complementary paths:
-//   - Type-aware path: when --type-aware is active, go/types sets the
-//     InterfaceMethod flag on FuncDecl nodes that satisfy a same-package
-//     interface. This catches custom interfaces beyond the static list.
-//   - Static fallback: the commonInterfaceMethodNames list covers well-known
-//     stdlib interfaces (fmt.Stringer, io.Reader, error, etc.) that are not
-//     declared in the same package and thus invisible to same-package scanning.
+// Detection has two paths depending on the clone root type:
 //
-// A method matching either path is suppressed as interface-driven boilerplate.
+//   - FuncDecl root (path 1): The FuncDecl itself is the clone root. This only
+//     happens in edge-case files without statements. The InterfaceMethod flag
+//     or the static name list identifies interface methods; body size is checked
+//     via the BlockStmt child.
+//
+//   - Statement root (path 2, normal Go files): FuncDecl nodes can never be
+//     clone roots in real Go files because the structural filter in
+//     FindSyntaxUnits rejects non-Statement clone roots. The transformer
+//     propagates the InterfaceMethod flag from the enclosing FuncDecl to body
+//     statement nodes, so the flag is available on the statement clone root.
+//     The number of clone units (len(seq)) IS the body size. The static name
+//     list does not apply here because the function name is not on statement
+//     nodes.
+//
+// Path 2 requires --type-aware mode (the flag is only set when go/types
+// confirms interface satisfaction). Path 1 also works without type-aware
+// via the static name list.
 func isInterfaceMethodBody(nodeSeqs [][]*domain.CloneNode) bool {
 	return everySequenceMatch(nodeSeqs, func(seq []*domain.CloneNode) bool {
-		if len(seq) != 1 {
+		if len(seq) == 0 {
 			return false
 		}
 
 		root := seq[0]
-		if root.BaseType != golang.FuncDecl {
-			return false
-		}
 
-		if !root.InterfaceMethod && !slices.Contains(commonInterfaceMethodNames, root.Name) {
-			return false
-		}
-
-		for _, child := range root.Children {
-			if child.BaseType == golang.BlockStmt && len(child.Children) > maxInterfaceMethodBodyNodes {
+		// Path 1: FuncDecl root (edge case — files without statements).
+		if root.BaseType == golang.FuncDecl {
+			if !root.InterfaceMethod && !slices.Contains(commonInterfaceMethodNames, root.Name) {
 				return false
 			}
+
+			for _, child := range root.Children {
+				if child.BaseType == golang.BlockStmt && len(child.Children) > maxInterfaceMethodBodyNodes {
+					return false
+				}
+			}
+
+			return true
 		}
 
-		return true
+		// Path 2: Statement-level root (normal Go files).
+		// The InterfaceMethod flag is propagated from the enclosing FuncDecl
+		// by the transformer. The number of clone units IS the body size.
+		return root.InterfaceMethod && len(seq) <= maxInterfaceMethodBodyNodes
 	})
 }

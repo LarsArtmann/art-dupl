@@ -179,9 +179,9 @@ type Options struct {
 	MaxFileSize int64    `json:"max_file_size"` // Maximum file size to process
 
 	// Performance tuning
-	MaxWorkers    int           `json:"max_workers"`     // Maximum concurrent workers
-	SearchWorkers int           `json:"search_workers"`  // Suffix tree search workers (0=sequential, >1=parallel)
-	Timeout       time.Duration `json:"timeout"`         // Maximum analysis time
+	MaxWorkers    int           `json:"max_workers"`    // Maximum concurrent workers
+	SearchWorkers int           `json:"search_workers"` // Suffix tree search workers (0=sequential, >1=parallel)
+	Timeout       time.Duration `json:"timeout"`        // Maximum analysis time
 
 	// Output customization
 	IncludeFragments  bool `json:"include_fragments"`    // Include actual code fragments

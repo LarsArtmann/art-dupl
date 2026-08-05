@@ -82,8 +82,9 @@ type transformer struct {
 	config               ParseConfig
 	inInterface          bool
 	norm                 *normalizer
-	typeInfo             *types.Info
-	enclosingReturnArity int32
+	typeInfo                 *types.Info
+	enclosingReturnArity     int32
+	enclosingInterfaceMethod bool
 }
 
 // funcReturnArity returns the number of return values in a function type.

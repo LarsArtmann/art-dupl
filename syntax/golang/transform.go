@@ -16,6 +16,7 @@ func (t *transformer) trans(
 	o = syntax.NewNode()
 	o.Filename = t.filename
 	o.EnclosingReturnArity = t.enclosingReturnArity
+	o.InterfaceMethod = t.enclosingInterfaceMethod
 	st, end := node.Pos(), node.End()
 	o.Pos, o.End = int32(
 		t.fileset.File(st).Offset(st),
@@ -184,14 +185,26 @@ func (t *transformer) trans(
 		// Track enclosing return arity for property engine
 		savedArity := t.enclosingReturnArity
 		t.enclosingReturnArity = funcReturnArity(n.Type)
+
+		// Propagate InterfaceMethod to body statement nodes so the
+		// actionability layer can match interface-method boilerplate at
+		// the statement level (FuncDecl nodes are never clone roots in Go
+		// files due to the structural filter in FindSyntaxUnits).
+		savedIM := t.enclosingInterfaceMethod
+		t.enclosingInterfaceMethod = o.InterfaceMethod
 		t.addWithNilCheck(o, n.Body)
+		t.enclosingInterfaceMethod = savedIM
+
 		t.enclosingReturnArity = savedArity
 
 	case *ast.FuncLit:
 		o.Type = FuncLit
 		savedArity := t.enclosingReturnArity
 		t.enclosingReturnArity = funcReturnArity(n.Type)
+		savedIM := t.enclosingInterfaceMethod
+		t.enclosingInterfaceMethod = false
 		o.AddChildren(t.trans(n.Type), t.trans(n.Body))
+		t.enclosingInterfaceMethod = savedIM
 		t.enclosingReturnArity = savedArity
 
 	case *ast.FuncType:

@@ -84,6 +84,44 @@ func TestIsInterfaceMethodBody(t *testing.T) {
 			expected: false,
 		},
 		{
+			name: "statement-level: interface method body suppressed via propagated flag",
+			seqs: [][]*domain.CloneNode{
+				mustStatementInterfaceMethodSeq(1),
+				mustStatementInterfaceMethodSeq(1),
+			},
+			expected: true,
+		},
+		{
+			name: "statement-level: 3-statement interface method body suppressed",
+			seqs: [][]*domain.CloneNode{
+				mustStatementInterfaceMethodSeq(3),
+				mustStatementInterfaceMethodSeq(3),
+			},
+			expected: true,
+		},
+		{
+			name: "statement-level: at limit (4 statements) suppressed",
+			seqs: [][]*domain.CloneNode{
+				mustStatementInterfaceMethodSeq(maxInterfaceMethodBodyNodes),
+			},
+			expected: true,
+		},
+		{
+			name: "statement-level: over limit (5 statements) not suppressed",
+			seqs: [][]*domain.CloneNode{
+				mustStatementInterfaceMethodSeq(maxInterfaceMethodBodyNodes + 1),
+			},
+			expected: false,
+		},
+		{
+			name: "statement-level: without InterfaceMethod flag not suppressed",
+			seqs: [][]*domain.CloneNode{
+				{{BaseType: golang.ReturnStmt}},
+				{{BaseType: golang.ReturnStmt}},
+			},
+			expected: false,
+		},
+		{
 			name:     "empty seqs",
 			seqs:     [][]*domain.CloneNode{},
 			expected: true,
@@ -122,6 +160,18 @@ func mustInterfaceMethodNode(methodName string, bodyChildCount int) []*domain.Cl
 func mustTypeAwareInterfaceMethodNode(methodName string, bodyChildCount int) []*domain.CloneNode {
 	seq := mustInterfaceMethodNode(methodName, bodyChildCount)
 	seq[0].InterfaceMethod = true
+
+	return seq
+}
+
+func mustStatementInterfaceMethodSeq(stmtCount int) []*domain.CloneNode {
+	seq := make([]*domain.CloneNode, stmtCount)
+	for i := range seq {
+		seq[i] = &domain.CloneNode{
+			BaseType:        golang.ReturnStmt,
+			InterfaceMethod: true,
+		}
+	}
 
 	return seq
 }
