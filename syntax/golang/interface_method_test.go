@@ -240,15 +240,18 @@ func findFuncDecl(t *testing.T, file *ast.File, name, recvType string) *ast.Func
 			if fn.Recv == nil {
 				return fn
 			}
+
 			continue
 		}
 
 		if fn.Recv != nil && len(fn.Recv.List) > 0 {
 			// Strip pointer indirection from receiver type name.
 			rt := fn.Recv.List[0].Type
+
 			if star, ok := rt.(*ast.StarExpr); ok {
 				rt = star.X
 			}
+
 			if ident, ok := rt.(*ast.Ident); ok && ident.Name == recvType {
 				return fn
 			}
@@ -256,6 +259,7 @@ func findFuncDecl(t *testing.T, file *ast.File, name, recvType string) *ast.Func
 	}
 
 	t.Fatalf("FuncDecl %s on %q not found", name, recvType)
+
 	return nil
 }
 
