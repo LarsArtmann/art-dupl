@@ -9,9 +9,12 @@ This file is OPEN work only — no completed, rejected, or resolved items.
 
 ## HIGH Priority
 
-### Property Engine Follow-up
+### Actionability Engine (from calibration)
 
-- [ ] **Calibrate confidence values against larger codebases**: Initial calibration on 8 projects showed 0 false positives with current thresholds, but sample size was too small (only 1 project produced meaningful clone data). Run on 3+ projects with 500+ Go files, manually label 50+ clone groups as actionable/non-actionable, compute precision/recall metrics, and tune thresholds empirically. The calibration harness (`scripts/calibrate-confidence.sh`) and initial report (`docs/calibration/confidence-thresholds-2026-08-05.md`) exist as starting points.
+- [ ] **Exclude demo/example directories by default**: Large-scale calibration (`docs/calibration/confidence-calibration-large-2026-08-05.md`) found 4/12 false positives are throwaway code in `examples/`, `demo/`, `test_plugin/`, `test_temp/` dirs. Add these to the default exclusion list (alongside vendor), with `--include-examples` to override. Eliminates 4 FPs (86.2% → 91% precision).
+- [ ] **Extend single-declaration pattern to type-alias blocks**: 3/12 FPs are `type X = pkg.Y` re-export shims (multiple aliases in one `type(...)` group). The existing `single-declaration` pattern catches lone aliases but not blocks. Extend it. Eliminates 3 FPs.
+- [ ] **Add interface-assertion + widen test-helper-delegate patterns**: 2/12 FPs are compile-time `_ I = (*T)(nil)` assertions and `b.Helper()` (testing.B) delegates. Add interface-assertion pattern; widen test-helper-delegate receiver check from `testing.T` to include `testing.B`.
+- [ ] **Surface suppressed groups for recall measurement**: Add `--show-suppressed` flag (or include suppressed groups in `--explain` with a "suppressed" label) so calibration can measure false negatives, not just precision. Currently recall is unmeasurable.
 
 ---
 

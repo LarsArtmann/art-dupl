@@ -1,0 +1,47 @@
+name: Architecture Lint
+
+# Enforces package dependency boundaries declared in .go-arch-lint.yml.
+# go-arch-lint uses go/packages, which needs a Go toolchain + module cache at
+# runtime, so it cannot run in the pure Nix sandbox. This workflow provides the
+# Go environment go-arch-lint needs and fails CI on architectural violations.
+
+on:
+  push:
+    branches: [main, master, fork]
+    paths:
+      - "**/*.go"
+      - ".go-arch-lint.yml"
+      - ".github/workflows/arch-lint.yml"
+  pull_request:
+    branches: [main, master, fork]
+    paths:
+      - "**/*.go"
+      - ".go-arch-lint.yml"
+      - ".github/workflows/arch-lint.yml"
+
+jobs:
+  arch-lint:
+    name: Verify package boundaries
+    runs-on: ubuntu-latest
+    env:
+      CGO_ENABLED: 0
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: stable
+
+      - name: Generate templ sources
+        run: |
+          go install github.com/a-h/templ/cmd/templ@v0.3.1020
+          templ generate
+
+      - name: Download modules
+        run: go mod download
+
+      - name: Install go-arch-lint
+        run: go install github.com/fe3dback/go-arch-lint@v1.16.0
+
+      - name: Run go-arch-lint
+        run: go-arch-lint check
