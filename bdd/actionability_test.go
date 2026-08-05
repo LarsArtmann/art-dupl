@@ -200,6 +200,71 @@ func processB(active bool) {
 	})
 })
 
+var _ = Describe("--show-suppressed flag", func() {
+	var setup *testutil.BDDTestSetup
+
+	BeforeEach(func() {
+		setup = CreateBDDTestSetup()
+
+		err := setup.CreateTestFiles(map[string]string{
+			"guard1.go": `package main
+
+func processA(enabled bool) {
+	if !enabled {
+		return
+	}
+}
+`,
+			"guard2.go": `package main
+
+func processB(active bool) {
+	if !active {
+		return
+	}
+}
+`,
+		})
+		Expect(err).NotTo(HaveOccurred())
+	})
+
+	It("should surface suppressed guard-clause clones when flag is set", func() {
+		outputSuppressed, err := setup.RunArtDupl("--quiet", "--semantic", "--show-suppressed", "--threshold", "1")
+		if err != nil {
+			fmt.Printf("Command failed with output: %s\n", string(outputSuppressed))
+		}
+
+		Expect(err).ToNot(HaveOccurred())
+
+		outputStr := string(outputSuppressed)
+		Expect(outputStr).To(ContainSubstring("guard1.go"),
+			"--show-suppressed should surface the suppressed guard-clause clone")
+		Expect(outputStr).To(ContainSubstring("guard2.go"),
+			"--show-suppressed should surface both guard-clause clones")
+	})
+
+	It("should suppress guard-clause clones by default (without --show-suppressed)", func() {
+		outputDefault, err := setup.RunArtDupl("--quiet", "--semantic", "--threshold", "1")
+		Expect(err).ToNot(HaveOccurred())
+
+		outputStr := string(outputDefault)
+		Expect(outputStr).To(ContainSubstring("Found total 0 clone groups"),
+			"guard-clause pattern should suppress clones by default")
+	})
+
+	It("should show at least as many clones as default mode", func() {
+		outputDefault, err := setup.RunArtDupl("--quiet", "--semantic", "--threshold", "1")
+		Expect(err).ToNot(HaveOccurred())
+
+		outputSuppressed, err := setup.RunArtDupl("--quiet", "--semantic", "--show-suppressed", "--threshold", "1")
+		Expect(err).ToNot(HaveOccurred())
+
+		defaultCount := strings.Count(string(outputDefault), "guard1.go")
+		suppressedCount := strings.Count(string(outputSuppressed), "guard1.go")
+		Expect(suppressedCount).To(BeNumerically(">=", defaultCount),
+			"--show-suppressed should show at least as many clones as default")
+	})
+})
+
 var _ = Describe("--explain flag", func() {
 	var setup *testutil.BDDTestSetup
 

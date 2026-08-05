@@ -139,6 +139,32 @@ art-dupl ./src
 art-dupl --include-ignored ./src
 ```
 
+### Example/Demo Directory Exclusion
+
+art-dupl excludes `examples/`, `demo/`, and `demos/` directories by default.
+These typically contain throwaway scripts that inflate false-positive counts
+without providing refactoring value:
+
+```bash
+# Default: examples/ and demo/ are excluded
+art-dupl ./src
+
+# Override: include example/demo directories in analysis
+art-dupl --include-examples ./src
+```
+
+### Showing Suppressed Groups
+
+Use `--show-suppressed` to surface clone groups that would normally be filtered
+by actionability patterns, min-lines, test-threshold, or accept directives.
+This is primarily useful for calibration — measuring recall (false negatives)
+by seeing what the tool suppresses:
+
+```bash
+# Show all groups including suppressed ones (with [non-actionable] badges)
+art-dupl --show-suppressed --explain ./src
+```
+
 ### Line-Count Filtering
 
 Use `--min-lines` to suppress clone groups that span fewer than N source lines.
