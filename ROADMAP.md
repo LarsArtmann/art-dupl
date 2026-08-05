@@ -19,8 +19,8 @@
 ## Architecture
 
 - [ ] **Plugin architecture for detection methods**: Allow third-party detectors beyond suffix-tree and hash. The `detection.MethodDetector` interface supports this but is not documented as a public extension point.
-- [ ] **Parallel suffix tree construction**: Current Ukkonen's algorithm is single-threaded. Parallel construction could improve throughput on large codebases (10000+ files).
-- [ ] **Streaming suffix tree**: Process files as they arrive instead of buffering all serialized nodes. Would reduce memory for very large codebases.
+- [x] **Parallel suffix tree search**: Ukkonen's construction is inherently sequential (active-point state propagation), so true parallel construction is impossible without a fundamentally different algorithm. Instead, `FindDuplOverParallel` parallelizes the DFS search phase across root-level subtrees, giving 1.5-3.4x speedup depending on tree size. The `--search-workers` CLI flag and `Options.SearchWorkers` SDK field control worker count (0=sequential, >1=parallel).
+- [x] **Memory-compact suffix tree storage**: Changed `STree.data` from `[]Token` (16 bytes/interface) to `[]TokenValue` (4 bytes/int32), reducing pointer-array memory by 75%. The tree no longer retains references to original Token objects; the external `[]*syntax.Node` in `BuildTree` is the sole copy, needed for `FindSyntaxUnits` position-indexed lookups.
 
 ## Quality and Intelligence
 
