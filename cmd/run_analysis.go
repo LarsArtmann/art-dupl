@@ -136,7 +136,7 @@ func buildSuffixTree(params buildParams) treeBuildResult {
 func buildSuffixTreeIncremental(params buildParams) treeBuildResult {
 	if params.cfg.Verbose {
 		_, _ = fmt.Fprintf(
-			os.Stderr,
+			params.stderr,
 			"🔍 Incremental mode enabled, cache dir: %s\n",
 			params.cfg.CacheDir,
 		)
@@ -187,11 +187,11 @@ func buildSuffixTreeIncremental(params buildParams) treeBuildResult {
 // buildSuffixTreeStandard builds a suffix tree using standard parsing without cache.
 func buildSuffixTreeStandard(params buildParams) treeBuildResult {
 	filesChan := params.getFilesChan()
-	filesChan = progressFilesChan(params.ctx, filesChan, params.cfg, params.outputFormat, os.Stderr)
+	filesChan = progressFilesChan(params.ctx, filesChan, params.cfg, params.outputFormat, params.stderr)
 
 	var typeInfos golang.TypeAwareData
 	if params.cfg.TypeAware {
-		typeInfos, filesChan = loadTypeAwareData(params.ctx, filesChan)
+		typeInfos, filesChan = loadTypeAwareData(params.ctx, filesChan, params.stderr)
 	}
 
 	var (
@@ -282,7 +282,7 @@ func setupFilter(cfg *config.Config) (*gogenfilter.Filter, error) {
 	for _, e := range entries {
 		if e.enabled {
 			filterOptions = append(filterOptions, e.option)
-			verboseFprintf(cfg, fmt.Sprintf(
+			verboseFprintf(stderr, cfg, fmt.Sprintf(
 				"Auto-generated code filtering enabled (%s)", e.logName,
 			))
 		}
@@ -305,7 +305,7 @@ func setupFilter(cfg *config.Config) (*gogenfilter.Filter, error) {
 			configs = append(configs, filterConfig)
 		}
 
-		verboseFprintf(cfg, "Auto-generated code filtering enabled")
+		verboseFprintf(stderr, cfg, "Auto-generated code filtering enabled")
 
 		fltr, err := gogenfilter.NewFilter(configs...)
 		if err != nil {
@@ -333,7 +333,7 @@ func buildExcludePatterns(cfg *config.Config) []string {
 	if cfg.IgnoreTests {
 		patterns = append(patterns, "*_test.go")
 
-		verboseFprintf(cfg, "Test file exclusion enabled (--ignore-tests)")
+		verboseFprintf(stderr, cfg, "Test file exclusion enabled (--ignore-tests)")
 	}
 
 	return patterns
@@ -373,7 +373,7 @@ func executeAnalysis(
 		return nil, job.ParseStats{}, nil, duplerrors.WrapValidation(err, "path validation failed")
 	}
 
-	startProfile := startProfiling(cfg)
+	startProfile := startProfiling(stderr, cfg)
 
 	filterParam, err := setupFilter(cfg)
 	if err != nil {
