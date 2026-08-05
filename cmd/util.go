@@ -2,8 +2,6 @@ package cmd
 
 import (
 	"bytes"
-	"os"
-	"path/filepath"
 	"strings"
 
 	"github.com/LarsArtmann/art-dupl/config"
@@ -87,10 +85,12 @@ func newReportMetadata(cfg *config.Config, sortBy string) printer.ReportMetadata
 // this, --include-sqlc would have no effect because FilterGeneric still matches
 // sqlc files.
 //
-// When includes are active, file content is read once and passed to
-// FilterDetailedWithContent (gogenfilter v3.2.0), avoiding a double read.
-// When no includes are active, the standard two-phase FilterDetailed is used
-// (filename check first, content read only if needed).
+// When includes are active, FilterDetailedAndContent (gogenfilter v3.4.0)
+// performs a lazy content read: the file is only opened when phase-2 detection
+// actually needs it (i.e., filename/pattern detection did not already decide).
+// The returned content is reused for the generic-override classification,
+// avoiding a double read. When no includes are active, the standard two-phase
+// FilterDetailed is used (filename check first, content read only if needed).
 func shouldIncludeFile(
 	f *gogenfilter.Filter,
 	path string,
@@ -105,18 +105,13 @@ func shouldIncludeFile(
 		return shouldIncludeFileStandard(f, path, stats)
 	}
 
-	content, err := os.ReadFile(filepath.Clean(path))
-	if err != nil {
-		return true
-	}
-
-	result, err := f.FilterDetailedWithContent(path, content)
+	result, content, err := f.FilterDetailedAndContent(path)
 	if err != nil {
 		return true
 	}
 
 	if result.Filtered && result.Reason == gogenfilter.ReasonGeneric &&
-		includes.allowsContent(content) {
+		content != nil && includes.allowsContent(content) {
 		return true
 	}
 
