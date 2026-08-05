@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"os"
 	"slices"
 	"strings"
 	"time"
@@ -265,7 +264,7 @@ func validateMutualExclusion(cmd *cobra.Command) error {
 func warnStructural(cmd *cobra.Command) {
 	if cmd.Flags().Changed("structural") {
 		fmt.Fprintf(
-			os.Stderr,
+			cmd.ErrOrStderr(),
 			"Note: --structural flag disables semantic detection. This may increase false positives from similar-looking but semantically different code.\n",
 		)
 	}
@@ -280,7 +279,7 @@ func warnTypeAwareIncremental(_ *cobra.Command) {}
 func warnSemanticDeprecation(cmd *cobra.Command) {
 	if cmd.Flags().Changed("semantic") {
 		fmt.Fprintf(
-			os.Stderr,
+			cmd.ErrOrStderr(),
 			"Note: --semantic is the default detection mode; this flag is redundant "+
 				"and may be removed in a future version.\n",
 		)

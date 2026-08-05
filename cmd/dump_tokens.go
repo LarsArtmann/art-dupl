@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"os"
 	"strconv"
 
 	"github.com/LarsArtmann/art-dupl/config"
@@ -22,13 +21,13 @@ import (
 //	<filename>\t<position>\t<type>\t<name>\t<statement>
 //
 // Sentinels (Type=-1) are printed as "---" to visually separate files.
-func dumpTokensOutput(ctx context.Context, cfg *config.Config, w io.Writer) error {
+func dumpTokensOutput(ctx context.Context, cfg *config.Config, w io.Writer, stderr io.Writer) error {
 	err := validatePaths(cfg.Paths, cfg.FilesFromStdin)
 	if err != nil {
 		return err
 	}
 
-	filterParam, err := setupFilter(os.Stderr, cfg)
+	filterParam, err := setupFilter(stderr, cfg)
 	if err != nil {
 		return err
 	}
@@ -45,7 +44,7 @@ func dumpTokensOutput(ctx context.Context, cfg *config.Config, w io.Writer) erro
 		filterParam:  filterParam,
 		filterStats:  filterStats,
 		outputFormat: cfg.OutputFormat,
-		stderr:       os.Stderr,
+		stderr:       stderr,
 	}
 
 	filesChan := params.getFilesChan()

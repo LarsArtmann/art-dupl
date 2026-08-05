@@ -114,7 +114,7 @@ func dispatchAnalysis(ctx context.Context, cmd *cobra.Command, mergedConfig *con
 	}
 
 	if dumpTokens, _ := cmd.Flags().GetBool("dump-tokens"); dumpTokens {
-		return dumpTokensOutput(ctx, mergedConfig, os.Stdout)
+		return dumpTokensOutput(ctx, mergedConfig, os.Stdout, cmd.ErrOrStderr())
 	}
 
 	if listPatterns, _ := cmd.Flags().GetBool("list-patterns"); listPatterns {

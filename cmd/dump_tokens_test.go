@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"bytes"
+	"io"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -23,7 +24,7 @@ func TestDumpTokensOutput(t *testing.T) {
 
 	buf := &bytes.Buffer{}
 
-	err := dumpTokensOutput(t.Context(), cfg, buf)
+	err := dumpTokensOutput(t.Context(), cfg, buf, io.Discard)
 	if err != nil {
 		t.Fatalf("dumpTokensOutput() error = %v", err)
 	}
@@ -74,7 +75,7 @@ func TestDumpTokensOutput_EmptyDir(t *testing.T) {
 
 	buf := &bytes.Buffer{}
 
-	err := dumpTokensOutput(t.Context(), cfg, buf)
+	err := dumpTokensOutput(t.Context(), cfg, buf, io.Discard)
 	if err != nil {
 		t.Fatalf("dumpTokensOutput() on empty dir error = %v", err)
 	}
