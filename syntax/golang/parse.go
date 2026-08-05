@@ -77,11 +77,11 @@ func parsePreloaded(filename string, cfg ParseConfig) (*syntax.Node, int, error)
 }
 
 type transformer struct {
-	fileset              *token.FileSet
-	filename             string
-	config               ParseConfig
-	inInterface          bool
-	norm                 *normalizer
+	fileset                  *token.FileSet
+	filename                 string
+	config                   ParseConfig
+	inInterface              bool
+	norm                     *normalizer
 	typeInfo                 *types.Info
 	enclosingReturnArity     int32
 	enclosingInterfaceMethod bool

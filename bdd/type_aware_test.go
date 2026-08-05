@@ -141,6 +141,7 @@ type Validator interface {
 	Validate(x int) error
 }
 `
+
 		const impl1Src = `package main
 
 import "errors"
@@ -154,6 +155,7 @@ func (f Foo) Validate(x int) error {
 	return nil
 }
 `
+
 		const impl2Src = `package main
 
 import "errors"
@@ -167,6 +169,7 @@ func (b Bar) Validate(x int) error {
 	return nil
 }
 `
+
 		const mainSrc = `package main
 
 func main() {

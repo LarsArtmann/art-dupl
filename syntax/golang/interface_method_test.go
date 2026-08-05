@@ -204,6 +204,67 @@ func (f Foo) String() string { return "foo" }
 	}
 }
 
+func TestTransformer_PropagatesInterfaceMethodToBody(t *testing.T) {
+	t.Parallel()
+
+	src := `package testpkg
+
+type Validator interface {
+	Validate() error
+}
+
+type User struct{ name string }
+func (u User) Validate() error { return nil }
+func (u User) GetName() string { return u.name }`
+	dir := t.TempDir()
+	path := dir + "/src.go"
+	writeFile(t, path, src)
+
+	typeData, err := LoadTypeAwareData([]string{path})
+	if err != nil {
+		t.Fatalf("LoadTypeAwareData failed: %v", err)
+	}
+
+	pre := typeData.LookupPreloaded(path)
+	if pre == nil {
+		t.Fatal("LookupPreloaded returned nil")
+	}
+
+	root := parsePreloadedTest(t, path, pre)
+
+	validateNode := findFuncDeclNode(t, root, "Validate")
+	if !validateNode.InterfaceMethod {
+		t.Fatal("Validate FuncDecl should have InterfaceMethod=true")
+	}
+
+	for _, stmt := range findBodyStatements(validateNode) {
+		if !stmt.InterfaceMethod {
+			t.Error("body statement of interface method Validate should have InterfaceMethod=true")
+		}
+	}
+
+	getNameNode := findFuncDeclNode(t, root, "GetName")
+	if getNameNode.InterfaceMethod {
+		t.Fatal("GetName FuncDecl should have InterfaceMethod=false")
+	}
+
+	for _, stmt := range findBodyStatements(getNameNode) {
+		if stmt.InterfaceMethod {
+			t.Error("body statement of non-interface method GetName should have InterfaceMethod=false")
+		}
+	}
+}
+
+func findBodyStatements(funcDecl *syntax.Node) []*syntax.Node {
+	for _, child := range funcDecl.Children {
+		if DecodeBaseType(child.Type) == BlockStmt {
+			return child.Children
+		}
+	}
+
+	return nil
+}
+
 // loadTypeInfoForTest writes the source to a temp file, loads type info via
 // go/packages, and returns the types.Info and parsed AST file.
 func loadTypeInfoForTest(t *testing.T, src string) (*types.Info, *ast.File) {
