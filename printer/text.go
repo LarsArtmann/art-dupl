@@ -9,6 +9,7 @@ import (
 	"github.com/LarsArtmann/art-dupl/config"
 	"github.com/LarsArtmann/art-dupl/domain"
 	duplerrors "github.com/LarsArtmann/art-dupl/errors"
+	"github.com/dustin/go-humanize"
 )
 
 // maxPreviewRunes limits the code preview shown after each clone location
@@ -361,23 +362,15 @@ func cloneWriteErr(cl domain.ProcessedClone, kind string, err error) error {
 	return fmt.Errorf("write clone %s %s:%d-%d: %w", kind, cl.Filename, cl.LineStart, cl.LineEnd, err)
 }
 
+// formatBytes returns a human-readable byte-size string using IEC binary units
+// (KiB/MiB/GiB) via go-humanize. Bytes are rendered with the same units as
+// `du -h` and `ls -lh` so output matches conventional Unix tool conventions.
+// Negative values are formatted as their absolute value.
 func formatBytes(bytes int) string {
-	const (
-		KB = 1024
-		MB = 1024 * KB
-		GB = 1024 * MB
-	)
-
-	switch {
-	case bytes >= GB:
-		return fmt.Sprintf("%.1f GB", float64(bytes)/GB)
-	case bytes >= MB:
-		return fmt.Sprintf("%.1f MB", float64(bytes)/MB)
-	case bytes >= KB:
-		return fmt.Sprintf("%.1f KB", float64(bytes)/KB)
-	default:
-		return fmt.Sprintf("%d B", bytes)
+	if bytes < 0 {
+		bytes = -bytes
 	}
+	return humanize.IBytes(uint64(bytes))
 }
 
 // totalFragmentSize returns the total byte length of all clone fragments.
