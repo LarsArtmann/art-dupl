@@ -27,7 +27,7 @@ pre-existing bug where FuncDecl nodes never had `Name` set by the transformer.
 ## b) PARTIALLY DONE
 
 1. **ROADMAP entry is `[~]` not `[x]**: Same-package interface detection is done, but cross-package interface scanning remains. The entry is marked partial — full "deep interface-awareness" is still future work.
-2. **Test coverage is unit-level only**: No integration/BDD test that runs the full `art-dupl --type-aware` pipeline and verifies suppression in real output. Unit tests prove the pieces work; no test proves they work *together* end-to-end.
+2. **Test coverage is unit-level only**: No integration/BDD test that runs the full `art-dupl --type-aware` pipeline and verifies suppression in real output. Unit tests prove the pieces work; no test proves they work _together_ end-to-end.
 3. **`InterfaceMethod` serialization survival**: The flag is carried through `serial()` (in the shallow copy), but no test explicitly verifies the flag survives serialization + deserialization through the suffix tree match pipeline. `Val()` doesn't use the flag, so it shouldn't be an issue, but it's unverified.
 
 ## c) NOT STARTED
@@ -62,6 +62,7 @@ clean and functional. The auto-git daemon committed everything correctly.
 ## f) Up to 50 Things to Get Done Next
 
 ### High Priority (close gaps in this feature)
+
 1. Add BDD test: create file with custom interface, run `--type-aware`, verify suppression
 2. Add SDK test: verify `InterfaceMethod` flag flows through `pkg/artdupl` detector
 3. Audit all consumers of `Node.Name` for FuncDecl to verify the fix doesn't change behavior
@@ -71,6 +72,7 @@ clean and functional. The auto-git daemon committed everything correctly.
 7. Add integration test that verifies `InterfaceMethod` survives serialization
 
 ### Medium Priority (improve the feature)
+
 8. Pre-compute interface→method-name map per package to avoid repeated scope scanning
 9. Benchmark `IsInterfaceMethod` on a large package (100+ types, 10+ interfaces)
 10. Add debug logging when type info is available but interface check fails
@@ -79,11 +81,13 @@ clean and functional. The auto-git daemon committed everything correctly.
 13. Add `--explain` output that says "type-aware: satisfies interface X" vs "static name list match"
 
 ### Actionability Pattern Improvements
+
 14. The `interface-implementation` pattern (pattern #2) is purely structural (3+ FuncType fragments from different files). Could use `go/types` to verify they implement the same interface.
 15. The `signature-only` pattern could use type info to distinguish interface stubs from forwarding methods.
 16. Consider a `type-aware-error-wrapping` pattern that uses type info to verify the wrapped error variable's type.
 
 ### Testing Improvements
+
 17. Add race test for `IsInterfaceMethod` (multiple goroutines parsing same package)
 18. Add fuzz test for `IsInterfaceMethod` with malformed AST nodes
 19. Add test for generic type receivers (`func (s[T]) Method()`)
@@ -92,12 +96,14 @@ clean and functional. The auto-git daemon committed everything correctly.
 22. Add test for very large body (>4 statements) with `InterfaceMethod=true` — should NOT suppress
 
 ### Documentation
+
 23. Update HOW_TO_USE.md with `--type-aware` interface detection examples
 24. Add before/after example in ACTIONABILITY_PATTERNS.md showing custom interface suppression
 25. Consider adding a `--list-patterns` output entry that notes which patterns are type-aware-enhanced
 26. Update README.md if it mentions actionability patterns
 
 ### Code Quality
+
 27. Consider extracting interface scanning into a reusable `PackageInterfaceIndex` type
 28. The `interfaceHasMethod` function could be a method on a `PackageInterfaceIndex`
 29. Consider whether `InterfaceMethod` should be `InterfaceMethodSource` (enum: none/stdlib/type-aware) for richer `--explain` output
@@ -105,12 +111,14 @@ clean and functional. The auto-git daemon committed everything correctly.
 31. Check if `InterfaceMethod` needs to be in the SDK's `CloneNode` equivalent (if any)
 
 ### Pre-existing Issues Noticed
+
 32. `extractFormatSpecifiers` is undefined in `printer/actionability/extractability_format_test.go:81` — pre-existing compile error in a test file (gopls reports it, tests pass because it's in a `_test.go` that may not be compiled in the normal build)
 33. `stdversion` warnings (54 total): many files use `json.Marshal`/`json.Unmarshal` which require go1.27 but files declare go1.26 — this is a known GOEXPERIMENT=jsonv2 situation
 34. `tagliatelle` linter has 44 pre-existing violations across `printer/` and `domain/` — these are explicitly excluded from the enable list per AGENTS.md, but gopls still reports them
 35. The `nlreturn` and `wsl_v5` linters are very aggressive about blank lines before return/continue/assign statements — required several extra edits to satisfy
 
 ### Architecture / Future
+
 36. Consider a general "type-aware actionability" framework that any pattern can opt into
 37. The property-based engine (ADR-0017) could incorporate interface satisfaction as a property
 38. Consider caching `go/types` results keyed by content hash (ROADMAP: "Caching for type-checking results")
@@ -118,6 +126,7 @@ clean and functional. The auto-git daemon committed everything correctly.
 40. The `type narrowing for interface-typed variables` ROADMAP item could interact with this work
 
 ### Cleanup
+
 41. Remove the `commonInterfaceMethodNames` comment that says "A deeper type-aware variant using `go/types` is tracked in ROADMAP" — it's now implemented
 42. The ROADMAP entry for "Interface-aware suppression" should link to ADR-0018
 43. Consider adding ADR-0018 to a docs/adr/README.md index if one exists
@@ -125,6 +134,7 @@ clean and functional. The auto-git daemon committed everything correctly.
 45. Verify the auto-git daemon's commit messages accurately describe the changes (commit `7e4c3a11` includes bool-guard and format-specifier work that was pre-existing staged changes, not from this session)
 
 ### Verification
+
 46. Run the full BDD suite (`go test ./bdd/...`) specifically for type-aware tests
 47. Test on a real codebase (e.g., run art-dupl on itself with `--type-aware --explain`)
 48. Verify `--type-aware` + `--incremental` works with the new flag

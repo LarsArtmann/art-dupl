@@ -123,7 +123,7 @@ full pipeline works.
 
 3. **`--no-actionability` + `--type-aware` interaction tested via BDD but not
    via unit test**: The BDD test `should classify suppressed clones as
-   interface-method with --explain` uses `--no-actionability` to reveal the
+interface-method with --explain` uses `--no-actionability` to reveal the
    clone and verify the pattern label, which implicitly tests the interaction.
    But there's no dedicated test for the `--no-actionability` override of the
    type-aware suppression path specifically.
@@ -206,7 +206,7 @@ immediately.
 4. **Auto-git daemon can silently break CI**: The daemon re-added `tagliatelle`
    to the enable list in commit `4324b03e`, which had been explicitly removed in
    `dcac7541`. The Nix disabled-linters check caught it, but only `nix flake
-   check` surfaces this — `golangci-lint run` and `go test` don't. CI should
+check` surfaces this — `golangci-lint run` and `go test` don't. CI should
    fail fast on config regressions.
 
 5. **The `commonInterfaceMethodNames` static list is now nearly vestigial**:
@@ -221,6 +221,7 @@ immediately.
 ## f) Up to 50 Things to Get Done Next
 
 ### High Priority (close gaps in this feature)
+
 1. Upgrade ROADMAP `[~]` to `[x]` for same-package interface-method detection (dead code now fixed)
 2. Add dedicated FuncLit flag-reset test (verify closures don't inherit InterfaceMethod)
 3. Add SDK-level test verifying `InterfaceMethod` flows through `pkg/artdupl.Clone`
@@ -232,6 +233,7 @@ immediately.
 9. Add test for very large body (>4 statements) with InterfaceMethod=true — should NOT suppress
 
 ### Medium Priority (improve the feature)
+
 10. Pre-compute interface-to-method-name map per package to avoid repeated scope scanning
 11. Benchmark `IsInterfaceMethod` on a large package (100+ types, 10+ interfaces)
 12. Add debug logging when type info is available but interface check fails
@@ -243,12 +245,14 @@ immediately.
 18. Consider whether path 1 (FuncDecl root) should be removed entirely as dead code
 
 ### CI / Build
+
 19. Add a CI check that prevents re-adding disabled linters (beyond the Nix check — maybe a pre-commit hook)
 20. Consider adding `godox` exception for test files (test doc comments often mention "bug" in regression context)
 21. Run `golangci-lint run --timeout 5m ./...` on the FULL project (not just changed packages)
 22. Consider adding a BDD test that specifically verifies pattern unreachability for common node types
 
 ### Documentation
+
 23. Add a "Pattern Authoring Guide" section to ACTIONABILITY_PATTERNS.md explaining the structural filter
 24. Document the `EnclosingReturnArity`/`InterfaceMethod` propagation pattern as a convention
 25. Update HOW_TO_USE.md with `--type-aware` interface detection examples
@@ -257,6 +261,7 @@ immediately.
 28. Update the previous status report (`2026-08-05_06-13`) to note the dead-code bug was found and fixed
 
 ### Code Quality
+
 29. Consider extracting interface scanning into a reusable `PackageInterfaceIndex` type
 30. Consider whether `InterfaceMethod` should be `InterfaceMethodSource` (enum: none/stdlib/type-aware)
 31. Verify `.go-arch-lint.yml` constraints aren't violated by new transformer field
@@ -265,6 +270,7 @@ immediately.
 34. Consider whether the `EnclosingReturnArity` / `InterfaceMethod` save/restore should use defer instead of manual restore
 
 ### Testing Improvements
+
 35. Add test for `--type-aware` on a package with compilation errors (graceful fallback)
 36. Add test for pointer receiver interface methods at the statement level
 37. Add test for value receiver interface methods at the statement level
@@ -273,6 +279,7 @@ immediately.
 40. Test that the pattern does NOT fire when two functions have the same body but only one implements an interface
 
 ### Architecture / Future
+
 41. Consider a general "type-aware actionability" framework that any pattern can opt into
 42. The property-based engine (ADR-0017) could incorporate interface satisfaction as a property
 43. Consider caching `go/types` results keyed by content hash (ROADMAP: "Caching for type-checking results")

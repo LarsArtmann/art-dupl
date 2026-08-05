@@ -3,6 +3,7 @@
 ## Session Goal
 
 Implement two ROADMAP items:
+
 1. "Parallel suffix tree construction" — Ukkonen's algorithm is single-threaded
 2. "Streaming suffix tree" — reduce memory by not buffering all serialized nodes
 
@@ -11,6 +12,7 @@ Implement two ROADMAP items:
 ## A) FULLY DONE
 
 ### 1. Memory-compact suffix tree storage (`[]Token` → `[]TokenValue`)
+
 - Changed `STree.data` from `[]Token` (interface, 16 bytes/elem) to `[]TokenValue` (int32, 4 bytes/elem)
 - `Update()` extracts `tok.Val()` immediately, discards original `Token` object
 - Total pointer-array memory reduced from 24N to 12N bytes (50% reduction)
@@ -21,6 +23,7 @@ Implement two ROADMAP items:
 - Files: `suffixtree/suffixtree.go`, `suffixtree/findtran.go`, `suffixtree/dupl.go`
 
 ### 2. Parallel suffix tree search (`FindDuplOverParallel`)
+
 - New file: `suffixtree/parallel.go`
 - Dispatches root-level subtrees to concurrent goroutines via semaphore-limited worker pool
 - Root subtrees are disjoint (each suffix starts with one first token), so results are identical to sequential
@@ -31,6 +34,7 @@ Implement two ROADMAP items:
   - 10K tokens: 7934μs → 2355μs par32 (3.37x)
 
 ### 3. Parallel search tests (`suffixtree/parallel_test.go`)
+
 - `TestParallelFindsSameMatchesAsSequential` — 6 test cases comparing seq vs parallel match sets
 - `TestParallelEmptyTree` — empty tree closes channel cleanly
 - `TestParallelContextCancellation` — cancelled context still closes channel
@@ -41,10 +45,12 @@ Implement two ROADMAP items:
 - All pass with `-race`
 
 ### 4. Parallel search benchmarks (`suffixtree/parallel_bench_test.go`)
+
 - `BenchmarkFindDuplOverParallel` — seq vs par2/par4/par32 at 1K/5K/10K tokens
 - `BenchmarkTokenValueMemory` — memory allocation measurement
 
 ### 5. Full wiring through CLI, detection, SDK
+
 - **`detection/config.go`**: Added `SearchWorkers int` to `Config`
 - **`detection/adapters.go`**: `suffixTreeAdapter` dispatches to `FindDuplOverParallel` when `searchWorkers > 1`
 - **`config/config.go`**: Added `SearchWorkers int` field + default in `DefaultConfig()`
@@ -57,11 +63,13 @@ Implement two ROADMAP items:
 - **`pkg/artdupl/detector_pipeline.go`**: Passes `SearchWorkers` to `detection.Config`
 
 ### 6. Test verification
+
 - All 28 packages pass with `-race` flag (28 ok, 0 fail)
 - Sequential vs parallel end-to-end comparison: identical clone group count (2 groups on the project itself)
 - CLI flag appears in `--help` output
 
 ### 7. Documentation
+
 - **ROADMAP.md**: Both items marked `[x]` with accurate descriptions explaining why Ukkonen's can't be parallelized
 - **ADR-0019**: Full decision record (`docs/adr/0019-memory-compact-parallel-search.md`)
 - **AGENTS.md**: Added conventions for memory-compact storage and parallel search
@@ -71,6 +79,7 @@ Implement two ROADMAP items:
 ## B) PARTIALLY DONE
 
 ### Streaming suffix tree (original ROADMAP item)
+
 - The original item said "process files as they arrive instead of buffering all serialized nodes"
 - The pipeline **already streams** files into the tree via `chan []*syntax.Node` → `BuildTree` → `t.Update()` per-file
 - The real memory issue was **duplicate pointer storage** (tree's `[]Token` + BuildTree's `[]*syntax.Node`), which we fixed by switching to `[]TokenValue`
@@ -78,6 +87,7 @@ Implement two ROADMAP items:
 - A truly streaming approach (not buffering ANY flat node slice) would require a fundamentally different position-resolution mechanism (e.g., per-file position offset maps instead of a global flat slice) — this is **architectural** and was correctly scoped out
 
 ### HOW_TO_USE.md
+
 - Did NOT update `HOW_TO_USE.md` with `--search-workers` flag documentation
 - The flag is registered and functional but not documented in the user guide
 - Searched for existing `--workers` documentation there and found none, so there's no established pattern to follow
@@ -107,6 +117,7 @@ Implement two ROADMAP items:
 ## D) TOTALLY FUCKED UP
 
 ### Edit tool corruption (recovered)
+
 - During the initial `multiedit` on `suffixtree.go`, two edits failed silently (old_string didn't match exactly). This left the `testAndSplit` function with a missing closing brace/return and merged the `canonize` comment into the middle of `testAndSplit`'s body, creating a syntax error
 - The `genStates` helper in `suffixtree_test.go` was incorrectly left pointing at `str2tok` (returns `[]Token`) instead of `str2vals` (returns `[]TokenValue`) — the edit applied to the wrong occurrence
 - The `parallel_test.go` file was corrupted during multiple sequential `multiedit` calls — the `sortedString` function declaration was eaten by an edit, leaving `}(vals []int) string {` as a syntax error
@@ -114,6 +125,7 @@ Implement two ROADMAP items:
 - **Root cause**: The `multiedit` tool applies edits sequentially, and failed edits leave partial state. When many edits target nearby lines, the "re-indented to match file's style" behavior shifts line positions for subsequent edits. Should have used `write` for large rewrites from the start.
 
 ### Pre-existing lint issue surfacing
+
 - The `gci` (Go Import Checker) linter flagged formatting in several files we touched — this is because adding struct fields with inconsistent alignment triggered the formatter. Fixed with `gofmt -w`.
 - The pre-existing `typecheck` error in `detection/coverage_test.go` (referencing `t.enclosingInterfaceMethod` which doesn't exist on the transformer type) was surfaced but is **not our bug** — it's a pre-existing issue from the type-aware interface-method work.
 

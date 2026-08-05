@@ -56,6 +56,7 @@ differs (goroutine scheduling), which is safe because downstream code groups
 matches by hash.
 
 Wired through:
+
 - `detection.Config.SearchWorkers` → `suffixTreeAdapter.searchWorkers`
 - CLI: `--search-workers N` flag (root-only)
 - SDK: `Options.SearchWorkers` field

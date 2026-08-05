@@ -3,6 +3,7 @@
 ## Context
 
 Two TODO items from `TODO_LIST.md` (Property Engine Follow-up section):
+
 1. Broaden `findOkVarName` beyond the literal `"ok"`.
 2. Fix `isFormatSpecifierDifference` edge cases (`%%`, width specifiers, arg indices).
 
@@ -13,12 +14,14 @@ Both functions live in `printer/actionability/` and feed the extractability/acti
 ## a) FULLY DONE
 
 ### 1. `findOkVarName` broadened (`actionability_boilerplate.go`)
+
 - **Before**: Hardcoded `child.Name == "ok"` — only matched the literal `"ok"`.
 - **After**: New `isBoolGuardVarName(name string) bool` helper using a type switch over `ok`, `found`, `exists`, `success`, `present`.
 - `findOkVarName` delegates to `isBoolGuardVarName` — no behavior change for existing `"ok"` clones, just accepts additional conventional bool-guard names.
 - Chosen as a **function** (not a global `var`) to satisfy `gochecknoglobals` lint rule.
 
 ### 2. `isFormatSpecifierDifference` rewritten (`extractability_engine.go`)
+
 - **Before**: Naive char-after-`%` comparison — broke on `%%` (treated second `%` as a verb), width/precision differences (`%5d` vs `%3d` collapsed to `%d`), and argument indices (`%[1]d`).
 - **After**: Full Go fmt verb parser:
   - `extractFormatSpecifiers(s)` — scans a string, returns ordered list of specifier tokens.
@@ -29,16 +32,19 @@ Both functions live in `printer/actionability/` and feed the extractability/acti
 - Complexity distributed across 5 small functions to satisfy gocyclo and readability.
 
 ### 3. Unit tests added
+
 - `actionability_boolguard_test.go` — `findOkVarName` (8 cases), `isAssignWithBoolGuard` integration tests (all 5 names + 1 rejection).
 - `extractability_format_test.go` — `isFormatSpecifierDifference` (20 cases: `%%`, width, precision, flags, arg indices, mixed), `extractFormatSpecifiers` (9 parser cases).
 
 ### 4. Verification
+
 - `go test ./...` — all packages pass.
 - `go test -race ./printer/actionability/...` — passes.
 - `golangci-lint run ./printer/actionability/...` — 0 issues.
 - Lint on full project: 51 pre-existing `tagliatelle`/`godox` issues in files NOT touched (documented as disabled in AGENTS.md).
 
 ### 5. Docs
+
 - `TODO_LIST.md`: Both items removed, last-updated date bumped to 2026-08-05.
 
 ---
@@ -52,6 +58,7 @@ Nothing — both items were small and fully completed.
 ## c) NOT STARTED
 
 From the same TODO section (Property Engine Follow-up), still open:
+
 - Calibrate confidence values against real-world data.
 - Add property engine labels to `--list-patterns`.
 
@@ -90,12 +97,14 @@ Nothing. All changes compile, lint clean, tests green (including race detector).
 ## f) Up to 50 things to do next
 
 ### Property Engine Follow-up (HIGH)
+
 1. Calibrate confidence values against 3-5 real OSS Go projects — measure FP/FN rates.
 2. Add property engine labels to `--list-patterns` output or document as internal-only.
 3. Integration test: `EvaluateExtractability` with format-specifier-differing `CloneNode` trees.
 4. Integration test: `isAssignWithBoolGuard` with real DiscordSync-style AST from `syntax.Serialize`.
 
 ### Actionability Pattern Hardening
+
 5. Update AGENTS.md bool-guard description to list all accepted names.
 6. Update `docs/ACTIONABILITY_PATTERNS.md` bool-guard section with broadened name set.
 7. Consider type-aware bool-guard validation (leverage `Node.VarType` from `--type-aware`).
@@ -105,6 +114,7 @@ Nothing. All changes compile, lint clean, tests green (including race detector).
 11. Test `hasFormatSpecifierDifferences` with 3+ clones to verify all-pairs semantics.
 
 ### Missing Test Coverage (actionability package)
+
 12. `isBoolGuardIf` — no direct unit test (only tested via `isAssignWithBoolGuard`).
 13. `isNotOkExpr` — no unit test.
 14. `isReturnOnlyBody` — no unit test.
@@ -114,17 +124,20 @@ Nothing. All changes compile, lint clean, tests green (including race detector).
 18. `hasFormatSpecifierDifferences` — no unit test (only the inner function is tested now).
 
 ### Extractability Engine Gaps
+
 19. `confidenceHigh`/`confidenceMedium`/`confidenceLower` constants are hardcoded — should be configurable or at least documented with rationale.
 20. `helperDominanceRatio = 0.6` — undocumented magic number, needs empirical validation.
 21. `EvaluateExtractability` has no golden-file / snapshot tests for complex clone groups.
 
 ### General Code Quality
+
 22. Pre-existing `tagliatelle` lint (50 issues) — documented as disabled, but json tags are inconsistent (snake_case in some structs, camelCase in others). ADR-0016 documents this but it's unresolved.
 23. Pre-existing `godox` lint (1 issue) — a TODO/FIXME in production code somewhere.
 24. `extractability_bench_test.go` has 2 `b.N` → `b.Loop()` modernization warnings (pre-existing, not mine).
 25. Run `nix flake check` to verify reproducible CI still passes (didn't run this session).
 
 ### Documentation
+
 26. `CHANGELOG.md` `[Unreleased]` section — add entries for the two completed fixes.
 27. `docs/adr/0017-property-based-classification.md` — was modified at conversation start (git status), verify consistency with code changes.
 28. `FEATURES.md` — verify bool-guard / format-specifier features are accurately described.
