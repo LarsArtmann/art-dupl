@@ -9,24 +9,29 @@ import (
 
 // matchKey creates a comparable representation of a match for set comparison.
 type matchKey struct {
-	len  Pos
-	ps   string
+	len Pos
+	ps  string
 }
 
 func matchSetKey(m Match) matchKey {
 	ps := make([]int, len(m.Ps))
+
 	for i, p := range m.Ps {
 		ps[i] = int(p)
 	}
+
 	sort.Ints(ps)
+
 	return matchKey{m.Len, sortedString(ps)}
 }
 
 func sortedString(vals []int) string {
-	var sb []byte
+	sb := make([]byte, 0, 2*len(vals))
+
 	for _, v := range vals {
 		sb = append(sb, byte(v), ',')
 	}
+
 	return string(sb)
 }
 
@@ -57,13 +62,9 @@ func TestParallelFindsSameMatchesAsSequential(t *testing.T) {
 			tree := New()
 			mustUpdate(tree, data...)
 
-			// Collect sequential matches
 			seqMatches := collectMatches(tree.FindDuplOver(context.Background(), tc.threshold))
-
-			// Collect parallel matches
 			parMatches := collectMatches(tree.FindDuplOverParallel(context.Background(), tc.threshold, tc.workers))
 
-			// Build sets for comparison
 			seqSet := make(map[matchKey]bool)
 			for _, m := range seqMatches {
 				seqSet[matchSetKey(m)] = true
@@ -74,14 +75,12 @@ func TestParallelFindsSameMatchesAsSequential(t *testing.T) {
 				parSet[matchSetKey(m)] = true
 			}
 
-			// Every sequential match must appear in parallel
 			for key := range seqSet {
 				if !parSet[key] {
 					t.Errorf("parallel search missing match present in sequential: %+v", key)
 				}
 			}
 
-			// Every parallel match must appear in sequential
 			for key := range parSet {
 				if !seqSet[key] {
 					t.Errorf("parallel search has extra match not in sequential: %+v", key)
@@ -97,7 +96,6 @@ func TestParallelEmptyTree(t *testing.T) {
 	t.Parallel()
 
 	tree := New()
-
 	ch := tree.FindDuplOverParallel(context.Background(), 2, 4)
 
 	count := 0
@@ -120,18 +118,14 @@ func TestParallelContextCancellation(t *testing.T) {
 	mustUpdate(tree, data...)
 
 	ctx, cancel := context.WithCancel(context.Background())
-	cancel() // cancel immediately
+	cancel()
 
 	ch := tree.FindDuplOverParallel(ctx, 2, 4)
-
-	// Channel must close even with cancelled context
 	for range ch {
 	}
 }
 
-// TestParallelThresholdZero verifies degenerate threshold=0 doesn't cause
-// issues (root-level matches of length 0 are harmless; FindSyntaxUnits
-// filters them downstream).
+// TestParallelThresholdZero verifies degenerate threshold=0 doesn't cause issues.
 func TestParallelThresholdZero(t *testing.T) {
 	t.Parallel()
 
@@ -170,19 +164,18 @@ func TestParallelWorkersAuto(t *testing.T) {
 	}
 }
 
-// TestParallelLargeTree verifies correctness on a large synthetic input
-// with many root-level transitions.
+// TestParallelLargeTree verifies correctness on a large synthetic input.
 func TestParallelLargeTree(t *testing.T) {
 	t.Parallel()
 
 	tree := New()
-
-	// Create input with many unique first characters and some repeats.
 	tokens := make([]Token, 0, 2000)
+
 	for i := range 100 {
 		c := char(rune('A' + i%26))
 		tokens = append(tokens, c, char('x'), char('y'), char('z'))
 	}
+
 	mustUpdate(tree, tokens...)
 
 	seqMatches := collectMatches(tree.FindDuplOver(context.Background(), 3))
@@ -193,8 +186,7 @@ func TestParallelLargeTree(t *testing.T) {
 	}
 }
 
-// TestParallelChannelCloses verifies the channel is always closed, even
-// when the context times out mid-walk.
+// TestParallelChannelCloses verifies the channel is always closed.
 func TestParallelChannelCloses(t *testing.T) {
 	t.Parallel()
 
@@ -206,7 +198,6 @@ func TestParallelChannelCloses(t *testing.T) {
 	defer cancel()
 
 	ch := tree.FindDuplOverParallel(ctx, 2, 4)
-
 	for range ch {
 	}
 }
