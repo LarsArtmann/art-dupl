@@ -380,7 +380,7 @@ func extractFormatSpecifiers(s string) []string {
 // scanFormatSpecifier parses a single Go fmt verb starting at s[start] (which
 // must be '%'). Returns the specifier substring and the index of the last
 // consumed byte. Returns ("", start) for "%%" or malformed input.
-func scanFormatSpecifier(s string, start int) (spec string, end int) {
+func scanFormatSpecifier(s string, start int) (string, int) {
 	i := start + 1
 	if i >= len(s) {
 		return "", start
@@ -391,42 +391,59 @@ func scanFormatSpecifier(s string, start int) (spec string, end int) {
 		return "", i
 	}
 
-	// Optional argument index: %[1]
-	if s[i] == '[' {
-		j := i + 1
-		for j < len(s) && s[j] != ']' {
-			j++
-		}
-		if j >= len(s) {
-			return "", start // malformed: no closing ]
-		}
-		i = j + 1
-	}
-
-	// Optional flags: + - # 0 space
-	for i < len(s) && isFmtFlag(s[i]) {
-		i++
-	}
-
-	// Optional width: digits
-	for i < len(s) && s[i] >= '0' && s[i] <= '9' {
-		i++
-	}
-
-	// Optional precision: . digits
-	if i < len(s) && s[i] == '.' {
-		i++
-		for i < len(s) && s[i] >= '0' && s[i] <= '9' {
-			i++
-		}
-	}
-
-	// Verb character
+	// Skip argument index, flags, width, and precision to reach the verb.
+	i = scanFmtBody(s, i)
 	if i >= len(s) {
 		return "", start
 	}
 
 	return s[start : i+1], i
+}
+
+// scanFmtBody advances past the optional argument index, flags, width, and
+// precision components of a format verb, returning the index of the verb char.
+func scanFmtBody(s string, i int) int {
+	i = scanArgIndex(s, i)
+
+	for i < len(s) && isFmtFlag(s[i]) {
+		i++
+	}
+
+	i = scanDigits(s, i)
+
+	if i < len(s) && s[i] == '.' {
+		i = scanDigits(s, i+1)
+	}
+
+	return i
+}
+
+// scanArgIndex skips an optional %[n] argument index. Returns the original
+// index if there is no argument index or if the bracket is never closed.
+func scanArgIndex(s string, i int) int {
+	if i >= len(s) || s[i] != '[' {
+		return i
+	}
+
+	j := i + 1
+	for j < len(s) && s[j] != ']' {
+		j++
+	}
+
+	if j >= len(s) {
+		return i // malformed: no closing ]
+	}
+
+	return j + 1
+}
+
+// scanDigits advances past a run of ASCII digits starting at s[i].
+func scanDigits(s string, i int) int {
+	for i < len(s) && s[i] >= '0' && s[i] <= '9' {
+		i++
+	}
+
+	return i
 }
 
 func isFmtFlag(c byte) bool {

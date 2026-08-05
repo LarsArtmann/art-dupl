@@ -30,6 +30,13 @@ type CloneNode struct {
 	// forced by the function signature (e.g., http.HandlerFunc).
 	EnclosingReturnArity int32
 
+	// InterfaceMethod is set on FuncDecl nodes when type-aware mode confirms
+	// via go/types that the method satisfies an interface declared in the same
+	// package. The actionability layer uses this to suppress interface-contract
+	// boilerplate beyond the static stdlib name list. Always false when
+	// type-aware mode is not active.
+	InterfaceMethod bool
+
 	// Children are the direct sub-nodes in tree order.
 	Children []*CloneNode
 }

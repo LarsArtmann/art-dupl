@@ -79,6 +79,11 @@ const maxChildrenSerial = 10_000
 // enclosing function (0 for void, >0 for functions returning values).
 // The property engine uses this to detect control-flow traps where bare
 // returns are forced by the function signature (e.g., http.HandlerFunc).
+//
+// The InterfaceMethod field is set on FuncDecl nodes when type-aware mode is
+// active and go/types confirms the method satisfies an interface declared in
+// the same package. The actionability layer uses this to suppress
+// interface-contract boilerplate beyond the static stdlib name list.
 type Node struct {
 	Type                 int32
 	Pos                  int32
@@ -91,6 +96,7 @@ type Node struct {
 	Statement            bool
 	Fingerprint          int32
 	EnclosingReturnArity int32
+	InterfaceMethod      bool
 }
 
 func NewNode() *Node {
@@ -121,6 +127,7 @@ func (n *Node) Clone() *Node {
 		Statement:            n.Statement,
 		Fingerprint:          n.Fingerprint,
 		EnclosingReturnArity: n.EnclosingReturnArity,
+		InterfaceMethod:      n.InterfaceMethod,
 	}
 	if len(n.Children) > 0 {
 		clone.Children = make([]*Node, len(n.Children))
@@ -200,6 +207,7 @@ func serial(n *Node, stream *[]*Node, maxChildren int) int {
 		Statement:            n.Statement,
 		Fingerprint:          n.Fingerprint,
 		EnclosingReturnArity: n.EnclosingReturnArity,
+		InterfaceMethod:      n.InterfaceMethod,
 	}
 	*stream = append(*stream, node)
 

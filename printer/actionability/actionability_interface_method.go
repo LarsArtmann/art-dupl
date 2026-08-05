@@ -39,10 +39,18 @@ var commonInterfaceMethodNames = []string{ //nolint:gochecknoglobals // static n
 // extracting.
 const maxInterfaceMethodBodyNodes = 4
 
-// isInterfaceMethodBody reports whether every clone is a FuncDecl whose method
-// name is a common standard-library interface method AND whose body is small
-// (≤4 nodes). These are typically delegation patterns required by the interface
-// contract, not copy-paste duplication.
+// isInterfaceMethodBody reports whether every clone is a FuncDecl that
+// implements an interface contract AND whose body is small (≤4 nodes).
+//
+// Detection has two complementary paths:
+//   - Type-aware path: when --type-aware is active, go/types sets the
+//     InterfaceMethod flag on FuncDecl nodes that satisfy a same-package
+//     interface. This catches custom interfaces beyond the static list.
+//   - Static fallback: the commonInterfaceMethodNames list covers well-known
+//     stdlib interfaces (fmt.Stringer, io.Reader, error, etc.) that are not
+//     declared in the same package and thus invisible to same-package scanning.
+//
+// A method matching either path is suppressed as interface-driven boilerplate.
 func isInterfaceMethodBody(nodeSeqs [][]*domain.CloneNode) bool {
 	return everySequenceMatch(nodeSeqs, func(seq []*domain.CloneNode) bool {
 		if len(seq) != 1 {
@@ -54,7 +62,7 @@ func isInterfaceMethodBody(nodeSeqs [][]*domain.CloneNode) bool {
 			return false
 		}
 
-		if !slices.Contains(commonInterfaceMethodNames, root.Name) {
+		if !root.InterfaceMethod && !slices.Contains(commonInterfaceMethodNames, root.Name) {
 			return false
 		}
 

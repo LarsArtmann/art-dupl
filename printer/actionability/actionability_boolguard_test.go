@@ -42,7 +42,8 @@ func TestFindOkVarName(t *testing.T) {
 }
 
 func TestIsAssignWithBoolGuard_AllNames(t *testing.T) {
-	for _, name := range boolGuardVarNames {
+	names := []string{"ok", "found", "exists", "success", "present"}
+	for _, name := range names {
 		t.Run(name, func(t *testing.T) {
 			seqs := [][]*domain.CloneNode{
 				buildBoolGuardSeq(name),

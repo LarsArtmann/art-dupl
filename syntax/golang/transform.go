@@ -168,6 +168,15 @@ func (t *transformer) trans(
 			receiverType,
 			funcName,
 		)
+
+		// Type-aware interface method detection: when go/types info is
+		// available, check if this method satisfies a same-package interface.
+		// The flag flows to the actionability layer to suppress
+		// interface-contract boilerplate beyond the static stdlib name list.
+		if t.typeInfo != nil {
+			o.InterfaceMethod = IsInterfaceMethod(t.typeInfo, n)
+		}
+
 		t.addWithNilCheck(o, n.Recv)
 		o.AddChildren(t.trans(n.Name), t.trans(n.Type))
 

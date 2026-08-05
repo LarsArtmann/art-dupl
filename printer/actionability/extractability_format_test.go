@@ -82,6 +82,7 @@ func TestExtractFormatSpecifiers(t *testing.T) {
 			if len(got) != len(tc.want) {
 				t.Fatalf("extractFormatSpecifiers(%q) = %v, want %v", tc.input, got, tc.want)
 			}
+
 			for i, spec := range tc.want {
 				if got[i] != spec {
 					t.Fatalf("extractFormatSpecifiers(%q)[%d] = %q, want %q", tc.input, i, got[i], spec)
