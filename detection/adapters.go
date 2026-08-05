@@ -11,8 +11,8 @@ import (
 
 // suffixTreeAdapter wraps the suffix tree algorithm as a MethodDetector.
 type suffixTreeAdapter struct {
-	tree         *suffixtree.STree
-	data         []*syntax.Node
+	tree          *suffixtree.STree
+	data          []*syntax.Node
 	searchWorkers int
 }
 
@@ -102,7 +102,11 @@ func (md *MultiDetector) buildCloneDetectors() []MethodDetector {
 	var detectors []MethodDetector
 
 	if len(md.cfg.Methods) == 0 || slices.Contains(md.cfg.Methods, MethodArtDupl) {
-		detectors = append(detectors, &suffixTreeAdapter{tree: md.tree, data: md.data, searchWorkers: md.cfg.SearchWorkers})
+		detectors = append(detectors, &suffixTreeAdapter{
+			tree:          md.tree,
+			data:          md.data,
+			searchWorkers: md.cfg.SearchWorkers,
+		})
 	}
 
 	if slices.Contains(md.cfg.Methods, MethodHash) {

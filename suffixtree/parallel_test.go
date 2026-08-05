@@ -7,7 +7,6 @@ import (
 	"time"
 )
 
-// matchKey creates a comparable representation of a match for set comparison.
 type matchKey struct {
 	len Pos
 	ps  string
@@ -35,8 +34,6 @@ func sortedString(vals []int) string {
 	return string(sb)
 }
 
-// TestParallelFindsSameMatchesAsSequential verifies that FindDuplOverParallel
-// produces the identical match set as the sequential FindDuplOver.
 func TestParallelFindsSameMatchesAsSequential(t *testing.T) {
 	t.Parallel()
 
@@ -90,8 +87,6 @@ func TestParallelFindsSameMatchesAsSequential(t *testing.T) {
 	}
 }
 
-// TestParallelEmptyTree verifies that FindDuplOverParallel on an empty tree
-// closes the channel without panicking.
 func TestParallelEmptyTree(t *testing.T) {
 	t.Parallel()
 
@@ -108,8 +103,6 @@ func TestParallelEmptyTree(t *testing.T) {
 	}
 }
 
-// TestParallelContextCancellation verifies that context cancellation
-// properly stops the parallel walk and closes the channel.
 func TestParallelContextCancellation(t *testing.T) {
 	t.Parallel()
 
@@ -125,7 +118,6 @@ func TestParallelContextCancellation(t *testing.T) {
 	}
 }
 
-// TestParallelThresholdZero verifies degenerate threshold=0 doesn't cause issues.
 func TestParallelThresholdZero(t *testing.T) {
 	t.Parallel()
 
@@ -144,7 +136,6 @@ func TestParallelThresholdZero(t *testing.T) {
 	}
 }
 
-// TestParallelWorkersAuto verifies that workers=0 (auto) works correctly.
 func TestParallelWorkersAuto(t *testing.T) {
 	t.Parallel()
 
@@ -164,7 +155,6 @@ func TestParallelWorkersAuto(t *testing.T) {
 	}
 }
 
-// TestParallelLargeTree verifies correctness on a large synthetic input.
 func TestParallelLargeTree(t *testing.T) {
 	t.Parallel()
 
@@ -186,7 +176,6 @@ func TestParallelLargeTree(t *testing.T) {
 	}
 }
 
-// TestParallelChannelCloses verifies the channel is always closed.
 func TestParallelChannelCloses(t *testing.T) {
 	t.Parallel()
 

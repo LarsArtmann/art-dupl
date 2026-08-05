@@ -25,6 +25,7 @@ func BenchmarkFindDuplOverParallel(b *testing.B) {
 		// Sequential baseline
 		b.Run(fmt.Sprintf("seq/tokens_%d", size), func(b *testing.B) {
 			b.ResetTimer()
+
 			for range b.N {
 				for range tree.FindDuplOver(context.Background(), threshold) {
 				}
@@ -35,6 +36,7 @@ func BenchmarkFindDuplOverParallel(b *testing.B) {
 		for _, workers := range []int{2, 4, runtime.NumCPU()} {
 			b.Run(fmt.Sprintf("par%d/tokens_%d", workers, size), func(b *testing.B) {
 				b.ResetTimer()
+
 				for range b.N {
 					for range tree.FindDuplOverParallel(context.Background(), threshold, workers) {
 					}
