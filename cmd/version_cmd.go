@@ -56,7 +56,7 @@ func NewVersionCommand() *cobra.Command {
 				return nil
 			}
 
-			PrintVersion()
+			PrintVersion(cmd.OutOrStdout())
 
 			return nil
 		},

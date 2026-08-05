@@ -3,6 +3,7 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"io"
 	"os"
 
 	"github.com/LarsArtmann/art-dupl/config"
@@ -24,8 +25,10 @@ func executeHashOnlyAnalysis(
 	filterParam *gogenfilter.Filter,
 	filterStats *FilterStats,
 	outputFormat config.OutputFormat,
+	stderr io.Writer,
 ) (chan syntax.Match, job.ParseStats, *FilterStats, error) {
 	printBuildingStatus(
+		stderr,
 		cfg,
 		outputFormat,
 		"Running hash-only duplicate detection",
@@ -34,7 +37,7 @@ func executeHashOnlyAnalysis(
 
 	if cfg.Verbose {
 		_, _ = fmt.Fprintln(
-			os.Stderr,
+			stderr,
 			"🔍 Excluding node_modules/ directory (use --include-node-modules to include)",
 		)
 	}
@@ -65,7 +68,7 @@ func executeHashOnlyAnalysis(
 		)
 	}
 
-	printFileCollectionStatus(cfg, outputFormat, len(files))
+	printFileCollectionStatus(stderr, cfg, outputFormat, len(files))
 
 	fileDuplicates := hash.FindFileDuplicates(ctx, files, cfg.Threshold)
 
@@ -138,13 +141,14 @@ func createFragmentsFromFileHashes(files []hash.FileHash) [][]*syntax.Node {
 
 // printFileCollectionStatus outputs status after file collection.
 func printFileCollectionStatus(
+	w io.Writer,
 	cfg *config.Config,
 	outputFormat config.OutputFormat,
 	fileCount int,
 ) {
 	if cfg.Verbose {
-		fmt.Fprintf(os.Stderr, "Found %d files to hash\n", fileCount)
+		fmt.Fprintf(w, "Found %d files to hash\n", fileCount)
 	} else if outputFormat == config.OutputFormatText {
-		fmt.Fprintln(os.Stderr, " ✅")
+		fmt.Fprintln(w, " ✅")
 	}
 }

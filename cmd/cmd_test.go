@@ -303,7 +303,7 @@ func TestPrintVersion(t *testing.T) {
 	Commit = "abc123"
 	Date = "2024-01-01"
 
-	PrintVersion()
+	PrintVersion(io.Discard)
 }
 
 func TestCrawlPaths(t *testing.T) {
@@ -514,7 +514,7 @@ func TestSetupFilter(t *testing.T) {
 	t.Run("empty config returns filter", func(t *testing.T) {
 		cfg := &config.Config{}
 
-		f, err := setupFilter(cfg)
+		f, err := setupFilter(io.Discard, cfg)
 		if err != nil {
 			t.Fatalf("setupFilter() error: %v", err)
 		}
@@ -527,7 +527,7 @@ func TestSetupFilter(t *testing.T) {
 	t.Run("with include sqlc", func(t *testing.T) {
 		cfg := &config.Config{IncludeSQLC: true}
 
-		f, err := setupFilter(cfg)
+		f, err := setupFilter(io.Discard, cfg)
 		if err != nil {
 			t.Fatalf("setupFilter() error: %v", err)
 		}
@@ -540,7 +540,7 @@ func TestSetupFilter(t *testing.T) {
 	t.Run("with include templ", func(t *testing.T) {
 		cfg := &config.Config{IncludeTempl: true}
 
-		f, err := setupFilter(cfg)
+		f, err := setupFilter(io.Discard, cfg)
 		if err != nil {
 			t.Fatalf("setupFilter() error: %v", err)
 		}
@@ -553,7 +553,7 @@ func TestSetupFilter(t *testing.T) {
 	t.Run("generic filter active by default", func(t *testing.T) {
 		cfg := &config.Config{}
 
-		f, err := setupFilter(cfg)
+		f, err := setupFilter(io.Discard, cfg)
 		if err != nil {
 			t.Fatalf("setupFilter() error: %v", err)
 		}
@@ -569,7 +569,7 @@ func TestSetupFilter(t *testing.T) {
 	t.Run("include generic disables generic filter", func(t *testing.T) {
 		cfg := &config.Config{IncludeGeneric: true}
 
-		f, err := setupFilter(cfg)
+		f, err := setupFilter(io.Discard, cfg)
 		if err != nil {
 			t.Fatalf("setupFilter() error: %v", err)
 		}

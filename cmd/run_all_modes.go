@@ -3,6 +3,7 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 
@@ -15,7 +16,7 @@ import (
 // runAllModes runs all detection methods and generates all output formats.
 //
 //nolint:funlen // Function orchestrates multi-format output generation
-func runAllModes(ctx context.Context, cfg *config.Config, sortBy, outputDir string) error {
+func runAllModes(ctx context.Context, cfg *config.Config, sortBy, outputDir string, stderr io.Writer) error {
 	// Set detection methods to all available methods
 	cfg.DetectionMethods = config.AllDetectionMethods()
 
@@ -35,13 +36,13 @@ func runAllModes(ctx context.Context, cfg *config.Config, sortBy, outputDir stri
 	}
 
 	fmt.Fprintf(
-		os.Stderr,
+		stderr,
 		"📂 Running all detection methods and generating all output formats in %s...\n",
 		outputDir,
 	)
 
 	// Run analysis once
-	duplChan, parseStats, _, err := executeAnalysis(ctx, cfg, cfg.Paths, cfg.OutputFormat)
+	duplChan, parseStats, _, err := executeAnalysis(ctx, cfg, cfg.Paths, cfg.OutputFormat, stderr)
 	if err != nil {
 		return fmt.Errorf(
 			"analysis failed for paths %v (sortBy=%s, outputDir=%s): %w",
@@ -103,10 +104,10 @@ func runAllModes(ctx context.Context, cfg *config.Config, sortBy, outputDir stri
 			)
 		}
 
-		fmt.Fprintf(os.Stderr, "  ✅ Generated %s\n", filename)
+		fmt.Fprintf(stderr, "  ✅ Generated %s\n", filename)
 	}
 
-	fmt.Fprintf(os.Stderr, "\n✨ All formats generated successfully!\n")
+	fmt.Fprintf(stderr, "\n✨ All formats generated successfully!\n")
 
 	return nil
 }

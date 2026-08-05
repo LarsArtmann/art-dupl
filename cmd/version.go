@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"io"
 	"runtime"
 )
 
@@ -33,15 +34,13 @@ func GetBuildDate() string {
 	return Date
 }
 
-// PrintVersion prints version information.
-func PrintVersion() {
-	//nolint:forbidigo // Version output to stdout
-	fmt.Printf(
+// PrintVersion prints version information to w.
+func PrintVersion(w io.Writer) {
+	fmt.Fprintf(w,
 		"art-dupl version %s\n",
 		GetVersion(),
 	)
-	//nolint:forbidigo // Build info output to stdout
-	fmt.Printf(
+	fmt.Fprintf(w,
 		"Built with %s %s/%s\n",
 		runtime.Compiler,
 		runtime.GOOS,

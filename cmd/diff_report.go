@@ -5,6 +5,7 @@ import (
 	"encoding/json/jsontext"
 	"encoding/json/v2"
 	"fmt"
+	"io"
 	"os"
 
 	"github.com/LarsArtmann/art-dupl/baseline"
@@ -24,6 +25,7 @@ func runDiffReport(
 	mergedConfig *config.Config,
 	baselinePath string,
 	useJSON bool,
+	stderr io.Writer,
 ) error {
 	if !baseline.Exists(baselinePath) {
 		return duplerrors.NewValidationError(
@@ -37,7 +39,7 @@ func runDiffReport(
 	}
 
 	duplChan, _, _, err := executeAnalysis(
-		ctx, mergedConfig, mergedConfig.Paths, config.OutputFormatText,
+		ctx, mergedConfig, mergedConfig.Paths, config.OutputFormatText, stderr,
 	)
 	if err != nil {
 		return wrapAnalysisError(err, mergedConfig.Paths)

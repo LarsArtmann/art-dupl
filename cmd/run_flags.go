@@ -110,7 +110,7 @@ func dispatchAnalysis(ctx context.Context, cmd *cobra.Command, mergedConfig *con
 	outputDir, _ := cmd.Flags().GetString("output-dir")
 
 	if allFlag {
-		return runAllModes(ctx, mergedConfig, sortBy, outputDir)
+		return runAllModes(ctx, mergedConfig, sortBy, outputDir, cmd.ErrOrStderr())
 	}
 
 	if dumpTokens, _ := cmd.Flags().GetBool("dump-tokens"); dumpTokens {
@@ -130,7 +130,7 @@ func dispatchAnalysis(ctx context.Context, cmd *cobra.Command, mergedConfig *con
 	if diffReportPath, _ := cmd.Flags().GetString("diff-report"); diffReportPath != "" {
 		useJSON, _ := cmd.Flags().GetBool("json")
 
-		return runDiffReport(ctx, mergedConfig, diffReportPath, useJSON)
+		return runDiffReport(ctx, mergedConfig, diffReportPath, useJSON, cmd.ErrOrStderr())
 	}
 
 	return runStandardAnalysis(ctx, cmd, mergedConfig, sortBy)
@@ -143,6 +143,7 @@ func runStandardAnalysis(ctx context.Context, cmd *cobra.Command, mergedConfig *
 		mergedConfig,
 		mergedConfig.Paths,
 		mergedConfig.OutputFormat,
+		cmd.ErrOrStderr(),
 	)
 	if err != nil {
 		return wrapAnalysisError(err, mergedConfig.Paths)

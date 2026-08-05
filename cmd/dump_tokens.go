@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"os"
 	"strconv"
 
 	"github.com/LarsArtmann/art-dupl/config"
@@ -27,7 +28,7 @@ func dumpTokensOutput(ctx context.Context, cfg *config.Config, w io.Writer) erro
 		return err
 	}
 
-	filterParam, err := setupFilter(cfg)
+	filterParam, err := setupFilter(os.Stderr, cfg)
 	if err != nil {
 		return err
 	}
@@ -44,6 +45,7 @@ func dumpTokensOutput(ctx context.Context, cfg *config.Config, w io.Writer) erro
 		filterParam:  filterParam,
 		filterStats:  filterStats,
 		outputFormat: cfg.OutputFormat,
+		stderr:       os.Stderr,
 	}
 
 	filesChan := params.getFilesChan()

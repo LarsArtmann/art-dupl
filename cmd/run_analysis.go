@@ -391,7 +391,7 @@ func executeAnalysis(
 	}
 
 	if cfg.DetectionMethods.IsHashOnly() {
-		ch, ps, fs, err := executeHashOnlyAnalysis(ctx, cfg, paths, filterParam, filterStats, outputFormat)
+		ch, ps, fs, err := executeHashOnlyAnalysis(ctx, cfg, paths, filterParam, filterStats, outputFormat, stderr)
 
 		return ch, ps, fs, err
 	}

@@ -102,6 +102,7 @@ func runStats(c *cobra.Command, arguments []string) error {
 		mergedConfig,
 		mergedConfig.Paths,
 		format,
+		c.ErrOrStderr(),
 	)
 	if err != nil {
 		return wrapAnalysisError(err, mergedConfig.Paths)
