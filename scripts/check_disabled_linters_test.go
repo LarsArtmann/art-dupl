@@ -16,16 +16,32 @@ func scriptPath(t *testing.T) string {
 	t.Helper()
 
 	_, file, _, ok := runtime.Caller(0)
-	if !ok {
-		t.Fatal("could not determine test file path")
+	if ok {
+		p := filepath.Join(filepath.Dir(file), "check-disabled-linters.sh")
+		if _, err := os.Stat(p); err == nil {
+			return p
+		}
 	}
 
-	p := filepath.Join(filepath.Dir(file), "check-disabled-linters.sh")
-	if _, err := os.Stat(p); err != nil {
-		t.Fatalf("script not found: %v", err)
+	// Fallback for Nix/CI builds where runtime.Caller returns a
+	// module-relative path. Use CWD (project root) to find scripts/.
+	cwd, err := os.Getwd()
+	if err != nil {
+		t.Fatalf("could not get working directory: %v", err)
 	}
 
-	return p
+	for _, candidate := range []string{
+		filepath.Join(cwd, "scripts", "check-disabled-linters.sh"),
+		filepath.Join(filepath.Dir(cwd), "scripts", "check-disabled-linters.sh"),
+	} {
+		if _, err := os.Stat(candidate); err == nil {
+			return candidate
+		}
+	}
+
+	t.Fatal("script not found: check-disabled-linters.sh (tried runtime.Caller and CWD)")
+
+	return ""
 }
 
 // runScript executes the guard against the given config file and returns the
