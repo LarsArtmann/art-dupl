@@ -271,15 +271,26 @@ func isAtomicDeclaration(n *domain.CloneNode) bool {
 		return true
 
 	case golang.TypeSpec:
-		// Only suppress true aliases (type X = pkg.Y), not named type
-		// definitions (type X Y). Duplicated named type definitions can
-		// represent real actionable cloning (e.g., type Severity string
-		// with divergent const values).
-		return n.IsAlias && !subtreeHasCompositeType(n)
+		return isAliasTypeSpec(n)
+
+	case golang.GenDecl:
+		// A GenDecl wrapping a single TypeSpec alias (e.g.
+		// `type ErrorType = errors.ErrorType`) is the same atomic
+		// re-export as a bare TypeSpec, but tokenized at the GenDecl
+		// level. Unwrap one level and delegate.
+		return len(n.Children) == 1 && isAliasTypeSpec(n.Children[0])
 
 	default:
 		return false
 	}
+}
+
+// isAliasTypeSpec reports whether a TypeSpec node is a true alias
+// (type X = pkg.Y, not type X Y) without a composite type body.
+func isAliasTypeSpec(n *domain.CloneNode) bool {
+	return n.BaseType == golang.TypeSpec &&
+		n.IsAlias &&
+		!subtreeHasCompositeType(n)
 }
 
 // subtreeHasCompositeType reports whether any node in the subtree is a
