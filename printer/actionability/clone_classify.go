@@ -15,6 +15,12 @@ const (
 	suggestHandler           = "Extract handler logic to service layer"
 	suggestLoopHelper        = "Extract loop body to helper function"
 	suggestStrategy          = "Consider strategy pattern or early returns"
+	suggestAssignment        = "Extract shared assignment or initialization pattern"
+	suggestExpression        = "Extract repeated expression or builder chain"
+	suggestBlock             = "Extract shared statement block to a helper function"
+	suggestCall              = "Extract repeated call sequence or parameterize arguments"
+	suggestReturn            = "Consolidate return patterns or extract wrapper"
+	suggestDefer             = "Extract shared cleanup or resource-management pattern"
 	suggestTestHelper        = "Extract test helper function or use table-driven tests"
 	suggestSharedTestUtility = "Consider extracting to shared test utility"
 	suggestTestDataPair      = "Test fixture files — expected structural similarity"
@@ -179,15 +185,21 @@ func getSuggestion(category domain.CloneCategory, isTest bool, tokens int) strin
 		return suggestLoopHelper
 	case domain.CategoryConditional:
 		return suggestStrategy
+	case domain.CategoryAssignment:
+		return suggestAssignment
+	case domain.CategoryExpression:
+		return suggestExpression
+	case domain.CategoryBlock:
+		return suggestBlock
+	case domain.CategoryCall:
+		return suggestCall
+	case domain.CategoryReturn:
+		return suggestReturn
+	case domain.CategoryDefer:
+		return suggestDefer
 	case domain.CategoryTest,
 		domain.CategoryTestBoilerplate,
 		domain.CategoryTestFixture,
-		domain.CategoryAssignment,
-		domain.CategoryExpression,
-		domain.CategoryBlock,
-		domain.CategoryCall,
-		domain.CategoryReturn,
-		domain.CategoryDefer,
 		domain.CategoryUnknown:
 		return suggestReviewExtract
 	default:
