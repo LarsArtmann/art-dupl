@@ -217,6 +217,7 @@ func serial(n *Node, stream *[]*Node, maxChildren int) int {
 		Fingerprint:          n.Fingerprint,
 		EnclosingReturnArity: n.EnclosingReturnArity,
 		InterfaceMethod:      n.InterfaceMethod,
+		IsAlias:              n.IsAlias,
 	}
 	*stream = append(*stream, node)
 

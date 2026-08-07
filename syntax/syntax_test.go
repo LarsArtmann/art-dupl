@@ -403,3 +403,25 @@ func TestSerializeDoesNotMutateOriginal(t *testing.T) {
 		t.Errorf("child[1].Owns mutated: was %d, now %d", originalOwns[2], root.Children[1].Owns)
 	}
 }
+
+func TestSerializePreservesIsAlias(t *testing.T) {
+	t.Parallel()
+
+	root := &Node{
+		Type: 10,
+		Children: []*Node{
+			{Type: 50, IsAlias: true, Statement: true, Children: []*Node{{Type: 60}}},
+		},
+	}
+
+	stream := Serialize(root)
+
+	// The TypeSpec child is a statement node: serial emits it as a single
+	// fingerprinted token. The shallow copy must preserve IsAlias so the
+	// actionability layer can distinguish type aliases from type definitions.
+	for _, n := range stream {
+		if n.Statement && n.Type == 50 && !n.IsAlias {
+			t.Errorf("statement node Type=%d: IsAlias lost during serialization (got false, want true)", n.Type)
+		}
+	}
+}
