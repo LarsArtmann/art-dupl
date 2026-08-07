@@ -77,17 +77,19 @@ func runRecommendThreshold(ctx context.Context, cfg *config.Config) error {
 	}
 
 	recommended := RecommendThreshold(fileCount)
+	auditThreshold := 1
+	if recommended <= 3 {
+		auditThreshold = 1
+	}
 
 	output := fmt.Sprintf(
-		"Codebase: %d Go files\nRecommended threshold: %d\n  art-dupl -t %d .\n",
-		fileCount, recommended, recommended,
+		"Codebase: %d Go files\n\n"+
+			"CI gate:       art-dupl -t %d .\n"+
+			"Deep audit:    art-dupl -t %d --explain .\n\n"+
+			"  CI gate filters noise (test boilerplate, guard clauses, etc.)\n"+
+			"  Deep audit finds everything; pair with --explain to triage manually.\n",
+		fileCount, recommended, auditThreshold,
 	)
-
-	if fileCount < smallCodebaseFiles {
-		output += "  (small codebase: lower threshold catches more clones)\n"
-	} else if fileCount >= largeCodebaseFiles {
-		output += "  (large codebase: higher threshold reduces noise)\n"
-	}
 
 	if _, err := os.Stdout.WriteString(output); err != nil {
 		return fmt.Errorf("write threshold recommendation: %w", err)

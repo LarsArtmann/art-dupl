@@ -231,8 +231,21 @@ func findLargestCallExprSize(node *domain.CloneNode) int {
 // checkParameterizability evaluates whether the clones differ only in
 // string-literal values. When the ONLY differences are in domain data,
 // the clones are "already parameterized" — the variation IS the logic.
+//
+// This veto only applies to clones WITHOUT control flow. A clone with
+// if/switch/for statements and differing literals is still actionable:
+// the control-flow pattern is worth extracting into a parameterized helper.
+// Bare sequential calls with different arguments are "already parameterized"
+// because the calls themselves are the abstraction.
 func checkParameterizability(nodeSeqs [][]*domain.CloneNode) domain.ExtractabilityAnalysis {
 	if len(nodeSeqs) < 2 {
+		return domain.ExtractabilityAnalysis{
+			Parameterizable: true,
+			Confidence:      confidenceHigh,
+		}
+	}
+
+	if anySeqHasControlFlow(nodeSeqs) {
 		return domain.ExtractabilityAnalysis{
 			Parameterizable: true,
 			Confidence:      confidenceHigh,
@@ -280,6 +293,41 @@ func collectStringLiterals(node *domain.CloneNode, literals *[]string) {
 	for _, child := range node.Children {
 		collectStringLiterals(child, literals)
 	}
+}
+
+// anySeqHasControlFlow reports whether any clone instance contains a
+// control-flow statement (if, switch, for, range, select). Such clones
+// represent structural logic worth extracting even when literals differ.
+func anySeqHasControlFlow(nodeSeqs [][]*domain.CloneNode) bool {
+	for _, seq := range nodeSeqs {
+		for _, node := range seq {
+			if subtreeHasControlFlow(node) {
+				return true
+			}
+		}
+	}
+
+	return false
+}
+
+func subtreeHasControlFlow(node *domain.CloneNode) bool {
+	if node == nil {
+		return false
+	}
+
+	switch node.BaseType {
+	case golang.IfStmt, golang.SwitchStmt, golang.TypeSwitchStmt,
+		golang.ForStmt, golang.RangeStmt, golang.SelectStmt:
+		return true
+	}
+
+	for _, child := range node.Children {
+		if subtreeHasControlFlow(child) {
+			return true
+		}
+	}
+
+	return false
 }
 
 func sameLiteralCount(literals [][]string) bool {

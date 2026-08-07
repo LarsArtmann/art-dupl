@@ -84,3 +84,48 @@ func buildSprintfCall(literal string) *domain.CloneNode {
 		},
 	}
 }
+
+// TestCheckParameterizability_ControlFlowOverridesVeto verifies that the
+// parameterizability veto does NOT fire when the clone contains control flow.
+// A clone with if/for/switch and differing literals is still actionable:
+// the control-flow pattern is worth extracting into a parameterized helper.
+func TestCheckParameterizability_ControlFlowOverridesVeto(t *testing.T) {
+	t.Parallel()
+
+	// Two if-return blocks with different error messages — same structure,
+	// different literals, but HAS control flow.
+	seq1 := []*domain.CloneNode{buildIfReturnWithLiteral("name cannot be empty")}
+	seq2 := []*domain.CloneNode{buildIfReturnWithLiteral("price must be positive")}
+
+	nodeSeqs := [][]*domain.CloneNode{seq1, seq2}
+
+	analysis := checkParameterizability(nodeSeqs)
+
+	if !analysis.Parameterizable {
+		t.Errorf("Parameterizable = false, want true: control-flow clones with "+
+			"differing literals should remain actionable (reason: %s)", analysis.Reason)
+	}
+}
+
+// buildIfReturnWithLiteral creates a CloneNode tree for:
+//
+//	if name == "" { return fmt.Errorf(literal) }
+func buildIfReturnWithLiteral(literal string) *domain.CloneNode {
+	return &domain.CloneNode{
+		BaseType: golang.IfStmt,
+		Children: []*domain.CloneNode{
+			{BaseType: golang.BinaryExpr, Children: []*domain.CloneNode{
+				{BaseType: golang.Ident, Name: "name"},
+				{BaseType: golang.BasicLit, Name: `""`},
+			}},
+			{BaseType: golang.BlockStmt, Children: []*domain.CloneNode{
+				{BaseType: golang.ReturnStmt, Children: []*domain.CloneNode{
+					{BaseType: golang.CallExpr, Children: []*domain.CloneNode{
+						{BaseType: golang.SelectorExpr, Name: "fmt.Errorf"},
+						{BaseType: golang.BasicLit, Name: literal},
+					}},
+				}},
+			}},
+		},
+	}
+}
