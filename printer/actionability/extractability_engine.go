@@ -1,6 +1,8 @@
 package actionability
 
 import (
+	"slices"
+
 	"github.com/LarsArtmann/art-dupl/domain"
 	"github.com/LarsArtmann/art-dupl/syntax/golang"
 )
@@ -300,10 +302,8 @@ func collectStringLiterals(node *domain.CloneNode, literals *[]string) {
 // represent structural logic worth extracting even when literals differ.
 func anySeqHasControlFlow(nodeSeqs [][]*domain.CloneNode) bool {
 	for _, seq := range nodeSeqs {
-		for _, node := range seq {
-			if subtreeHasControlFlow(node) {
-				return true
-			}
+		if slices.ContainsFunc(seq, subtreeHasControlFlow) {
+			return true
 		}
 	}
 
@@ -321,13 +321,7 @@ func subtreeHasControlFlow(node *domain.CloneNode) bool {
 		return true
 	}
 
-	for _, child := range node.Children {
-		if subtreeHasControlFlow(child) {
-			return true
-		}
-	}
-
-	return false
+	return slices.ContainsFunc(node.Children, subtreeHasControlFlow)
 }
 
 func sameLiteralCount(literals [][]string) bool {

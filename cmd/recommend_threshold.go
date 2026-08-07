@@ -77,10 +77,10 @@ func runRecommendThreshold(ctx context.Context, cfg *config.Config) error {
 	}
 
 	recommended := RecommendThreshold(fileCount)
+
+	// Deep audit always runs at threshold 1 to surface every potential clone;
+	// the CI gate uses the size-based recommendation to filter noise.
 	auditThreshold := 1
-	if recommended <= 3 {
-		auditThreshold = 1
-	}
 
 	output := fmt.Sprintf(
 		"Codebase: %d Go files\n\n"+

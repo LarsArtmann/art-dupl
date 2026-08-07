@@ -119,7 +119,6 @@ func TestClassifyClone(t *testing.T) {
 			wantSuggestion: "Consider strategy pattern or early returns",
 		},
 		{
-
 			name:           "assignment statement - small",
 			filename:       "main.go",
 			nodeType:       golang.AssignStmt,
@@ -131,7 +130,6 @@ func TestClassifyClone(t *testing.T) {
 			wantSuggestion: suggestAssignment,
 		},
 		{
-
 			name:           "call expression - mapped to call category",
 			filename:       "caller.go",
 			nodeType:       golang.CallExpr,
@@ -187,7 +185,6 @@ func TestClassifyClone(t *testing.T) {
 			wantSuggestion: suggestExtractUtility,
 		},
 		{
-
 			name:           "gen decl maps to expression",
 			filename:       "consts.go",
 			nodeType:       golang.GenDecl,

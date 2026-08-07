@@ -7,6 +7,25 @@ import (
 	"github.com/LarsArtmann/art-dupl/syntax/golang"
 )
 
+// productionSuggestions maps clone categories to specific refactoring
+// suggestions for production code. Categories not listed here fall back
+// to suggestReviewExtract in getSuggestion.
+var productionSuggestions = map[domain.CloneCategory]string{ //nolint:gochecknoglobals // static lookup table
+	domain.CategoryFunction:    suggestExtractUtility,
+	domain.CategoryMethod:      suggestExtractUtility,
+	domain.CategoryStruct:      suggestComposition,
+	domain.CategoryInterface:   suggestInterface,
+	domain.CategoryHandler:     suggestHandler,
+	domain.CategoryLoop:        suggestLoopHelper,
+	domain.CategoryConditional: suggestStrategy,
+	domain.CategoryAssignment:  suggestAssignment,
+	domain.CategoryExpression:  suggestExpression,
+	domain.CategoryBlock:       suggestBlock,
+	domain.CategoryCall:        suggestCall,
+	domain.CategoryReturn:      suggestReturn,
+	domain.CategoryDefer:       suggestDefer,
+}
+
 const (
 	suggestExtractUtility    = "Extract to shared utility function"
 	suggestReviewExtract     = "Review and extract common logic"
@@ -172,39 +191,11 @@ func getSuggestion(category domain.CloneCategory, isTest bool, tokens int) strin
 		return suggestSharedTestUtility
 	}
 
-	switch category {
-	case domain.CategoryFunction, domain.CategoryMethod:
-		return suggestExtractUtility
-	case domain.CategoryStruct:
-		return suggestComposition
-	case domain.CategoryInterface:
-		return suggestInterface
-	case domain.CategoryHandler:
-		return suggestHandler
-	case domain.CategoryLoop:
-		return suggestLoopHelper
-	case domain.CategoryConditional:
-		return suggestStrategy
-	case domain.CategoryAssignment:
-		return suggestAssignment
-	case domain.CategoryExpression:
-		return suggestExpression
-	case domain.CategoryBlock:
-		return suggestBlock
-	case domain.CategoryCall:
-		return suggestCall
-	case domain.CategoryReturn:
-		return suggestReturn
-	case domain.CategoryDefer:
-		return suggestDefer
-	case domain.CategoryTest,
-		domain.CategoryTestBoilerplate,
-		domain.CategoryTestFixture,
-		domain.CategoryUnknown:
-		return suggestReviewExtract
-	default:
-		return suggestReviewExtract
+	if suggestion, ok := productionSuggestions[category]; ok {
+		return suggestion
 	}
+
+	return suggestReviewExtract
 }
 
 // patternLabelConfig defines how ApplyPatternLabel adjusts a clone's
