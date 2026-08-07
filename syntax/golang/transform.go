@@ -41,6 +41,7 @@ func (t *transformer) trans(
 		}
 
 	case *ast.BasicLit:
+		o.Name = n.Value
 		if t.config.Mode.NormalizesLiterals() {
 			o.Type = encodeSemanticType(BasicLit, n.Kind.String(), true)
 		} else {
