@@ -274,10 +274,11 @@ func isAtomicDeclaration(n *domain.CloneNode) bool {
 		return isAliasTypeSpec(n)
 
 	case golang.GenDecl:
-		// A GenDecl wrapping a single TypeSpec alias (e.g.
-		// `type ErrorType = errors.ErrorType`) is the same atomic
-		// re-export as a bare TypeSpec, but tokenized at the GenDecl
-		// level. Unwrap one level and delegate.
+		// Defensive guard: through the real pipeline, getUnitsIndexes
+		// only selects statement tokens as clone units, and GenDecl
+		// children always have Statement=true (transform.go:226), so
+		// GenDecl tokens are never selected. This case is unreachable
+		// in practice but guards against future tokenization changes.
 		return len(n.Children) == 1 && isAliasTypeSpec(n.Children[0])
 
 	default:

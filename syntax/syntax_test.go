@@ -425,3 +425,161 @@ func TestSerializePreservesIsAlias(t *testing.T) {
 		}
 	}
 }
+
+// TestSerializePreservesAllFields is a regression guard for the serial()
+// shallow-copy pattern. If a new field is added to Node but forgotten in
+// serial(), this test catches it immediately. Each field is set to a
+// distinct non-zero value to detect field swaps or omissions.
+func TestSerializePreservesAllFields(t *testing.T) {
+	t.Parallel()
+
+	// Non-statement node: serial preserves Owns and does not set Fingerprint.
+	t.Run("non-statement node", func(t *testing.T) {
+		t.Parallel()
+
+		child := &Node{Type: 999}
+		original := &Node{
+			Type:                 10,
+			Pos:                  20,
+			End:                  30,
+			Owns:                 1,
+			Children:             []*Node{child},
+			Filename:             "test.go",
+			Name:                  "MyName",
+			VarType:              "MyVarType",
+			Statement:            false,
+			Fingerprint:          0,
+			EnclosingReturnArity: 3,
+			InterfaceMethod:      true,
+			IsAlias:              true,
+		}
+
+		stream := Serialize(original)
+		// Non-statement root is the first token in the stream.
+		got := stream[0]
+
+		if got.Type != 10 {
+			t.Errorf("Type: got %d, want 10", got.Type)
+		}
+
+		if got.Pos != 20 {
+			t.Errorf("Pos: got %d, want 20", got.Pos)
+		}
+
+		if got.End != 30 {
+			t.Errorf("End: got %d, want 30", got.End)
+		}
+
+		if got.Owns != 1 {
+			t.Errorf("Owns: got %d, want 1", got.Owns)
+		}
+
+		if len(got.Children) != 1 {
+			t.Errorf("Children len: got %d, want 1", len(got.Children))
+		}
+
+		if got.Filename != "test.go" {
+			t.Errorf("Filename: got %q, want %q", got.Filename, "test.go")
+		}
+
+		if got.Name != "MyName" {
+			t.Errorf("Name: got %q, want %q", got.Name, "MyName")
+		}
+
+		if got.VarType != "MyVarType" {
+			t.Errorf("VarType: got %q, want %q", got.VarType, "MyVarType")
+		}
+
+		if got.Statement {
+			t.Error("Statement: got true, want false")
+		}
+
+		if got.EnclosingReturnArity != 3 {
+			t.Errorf("EnclosingReturnArity: got %d, want 3", got.EnclosingReturnArity)
+		}
+
+		if !got.InterfaceMethod {
+			t.Error("InterfaceMethod: got false, want true")
+		}
+
+		if !got.IsAlias {
+			t.Error("IsAlias: got false, want true")
+		}
+	})
+
+	// Statement node: serial sets Owns=0 and computes Fingerprint, but
+	// must preserve all other fields including IsAlias.
+	t.Run("statement node", func(t *testing.T) {
+		t.Parallel()
+
+		original := &Node{
+			Type:                 50,
+			Pos:                  100,
+			End:                  200,
+			Owns:                 5,
+			Children:             []*Node{{Type: 60}},
+			Filename:             "alias.go",
+			Name:                  "ErrorType",
+			VarType:              "error",
+			Statement:            true,
+			Fingerprint:          0,
+			EnclosingReturnArity: 2,
+			InterfaceMethod:      false,
+			IsAlias:              true,
+		}
+
+		stream := Serialize(original)
+		// Statement root is the first (and only) token.
+		got := stream[0]
+
+		if got.Type != 50 {
+			t.Errorf("Type: got %d, want 50", got.Type)
+		}
+
+		if got.Pos != 100 {
+			t.Errorf("Pos: got %d, want 100", got.Pos)
+		}
+
+		if got.End != 200 {
+			t.Errorf("End: got %d, want 200", got.End)
+		}
+
+		// serial() intentionally sets Owns=0 for statement nodes.
+		if got.Owns != 0 {
+			t.Errorf("Owns: got %d, want 0 (statement)", got.Owns)
+		}
+
+		if got.Filename != "alias.go" {
+			t.Errorf("Filename: got %q, want %q", got.Filename, "alias.go")
+		}
+
+		if got.Name != "ErrorType" {
+			t.Errorf("Name: got %q, want %q", got.Name, "ErrorType")
+		}
+
+		if got.VarType != "error" {
+			t.Errorf("VarType: got %q, want %q", got.VarType, "error")
+		}
+
+		if !got.Statement {
+			t.Error("Statement: got false, want true")
+		}
+
+		// serial() computes a non-zero Fingerprint for statement nodes.
+		if got.Fingerprint == 0 {
+			t.Error("Fingerprint: got 0, want non-zero (statement)")
+		}
+
+		if got.EnclosingReturnArity != 2 {
+			t.Errorf("EnclosingReturnArity: got %d, want 2", got.EnclosingReturnArity)
+		}
+
+		if got.InterfaceMethod {
+			t.Error("InterfaceMethod: got true, want false")
+		}
+
+		if !got.IsAlias {
+			t.Error("IsAlias: got false, want true")
+		}
+	})
+}
