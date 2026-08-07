@@ -5,6 +5,7 @@ import (
 	"math"
 	"os"
 	"path/filepath"
+	"slices"
 	"testing"
 
 	"github.com/LarsArtmann/art-dupl/domain"
@@ -32,6 +33,7 @@ func runPipeline(t *testing.T, files map[string]string, threshold int) *pipeline
 	t.Helper()
 
 	tree := suffixtree.New()
+
 	var data []*syntax.Node
 
 	sentinelFP := int32(math.MinInt32 / 2)
@@ -65,6 +67,7 @@ func runPipeline(t *testing.T, files map[string]string, threshold int) *pipeline
 			Fingerprint: sentinelFP,
 		}
 		sentinelFP++
+
 		data = append(data, sentinel)
 
 		if err := tree.Update(sentinel); err != nil {
@@ -155,12 +158,9 @@ type ErrorType = string
 // test for the BasicLit Name bug (commit 71e12c96).
 //
 // It writes two identical Go files containing string literals in control-flow
-// statements, runs them through the full pipeline, and verifies that:
-//
-// 1. The suffix tree finds a match
-// 2. The CloneNode tree contains BasicLit-derived nodes with non-empty Name
-//    (proving transform.go populates BasicLit Name AND serial() preserves it)
-// 3. collectStringLiterals returns non-empty results for the matched clones
+// statements, runs them through the full pipeline, and verifies that the
+// CloneNode tree contains BasicLit-derived nodes with non-empty Name
+// (proving transform.go populates BasicLit Name AND serial preserves it).
 //
 // Before the fix, BasicLit nodes never had their Value stored in Name, so
 // collectStringLiterals always returned empty slices, and the parameterizability
@@ -205,7 +205,11 @@ func helper(val int) error {
 	}
 
 	if !foundBasicLitName {
-		t.Error("no BasicLit node with non-empty Name found — transform.go may not be populating BasicLit Name, or serial() may be dropping it")
+		t.Error(
+			"no BasicLit node with non-empty Name found — " +
+				"transform.go may not be populating BasicLit Name, " +
+				"or serial() may be dropping it",
+		)
 	}
 }
 
@@ -221,11 +225,5 @@ func hasBasicLitWithName(n *domain.CloneNode) bool {
 		return true
 	}
 
-	for _, child := range n.Children {
-		if hasBasicLitWithName(child) {
-			return true
-		}
-	}
-
-	return false
+	return slices.ContainsFunc(n.Children, hasBasicLitWithName)
 }
