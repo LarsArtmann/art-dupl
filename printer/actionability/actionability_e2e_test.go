@@ -16,8 +16,13 @@ import (
 // actionability). The conversion is identical: decode the base type and recurse.
 func cloneNodeFromSyntax(n *syntax.Node) *domain.CloneNode {
 	cn := &domain.CloneNode{
-		BaseType: golang.DecodeBaseType(n.Type),
-		Name:     n.Name,
+		BaseType:             golang.DecodeBaseType(n.Type),
+		Name:                 n.Name,
+		Filename:             n.Filename,
+		VarType:              n.VarType,
+		EnclosingReturnArity: n.EnclosingReturnArity,
+		InterfaceMethod:      n.InterfaceMethod,
+		IsAlias:              n.IsAlias,
 	}
 	if len(n.Children) > 0 {
 		cn.Children = make([]*domain.CloneNode, len(n.Children))
