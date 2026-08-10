@@ -46,7 +46,9 @@ const (
 	DefaultCacheDir = ".cache/art-dupl"
 
 	// CacheVersion is incremented when cache format changes.
-	CacheVersion = 2
+	// v2 → v3: KeyWithParams changed the cache key format (now includes
+	// detection mode, maxChildren, and typeAwareTag), orphaning all v2 entries.
+	CacheVersion = 3
 
 	// Directory permissions.
 	cacheDirPerms = 0o750
