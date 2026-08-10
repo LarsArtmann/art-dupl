@@ -2,126 +2,33 @@ goos: linux
 goarch: amd64
 pkg: github.com/LarsArtmann/art-dupl/suffixtree
 cpu: AMD RYZEN AI MAX+ 395 w/ Radeon 8060S          
-BenchmarkSTreeUpdate/tokens_100-32   	   78086	     31638 ns/op	   17816 B/op	     434 allocs/op
-BenchmarkSTreeUpdate/tokens_500-32   	    7441	    148558 ns/op	  104925 B/op	    2378 allocs/op
-BenchmarkSTreeUpdate/tokens_2000-32  	    1362	    795157 ns/op	  377512 B/op	    8917 allocs/op
-BenchmarkFindDuplOver/threshold_10-32         	    3144	    831107 ns/op	  374782 B/op	    7179 allocs/op
-BenchmarkFindDuplOver/threshold_50-32         	    1088	    932606 ns/op	  374431 B/op	    7173 allocs/op
-BenchmarkFindDuplOver/threshold_200-32        	     915	   1209538 ns/op	  370749 B/op	    7129 allocs/op
-BenchmarkMemoryUsageFewTokens-32              	    2709	    531062 ns/op	  173008 B/op	     176 allocs/op
-BenchmarkMemoryUsageManyTokens-32             	     667	   1928881 ns/op	  902439 B/op	   15065 allocs/op
-BenchmarkFindDuplOverParallel/seq/tokens_1000-32         	     708	   1562271 ns/op	  748344 B/op	   14330 allocs/op
-BenchmarkFindDuplOverParallel/par2/tokens_1000-32        	    1809	   1366159 ns/op	  750673 B/op	   14382 allocs/op
-BenchmarkFindDuplOverParallel/par4/tokens_1000-32        	    1165	   1192876 ns/op	  750724 B/op	   14382 allocs/op
-BenchmarkFindDuplOverParallel/par32/tokens_1000-32       	     950	   1308350 ns/op	  750832 B/op	   14382 allocs/op
-BenchmarkFindDuplOverParallel/seq/tokens_5000-32         	     112	  10472303 ns/op	 3714496 B/op	   71323 allocs/op
-BenchmarkFindDuplOverParallel/par2/tokens_5000-32        	     267	   4648577 ns/op	 3716796 B/op	   71375 allocs/op
-BenchmarkFindDuplOverParallel/par4/tokens_5000-32        	     422	   4569611 ns/op	 3716785 B/op	   71375 allocs/op
-BenchmarkFindDuplOverParallel/par32/tokens_5000-32       	     285	   4702027 ns/op	 3716863 B/op	   71375 allocs/op
-BenchmarkFindDuplOverParallel/seq/tokens_10000-32        	      42	  28485021 ns/op	 7466123 B/op	  143071 allocs/op
-BenchmarkFindDuplOverParallel/par2/tokens_10000-32       	     100	  14439342 ns/op	 7468452 B/op	  143123 allocs/op
-BenchmarkFindDuplOverParallel/par4/tokens_10000-32       	     100	  10113790 ns/op	 7468460 B/op	  143123 allocs/op
-BenchmarkFindDuplOverParallel/par32/tokens_10000-32      	     210	   9318664 ns/op	 7468721 B/op	  143124 allocs/op
-BenchmarkTokenValueMemory-32                             	     476	   2784695 ns/op	 1879159 B/op	   46382 allocs/op
-BenchmarkFindTranSmall-32                                	203202609	         6.190 ns/op	       0 B/op	       0 allocs/op
-BenchmarkFindTranMedium-32                               	144859777	         7.397 ns/op	       0 B/op	       0 allocs/op
-BenchmarkFindTranLarge-32                                	136736738	         9.282 ns/op	       0 B/op	       0 allocs/op
-BenchmarkFindTranVeryLarge-32                            	127355527	         9.630 ns/op	       0 B/op	       0 allocs/op
-BenchmarkFindTranMap-32                                  	121905117	         9.990 ns/op	       0 B/op	       0 allocs/op
-BenchmarkConstruction/Size10-32                          	  355173	      5318 ns/op	    1768 B/op	      40 allocs/op
-BenchmarkConstruction/Size100-32                         	   28132	     45639 ns/op	   15304 B/op	     334 allocs/op
-BenchmarkConstruction/Size1000-32                        	    2283	    524449 ns/op	  195997 B/op	    4044 allocs/op
-BenchmarkConstruction/Size10000-32                       	     162	   7029692 ns/op	 1625972 B/op	   36384 allocs/op
-BenchmarkConstructionParallel/Size10-32                  	  701709	      2248 ns/op	    1768 B/op	      40 allocs/op
-BenchmarkConstructionParallel/Size100-32                 	   52651	     29370 ns/op	   14928 B/op	     329 allocs/op
-BenchmarkConstructionParallel/Size1000-32                	    3937	    316036 ns/op	  197154 B/op	    4064 allocs/op
-BenchmarkConstructionParallel/Size10000-32               	     369	   4396472 ns/op	 1635428 B/op	   36454 allocs/op
-BenchmarkCanonize-32                                     	47569260	        23.79 ns/op	       0 B/op	       0 allocs/op
-BenchmarkUpdate/Batch1-32                                	32859208	        34.36 ns/op	      20 B/op	       0 allocs/op
-BenchmarkUpdate/Batch10-32                               	 1763935	       601.0 ns/op	     239 B/op	       0 allocs/op
-BenchmarkUpdate/Batch100-32                              	  263896	      4239 ns/op	    2005 B/op	       0 allocs/op
-BenchmarkAt-32                                           	10697626	        98.17 ns/op	       0 B/op	       0 allocs/op
-BenchmarkMemoryUsage-32                                  	     176	   6644388 ns/op	 1625647 B/op	   36347 allocs/op
-BenchmarkTestAndSplit-32                                 	103286805	        11.48 ns/op	       0 B/op	       0 allocs/op
-BenchmarkSearch-32                                       	46885426	        24.59 ns/op	       0 B/op	       0 allocs/op
-PASS
-ok  	github.com/LarsArtmann/art-dupl/suffixtree	72.103s
-goos: linux
-goarch: amd64
-pkg: github.com/LarsArtmann/art-dupl/syntax
-cpu: AMD RYZEN AI MAX+ 395 w/ Radeon 8060S          
-BenchmarkHashSeqSmall-32            	12523364	       139.4 ns/op	      16 B/op	       1 allocs/op
-BenchmarkHashSeqMedium-32           	  763598	      1666 ns/op	      16 B/op	       1 allocs/op
-BenchmarkHashSeqLarge-32            	   65080	     17206 ns/op	      16 B/op	       1 allocs/op
-BenchmarkHashSeqVeryLarge-32        	    5523	    215958 ns/op	      96 B/op	       1 allocs/op
-BenchmarkHashSeqParallel/Size1000-32         	 2580872	       536.9 ns/op	      16 B/op	       1 allocs/op
-BenchmarkHashSeqParallel/Size10000-32        	  455935	      2937 ns/op	      18 B/op	       1 allocs/op
-BenchmarkHashSeqParallel/Size100000-32       	   37166	     48047 ns/op	     397 B/op	       1 allocs/op
-BenchmarkSerialize/Size10-32                 	  566001	      2136 ns/op	    1200 B/op	      11 allocs/op
-BenchmarkSerialize/Size100-32                	   59302	     22748 ns/op	   13872 B/op	     105 allocs/op
-BenchmarkSerialize/Size1000-32               	    4449	    270219 ns/op	  132597 B/op	    1008 allocs/op
-BenchmarkSerialize/Size10000-32              	     510	   2790943 ns/op	 1470866 B/op	   10015 allocs/op
-BenchmarkFindSyntaxUnits-32                  	 3134292	       369.8 ns/op	       0 B/op	       0 allocs/op
-BenchmarkMemoryPool-32                       	   13430	     90436 ns/op	      83 B/op	       5 allocs/op
-BenchmarkSerialize_Small-32                  	 1717879	       635.0 ns/op	     528 B/op	       5 allocs/op
-BenchmarkSerialize_Large-32                  	   54060	     19369 ns/op	   13872 B/op	     105 allocs/op
-BenchmarkSerialize_Statements-32             	 1891730	       587.1 ns/op	     528 B/op	       5 allocs/op
-BenchmarkSerialize_Idempotent-32             	   69946	     20685 ns/op	   13728 B/op	     108 allocs/op
-PASS
-ok  	github.com/LarsArtmann/art-dupl/syntax	28.970s
-goos: linux
-goarch: amd64
-pkg: github.com/LarsArtmann/art-dupl/syntax/golang
-cpu: AMD RYZEN AI MAX+ 395 w/ Radeon 8060S          
-BenchmarkSemanticVsExactVsStructural/semantic-32         	   10000	    150891 ns/op	   37286 B/op	     643 allocs/op
-BenchmarkSemanticVsExactVsStructural/exact-32            	    9548	    130111 ns/op	   36161 B/op	     629 allocs/op
-BenchmarkSemanticVsExactVsStructural/structural-32       	   10000	    131964 ns/op	   36162 B/op	     629 allocs/op
-BenchmarkHashIdentifierFast-32                           	16703161	        61.88 ns/op	       0 B/op	       0 allocs/op
-BenchmarkEncodeSemanticType-32                           	114617301	        10.46 ns/op	       0 B/op	       0 allocs/op
-PASS
-ok  	github.com/LarsArtmann/art-dupl/syntax/golang	6.405s
-PASS
-ok  	github.com/LarsArtmann/art-dupl/syntax/templ	0.014s
-PASS
-ok  	github.com/LarsArtmann/art-dupl/cache	0.011s
-goos: linux
-goarch: amd64
-pkg: github.com/LarsArtmann/art-dupl/printer/actionability
-cpu: AMD RYZEN AI MAX+ 395 w/ Radeon 8060S          
-BenchmarkEvaluateActionability_SyntaxOnly-32    	21056877	        48.48 ns/op	       0 B/op	       0 allocs/op
-BenchmarkEvaluateExtractability-32              	32722480	        37.07 ns/op	       0 B/op	       0 allocs/op
-PASS
-ok  	github.com/LarsArtmann/art-dupl/printer/actionability	2.443s
-goos: linux
-goarch: amd64
-pkg: github.com/LarsArtmann/art-dupl/cmd
-cpu: AMD RYZEN AI MAX+ 395 w/ Radeon 8060S          
-BenchmarkMatchedGeneratedCategory_RegularFile-32      	19080057	        55.88 ns/op	       0 B/op	       0 allocs/op
-BenchmarkMatchedGeneratedCategory_GeneratedFile-32    	35197752	        31.18 ns/op	       0 B/op	       0 allocs/op
-BenchmarkAllowsContent_RegularFile-32                 	30408138	        43.00 ns/op	       0 B/op	       0 allocs/op
-BenchmarkCategoryIncluded-32                          	100000000	        10.52 ns/op	       0 B/op	       0 allocs/op
-PASS
-ok  	github.com/LarsArtmann/art-dupl/cmd	4.620s
-?   	github.com/LarsArtmann/art-dupl/cmd/art-dupl	[no test files]
-goos: linux
-goarch: amd64
-pkg: github.com/LarsArtmann/art-dupl/pkg/format
-cpu: AMD RYZEN AI MAX+ 395 w/ Radeon 8060S          
-BenchmarkHash/zero-32         	63204912	        21.22 ns/op	       0 B/op	       0 allocs/op
-BenchmarkHash/small-32        	62914378	        19.59 ns/op	       0 B/op	       0 allocs/op
-BenchmarkHash/medium-32       	64938579	        17.50 ns/op	       0 B/op	       0 allocs/op
-BenchmarkHash/large-32        	66716414	        18.29 ns/op	       0 B/op	       0 allocs/op
-BenchmarkHash/max-32          	57909560	        18.74 ns/op	       0 B/op	       0 allocs/op
-PASS
-ok  	github.com/LarsArtmann/art-dupl/pkg/format	8.512s
-goos: linux
-goarch: amd64
-pkg: github.com/LarsArtmann/art-dupl/printer
-cpu: AMD RYZEN AI MAX+ 395 w/ Radeon 8060S          
-BenchmarkLineDiff_Small-32     	 1000000	      1463 ns/op	     544 B/op	      10 allocs/op
-BenchmarkLineDiff_Medium-32    	   49507	     25483 ns/op	   12016 B/op	     114 allocs/op
-BenchmarkLineDiff_Large-32     	   13768	     80814 ns/op	   29552 B/op	     316 allocs/op
-PASS
-ok  	github.com/LarsArtmann/art-dupl/printer	3.895s
-PASS
-ok  	github.com/LarsArtmann/art-dupl/printer/stats	0.048s
+BenchmarkSTreeUpdate/tokens_100-32   	   85202	     13308 ns/op	   17816 B/op	     434 allocs/op
+BenchmarkSTreeUpdate/tokens_100-32   	   85483	     13661 ns/op	   17816 B/op	     434 allocs/op
+BenchmarkSTreeUpdate/tokens_100-32   	   85628	     14920 ns/op	   17816 B/op	     434 allocs/op
+BenchmarkSTreeUpdate/tokens_100-32   	   83869	     13580 ns/op	   17816 B/op	     434 allocs/op
+BenchmarkSTreeUpdate/tokens_100-32   	   85598	     13477 ns/op	   17816 B/op	     434 allocs/op
+BenchmarkSTreeUpdate/tokens_500-32   	   14643	     82314 ns/op	  104921 B/op	    2378 allocs/op
+BenchmarkSTreeUpdate/tokens_500-32   	   14016	     83932 ns/op	  104920 B/op	    2378 allocs/op
+BenchmarkSTreeUpdate/tokens_500-32   	   14526	     81423 ns/op	  104920 B/op	    2378 allocs/op
+BenchmarkSTreeUpdate/tokens_500-32   	   15225	     78945 ns/op	  104920 B/op	    2378 allocs/op
+BenchmarkSTreeUpdate/tokens_500-32   	   14796	     79304 ns/op	  104920 B/op	    2378 allocs/op
+BenchmarkSTreeUpdate/tokens_2000-32  	    3772	    322920 ns/op	  377490 B/op	    8917 allocs/op
+BenchmarkSTreeUpdate/tokens_2000-32  	    3622	    323209 ns/op	  377489 B/op	    8917 allocs/op
+BenchmarkSTreeUpdate/tokens_2000-32  	    3705	    330508 ns/op	  377490 B/op	    8917 allocs/op
+BenchmarkSTreeUpdate/tokens_2000-32  	    3452	    338683 ns/op	  377490 B/op	    8917 allocs/op
+BenchmarkSTreeUpdate/tokens_2000-32  	    3248	    328924 ns/op	  377490 B/op	    8917 allocs/op
+BenchmarkFindDuplOver/threshold_10-32         	    4243	    301995 ns/op	  374765 B/op	    7179 allocs/op
+BenchmarkFindDuplOver/threshold_10-32         	    4098	    298042 ns/op	  374765 B/op	    7179 allocs/op
+BenchmarkFindDuplOver/threshold_10-32         	    3684	    309535 ns/op	  374764 B/op	    7179 allocs/op
+BenchmarkFindDuplOver/threshold_10-32         	    3334	    395147 ns/op	  374769 B/op	    7179 allocs/op
+BenchmarkFindDuplOver/threshold_10-32         	    4165	    340088 ns/op	  374766 B/op	    7179 allocs/op
+BenchmarkFindDuplOver/threshold_50-32         	    3720	    320406 ns/op	  374412 B/op	    7173 allocs/op
+BenchmarkFindDuplOver/threshold_50-32         	    4058	    297841 ns/op	  374412 B/op	    7173 allocs/op
+BenchmarkFindDuplOver/threshold_50-32         	    4315	    302905 ns/op	  374412 B/op	    7173 allocs/op
+BenchmarkFindDuplOver/threshold_50-32         	    4170	    303130 ns/op	  374412 B/op	    7173 allocs/op
+BenchmarkFindDuplOver/threshold_50-32         	    3996	    299376 ns/op	  374412 B/op	    7173 allocs/op
+BenchmarkFindDuplOver/threshold_200-32        	    4263	    287638 ns/op	  370731 B/op	    7129 allocs/op
+BenchmarkFindDuplOver/threshold_200-32        	    4028	    287790 ns/op	  370732 B/op	    7129 allocs/op
+BenchmarkFindDuplOver/threshold_200-32        	    3781	    315657 ns/op	  370733 B/op	    7129 allocs/op
+BenchmarkFindDuplOver/threshold_200-32        	    4345	    288953 ns/op	  370731 B/op	    7129 allocs/op
+BenchmarkFindDuplOver/threshold_200-32        	

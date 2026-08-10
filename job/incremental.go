@@ -66,16 +66,25 @@ func NewIncrementalParser(
 // pre-loaded AST + TypeInfo to the transformer instead of nil.
 func (ip *IncrementalParser) SetTypeAwareData(td golang.TypeAwareData) {
 	ip.typeInfos = td
-	// Detect the type-aware mode from the loaded data to isolate cache keys.
-	// All entries in the map share the same EraseHash value (set globally by LoadTypeAwareData).
+	// Derive the cache-isolation tag from the EraseHash flag. All entries share
+	// the same value (set globally by LoadTypeAwareData), but we validate this
+	// invariant rather than trusting it — a mixed map would silently produce
+	// wrong cache keys for some files.
 	ip.typeAwareTag = ""
 	for _, pre := range td {
+		tag := "ta" // type-aware: hash includes types
 		if pre.EraseHash {
-			ip.typeAwareTag = "sg" // suggest-generics: hash erased
-		} else {
-			ip.typeAwareTag = "ta" // type-aware: hash includes types
+			tag = "sg" // suggest-generics: hash erased
 		}
-		break
+		if ip.typeAwareTag == "" {
+			ip.typeAwareTag = tag
+		} else if ip.typeAwareTag != tag {
+			logger.Default.Warn(
+				"inconsistent EraseHash in TypeAwareData — cache key may be wrong for some files",
+				"expected", ip.typeAwareTag,
+				"got", tag,
+			)
+		}
 	}
 }
 

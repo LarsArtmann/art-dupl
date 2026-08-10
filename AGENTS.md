@@ -33,6 +33,11 @@ nix flake check    # reproducible CI (includes templ generate in preBuild)
 > The `flake.nix` devShell sets this automatically. For non-Nix workflows, export it
 > manually: `export GOEXPERIMENT=jsonv2`. Convention: use `omitzero` (not `omitempty`)
 > on custom `MarshalJSON` types, and `format:nano` for `time.Duration` fields.
+> **Known gopls false positives**: gopls's `stdversion` analyzer reports ~65
+> `json.Unmarshal requires go1.27 or later (file is go1.26)` warnings because gopls
+> doesn't understand `GOEXPERIMENT=jsonv2`. These are pure IDE noise — `go build`,
+> `go vet`, and `go test` all pass clean. Ignore them; do NOT bump the go.mod version
+> to `1.27` (Go 1.27 doesn't exist yet).
 
 ## Architecture
 

@@ -642,6 +642,16 @@ func TestKeyWithParams(t *testing.T) {
 			t.Errorf("Expected 64-char hex hash, got %d chars", len(key))
 		}
 	})
+
+	t.Run("length_prefix_prevents_concatenation_collision", func(t *testing.T) {
+		// Without a length prefix, content="ab"+params="cd" hashes the same
+		// stream as content="a"+params="bcd". The length prefix prevents this.
+		key1 := KeyWithParams([]byte("ab"), "cd")
+		key2 := KeyWithParams([]byte("a"), "bcd")
+		if key1 == key2 {
+			t.Fatal("Expected different keys for different content/params splits")
+		}
+	})
 }
 
 // TestFileCache_ErrorPaths tests Get behavior with corrupt, stale, and
