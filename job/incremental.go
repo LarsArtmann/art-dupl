@@ -71,11 +71,13 @@ func (ip *IncrementalParser) SetTypeAwareData(td golang.TypeAwareData) {
 	// invariant rather than trusting it — a mixed map would silently produce
 	// wrong cache keys for some files.
 	ip.typeAwareTag = ""
+
 	for _, pre := range td {
 		tag := "ta" // type-aware: hash includes types
 		if pre.EraseHash {
 			tag = "sg" // suggest-generics: hash erased
 		}
+
 		if ip.typeAwareTag == "" {
 			ip.typeAwareTag = tag
 		} else if ip.typeAwareTag != tag {
@@ -93,6 +95,7 @@ func (ip *IncrementalParser) SetTypeAwareData(td golang.TypeAwareData) {
 // where a cached semantic-mode AST is incorrectly reused for an exact-mode run.
 func (ip *IncrementalParser) cacheKey(content []byte) string {
 	params := fmt.Sprintf("%s:%d:%s", ip.mode, ip.maxChildren, ip.typeAwareTag)
+
 	return cache.KeyWithParams(content, params)
 }
 

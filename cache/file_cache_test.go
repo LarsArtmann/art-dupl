@@ -519,17 +519,21 @@ func TestFileCache_Persistence(t *testing.T) {
 func TestFileCache_Prune(t *testing.T) {
 	t.Run("zero_max_no_op", func(t *testing.T) {
 		fc := NewFileCache(t.TempDir())
+
 		hash := Key([]byte("a"))
 		if err := fc.Set(hash, testNodes()); err != nil {
 			t.Fatalf("Set failed: %v", err)
 		}
+
 		evicted, err := fc.Prune(0)
 		if err != nil {
 			t.Fatalf("Prune error: %v", err)
 		}
+
 		if evicted != 0 {
 			t.Errorf("Expected 0 evicted, got %d", evicted)
 		}
+
 		if _, hit := fc.Get(hash); !hit {
 			t.Error("Entry should still exist after Prune(0)")
 		}
@@ -542,10 +546,12 @@ func TestFileCache_Prune(t *testing.T) {
 				t.Fatalf("Set failed: %v", err)
 			}
 		}
+
 		evicted, err := fc.Prune(10)
 		if err != nil {
 			t.Fatalf("Prune error: %v", err)
 		}
+
 		if evicted != 0 {
 			t.Errorf("Expected 0 evicted, got %d", evicted)
 		}
@@ -562,6 +568,7 @@ func TestFileCache_Prune(t *testing.T) {
 			}
 			// Touch the file to ensure distinct mtimes (some filesystems have low resolution).
 			path := filepath.Join(fc.cacheDir, "files", hashes[i]+".gob")
+
 			modTime := time.Now().Add(time.Duration(i) * 100 * time.Millisecond)
 			if err := os.Chtimes(path, modTime, modTime); err != nil {
 				t.Fatalf("Chtimes failed: %v", err)
@@ -573,6 +580,7 @@ func TestFileCache_Prune(t *testing.T) {
 		if err != nil {
 			t.Fatalf("Prune error: %v", err)
 		}
+
 		if evicted != 2 {
 			t.Fatalf("Expected 2 evicted, got %d", evicted)
 		}
@@ -581,6 +589,7 @@ func TestFileCache_Prune(t *testing.T) {
 		if _, hit := fc.Get(hashes[0]); hit {
 			t.Error("Oldest entry 'a' should have been evicted")
 		}
+
 		if _, hit := fc.Get(hashes[1]); hit {
 			t.Error("Second-oldest entry 'b' should have been evicted")
 		}
@@ -595,10 +604,12 @@ func TestFileCache_Prune(t *testing.T) {
 
 	t.Run("empty_cache_no_error", func(t *testing.T) {
 		fc := NewFileCache(t.TempDir())
+
 		evicted, err := fc.Prune(5)
 		if err != nil {
 			t.Fatalf("Prune error: %v", err)
 		}
+
 		if evicted != 0 {
 			t.Errorf("Expected 0 evicted on empty cache, got %d", evicted)
 		}
@@ -612,6 +623,7 @@ func TestKeyWithParams(t *testing.T) {
 
 	t.Run("different_params_produce_different_keys", func(t *testing.T) {
 		keyA := KeyWithParams(content, "semantic:5:")
+
 		keyB := KeyWithParams(content, "exact:5:")
 		if keyA == keyB {
 			t.Fatal("Expected different keys for different params")
@@ -620,6 +632,7 @@ func TestKeyWithParams(t *testing.T) {
 
 	t.Run("same_params_produce_same_key", func(t *testing.T) {
 		keyA := KeyWithParams(content, "semantic:5:ta")
+
 		keyB := KeyWithParams(content, "semantic:5:ta")
 		if keyA != keyB {
 			t.Fatal("Expected identical keys for same params")
@@ -630,6 +643,7 @@ func TestKeyWithParams(t *testing.T) {
 		// KeyWithParams with empty params should equal Key — empty string writes
 		// 0 extra bytes into the hash stream, so the input is identical.
 		keyNormal := Key(content)
+
 		keyWithEmptyParams := KeyWithParams(content, "")
 		if keyNormal != keyWithEmptyParams {
 			t.Fatalf("Expected identical keys for empty params, got %q vs %q", keyNormal, keyWithEmptyParams)
@@ -647,6 +661,7 @@ func TestKeyWithParams(t *testing.T) {
 		// Without a length prefix, content="ab"+params="cd" hashes the same
 		// stream as content="a"+params="bcd". The length prefix prevents this.
 		key1 := KeyWithParams([]byte("ab"), "cd")
+
 		key2 := KeyWithParams([]byte("a"), "bcd")
 		if key1 == key2 {
 			t.Fatal("Expected different keys for different content/params splits")
@@ -660,15 +675,18 @@ func TestKeyWithParams(t *testing.T) {
 func TestFileCache_ErrorPaths(t *testing.T) {
 	writeCacheFile := func(t *testing.T, fc *FileCache, hash string, data []byte) string {
 		t.Helper()
+
 		path := filepath.Join(fc.cacheDir, "files", hash+".gob")
 		if err := os.WriteFile(path, data, cacheFilePerms); err != nil {
 			t.Fatalf("WriteFile failed: %v", err)
 		}
+
 		return path
 	}
 
 	assertFileRemoved := func(t *testing.T, path string) {
 		t.Helper()
+
 		if _, err := os.Stat(path); !os.IsNotExist(err) {
 			t.Errorf("Expected file %q to be removed after Get, but it still exists", path)
 		}
@@ -676,10 +694,12 @@ func TestFileCache_ErrorPaths(t *testing.T) {
 
 	encodeEntry := func(t *testing.T, entry *cacheEntry) []byte {
 		t.Helper()
+
 		var buf bytes.Buffer
 		if err := gob.NewEncoder(&buf).Encode(entry); err != nil {
 			t.Fatalf("Gob encode failed: %v", err)
 		}
+
 		return buf.Bytes()
 	}
 
@@ -692,9 +712,11 @@ func TestFileCache_ErrorPaths(t *testing.T) {
 		if hit {
 			t.Fatal("Expected cache miss for corrupt data")
 		}
+
 		if nodes != nil {
 			t.Fatal("Expected nil nodes for corrupt data")
 		}
+
 		assertFileRemoved(t, path)
 	})
 
@@ -708,6 +730,7 @@ func TestFileCache_ErrorPaths(t *testing.T) {
 		if hit {
 			t.Fatal("Expected cache miss for truncated gob")
 		}
+
 		assertFileRemoved(t, path)
 	})
 
@@ -721,6 +744,7 @@ func TestFileCache_ErrorPaths(t *testing.T) {
 		if hit {
 			t.Fatal("Expected cache miss for version mismatch")
 		}
+
 		assertFileRemoved(t, path)
 	})
 
@@ -733,6 +757,7 @@ func TestFileCache_ErrorPaths(t *testing.T) {
 		if hit {
 			t.Fatal("Expected cache miss for empty file")
 		}
+
 		assertFileRemoved(t, path)
 	})
 
@@ -746,16 +771,19 @@ func TestFileCache_ErrorPaths(t *testing.T) {
 		if hit {
 			t.Fatal("Expected miss for garbage")
 		}
+
 		assertFileRemoved(t, path)
 
 		// After removal, Set should succeed and Get should hit
 		if err := fc.Set(hash, testNodes()); err != nil {
 			t.Fatalf("Set after corrupt-removal failed: %v", err)
 		}
+
 		retrieved, hit := fc.Get(hash)
 		if !hit {
 			t.Fatal("Expected hit after Set recovery")
 		}
+
 		if len(retrieved) != 1 {
 			t.Errorf("Expected 1 node, got %d", len(retrieved))
 		}
@@ -770,59 +798,59 @@ func TestFileCache_ConcurrentPruneAndSet(t *testing.T) {
 
 	// Pre-populate with some entries so Prune has work to do.
 	for i := range 20 {
-		if err := fc.Set(Key([]byte(fmt.Sprintf("seed-%d", i))), nodes); err != nil {
+		if err := fc.Set(Key(fmt.Appendf(nil, "seed-%d", i)), nodes); err != nil {
 			t.Fatalf("Seed Set failed: %v", err)
 		}
 	}
 
 	var wg sync.WaitGroup
+
 	done := make(chan struct{})
 
 	// Writer goroutine: continuously Set new entries.
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
+	wg.Go(func() {
 		i := 0
+
 		for {
 			select {
 			case <-done:
 				return
 			default:
 			}
-			hash := Key([]byte(fmt.Sprintf("concurrent-%d", i)))
+
+			hash := Key(fmt.Appendf(nil, "concurrent-%d", i))
 			_ = fc.Set(hash, nodes)
 			fc.Get(hash)
+
 			i++
 		}
-	}()
+	})
 
 	// Pruner goroutine: continuously prune to a small max.
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
+	wg.Go(func() {
 		for {
 			select {
 			case <-done:
 				return
 			default:
 			}
+
 			_, _ = fc.Prune(10)
 		}
-	}()
+	})
 
 	// Stats reader goroutine: concurrently read stats.
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
+	wg.Go(func() {
 		for {
 			select {
 			case <-done:
 				return
 			default:
 			}
+
 			_ = fc.Stats()
 		}
-	}()
+	})
 
 	// Let them run for a short burst.
 	time.Sleep(100 * time.Millisecond)

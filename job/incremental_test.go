@@ -291,27 +291,33 @@ func TestIncrementalParserCacheKeyIsolationMode(t *testing.T) {
 	// First parse with semantic mode → cache miss.
 	semanticParser := NewIncrementalParser(cacheDir, false, golang.DetectionModeSemantic, 0, 0)
 	fchan1 := singleFileChannel(setup)
+
 	schan1, statsChan1 := semanticParser.ParseIncremental(ctx, fchan1)
 	for range schan1 {
 	}
+
 	stats1 := <-statsChan1
 	testutil.AssertFieldValue(t, stats1.CacheMisses, 1, "CacheMisses on first semantic parse")
 
 	// Same file with exact mode → should ALSO be a cache miss (different key).
 	exactParser := NewIncrementalParser(cacheDir, false, golang.DetectionModeExact, 0, 0)
 	fchan2 := singleFileChannel(setup)
+
 	schan2, statsChan2 := exactParser.ParseIncremental(ctx, fchan2)
 	for range schan2 {
 	}
+
 	stats2 := <-statsChan2
 	testutil.AssertFieldValue(t, stats2.CacheMisses, 1, "CacheMisses on exact parse (key isolation)")
 	testutil.AssertFieldValue(t, stats2.CacheHits, 0, "CacheHits should be 0 for different mode")
 
 	// But repeating exact mode → should be a cache hit.
 	fchan3 := singleFileChannel(setup)
+
 	schan3, statsChan3 := exactParser.ParseIncremental(ctx, fchan3)
 	for range schan3 {
 	}
+
 	stats3 := <-statsChan3
 	testutil.AssertFieldValue(t, stats3.CacheHits, 1, "CacheHits on repeat exact parse")
 }
@@ -329,18 +335,22 @@ func TestIncrementalParserCacheKeyIsolationMaxChildren(t *testing.T) {
 	// Parse with maxChildren=0 → cache miss.
 	parser1 := NewIncrementalParser(cacheDir, false, golang.DetectionModeSemantic, 0, 0)
 	fchan1 := singleFileChannel(setup)
+
 	schan1, statsChan1 := parser1.ParseIncremental(ctx, fchan1)
 	for range schan1 {
 	}
+
 	stats1 := <-statsChan1
 	testutil.AssertFieldValue(t, stats1.CacheMisses, 1, "CacheMisses on first parse")
 
 	// Same file with maxChildren=5 → should be cache miss (different key).
 	parser2 := NewIncrementalParser(cacheDir, false, golang.DetectionModeSemantic, 5, 0)
 	fchan2 := singleFileChannel(setup)
+
 	schan2, statsChan2 := parser2.ParseIncremental(ctx, fchan2)
 	for range schan2 {
 	}
+
 	stats2 := <-statsChan2
 	testutil.AssertFieldValue(t, stats2.CacheMisses, 1, "CacheMisses on different maxChildren")
 	testutil.AssertFieldValue(t, stats2.CacheHits, 0, "CacheHits should be 0 for different maxChildren")

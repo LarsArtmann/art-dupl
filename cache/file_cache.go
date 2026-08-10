@@ -453,12 +453,15 @@ func KeyWithParams(content []byte, params string) string {
 	if _, err := h.Write([]byte(strconv.Itoa(len(content)))); err != nil {
 		panic(fmt.Sprintf("sha256 Write failed (infallible): %v", err))
 	}
+
 	if _, err := h.Write([]byte{':'}); err != nil {
 		panic(fmt.Sprintf("sha256 Write failed (infallible): %v", err))
 	}
+
 	if _, err := h.Write(content); err != nil {
 		panic(fmt.Sprintf("sha256 Write failed (infallible): %v", err))
 	}
+
 	if _, err := h.Write([]byte(params)); err != nil {
 		panic(fmt.Sprintf("sha256 Write failed (infallible): %v", err))
 	}

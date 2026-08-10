@@ -85,8 +85,10 @@ func benchmarkFindTran(
 	var target *tran
 	for _, t := range tree.root.trans {
 		target = t
+
 		break
 	}
+
 	token := tree.data[target.start]
 
 	for b.Loop() {
