@@ -42,6 +42,10 @@ var actionabilityPatternTable = []patternEntry{ //nolint:gochecknoglobals // sta
 	{isDescribeTablePattern, PatternDescribeTable},
 	{isBuilderCallbackPattern, PatternBuilderCallback},
 	{isTemplRenderingIdiom, PatternTemplRenderingIdiom},
+	{isDeferCallPattern, PatternDeferCall},
+	{isTestFrameworkCallPattern, PatternTestFrameworkCall},
+	{isStateFlagMutation, PatternStateFlagMutation},
+	{isEmptyDefault, PatternEmptyDefault},
 }
 
 // AllActionabilityPatterns returns all pattern labels that can appear in
@@ -174,6 +178,10 @@ const (
 	PatternPropertyROI                PatternLabel = "property-roi"
 	PatternPropertyParameterizable    PatternLabel = "property-parameterizable"
 	PatternTemplRenderingIdiom        PatternLabel = "templ-rendering-idiom"
+	PatternDeferCall                  PatternLabel = "defer-call"
+	PatternTestFrameworkCall          PatternLabel = "test-framework-call"
+	PatternStateFlagMutation          PatternLabel = "state-flag-mutation"
+	PatternEmptyDefault               PatternLabel = "empty-default"
 )
 
 // EvaluateActionabilityWithLabel returns both the actionability and the
