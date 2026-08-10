@@ -3,8 +3,10 @@ package cache
 import (
 	"bytes"
 	"encoding/gob"
+	"fmt"
 	"os"
 	"path/filepath"
+	"sync"
 	"testing"
 	"time"
 
@@ -748,4 +750,72 @@ func TestFileCache_ErrorPaths(t *testing.T) {
 			t.Errorf("Expected 1 node, got %d", len(retrieved))
 		}
 	})
+}
+
+// TestFileCache_ConcurrentPruneAndSet verifies that Prune and Set can run
+// concurrently without data races or panics. Run with -race to verify.
+func TestFileCache_ConcurrentPruneAndSet(t *testing.T) {
+	fc := NewFileCache(t.TempDir())
+	nodes := testNodes()
+
+	// Pre-populate with some entries so Prune has work to do.
+	for i := range 20 {
+		if err := fc.Set(Key([]byte(fmt.Sprintf("seed-%d", i))), nodes); err != nil {
+			t.Fatalf("Seed Set failed: %v", err)
+		}
+	}
+
+	var wg sync.WaitGroup
+	done := make(chan struct{})
+
+	// Writer goroutine: continuously Set new entries.
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		i := 0
+		for {
+			select {
+			case <-done:
+				return
+			default:
+			}
+			hash := Key([]byte(fmt.Sprintf("concurrent-%d", i)))
+			_ = fc.Set(hash, nodes)
+			fc.Get(hash)
+			i++
+		}
+	}()
+
+	// Pruner goroutine: continuously prune to a small max.
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		for {
+			select {
+			case <-done:
+				return
+			default:
+			}
+			_, _ = fc.Prune(10)
+		}
+	}()
+
+	// Stats reader goroutine: concurrently read stats.
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		for {
+			select {
+			case <-done:
+				return
+			default:
+			}
+			_ = fc.Stats()
+		}
+	}()
+
+	// Let them run for a short burst.
+	time.Sleep(100 * time.Millisecond)
+	close(done)
+	wg.Wait()
 }

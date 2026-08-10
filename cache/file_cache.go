@@ -433,9 +433,7 @@ type cacheEntry struct {
 
 // Key generates a cache key from file content using SHA-256.
 func Key(content []byte) string {
-	h := sha256.Sum256(content)
-
-	return hex.EncodeToString(h[:])
+	return KeyWithParams(content, "")
 }
 
 // KeyWithParams generates a cache key from file content AND a params string.
@@ -444,10 +442,25 @@ func Key(content []byte) string {
 // configurations get separate cache entries. This prevents cross-mode cache
 // contamination where a cached semantic-mode AST is incorrectly reused for an
 // exact-mode run.
+//
+// The content length is written as a prefix to prevent hash ambiguity:
+// without it, content="ab"+params="cd" would hash the same stream as
+// content="a"+params="bcd".
 func KeyWithParams(content []byte, params string) string {
 	h := sha256.New()
-	h.Write(content)
-	h.Write([]byte(params))
+	// Length-prefix prevents concatenation ambiguity between content and params.
+	if _, err := h.Write([]byte(strconv.Itoa(len(content)))); err != nil {
+		panic(fmt.Sprintf("sha256 Write failed (infallible): %v", err))
+	}
+	if _, err := h.Write([]byte{':'}); err != nil {
+		panic(fmt.Sprintf("sha256 Write failed (infallible): %v", err))
+	}
+	if _, err := h.Write(content); err != nil {
+		panic(fmt.Sprintf("sha256 Write failed (infallible): %v", err))
+	}
+	if _, err := h.Write([]byte(params)); err != nil {
+		panic(fmt.Sprintf("sha256 Write failed (infallible): %v", err))
+	}
 
 	return hex.EncodeToString(h.Sum(nil))
 }
