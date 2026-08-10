@@ -135,7 +135,7 @@ func AddFlags(rootCmd *cobra.Command) {
 	rootCmd.Flags().
 		Bool("explain", false, "explain why each clone group was reported (type, actionability, category, extractability)")
 	rootCmd.Flags().
-		Bool("suggest-generics", false, "find generics-extraction candidates: same algorithm, different types (loads type info; incompatible with --type-aware)")
+		Bool("suggest-generics", false, "find generics-extraction candidates: same algorithm, different types (implicitly loads type info; takes precedence over --type-aware)")
 	rootCmd.Flags().
 		Bool("include-ignored", false, "include gitignored files in analysis (default: honor .gitignore)")
 	rootCmd.Flags().
