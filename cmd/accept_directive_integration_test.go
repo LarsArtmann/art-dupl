@@ -56,14 +56,17 @@ func TestStatsHonorsAcceptDirectives(t *testing.T) {
 	}
 }
 
-// TestBaselineRecordHonorsAcceptDirectives verifies that the baseline record
-// subcommand honors //art-dupl:accept directives — another site that had a
-// truncated SuppressionConfig before the fix.
+// TestBaselineRecordBypassesAcceptDirectives verifies that the baseline record
+// subcommand captures ALL groups regardless of //art-dupl:accept directives.
+// This prevents the split-brain issue where directive-suppressed groups are
+// absent from the baseline, then appear as "new" when directives are later
+// removed. The baseline is the complete snapshot; directives are checked
+// separately at analysis time.
 //
 // NOTE: This test is intentionally NOT t.Parallel(): executeTestCommand ->
 // CaptureStdoutStderr mutates the process-global os.Stdout/os.Stderr, which
 // races with parallel sibling tests that read those globals directly.
-func TestBaselineRecordHonorsAcceptDirectives(t *testing.T) {
+func TestBaselineRecordBypassesAcceptDirectives(t *testing.T) {
 	// Without accept directives: baseline should record the clone group.
 	baselineNoAccept := filepath.Join(t.TempDir(), "baseline-no-accept.json")
 
@@ -83,7 +86,7 @@ func TestBaselineRecordHonorsAcceptDirectives(t *testing.T) {
 		t.Errorf("expected 'Recorded 1 clone group' without directives, got:\n%s", output)
 	}
 
-	// With accept directives: baseline should record 0 groups.
+	// With accept directives: baseline should STILL record 1 group (bypassed).
 	baselineWithAccept := filepath.Join(t.TempDir(), "baseline-with-accept.json")
 
 	output, err = executeTestCommand(t, []string{
@@ -97,7 +100,7 @@ func TestBaselineRecordHonorsAcceptDirectives(t *testing.T) {
 		t.Fatalf("baseline with accept directives failed: %v\nOutput: %s", err, output)
 	}
 
-	if !strings.Contains(string(output), "Recorded 0 clone group") {
-		t.Errorf("expected 'Recorded 0 clone group' with accept directives, got:\n%s", output)
+	if !strings.Contains(string(output), "Recorded 1 clone group") {
+		t.Errorf("expected 'Recorded 1 clone group' with directives (bypassed), got:\n%s", output)
 	}
 }

@@ -85,19 +85,22 @@ func nodeTypeToCategory(nodeType int32) domain.CloneCategory {
 		return domain.CategoryLoop
 	case golang.IfStmt, golang.SwitchStmt, golang.TypeSwitchStmt, golang.SelectStmt:
 		return domain.CategoryConditional
-	case golang.AssignStmt, golang.ValueSpec:
+	case golang.AssignStmt, golang.ValueSpec, golang.IncDecStmt:
 		return domain.CategoryAssignment
 	case golang.GenDecl:
 		return domain.CategoryExpression
-	case golang.BlockStmt:
+	case golang.BlockStmt, golang.LabeledStmt:
 		return domain.CategoryBlock
-	case golang.CallExpr:
+	case golang.CallExpr, golang.ExprStmt:
 		return domain.CategoryCall
-	case golang.ReturnStmt:
+	case golang.ReturnStmt, golang.BranchStmt:
 		return domain.CategoryReturn
 	case golang.DeferStmt, golang.GoStmt:
 		return domain.CategoryDefer
-	case golang.DeclStmt, golang.BinaryExpr:
+	case golang.DeclStmt, golang.BinaryExpr, golang.UnaryExpr, golang.CompositeLit,
+		golang.KeyValueExpr, golang.IndexExpr, golang.SliceExpr, golang.TypeAssertExpr,
+		golang.StarExpr, golang.ParenExpr, golang.SendStmt, golang.Ident, golang.BasicLit,
+		golang.MapType, golang.ChanType, golang.ArrayType:
 		return domain.CategoryExpression
 	default:
 		return domain.CategoryUnknown
