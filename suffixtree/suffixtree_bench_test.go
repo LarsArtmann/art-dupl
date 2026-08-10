@@ -81,7 +81,12 @@ func benchmarkFindTran(
 		b.Skip("No transitions to benchmark")
 	}
 
-	target := tree.root.trans[0]
+	// trans is a map[TokenValue]*tran — grab the first available transition.
+	var target *tran
+	for _, t := range tree.root.trans {
+		target = t
+		break
+	}
 	token := tree.data[target.start]
 
 	for b.Loop() {
