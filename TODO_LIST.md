@@ -54,12 +54,17 @@ This file is OPEN work only — no completed, rejected, or resolved items.
 - [ ] **TTY-aware HTML output**: Auto-write to `art-dupl-report.html` when TTY detected (currently requires `--html-out` explicitly).
 - [ ] **Stable display IDs**: `GroupNum` is not stable across runs (content hash IDs ARE stable). Add stable `id` attributes for deep-linking.
 
-### Cache improvements
-**Source:** `docs/status/2026-08-10_04-39_post-audit-hardening-self-critique.md` §f
-- [ ] **Bump `CacheVersion` to 3**: The `KeyWithParams` change orphaned all existing on-disk caches (old key format never looked up again). Not a correctness bug, but inelegant. (`cache/file_cache.go` — `CacheVersion` still `2`)
-- [ ] **In-memory LRU layer**: Add in-process cache on top of `FileCache` to avoid redundant gob deserialization on hot paths. Biggest perf win for cache-heavy workflows.
-- [ ] **Hysteresis pruning**: Current `Prune` sorts ALL entries on every call (O(n log n) per miss). Prune at 110%, evict to 90%.
-- [ ] **`cacheKey()` unit test**: Test `ip.cacheKey()` in `job/incremental_test.go` to verify params string format (`"mode:maxChildren:typeAwareTag"`).
+### Cache improvements (follow-ups)
+**Source:** `docs/status/2026-08-10_07-27_cache-improvements-sprint.md` §e, §f
+LRU layer, hysteresis pruning, CacheVersion=3, and `cacheKey()` test are DONE (commits `85865f51`, `8dc019a5`). Remaining follow-ups:
+- [ ] **Expose `memHits` in `Stats()`**: `lru.memHits` is tracked but not surfaced. Add `MemHits int64` to `Stats` struct and CLI `--cache-stats` output. (`cache/lru.go:23`, `cache/file_cache.go::Stats`)
+- [ ] **Configurable LRU capacity**: `defaultMemoryEntries = 512` is hardcoded. Add `Config.MemoryCacheEntries` + `--memory-cache-entries` CLI flag. (`cache/lru.go:14`, `config/config.go`)
+- [ ] **Lock-ordering comments**: `FileCache.mu` → `lru.mu` ordering is safe but undocumented. Add comments on both types to prevent future deadlocks. (`cache/file_cache.go`, `cache/lru.go`)
+- [ ] **`Set` ownership contract**: `Set` stores caller's slice directly in LRU — safe only because `parseFile` passes a deep clone. Document the contract or defensively clone. (`cache/file_cache.go::Set`)
+- [ ] **Benchmark LRU vs disk-only**: Add benchmark comparing `Get` with LRU hit vs `Get` with empty LRU to quantify the deserialization-avoidance win. (`cache/file_cache_test.go`)
+- [ ] **Extract `cloneNodes`**: Duplicated in `cache/lru.go::cloneNodes` and `job/incremental.go::deepCloneNodes`. Extract to `syntax` package. (`cache/lru.go:113`, `job/incremental.go`)
+- [ ] **`GetShared` for singleflight**: `Get` returns a deep clone, then singleflight callers clone again (double clone). Add `GetShared` returning the canonical pointer for callers that clone anyway. (`cache/file_cache.go`, `job/incremental.go::parseFile`)
+- [ ] **Rename `td` parameter**: Pre-existing `varnamelen` lint warning on `SetTypeAwareData(td ...*PreloadedAST)`. Rename to `typeAwareData` or `data`. (`syntax/golang/typeinfo.go`)
 
 ### Feedback-driven actionability patterns
 **Source:** `docs/status/2026-08-10_05-29_feedback-review-implementation-sprint.md` §c, feedback files in `docs/feedback/new/`

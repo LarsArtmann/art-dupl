@@ -161,9 +161,10 @@
 | **Parallel Parsing**      | FULLY_FUNCTIONAL | Worker pool via `--workers` flag (0=auto, NumCPU)                                                                                                   |
 | **Parallel Search**       | FULLY_FUNCTIONAL | `--search-workers` flag parallelizes suffix tree DFS across root subtrees (0/1=sequential, >1=N workers). 1.5-3.4x speedup.                         |
 | **Memory-Compact Tree**   | FULLY_FUNCTIONAL | Suffix tree data stored as `[]TokenValue` (int32, 4 bytes) instead of `[]Token` (interface, 16 bytes). 75% pointer-array memory reduction.          |
-| **Incremental Analysis**  | FULLY_FUNCTIONAL | SHA-256 content-hash AST caching, `--incremental` flag, CacheVersion 2                                                                              |
+| **Incremental Analysis**  | FULLY_FUNCTIONAL | SHA-256 content-hash AST caching, `--incremental` flag, CacheVersion 3                                                                              |
 | **Git-Aware Incremental** | REMOVED          | `--since` flag removed (was a dead stub, never read). Only content-hash caching via `--incremental` works. Git-diff file selection not implemented. |
-| **Cache Management**      | FULLY_FUNCTIONAL | `--cache-dir`, `--clear-cache`, `--max-cache-entries`, file-based gob serialization, LRU-style `Prune` eviction                                     |
+| **Cache Management**      | FULLY_FUNCTIONAL | `--cache-dir`, `--clear-cache`, `--max-cache-entries`, file-based gob serialization, hysteresis pruning (110%/90%)                                   |
+| **In-Memory LRU Cache**   | FULLY_FUNCTIONAL | 512-entry `container/list`-based LRU on top of `FileCache`. O(1) hit, no gob deserialization. Deep-clone on read. (`cache/lru.go`)                 |
 | **Parallel Incremental**  | FULLY_FUNCTIONAL | `ParseIncrementalParallel` worker pool + `singleflight.Group` dedup for byte-identical files (commit `94b5205`)                                     |
 | **Execution Timeout**     | FULLY_FUNCTIONAL | `--timeout` with context cancellation (default 30m)                                                                                                 |
 | **Performance Profiling** | EXPERIMENTAL     | Hidden `--profile` flag; pprof CPU/mem profile capture                                                                                              |
@@ -257,7 +258,7 @@
 | **hash/**        | FULLY_FUNCTIONAL | XXH3 streaming hash detection                                                                            |
 | **config/**      | FULLY_FUNCTIONAL | Multi-source config with validation                                                                      |
 | **detection/**   | FULLY_FUNCTIONAL | Multi-detector coordination via goroutines                                                               |
-| **cache/**       | FULLY_FUNCTIONAL | File-based AST caching with SHA-256 content hashing                                                      |
+| **cache/**       | FULLY_FUNCTIONAL | File-based AST caching with SHA-256 content hashing, in-memory LRU layer, hysteresis pruning (110%/90%)  |
 | **domain/**      | FULLY_FUNCTIONAL | Value objects: ProcessedClone, enums, validation sentinels                                               |
 | **errors/**      | FULLY_FUNCTIONAL | 7 error categories (ErrorType), single DuplError struct, typed wrapping                                  |
 | **pkg/artdupl/** | FULLY_FUNCTIONAL | Public SDK with Detector interface, comprehensive godoc                                                  |

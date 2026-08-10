@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **In-memory LRU cache layer** (`cache/lru.go`): 512-entry `container/list`-based LRU on top of `FileCache`. `Get` checks LRU first (O(1), no gob deserialization), falls back to disk, promotes disk hits into LRU. All `Get` returns are deep clones so callers can't corrupt the canonical copy. `Set`/`Remove`/`Clear`/`Prune` keep both layers in sync.
+- **Hysteresis pruning** (`cache/file_cache.go::Prune`): Pruning triggers at 110% of `maxEntries` (high water) and evicts to 90% (low water), evicting from both disk and LRU. Eliminates the O(n log n) sort on every cache miss.
+- **`CacheVersion` bumped to 3**: The `KeyWithParams` format change (`"mode:maxChildren:typeAwareTag"`) orphaned all v2 on-disk entries. Bumping the version makes rejection explicit — old entries are auto-removed by the version-mismatch check.
+- **`cacheKey()` unit test** (`job/incremental_test.go`): 5 subtests verifying the params format and isolation across detection mode, maxChildren, and typeAwareTag axes.
+- **`stampFilename` refactoring** (`job/incremental.go`): Replaced `cloneWithFilename` (deep-clone + stamp) with `stampFilename` (in-place stamp) on the cache-hit fast path, since `Get` now returns deep clones. The singleflight slow path still uses `deepCloneNodes` because the result is shared across concurrent callers.
 - **`interface-assertion` actionability pattern**: Suppresses compile-time interface checks (`var _ I = (*T)(nil)`) as non-actionable boilerplate. These declarations are duplicated across types by design. Total actionability patterns: 23 to 25.
 - **`type-alias-block` actionability pattern**: Suppresses multi-node `type(...)` blocks where all specs are package-type aliases (`type ( X = pkg.A; Y = pkg.B )`). Detects via SelectorExpr children (external package reference). Does NOT suppress blocks with non-alias named types (`type ( Severity string; Priority string )`) which carry divergence risk.
 - **Example/demo directory exclusion** (`--include-examples`): Directories named `examples/`, `demo/`, `demos/` are excluded by default to reduce false positives from throwaway code. Override with `--include-examples`. Config field: `IncludeExamples`.
