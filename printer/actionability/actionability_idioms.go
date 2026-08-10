@@ -8,24 +8,40 @@ import (
 )
 
 // isDeferCallPattern reports whether every clone is a lone DeferStmt wrapping
-// any CallExpr. This catches resource-specific teardowns that raii-defer misses
-// because the cleanup method name is not in the RAII name list (e.g.,
-// defer unsubscribe(), defer cleanupFoo()). These are never actionable: defer
-// semantics make extraction dangerous, and the function name carries the
-// resource identity.
+// a bare function call (defer cancel(), defer unsubscribe()). This catches
+// resource-specific teardowns that raii-defer misses because the cleanup
+// function name is not in the RAII name list.
+//
+// Only matches bare Ident callees (not SelectorExpr method calls), because
+// deferred method calls like `defer svc.processOrder()` can be business logic.
+// Bare function calls in defer position are almost always cleanup callbacks
+// (from context.WithCancel, event bus subscriptions, etc.).
 func isDeferCallPattern(nodeSeqs [][]*domain.CloneNode) bool {
 	return everySequenceMatch(nodeSeqs, func(seq []*domain.CloneNode) bool {
-		return len(seq) == 1 &&
-			seq[0].BaseType == golang.DeferStmt &&
-			hasAnyCallExpr(seq[0])
+		if len(seq) != 1 || seq[0].BaseType != golang.DeferStmt {
+			return false
+		}
+
+		return hasBareIdentDeferCall(seq[0])
 	})
 }
 
-// hasAnyCallExpr checks if a DeferStmt contains any CallExpr at its top level.
-func hasAnyCallExpr(node *domain.CloneNode) bool {
-	return slices.ContainsFunc(node.Children, func(child *domain.CloneNode) bool {
-		return child.BaseType == golang.CallExpr
-	})
+// hasBareIdentDeferCall checks if a DeferStmt wraps a CallExpr whose callee is
+// a bare Ident (e.g., defer cancel()).
+func hasBareIdentDeferCall(node *domain.CloneNode) bool {
+	for _, child := range node.Children {
+		if child.BaseType != golang.CallExpr {
+			continue
+		}
+
+		if slices.ContainsFunc(child.Children, func(c *domain.CloneNode) bool {
+			return c.BaseType == golang.Ident
+		}) {
+			return true
+		}
+	}
+
+	return false
 }
 
 // testFrameworkMethodNames are Go testing.T/B methods that are linter-mandated
