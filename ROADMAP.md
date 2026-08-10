@@ -40,6 +40,10 @@
 - [ ] **Caching for type-checking results**: Similar to the AST cache, cache `go/types` results keyed by content hash and detection mode.
 - [x] **Type-aware + incremental integration**: `--type-aware` combined with `--incremental` now works. The `IncrementalParser` threads `typeInfos` via `SetTypeAwareData()`.
 
+## UX and Defaults
+
+- [ ] **Type-aware + suggest-generics as default (with `--fast` escape hatch)**: Long-term goal: make the most informative analysis the default, with a `--fast` flag that disables type-checking for quick syntactic scans. Revisit AFTER: (1) precision filtering brings `--suggest-generics` from 12.5% to >50% (surface 3 real candidates on DiscordSync, not 24), (2) progress output during the ~100x slower type-checking phase (57s dead-air on DiscordSync), (3) real-world validation on 3-5 codebases confirms signal-to-noise ratio. See `docs/status/2026-08-10_03-37_suggest-generics-e2e-validation-discordsync.md` for the E2E measurements and `docs/feedback/new/2026-08-10_discordsync_type-aware-false-negatives-generics-extraction-candidates.md` for the original analysis.
+
 ## Documentation and Adoption
 
 - [ ] **SARIF output validation**: Validate emitted SARIF JSON against GitHub's official schema validator library in CI.
