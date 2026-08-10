@@ -275,4 +275,165 @@ BenchmarkSerialize/Size10000-32              	     907	   1406925 ns/op	 1470849
 BenchmarkSerialize/Size10000-32              	     936	   1218612 ns/op	 1470843 B/op	   10015 allocs/op
 BenchmarkFindSyntaxUnits-32                  	 3174109	       360.9 ns/op	       0 B/op	       0 allocs/op
 BenchmarkFindSyntaxUnits-32                  	 3267643	       347.1 ns/op	       0 B/op	       0 allocs/op
-BenchmarkFindSyntaxUnits-32                  	
+BenchmarkFindSyntaxUnits-32                  	 3772807	       358.2 ns/op	       0 B/op	       0 allocs/op
+BenchmarkFindSyntaxUnits-32                  	 3344961	       370.0 ns/op	       0 B/op	       0 allocs/op
+BenchmarkFindSyntaxUnits-32                  	 3583785	       322.8 ns/op	       0 B/op	       0 allocs/op
+BenchmarkMemoryPool-32                       	   19972	     63671 ns/op	      82 B/op	       5 allocs/op
+BenchmarkMemoryPool-32                       	   16538	     70459 ns/op	      83 B/op	       5 allocs/op
+BenchmarkMemoryPool-32                       	   17743	     68368 ns/op	      82 B/op	       5 allocs/op
+BenchmarkMemoryPool-32                       	   17371	     67490 ns/op	      82 B/op	       5 allocs/op
+BenchmarkMemoryPool-32                       	   17820	     66577 ns/op	      82 B/op	       5 allocs/op
+BenchmarkSerialize_Small-32                  	 5975605	       262.7 ns/op	     528 B/op	       5 allocs/op
+BenchmarkSerialize_Small-32                  	 5850048	       207.4 ns/op	     528 B/op	       5 allocs/op
+BenchmarkSerialize_Small-32                  	 5895462	       204.7 ns/op	     528 B/op	       5 allocs/op
+BenchmarkSerialize_Small-32                  	 5614028	       205.1 ns/op	     528 B/op	       5 allocs/op
+BenchmarkSerialize_Small-32                  	 5858250	       194.1 ns/op	     528 B/op	       5 allocs/op
+BenchmarkSerialize_Large-32                  	  214839	      5490 ns/op	   13872 B/op	     105 allocs/op
+BenchmarkSerialize_Large-32                  	  238228	      6165 ns/op	   13872 B/op	     105 allocs/op
+BenchmarkSerialize_Large-32                  	  208276	      5615 ns/op	   13872 B/op	     105 allocs/op
+BenchmarkSerialize_Large-32                  	  260035	      8698 ns/op	   13872 B/op	     105 allocs/op
+BenchmarkSerialize_Large-32                  	  136197	     10284 ns/op	   13872 B/op	     105 allocs/op
+BenchmarkSerialize_Statements-32             	 5402798	       190.2 ns/op	     528 B/op	       5 allocs/op
+BenchmarkSerialize_Statements-32             	 6162832	       208.7 ns/op	     528 B/op	       5 allocs/op
+BenchmarkSerialize_Statements-32             	 6209502	       226.5 ns/op	     528 B/op	       5 allocs/op
+BenchmarkSerialize_Statements-32             	 6412860	       190.0 ns/op	     528 B/op	       5 allocs/op
+BenchmarkSerialize_Statements-32             	 6459478	       198.2 ns/op	     528 B/op	       5 allocs/op
+BenchmarkSerialize_Idempotent-32             	  231284	      5112 ns/op	   13728 B/op	     108 allocs/op
+BenchmarkSerialize_Idempotent-32             	  243850	      4948 ns/op	   13728 B/op	     108 allocs/op
+BenchmarkSerialize_Idempotent-32             	  282634	      4888 ns/op	   13728 B/op	     108 allocs/op
+BenchmarkSerialize_Idempotent-32             	  251620	      4897 ns/op	   13728 B/op	     108 allocs/op
+BenchmarkSerialize_Idempotent-32             	  243883	      5085 ns/op	   13728 B/op	     108 allocs/op
+PASS
+ok  	github.com/LarsArtmann/art-dupl/syntax	115.639s
+goos: linux
+goarch: amd64
+pkg: github.com/LarsArtmann/art-dupl/syntax/golang
+cpu: AMD RYZEN AI MAX+ 395 w/ Radeon 8060S          
+BenchmarkSemanticVsExactVsStructural/semantic-32         	   34075	     36341 ns/op	   37281 B/op	     643 allocs/op
+BenchmarkSemanticVsExactVsStructural/semantic-32         	   33553	     36584 ns/op	   37281 B/op	     643 allocs/op
+BenchmarkSemanticVsExactVsStructural/semantic-32         	   32168	     38267 ns/op	   37281 B/op	     643 allocs/op
+BenchmarkSemanticVsExactVsStructural/semantic-32         	   30543	     38368 ns/op	   37281 B/op	     643 allocs/op
+BenchmarkSemanticVsExactVsStructural/semantic-32         	   30958	     38301 ns/op	   37281 B/op	     643 allocs/op
+BenchmarkSemanticVsExactVsStructural/exact-32            	   34822	     34072 ns/op	   36160 B/op	     629 allocs/op
+BenchmarkSemanticVsExactVsStructural/exact-32            	   34987	     34301 ns/op	   36160 B/op	     629 allocs/op
+BenchmarkSemanticVsExactVsStructural/exact-32            	   33025	     35626 ns/op	   36160 B/op	     629 allocs/op
+BenchmarkSemanticVsExactVsStructural/exact-32            	   34791	     34375 ns/op	   36160 B/op	     629 allocs/op
+BenchmarkSemanticVsExactVsStructural/exact-32            	   34549	     34000 ns/op	   36160 B/op	     629 allocs/op
+BenchmarkSemanticVsExactVsStructural/structural-32       	   34718	     35475 ns/op	   36160 B/op	     629 allocs/op
+BenchmarkSemanticVsExactVsStructural/structural-32       	   34036	     34696 ns/op	   36160 B/op	     629 allocs/op
+BenchmarkSemanticVsExactVsStructural/structural-32       	   35550	     35006 ns/op	   36160 B/op	     629 allocs/op
+BenchmarkSemanticVsExactVsStructural/structural-32       	   34268	     33813 ns/op	   36160 B/op	     629 allocs/op
+BenchmarkSemanticVsExactVsStructural/structural-32       	   35308	     34227 ns/op	   36160 B/op	     629 allocs/op
+BenchmarkHashIdentifierFast-32                           	32025174	        36.94 ns/op	       0 B/op	       0 allocs/op
+BenchmarkHashIdentifierFast-32                           	32650351	        37.09 ns/op	       0 B/op	       0 allocs/op
+BenchmarkHashIdentifierFast-32                           	30279698	        37.22 ns/op	       0 B/op	       0 allocs/op
+BenchmarkHashIdentifierFast-32                           	32512557	        36.99 ns/op	       0 B/op	       0 allocs/op
+BenchmarkHashIdentifierFast-32                           	32893309	        38.49 ns/op	       0 B/op	       0 allocs/op
+BenchmarkEncodeSemanticType-32                           	224740639	         5.651 ns/op	       0 B/op	       0 allocs/op
+BenchmarkEncodeSemanticType-32                           	197900084	         5.880 ns/op	       0 B/op	       0 allocs/op
+BenchmarkEncodeSemanticType-32                           	225372097	         5.298 ns/op	       0 B/op	       0 allocs/op
+BenchmarkEncodeSemanticType-32                           	224686903	         5.339 ns/op	       0 B/op	       0 allocs/op
+BenchmarkEncodeSemanticType-32                           	193502343	         6.441 ns/op	       0 B/op	       0 allocs/op
+PASS
+ok  	github.com/LarsArtmann/art-dupl/syntax/golang	30.095s
+PASS
+ok  	github.com/LarsArtmann/art-dupl/syntax/templ	0.003s
+PASS
+ok  	github.com/LarsArtmann/art-dupl/cache	0.009s
+goos: linux
+goarch: amd64
+pkg: github.com/LarsArtmann/art-dupl/printer/actionability
+cpu: AMD RYZEN AI MAX+ 395 w/ Radeon 8060S          
+BenchmarkEvaluateActionability_SyntaxOnly-32    	37917955	        26.82 ns/op	       0 B/op	       0 allocs/op
+BenchmarkEvaluateActionability_SyntaxOnly-32    	52661038	        22.69 ns/op	       0 B/op	       0 allocs/op
+BenchmarkEvaluateActionability_SyntaxOnly-32    	50359068	        24.46 ns/op	       0 B/op	       0 allocs/op
+BenchmarkEvaluateActionability_SyntaxOnly-32    	45677035	        23.84 ns/op	       0 B/op	       0 allocs/op
+BenchmarkEvaluateActionability_SyntaxOnly-32    	45072463	        24.48 ns/op	       0 B/op	       0 allocs/op
+BenchmarkEvaluateExtractability-32              	44719106	        32.18 ns/op	       0 B/op	       0 allocs/op
+BenchmarkEvaluateExtractability-32              	36730314	        29.84 ns/op	       0 B/op	       0 allocs/op
+BenchmarkEvaluateExtractability-32              	42860762	        27.78 ns/op	       0 B/op	       0 allocs/op
+BenchmarkEvaluateExtractability-32              	43764398	        28.90 ns/op	       0 B/op	       0 allocs/op
+BenchmarkEvaluateExtractability-32              	39638127	        28.66 ns/op	       0 B/op	       0 allocs/op
+PASS
+ok  	github.com/LarsArtmann/art-dupl/printer/actionability	12.092s
+goos: linux
+goarch: amd64
+pkg: github.com/LarsArtmann/art-dupl/cmd
+cpu: AMD RYZEN AI MAX+ 395 w/ Radeon 8060S          
+BenchmarkMatchedGeneratedCategory_RegularFile-32      	50330611	        24.79 ns/op	       0 B/op	       0 allocs/op
+BenchmarkMatchedGeneratedCategory_RegularFile-32      	52985456	        25.47 ns/op	       0 B/op	       0 allocs/op
+BenchmarkMatchedGeneratedCategory_RegularFile-32      	52494135	        26.93 ns/op	       0 B/op	       0 allocs/op
+BenchmarkMatchedGeneratedCategory_RegularFile-32      	40292994	        29.61 ns/op	       0 B/op	       0 allocs/op
+BenchmarkMatchedGeneratedCategory_RegularFile-32      	43707476	        27.06 ns/op	       0 B/op	       0 allocs/op
+BenchmarkMatchedGeneratedCategory_GeneratedFile-32    	73527838	        17.23 ns/op	       0 B/op	       0 allocs/op
+BenchmarkMatchedGeneratedCategory_GeneratedFile-32    	75597998	        16.31 ns/op	       0 B/op	       0 allocs/op
+BenchmarkMatchedGeneratedCategory_GeneratedFile-32    	85491312	        16.69 ns/op	       0 B/op	       0 allocs/op
+BenchmarkMatchedGeneratedCategory_GeneratedFile-32    	71521621	        20.75 ns/op	       0 B/op	       0 allocs/op
+BenchmarkMatchedGeneratedCategory_GeneratedFile-32    	80081527	        18.24 ns/op	       0 B/op	       0 allocs/op
+BenchmarkAllowsContent_RegularFile-32                 	42411936	        27.47 ns/op	       0 B/op	       0 allocs/op
+BenchmarkAllowsContent_RegularFile-32                 	36293274	        29.69 ns/op	       0 B/op	       0 allocs/op
+BenchmarkAllowsContent_RegularFile-32                 	41765516	        27.06 ns/op	       0 B/op	       0 allocs/op
+BenchmarkAllowsContent_RegularFile-32                 	49692619	        31.27 ns/op	       0 B/op	       0 allocs/op
+BenchmarkAllowsContent_RegularFile-32                 	48029776	        24.55 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCategoryIncluded-32                          	223114335	         5.349 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCategoryIncluded-32                          	237017473	         5.779 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCategoryIncluded-32                          	196488184	         6.626 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCategoryIncluded-32                          	158367912	         7.816 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCategoryIncluded-32                          	125547244	         9.603 ns/op	       0 B/op	       0 allocs/op
+PASS
+ok  	github.com/LarsArtmann/art-dupl/cmd	25.716s
+?   	github.com/LarsArtmann/art-dupl/cmd/art-dupl	[no test files]
+goos: linux
+goarch: amd64
+pkg: github.com/LarsArtmann/art-dupl/pkg/format
+cpu: AMD RYZEN AI MAX+ 395 w/ Radeon 8060S          
+BenchmarkHash/zero-32         	131370436	         9.153 ns/op	       0 B/op	       0 allocs/op
+BenchmarkHash/zero-32         	130632652	         9.410 ns/op	       0 B/op	       0 allocs/op
+BenchmarkHash/zero-32         	100000000	        10.98 ns/op	       0 B/op	       0 allocs/op
+BenchmarkHash/zero-32         	100000000	        12.46 ns/op	       0 B/op	       0 allocs/op
+BenchmarkHash/zero-32         	125016932	        11.29 ns/op	       0 B/op	       0 allocs/op
+BenchmarkHash/small-32        	132731266	        10.80 ns/op	       0 B/op	       0 allocs/op
+BenchmarkHash/small-32        	147008334	         8.843 ns/op	       0 B/op	       0 allocs/op
+BenchmarkHash/small-32        	100000000	        10.14 ns/op	       0 B/op	       0 allocs/op
+BenchmarkHash/small-32        	129181419	         8.816 ns/op	       0 B/op	       0 allocs/op
+BenchmarkHash/small-32        	133576057	         8.881 ns/op	       0 B/op	       0 allocs/op
+BenchmarkHash/medium-32       	136965501	         8.821 ns/op	       0 B/op	       0 allocs/op
+BenchmarkHash/medium-32       	133164358	         8.882 ns/op	       0 B/op	       0 allocs/op
+BenchmarkHash/medium-32       	133004241	         9.081 ns/op	       0 B/op	       0 allocs/op
+BenchmarkHash/medium-32       	130922994	         8.762 ns/op	       0 B/op	       0 allocs/op
+BenchmarkHash/medium-32       	138540522	         8.872 ns/op	       0 B/op	       0 allocs/op
+BenchmarkHash/large-32        	140148891	         8.647 ns/op	       0 B/op	       0 allocs/op
+BenchmarkHash/large-32        	138220765	         8.954 ns/op	       0 B/op	       0 allocs/op
+BenchmarkHash/large-32        	138653210	         8.257 ns/op	       0 B/op	       0 allocs/op
+BenchmarkHash/large-32        	152074879	         7.837 ns/op	       0 B/op	       0 allocs/op
+BenchmarkHash/large-32        	141627742	         9.380 ns/op	       0 B/op	       0 allocs/op
+BenchmarkHash/max-32          	129041085	        11.04 ns/op	       0 B/op	       0 allocs/op
+BenchmarkHash/max-32          	120292358	        14.53 ns/op	       0 B/op	       0 allocs/op
+BenchmarkHash/max-32          	120868310	        11.27 ns/op	       0 B/op	       0 allocs/op
+BenchmarkHash/max-32          	122251804	        12.08 ns/op	       0 B/op	       0 allocs/op
+BenchmarkHash/max-32          	130799550	         9.578 ns/op	       0 B/op	       0 allocs/op
+PASS
+ok  	github.com/LarsArtmann/art-dupl/pkg/format	53.382s
+goos: linux
+goarch: amd64
+pkg: github.com/LarsArtmann/art-dupl/printer
+cpu: AMD RYZEN AI MAX+ 395 w/ Radeon 8060S          
+BenchmarkLineDiff_Small-32     	 2921547	       513.2 ns/op	     544 B/op	      10 allocs/op
+BenchmarkLineDiff_Small-32     	 3402825	       309.7 ns/op	     544 B/op	      10 allocs/op
+BenchmarkLineDiff_Small-32     	 2944604	       346.5 ns/op	     544 B/op	      10 allocs/op
+BenchmarkLineDiff_Small-32     	 3968886	       299.2 ns/op	     544 B/op	      10 allocs/op
+BenchmarkLineDiff_Small-32     	 3977035	       299.3 ns/op	     544 B/op	      10 allocs/op
+BenchmarkLineDiff_Medium-32    	  284734	      4228 ns/op	   12016 B/op	     114 allocs/op
+BenchmarkLineDiff_Medium-32    	  283200	      7077 ns/op	   12016 B/op	     114 allocs/op
+BenchmarkLineDiff_Medium-32    	  284437	      4211 ns/op	   12016 B/op	     114 allocs/op
+BenchmarkLineDiff_Medium-32    	  316144	      4279 ns/op	   12016 B/op	     114 allocs/op
+BenchmarkLineDiff_Medium-32    	  282493	      4458 ns/op	   12016 B/op	     114 allocs/op
+BenchmarkLineDiff_Large-32     	   93871	     12192 ns/op	   29552 B/op	     316 allocs/op
+BenchmarkLineDiff_Large-32     	  109512	     10621 ns/op	   29552 B/op	     316 allocs/op
+BenchmarkLineDiff_Large-32     	  109275	     10836 ns/op	   29552 B/op	     316 allocs/op
+BenchmarkLineDiff_Large-32     	  112190	     10941 ns/op	   29552 B/op	     316 allocs/op
+BenchmarkLineDiff_Large-32     	  103851	     11979 ns/op	   29552 B/op	     316 allocs/op
+PASS
+ok  	github.com/LarsArtmann/art-dupl/printer	19.046s
+PASS
+ok  	github.com/LarsArtmann/art-dupl/printer/stats	0.021s

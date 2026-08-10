@@ -6,7 +6,7 @@ This directory contains committed benchmark result snapshots for regression dete
 
 | File | Date | CPU | Notes |
 |------|------|-----|-------|
-| `baseline-2026-08-10.txt` | 2026-08-10 | AMD Ryzen AI MAX+ 395 (32 threads) | First baseline after fixing crashing benchmarks (FindTranSmall, TestAndSplit) and cache key isolation bug |
+| `baseline-2026-08-10.txt` | 2026-08-10 | AMD Ryzen AI MAX+ 395 (32 threads) | Re-run with count=5 for statistical significance. First run was thermally throttled (2x slower). |
 
 ## How to Compare Against Baseline
 
@@ -24,6 +24,6 @@ When making significant performance changes, generate a new baseline:
 GOEXPERIMENT=jsonv2 go test \
   ./suffixtree/... ./syntax/... ./syntax/golang/... \
   ./cache/... ./printer/actionability/... ./cmd/... ./pkg/format/... ./printer/... \
-  -bench=. -benchmem -count=1 -run='^$' \
+  -bench=. -benchmem -count=5 -run='^$' \
   > docs/benchmarks/baseline-$(date +%Y-%m-%d).txt
 ```
