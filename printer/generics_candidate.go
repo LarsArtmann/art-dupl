@@ -67,6 +67,7 @@ func ClassifyGenericsCandidate(seqs [][]*domain.CloneNode) (bool, string) {
 // Shows up to 3 unique type-pair divergences to keep the hint readable.
 func formatGenericsHint(divs []TypeDivergence) string {
 	seen := make(map[string]bool)
+
 	var parts []string
 
 	for _, d := range divs {
@@ -76,6 +77,7 @@ func formatGenericsHint(divs []TypeDivergence) string {
 		}
 
 		seen[key] = true
+
 		parts = append(parts, fmt.Sprintf("%s vs %s", d.TypeA, d.TypeB))
 
 		if len(parts) >= 3 {
