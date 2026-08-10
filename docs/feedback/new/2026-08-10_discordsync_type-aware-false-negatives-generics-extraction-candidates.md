@@ -372,3 +372,66 @@ Rather than changing `--type-aware`'s default behavior (which is well-calibrated
 | Root cause | Type-aware filter treats different container types as different semantics, even when fields are structurally identical |
 
 **Bottom line:** `--type-aware` is well-calibrated for false-positive reduction but has a systematic blind spot for generics-extraction candidates. The blind spot is small (10% of real duplicates in this codebase) but high-value (the missed groups are the ones most amenable to clean elimination). A structural field-access equivalence pass — either integrated or as an opt-in `--suggest-generics` flag — would close the gap.
+
+---
+
+## Update (2026-08-10): `--suggest-generics` implemented and validated E2E
+
+The `--suggest-generics` flag proposed above was implemented in art-dupl (commit `fdbaccce`, "feat(syntax/golang): add EraseHash mode for generics-extraction detection"). Running it against DiscordSync validates the original analysis:
+
+### Before any fixes
+
+```
+art-dupl --type-aware --suggest-generics -t 1 .
+→ 24 clone groups
+```
+
+All 3 false-negatives from the original analysis are surfaced:
+
+| Original finding | art-dupl `--suggest-generics` output | Clones |
+| --- | --- | --- |
+| Finding 1: `maxXxxCount` loops | `generics: same algorithm, different types: AuthorKindActivity vs TopReaction vs MemberGrowthPoint` at `activity_helpers.go:142`, `:168`, `handlers_extras.go:289` | 3 |
+| Finding 2: `sumValue` loops | `generics: same algorithm, different types: AttachmentCategoryStat vs AuthorKindActivity` at `activity_helpers.go:192`, `attachment_analytics_helpers.go:167` | 2 |
+| Finding 3: kind-derivation logic twin | `generics: same algorithm, different types: events.UserPayload vs *db.User` at `entities.go:131`, `projection/users.go:23` | 2 |
+
+The remaining 19 groups are all the correctly-identified generics-extraction candidates for irreducible boilerplate (error-handling guards, named-method calls, intentional mirror pairs) — these are technically "same algorithm, different types" but not worth extracting.
+
+### Fixes applied to DiscordSync
+
+All 3 false-negatives were eliminated:
+
+1. **`maxValue[T any]` generic** (`internal/web/activity_helpers.go`) — replaces `maxAuthorKindCount`, `maxMemberGrowth`, `maxStorageGrowth`, `maxReactionCount` (4 functions → 1 generic + 4 one-line call sites).
+
+2. **`sumValue[T any]` generic** (`internal/web/activity_helpers.go`) — replaces `totalAuthorKindCount` and the inline sum in `computeDonutSegments` (2 loops → 1 generic + 2 one-line call sites).
+
+3. **`domain.ResolveUserKind(kind UserKind, isBot bool) UserKind`** (`internal/domain/user_kind.go`) — replaces the kind-derivation logic in both `internal/db/entities.go:UpsertUser` and `internal/projection/users.go:ensureUserWithKind`. Also consolidated `events.DeriveUserKindFromBot` (a third copy of the same logic in `internal/events/payloads.go`) and its 3 upcaster call sites in `internal/eventschema/upcasters.go` — eliminating a pre-existing split brain the original analysis didn't catch.
+
+### After fixes
+
+```
+art-dupl --type-aware --suggest-generics -t 1 .
+→ 20 clone groups (down from 24)
+```
+
+The 4 eliminated groups correspond exactly to the 3 false-negatives (Finding 1 produced 2 clone groups in `--suggest-generics` output because art-dupl detected the `maxAuthorKindCount`/`maxMemberGrowth`/`maxReactionCount` group and the `maxStorageGrowth`/`totalAuthorKindCount` loop-overlap separately). The remaining 20 groups are all correctly-classified non-actionable boilerplate.
+
+### Validation
+
+- **Quality gate:** `nix run .#quality` → 0 issues (lint + fmt + file-size clean)
+- **Tests:** `nix run .#test` → all 25 packages pass, 0 failures
+- **`--suggest-generics` precision:** 24 groups reported, 3 actionable (12.5% precision), 21 correctly identified as non-actionable boilerplate. The 3 actionable groups were all real generics-extraction candidates.
+
+### What `--suggest-generics` got right
+
+1. **All 3 false-negatives surfaced** — zero false-negatives in the `--suggest-generics` output.
+2. **Type-difference metadata** is excellent for triage: `"AuthorKindActivity vs TopReaction vs MemberGrowthPoint (8 type differences total)"` immediately tells you whether the clone is worth extracting (few structural types, same algorithm) or not (many type differences, different semantics).
+3. **The 21 non-actionable groups** are all genuinely "same algorithm, different types" — they're just not worth extracting. This is the correct trade-off: better to over-report and let the human filter than to miss the 3 real candidates.
+
+### What could improve
+
+The 21 non-actionable groups are dominated by two patterns that could be suppressed:
+
+1. **Error-handling guards** (`if err != nil { return ... }`) — 7+ groups are `queryRowErr`-style boilerplate where the algorithm is "check error, wrap, return." These are structurally identical across Go codebases but extracting a generic doesn't help because Go's error handling is verbosely typed by design.
+2. **2-line entity nil-guards** (`if err != nil || x == nil { return nil }`) — the guard itself is the irreducible form; the type differences (`*Channel` vs `*Guild` vs `*Thread`) are real and don't benefit from generics.
+
+Suppressing these two patterns (e.g., by recognizing that the clone body is a single `if err != nil` branch or a single nil-guard) would reduce the noise-to-signal ratio from 21:3 to ~6:3, making the output much more actionable.

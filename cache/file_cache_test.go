@@ -1,6 +1,8 @@
 package cache
 
 import (
+	"bytes"
+	"encoding/gob"
 	"os"
 	"path/filepath"
 	"testing"
@@ -636,6 +638,114 @@ func TestKeyWithParams(t *testing.T) {
 		key := KeyWithParams(content, "semantic:5:ta")
 		if len(key) != 64 {
 			t.Errorf("Expected 64-char hex hash, got %d chars", len(key))
+		}
+	})
+}
+
+// TestFileCache_ErrorPaths tests Get behavior with corrupt, stale, and
+// malformed cache files. In all cases Get must return a miss and remove the
+// offending file so it doesn't waste disk or cause repeated decode failures.
+func TestFileCache_ErrorPaths(t *testing.T) {
+	writeCacheFile := func(t *testing.T, fc *FileCache, hash string, data []byte) string {
+		t.Helper()
+		path := filepath.Join(fc.cacheDir, "files", hash+".gob")
+		if err := os.WriteFile(path, data, cacheFilePerms); err != nil {
+			t.Fatalf("WriteFile failed: %v", err)
+		}
+		return path
+	}
+
+	assertFileRemoved := func(t *testing.T, path string) {
+		t.Helper()
+		if _, err := os.Stat(path); !os.IsNotExist(err) {
+			t.Errorf("Expected file %q to be removed after Get, but it still exists", path)
+		}
+	}
+
+	encodeEntry := func(t *testing.T, entry *cacheEntry) []byte {
+		t.Helper()
+		var buf bytes.Buffer
+		if err := gob.NewEncoder(&buf).Encode(entry); err != nil {
+			t.Fatalf("Gob encode failed: %v", err)
+		}
+		return buf.Bytes()
+	}
+
+	t.Run("corrupt_gob_removed_on_get", func(t *testing.T) {
+		fc := NewFileCache(t.TempDir())
+		hash := Key([]byte("corrupt"))
+		path := writeCacheFile(t, fc, hash, []byte("not valid gob data at all"))
+
+		nodes, hit := fc.Get(hash)
+		if hit {
+			t.Fatal("Expected cache miss for corrupt data")
+		}
+		if nodes != nil {
+			t.Fatal("Expected nil nodes for corrupt data")
+		}
+		assertFileRemoved(t, path)
+	})
+
+	t.Run("truncated_gob_removed_on_get", func(t *testing.T) {
+		fc := NewFileCache(t.TempDir())
+		hash := Key([]byte("truncated"))
+		full := encodeEntry(t, &cacheEntry{Version: CacheVersion, Nodes: testNodes()})
+		path := writeCacheFile(t, fc, hash, full[:len(full)/2])
+
+		_, hit := fc.Get(hash)
+		if hit {
+			t.Fatal("Expected cache miss for truncated gob")
+		}
+		assertFileRemoved(t, path)
+	})
+
+	t.Run("version_mismatch_removed_on_get", func(t *testing.T) {
+		fc := NewFileCache(t.TempDir())
+		hash := Key([]byte("stale-version"))
+		data := encodeEntry(t, &cacheEntry{Version: CacheVersion + 999, Nodes: testNodes()})
+		path := writeCacheFile(t, fc, hash, data)
+
+		_, hit := fc.Get(hash)
+		if hit {
+			t.Fatal("Expected cache miss for version mismatch")
+		}
+		assertFileRemoved(t, path)
+	})
+
+	t.Run("empty_file_removed_on_get", func(t *testing.T) {
+		fc := NewFileCache(t.TempDir())
+		hash := Key([]byte("empty-file"))
+		path := writeCacheFile(t, fc, hash, []byte{})
+
+		_, hit := fc.Get(hash)
+		if hit {
+			t.Fatal("Expected cache miss for empty file")
+		}
+		assertFileRemoved(t, path)
+	})
+
+	t.Run("miss_does_not_affect_subsequent_set", func(t *testing.T) {
+		fc := NewFileCache(t.TempDir())
+		hash := Key([]byte("recover"))
+		path := writeCacheFile(t, fc, hash, []byte("garbage"))
+
+		// Corrupt entry is auto-removed on Get miss
+		_, hit := fc.Get(hash)
+		if hit {
+			t.Fatal("Expected miss for garbage")
+		}
+		assertFileRemoved(t, path)
+
+		// After removal, Set should succeed and Get should hit
+		if err := fc.Set(hash, testNodes()); err != nil {
+			t.Fatalf("Set after corrupt-removal failed: %v", err)
+		}
+		retrieved, hit := fc.Get(hash)
+		if !hit {
+			t.Fatal("Expected hit after Set recovery")
+		}
+		if len(retrieved) != 1 {
+			t.Errorf("Expected 1 node, got %d", len(retrieved))
 		}
 	})
 }
