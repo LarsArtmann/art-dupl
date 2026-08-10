@@ -5,12 +5,10 @@ package printer
 
 //lint:file-ignore SA4006 This context is only used if a nested component is present.
 
-import (
-	"strconv"
+import "github.com/a-h/templ"
+import templruntime "github.com/a-h/templ/runtime"
 
-	"github.com/a-h/templ"
-	templruntime "github.com/a-h/templ/runtime"
-)
+import "strconv"
 
 func copyCodeScript(elementId string) templ.ComponentScript {
 	return templ.ComponentScript{
@@ -547,7 +545,7 @@ func diffStatBadge(cssClass string, value int, label string) templ.Component {
 		}
 		ctx = templ.ClearChildren(ctx)
 		if value > 0 {
-			templ_7745c5c3_Var24 := []any{cssClass}
+			var templ_7745c5c3_Var24 = []any{cssClass}
 			templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var24...)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -689,7 +687,7 @@ func renderStatBlock(wrapperClass string, makeItem func(t string) templ.Componen
 			templ_7745c5c3_Var31 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Var32 := []any{wrapperClass}
+		var templ_7745c5c3_Var32 = []any{wrapperClass}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var32...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -890,7 +888,7 @@ func diffLegendItem(cssClass string, label string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Var41 := []any{"diff-legend-color " + cssClass}
+		var templ_7745c5c3_Var41 = []any{"diff-legend-color " + cssClass}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var41...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -1017,7 +1015,7 @@ func diffComparison(groupNum int, other CloneDiff, index int, total int) templ.C
 			templ_7745c5c3_Var45 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Var46 := []any{templ.KV("diff-comparison", true), templ.KV("active", total == 1 || index == 0)}
+		var templ_7745c5c3_Var46 = []any{templ.KV("diff-comparison", true), templ.KV("active", total == 1 || index == 0)}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var46...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -1117,7 +1115,7 @@ func diffPanel(panelClass string, title string, lines []DiffLine, oppositeLines 
 			templ_7745c5c3_Var50 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Var51 := []any{"diff-panel " + panelClass}
+		var templ_7745c5c3_Var51 = []any{"diff-panel " + panelClass}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var51...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -1218,7 +1216,7 @@ func diffViewToggleButton(groupNum int, mode string, label string, active bool) 
 			templ_7745c5c3_Var55 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Var56 := []any{templ.KV("active", active)}
+		var templ_7745c5c3_Var56 = []any{templ.KV("active", active)}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var56...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -1451,7 +1449,7 @@ func renderDiffLinesTempl(lines []DiffLine, oppositeLines []DiffLine, isBasePane
 		for i, line := range lines {
 			typeClass := diffLineTypeClass(line.Type)
 			content := diffLineContent(line, i, oppositeLines, isBasePanel)
-			templ_7745c5c3_Var68 := []any{"diff-line " + typeClass}
+			var templ_7745c5c3_Var68 = []any{"diff-line " + typeClass}
 			templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var68...)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err

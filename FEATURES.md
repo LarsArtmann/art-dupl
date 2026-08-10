@@ -1,11 +1,11 @@
 # art-dupl Feature Documentation
 
-> **Last Updated:** 2026-08-05
-> **Version:** v0.6.1
+> **Last Updated:** 2026-08-10
+> **Version:** v0.6.1 (unreleased features pending v0.7.0)
 
 ## Overview
 
-**art-dupl** is a Go tool for finding code clones using suffix tree algorithms and hash-based detection. It analyzes abstract syntax trees (ASTs) to find structural code clones while ignoring literal values. Supports multi-method detection, professional CLI (Fang/Cobra), 7 output formats, and 23 actionability patterns. Tuned on real-world Go projects (6,000+ Go files, 320+ templ files) to minimize false positives at the default threshold.
+**art-dupl** is a Go tool for finding code clones using suffix tree algorithms and hash-based detection. It analyzes abstract syntax trees (ASTs) to find structural code clones while ignoring literal values. Supports multi-method detection, professional CLI (Fang/Cobra), 7 output formats, and 29 actionability patterns. Tuned on real-world Go projects (6,000+ Go files, 320+ templ files) to minimize false positives at the default threshold.
 
 ---
 
@@ -58,7 +58,7 @@
 | **Health Grade**            | FULLY_FUNCTIONAL | A-F health grade (`domain.HealthScore`) with validation                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | **Clone Metrics**           | FULLY_FUNCTIONAL | Total clones, groups, files affected, duplication %                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | **Spread Analysis**         | FULLY_FUNCTIONAL | Complexity scores, severity distributions                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
-| **Actionability Class.**    | FULLY_FUNCTIONAL | AST-based detection of 23 non-actionable patterns (signature-only, interface-implementation, interface-method, RAII defer, error-propagation, error-wrapping, assertion-chain, cobra-boilerplate, testdata-pair, table-driven-test, test-scaffolding, data-dominated, describe-table, builder-callback, assign-error-check, single-call-expression, guard-clause, single-simple-statement, bool-accumulator-initializer, single-declaration, test-helper-delegate, bool-guard, templ-rendering-idiom) |
+| **Actionability Class.**    | FULLY_FUNCTIONAL | AST-based detection of 29 non-actionable patterns (signature-only, interface-implementation, interface-method, RAII defer, error-propagation, error-wrapping, assertion-chain, cobra-boilerplate, testdata-pair, table-driven-test, test-scaffolding, data-dominated, describe-table, builder-callback, assign-error-check, single-call-expression, guard-clause, single-simple-statement, bool-accumulator-initializer, single-declaration, test-helper-delegate, bool-guard, templ-rendering-idiom, interface-assertion, type-alias-block, defer-call, test-framework-call, state-flag-mutation, empty-default) |
 | **Clone Classification**    | FULLY_FUNCTIONAL | 17 categories (function, method, test, struct, interface, handler, loop, conditional, test-boilerplate, test-fixture, assignment, expression, block, call, return, defer, unknown), 4 priority levels                                                                                                                                                                                                                                                                                                 |
 | **Refactoring Suggestions** | FULLY_FUNCTIONAL | Category + actionability pattern based suggestions (`printer/clone_classify.go::getSuggestion`)                                                                                                                                                                                                                                                                                                                                                                                                       |
 | **Stats Recommendations**   | FULLY_FUNCTIONAL | Grade-specific (A-F) actionable next steps in stats output                                                                                                                                                                                                                                                                                                                                                                                                                                            |
@@ -97,6 +97,7 @@
 | **Clone Type Classification** | FULLY_FUNCTIONAL | Labels each clone type-1/2/3 in JSON, SARIF, and `--rich-text` output                                                                                                                                                                                                                                                                                                    |
 | **Mutual Exclusion**          | FULLY_FUNCTIONAL | `--semantic` / `--exact` / `--structural` are mutually exclusive                                                                                                                                                                                                                                                                                                         |
 | **Type-Aware Mode**           | FULLY_FUNCTIONAL | `--type-aware` uses `go/types` to encode variable types into hashes, eliminating same-method-different-receiver-type false positives (e.g. `time.Time.String` vs `*big.Int.String`). Also enables type-aware interface-method detection (same-package interface scanning for the `interface-method` actionability pattern). 10-100x slower. Follow-up items in TODO_LIST |
+| **Generics-Extraction Candidates** | PARTIALLY_FUNCTIONAL | `--suggest-generics` finds clones where the algorithm is identical but local variable types differ — the class of duplication Go generics can eliminate. Uses type-erased hashing so structurally-identical functions on different types still match, then classifies by comparing `VarType` at corresponding positions. Outputs `generics:` hint (text) and `generics_candidate`/`generics_hint` fields (JSON). 12.5% precision on real-world validation (3 true / 24 surfaced on DiscordSync); needs precision filtering before general use. Same ~100x type-checking cost as `--type-aware`. Takes precedence when both flags are set. |
 
 **Note:** Default is semantic mode (alpha-normalized). Use `--exact` for verbatim name matching or `--structural` for shape-only analysis.
 
@@ -111,7 +112,7 @@
 | **Actionability Verdict**                | FULLY_FUNCTIONAL | Labels clones actionable vs non-actionable (test boilerplate, idioms, etc.)                                                                                     |
 | **Actionability Override**               | FULLY_FUNCTIONAL | `--no-actionability` disables filtering, showing ALL clones including boilerplate                                                                               |
 | **Disable Specific Pattern**             | FULLY_FUNCTIONAL | `--disable-pattern <label>` selectively re-enables a single boilerplate pattern                                                                                 |
-| **List Patterns**                        | FULLY_FUNCTIONAL | `--list-patterns` prints all 23 pattern labels in priority order                                                                                                |
+| **List Patterns**                        | FULLY_FUNCTIONAL | `--list-patterns` prints all 29 pattern labels (plus 4 property-engine labels)      |
 | **Explain Mode**                         | FULLY_FUNCTIONAL | `--explain` prints why each clone group was reported (type, actionability, category, extractability)                                                            |
 | **Property-Based Extractability Engine** | PARTIALLY_DONE   | Second-pass analysis using 4 computable properties (control-flow, ROI, parameterizability, confidence). Patterns run first, engine catches misses. See ADR-0017 |
 | **Confidence Tiers**                     | PARTIALLY_DONE   | Three-tier output: actionable / low-confidence / non-actionable with `confidence` field in JSON                                                                 |
@@ -182,6 +183,7 @@
 | **Color Control**            | FULLY_FUNCTIONAL | `--no-color` flag, `NO_COLOR` env var (lipgloss native)                             |
 | **Typed Exit Codes**         | FULLY_FUNCTIONAL | 0=success, 1=general, 2=config/validation, 3=internal, 130=interrupted (ADR-0013)   |
 | **Line-Count Filtering**     | FULLY_FUNCTIONAL | `--min-lines` suppresses clone groups with fewer lines (minimum across all clones)  |
+| **Token-Count Filtering**    | FULLY_FUNCTIONAL | `--min-tokens` suppresses clone groups where any clone has fewer than N tokens       |
 | **Test Threshold**           | FULLY_FUNCTIONAL | `--test-threshold` sets a separate (higher) threshold for test files                |
 | **Test Suppression**         | FULLY_FUNCTIONAL | `--suppress-test-low` suppresses low-priority clones in test files                  |
 | **Token Dump**               | FULLY_FUNCTIONAL | `--dump-tokens` outputs serialized token stream for debugging false positives       |
@@ -189,8 +191,9 @@
 | **Explain Mode**             | FULLY_FUNCTIONAL | `--explain` prints a per-group rationale (type, actionability, category, savings)   |
 | **Actionability Toggle**     | FULLY_FUNCTIONAL | `--no-actionability` shows all clones, including non-actionable boilerplate         |
 | **Disable Pattern**          | FULLY_FUNCTIONAL | `--disable-pattern <label>` re-enables a specific boilerplate pattern               |
-| **List Patterns**            | FULLY_FUNCTIONAL | `--list-patterns` prints all 23 pattern labels                                      |
-| **Threshold Recommendation** | FULLY_FUNCTIONAL | `--recommend-threshold` suggests a threshold based on codebase size                 |
+| **List Patterns**            | FULLY_FUNCTIONAL | `--list-patterns` prints all 29 pattern labels                                      |
+| **Threshold Recommendation** | FULLY_FUNCTIONAL | `--recommend-threshold` suggests CI gate and deep-audit thresholds                  |
+| **Token-Count Filter**       | FULLY_FUNCTIONAL | `--min-tokens N` suppresses clone groups where any clone has < N tokens             |
 | **Diff Report**              | FULLY_FUNCTIONAL | `--diff-report <baseline>` shows new/suppressed/resolved clones                     |
 | **HTML to File**             | FULLY_FUNCTIONAL | `--html-out <file>` writes HTML report to file with auto-open                       |
 | **Quiet Mode**               | FULLY_FUNCTIONAL | `--quiet`/`-q` suppresses progress and status output                                |
@@ -209,7 +212,7 @@
 | **JSON Configuration Files** | FULLY_FUNCTIONAL | `--config` / `-c` flag, JSON-tagged Config struct                   |
 | **Configuration Merging**    | FULLY_FUNCTIONAL | CLI flags override file config, file overrides defaults             |
 | **Threshold Control**        | FULLY_FUNCTIONAL | Adjustable minimum duplicated statement count (default: 5)          |
-| **Threshold Recommendation** | FULLY_FUNCTIONAL | `--recommend-threshold` suggests a threshold based on codebase size |
+| **Threshold Recommendation** | FULLY_FUNCTIONAL | `--recommend-threshold` suggests CI gate and deep-audit thresholds based on codebase |
 | **Vendor Directory Control** | FULLY_FUNCTIONAL | `--vendor` to include vendor directory                              |
 | **File Input from Stdin**    | FULLY_FUNCTIONAL | `--files` / `-f` reads file paths from stdin                        |
 | **YAML Config Files**        | FULLY_FUNCTIONAL | `--config` auto-detects `.yaml`/`.yml` alongside JSON               |
@@ -310,17 +313,30 @@ art-dupl --diff-report .art-dupl-baseline.json . -t 15
 art-dupl --diff-report .art-dupl-baseline.json --json . -t 15
 ```
 
+### Type-Aware & Generics Detection
+
+```bash
+# Type-aware: encode variable types into hashes (eliminates false positives)
+art-dupl --type-aware -t 5 ./src
+
+# Generics-extraction candidates (same algorithm, different types)
+art-dupl --suggest-generics -t 1 ./src
+
+# Filter noise by token count
+art-dupl --min-tokens 15 -t 1 ./src
+```
+
 ### Threshold Recommendation
 
 ```bash
-# Get a suggested threshold based on codebase size
+# Get CI gate and deep-audit thresholds based on codebase size
 art-dupl --recommend-threshold ./src
 ```
 
 ### Pattern Control
 
 ```bash
-# List all 23 actionability pattern labels (plus 4 property-engine labels)
+# List all 29 actionability pattern labels (plus 4 property-engine labels)
 art-dupl --list-patterns
 
 # Re-enable a specific boilerplate pattern
