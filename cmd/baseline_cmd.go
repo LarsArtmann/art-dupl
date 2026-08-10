@@ -84,9 +84,18 @@ func runBaseline(c *cobra.Command, arguments []string) error {
 	bf := baseline.NewFile(mergedConfig.Threshold)
 	recorder := newBaselineRecorderPrinter(bf)
 
+	// When recording a baseline, bypass accept directives so the baseline
+	// captures ALL detected groups. If directives suppress groups during
+	// recording, those groups are absent from the baseline; later removing
+	// the directives would cause them to appear as "new" clones with no
+	// audit trail. The baseline is the complete snapshot; directives are a
+	// separate suppression mechanism checked at analysis time.
+	recordingSuppression := buildSuppressionConfig(mergedConfig)
+	recordingSuppression.AcceptDirectives = nil
+
 	err = printCloneGroups(recorder, os.ReadFile, groups, keys, config.SortByHash,
 		mergedConfig.DetectionMode.IsSemantic(),
-		buildSuppressionConfig(mergedConfig))
+		recordingSuppression)
 	if err != nil {
 		return duplerrors.Wrap(err, duplerrors.AnalysisError, "recording baseline")
 	}
@@ -101,6 +110,11 @@ func runBaseline(c *cobra.Command, arguments []string) error {
 	fmt.Fprintf(c.ErrOrStderr(),
 		"Recorded %d clone groups (%d files, %d filtered) to %s\n",
 		bf.Len(), parseStats.FilesCount, filteredCount(filterStats), path)
+
+	if !mergedConfig.NoAcceptDirectives {
+		fmt.Fprintf(c.ErrOrStderr(),
+			"Note: baseline includes all groups regardless of //art-dupl:accept directives.\n")
+	}
 
 	return nil
 }
