@@ -25,12 +25,6 @@ This file is OPEN work only — no completed, rejected, or resolved items.
 - [ ] Add unit tests for `minCloneTokenCount` suppression logic (mirror `TestShouldSuppressGroup_MinLines`)
 - [ ] Add BDD test for `--min-tokens` flag
 
-### Tagliatelle lint contradiction
-**Why:** `.golangci.yml` has `tagliatelle` enabled but AGENTS.md says it is NOT. 50 `json(camel)` violations exist.
-**Source:** `docs/status/2026-08-07_22-05_post-lint-cleanup-pipeline-tests-status.md` §e.4
-**Evidence:** `grep tagliatelle .golangci.yml` → `- tagliatelle` (line ~108)
-- [ ] Remove `- tagliatelle` from `.golangci.yml` enable list (matching AGENTS.md and ADR-0016 mixed JSON convention)
-
 ### `--suggest-generics` output quality
 **Why:** `generics_hint` uses fully-qualified type paths (375 chars on one line, unreadable in terminal).
 **Source:** `docs/status/2026-08-10_03-37_suggest-generics-e2e-validation-discordsync.md` §D2

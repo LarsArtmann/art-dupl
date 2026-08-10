@@ -230,6 +230,8 @@
 | **Result Type**        | FULLY_FUNCTIONAL | CloneGroups, Summary, Metadata                                    |
 | **Validation**         | FULLY_FUNCTIONAL | 12 domain sentinel errors, `ValidateOptions()`, `Clone.IsValid()` |
 | **Custom FileReader**  | FULLY_FUNCTIONAL | Injectable file reader for testing/custom sources                 |
+| **TypeAware Mode**     | FULLY_FUNCTIONAL | `Options.TypeAware` — go/types-based false-positive elimination    |
+| **SuggestGenerics**    | FULLY_FUNCTIONAL | `Options.SuggestGenerics` — finds clones extractable via Go generics |
 
 ---
 
