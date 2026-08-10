@@ -307,9 +307,10 @@ func (ip *IncrementalParser) parseFile(file string) ([]*syntax.Node, int, bool) 
 	contentHash := ip.cacheKey(content)
 	lines := countLines(content)
 
-	// Fast path: cache hit (thread-safe via RWMutex)
+	// Fast path: cache hit — Get returns a deep clone, so we can stamp
+	// the filename directly without another clone.
 	if cachedNodes, hit := ip.cache.Get(contentHash); hit {
-		return ip.cloneWithFilename(cachedNodes, file), lines, true
+		return stampFilename(cachedNodes, file), lines, true
 	}
 
 	// Slow path: cache miss — singleflight deduplicates concurrent parses
@@ -350,31 +351,28 @@ func (ip *IncrementalParser) parseFile(file string) ([]*syntax.Node, int, bool) 
 		return ip.handleFileError(file, err, "parse")
 	}
 
-	// The singleflight result is shared — deep-clone before mutating Filename.
+	// The singleflight result is shared across all waiting callers —
+	// deep-clone before stamping the filename to prevent cross-caller mutation.
 	parsedNodes, ok := v.([]*syntax.Node)
 	if !ok {
 		return ip.handleFileError(file, fmt.Errorf("%w: %T", errUnexpectedSingleflightType, v), "parse")
 	}
 
-	nodes := ip.cloneWithFilename(parsedNodes, file)
-
-	return nodes, lines, false
+	return stampFilename(deepCloneNodes(parsedNodes), file), lines, false
 }
 
-// cloneWithFilename deep-clones nodes and sets the filename for each.
-// This is necessary because cached/shared nodes have a different (or empty)
-// filename than the file currently being processed.
-func (ip *IncrementalParser) cloneWithFilename(nodes []*syntax.Node, filename string) []*syntax.Node {
-	result := make([]*syntax.Node, len(nodes))
+// stampFilename sets the filename on each top-level node in place.
+// The nodes must already be independent (cloned) — this function does NOT
+// deep-clone, because cache.Get and deepCloneNodes already return
+// independent copies.
+func stampFilename(nodes []*syntax.Node, filename string) []*syntax.Node {
 	interned := syntax.InternFilename(filename)
 
-	for i, node := range nodes {
-		cloned := node.Clone()
-		cloned.Filename = interned
-		result[i] = cloned
+	for _, node := range nodes {
+		node.Filename = interned
 	}
 
-	return result
+	return nodes
 }
 
 // deepCloneNodes creates independent copies of all nodes (no shared pointers).

@@ -5,6 +5,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/LarsArtmann/art-dupl/cache"
 	"github.com/LarsArtmann/art-dupl/internal/testutil"
 	"github.com/LarsArtmann/art-dupl/syntax"
 	"github.com/LarsArtmann/art-dupl/syntax/golang"
@@ -354,4 +355,116 @@ func TestIncrementalParserCacheKeyIsolationMaxChildren(t *testing.T) {
 	stats2 := <-statsChan2
 	testutil.AssertFieldValue(t, stats2.CacheMisses, 1, "CacheMisses on different maxChildren")
 	testutil.AssertFieldValue(t, stats2.CacheHits, 0, "CacheHits should be 0 for different maxChildren")
+}
+
+// TestIncrementalParserCacheKeyFormat verifies that cacheKey() produces the
+// expected "mode:maxChildren:typeAwareTag" params format and that each
+// parameter axis independently affects the key.
+func TestIncrementalParserCacheKeyFormat(t *testing.T) {
+	t.Parallel()
+
+	content := []byte("package main\n\nfunc f() { println(\"hi\") }\n")
+
+	t.Run("params format is mode:maxChildren:typeAwareTag", func(t *testing.T) {
+		t.Parallel()
+
+		ip := NewIncrementalParser(t.TempDir(), false, golang.DetectionModeSemantic, 10, 0)
+		ip.typeAwareTag = "ta"
+
+		// The key should be KeyWithParams(content, "semantic:10:ta").
+		expectedParams := "semantic:10:ta"
+		expectedKey := cache.KeyWithParams(content, expectedParams)
+
+		gotKey := ip.cacheKey(content)
+		if gotKey != expectedKey {
+			t.Errorf("cacheKey mismatch:\n  got:    %s\n  expect: %s", gotKey, expectedKey)
+		}
+	})
+
+	t.Run("different modes produce different keys", func(t *testing.T) {
+		t.Parallel()
+
+		semantic := NewIncrementalParser(t.TempDir(), false, golang.DetectionModeSemantic, 0, 0)
+		exact := NewIncrementalParser(t.TempDir(), false, golang.DetectionModeExact, 0, 0)
+		structural := NewIncrementalParser(t.TempDir(), false, golang.DetectionModeStructural, 0, 0)
+
+		keyS := semantic.cacheKey(content)
+		keyE := exact.cacheKey(content)
+		keySt := structural.cacheKey(content)
+
+		if keyS == keyE {
+			t.Error("expected different keys for semantic vs exact mode")
+		}
+
+		if keyS == keySt {
+			t.Error("expected different keys for semantic vs structural mode")
+		}
+
+		if keyE == keySt {
+			t.Error("expected different keys for exact vs structural mode")
+		}
+	})
+
+	t.Run("different maxChildren produce different keys", func(t *testing.T) {
+		t.Parallel()
+
+		p0 := NewIncrementalParser(t.TempDir(), false, golang.DetectionModeSemantic, 0, 0)
+		p5 := NewIncrementalParser(t.TempDir(), false, golang.DetectionModeSemantic, 5, 0)
+		p100 := NewIncrementalParser(t.TempDir(), false, golang.DetectionModeSemantic, 100, 0)
+
+		key0 := p0.cacheKey(content)
+		key5 := p5.cacheKey(content)
+		key100 := p100.cacheKey(content)
+
+		if key0 == key5 {
+			t.Error("expected different keys for maxChildren 0 vs 5")
+		}
+
+		if key5 == key100 {
+			t.Error("expected different keys for maxChildren 5 vs 100")
+		}
+	})
+
+	t.Run("different typeAwareTags produce different keys", func(t *testing.T) {
+		t.Parallel()
+
+		none := NewIncrementalParser(t.TempDir(), false, golang.DetectionModeSemantic, 0, 0)
+		none.typeAwareTag = ""
+
+		ta := NewIncrementalParser(t.TempDir(), false, golang.DetectionModeSemantic, 0, 0)
+		ta.typeAwareTag = "ta"
+
+		sg := NewIncrementalParser(t.TempDir(), false, golang.DetectionModeSemantic, 0, 0)
+		sg.typeAwareTag = "sg"
+
+		keyNone := none.cacheKey(content)
+		keyTA := ta.cacheKey(content)
+		keySG := sg.cacheKey(content)
+
+		if keyNone == keyTA {
+			t.Error("expected different keys for typeAwareTag '' vs 'ta'")
+		}
+
+		if keyNone == keySG {
+			t.Error("expected different keys for typeAwareTag '' vs 'sg'")
+		}
+
+		if keyTA == keySG {
+			t.Error("expected different keys for typeAwareTag 'ta' vs 'sg'")
+		}
+	})
+
+	t.Run("same params produce same key", func(t *testing.T) {
+		t.Parallel()
+
+		p1 := NewIncrementalParser(t.TempDir(), false, golang.DetectionModeExact, 7, 0)
+		p1.typeAwareTag = "sg"
+
+		p2 := NewIncrementalParser(t.TempDir(), false, golang.DetectionModeExact, 7, 0)
+		p2.typeAwareTag = "sg"
+
+		if p1.cacheKey(content) != p2.cacheKey(content) {
+			t.Error("expected identical keys for identical params")
+		}
+	})
 }

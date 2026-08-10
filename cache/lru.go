@@ -23,11 +23,11 @@ const defaultMemoryEntries = 512
 //
 // Concurrency: all methods are goroutine-safe via a single sync.Mutex.
 type lru struct {
-	mu       sync.Mutex
-	max      int
-	entries  map[string]*list.Element
-	order    *list.List
-	memHits  int64
+	mu      sync.Mutex
+	cap     int
+	entries map[string]*list.Element
+	order   *list.List
+	memHits int64
 }
 
 type lruEntry struct {
@@ -35,14 +35,14 @@ type lruEntry struct {
 	data []*syntax.Node
 }
 
-func newLRU(max int) *lru {
-	if max <= 0 {
-		max = defaultMemoryEntries
+func newLRU(capacity int) *lru {
+	if capacity <= 0 {
+		capacity = defaultMemoryEntries
 	}
 
 	return &lru{
-		max:     max,
-		entries: make(map[string]*list.Element, max),
+		cap:     capacity,
+		entries: make(map[string]*list.Element, capacity),
 		order:   list.New(),
 	}
 }
@@ -61,7 +61,12 @@ func (l *lru) get(key string) []*syntax.Node {
 	l.order.MoveToFront(elem)
 	l.memHits++
 
-	return cloneNodes(elem.Value.(*lruEntry).data)
+	entry, ok := elem.Value.(*lruEntry)
+	if !ok {
+		return nil
+	}
+
+	return cloneNodes(entry.data)
 }
 
 // put stores nodes as the canonical copy for key. If the cache is full, the
@@ -72,7 +77,10 @@ func (l *lru) put(key string, nodes []*syntax.Node) {
 	defer l.mu.Unlock()
 
 	if elem, ok := l.entries[key]; ok {
-		elem.Value.(*lruEntry).data = nodes
+		if entry, ok := elem.Value.(*lruEntry); ok {
+			entry.data = nodes
+		}
+
 		l.order.MoveToFront(elem)
 
 		return
@@ -81,11 +89,14 @@ func (l *lru) put(key string, nodes []*syntax.Node) {
 	elem := l.order.PushFront(&lruEntry{key: key, data: nodes})
 	l.entries[key] = elem
 
-	if l.order.Len() > l.max {
+	if l.order.Len() > l.cap {
 		oldest := l.order.Back()
 		if oldest != nil {
 			l.order.Remove(oldest)
-			delete(l.entries, oldest.Value.(*lruEntry).key)
+
+			if entry, ok := oldest.Value.(*lruEntry); ok {
+				delete(l.entries, entry.key)
+			}
 		}
 	}
 }
@@ -106,13 +117,14 @@ func (l *lru) clear() {
 	l.mu.Lock()
 	defer l.mu.Unlock()
 
-	l.entries = make(map[string]*list.Element, l.max)
+	l.entries = make(map[string]*list.Element, l.cap)
 	l.order = list.New()
 }
 
 // cloneNodes creates independent copies of all nodes (no shared pointers).
 func cloneNodes(nodes []*syntax.Node) []*syntax.Node {
 	result := make([]*syntax.Node, len(nodes))
+
 	for i, node := range nodes {
 		result[i] = node.Clone()
 	}

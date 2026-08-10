@@ -33,6 +33,7 @@ import (
 	"path/filepath"
 	"sort"
 	"strconv"
+	"strings"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -61,6 +62,7 @@ type FileCache struct {
 	mu       sync.RWMutex
 	cacheDir string
 	metadata Metadata
+	mem      *lru
 }
 
 // Metadata contains cache metadata.
@@ -90,6 +92,7 @@ func NewFileCache(cacheDir string) *FileCache {
 	fc := &FileCache{
 		cacheDir: cacheDir,
 		metadata: newMetadata(),
+		mem:      newLRU(defaultMemoryEntries),
 	}
 
 	// Ensure cache directories exist (tests verify this)
@@ -127,7 +130,15 @@ func (fc *FileCache) withCachePath(contentHash string, fn func(cachePath string)
 
 // Get retrieves cached AST nodes for the given content hash.
 // Returns the nodes and true if found (cache hit), nil and false otherwise.
+// On a hit, the returned nodes are a deep clone — callers may freely mutate them.
 func (fc *FileCache) Get(contentHash string) ([]*syntax.Node, bool) {
+	// Fast path: check in-memory LRU first (avoids gob deserialization).
+	if nodes := fc.mem.get(contentHash); nodes != nil {
+		atomic.AddInt64(&fc.metadata.HitCount, 1)
+
+		return nodes, true
+	}
+
 	var (
 		nodes []*syntax.Node
 		hit   bool
@@ -151,6 +162,7 @@ func (fc *FileCache) Get(contentHash string) ([]*syntax.Node, bool) {
 				fmt.Fprintf(os.Stderr, "warning: failed to remove stale cache entry %s: %v\n", path, removeErr)
 			}
 
+			fc.mem.remove(contentHash)
 			atomic.AddInt64(&fc.metadata.MissCount, 1)
 
 			return
@@ -166,7 +178,11 @@ func (fc *FileCache) Get(contentHash string) ([]*syntax.Node, bool) {
 		return nil, false
 	}
 
-	return nodes, true
+	// Populate the LRU so subsequent hits skip disk I/O.
+	fc.mem.put(contentHash, nodes)
+
+	// Return a clone so the LRU's canonical copy is never mutated by callers.
+	return cloneNodes(nodes), true
 }
 
 // Set stores AST nodes for the given content hash.
@@ -197,6 +213,9 @@ func (fc *FileCache) Set(contentHash string, nodes []*syntax.Node) error {
 	if err != nil {
 		return errors.NewIOError(cachePath, "failed to write cache file", err)
 	}
+
+	// Store the canonical copy in the LRU. The caller's slice is independent.
+	fc.mem.put(contentHash, nodes)
 
 	fc.metadata.UpdatedAt = time.Now()
 
@@ -236,6 +255,8 @@ func (fc *FileCache) Remove(contentHash string) error {
 		)
 	}
 
+	fc.mem.remove(contentHash)
+
 	return nil
 }
 
@@ -257,6 +278,7 @@ func (fc *FileCache) Clear() error {
 		return errors.NewIOError(filesDir, "failed to recreate cache directory", err)
 	}
 
+	fc.mem.clear()
 	fc.metadata = newMetadata()
 
 	return nil
@@ -288,8 +310,15 @@ func (fc *FileCache) Stats() Stats {
 	return stats
 }
 
-// Prune removes the oldest cache entries until the cache contains at most
-// maxEntries files. Entries are evicted by modification time (oldest first).
+// Prune removes the oldest cache entries using hysteresis to avoid sorting on
+// every call. Pruning is triggered when the cache exceeds 110% of maxEntries
+// (high water mark) and evicts down to 90% of maxEntries (low water mark).
+// This amortizes the O(n log n) sort cost across many cache misses instead of
+// paying it on every miss.
+//
+// Entries are evicted by modification time (oldest first). Evicted entries are
+// also removed from the in-memory LRU.
+//
 // If maxEntries <= 0, no pruning occurs.
 func (fc *FileCache) Prune(maxEntries int) (int, error) {
 	if maxEntries <= 0 {
@@ -306,9 +335,15 @@ func (fc *FileCache) Prune(maxEntries int) (int, error) {
 		return 0, nil // Directory might not exist yet
 	}
 
-	if len(entries) <= maxEntries {
+	// Hysteresis: only prune when entries exceed 110% of maxEntries.
+	// This avoids the O(n log n) sort on every cache miss.
+	highWater := maxEntries + maxEntries/10
+	if len(entries) <= highWater {
 		return 0, nil
 	}
+
+	// Evict down to 90% of maxEntries (low water mark).
+	lowWater := max(maxEntries-maxEntries/10, 0)
 
 	type entryInfo struct {
 		name    string
@@ -331,9 +366,14 @@ func (fc *FileCache) Prune(maxEntries int) (int, error) {
 
 	evicted := 0
 
-	for i := range len(infos) - maxEntries {
+	for i := range len(infos) - lowWater {
 		path := filepath.Join(filesDir, infos[i].name)
+
 		if err := os.Remove(path); err == nil {
+			// Strip the ".gob" suffix to recover the content hash for LRU eviction.
+			hash := strings.TrimSuffix(infos[i].name, ".gob")
+			fc.mem.remove(hash)
+
 			evicted++
 		}
 	}

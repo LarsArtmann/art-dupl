@@ -857,3 +857,180 @@ func TestFileCache_ConcurrentPruneAndSet(t *testing.T) {
 	close(done)
 	wg.Wait()
 }
+
+// TestFileCache_LRUHitAfterSet verifies that a Get immediately following a Set
+// hits the in-memory LRU without needing to read from disk.
+func TestFileCache_LRUHitAfterSet(t *testing.T) {
+	fc := NewFileCache(t.TempDir())
+	hash := Key([]byte("lru-test"))
+	original := testNodes()
+
+	if err := fc.Set(hash, original); err != nil {
+		t.Fatalf("Set failed: %v", err)
+	}
+
+	// Remove the on-disk file so only the LRU has the data.
+	diskPath := filepath.Join(fc.cacheDir, "files", hash+".gob")
+	if err := os.Remove(diskPath); err != nil {
+		t.Fatalf("Failed to remove disk cache file: %v", err)
+	}
+
+	// Get should still succeed via the in-memory LRU.
+	nodes, hit := fc.Get(hash)
+	if !hit {
+		t.Fatal("Expected cache hit from LRU after disk file removed")
+	}
+
+	if len(nodes) != len(original) {
+		t.Errorf("Expected %d nodes, got %d", len(original), len(nodes))
+	}
+}
+
+// TestFileCache_LRUReturnsDeepClone verifies that Get returns independent
+// copies so callers cannot corrupt the cached canonical nodes.
+func TestFileCache_LRUReturnsDeepClone(t *testing.T) {
+	fc := NewFileCache(t.TempDir())
+	hash := Key([]byte("clone-test"))
+
+	if err := fc.Set(hash, testNodes()); err != nil {
+		t.Fatalf("Set failed: %v", err)
+	}
+
+	first, _ := fc.Get(hash)
+	second, _ := fc.Get(hash)
+
+	// Mutate the first result.
+	if len(first) > 0 {
+		first[0].Type = 999
+	}
+
+	// Second result must be unaffected.
+	if len(second) > 0 && second[0].Type == 999 {
+		t.Error("Get returned a shared reference — mutating one result corrupted another")
+	}
+}
+
+// TestFileCache_LHysteresisPruning verifies that Prune only triggers above 110%
+// of maxEntries and evicts down to 90% of maxEntries.
+func TestFileCache_HysteresisPruning(t *testing.T) {
+	t.Run("no_prune_below_high_water", func(t *testing.T) {
+		fc := NewFileCache(t.TempDir())
+
+		// maxEntries=10, highWater=11. Insert 11 entries (exactly at high water).
+		for i := range 11 {
+			if err := fc.Set(Key([]byte{byte(i)}), testNodes()); err != nil {
+				t.Fatalf("Set failed: %v", err)
+			}
+		}
+
+		evicted, err := fc.Prune(10)
+		if err != nil {
+			t.Fatalf("Prune error: %v", err)
+		}
+
+		if evicted != 0 {
+			t.Errorf("Expected 0 evicted at high water mark (11 <= 11), got %d", evicted)
+		}
+	})
+
+	t.Run("prune_above_high_water_to_low_water", func(t *testing.T) {
+		fc := NewFileCache(t.TempDir())
+
+		// maxEntries=10, highWater=11, lowWater=9.
+		// Insert 15 entries (> 11) to trigger pruning.
+		hashes := make([]string, 15)
+		for i := range 15 {
+			hashes[i] = Key([]byte{byte(i)})
+
+			if err := fc.Set(hashes[i], testNodes()); err != nil {
+				t.Fatalf("Set failed: %v", err)
+			}
+
+			// Ensure distinct mtimes for deterministic eviction order.
+			path := filepath.Join(fc.cacheDir, "files", hashes[i]+".gob")
+			modTime := time.Now().Add(time.Duration(i) * 100 * time.Millisecond)
+
+			if err := os.Chtimes(path, modTime, modTime); err != nil {
+				t.Fatalf("Chtimes failed: %v", err)
+			}
+		}
+
+		evicted, err := fc.Prune(10)
+		if err != nil {
+			t.Fatalf("Prune error: %v", err)
+		}
+
+		// Should evict 15 - 9 = 6 entries (down to low water = 9).
+		if evicted != 6 {
+			t.Errorf("Expected 6 evicted (15 → 9), got %d", evicted)
+		}
+
+		// Verify remaining count.
+		stats := fc.Stats()
+		if stats.Size != 9 {
+			t.Errorf("Expected 9 entries after prune, got %d", stats.Size)
+		}
+	})
+
+	t.Run("prune_evicts_from_lru", func(t *testing.T) {
+		fc := NewFileCache(t.TempDir())
+
+		// maxEntries=2, highWater=2, lowWater=1.
+		// Insert 3 entries to trigger pruning (> 2).
+		hashes := []string{
+			Key([]byte("x")),
+			Key([]byte("y")),
+			Key([]byte("z")),
+		}
+		for i, h := range hashes {
+			if err := fc.Set(h, testNodes()); err != nil {
+				t.Fatalf("Set failed: %v", err)
+			}
+
+			path := filepath.Join(fc.cacheDir, "files", h+".gob")
+			modTime := time.Now().Add(time.Duration(i) * 100 * time.Millisecond)
+
+			if err := os.Chtimes(path, modTime, modTime); err != nil {
+				t.Fatalf("Chtimes failed: %v", err)
+			}
+		}
+
+		evicted, err := fc.Prune(2)
+		if err != nil {
+			t.Fatalf("Prune error: %v", err)
+		}
+
+		if evicted == 0 {
+			t.Fatal("Expected some evictions")
+		}
+
+		// Evicted entries should not be in the LRU. Remove the disk file for
+		// an evicted entry and verify Get returns a miss (not an LRU hit).
+		stats := fc.Stats()
+		remaining := stats.Size
+
+		// Remove all disk files and check that Get only succeeds for entries
+		// still in the LRU (if any). Evicted entries should be gone from both.
+		filesDir := filepath.Join(fc.cacheDir, "files")
+		entries, _ := os.ReadDir(filesDir)
+
+		for _, entry := range entries {
+			_ = os.Remove(filepath.Join(filesDir, entry.Name()))
+		}
+
+		hits := 0
+
+		for _, h := range hashes {
+			if _, hit := fc.Get(h); hit {
+				hits++
+			}
+		}
+
+		// Only remaining disk entries could have been in the LRU (from the Set
+		// that wrote them). After disk removal, only LRU entries survive.
+		// Evicted entries should NOT be in the LRU.
+		if hits > remaining {
+			t.Errorf("Expected at most %d LRU hits (remaining disk entries), got %d", remaining, hits)
+		}
+	})
+}
