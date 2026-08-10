@@ -19,15 +19,16 @@ const maxPreviewRunes = 60
 type TextPrinter struct {
 	ReadFile
 
-	cnt           int
-	w             io.Writer
-	totalSize     int
-	cloneGroups   [][]domain.ProcessedClone
-	currentHash   string
-	isFileDupe    bool
-	richText      bool
-	explain       bool
-	diffHintFiles []string
+	cnt              int
+	w                io.Writer
+	totalSize        int
+	cloneGroups      [][]domain.ProcessedClone
+	currentHash      string
+	isFileDupe       bool
+	richText         bool
+	explain          bool
+	diffHintFiles    []string
+	suppressionStats SuppressionStats
 }
 
 func (p *TextPrinter) SetHash(hash string) {
@@ -36,6 +37,10 @@ func (p *TextPrinter) SetHash(hash string) {
 
 func (p *TextPrinter) SetFileDuplicate(isDupe bool) {
 	p.isFileDupe = isDupe
+}
+
+func (p *TextPrinter) SetSuppressionStats(stats SuppressionStats) {
+	p.suppressionStats = stats
 }
 
 func (p *TextPrinter) SetRichText(enabled bool) {
@@ -138,8 +143,33 @@ func (p *TextPrinter) writeCloneHeader(clones []domain.ProcessedClone) error {
 }
 
 func (p *TextPrinter) PrintFooter() error {
-	if _, err := fmt.Fprintf(p.w, "\nFound total %d clone groups.\n", p.cnt); err != nil {
-		return err
+	s := p.suppressionStats
+	if s.DetectedTotal > s.Shown && s.DetectedTotal > 0 {
+		if _, err := fmt.Fprintf(p.w, "\nDetected %d clone groups, %d shown", s.DetectedTotal, s.Shown); err != nil {
+			return err
+		}
+		if s.SuppressedActionable > 0 || s.SuppressedOther > 0 || s.SuppressedGenerics > 0 {
+			parts := make([]string, 0, 3)
+			if s.SuppressedActionable > 0 {
+				parts = append(parts, fmt.Sprintf("%d non-actionable", s.SuppressedActionable))
+			}
+			if s.SuppressedOther > 0 {
+				parts = append(parts, fmt.Sprintf("%d filtered", s.SuppressedOther))
+			}
+			if s.SuppressedGenerics > 0 {
+				parts = append(parts, fmt.Sprintf("%d non-generics", s.SuppressedGenerics))
+			}
+			if _, err := fmt.Fprintf(p.w, " (%s suppressed)", strings.Join(parts, ", ")); err != nil {
+				return err
+			}
+		}
+		if _, err := fmt.Fprintln(p.w, "."); err != nil {
+			return err
+		}
+	} else {
+		if _, err := fmt.Fprintf(p.w, "\nFound total %d clone groups.\n", p.cnt); err != nil {
+			return err
+		}
 	}
 
 	if len(p.diffHintFiles) >= 2 {

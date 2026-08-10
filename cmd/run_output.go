@@ -130,18 +130,25 @@ func printCloneGroups(
 	semantic bool,
 	suppression SuppressionConfig,
 ) error {
+	var stats printer.SuppressionStats
+
 	for _, k := range keys {
 		uniq := syntax.Unique(groups[k])
 		if len(uniq) <= 1 {
 			continue
 		}
 
+		stats.DetectedTotal++
+
 		if semantic && !suppression.NoActionability {
 			result := actionability.EvaluateActionabilityWithDisabled(
 				printer.ToCloneNodeSeqs(uniq), suppression.DisabledPatterns,
 			)
-			if result == domain.NonActionable && !suppression.ShowSuppressed {
-				continue
+			if result == domain.NonActionable {
+				stats.SuppressedActionable++
+				if !suppression.ShowSuppressed {
+					continue
+				}
 			}
 		}
 
@@ -157,19 +164,29 @@ func printCloneGroups(
 
 		group := domain.NewProcessedCloneGroup(k, clones)
 
-		if shouldSuppressGroup(group, suppression) && !suppression.ShowSuppressed {
-			continue
+		if shouldSuppressGroup(group, suppression) {
+			stats.SuppressedOther++
+			if !suppression.ShowSuppressed {
+				continue
+			}
 		}
 
 		if suppression.SuggestGenerics && !group.Clones[0].Classification.GenericsCandidate {
+			stats.SuppressedGenerics++
 			continue
 		}
+
+		stats.Shown++
 
 		err = p.PrintClones(group, sortBy)
 		if err != nil {
 			return errors.Wrap(err, errors.AnalysisError,
 				fmt.Sprintf("failed to print clones for hash %s (sortBy: %s)", k, sortBy.String()))
 		}
+	}
+
+	if ss, ok := p.(printer.SuppressionStatsSetter); ok {
+		ss.SetSuppressionStats(stats)
 	}
 
 	return nil

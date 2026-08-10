@@ -26,6 +26,25 @@ type ExplainSetter interface {
 	SetExplain(enabled bool)
 }
 
+// SuppressionStats carries counts of detected vs suppressed clone groups,
+// enabling the summary to distinguish "what the detector found" from "what
+// is actually actionable." This prevents the "drive to zero" failure mode
+// where agents treat every detected group as harmful.
+type SuppressionStats struct {
+	DetectedTotal        int
+	SuppressedActionable int
+	SuppressedOther      int
+	SuppressedGenerics   int
+	Shown                int
+}
+
+// SuppressionStatsSetter enables printers to receive suppression counts for
+// summary display. Printers that implement this interface can show a richer
+// footer separating "Detected" from "Actionable" clone groups.
+type SuppressionStatsSetter interface {
+	SetSuppressionStats(stats SuppressionStats)
+}
+
 type Printer interface {
 	PrintHeader() error
 	PrintClones(group domain.ProcessedCloneGroup, sortBy ...config.SortCriteria) error
