@@ -34,7 +34,6 @@ type SuppressionStats struct {
 	DetectedTotal        int
 	SuppressedActionable int
 	SuppressedOther      int
-	SuppressedGenerics   int
 	Shown                int
 }
 

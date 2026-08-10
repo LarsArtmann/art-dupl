@@ -172,7 +172,7 @@ type Options struct {
 	DetectionMethods []DetectionMethod `json:"detection_methods"` // Methods to use for detection
 	Verbose          bool              `json:"verbose"`           // Enable verbose detection logging
 	TypeAware        bool              `json:"type_aware"`        // Enable go/types-based detection (10-100x slower)
-	SuggestGenerics  bool              `json:"suggest_generics"`  // Find generics-extraction candidates (loads type info, does not encode in hash)
+	SuggestGenerics  bool              `json:"suggest_generics"`  // Highlight generics-extraction candidates (loads type info, does not encode in hash; all clones still returned)
 
 	// File processing — the SDK takes explicit file lists, so callers
 	// filter vendor/test directories themselves before calling FindClones.

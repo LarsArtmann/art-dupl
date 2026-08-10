@@ -298,11 +298,14 @@ type CloneClassification struct {
 	// GenericsCandidate is true when this clone group's instances differ only in
 	// local variable types (same algorithm, different concrete types). This is
 	// the class of duplication that --type-aware would suppress but Go generics
-	// can eliminate. Only populated when --suggest-generics is active.
+	// can eliminate. Populated whenever type info is available (--suggest-generics
+	// or --type-aware); in practice only --suggest-generics produces candidates
+	// because type-aware mode encodes types in the hash (identical-type matches
+	// have no divergence).
 	GenericsCandidate bool
 
 	// GenericsHint describes the differing types for generics-extraction candidates.
-	// Example: "v0: int64 []db.AuthorKindActivity vs int64 []db.MemberGrowthPoint".
+	// Example: "same algorithm, different types: analyzer.MainAnalyzerOption vs analyzer.OtherOption".
 	// Empty when GenericsCandidate is false.
 	GenericsHint string
 }

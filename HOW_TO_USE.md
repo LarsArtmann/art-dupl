@@ -379,12 +379,14 @@ art-dupl --type-aware -t 30 ./src
 - Compatible with `--incremental` (type data is threaded through the incremental parser)
 - Falls back gracefully to syntax-only if type checking fails (missing dependencies, etc.)
 
-### Generics-Extraction Candidates (`--suggest-generics`)
+### Generics-Extraction Enhancer (`--suggest-generics`)
 
-Finds clones where the algorithm is identical but local variable types differ across instances — the class of duplication that Go generics can eliminate. Uses type-erased hashing so structurally-identical functions on different types still match, then classifies by comparing type information at corresponding positions.
+Highlights clones where the algorithm is identical but local variable types differ across instances — the class of duplication that Go generics can eliminate. Uses type-erased hashing so structurally-identical functions on different types still match, then classifies by comparing type information at corresponding positions.
+
+**Enhancer, not filter**: All clone groups are shown. Generics candidates are annotated with a `generics:` hint line and `Extract to generic function` suggestion. Use `--min-tokens` or `--threshold` to reduce noise.
 
 ```bash
-# Find generics-extraction candidates
+# Highlight generics-extraction candidates among all clones
 art-dupl --suggest-generics -t 1 ./src
 
 # Combine with --explain for detailed hints
@@ -398,7 +400,7 @@ art-dupl --suggest-generics -t 1 --json ./src
 
 - Same ~100x slower as `--type-aware` (full type checking required)
 - Takes precedence over `--type-aware` when both flags are set
-- 12.5% precision on real-world validation (3 true / 24 surfaced on DiscordSync) — use `--min-tokens` to filter noise
+- Use `--min-tokens` to filter noise from small clone groups
 - Output shows `generics:` hint line with type differences (text) or `generics_candidate`/`generics_hint` fields (JSON)
 
 ### Token-Count Filtering (`--min-tokens`)
@@ -409,7 +411,7 @@ Suppresses clone groups where any clone has fewer than N tokens. Complements `--
 # Suppress clones with fewer than 15 tokens
 art-dupl --min-tokens 15 -t 1 ./src
 
-# Combine with suggest-generics to filter trivial candidates
+# Combine with suggest-generics to surface type-divergent clones
 art-dupl --suggest-generics --min-tokens 20 -t 1 ./src
 ```
 

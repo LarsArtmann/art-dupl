@@ -23,7 +23,6 @@ type SuppressionConfig struct {
 	AcceptDirectives *AcceptedSet
 	NoActionability  bool
 	ShowSuppressed   bool
-	SuggestGenerics  bool
 	DisabledPatterns map[actionability.PatternLabel]bool
 }
 
@@ -41,7 +40,6 @@ func buildSuppressionConfig(cfg *config.Config) SuppressionConfig {
 		AcceptDirectives: newAcceptSet(cfg),
 		NoActionability:  cfg.NoActionability,
 		ShowSuppressed:   cfg.ShowSuppressed,
-		SuggestGenerics:  cfg.SuggestGenerics,
 		DisabledPatterns: buildDisabledPatternSet(cfg.DisabledPatterns),
 	}
 }
@@ -169,14 +167,6 @@ func printCloneGroups(
 
 		if shouldSuppressGroup(group, suppression) {
 			stats.SuppressedOther++
-
-			if !suppression.ShowSuppressed {
-				continue
-			}
-		}
-
-		if suppression.SuggestGenerics && !group.Clones[0].Classification.GenericsCandidate {
-			stats.SuppressedGenerics++
 
 			if !suppression.ShowSuppressed {
 				continue

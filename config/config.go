@@ -219,14 +219,16 @@ type Config struct {
 	// Used for calibration to measure recall (false negatives).
 	ShowSuppressed bool `json:"showSuppressed,omitempty"`
 
-	// SuggestGenerics finds generics-extraction candidates: clones where the
-	// algorithm is identical but the local variable types differ across
-	// instances. This is the class of duplication that --type-aware would
-	// suppress (because different concrete types produce different hashes) but
-	// that Go generics can eliminate. Loads type info (same cost as --type-aware)
-	// but does NOT encode types in the hash, so structurally-identical clones on
-	// different types still match. Only generics-extraction candidates are shown.
-	// Incompatible with --type-aware (suggest-generics takes precedence).
+	// SuggestGenerics enriches output by highlighting generics-extraction
+	// candidates: clone groups where the algorithm is identical but the local
+	// variable types differ across instances. This is the class of duplication
+	// that --type-aware would suppress (because different concrete types produce
+	// different hashes) but that Go generics can eliminate. Loads type info
+	// (same cost as --type-aware) but does NOT encode types in the hash, so
+	// structurally-identical clones on different types still match. All clone
+	// groups are shown; generics candidates are annotated with a hint and
+	// suggestion. Incompatible with --type-aware (suggest-generics takes
+	// precedence).
 	SuggestGenerics bool `json:"suggestGenerics,omitempty"`
 }
 

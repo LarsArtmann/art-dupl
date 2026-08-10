@@ -149,18 +149,14 @@ func (p *TextPrinter) PrintFooter() error {
 			return err
 		}
 
-		if s.SuppressedActionable > 0 || s.SuppressedOther > 0 || s.SuppressedGenerics > 0 {
-			parts := make([]string, 0, 3)
+		if s.SuppressedActionable > 0 || s.SuppressedOther > 0 {
+			parts := make([]string, 0, 2)
 			if s.SuppressedActionable > 0 {
 				parts = append(parts, fmt.Sprintf("%d non-actionable", s.SuppressedActionable))
 			}
 
 			if s.SuppressedOther > 0 {
 				parts = append(parts, fmt.Sprintf("%d filtered", s.SuppressedOther))
-			}
-
-			if s.SuppressedGenerics > 0 {
-				parts = append(parts, fmt.Sprintf("%d non-generics", s.SuppressedGenerics))
 			}
 
 			if _, err := fmt.Fprintf(p.w, " (%s suppressed)", strings.Join(parts, ", ")); err != nil {
