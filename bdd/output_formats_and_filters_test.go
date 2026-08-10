@@ -225,6 +225,7 @@ templ page(name string) {
 		Expect(outputStr).To(SatisfyAny(
 			ContainSubstring("page1.templ"),
 			ContainSubstring("0 clone"),
+			ContainSubstring("0 shown"),
 		))
 		Expect(outputStr).ToNot(ContainSubstring(goldenFile1))
 	})

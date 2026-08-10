@@ -181,6 +181,11 @@ func applyChangedIntFlags(cmd *cobra.Command, cfg *config.Config) {
 		cfg.MinLines = val
 	}
 
+	if cmd.Flags().Changed("min-tokens") {
+		val, _ := cmd.Flags().GetInt("min-tokens")
+		cfg.MinTokens = val
+	}
+
 	if cmd.Flags().Changed("max-cache-entries") {
 		val, _ := cmd.Flags().GetInt("max-cache-entries")
 		cfg.MaxCacheEntries = val

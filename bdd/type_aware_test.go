@@ -110,7 +110,7 @@ var _ = Describe("Type-Aware Detection", func() {
 			outputStr := string(output)
 			// The accept directive suppresses the entire clone group —
 			// both the accepted clone and its duplicate partner disappear.
-			Expect(outputStr).To(ContainSubstring("Found total 0 clone groups"))
+			Expect(outputStr).To(ContainSubstring("0 shown"))
 			Expect(outputStr).NotTo(ContainSubstring("accepted.go"))
 			Expect(outputStr).NotTo(ContainSubstring("other.go"))
 		})
@@ -191,7 +191,7 @@ func main() {
 		It("should suppress interface-method clones with --type-aware", func() {
 			output, err := setup.RunArtDupl("--type-aware", "--threshold", "2")
 			Expect(err).NotTo(HaveOccurred())
-			Expect(string(output)).To(ContainSubstring("Found total 0 clone groups"))
+			Expect(string(output)).To(ContainSubstring("0 shown"))
 		})
 
 		It("should classify suppressed clones as interface-method with --explain", func() {
@@ -212,7 +212,7 @@ func main() {
 
 			outputStr := string(output)
 			Expect(outputStr).To(ContainSubstring("impl1.go"))
-			Expect(outputStr).NotTo(ContainSubstring("Found total 0 clone groups"))
+			Expect(outputStr).NotTo(ContainSubstring("0 shown"))
 		})
 	})
 })

@@ -247,7 +247,7 @@ func processB(active bool) {
 		Expect(err).ToNot(HaveOccurred())
 
 		outputStr := string(outputDefault)
-		Expect(outputStr).To(ContainSubstring("Found total 0 clone groups"),
+		Expect(outputStr).To(ContainSubstring("0 shown"),
 			"guard-clause pattern should suppress clones by default")
 	})
 
@@ -358,7 +358,7 @@ func detectB() bool {
 		Expect(err).ToNot(HaveOccurred())
 
 		outputStr := string(output)
-		Expect(outputStr).To(ContainSubstring("Found total 0 clone groups"),
+		Expect(outputStr).To(ContainSubstring("0 shown"),
 			"bool-accumulator-initializer pattern should suppress the flag pair")
 	})
 

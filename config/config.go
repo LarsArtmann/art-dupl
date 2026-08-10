@@ -175,6 +175,13 @@ type Config struct {
 	// one-liner clones that pass the token threshold but are too short to matter.
 	MinLines int `json:"minLines,omitempty"`
 
+	// MinTokens suppresses clone groups where any clone has fewer than N tokens.
+	// 0 = disabled. Token-based complement to --threshold (statement-based) and
+	// --min-lines (line-based). Useful for filtering clones that meet the
+	// statement threshold but are still semantically trivial (e.g., a 5-statement
+	// clone where each statement is a single token).
+	MinTokens int `json:"minTokens,omitempty"`
+
 	// Quiet suppresses non-essential status output (progress messages,
 	// profiling notices). Clone results are still printed.
 	Quiet bool `json:"quiet,omitempty"`
@@ -268,6 +275,7 @@ func DefaultConfig() *Config {
 		TestThreshold:      0,
 		IgnoreTests:        false,
 		MinLines:           0,
+		MinTokens:          0,
 		TypeAware:          false,
 	}
 }

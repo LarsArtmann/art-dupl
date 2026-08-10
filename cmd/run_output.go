@@ -19,6 +19,7 @@ type SuppressionConfig struct {
 	SuppressTestLow  bool
 	TestThreshold    int
 	MinLines         int
+	MinTokens        int
 	AcceptDirectives *AcceptedSet
 	NoActionability  bool
 	ShowSuppressed   bool
@@ -36,6 +37,7 @@ func buildSuppressionConfig(cfg *config.Config) SuppressionConfig {
 		SuppressTestLow:  cfg.EffectiveSuppressTestLow(),
 		TestThreshold:    cfg.EffectiveTestThreshold(),
 		MinLines:         cfg.MinLines,
+	MinTokens:        cfg.MinTokens,
 		AcceptDirectives: newAcceptSet(cfg),
 		NoActionability:  cfg.NoActionability,
 		ShowSuppressed:   cfg.ShowSuppressed,
@@ -249,7 +251,29 @@ func shouldSuppressGroup(
 		return true
 	}
 
+	if suppression.MinTokens > 0 && minCloneTokenCount(group) < suppression.MinTokens {
+		return true
+	}
+
 	return false
+}
+
+// minCloneTokenCount returns the smallest TokenCount across all clones in a group.
+// Used by min-tokens filtering: if ANY clone has fewer tokens than the threshold,
+// the entire group is suppressed.
+func minCloneTokenCount(group domain.ProcessedCloneGroup) int {
+	if len(group.Clones) == 0 {
+		return 0
+	}
+
+	result := group.Clones[0].TokenCount
+	for _, c := range group.Clones[1:] {
+		if c.TokenCount < result {
+			result = c.TokenCount
+		}
+	}
+
+	return result
 }
 
 // minCloneLineCount returns the smallest LineCount across all clones in a group.

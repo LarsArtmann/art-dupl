@@ -60,6 +60,8 @@ func addSharedFlags(cmd *cobra.Command) {
 	cmd.Flags().
 		Int("min-lines", 0, "suppress clone groups spanning fewer than N source lines (0 = disabled)")
 	cmd.Flags().
+		Int("min-tokens", 0, "suppress clone groups where any clone has fewer than N tokens (0 = disabled)")
+	cmd.Flags().
 		StringSlice("disable-pattern", nil, "suppress a specific actionability pattern by label (repeatable, use --list-patterns for labels)")
 
 	// File type filter
@@ -139,7 +141,7 @@ func AddFlags(rootCmd *cobra.Command) {
 	rootCmd.Flags().
 		Bool("include-ignored", false, "include gitignored files in analysis (default: honor .gitignore)")
 	rootCmd.Flags().
-		Bool("show-suppressed", false, "show clone groups that would normally be suppressed (actionability, min-lines, test-threshold) for calibration")
+		Bool("show-suppressed", false, "show clone groups that would normally be suppressed (actionability, min-lines, min-tokens, test-threshold) for calibration")
 
 	rootCmd.Flags().
 		String("diff-report", "", "compare current scan against a baseline file and show new/suppressed/resolved clones")
