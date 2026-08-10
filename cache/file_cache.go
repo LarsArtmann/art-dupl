@@ -438,6 +438,20 @@ func Key(content []byte) string {
 	return hex.EncodeToString(h[:])
 }
 
+// KeyWithParams generates a cache key from file content AND a params string.
+// The params string encodes detection-affecting configuration (e.g., detection
+// mode, maxChildren, type-aware mode) so that ASTs serialized under different
+// configurations get separate cache entries. This prevents cross-mode cache
+// contamination where a cached semantic-mode AST is incorrectly reused for an
+// exact-mode run.
+func KeyWithParams(content []byte, params string) string {
+	h := sha256.New()
+	h.Write(content)
+	h.Write([]byte(params))
+
+	return hex.EncodeToString(h.Sum(nil))
+}
+
 //nolint:gochecknoinits // Required for gob registration of types used in cache serialization
 func init() {
 	// Register types for gob encoding (zero-values are intentional for registration)

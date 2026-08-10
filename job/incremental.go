@@ -29,6 +29,9 @@ type IncrementalParser struct {
 	maxCacheEntries int
 	group           singleflight.Group
 	typeInfos       golang.TypeAwareData
+	// typeAwareTag encodes the type-aware mode for cache key isolation:
+	// "" = no type info, "ta" = type-aware (hash includes types), "sg" = suggest-generics (hash erased).
+	typeAwareTag string
 }
 
 // NewIncrementalParser creates a new IncrementalParser.
@@ -63,6 +66,25 @@ func NewIncrementalParser(
 // pre-loaded AST + TypeInfo to the transformer instead of nil.
 func (ip *IncrementalParser) SetTypeAwareData(td golang.TypeAwareData) {
 	ip.typeInfos = td
+	// Detect the type-aware mode from the loaded data to isolate cache keys.
+	// All entries in the map share the same EraseHash value (set globally by LoadTypeAwareData).
+	ip.typeAwareTag = ""
+	for _, pre := range td {
+		if pre.EraseHash {
+			ip.typeAwareTag = "sg" // suggest-generics: hash erased
+		} else {
+			ip.typeAwareTag = "ta" // type-aware: hash includes types
+		}
+		break
+	}
+}
+
+// cacheKey computes a composite cache key that includes file content AND
+// detection-affecting parameters. This prevents cross-mode cache contamination
+// where a cached semantic-mode AST is incorrectly reused for an exact-mode run.
+func (ip *IncrementalParser) cacheKey(content []byte) string {
+	params := fmt.Sprintf("%s:%d:%s", ip.mode, ip.maxChildren, ip.typeAwareTag)
+	return cache.KeyWithParams(content, params)
 }
 
 // ParseStatsMixin provides common fields for parsing statistics.
@@ -270,7 +292,7 @@ func (ip *IncrementalParser) parseFile(file string) ([]*syntax.Node, int, bool) 
 		return ip.handleFileError(file, err, "read")
 	}
 
-	contentHash := cache.Key(content)
+	contentHash := ip.cacheKey(content)
 	lines := countLines(content)
 
 	// Fast path: cache hit (thread-safe via RWMutex)
