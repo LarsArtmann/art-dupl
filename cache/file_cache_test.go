@@ -4,6 +4,7 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+	"time"
 
 	"github.com/LarsArtmann/art-dupl/internal/testutil"
 	"github.com/LarsArtmann/art-dupl/syntax"
@@ -508,4 +509,133 @@ func TestFileCache_Persistence(t *testing.T) {
 	if len(retrievedNodes) != len(nodes) {
 		t.Errorf("Expected %d nodes, got %d", len(nodes), len(retrievedNodes))
 	}
+}
+
+// TestFileCache_Prune tests the Prune function for cache eviction.
+func TestFileCache_Prune(t *testing.T) {
+	t.Run("zero_max_no_op", func(t *testing.T) {
+		fc := NewFileCache(t.TempDir())
+		hash := Key([]byte("a"))
+		if err := fc.Set(hash, testNodes()); err != nil {
+			t.Fatalf("Set failed: %v", err)
+		}
+		evicted, err := fc.Prune(0)
+		if err != nil {
+			t.Fatalf("Prune error: %v", err)
+		}
+		if evicted != 0 {
+			t.Errorf("Expected 0 evicted, got %d", evicted)
+		}
+		if _, hit := fc.Get(hash); !hit {
+			t.Error("Entry should still exist after Prune(0)")
+		}
+	})
+
+	t.Run("fewer_than_max_no_eviction", func(t *testing.T) {
+		fc := NewFileCache(t.TempDir())
+		for _, content := range []string{"a", "b", "c"} {
+			if err := fc.Set(Key([]byte(content)), testNodes()); err != nil {
+				t.Fatalf("Set failed: %v", err)
+			}
+		}
+		evicted, err := fc.Prune(10)
+		if err != nil {
+			t.Fatalf("Prune error: %v", err)
+		}
+		if evicted != 0 {
+			t.Errorf("Expected 0 evicted, got %d", evicted)
+		}
+	})
+
+	t.Run("evicts_oldest", func(t *testing.T) {
+		fc := NewFileCache(t.TempDir())
+		// Insert 5 entries, each with a small delay to get distinct mtimes.
+		hashes := make([]string, 5)
+		for i, content := range []string{"a", "b", "c", "d", "e"} {
+			hashes[i] = Key([]byte(content))
+			if err := fc.Set(hashes[i], testNodes()); err != nil {
+				t.Fatalf("Set failed: %v", err)
+			}
+			// Touch the file to ensure distinct mtimes (some filesystems have low resolution).
+			path := filepath.Join(fc.cacheDir, "files", hashes[i]+".gob")
+			modTime := time.Now().Add(time.Duration(i) * 100 * time.Millisecond)
+			if err := os.Chtimes(path, modTime, modTime); err != nil {
+				t.Fatalf("Chtimes failed: %v", err)
+			}
+		}
+
+		// Prune to 3 entries — should evict the 2 oldest (a, b).
+		evicted, err := fc.Prune(3)
+		if err != nil {
+			t.Fatalf("Prune error: %v", err)
+		}
+		if evicted != 2 {
+			t.Fatalf("Expected 2 evicted, got %d", evicted)
+		}
+
+		// Oldest entries should be gone.
+		if _, hit := fc.Get(hashes[0]); hit {
+			t.Error("Oldest entry 'a' should have been evicted")
+		}
+		if _, hit := fc.Get(hashes[1]); hit {
+			t.Error("Second-oldest entry 'b' should have been evicted")
+		}
+
+		// Newer entries should remain.
+		for i := 2; i < 5; i++ {
+			if _, hit := fc.Get(hashes[i]); !hit {
+				t.Errorf("Entry %q should still exist after prune", string(rune('a'+i)))
+			}
+		}
+	})
+
+	t.Run("empty_cache_no_error", func(t *testing.T) {
+		fc := NewFileCache(t.TempDir())
+		evicted, err := fc.Prune(5)
+		if err != nil {
+			t.Fatalf("Prune error: %v", err)
+		}
+		if evicted != 0 {
+			t.Errorf("Expected 0 evicted on empty cache, got %d", evicted)
+		}
+	})
+}
+
+// TestKeyWithParams tests that the params-aware cache key produces different
+// keys for the same content with different params, preventing cross-mode cache contamination.
+func TestKeyWithParams(t *testing.T) {
+	content := []byte("package main")
+
+	t.Run("different_params_produce_different_keys", func(t *testing.T) {
+		keyA := KeyWithParams(content, "semantic:5:")
+		keyB := KeyWithParams(content, "exact:5:")
+		if keyA == keyB {
+			t.Fatal("Expected different keys for different params")
+		}
+	})
+
+	t.Run("same_params_produce_same_key", func(t *testing.T) {
+		keyA := KeyWithParams(content, "semantic:5:ta")
+		keyB := KeyWithParams(content, "semantic:5:ta")
+		if keyA != keyB {
+			t.Fatal("Expected identical keys for same params")
+		}
+	})
+
+	t.Run("empty_params_equals_Key", func(t *testing.T) {
+		// KeyWithParams with empty params should equal Key — empty string writes
+		// 0 extra bytes into the hash stream, so the input is identical.
+		keyNormal := Key(content)
+		keyWithEmptyParams := KeyWithParams(content, "")
+		if keyNormal != keyWithEmptyParams {
+			t.Fatalf("Expected identical keys for empty params, got %q vs %q", keyNormal, keyWithEmptyParams)
+		}
+	})
+
+	t.Run("returns_64_char_hex", func(t *testing.T) {
+		key := KeyWithParams(content, "semantic:5:ta")
+		if len(key) != 64 {
+			t.Errorf("Expected 64-char hex hash, got %d chars", len(key))
+		}
+	})
 }

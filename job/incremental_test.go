@@ -275,3 +275,73 @@ func TestIncrementalParserGetCacheStats(t *testing.T) {
 	stats := parser.GetCacheStats()
 	testutil.AssertFieldValue(t, stats.Size, 1, "cache entry")
 }
+
+// TestIncrementalParserCacheKeyIsolationMode verifies that switching detection
+// modes (semantic vs exact) does NOT reuse cached ASTs from a prior mode.
+// Before the fix, the cache key was SHA-256(content) only, so an exact-mode run
+// would incorrectly reuse a semantic-mode cached AST.
+func TestIncrementalParserCacheKeyIsolationMode(t *testing.T) {
+	setup := testutil.NewTestFileSetup(t)
+	cacheDir := setup.TmpDir + "/cache"
+
+	writeHelloWorldFile(t, setup)
+
+	ctx := t.Context()
+
+	// First parse with semantic mode → cache miss.
+	semanticParser := NewIncrementalParser(cacheDir, false, golang.DetectionModeSemantic, 0, 0)
+	fchan1 := singleFileChannel(setup)
+	schan1, statsChan1 := semanticParser.ParseIncremental(ctx, fchan1)
+	for range schan1 {
+	}
+	stats1 := <-statsChan1
+	testutil.AssertFieldValue(t, stats1.CacheMisses, 1, "CacheMisses on first semantic parse")
+
+	// Same file with exact mode → should ALSO be a cache miss (different key).
+	exactParser := NewIncrementalParser(cacheDir, false, golang.DetectionModeExact, 0, 0)
+	fchan2 := singleFileChannel(setup)
+	schan2, statsChan2 := exactParser.ParseIncremental(ctx, fchan2)
+	for range schan2 {
+	}
+	stats2 := <-statsChan2
+	testutil.AssertFieldValue(t, stats2.CacheMisses, 1, "CacheMisses on exact parse (key isolation)")
+	testutil.AssertFieldValue(t, stats2.CacheHits, 0, "CacheHits should be 0 for different mode")
+
+	// But repeating exact mode → should be a cache hit.
+	fchan3 := singleFileChannel(setup)
+	schan3, statsChan3 := exactParser.ParseIncremental(ctx, fchan3)
+	for range schan3 {
+	}
+	stats3 := <-statsChan3
+	testutil.AssertFieldValue(t, stats3.CacheHits, 1, "CacheHits on repeat exact parse")
+}
+
+// TestIncrementalParserCacheKeyIsolationMaxChildren verifies that different
+// maxChildren values produce separate cache entries.
+func TestIncrementalParserCacheKeyIsolationMaxChildren(t *testing.T) {
+	setup := testutil.NewTestFileSetup(t)
+	cacheDir := setup.TmpDir + "/cache"
+
+	writeHelloWorldFile(t, setup)
+
+	ctx := t.Context()
+
+	// Parse with maxChildren=0 → cache miss.
+	parser1 := NewIncrementalParser(cacheDir, false, golang.DetectionModeSemantic, 0, 0)
+	fchan1 := singleFileChannel(setup)
+	schan1, statsChan1 := parser1.ParseIncremental(ctx, fchan1)
+	for range schan1 {
+	}
+	stats1 := <-statsChan1
+	testutil.AssertFieldValue(t, stats1.CacheMisses, 1, "CacheMisses on first parse")
+
+	// Same file with maxChildren=5 → should be cache miss (different key).
+	parser2 := NewIncrementalParser(cacheDir, false, golang.DetectionModeSemantic, 5, 0)
+	fchan2 := singleFileChannel(setup)
+	schan2, statsChan2 := parser2.ParseIncremental(ctx, fchan2)
+	for range schan2 {
+	}
+	stats2 := <-statsChan2
+	testutil.AssertFieldValue(t, stats2.CacheMisses, 1, "CacheMisses on different maxChildren")
+	testutil.AssertFieldValue(t, stats2.CacheHits, 0, "CacheHits should be 0 for different maxChildren")
+}
