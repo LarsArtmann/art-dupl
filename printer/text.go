@@ -255,6 +255,19 @@ func (p *TextPrinter) previewFromFile(cl domain.ProcessedClone) string {
 	return strings.TrimSpace(lines[cl.LineStart-1])
 }
 
+// tokenLineSummary formats token and line counts with correct pluralization.
+func tokenLineSummary(tokens, lines int) string {
+	return fmt.Sprintf("%d %s, %d %s", tokens, plural("token", tokens), lines, plural("line", lines))
+}
+
+func plural(word string, n int) string {
+	if n == 1 {
+		return word
+	}
+
+	return word + "s"
+}
+
 func (p *TextPrinter) writeRichGroupHeader(count int, cls domain.CloneClassification) error {
 	actionabilityBadge := ""
 	if cls.Actionability == domain.NonActionable {
@@ -263,14 +276,13 @@ func (p *TextPrinter) writeRichGroupHeader(count int, cls domain.CloneClassifica
 
 	if _, err := fmt.Fprintf(
 		p.w,
-		"found %d clones: [%s] [%s] %s%s (%d tokens, %d lines) suggestion: %s\n",
+		"found %d clones: [%s] [%s] %s%s (%s) suggestion: %s\n",
 		count,
 		cls.Priority,
 		cls.CloneType,
 		cls.Category,
 		actionabilityBadge,
-		cls.Tokens,
-		cls.Lines,
+		tokenLineSummary(cls.Tokens, cls.Lines),
 		cls.Suggestion,
 	); err != nil {
 		return duplerrors.Wrapf(
@@ -322,7 +334,7 @@ func (p *TextPrinter) writeExplanation(cls domain.CloneClassification, cloneCoun
 	}
 
 	parts = append(parts, string(cls.Category))
-	parts = append(parts, fmt.Sprintf("%d tokens, %d lines", cls.Tokens, cls.Lines))
+	parts = append(parts, tokenLineSummary(cls.Tokens, cls.Lines))
 
 	if cls.Extractability.CanExtract {
 		parts = append(parts, fmt.Sprintf("extractable: ~%d lines saved across %d sites",

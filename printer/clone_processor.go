@@ -142,6 +142,10 @@ func ProcessClones(fread ReadFile, dups [][]*syntax.Node) ([]domain.ProcessedClo
 
 		clones[i].Classification.GenericsCandidate = genericsCandidate
 		clones[i].Classification.GenericsHint = genericsHint
+
+		if genericsCandidate && clones[i].Classification.Actionability == domain.Actionable {
+			clones[i].Classification.Suggestion = "Extract to generic function"
+		}
 	}
 
 	return clones, nil

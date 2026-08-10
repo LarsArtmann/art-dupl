@@ -178,7 +178,9 @@ func printCloneGroups(
 		if suppression.SuggestGenerics && !group.Clones[0].Classification.GenericsCandidate {
 			stats.SuppressedGenerics++
 
-			continue
+			if !suppression.ShowSuppressed {
+				continue
+			}
 		}
 
 		stats.Shown++

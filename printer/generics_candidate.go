@@ -2,6 +2,7 @@ package printer
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 
 	"github.com/LarsArtmann/art-dupl/domain"
@@ -63,6 +64,27 @@ func ClassifyGenericsCandidate(seqs [][]*domain.CloneNode) (bool, string) {
 	return true, formatGenericsHint(divergences)
 }
 
+// pkgPathSegmentRe matches a Go import path segment followed by a slash,
+// e.g. "github.com/larsartmann/" in "github.com/larsartmann/erraudit/pkg.Type".
+// Used to strip package paths to just the last segment for readability.
+var pkgPathSegmentRe = regexp.MustCompile(`[\w.-]+/`)
+
+// shortenTypeString strips Go import path prefixes from type strings,
+// keeping only the last path segment. For example:
+//   - github.com/pkg.Type → pkg.Type
+//   - []github.com/pkg.Type → []pkg.Type
+//   - *github.com/pkg.Type → *pkg.Type
+func shortenTypeString(s string) string {
+	for {
+		loc := pkgPathSegmentRe.FindStringIndex(s)
+		if loc == nil {
+			return s
+		}
+
+		s = s[:loc[0]] + s[loc[1]:]
+	}
+}
+
 // formatGenericsHint produces a concise summary of the type differences.
 // Shows up to 3 unique type-pair divergences to keep the hint readable.
 func formatGenericsHint(divs []TypeDivergence) string {
@@ -78,7 +100,7 @@ func formatGenericsHint(divs []TypeDivergence) string {
 
 		seen[key] = true
 
-		parts = append(parts, fmt.Sprintf("%s vs %s", d.TypeA, d.TypeB))
+		parts = append(parts, fmt.Sprintf("%s vs %s", shortenTypeString(d.TypeA), shortenTypeString(d.TypeB)))
 
 		if len(parts) >= 3 {
 			break

@@ -158,3 +158,49 @@ func TestClassifyGenericsCandidate_HintFormat(t *testing.T) {
 		t.Errorf("hint should contain both types, got: %s", hint)
 	}
 }
+
+func TestShortenTypeString(t *testing.T) {
+	tests := []struct {
+		input string
+		want  string
+	}{
+		{"int", "int"},
+		{"[]int", "[]int"},
+		{"*int", "*int"},
+		{"github.com/pkg.Type", "pkg.Type"},
+		{"[]github.com/pkg.Type", "[]pkg.Type"},
+		{"*github.com/pkg.Type", "*pkg.Type"},
+		{"github.com/larsartmann/erraudit/internal/analyzer.MainAnalyzerOption", "analyzer.MainAnalyzerOption"},
+		{"[]github.com/larsartmann/erraudit/internal/analyzer.MainAnalyzerOption", "[]analyzer.MainAnalyzerOption"},
+		{"*github.com/larsartmann/erraudit/internal/analyzer.Main", "*analyzer.Main"},
+		{"map[string]github.com/pkg.Type", "map[string]pkg.Type"},
+	}
+
+	for _, tc := range tests {
+		got := shortenTypeString(tc.input)
+		if got != tc.want {
+			t.Errorf("shortenTypeString(%q) = %q, want %q", tc.input, got, tc.want)
+		}
+	}
+}
+
+func TestClassifyGenericsCandidate_HintShortensPackagePaths(t *testing.T) {
+	seqs := [][]*domain.CloneNode{
+		{{Name: "x", VarType: "github.com/larsartmann/erraudit/internal/analyzer.MainAnalyzerOption"}},
+		{{Name: "y", VarType: "github.com/larsartmann/erraudit/internal/ast.FileCacheOption"}},
+	}
+
+	_, hint := ClassifyGenericsCandidate(seqs)
+
+	if hint == "" {
+		t.Fatal("expected non-empty hint")
+	}
+
+	if strings.Contains(hint, "github.com/") {
+		t.Errorf("hint should not contain full package paths, got: %s", hint)
+	}
+
+	if !strings.Contains(hint, "analyzer.MainAnalyzerOption") || !strings.Contains(hint, "ast.FileCacheOption") {
+		t.Errorf("hint should contain shortened type names, got: %s", hint)
+	}
+}
