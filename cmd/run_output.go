@@ -37,7 +37,7 @@ func buildSuppressionConfig(cfg *config.Config) SuppressionConfig {
 		SuppressTestLow:  cfg.EffectiveSuppressTestLow(),
 		TestThreshold:    cfg.EffectiveTestThreshold(),
 		MinLines:         cfg.MinLines,
-	MinTokens:        cfg.MinTokens,
+		MinTokens:        cfg.MinTokens,
 		AcceptDirectives: newAcceptSet(cfg),
 		NoActionability:  cfg.NoActionability,
 		ShowSuppressed:   cfg.ShowSuppressed,
@@ -148,6 +148,7 @@ func printCloneGroups(
 			)
 			if result == domain.NonActionable {
 				stats.SuppressedActionable++
+
 				if !suppression.ShowSuppressed {
 					continue
 				}
@@ -168,6 +169,7 @@ func printCloneGroups(
 
 		if shouldSuppressGroup(group, suppression) {
 			stats.SuppressedOther++
+
 			if !suppression.ShowSuppressed {
 				continue
 			}
@@ -175,6 +177,7 @@ func printCloneGroups(
 
 		if suppression.SuggestGenerics && !group.Clones[0].Classification.GenericsCandidate {
 			stats.SuppressedGenerics++
+
 			continue
 		}
 
