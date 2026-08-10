@@ -133,6 +133,7 @@ func applyChangedBoolFlags(cmd *cobra.Command, cfg *config.Config) {
 		"no-accept-directives": &cfg.NoAcceptDirectives,
 		"include-ignored":      &cfg.IncludeIgnored,
 		"show-suppressed":      &cfg.ShowSuppressed,
+		"suggest-generics":     &cfg.SuggestGenerics,
 	}
 
 	for flagName, configPtr := range mappings {

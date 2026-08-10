@@ -68,6 +68,12 @@ func (p *TextPrinter) PrintClones(
 		return duplerrors.Wrap(err, duplerrors.InternalError, "write group header")
 	}
 
+	if len(clones) > 0 && clones[0].Classification.GenericsCandidate {
+		if err := p.writeGenericsHint(clones[0].Classification); err != nil {
+			return duplerrors.Wrap(err, duplerrors.InternalError, "write generics hint")
+		}
+	}
+
 	if p.explain && len(clones) > 0 {
 		if err := p.writeExplanation(clones[0].Classification, len(clones)); err != nil {
 			return duplerrors.Wrap(err, duplerrors.InternalError, "write explanation")
@@ -238,6 +244,19 @@ func (p *TextPrinter) writeRichGroupHeader(count int, cls domain.CloneClassifica
 			"write rich group header (count=%d, category=%q, priority=%q)",
 			count, cls.Category, cls.Priority,
 		)
+	}
+
+	return nil
+}
+
+func (p *TextPrinter) writeGenericsHint(cls domain.CloneClassification) error {
+	hint := cls.GenericsHint
+	if hint == "" {
+		hint = "same algorithm, different types; consider generics extraction"
+	}
+
+	if _, err := fmt.Fprintf(p.w, "  generics: %s\n", hint); err != nil {
+		return fmt.Errorf("write generics hint: %w", err)
 	}
 
 	return nil

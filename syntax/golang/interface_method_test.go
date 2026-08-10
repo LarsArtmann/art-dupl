@@ -160,7 +160,7 @@ func (u User) GetName() string { return u.name }
 	path := dir + "/src.go"
 	writeFile(t, path, src)
 
-	typeData, err := LoadTypeAwareData([]string{path})
+	typeData, err := LoadTypeAwareData([]string{path}, false)
 	if err != nil {
 		t.Fatalf("LoadTypeAwareData failed: %v", err)
 	}
@@ -220,7 +220,7 @@ func (u User) GetName() string { return u.name }`
 	path := dir + "/src.go"
 	writeFile(t, path, src)
 
-	typeData, err := LoadTypeAwareData([]string{path})
+	typeData, err := LoadTypeAwareData([]string{path}, false)
 	if err != nil {
 		t.Fatalf("LoadTypeAwareData failed: %v", err)
 	}
@@ -273,7 +273,7 @@ func loadTypeInfoForTest(t *testing.T, src string) (*types.Info, *ast.File) {
 	path := dir + "/src.go"
 	writeFile(t, path, src)
 
-	typeData, err := LoadTypeAwareData([]string{path})
+	typeData, err := LoadTypeAwareData([]string{path}, false)
 	if err != nil {
 		t.Fatalf("LoadTypeAwareData failed: %v", err)
 	}
@@ -409,7 +409,7 @@ func (w Worker) Process(data []byte) error {
 	path := dir + "/src.go"
 	writeFile(t, path, src)
 
-	typeData, err := LoadTypeAwareData([]string{path})
+	typeData, err := LoadTypeAwareData([]string{path}, false)
 	if err != nil {
 		t.Fatalf("LoadTypeAwareData failed: %v", err)
 	}

@@ -39,6 +39,7 @@ type detectorConfig struct {
 	DetectionMethods  []DetectionMethod
 	Semantic          bool
 	TypeAware         bool
+	SuggestGenerics   bool
 	MaxChildrenSerial int
 	SearchWorkers     int
 }
@@ -62,6 +63,7 @@ func convertOptionsToConfig(opts *Options) *detectorConfig {
 		DetectionMethods: opts.DetectionMethods,
 		Semantic:         true,
 		TypeAware:        opts.TypeAware,
+		SuggestGenerics:  opts.SuggestGenerics,
 		SearchWorkers:    opts.SearchWorkers,
 	}
 }

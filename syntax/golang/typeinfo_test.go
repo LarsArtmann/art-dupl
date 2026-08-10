@@ -57,12 +57,12 @@ func processBigIntData(bi *big.Int) string {
 	writeFile(t, fileA, srcA)
 	writeFile(t, fileB, srcB)
 
-	typeDataA, err := LoadTypeAwareData([]string{fileA})
+	typeDataA, err := LoadTypeAwareData([]string{fileA}, false)
 	if err != nil {
 		t.Fatalf("LoadTypeAwareData A failed: %v", err)
 	}
 
-	typeDataB, err := LoadTypeAwareData([]string{fileB})
+	typeDataB, err := LoadTypeAwareData([]string{fileB}, false)
 	if err != nil {
 		t.Fatalf("LoadTypeAwareData B failed: %v", err)
 	}
@@ -132,8 +132,8 @@ func formatB(tm time.Time) string {
 	writeFile(t, fileA, srcA)
 	writeFile(t, fileB, srcB)
 
-	typeDataA, _ := LoadTypeAwareData([]string{fileA})
-	typeDataB, _ := LoadTypeAwareData([]string{fileB})
+	typeDataA, _ := LoadTypeAwareData([]string{fileA}, false)
+	typeDataB, _ := LoadTypeAwareData([]string{fileB}, false)
 
 	preA := typeDataA.LookupPreloaded(fileA)
 	preB := typeDataB.LookupPreloaded(fileB)
@@ -186,7 +186,7 @@ func foo(x int) int {
 func TestLoadTypeAwareData_EmptyInputReturnsEmpty(t *testing.T) {
 	t.Parallel()
 
-	result, err := LoadTypeAwareData(nil)
+	result, err := LoadTypeAwareData(nil, false)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -263,11 +263,12 @@ func parsePreloadedTest(t *testing.T, filename string, pre *PreloadedAST) *synta
 	t.Helper()
 
 	tr := &transformer{
-		fileset:  pre.Fset,
-		filename: filename,
-		config:   ParseConfig{Mode: DetectionModeSemantic, Preloaded: pre},
-		norm:     newNormalizer(true),
-		typeInfo: pre.TypeInfo,
+		fileset:       pre.Fset,
+		filename:      filename,
+		config:        ParseConfig{Mode: DetectionModeSemantic, Preloaded: pre},
+		norm:          newNormalizer(true),
+		typeInfo:      pre.TypeInfo,
+		typeEraseHash: pre.EraseHash,
 	}
 
 	return tr.trans(pre.File)

@@ -40,6 +40,8 @@ type JSONClone struct {
 	LinesSaved           int                       `json:"lines_saved,omitempty"`
 	Extractable          bool                      `json:"extractable,omitempty"`
 	Confidence           float64                   `json:"confidence,omitempty"`
+	GenericsCandidate    bool                      `json:"generics_candidate,omitempty"`
+	GenericsHint         string                    `json:"generics_hint,omitempty"`
 }
 
 type Summary struct {
@@ -61,6 +63,8 @@ func toJSONClone(cl domain.ProcessedClone) JSONClone {
 		CloneType:            cl.Classification.CloneType,
 		LinesSaved:           cl.Classification.Extractability.EstimatedLinesSaved,
 		Extractable:          cl.Classification.Extractability.CanExtract,
+		GenericsCandidate:    cl.Classification.GenericsCandidate,
+		GenericsHint:         cl.Classification.GenericsHint,
 	}
 
 	if cl.Classification.Analysis != nil {

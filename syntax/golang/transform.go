@@ -239,17 +239,7 @@ func (t *transformer) trans(
 		nameForHash := n.Name
 		if t.config.Mode.NormalizesLocals() {
 			nameForHash = t.norm.resolve(n.Name)
-
-			// Type-aware encoding: append the variable's type to the hash so
-			// that different-typed locals with the same canonical name (v0)
-			// produce different hashes. This prevents false positives like
-			// time.Time.String matching *big.Int.String.
-			if t.typeInfo != nil && t.norm.isLocal(n.Name) {
-				if typeStr := identTypeString(t.typeInfo, n); typeStr != "" {
-					nameForHash += "\x00" + typeStr
-					o.VarType = typeStr
-				}
-			}
+			nameForHash = t.encodeTypeIfAware(nameForHash, n, o)
 		}
 
 		o.Type = encodeSemanticType(Ident, nameForHash, t.config.Mode.HashesIdentifiers())
@@ -388,6 +378,32 @@ func (t *transformer) trans(
 	}
 
 	return o
+}
+
+// encodeTypeIfAware appends the variable's type to the hash input when
+// type-aware mode is active. This prevents false positives like
+// time.Time.String matching *big.Int.String.
+//
+// When typeEraseHash is true (--suggest-generics), VarType is still populated
+// on the node for post-detection classification, but the type is NOT encoded
+// into the hash so that clones with different concrete types still match —
+// enabling generics-extraction candidate detection.
+func (t *transformer) encodeTypeIfAware(nameForHash string, n *ast.Ident, o *syntax.Node) string {
+	if t.typeInfo == nil || !t.norm.isLocal(n.Name) {
+		return nameForHash
+	}
+
+	typeStr := identTypeString(t.typeInfo, n)
+	if typeStr == "" {
+		return nameForHash
+	}
+
+	o.VarType = typeStr
+	if !t.typeEraseHash {
+		return nameForHash + "\x00" + typeStr
+	}
+
+	return nameForHash
 }
 
 // extractReceiverTypeName extracts the type name from a method receiver.

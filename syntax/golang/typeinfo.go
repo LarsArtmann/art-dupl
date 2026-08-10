@@ -18,6 +18,12 @@ type PreloadedAST struct {
 	File     *ast.File
 	TypeInfo *types.Info
 	Fset     *token.FileSet
+
+	// EraseHash, when true, populates VarType on nodes but does NOT encode the
+	// type string into the identifier hash. Used by --suggest-generics so that
+	// clones with different concrete types still match, while the type info is
+	// preserved for post-detection generics-extraction classification.
+	EraseHash bool
 }
 
 // TypeAwareData is a map from absolute file path to its pre-loaded AST and type info.
@@ -41,9 +47,14 @@ func (td TypeAwareData) LookupPreloaded(file string) *PreloadedAST {
 // LoadTypeAwareData loads type information for the given Go files using
 // go/packages. Returns a map from absolute file path to PreloadedAST.
 //
+// When eraseHash is true, each PreloadedAST has EraseHash set so that the
+// transformer populates VarType on nodes without encoding the type into the
+// identifier hash. This is used by --suggest-generics to detect generics-
+// extraction candidates that --type-aware would suppress.
+//
 // This is significantly slower than parsing alone (10-100x) because it runs the
-// full Go type checker with import resolution. Only call when --type-aware is enabled.
-func LoadTypeAwareData(files []string) (TypeAwareData, error) {
+// full Go type checker with import resolution.
+func LoadTypeAwareData(files []string, eraseHash bool) (TypeAwareData, error) {
 	if len(files) == 0 {
 		return TypeAwareData{}, nil
 	}
@@ -97,9 +108,10 @@ func LoadTypeAwareData(files []string) (TypeAwareData, error) {
 			}
 
 			result[absName] = &PreloadedAST{
-				File:     syntaxFile,
-				TypeInfo: pkg.TypesInfo,
-				Fset:     pkg.Fset,
+				File:      syntaxFile,
+				TypeInfo:  pkg.TypesInfo,
+				Fset:      pkg.Fset,
+				EraseHash: eraseHash,
 			}
 		}
 	}

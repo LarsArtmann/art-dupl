@@ -105,7 +105,7 @@ func (d *detector) buildAnalysisPipeline(
 // loadTypeAwareDataIfEnabled loads go/types information for all .go files when
 // type-aware mode is active. Falls back to syntax-only on error.
 func (d *detector) loadTypeAwareDataIfEnabled(files []string) golang.TypeAwareData {
-	if !d.cfg.TypeAware {
+	if !d.cfg.TypeAware && !d.cfg.SuggestGenerics {
 		return golang.TypeAwareData{}
 	}
 
@@ -121,7 +121,7 @@ func (d *detector) loadTypeAwareDataIfEnabled(files []string) golang.TypeAwareDa
 		return golang.TypeAwareData{}
 	}
 
-	typeData, err := golang.LoadTypeAwareData(goFiles)
+	typeData, err := golang.LoadTypeAwareData(goFiles, d.cfg.SuggestGenerics)
 	if err != nil {
 		d.logger.Warn("Type-aware mode failed, falling back to syntax-only", "err", err)
 

@@ -15,12 +15,17 @@ import (
 // a new channel that replays all collected files (both .go and .templ) for the
 // subsequent parsing phase.
 //
+// When eraseHash is true, the loaded data has EraseHash set so that the
+// transformer populates VarType without encoding types in the hash. This is
+// used by --suggest-generics.
+//
 // This is a blocking operation — the entire file set must be known before
 // go/packages can resolve imports and type-check.
 func loadTypeAwareData(
 	ctx context.Context,
 	filesChan chan string,
 	stderr io.Writer,
+	eraseHash bool,
 ) (golang.TypeAwareData, chan string) {
 	var allFiles []string
 
@@ -56,7 +61,7 @@ func loadTypeAwareData(
 
 	fmt.Fprintf(stderr, "🔍 Type-aware mode: loading type information for %d Go files...\n", len(goFiles))
 
-	typeData, err := golang.LoadTypeAwareData(goFiles)
+	typeData, err := golang.LoadTypeAwareData(goFiles, eraseHash)
 	if err != nil {
 		logger.Default.Error("type-aware mode failed, falling back to syntax-only", "err", err)
 

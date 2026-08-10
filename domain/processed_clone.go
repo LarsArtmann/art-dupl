@@ -294,6 +294,17 @@ type CloneClassification struct {
 	Tokens               int
 	Lines                int
 	Suggestion           string
+
+	// GenericsCandidate is true when this clone group's instances differ only in
+	// local variable types (same algorithm, different concrete types). This is
+	// the class of duplication that --type-aware would suppress but Go generics
+	// can eliminate. Only populated when --suggest-generics is active.
+	GenericsCandidate bool
+
+	// GenericsHint describes the differing types for generics-extraction candidates.
+	// Example: "v0: int64 []db.AuthorKindActivity vs int64 []db.MemberGrowthPoint".
+	// Empty when GenericsCandidate is false.
+	GenericsHint string
 }
 
 // ProcessedClone represents a single clone instance with extracted fragment data.

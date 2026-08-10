@@ -123,6 +123,7 @@ func ProcessClones(fread ReadFile, dups [][]*syntax.Node) ([]domain.ProcessedClo
 	// in a clone group shares the same actionability verdict and clone type.
 	label, verdict := actionability.EvaluateActionabilityWithLabel(toCloneNodeSeqs(dups))
 	cloneType := classifyCloneType(dups)
+	genericsCandidate, genericsHint := ClassifyGenericsCandidate(toCloneNodeSeqs(dups))
 
 	for i := range clones {
 		clones[i].Classification.Actionability = verdict
@@ -138,6 +139,9 @@ func ProcessClones(fread ReadFile, dups [][]*syntax.Node) ([]domain.ProcessedClo
 		if label != actionability.PatternNone {
 			clones[i].Classification.NonActionablePattern = string(label)
 		}
+
+		clones[i].Classification.GenericsCandidate = genericsCandidate
+		clones[i].Classification.GenericsHint = genericsHint
 	}
 
 	return clones, nil

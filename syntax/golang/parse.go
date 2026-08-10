@@ -65,11 +65,12 @@ func parsePreloaded(filename string, cfg ParseConfig) (*syntax.Node, int, error)
 	pre := cfg.Preloaded
 
 	t := &transformer{
-		fileset:  pre.Fset,
-		filename: syntax.InternFilename(filename),
-		config:   cfg,
-		norm:     newNormalizer(cfg.Mode.NormalizesLocals()),
-		typeInfo: pre.TypeInfo,
+		fileset:       pre.Fset,
+		filename:      syntax.InternFilename(filename),
+		config:        cfg,
+		norm:          newNormalizer(cfg.Mode.NormalizesLocals()),
+		typeInfo:      pre.TypeInfo,
+		typeEraseHash: pre.EraseHash,
 	}
 	lineCount := pre.Fset.File(pre.File.Pos()).LineCount()
 
@@ -83,6 +84,7 @@ type transformer struct {
 	inInterface              bool
 	norm                     *normalizer
 	typeInfo                 *types.Info
+	typeEraseHash            bool
 	enclosingReturnArity     int32
 	enclosingInterfaceMethod bool
 }
