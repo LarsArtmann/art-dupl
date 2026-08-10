@@ -31,10 +31,14 @@ These patterns represent Go idioms that cannot be eliminated without breaking se
 | Builder callback      | `builder-callback`             | 3+ chained calls on 2+ different receivers                                                                                                                                                                                                                           | Builder/fluent API pattern                  |
 | Bool-guard            | `bool-guard`                   | 2-stmt: `X, ok := helper(); if !ok { return }` (assign + guard on same variable)                                                                                                                                                                                     | `v, ok := m[key]; if !ok { return }`        |
 | Templ rendering       | `templ-rendering-idiom`        | `if len(x) == 0 { ... } else { for ... }` (templ/HTML empty-state convention; `.go` files, not `.templ` source)                                                                                                                                                      | Generated `_templ.go` empty-state rendering |
+| Defer call            | `defer-call`                   | Bare `defer cleanupFunc()` (Ident callee only, NOT method calls like `defer svc.processOrder()`)                                                                                                                                                                    | `defer unsubscribe()`                       |
+| Test framework call   | `test-framework-call`          | Test framework method calls (`t.Parallel()`, `b.Helper()`, `t.Cleanup()`, etc.)                                                                                                                                                                                     | `t.Parallel()`                              |
+| State flag mutation   | `state-flag-mutation`          | Single field assignment in methods (`x.flag = true`)                                                                                                                                                                                                                | `w.flushed = true`                          |
+| Empty default         | `empty-default`                | `if x == "" { x = default }` idiom                                                                                                                                                                                                                                  | `if name == "" { name = "unknown" }`      |
 
 ## How It Works
 
-1. `EvaluateActionabilityWithLabel` runs 25 pattern checks in priority order.
+1. `EvaluateActionabilityWithLabel` runs 29 pattern checks in priority order.
 2. The first matching pattern wins (returns its `PatternLabel`).
 3. If no pattern matches, the group is **Actionable**.
 4. Only `semantic` detection mode runs actionability checks. `exact` and `structural` skip them.
@@ -69,10 +73,14 @@ Patterns are checked in this order (first match wins):
 23. Describe table
 24. Builder callback
 25. Templ-rendering-idiom (`if len(x) == 0 { text } else { for ... }`)
+26. Defer-call (bare `defer cleanupFunc()` — Ident callee only)
+27. Test-framework-call (`t.Parallel()`, `b.Helper()`, `t.Cleanup()`)
+28. State-flag-mutation (`x.flag = true` single field assignment)
+29. Empty-default (`if x == "" { x = default }`)
 
 ## Property-Based Classification Engine (Second Pass)
 
-After the 25 pattern-table checks run, a **property-based extractability engine** runs as a second-pass fallback. It evaluates four computable properties that define "harmful duplication" from first principles, catching false positives that the pattern table misses.
+After the 29 pattern-table checks run, a **property-based extractability engine** runs as a second-pass fallback. It evaluates four computable properties that define "harmful duplication" from first principles, catching false positives that the pattern table misses.
 
 See `docs/adr/0017-property-based-classification.md` for the full design.
 

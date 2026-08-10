@@ -77,3 +77,8 @@ for _, group := range result.CloneGroups {
   positives where same-name methods on different types (e.g., `time.Time.String`
   vs `*big.Int.String`) match. Falls back to syntax-only if type checking fails.
   10-100x slower than syntax-only mode.
+- The SDK supports `Options.SuggestGenerics = true` to find clones where the
+  algorithm is identical but local variable types differ — candidates for Go
+  generics extraction. Uses type-erased hashing, then classifies by comparing
+  types at corresponding positions. Takes precedence over `TypeAware` when both
+  are set. Same ~100x cost as `TypeAware`.
