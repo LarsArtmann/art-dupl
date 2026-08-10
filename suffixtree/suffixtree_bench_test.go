@@ -233,10 +233,11 @@ func BenchmarkMemoryUsage(b *testing.B) {
 // BenchmarkTestAndSplit benchmarks the testAndSplit operation.
 func BenchmarkTestAndSplit(b *testing.B) {
 	benchmarkTreeOperation(b, 1000, func(tree *STree) {
-		// Use valid parameters within bounds
-		if len(tree.data) > 10 {
-			tree.testAndSplit(tree.root, 0, 10)
-		}
+		// testAndSplit reads t.data[t.end]; after Update(), t.end points one past
+		// the last element. Set it to the last valid index for standalone use.
+		// Use start > end to exercise the endpoint-check path (findTran only).
+		tree.end = Pos(len(tree.data) - 1)
+		tree.testAndSplit(tree.root, 1, 0)
 	})
 }
 
