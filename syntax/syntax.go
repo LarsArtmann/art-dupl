@@ -86,18 +86,23 @@ const maxChildrenSerial = 10_000
 // transformer (same save/restore pattern as EnclosingReturnArity) because
 // FuncDecl nodes are never clone roots in Go files. The actionability layer
 // uses this to suppress interface-contract boilerplate.
+// Field ordering groups pointer/string fields first (72 bytes) and scalar
+// fields last (32 bytes with padding). This keeps Val()'s hot reads
+// (Type, Fingerprint, Statement) in a single cache line instead of
+// straddling two, since the scalar block starts at offset 72 and fits
+// within one 64-byte line.
 type Node struct {
-	Type                 int32
-	Pos                  int32
-	End                  int32
-	Owns                 int32
 	Children             []*Node
 	Filename             string
 	Name                 string
 	VarType              string
-	Statement            bool
+	Type                 int32
+	Pos                  int32
+	End                  int32
+	Owns                 int32
 	Fingerprint          int32
 	EnclosingReturnArity int32
+	Statement            bool
 	InterfaceMethod      bool
 
 	// IsAlias is set on TypeSpec nodes when the source uses `type X = Y`
@@ -124,17 +129,17 @@ func (n *Node) Clone() *Node {
 	}
 
 	clone := &Node{
-		Type:                 n.Type,
-		Pos:                  n.Pos,
-		End:                  n.End,
-		Owns:                 n.Owns,
 		Children:             n.Children,
 		Filename:             n.Filename,
 		Name:                 n.Name,
 		VarType:              n.VarType,
-		Statement:            n.Statement,
+		Type:                 n.Type,
+		Pos:                  n.Pos,
+		End:                  n.End,
+		Owns:                 n.Owns,
 		Fingerprint:          n.Fingerprint,
 		EnclosingReturnArity: n.EnclosingReturnArity,
+		Statement:            n.Statement,
 		InterfaceMethod:      n.InterfaceMethod,
 		IsAlias:              n.IsAlias,
 	}
@@ -219,17 +224,17 @@ func serial(n *Node, stream *[]*Node, maxChildren int) int {
 	// never corrupt the original tree. This makes Serialize idempotent and
 	// safe for concurrent access to cached trees.
 	node := &Node{
-		Type:                 n.Type,
-		Pos:                  n.Pos,
-		End:                  n.End,
-		Owns:                 n.Owns,
 		Children:             n.Children,
 		Filename:             n.Filename,
 		Name:                 n.Name,
 		VarType:              n.VarType,
-		Statement:            n.Statement,
+		Type:                 n.Type,
+		Pos:                  n.Pos,
+		End:                  n.End,
+		Owns:                 n.Owns,
 		Fingerprint:          n.Fingerprint,
 		EnclosingReturnArity: n.EnclosingReturnArity,
+		Statement:            n.Statement,
 		InterfaceMethod:      n.InterfaceMethod,
 		IsAlias:              n.IsAlias,
 	}

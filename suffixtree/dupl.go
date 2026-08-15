@@ -36,9 +36,27 @@ func newContextList() *contextList {
 }
 
 func (c *contextList) getAll() []Pos {
-	keys := make([]TokenValue, 0, len(c.lists))
-	for k := range c.lists {
-		keys = append(keys, k)
+	const maxStackKeys = 32
+
+	var (
+		stackBuf [maxStackKeys]TokenValue
+		keys     []TokenValue
+	)
+
+	if n := len(c.lists); n <= maxStackKeys {
+		idx := 0
+
+		for k := range c.lists {
+			stackBuf[idx] = k
+			idx++
+		}
+
+		keys = stackBuf[:idx]
+	} else {
+		keys = make([]TokenValue, 0, n)
+		for k := range c.lists {
+			keys = append(keys, k)
+		}
 	}
 
 	slices.Sort(keys)
@@ -115,10 +133,31 @@ func walkTrans(
 		return cl
 	}
 
-	// Sort transitions by token value for deterministic iteration order
-	transKeys := make([]TokenValue, 0, len(s.trans))
-	for k := range s.trans {
-		transKeys = append(transKeys, k)
+	// Sort transitions by token value for deterministic iteration order.
+	// For small transition maps (the common case — most suffix tree states
+	// have very few transitions), use a stack-allocated buffer to avoid
+	// the heap allocation that make([]TokenValue, ...) would trigger.
+	const maxStackTransKeys = 32
+
+	var (
+		stackBuf  [maxStackTransKeys]TokenValue
+		transKeys []TokenValue
+	)
+
+	if n := len(s.trans); n <= maxStackTransKeys {
+		idx := 0
+
+		for k := range s.trans {
+			stackBuf[idx] = k
+			idx++
+		}
+
+		transKeys = stackBuf[:idx]
+	} else {
+		transKeys = make([]TokenValue, 0, n)
+		for k := range s.trans {
+			transKeys = append(transKeys, k)
+		}
 	}
 
 	slices.Sort(transKeys)

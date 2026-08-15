@@ -7,11 +7,12 @@ package domain
 //
 // The bridge in printer/clone_processor.go converts []*syntax.Node into
 // []*CloneNode before passing them to EvaluateActionability.
+// Field ordering groups pointer/string fields first, scalar fields last,
+// so scalar-only access patterns (actionability pattern matching that reads
+// BaseType, InterfaceMethod, IsAlias) touch a single cache line.
 type CloneNode struct {
-	// BaseType is the 8-bit base AST node type, already decoded from the raw
-	// syntax.Node.Type (which packs identifier/operator hashes into the upper
-	// 24 bits). Compare against syntax/golang constants (golang.FuncDecl, etc.).
-	BaseType int32
+	// Children are the direct sub-nodes in tree order.
+	Children []*CloneNode
 
 	// Name is the identifier or method name associated with this node.
 	Name string
@@ -23,6 +24,11 @@ type CloneNode struct {
 	// mode is active. Empty string means no type info available. The
 	// actionability layer uses this for type-aware false-positive detection.
 	VarType string
+
+	// BaseType is the 8-bit base AST node type, already decoded from the raw
+	// syntax.Node.Type (which packs identifier/operator hashes into the upper
+	// 24 bits). Compare against syntax/golang constants (golang.FuncDecl, etc.).
+	BaseType int32
 
 	// EnclosingReturnArity is the number of return values in the enclosing
 	// function (0 for void, >0 for functions returning values). Used by the
@@ -42,9 +48,6 @@ type CloneNode struct {
 	// actionability layer uses this to distinguish re-export shims (aliases,
 	// non-actionable) from named type definitions (potentially actionable).
 	IsAlias bool
-
-	// Children are the direct sub-nodes in tree order.
-	Children []*CloneNode
 }
 
 // HasChildren returns true if the node has at least one child.
