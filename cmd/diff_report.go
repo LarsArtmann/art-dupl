@@ -96,15 +96,13 @@ func collectCurrentGroups(
 			}
 		}
 
-		clones, err := printer.ProcessClones(
-			os.ReadFile, uniq,
+		group, err := printer.NodesToGroup(
+			os.ReadFile, k, uniq,
 			printer.WithGenericsMinLines(mergedConfig.SuggestGenericsMinLines),
 		)
 		if err != nil {
 			return nil, fmt.Errorf("processing clones for group %s: %w", k, err)
 		}
-
-		group := domain.NewProcessedCloneGroup(k, clones)
 
 		if shouldSuppressGroup(group, suppression) && !suppression.ShowSuppressed {
 			continue

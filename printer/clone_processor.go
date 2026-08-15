@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/LarsArtmann/art-dupl/domain"
+	duplerrors "github.com/LarsArtmann/art-dupl/errors"
 	"github.com/LarsArtmann/art-dupl/printer/actionability"
 	"github.com/LarsArtmann/art-dupl/syntax"
 	"github.com/LarsArtmann/art-dupl/syntax/golang"
@@ -281,14 +282,18 @@ func collectNamesPreOrder(nodes []*syntax.Node) []string {
 }
 
 // NodesToGroup converts raw syntax.Node groups into a ProcessedCloneGroup.
+// Options are forwarded to ProcessClones (e.g. WithGenericsMinLines).
 func NodesToGroup(
 	fread ReadFile,
 	hash string,
 	dups [][]*syntax.Node,
+	opts ...ProcessOption,
 ) (domain.ProcessedCloneGroup, error) {
-	clones, err := ProcessClones(fread, dups)
+	clones, err := ProcessClones(fread, dups, opts...)
 	if err != nil {
-		return domain.ProcessedCloneGroup{}, fmt.Errorf("process clones for hash %s: %w", hash, err)
+		return domain.ProcessedCloneGroup{}, duplerrors.Wrapf(
+			err, duplerrors.AnalysisError, "process clones for hash %s", hash,
+		)
 	}
 
 	return domain.NewProcessedCloneGroup(hash, clones), nil

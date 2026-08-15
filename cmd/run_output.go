@@ -16,10 +16,10 @@ import (
 // Passing it as a single value avoids 3-parameter function signatures that are
 // prone to argument-swap bugs.
 type SuppressionConfig struct {
-	SuppressTestLow  bool
-	TestThreshold    int
-	MinLines         int
-	MinTokens        int
+	SuppressTestLow bool
+	TestThreshold   int
+	MinLines        int
+	MinTokens       int
 	// GenericsMinLines gates generics-extraction candidacy (classification-time
 	// precision filter, unlike the fields above which suppress whole groups).
 	// 0 disables the gate.
@@ -162,13 +162,14 @@ func printCloneGroups(
 			hs.SetHash(k)
 		}
 
-		clones, err := printer.ProcessClones(fread, uniq, printer.WithGenericsMinLines(suppression.GenericsMinLines))
+		group, err := printer.NodesToGroup(
+			fread, k, uniq,
+			printer.WithGenericsMinLines(suppression.GenericsMinLines),
+		)
 		if err != nil {
 			return errors.Wrapf(err, errors.AnalysisError,
 				"failed to process clones for hash %s", k)
 		}
-
-		group := domain.NewProcessedCloneGroup(k, clones)
 
 		if shouldSuppressGroup(group, suppression) {
 			stats.SuppressedOther++
