@@ -26,12 +26,12 @@ Over three work blocks this session, I built a complete Astro + Starlight docume
 | 6   | **Public assets**                | `favicon.svg`, `manifest.json`, `robots.txt`, `theme-init.js`, `animations.js`, `copy-code.js`, `header.js`                                                                                                                                                                             |
 | 7   | **GitHub metadata**              | Description (200 chars), Homepage URL set to `https://art-dupl.lars.software`, 12 topics added                                                                                                                                                                                          |
 | 8   | **Firebase config upgraded**     | `website/firebase.json` now has full security headers (HSTS, X-Frame-Options DENY, Permissions-Policy, CORP, COOP, X-Content-Type-Options, X-XSS-Protection, Referrer-Policy), split caching strategy (immutable for assets, must-revalidate for HTML), `/docs/*` redirect, 404 caching |
-| 9   | **Deploy workflow upgraded**     | Two-job pattern (build → deploy) with `npm ci`, `astro check`, HTML validation, artifact upload/download, `GOOGLE_APPLICATION_CREDENTIALS` service account auth, concurrency groups, PR builds (no deploy)                                                                              |
+| 9   | **Deploy workflow upgraded**     | Two-job pattern (build → deploy) with `pnpm install --frozen-lockfile`, `astro check`, HTML validation, artifact upload/download, `GOOGLE_APPLICATION_CREDENTIALS` service account auth, concurrency groups, PR builds (no deploy)                                                                              |
 | 10  | **DNS record added**             | CNAME `art-dupl.lars.software` → `art-dupl.web.app.` added to `/home/lars/projects/domains/lars.software.tf` matching the exact pattern of gogenfilter, atomicwrite, and all other subdomains                                                                                           |
 | 11  | **URLs updated everywhere**      | All canonical URLs updated from `art-dupl.web.app` to `art-dupl.lars.software` (README, astro.config.mjs, config.ts, package.json, robots.txt)                                                                                                                                          |
 | 12  | **Old static site removed**      | `site/` directory, root `firebase.json`, root `.firebaserc` trashed. Stale `.gitignore` entry removed                                                                                                                                                                                   |
 | 13  | **Build verified**               | Website builds to 15 pages successfully. `go build ./...` still passes                                                                                                                                                                                                                  |
-| 14  | **package-lock.json exists**     | Generated locally, ready for commit so CI `npm ci` works                                                                                                                                                                                                                                |
+| 14  | **package-lock.json exists**     | Generated locally, ready for commit so CI `pnpm install --frozen-lockfile` works                                                                                                                                                                                                                                |
 
 ---
 
@@ -40,7 +40,7 @@ Over three work blocks this session, I built a complete Astro + Starlight docume
 | #   | Item                            | What's Done                                                                                 | What's Missing                                                                                                                  |
 | --- | ------------------------------- | ------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
 | 1   | **Website visual verification** | Builds to 15 HTML pages successfully                                                        | Never previewed in browser. No visual QA. Colors/layout/icons/responsiveness could have rendering issues                        |
-| 2   | **Deploy workflow CI**          | YAML written with two-job pattern, `npm ci`, astro check, HTML validation, artifact passing | Not tested end-to-end. Uses `FIREBASE_SERVICE_ACCOUNT` secret which may not exist yet (old workflow used `FIREBASE_TOKEN`)      |
+| 2   | **Deploy workflow CI**          | YAML written with two-job pattern, `pnpm install --frozen-lockfile`, astro check, HTML validation, artifact passing | Not tested end-to-end. Uses `FIREBASE_SERVICE_ACCOUNT` secret which may not exist yet (old workflow used `FIREBASE_TOKEN`)      |
 | 3   | **DNS configuration**           | CNAME record added to Terraform `.tf` file                                                  | Terraform not applied. Firebase custom domain not added in console. SSL cert not provisioned                                    |
 | 4   | **OG image**                    | Old `site/og-image.svg` was removed                                                         | Website has NO OG image. Social sharing will show no preview. No `<meta og:image>` tags in LandingLayout                        |
 | 5   | **HTML/TS validation**          | `.htmlvalidate.json` configured, `astro check` in CI workflow                               | `astro check` never run locally. HTML validation never run. Both set to `continue-on-error: true` in CI so errors won't block   |
@@ -58,7 +58,7 @@ Over three work blocks this session, I built a complete Astro + Starlight docume
 | 4   | **Terraform apply**                       | DNS CNAME exists in `.tf` file but not applied to Namecheap                                                                                                                                                                                                                                             |
 | 5   | **Provision SSL certificate**             | Firebase auto-provisions after custom domain is added and DNS propagates. Requires the above two steps first                                                                                                                                                                                            |
 | 6   | **`FIREBASE_SERVICE_ACCOUNT` secret**     | New deploy workflow uses service account JSON auth (matching gogenfilter pattern). Old workflow used `FIREBASE_TOKEN`. This secret must be added to GitHub                                                                                                                                              |
-| 6   | **Visual QA**                             | Never ran `npm run preview` or opened any page in a browser                                                                                                                                                                                                                                             |
+| 6   | **Visual QA**                             | Never ran `pnpm run preview` or opened any page in a browser                                                                                                                                                                                                                                             |
 | 7   | **Mobile responsive testing**             | Tailwind responsive classes used but never tested                                                                                                                                                                                                                                                       |
 | 8   | **Link checking**                         | No verification that all internal doc links resolve correctly                                                                                                                                                                                                                                           |
 | 9   | **Lighthouse audit**                      | Not run                                                                                                                                                                                                                                                                                                 |
@@ -88,7 +88,7 @@ Over three work blocks this session, I built a complete Astro + Starlight docume
 | #   | Area                                    | Improvement                                                                                                                                                                                                                                            |
 | --- | --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | 1   | **Always commit incrementally**         | Should have committed after README, after website build, after Firebase config — not left everything uncommitted                                                                                                                                       |
-| 2   | **Visual QA is non-negotiable**         | Should have run `npm run preview` and verified at least the landing page before declaring done                                                                                                                                                         |
+| 2   | **Visual QA is non-negotiable**         | Should have run `pnpm run preview` and verified at least the landing page before declaring done                                                                                                                                                         |
 | 3   | **Test code examples**                  | SDK guide code examples should be compile-tested                                                                                                                                                                                                       |
 | 4   | **OG image**                            | Need a proper social sharing image — every other LarsArtmann project site has one                                                                                                                                                                      |
 | 5   | **Doc accuracy audit**                  | Cross-reference every flag default and JSON output field against actual source code                                                                                                                                                                    |
@@ -110,7 +110,7 @@ Over three work blocks this session, I built a complete Astro + Starlight docume
 4. **Remove old `FIREBASE_TOKEN` secret** from GitHub if it exists
 5. **Push both repos** to trigger CI
 6. **Verify deploy workflow succeeds** end-to-end
-7. **Run `npm run preview` locally** and visually QA the landing page
+7. **Run `pnpm run preview` locally** and visually QA the landing page
 8. **Fix any visual issues** found during preview
 
 ### DNS & Firebase Domain Setup
@@ -125,8 +125,8 @@ Over three work blocks this session, I built a complete Astro + Starlight docume
 
 14. **Generate OG image** for social sharing (`website/public/og-image.svg` or dynamic OG API route)
 15. **Add `<meta og:image>` tags** to LandingLayout.astro
-16. **Run `npx astro check`** locally and fix TypeScript errors
-17. **Run HTML validation** (`npx html-validate "dist/**/*.html"`) and fix errors
+16. **Run `pnpm dlx astro check`** locally and fix TypeScript errors
+17. **Run HTML validation** (`pnpm dlx html-validate "dist/**/*.html"`) and fix errors
 18. **Remove `continue-on-error: true`** from astro check and HTML validation in CI once errors are fixed
 19. **Run Lighthouse audit** on the deployed site
 20. **Fix Lighthouse issues** (performance, accessibility, SEO, best practices)
@@ -169,7 +169,7 @@ Over three work blocks this session, I built a complete Astro + Starlight docume
 45. **Add `website` apps to root `flake.nix`** (`nix run .#website-dev`, `nix run .#website-build`)
 46. **Set up Firebase preview channels** for PR previews
 47. **Add lighthouse CI** (gogenfilter has `.github/workflows/lighthouse.yml`)
-48. **Add Dependabot config** for website npm dependencies
+48. **Add Dependabot config** for website pnpm dependencies
 49. **Consider shared Firebase project** — move art-dupl hosting to `lars-software` project like gogenfilter/atomicwrite for consistency
 50. **Add `lighthouserc.json`** for automated performance regression checks
 

@@ -119,6 +119,6 @@ This gives every audience the best path:
 
 ## Non-goals / what NOT to build
 
-- A **JavaScript action** (needs Node build + `@actions/*` deps) — overkill; composite + bash is enough and ships with zero npm.
+- A **JavaScript action** (needs Node build + `@actions/*` deps) — overkill; composite + bash is enough and ships with zero pnpm.
 - A **Marketplace listing** right away — optional follow-up; `uses:` works without it.
 - Replacing Homebrew/Nix/Scoop/deb/rpm — those serve other surfaces; leave them.

@@ -103,7 +103,7 @@ Remaining items from previous reports that are NOT bugs but enhancements:
 **Can you run `firebase deploy`?** The site is complete and all bugs are fixed. The only blocker between this and a live website is running:
 
 ```
-npm install -g firebase-tools
+pnpm add -g firebase-tools
 firebase login
 firebase deploy --only hosting
 ```

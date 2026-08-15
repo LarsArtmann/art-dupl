@@ -192,7 +192,7 @@ In `cmd/diff_report.go`, I changed `ProcessClones` error handling from `return e
 
 26. Implement TTY auto-detection for HTML output (F034)
 27. Implement pattern label validation — reject unknown labels with clear error (F078)
-28. Make T14 a real SARIF schema validator (download schema, validate with `npx @microsoft/sarif-cli validate` or Go library)
+28. Make T14 a real SARIF schema validator (download schema, validate with `pnpm dlx @microsoft/sarif-cli validate` or Go library)
 29. Add local pre-commit git hook that runs `scripts/check-disabled-linters.sh` — stops daemon regression at commit time
 30. Expand T11 interface-method pattern to scan `InterfaceType` declarations in the same package
 31. Expand T12 templ normalization to standalone identifiers (not just field access)
@@ -230,7 +230,7 @@ In `cmd/diff_report.go`, I changed `ProcessClones` error handling from `return e
 
 The plan (F078) says "reject unknown labels with a clear error." But silent ignoring is more forward-compatible (new pattern labels in future versions won't break old configs). Which behavior do you want? This affects config-file robustness vs. fail-fast ergonomics.
 
-### 2. Should T14 (SARIF validation) use an external tool (`npx @microsoft/sarif-cli validate`) or a Go library?
+### 2. Should T14 (SARIF validation) use an external tool (`pnpm dlx @microsoft/sarif-cli validate`) or a Go library?
 
 The external tool adds a Node.js dependency to CI. A Go library (like `github.com/owenrumney/go-sarif/v2`) can validate structurally but may not match the official JSON schema exactly. Which approach do you prefer? This determines the Nix check complexity.
 

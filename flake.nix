@@ -149,6 +149,14 @@
             format = config.treefmt.build.check self;
             build = config.packages.default;
 
+            # Fast vendorHash drift check: forces realization of the goModules
+            # FOD. If vendorHash doesn't match go.sum, the FOD fails with a
+            # clear hash mismatch error — before any Go code compiles.
+            vendor-hash = pkgs.runCommand "vendor-hash" { } ''
+              echo "vendor hash verified: ${config.packages.default.goModules}"
+              touch $out
+            '';
+
             test = config.packages.default.overrideAttrs (old: {
               name = "${old.pname}-test";
               doCheck = true;

@@ -25,7 +25,7 @@ Built a complete Astro + Starlight documentation website, rewrote the README as 
 | 5   | **Brand theming**                | Amber/gold (#e8a020) accent matching existing site, Syne + JetBrains Mono fonts, dark/light mode, starlight.css color mapping                                              |
 | 6   | **Public assets**                | favicon.svg, manifest.json, robots.txt, theme-init.js, animations.js, copy-code.js, header.js                                                                              |
 | 7   | **GitHub metadata**              | Description (200 chars), Homepage URL set to `https://art-dupl.web.app`, 12 topics added                                                                                   |
-| 8   | **Deploy workflow**              | `.github/workflows/deploy-site.yml` updated for Astro build (`npm ci` + `npm run build` + Firebase deploy from `website/`)                                                 |
+| 8   | **Deploy workflow**              | `.github/workflows/deploy-site.yml` updated for Astro build (`pnpm install --frozen-lockfile` + `pnpm run build` + Firebase deploy from `website/`)                                                 |
 | 9   | **Old site removed**             | `site/` directory, root `firebase.json`, root `.firebaserc` trashed. Stale `.gitignore` entry (`!site/*.html`) removed                                                     |
 | 10  | **Go build verified**            | `go build ./...` still passes after all changes                                                                                                                            |
 
@@ -37,7 +37,7 @@ Built a complete Astro + Starlight documentation website, rewrote the README as 
 | --- | ------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
 | 1   | **Website visual verification** | Builds to 15 pages successfully                                     | Never previewed in browser — no visual QA. Colors/layout could have rendering issues                                            |
 | 2   | **README badge accuracy**       | 5 badges added (Go Report Card, CI, License, Go Reference, Website) | codecov badge removed — was it intentionally abandoned? Also Go Reference badge may 404 if pkg.go.dev hasn't indexed the module |
-| 3   | **Deploy workflow CI**          | YAML written with `npm ci`, cache, build, deploy                    | Not tested end-to-end. `npm ci` requires `package-lock.json` to be committed — it exists but is untracked                       |
+| 3   | **Deploy workflow CI**          | YAML written with `pnpm install --frozen-lockfile`, cache, build, deploy                    | Not tested end-to-end. `pnpm install --frozen-lockfile` requires `package-lock.json` to be committed — it exists but is untracked                       |
 | 4   | **Starlight sidebar config**    | 13 docs pages + sidebar groups configured                           | Sidebar may have ordering issues or missing pages — not visually verified                                                       |
 | 5   | **OG image**                    | Old `site/og-image.svg` was removed                                 | Website has NO OG image. Social sharing will show no preview image                                                              |
 | 6   | **Website `.gitignore`**        | Written with `dist/`, `.astro/`, `node_modules/`                    | Root `.gitignore` still has `dist/` globally — fine for website but could be confusing                                          |
@@ -50,9 +50,9 @@ Built a complete Astro + Starlight documentation website, rewrote the README as 
 | --- | -------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
 | 1   | **Commit the changes**                                   | Nothing is committed. All work is uncommitted in working tree                                                                                 |
 | 2   | **Push and deploy**                                      | Website not deployed. Firebase CI hasn't run. Site is still old version at `art-dupl.web.app`                                                 |
-| 3   | **package-lock.json committed**                          | Exists locally but untracked. CI (`npm ci`) will fail without it                                                                              |
-| 4   | **HTML validation**                                      | `.htmlvalidate.json` exists but `npm run build` doesn't run validation. No HTML validation done                                               |
-| 5   | **TypeScript check**                                     | `npm run typecheck` (astro check) never run                                                                                                   |
+| 3   | **package-lock.json committed**                          | Exists locally but untracked. CI (`pnpm install --frozen-lockfile`) will fail without it                                                                              |
+| 4   | **HTML validation**                                      | `.htmlvalidate.json` exists but `pnpm run build` doesn't run validation. No HTML validation done                                               |
+| 5   | **TypeScript check**                                     | `pnpm run typecheck` (astro check) never run                                                                                                   |
 | 6   | **Lighthouse / performance audit**                       | Not run                                                                                                                                       |
 | 7   | **Accessibility audit**                                  | Not run (though skip-link, ARIA labels, focus styles are present)                                                                             |
 | 8   | **Mobile responsive testing**                            | Tailwind responsive classes used but never tested                                                                                             |
@@ -69,7 +69,7 @@ Built a complete Astro + Starlight documentation website, rewrote the README as 
 | #   | Issue                                              | Severity | Details                                                                                                                                                                                                                                         |
 | --- | -------------------------------------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 1   | **Website has NO commit**                          | CRITICAL | All website files are untracked. If session ends, work is only on disk — not in git history                                                                                                                                                     |
-| 2   | **package-lock.json not committed**                | HIGH     | Deploy workflow uses `npm ci` which fails without lock file in git                                                                                                                                                                              |
+| 2   | **package-lock.json not committed**                | HIGH     | Deploy workflow uses `pnpm install --frozen-lockfile` which fails without lock file in git                                                                                                                                                                              |
 | 3   | **Old Firebase hosting still serving old `site/`** | HIGH     | `art-dupl.web.app` still shows old hand-written HTML. Until `website/dist/` is deployed, the public URL shows stale content                                                                                                                     |
 | 4   | **No visual QA whatsoever**                        | HIGH     | Built 15 pages and 15 components without ever looking at any of them in a browser. Could have broken layouts, wrong colors, invisible text, etc.                                                                                                |
 | 5   | **Hero code is fake**                              | MEDIUM   | The hero terminal output is fabricated illustrative content, not actual art-dupl output. Format may differ from reality                                                                                                                         |
@@ -82,7 +82,7 @@ Built a complete Astro + Starlight documentation website, rewrote the README as 
 
 | #   | Area                            | Improvement                                                                                                                                                                                |
 | --- | ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| 1   | **Visual QA process**           | Should have run `npm run preview` and screenshot/verified at least the landing page before declaring done                                                                                  |
+| 1   | **Visual QA process**           | Should have run `pnpm run preview` and screenshot/verified at least the landing page before declaring done                                                                                  |
 | 2   | **OG image**                    | Generate a proper OG image (`website/public/og-image.svg` or dynamic OG via API route like gogenfilter does)                                                                               |
 | 3   | **Doc accuracy**                | Cross-reference every flag default in CLI Flags doc against actual `cmd/flags.go` source                                                                                                   |
 | 4   | **README stale doc references** | Repository has HOW_TO_USE.md, USAGE.md, SDK_DESIGN.md, WHAT_THIS_PROJECT_IS_NOT.md, PERFORMANCE_OPTIMIZATION.md, PARTS.md, MIGRATION_QUICK_START.md — README doesn't mention most of these |
@@ -102,8 +102,8 @@ Built a complete Astro + Starlight documentation website, rewrote the README as 
 
 1. Commit all website + README + metadata changes
 2. Push to trigger deploy-site workflow
-3. Verify `npm ci` succeeds in CI (needs committed `package-lock.json`)
-4. Run `npm run typecheck` — fix any TypeScript errors
+3. Verify `pnpm install --frozen-lockfile` succeeds in CI (needs committed `package-lock.json`)
+4. Run `pnpm run typecheck` — fix any TypeScript errors
 5. Preview website locally and do visual QA on landing page
 6. Preview at least 2-3 doc pages to verify Starlight renders correctly
 7. Fix any visual issues found during preview

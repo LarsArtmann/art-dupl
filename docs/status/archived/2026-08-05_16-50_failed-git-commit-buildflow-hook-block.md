@@ -337,7 +337,7 @@ divergence is visible but I don't know your preference for future sessions.
 - `templ-generate`
 - `govulncheck`
 - `golangci-lint-config-verify`
-- `shellcheck`, `codespell`, `hadolint`, `license-check`, `npm-audit`
+- `shellcheck`, `codespell`, `hadolint`, `license-check`, `pnpm-audit`
 
 ---
 

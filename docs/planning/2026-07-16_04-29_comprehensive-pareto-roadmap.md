@@ -88,7 +88,7 @@ Medium-effort items that complete the feature set and address known limitations.
 | 24  | Integration test: synthetic templ project with known clones                      | E2E coverage for templ pipeline                                | 1h     | ZERO           |
 | 25  | Website visual QA (landing + 3 doc pages)                                        | Never visually verified. Could have broken layouts.            | 1h     | ZERO           |
 | 26  | Generate OG image + add meta tags                                                | Professional social sharing appearance                         | 45min  | ZERO           |
-| 27  | Run `npx astro check` + fix TS errors                                            | TypeScript correctness                                         | 30min  | LOW            |
+| 27  | Run `pnpm dlx astro check` + fix TS errors                                            | TypeScript correctness                                         | 30min  | LOW            |
 | 28  | Unify Type/Fingerprint model (remove DecodeBaseType)                             | Code clarity: every consumer needs `DecodeBaseType(node.Type)` | 2h     | MEDIUM         |
 | 29  | Update DOMAIN_LANGUAGE.md (sendCtx, CloneNode, --include-generated semantics)    | Completeness for domain vocabulary                             | 30min  | ZERO           |
 | 30  | Verify + fix website docs accuracy (flag defaults, JSON structure, SARIF schema) | Docs written from AGENTS.md, not verified against source       | 1h     | ZERO           |
@@ -167,10 +167,10 @@ Sorted by Impact × (1/Effort) × Customer Value. All 120 tasks included.
 | **P2**   | T4   | Testing   | BDD tests for templ semantic mode (multi-element, callee encoding)                      | Coverage                    | 1h       | MEDIUM         | ZERO   |
 | **P2**   | T5   | Testing   | Property-based/fuzz test for normalization pipeline                                     | Edge case discovery         | 1h       | MEDIUM         | ZERO   |
 | **P2**   | T6   | Testing   | Integration test: synthetic templ project with known clones                             | E2E coverage                | 1h       | MEDIUM         | ZERO   |
-| **P2**   | W1   | Website   | Visual QA (landing + 3 doc pages via `npm run preview`)                                 | UX correctness              | 1h       | HIGH           | ZERO   |
+| **P2**   | W1   | Website   | Visual QA (landing + 3 doc pages via `pnpm run preview`)                                 | UX correctness              | 1h       | HIGH           | ZERO   |
 | **P2**   | W2   | Website   | Generate OG image for social sharing                                                    | Professional appearance     | 30min    | MEDIUM         | ZERO   |
 | **P2**   | W3   | Website   | Add OG image meta tags to LandingLayout                                                 | Social sharing              | 15min    | MEDIUM         | ZERO   |
-| **P2**   | W4   | Website   | Run `npx astro check` + fix TS errors                                                   | Code quality                | 30min    | MEDIUM         | LOW    |
+| **P2**   | W4   | Website   | Run `pnpm dlx astro check` + fix TS errors                                                   | Code quality                | 30min    | MEDIUM         | LOW    |
 | **P2**   | CQ9  | Code      | Unify Type/Fingerprint model (remove DecodeBaseType)                                    | Code clarity                | 2h       | LOW            | MEDIUM |
 | **P2**   | DH19 | Docs      | Update DOMAIN_LANGUAGE.md (sendCtx, CloneNode, --include-generated semantics)           | Completeness                | 30min    | MEDIUM         | ZERO   |
 | **P2**   | DH22 | Docs      | Verify website docs accuracy (flag defaults, JSON output, SARIF schema)                 | Accuracy                    | 1h       | MEDIUM         | ZERO   |
@@ -232,7 +232,7 @@ Sorted by Impact × (1/Effort) × Customer Value. All 120 tasks included.
 | **P3**   | I7   | Infra     | Add website apps to root flake.nix                                                      | DX                          | 1h       | LOW            | LOW    |
 | **P3**   | I8   | Infra     | Run statix on flake.nix                                                                 | Nix quality                 | 30min    | LOW            | LOW    |
 | **P3**   | I9   | Infra     | Review .go-arch-lint.yml for enforcement gaps                                           | Safety                      | 30min    | LOW            | LOW    |
-| **P3**   | I12  | Infra     | Add Dependabot config for website npm                                                   | Maintenance                 | 15min    | LOW            | LOW    |
+| **P3**   | I12  | Infra     | Add Dependabot config for website pnpm                                                   | Maintenance                 | 15min    | LOW            | LOW    |
 | **P3**   | I13  | Infra     | Set up Firebase preview channels for PRs                                                | DX                          | 1h       | LOW            | LOW    |
 | **P3**   | I14  | Infra     | Add lighthouse CI                                                                       | Perf regression             | 1h       | LOW            | LOW    |
 | **P3**   | F10  | Future    | Stats FP rate estimate based on actionability distribution                              | Insight                     | 30min    | LOW            | ZERO   |
@@ -429,12 +429,12 @@ Every task above is broken into max-12min subtasks. Sorted by priority (P0 first
 | 65  | Write fuzz target: `FuzzNormalizeFunction`                                  | T5     | 10min | No panics                         |
 | 66  | Create synthetic templ project fixture with known clones                    | T6     | 10min | Fixture exists                    |
 | 67  | Write integration test running full pipeline on fixture                     | T6     | 10min | Test passes                       |
-| 68  | Run `cd website && npm run preview`                                         | W1     | 5min  | Server starts                     |
+| 68  | Run `cd website && pnpm run preview`                                         | W1     | 5min  | Server starts                     |
 | 69  | Visual QA landing page (hero, features, comparison, CTA)                    | W1     | 10min | No broken layouts                 |
 | 70  | Visual QA 3 doc pages (installation, detection-methods, output-formats)     | W1     | 10min | Pages render                      |
 | 71  | Create OG image SVG (`website/public/og-image.svg`)                         | W2     | 10min | File exists                       |
 | 72  | Add `<meta property="og:image">` tags to LandingLayout.astro                | W3     | 5min  | Tags present                      |
-| 73  | Run `cd website && npx astro check`                                         | W4     | 5min  | Check output                      |
+| 73  | Run `cd website && pnpm dlx astro check`                                         | W4     | 5min  | Check output                      |
 | 74  | Fix any TypeScript errors found                                             | W4     | 10min | 0 errors                          |
 | 75  | Read `syntax/syntax.go` Val() and DecodeBaseType()                          | CQ9    | 5min  | Understand model                  |
 | 76  | Plan unification: make Fingerprint universal or remove DecodeBaseType       | CQ9    | 10min | Plan written                      |
@@ -451,7 +451,7 @@ Every task above is broken into max-12min subtasks. Sorted by priority (P0 first
 | 87  | Add `CacheVersion` bump mechanism for serialization format changes          | I10    | 10min | Mechanism exists                  |
 | 88  | Add Fingerprint field to incremental cache serialization                    | I11    | 10min | Cache stores Fingerprint          |
 | 89  | Write benchmark: `BenchmarkSemanticVsExactVsStructural`                     | T8     | 10min | Benchmark runs                    |
-| 90  | Run `cd website && npx html-validate "dist/**/*.html"`                      | W5     | 5min  | Validation output                 |
+| 90  | Run `cd website && pnpm dlx html-validate "dist/**/*.html"`                      | W5     | 5min  | Validation output                 |
 | 91  | Fix any HTML validation errors                                              | W5     | 10min | 0 errors                          |
 | 92  | Remove `continue-on-error: true` from deploy-site.yml                       | W6     | 5min  | YAML updated                      |
 | 93  | Run Lighthouse on deployed site                                             | W7     | 10min | Score recorded                    |

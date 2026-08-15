@@ -120,7 +120,7 @@ Nothing is totally fucked up. All previously identified bugs have been fixed:
 
 1. **Extract CSS/JS to external files** — 1,100+ lines inline CSS hurts caching. Firebase Hosting's cache headers are already configured for `.css` and `.js` files. Just need to extract them.
 
-2. **Firebase deploy automation** — Add a GitHub Actions workflow that deploys `site/` to Firebase on push to main. Use `firebase-tools` npm package.
+2. **Firebase deploy automation** — Add a GitHub Actions workflow that deploys `site/` to Firebase on push to main. Use `firebase-tools` pnpm package.
 
 3. **`.firebase/` in `.gitignore`** — The Firebase login cache directory should be excluded.
 
@@ -180,7 +180,7 @@ Nothing is totally fucked up. All previously identified bugs have been fixed:
 
 Firebase CLI is not installed in this environment. To deploy:
 
-1. `npm install -g firebase-tools`
+1. `pnpm add -g firebase-tools`
 2. `firebase login` (requires browser auth)
 3. `firebase deploy --only hosting`
 

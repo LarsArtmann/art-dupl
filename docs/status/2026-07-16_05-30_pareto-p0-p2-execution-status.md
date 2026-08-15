@@ -87,7 +87,7 @@ Executed 38 tasks from the comprehensive Pareto roadmap (`docs/planning/2026-07-
 | W1  | Website visual QA                          | Cannot run browser preview in CLI session  |
 | W2  | OG image generation                        | Requires image creation tooling            |
 | W3  | OG meta tags                               | Depends on OG image                        |
-| W4  | `npx astro check` + TS fixes               | Website is in subdirectory, separate build |
+| W4  | `pnpm dlx astro check` + TS fixes               | Website is in subdirectory, separate build |
 | CQ9 | Unify Type/Fingerprint model               | MEDIUM risk, deferred (needs ADR first)    |
 | I10 | Cache versioning for serialization changes | MEDIUM risk, deferred                      |
 | I11 | Store Fingerprint in incremental cache     | MEDIUM risk, deferred                      |
@@ -182,7 +182,7 @@ All P3 tasks from the roadmap were skipped. Key ones:
 17. Website visual QA (landing + 3 doc pages)
 18. Generate OG image for social sharing
 19. Add OG image meta tags to LandingLayout
-20. Run `npx astro check` + fix TS errors
+20. Run `pnpm dlx astro check` + fix TS errors
 21. Run HTML validation on dist output
 22. Remove `continue-on-error: true` from deploy-site.yml CI
 23. Run Lighthouse audit + fix issues
@@ -221,7 +221,7 @@ All P3 tasks from the roadmap were skipped. Key ones:
 47. Pin golangci-lint version in flake.nix
 48. Run statix on flake.nix
 49. Review .go-arch-lint.yml for enforcement gaps
-50. Add Dependabot config for website npm deps
+50. Add Dependabot config for website pnpm deps
 
 ---
 

@@ -124,7 +124,7 @@ Completed site infrastructure: extracted CSS/JS to external files, added Firebas
 
 **Ready to deploy?** The site is production-ready. You need to:
 
-1. `npm install -g firebase-tools`
+1. `pnpm add -g firebase-tools`
 2. `firebase login`
 3. `firebase deploy --only hosting`
 
