@@ -5,7 +5,7 @@
 
 ## Overview
 
-**art-dupl** is a Go tool for finding code clones using suffix tree algorithms and hash-based detection. It analyzes abstract syntax trees (ASTs) to find structural code clones while ignoring literal values. Supports multi-method detection, professional CLI (Fang/Cobra), 7 output formats, and 29 actionability patterns. Tuned on real-world Go projects (6,000+ Go files, 320+ templ files) to minimize false positives at the default threshold.
+**art-dupl** is a Go tool for finding code clones using suffix tree algorithms and hash-based detection. It analyzes abstract syntax trees (ASTs) to find structural code clones while ignoring literal values. Supports multi-method detection, professional CLI (Fang/Cobra), 7 output formats, and 30 actionability patterns. Tuned on real-world Go projects (6,000+ Go files, 320+ templ files) to minimize false positives at the default threshold.
 
 ---
 
@@ -97,7 +97,7 @@
 | **Clone Type Classification** | FULLY_FUNCTIONAL | Labels each clone type-1/2/3 in JSON, SARIF, and `--rich-text` output                                                                                                                                                                                                                                                                                                    |
 | **Mutual Exclusion**          | FULLY_FUNCTIONAL | `--semantic` / `--exact` / `--structural` are mutually exclusive                                                                                                                                                                                                                                                                                                         |
 | **Type-Aware Mode**           | FULLY_FUNCTIONAL | `--type-aware` uses `go/types` to encode variable types into hashes, eliminating same-method-different-receiver-type false positives (e.g. `time.Time.String` vs `*big.Int.String`). Also enables type-aware interface-method detection (same-package interface scanning for the `interface-method` actionability pattern). 10-100x slower. Follow-up items in TODO_LIST |
-| **Generics-Extraction Enhancer** | PARTIALLY_FUNCTIONAL | `--suggest-generics` highlights clones where the algorithm is identical but local variable types differ — the class of duplication Go generics can eliminate. Uses type-erased hashing so structurally-identical functions on different types still match, then classifies by comparing `VarType` at corresponding positions. **Enhancer, not filter**: all clone groups are shown; candidates are annotated with `generics:` hint (text) and `generics_candidate`/`generics_hint` fields (JSON). Same ~100x type-checking cost as `--type-aware`. Takes precedence when both flags are set. |
+| **Generics-Extraction Enhancer** | FULLY_FUNCTIONAL | `--suggest-generics` highlights clones where the algorithm is identical but local variable types differ — the class of duplication Go generics can eliminate. Uses type-erased hashing so structurally-identical functions on different types still match, then classifies by comparing `VarType` at corresponding positions. **Enhancer, not filter**: all clone groups are shown; candidates are annotated with `generics:` hint (text) and `generics_candidate`/`generics_hint` fields (JSON, SARIF properties). Precision gates: ≥2 divergent type positions, min-lines per instance (`--suggest-generics-min-lines`, default 4, 0 disables), no actionability-pattern match. Same ~100x type-checking cost as `--type-aware`; warns and wins when both flags are set. Covered by 4 BDD scenarios. |
 
 **Note:** Default is semantic mode (alpha-normalized). Use `--exact` for verbatim name matching or `--structural` for shape-only analysis.
 
@@ -112,7 +112,7 @@
 | **Actionability Verdict**                | FULLY_FUNCTIONAL | Labels clones actionable vs non-actionable (test boilerplate, idioms, etc.)                                                                                     |
 | **Actionability Override**               | FULLY_FUNCTIONAL | `--no-actionability` disables filtering, showing ALL clones including boilerplate                                                                               |
 | **Disable Specific Pattern**             | FULLY_FUNCTIONAL | `--disable-pattern <label>` selectively re-enables a single boilerplate pattern                                                                                 |
-| **List Patterns**                        | FULLY_FUNCTIONAL | `--list-patterns` prints all 29 pattern labels (plus 4 property-engine labels)      |
+| **List Patterns**                        | FULLY_FUNCTIONAL | `--list-patterns` prints all 30 pattern labels (plus 4 property-engine labels)      |
 | **Explain Mode**                         | FULLY_FUNCTIONAL | `--explain` prints why each clone group was reported (type, actionability, category, extractability)                                                            |
 | **Property-Based Extractability Engine** | PARTIALLY_DONE   | Second-pass analysis using 4 computable properties (control-flow, ROI, parameterizability, confidence). Patterns run first, engine catches misses. See ADR-0017 |
 | **Confidence Tiers**                     | PARTIALLY_DONE   | Three-tier output: actionable / low-confidence / non-actionable with `confidence` field in JSON                                                                 |
@@ -163,8 +163,8 @@
 | **Memory-Compact Tree**   | FULLY_FUNCTIONAL | Suffix tree data stored as `[]TokenValue` (int32, 4 bytes) instead of `[]Token` (interface, 16 bytes). 75% pointer-array memory reduction.          |
 | **Incremental Analysis**  | FULLY_FUNCTIONAL | SHA-256 content-hash AST caching, `--incremental` flag, CacheVersion 3                                                                              |
 | **Git-Aware Incremental** | REMOVED          | `--since` flag removed (was a dead stub, never read). Only content-hash caching via `--incremental` works. Git-diff file selection not implemented. |
-| **Cache Management**      | FULLY_FUNCTIONAL | `--cache-dir`, `--clear-cache`, `--max-cache-entries`, file-based gob serialization, hysteresis pruning (110%/90%)                                   |
-| **In-Memory LRU Cache**   | FULLY_FUNCTIONAL | 512-entry `container/list`-based LRU on top of `FileCache`. O(1) hit, no gob deserialization. Deep-clone on read. (`cache/lru.go`)                 |
+| **Cache Management**      | FULLY_FUNCTIONAL | `--cache-dir`, `--clear-cache`, `--max-cache-entries`, `--memory-cache-entries`, file-based gob serialization, hysteresis pruning (110%/90%)                                   |
+| **In-Memory LRU Cache**   | FULLY_FUNCTIONAL | Configurable-entry (`--memory-cache-entries`, default 512) `container/list`-based LRU on top of `FileCache`. O(1) hit, no gob deserialization (~5x faster than disk, benchmark-proven in `BenchmarkFileCacheGet`). Deep-clone on read; `MemHits` surfaced in verbose stats. (`cache/lru.go`)                 |
 | **Parallel Incremental**  | FULLY_FUNCTIONAL | `ParseIncrementalParallel` worker pool + `singleflight.Group` dedup for byte-identical files (commit `94b5205`)                                     |
 | **Execution Timeout**     | FULLY_FUNCTIONAL | `--timeout` with context cancellation (default 30m)                                                                                                 |
 | **Performance Profiling** | EXPERIMENTAL     | Hidden `--profile` flag; pprof CPU/mem profile capture                                                                                              |
@@ -192,7 +192,7 @@
 | **Explain Mode**             | FULLY_FUNCTIONAL | `--explain` prints a per-group rationale (type, actionability, category, savings)   |
 | **Actionability Toggle**     | FULLY_FUNCTIONAL | `--no-actionability` shows all clones, including non-actionable boilerplate         |
 | **Disable Pattern**          | FULLY_FUNCTIONAL | `--disable-pattern <label>` re-enables a specific boilerplate pattern               |
-| **List Patterns**            | FULLY_FUNCTIONAL | `--list-patterns` prints all 29 pattern labels                                      |
+| **List Patterns**            | FULLY_FUNCTIONAL | `--list-patterns` prints all 30 pattern labels                                      |
 | **Threshold Recommendation** | FULLY_FUNCTIONAL | `--recommend-threshold` suggests CI gate and deep-audit thresholds                  |
 | **Token-Count Filter**       | FULLY_FUNCTIONAL | `--min-tokens N` suppresses clone groups where any clone has < N tokens             |
 | **Diff Report**              | FULLY_FUNCTIONAL | `--diff-report <baseline>` shows new/suppressed/resolved clones                     |
@@ -339,7 +339,7 @@ art-dupl --recommend-threshold ./src
 ### Pattern Control
 
 ```bash
-# List all 29 actionability pattern labels (plus 4 property-engine labels)
+# List all 30 actionability pattern labels (plus 4 property-engine labels)
 art-dupl --list-patterns
 
 # Re-enable a specific boilerplate pattern

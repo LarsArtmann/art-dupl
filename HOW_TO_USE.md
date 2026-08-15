@@ -399,9 +399,15 @@ art-dupl --suggest-generics -t 1 --json ./src
 **Tradeoffs:**
 
 - Same ~100x slower as `--type-aware` (full type checking required)
-- Takes precedence over `--type-aware` when both flags are set
+- Takes precedence over `--type-aware` when both flags are set (a warning is printed)
+- Candidates require ≥2 distinct positions with differing types and ≥4 lines per instance (tune or disable with `--suggest-generics-min-lines`, `0` disables the line gate)
 - Use `--min-tokens` to filter noise from small clone groups
-- Output shows `generics:` hint line with type differences (text) or `generics_candidate`/`generics_hint` fields (JSON)
+- Output shows `generics:` hint line with type differences (text), `generics_candidate`/`generics_hint` fields (JSON), or result properties (SARIF)
+
+```bash
+# Only annotate candidates where every instance spans at least 10 lines
+art-dupl --suggest-generics --suggest-generics-min-lines 10 -t 1 ./src
+```
 
 ### Token-Count Filtering (`--min-tokens`)
 

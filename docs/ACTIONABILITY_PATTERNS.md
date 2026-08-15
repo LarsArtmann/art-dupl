@@ -21,6 +21,7 @@ These patterns represent Go idioms that cannot be eliminated without breaking se
 | Test helper delegate  | `test-helper-delegate`         | 2-stmt body: `t.Helper()` + single delegate call (irreducible Go test boilerplate)                                                                                                                                                                                   | `t.Helper()` + `failIfNilf(t, got, ...)`    |
 | Guard clause          | `guard-clause`                 | IfStmt with return-only body and no else (boolean/value guard)                                                                                                                                                                                                       | `if !enabled { return }`                    |
 | Error wrapping        | `error-wrapping`               | `if err != nil { return fmt.Errorf(...) }`                                                                                                                                                                                                                           | Error wrapping idiom                        |
+| Error guard fallthrough | `error-guard-fallthrough`    | Multi-statement: leading error guard (`if err != nil { return ... }`) + tail of only trivial Assign/Return statements (HTTP-handler upserts, store-wrapper pairs)                                                                                                  | `if err != nil { return err }` + assigns   |
 | Assertion chain       | `assertion-chain`              | 3+ test assertion calls (Expect/Assert/Require)                                                                                                                                                                                                                      | `Expect(x).To(Equal(y))`                    |
 | Cobra boilerplate     | `cobra-boilerplate`            | `cobra.Command{}` or `fang.Command{}` struct literals                                                                                                                                                                                                                | CLI framework setup                         |
 | Test data pair        | `testdata-pair`                | All clones from `testdata/` directories                                                                                                                                                                                                                              | Golden/input file pairs                     |
@@ -38,7 +39,7 @@ These patterns represent Go idioms that cannot be eliminated without breaking se
 
 ## How It Works
 
-1. `EvaluateActionabilityWithLabel` runs 29 pattern checks in priority order.
+1. `EvaluateActionabilityWithLabel` runs 30 pattern checks in priority order.
 2. The first matching pattern wins (returns its `PatternLabel`).
 3. If no pattern matches, the group is **Actionable**.
 4. Only `semantic` detection mode runs actionability checks. `exact` and `structural` skip them.
@@ -64,23 +65,24 @@ Patterns are checked in this order (first match wins):
 14. Type alias block (2+ consecutive `type X = pkg.Y` re-export shims)
 15. Test helper delegate (`t.Helper()` + delegate call)
 16. Error wrapping
-17. Assertion chain
-18. Cobra boilerplate
-19. Test data pair
-20. Table-driven test
-21. Test scaffolding
-22. Data-dominated
-23. Describe table
-24. Builder callback
-25. Templ-rendering-idiom (`if len(x) == 0 { text } else { for ... }`)
-26. Defer-call (bare `defer cleanupFunc()` — Ident callee only)
-27. Test-framework-call (`t.Parallel()`, `b.Helper()`, `t.Cleanup()`)
-28. State-flag-mutation (`x.flag = true` single field assignment)
-29. Empty-default (`if x == "" { x = default }`)
+17. Error guard fallthrough (error guard + trivial Assign/Return tail)
+18. Assertion chain
+19. Cobra boilerplate
+20. Test data pair
+21. Table-driven test
+22. Test scaffolding
+23. Data-dominated
+24. Describe table
+25. Builder callback
+26. Templ-rendering-idiom (`if len(x) == 0 { text } else { for ... }`)
+27. Defer-call (bare `defer cleanupFunc()` — Ident callee only)
+28. Test-framework-call (`t.Parallel()`, `b.Helper()`, `t.Cleanup()`)
+29. State-flag-mutation (`x.flag = true` single field assignment)
+30. Empty-default (`if x == "" { x = default }`)
 
 ## Property-Based Classification Engine (Second Pass)
 
-After the 29 pattern-table checks run, a **property-based extractability engine** runs as a second-pass fallback. It evaluates four computable properties that define "harmful duplication" from first principles, catching false positives that the pattern table misses.
+After the 30 pattern-table checks run, a **property-based extractability engine** runs as a second-pass fallback. It evaluates four computable properties that define "harmful duplication" from first principles, catching false positives that the pattern table misses.
 
 See `docs/adr/0017-property-based-classification.md` for the full design.
 

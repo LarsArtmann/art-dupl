@@ -27,8 +27,8 @@
 ## Quality and Intelligence
 
 - **Interface-aware suppression (cross-package)**: Same-package interface detection via `go/types` is implemented (the `interface-method` pattern). Cross-package and stdlib interfaces still rely on the static name list (`commonInterfaceMethodNames`). Full call-graph analysis remains future work.
-- **Configurable actionability patterns**: `--disable-pattern <label>` and `--list-patterns` implemented. 29 denylist patterns + 4 property-engine labels currently active.
-- **ML-based actionability classification**: Train a model on labeled clone data to predict whether a clone is actionable, replacing the rule-based actionability patterns. Would handle edge cases the 29 current patterns miss.
+- **Configurable actionability patterns**: `--disable-pattern <label>` and `--list-patterns` implemented. 30 denylist patterns + 4 property-engine labels currently active.
+- **ML-based actionability classification**: Train a model on labeled clone data to predict whether a clone is actionable, replacing the rule-based actionability patterns. Would handle edge cases the 30 current patterns miss.
 - **Fixability score**: Property-based extractability engine implemented (ADR-0017) with 4 properties + confidence scoring. Three-tier output (actionable / low-confidence / non-actionable). Confidence values need calibration against real-world data. Could evolve into a continuous fixability score instead of binary Actionable/NonActionable.
 - **Nested-scope shadowing in alpha-normalization**: Current symbol table is flat (no nested-scope shadowing). Proper lexical scoping would improve Type-2 clone accuracy in deeply nested code.
 - **Type narrowing for interface-typed variables**: If a local has an interface type, two variables with the same interface type match even if their concrete types differ. Could add concrete-type awareness via flow analysis.
