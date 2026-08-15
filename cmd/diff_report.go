@@ -96,7 +96,10 @@ func collectCurrentGroups(
 			}
 		}
 
-		clones, err := printer.ProcessClones(os.ReadFile, uniq)
+		clones, err := printer.ProcessClones(
+			os.ReadFile, uniq,
+			printer.WithGenericsMinLines(mergedConfig.SuggestGenericsMinLines),
+		)
 		if err != nil {
 			return nil, fmt.Errorf("processing clones for group %s: %w", k, err)
 		}

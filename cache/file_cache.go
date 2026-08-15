@@ -58,6 +58,11 @@ const (
 )
 
 // FileCache provides caching for parsed AST nodes.
+//
+// LOCK ORDERING: when both locks are needed, FileCache.mu is always acquired
+// BEFORE the LRU's internal mutex (never the reverse). The LRU never calls
+// back into FileCache, so no deadlock is possible — preserve that property
+// when adding methods.
 type FileCache struct {
 	mu       sync.RWMutex
 	cacheDir string
@@ -78,21 +83,32 @@ type Metadata struct {
 type Stats struct {
 	Hits      int64
 	Misses    int64
-	Size      int // Number of cached entries
+	MemHits   int64 // In-memory LRU hits (no gob deserialization needed)
+	Size      int   // Number of cached entries
 	BytesUsed int64
 }
 
-// NewFileCache creates a new FileCache.
-// If cacheDir is empty, uses DefaultCacheDir.
+// NewFileCache creates a new FileCache with the default in-memory LRU
+// capacity. If cacheDir is empty, uses DefaultCacheDir.
 func NewFileCache(cacheDir string) *FileCache {
+	return NewFileCacheWithMemoryEntries(cacheDir, DefaultMemoryEntries)
+}
+
+// NewFileCacheWithMemoryEntries creates a new FileCache with a configurable
+// in-memory LRU capacity. Values <= 0 fall back to DefaultMemoryEntries.
+func NewFileCacheWithMemoryEntries(cacheDir string, memoryEntries int) *FileCache {
 	if cacheDir == "" {
 		cacheDir = DefaultCacheDir
+	}
+
+	if memoryEntries <= 0 {
+		memoryEntries = DefaultMemoryEntries
 	}
 
 	fc := &FileCache{
 		cacheDir: cacheDir,
 		metadata: newMetadata(),
-		mem:      newLRU(defaultMemoryEntries),
+		mem:      newLRU(memoryEntries),
 	}
 
 	// Ensure cache directories exist (tests verify this)
@@ -182,10 +198,16 @@ func (fc *FileCache) Get(contentHash string) ([]*syntax.Node, bool) {
 	fc.mem.put(contentHash, nodes)
 
 	// Return a clone so the LRU's canonical copy is never mutated by callers.
-	return cloneNodes(nodes), true
+	return syntax.CloneNodes(nodes), true
 }
 
 // Set stores AST nodes for the given content hash.
+// Set stores nodes for contentHash in both cache layers.
+//
+// OWNERSHIP CONTRACT: the LRU layer stores the caller's slice directly (no
+// defensive clone). Callers must not mutate nodes after calling Set — or must
+// pass a slice they will never touch again. The incremental parser satisfies
+// this by passing freshly deep-cloned nodes (see parseFile in job/incremental).
 func (fc *FileCache) Set(contentHash string, nodes []*syntax.Node) error {
 	fc.mu.Lock()
 	defer fc.mu.Unlock()
@@ -290,8 +312,9 @@ func (fc *FileCache) Stats() Stats {
 	defer fc.mu.RUnlock()
 
 	stats := Stats{
-		Hits:   atomic.LoadInt64(&fc.metadata.HitCount),
-		Misses: atomic.LoadInt64(&fc.metadata.MissCount),
+		Hits:    atomic.LoadInt64(&fc.metadata.HitCount),
+		Misses:  atomic.LoadInt64(&fc.metadata.MissCount),
+		MemHits: fc.mem.hits(),
 	}
 
 	filesDir := filepath.Join(fc.cacheDir, "files")

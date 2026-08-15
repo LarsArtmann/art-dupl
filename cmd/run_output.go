@@ -20,6 +20,10 @@ type SuppressionConfig struct {
 	TestThreshold    int
 	MinLines         int
 	MinTokens        int
+	// GenericsMinLines gates generics-extraction candidacy (classification-time
+	// precision filter, unlike the fields above which suppress whole groups).
+	// 0 disables the gate.
+	GenericsMinLines int
 	AcceptDirectives *AcceptedSet
 	NoActionability  bool
 	ShowSuppressed   bool
@@ -37,6 +41,7 @@ func buildSuppressionConfig(cfg *config.Config) SuppressionConfig {
 		TestThreshold:    cfg.EffectiveTestThreshold(),
 		MinLines:         cfg.MinLines,
 		MinTokens:        cfg.MinTokens,
+		GenericsMinLines: cfg.SuggestGenericsMinLines,
 		AcceptDirectives: newAcceptSet(cfg),
 		NoActionability:  cfg.NoActionability,
 		ShowSuppressed:   cfg.ShowSuppressed,
@@ -157,7 +162,7 @@ func printCloneGroups(
 			hs.SetHash(k)
 		}
 
-		clones, err := printer.ProcessClones(fread, uniq)
+		clones, err := printer.ProcessClones(fread, uniq, printer.WithGenericsMinLines(suppression.GenericsMinLines))
 		if err != nil {
 			return errors.Wrapf(err, errors.AnalysisError,
 				"failed to process clones for hash %s", k)

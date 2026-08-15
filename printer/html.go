@@ -36,14 +36,15 @@ type ReportMetadata struct {
 type htmlprinter struct {
 	ReadFile
 
-	iota      int
-	w         io.Writer
-	threshold int
-	dupMutex  sync.Mutex
-	dupls     [][]domain.ProcessedClone
-	diffMode  config.DiffMode
-	stats     classificationStats
-	metadata  ReportMetadata
+	iota             int
+	w                io.Writer
+	threshold        int
+	dupMutex         sync.Mutex
+	dupls            [][]domain.ProcessedClone
+	diffMode         config.DiffMode
+	stats            classificationStats
+	metadata         ReportMetadata
+	suppressionStats SuppressionStats
 }
 
 // NewHTML creates a new HTML printer.
@@ -152,11 +153,24 @@ func (p *htmlprinter) PrintClones(
 }
 
 func (p *htmlprinter) buildSummarySection() string {
-	if p.stats.totalClones == 0 {
+	if p.stats.totalClones == 0 && !p.hasSuppression() {
 		return ""
 	}
 
-	return buildSummaryHTML(toSummaryView(p.stats))
+	return buildSummaryHTML(toSummaryView(p.stats, p.suppressionStats))
+}
+
+// hasSuppression reports whether any clone group was suppressed from output.
+func (p *htmlprinter) hasSuppression() bool {
+	s := p.suppressionStats
+
+	return s.DetectedTotal > 0 && s.DetectedTotal > s.Shown
+}
+
+// SetSuppressionStats implements SuppressionStatsSetter so the HTML summary
+// shows the detected-vs-actionable breakdown, mirroring the text footer.
+func (p *htmlprinter) SetSuppressionStats(stats SuppressionStats) {
+	p.suppressionStats = stats
 }
 
 func (p *htmlprinter) PrintFooter() error {

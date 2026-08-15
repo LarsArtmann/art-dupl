@@ -148,6 +148,20 @@ func (n *Node) Clone() *Node {
 	return clone
 }
 
+// CloneNodes returns independent deep copies of all node subtrees (no shared
+// pointers). This is the single canonical helper for cloning cached node
+// slices — the cache LRU layer and the incremental parser both use it so that
+// callers can mutate results without corrupting canonical cached copies.
+func CloneNodes(nodes []*Node) []*Node {
+	result := make([]*Node, len(nodes))
+
+	for i, node := range nodes {
+		result[i] = node.Clone()
+	}
+
+	return result
+}
+
 // Val returns the token value for suffix tree compatibility.
 // Implements the suffixtree.Token interface.
 //

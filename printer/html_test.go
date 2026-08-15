@@ -1229,3 +1229,54 @@ func TestHTMLRenderDiffLines_Variants(t *testing.T) {
 		})
 	}
 }
+
+func TestHTMLSummary_ShowsSuppressionBreakdown(t *testing.T) {
+	t.Parallel()
+
+	var buf bytes.Buffer
+
+	p := NewHTML(&buf, func(string) ([]byte, error) { return []byte("package p\n"), nil }, 5).(*htmlprinter)
+	p.SetSuppressionStats(SuppressionStats{
+		DetectedTotal:        51,
+		Shown:                3,
+		SuppressedActionable: 16,
+		SuppressedOther:      32,
+	})
+
+	if err := p.PrintFooter(); err != nil {
+		t.Fatalf("PrintFooter failed: %v", err)
+	}
+
+	out := buf.String()
+
+	for _, want := range []string{"Detected Groups", "Actionable (Shown)", "Suppressed"} {
+		if !strings.Contains(out, want) {
+			t.Errorf("HTML summary should contain %q, got output without it", want)
+		}
+	}
+
+	if !strings.Contains(out, ">51<") {
+		t.Error("HTML summary should show detected total 51")
+	}
+
+	if !strings.Contains(out, ">48<") {
+		t.Error("HTML summary should show suppressed total 48 (16 actionable + 32 other)")
+	}
+}
+
+func TestHTMLSummary_NoSuppressionRowWhenAllShown(t *testing.T) {
+	t.Parallel()
+
+	var buf bytes.Buffer
+
+	p := NewHTML(&buf, func(string) ([]byte, error) { return []byte("package p\n"), nil }, 5).(*htmlprinter)
+	p.SetSuppressionStats(SuppressionStats{DetectedTotal: 4, Shown: 4})
+
+	if err := p.PrintFooter(); err != nil {
+		t.Fatalf("PrintFooter failed: %v", err)
+	}
+
+	if strings.Contains(buf.String(), "Detected Groups") {
+		t.Error("suppression row should be absent when nothing was suppressed")
+	}
+}

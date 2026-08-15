@@ -41,6 +41,7 @@ func NewIncrementalParser(
 	mode golang.DetectionMode,
 	maxChildren int,
 	maxCacheEntries int,
+	memoryCacheEntries int,
 ) *IncrementalParser {
 	logger.Default.Info(
 		"creating incremental parser",
@@ -53,7 +54,7 @@ func NewIncrementalParser(
 	)
 
 	return &IncrementalParser{
-		cache:           cache.NewFileCache(cacheDir),
+		cache:           cache.NewFileCacheWithMemoryEntries(cacheDir, memoryCacheEntries),
 		clearCache:      clearCache,
 		mode:            mode,
 		maxChildren:     maxChildren,
@@ -64,15 +65,15 @@ func NewIncrementalParser(
 // SetTypeAwareData configures the incremental parser to use pre-loaded type
 // information for type-aware detection. When set, parseFile passes the
 // pre-loaded AST + TypeInfo to the transformer instead of nil.
-func (ip *IncrementalParser) SetTypeAwareData(td golang.TypeAwareData) {
-	ip.typeInfos = td
+func (ip *IncrementalParser) SetTypeAwareData(typeAwareData golang.TypeAwareData) {
+	ip.typeInfos = typeAwareData
 	// Derive the cache-isolation tag from the EraseHash flag. All entries share
 	// the same value (set globally by LoadTypeAwareData), but we validate this
 	// invariant rather than trusting it — a mixed map would silently produce
 	// wrong cache keys for some files.
 	ip.typeAwareTag = ""
 
-	for _, pre := range td {
+	for _, pre := range typeAwareData {
 		tag := "ta" // type-aware: hash includes types
 		if pre.EraseHash {
 			tag = "sg" // suggest-generics: hash erased
@@ -330,7 +331,7 @@ func (ip *IncrementalParser) parseFile(file string) ([]*syntax.Node, int, bool) 
 
 		// Store a deep-cloned copy in cache — the returned slice and cached
 		// slice must be independent for concurrent access.
-		cachedNodes := deepCloneNodes(nodes)
+		cachedNodes := syntax.CloneNodes(nodes)
 
 		cacheErr := ip.cache.Set(contentHash, cachedNodes)
 		if cacheErr != nil {
@@ -358,12 +359,12 @@ func (ip *IncrementalParser) parseFile(file string) ([]*syntax.Node, int, bool) 
 		return ip.handleFileError(file, fmt.Errorf("%w: %T", errUnexpectedSingleflightType, v), "parse")
 	}
 
-	return stampFilename(deepCloneNodes(parsedNodes), file), lines, false
+	return stampFilename(syntax.CloneNodes(parsedNodes), file), lines, false
 }
 
 // stampFilename sets the filename on each top-level node in place.
 // The nodes must already be independent (cloned) — this function does NOT
-// deep-clone, because cache.Get and deepCloneNodes already return
+// deep-clone, because cache.Get and syntax.CloneNodes already return
 // independent copies.
 func stampFilename(nodes []*syntax.Node, filename string) []*syntax.Node {
 	interned := syntax.InternFilename(filename)
@@ -373,16 +374,6 @@ func stampFilename(nodes []*syntax.Node, filename string) []*syntax.Node {
 	}
 
 	return nodes
-}
-
-// deepCloneNodes creates independent copies of all nodes (no shared pointers).
-func deepCloneNodes(nodes []*syntax.Node) []*syntax.Node {
-	result := make([]*syntax.Node, len(nodes))
-	for i, node := range nodes {
-		result[i] = node.Clone()
-	}
-
-	return result
 }
 
 // handleFileError logs the error and returns zero values.

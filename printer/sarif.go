@@ -210,6 +210,14 @@ func (p *sarifPrinter) PrintClones(
 			properties["non_actionable_pattern"] = cl.Classification.NonActionablePattern
 		}
 
+		if cl.Classification.GenericsCandidate {
+			properties["generics_candidate"] = "true"
+
+			if cl.Classification.GenericsHint != "" {
+				properties["generics_hint"] = cl.Classification.GenericsHint
+			}
+		}
+
 		result := SARIFResult{
 			RuleID: "art-dupl/duplicate-code",
 			Level:  level,

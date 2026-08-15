@@ -7,6 +7,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/LarsArtmann/art-dupl/cache"
 	"github.com/LarsArtmann/art-dupl/config"
 	"github.com/LarsArtmann/art-dupl/detection"
 	duplerrors "github.com/LarsArtmann/art-dupl/errors"
@@ -150,6 +151,7 @@ func buildSuffixTreeIncremental(params buildParams) treeBuildResult {
 		detectionMode(params.cfg),
 		params.cfg.MaxChildrenSerial,
 		params.cfg.MaxCacheEntries,
+		params.cfg.MemoryCacheEntries,
 	)
 
 	filesChan := params.getFilesChan()
@@ -176,6 +178,8 @@ func buildSuffixTreeIncremental(params buildParams) treeBuildResult {
 
 	return finalizeTreeBuild(params, schan, func() job.ParseStats {
 		incStats := <-incStatsChan
+
+		printCacheStats(params.stderr, params.cfg, incParser.GetCacheStats())
 
 		return job.ParseStats{
 			ParseStatsMixin: job.ParseStatsMixin{
@@ -454,4 +458,18 @@ func spawnCloneDetection(
 	}()
 
 	return duplChan
+}
+
+// printCacheStats reports cache effectiveness to stderr in verbose mode.
+// Without this, hits/misses/mem-hits are tracked but never surfaced.
+func printCacheStats(stderr io.Writer, cfg *config.Config, stats cache.Stats) {
+	if !cfg.Verbose {
+		return
+	}
+
+	_, _ = fmt.Fprintf(
+		stderr,
+		"📦 Cache: %d hits (%d in memory), %d misses, %d entries on disk\n",
+		stats.Hits, stats.MemHits, stats.Misses, stats.Size,
+	)
 }

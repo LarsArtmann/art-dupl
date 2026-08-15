@@ -221,3 +221,115 @@ func TestPrintCloneGroups_ShowsAllClonesRegardlessOfGenericsCandidate(t *testing
 		t.Errorf("expected stats.Shown=2, got %d", cp.stats.Shown)
 	}
 }
+
+func TestShouldSuppressGroup_MinTokens(t *testing.T) {
+	t.Parallel()
+
+	cloneWithTokens := func(tokens int) domain.ProcessedClone {
+		return domain.ProcessedClone{TokenCount: tokens}
+	}
+
+	tests := []struct {
+		name     string
+		group    domain.ProcessedCloneGroup
+		minToken int
+		expected bool
+	}{
+		{
+			name:     "minTokens=0 disables filter",
+			group:    domain.ProcessedCloneGroup{Clones: []domain.ProcessedClone{cloneWithTokens(3)}},
+			minToken: 0,
+			expected: false,
+		},
+		{
+			name:     "clone below minTokens is suppressed",
+			group:    domain.ProcessedCloneGroup{Clones: []domain.ProcessedClone{cloneWithTokens(3)}},
+			minToken: 10,
+			expected: true,
+		},
+		{
+			name:     "clone exactly at minTokens is not suppressed",
+			group:    domain.ProcessedCloneGroup{Clones: []domain.ProcessedClone{cloneWithTokens(10)}},
+			minToken: 10,
+			expected: false,
+		},
+		{
+			name:     "clone above minTokens is not suppressed",
+			group:    domain.ProcessedCloneGroup{Clones: []domain.ProcessedClone{cloneWithTokens(42)}},
+			minToken: 10,
+			expected: false,
+		},
+		{
+			name: "multiple clones: any clone below minTokens suppresses the group",
+			group: domain.ProcessedCloneGroup{Clones: []domain.ProcessedClone{
+				cloneWithTokens(50),
+				cloneWithTokens(3),
+				cloneWithTokens(20),
+			}},
+			minToken: 10,
+			expected: true,
+		},
+		{
+			name: "multiple clones: all above minTokens not suppressed",
+			group: domain.ProcessedCloneGroup{Clones: []domain.ProcessedClone{
+				cloneWithTokens(50),
+				cloneWithTokens(20),
+				cloneWithTokens(11),
+			}},
+			minToken: 10,
+			expected: false,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+
+			result := shouldSuppressGroup(tc.group, SuppressionConfig{MinTokens: tc.minToken})
+			if result != tc.expected {
+				t.Errorf("shouldSuppressGroup() = %v, want %v", result, tc.expected)
+			}
+		})
+	}
+}
+
+func TestMinCloneTokenCount(t *testing.T) {
+	t.Parallel()
+
+	cloneWithTokens := func(tokens int) domain.ProcessedClone {
+		return domain.ProcessedClone{TokenCount: tokens}
+	}
+
+	tests := []struct {
+		name     string
+		group    domain.ProcessedCloneGroup
+		expected int
+	}{
+		{name: "empty group returns 0", group: domain.ProcessedCloneGroup{}, expected: 0},
+		{
+			name:     "single clone",
+			group:    domain.ProcessedCloneGroup{Clones: []domain.ProcessedClone{cloneWithTokens(7)}},
+			expected: 7,
+		},
+		{
+			name: "multiple clones returns minimum",
+			group: domain.ProcessedCloneGroup{Clones: []domain.ProcessedClone{
+				cloneWithTokens(30),
+				cloneWithTokens(5),
+				cloneWithTokens(12),
+			}},
+			expected: 5,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+
+			result := minCloneTokenCount(tc.group)
+			if result != tc.expected {
+				t.Errorf("minCloneTokenCount() = %d, want %d", result, tc.expected)
+			}
+		})
+	}
+}

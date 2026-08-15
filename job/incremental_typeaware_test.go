@@ -20,7 +20,7 @@ func parseIncrementalTypeAwareNodes(t *testing.T, filename, content string) []*s
 		t.Fatalf("Failed to create test file: %v", err)
 	}
 
-	parser := NewIncrementalParser(cacheDir, false, golang.DetectionModeSemantic, 0, 0)
+	parser := NewIncrementalParser(cacheDir, false, golang.DetectionModeSemantic, 0, 0, 0)
 	ctx := context.Background()
 
 	fchan := make(chan string, 1)
@@ -95,7 +95,7 @@ func main() {}
 		t.Fatalf("Failed to create test file: %v", err)
 	}
 
-	parser := NewIncrementalParser(cacheDir, false, golang.DetectionModeSemantic, 0, 0)
+	parser := NewIncrementalParser(cacheDir, false, golang.DetectionModeSemantic, 0, 0, 0)
 
 	// SetTypeAwareData with nil should not panic and should be a no-op
 	parser.SetTypeAwareData(nil)

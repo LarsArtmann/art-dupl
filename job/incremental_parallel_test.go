@@ -77,7 +77,7 @@ func TestIncrementalParallelBasic(t *testing.T) {
 
 	writeHelloWorldFile(t, setup)
 
-	parser := NewIncrementalParser(cacheDir, false, golang.DetectionModeSemantic, 0, 0)
+	parser := NewIncrementalParser(cacheDir, false, golang.DetectionModeSemantic, 0, 0, 0)
 	ctx := t.Context()
 
 	fchan := singleFileChannel(setup)
@@ -126,7 +126,7 @@ func gamma() {
 		t.Fatalf("Failed to create test files: %v", err)
 	}
 
-	parser := NewIncrementalParser(cacheDir, false, golang.DetectionModeSemantic, 0, 0)
+	parser := NewIncrementalParser(cacheDir, false, golang.DetectionModeSemantic, 0, 0, 0)
 	ctx := t.Context()
 
 	fchan := make(chan string, len(files))
@@ -182,7 +182,7 @@ func duplicated() {
 		t.Fatalf("Failed to create duplicate files: %v", err)
 	}
 
-	parser := NewIncrementalParser(cacheDir, false, golang.DetectionModeSemantic, 0, 0)
+	parser := NewIncrementalParser(cacheDir, false, golang.DetectionModeSemantic, 0, 0, 0)
 	ctx := t.Context()
 
 	fchan := make(chan string, numFiles)
@@ -293,12 +293,12 @@ func (t Thing) String() string {
 	}
 
 	// Sequential run (fresh cache)
-	seqParser := NewIncrementalParser(setup.TmpDir+"/cache_seq", false, golang.DetectionModeSemantic, 0, 0)
+	seqParser := NewIncrementalParser(setup.TmpDir+"/cache_seq", false, golang.DetectionModeSemantic, 0, 0, 0)
 	seqSchan, _ := seqParser.ParseIncremental(t.Context(), makeChan())
 	seqSigs := nodeSignatures(drainIncremental(t, seqSchan))
 
 	// Parallel run (fresh, separate cache)
-	parParser := NewIncrementalParser(setup.TmpDir+"/cache_par", false, golang.DetectionModeSemantic, 0, 0)
+	parParser := NewIncrementalParser(setup.TmpDir+"/cache_par", false, golang.DetectionModeSemantic, 0, 0, 0)
 	parSchan, _ := parParser.ParseIncrementalParallel(t.Context(), makeChan(), 4)
 	parSigs := nodeSignatures(drainIncremental(t, parSchan))
 
@@ -336,7 +336,7 @@ func two() { println("two") }`,
 		t.Fatalf("Failed to create test files: %v", err)
 	}
 
-	parser := NewIncrementalParser(cacheDir, false, golang.DetectionModeSemantic, 0, 0)
+	parser := NewIncrementalParser(cacheDir, false, golang.DetectionModeSemantic, 0, 0, 0)
 	ctx := t.Context()
 
 	// First run — populates cache (misses)
@@ -372,7 +372,7 @@ func TestIncrementalParallelContextCancellation(t *testing.T) {
 
 	writeHelloWorldFile(t, setup)
 
-	parser := NewIncrementalParser(cacheDir, false, golang.DetectionModeSemantic, 0, 0)
+	parser := NewIncrementalParser(cacheDir, false, golang.DetectionModeSemantic, 0, 0, 0)
 
 	ctx, cancel := context.WithCancel(t.Context())
 	defer cancel()
@@ -420,7 +420,7 @@ func TestIncrementalParallelWorkerZero(t *testing.T) {
 
 	writeHelloWorldFile(t, setup)
 
-	parser := NewIncrementalParser(cacheDir, false, golang.DetectionModeSemantic, 0, 0)
+	parser := NewIncrementalParser(cacheDir, false, golang.DetectionModeSemantic, 0, 0, 0)
 
 	schan, statsChan := parser.ParseIncrementalParallel(t.Context(), singleFileChannel(setup), 0)
 
@@ -443,7 +443,7 @@ func TestIncrementalParallelMutationIsolation(t *testing.T) {
 
 	writeHelloWorldFile(t, setup)
 
-	parser := NewIncrementalParser(cacheDir, false, golang.DetectionModeSemantic, 0, 0)
+	parser := NewIncrementalParser(cacheDir, false, golang.DetectionModeSemantic, 0, 0, 0)
 	ctx := t.Context()
 
 	// First run — cache miss, populates cache
@@ -523,7 +523,7 @@ func fb() { println("b"); y := 2; _ = y }`
 		t.Fatalf("Failed to create test files: %v", err)
 	}
 
-	parser := NewIncrementalParser(cacheDir, false, golang.DetectionModeSemantic, 0, 0)
+	parser := NewIncrementalParser(cacheDir, false, golang.DetectionModeSemantic, 0, 0, 0)
 	ctx := t.Context()
 
 	fchan := make(chan string, numFiles)

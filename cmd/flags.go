@@ -106,6 +106,8 @@ func AddFlags(rootCmd *cobra.Command) {
 		Bool("clear-cache", false, "clear cache before running (requires --incremental)")
 	rootCmd.Flags().
 		Int("max-cache-entries", 0, "maximum number of cached AST files to keep on disk (0 = unlimited, requires --incremental)")
+	rootCmd.Flags().
+		Int("memory-cache-entries", config.DefaultMemoryCacheEntries, "number of AST node slices held in the in-memory cache layer (0 = default; requires --incremental)")
 
 	// Root-only: concurrent processing flag
 	rootCmd.Flags().
@@ -138,6 +140,8 @@ func AddFlags(rootCmd *cobra.Command) {
 		Bool("explain", false, "explain why each clone group was reported (type, actionability, category, extractability)")
 	rootCmd.Flags().
 		Bool("suggest-generics", false, "highlight generics-extraction candidates among all clones: loads type info and marks groups where the same algorithm uses different concrete types (does NOT filter; all clones are still shown)")
+	rootCmd.Flags().
+		Int("suggest-generics-min-lines", config.DefaultSuggestGenericsMinLines, "minimum line count for a generics-extraction candidate (0 = disabled; precision gate against 1-2 statement idiom noise)")
 	rootCmd.Flags().
 		Bool("include-ignored", false, "include gitignored files in analysis (default: honor .gitignore)")
 	rootCmd.Flags().

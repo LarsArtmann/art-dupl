@@ -52,6 +52,14 @@ type SummaryView struct {
 	CategoryCounts map[CloneCategory]int
 	PriorityCounts map[ClonePriority]int
 	HasData        bool
+
+	// Suppression breakdown (Detected vs Actionable). Only rendered when the
+	// printer received suppression stats — i.e., groups were suppressed.
+	DetectedTotal        int
+	Shown                int
+	SuppressedActionable int
+	SuppressedOther      int
+	HasSuppression       bool
 }
 
 func toCloneOccurrenceView(cl domain.ProcessedClone) CloneOccurrenceView {
@@ -152,7 +160,9 @@ func toDiffView(groupNum int, groupDiff CloneGroupDiff) DiffView {
 	}
 }
 
-func toSummaryView(stats classificationStats) SummaryView {
+func toSummaryView(stats classificationStats, suppression SuppressionStats) SummaryView {
+	hasSuppression := suppression.DetectedTotal > 0 && suppression.DetectedTotal > suppression.Shown
+
 	return SummaryView{
 		TotalClones:    stats.totalClones,
 		TotalTokens:    stats.totalTokens,
@@ -160,7 +170,13 @@ func toSummaryView(stats classificationStats) SummaryView {
 		TestCount:      stats.testCount,
 		CategoryCounts: stats.categoryCounts,
 		PriorityCounts: stats.priorityCounts,
-		HasData:        stats.totalClones > 0,
+		HasData:        stats.totalClones > 0 || hasSuppression,
+
+		DetectedTotal:        suppression.DetectedTotal,
+		Shown:                suppression.Shown,
+		SuppressedActionable: suppression.SuppressedActionable,
+		SuppressedOther:      suppression.SuppressedOther,
+		HasSuppression:       hasSuppression,
 	}
 }
 
@@ -227,6 +243,26 @@ func buildSummaryHTML(data SummaryView) string {
 	sb.WriteString(`<div class="summary-item"><span class="summary-label">Test Code</span><span class="summary-value">`)
 	sb.WriteString(strconv.Itoa(data.TestCount))
 	sb.WriteString(`</span></div>`)
+
+	if data.HasSuppression {
+		sb.WriteString(
+			`<div class="summary-item"><span class="summary-label">Detected Groups</span><span class="summary-value">`,
+		)
+		sb.WriteString(strconv.Itoa(data.DetectedTotal))
+		sb.WriteString(`</span></div>`)
+
+		sb.WriteString(
+			`<div class="summary-item"><span class="summary-label">Actionable (Shown)</span><span class="summary-value">`,
+		)
+		sb.WriteString(strconv.Itoa(data.Shown))
+		sb.WriteString(`</span></div>`)
+
+		sb.WriteString(
+			`<div class="summary-item"><span class="summary-label">Suppressed</span><span class="summary-value">`,
+		)
+		sb.WriteString(strconv.Itoa(data.SuppressedActionable + data.SuppressedOther))
+		sb.WriteString(`</span></div>`)
+	}
 
 	sb.WriteString(`</div>`)
 

@@ -125,6 +125,12 @@ type Config struct {
 	// ClearCache clears the cache before running (useful for forced full rebuild)
 	ClearCache bool `json:"clearCache,omitempty"`
 
+	// MemoryCacheEntries limits the number of AST node slices held in the
+	// in-memory LRU layer on top of the disk cache (0 = library default of
+	// 512). Higher values keep more hot files in memory, avoiding gob
+	// deserialization entirely on repeated runs.
+	MemoryCacheEntries int `json:"memoryCacheEntries,omitempty"`
+
 	// MaxCacheEntries limits the number of cached AST files on disk.
 	// 0 means unlimited. When exceeded, oldest entries are evicted.
 	MaxCacheEntries int `json:"maxCacheEntries,omitempty"`
@@ -230,6 +236,13 @@ type Config struct {
 	// suggestion. Incompatible with --type-aware (suggest-generics takes
 	// precedence).
 	SuggestGenerics bool `json:"suggestGenerics,omitempty"`
+
+	// SuggestGenericsMinLines is the minimum line count (across all clone
+	// instances) for a group to qualify as a generics-extraction candidate.
+	// Genuine candidates are multi-line algorithm blocks; 1-2 line clones with
+	// type differences are idiom noise (12.5% precision without the gate).
+	// 0 disables the gate.
+	SuggestGenericsMinLines int `json:"suggestGenericsMinLines,omitempty"`
 }
 
 // DefaultThreshold is the default minimum number of duplicated statements to report.
@@ -238,6 +251,15 @@ type Config struct {
 // boilerplate) while still catching meaningful duplication. Users who want more
 // sensitivity can lower to 3; users who want less noise can raise to 10+.
 const DefaultThreshold = 5
+
+// DefaultSuggestGenericsMinLines is the default minimum line count for a
+// generics-extraction candidate. Most --suggest-generics noise is 1-2
+// statement clones; genuine candidates are 4-8 line algorithm blocks.
+const DefaultSuggestGenericsMinLines = 4
+
+// DefaultMemoryCacheEntries mirrors cache.DefaultMemoryEntries (the SDK-style
+// layering prevents config from importing cache; keep both in sync).
+const DefaultMemoryCacheEntries = 512
 
 // DefaultConfig returns a default configuration.
 func DefaultConfig() *Config {
@@ -276,9 +298,11 @@ func DefaultConfig() *Config {
 		SuppressTestLow:    false,
 		TestThreshold:      0,
 		IgnoreTests:        false,
+		MemoryCacheEntries: DefaultMemoryCacheEntries,
 		MinLines:           0,
 		MinTokens:          0,
 		TypeAware:          false,
+		SuggestGenericsMinLines: DefaultSuggestGenericsMinLines,
 	}
 }
 

@@ -83,7 +83,7 @@ func TestIncrementalParserBasic(t *testing.T) {
 
 	writeHelloWorldFile(t, setup)
 
-	parser := NewIncrementalParser(cacheDir, false, golang.DetectionModeSemantic, 0, 0)
+	parser := NewIncrementalParser(cacheDir, false, golang.DetectionModeSemantic, 0, 0, 0)
 	ctx := t.Context()
 
 	fchan := singleFileChannel(setup)
@@ -102,7 +102,7 @@ func TestIncrementalParserCacheHit(t *testing.T) {
 
 	writeHelloWorldFile(t, setup)
 
-	parser := NewIncrementalParser(cacheDir, false, golang.DetectionModeSemantic, 0, 0)
+	parser := NewIncrementalParser(cacheDir, false, golang.DetectionModeSemantic, 0, 0, 0)
 	ctx := t.Context()
 
 	fchan := singleFileChannel(setup)
@@ -132,7 +132,7 @@ func TestIncrementalParserClearCache(t *testing.T) {
 
 	writeHelloWorldFile(t, setup)
 
-	parser := NewIncrementalParser(cacheDir, false, golang.DetectionModeSemantic, 0, 0)
+	parser := NewIncrementalParser(cacheDir, false, golang.DetectionModeSemantic, 0, 0, 0)
 	ctx := t.Context()
 
 	fchan := singleFileChannel(setup)
@@ -142,7 +142,7 @@ func TestIncrementalParserClearCache(t *testing.T) {
 		// Drain channel
 	}
 
-	parserWithClear := NewIncrementalParser(cacheDir, true, golang.DetectionModeSemantic, 0, 0)
+	parserWithClear := NewIncrementalParser(cacheDir, true, golang.DetectionModeSemantic, 0, 0, 0)
 
 	fchan2 := singleFileChannel(setup)
 
@@ -160,7 +160,7 @@ func TestIncrementalParserContextCancellation(t *testing.T) {
 	setup := testutil.NewTestFileSetup(t)
 	cacheDir := setup.TmpDir + "/cache"
 
-	parser := NewIncrementalParser(cacheDir, false, golang.DetectionModeSemantic, 0, 0)
+	parser := NewIncrementalParser(cacheDir, false, golang.DetectionModeSemantic, 0, 0, 0)
 	cancel, fchan := cancelledContextAndChannel(t.Context())
 
 	schan, _ := parser.ParseIncremental(t.Context(), fchan)
@@ -175,7 +175,7 @@ func TestIncrementalParserNonexistentFile(t *testing.T) {
 	setup := testutil.NewTestFileSetup(t)
 	cacheDir := setup.TmpDir + "/cache"
 
-	parser := NewIncrementalParser(cacheDir, false, golang.DetectionModeSemantic, 0, 0)
+	parser := NewIncrementalParser(cacheDir, false, golang.DetectionModeSemantic, 0, 0, 0)
 	ctx := t.Context()
 
 	fchan := make(chan string, 1)
@@ -228,7 +228,7 @@ func function2() {
 		t.Fatalf("Failed to create test files: %v", err)
 	}
 
-	parser := NewIncrementalParser(cacheDir, false, golang.DetectionModeSemantic, 0, 0)
+	parser := NewIncrementalParser(cacheDir, false, golang.DetectionModeSemantic, 0, 0, 0)
 	ctx := t.Context()
 
 	fchan := make(chan string, 2)
@@ -264,7 +264,7 @@ func TestIncrementalParserGetCacheStats(t *testing.T) {
 
 	writeHelloWorldFile(t, setup)
 
-	parser := NewIncrementalParser(cacheDir, false, golang.DetectionModeSemantic, 0, 0)
+	parser := NewIncrementalParser(cacheDir, false, golang.DetectionModeSemantic, 0, 0, 0)
 	ctx := t.Context()
 
 	fchan := singleFileChannel(setup)
@@ -290,7 +290,7 @@ func TestIncrementalParserCacheKeyIsolationMode(t *testing.T) {
 	ctx := t.Context()
 
 	// First parse with semantic mode → cache miss.
-	semanticParser := NewIncrementalParser(cacheDir, false, golang.DetectionModeSemantic, 0, 0)
+	semanticParser := NewIncrementalParser(cacheDir, false, golang.DetectionModeSemantic, 0, 0, 0)
 	fchan1 := singleFileChannel(setup)
 
 	schan1, statsChan1 := semanticParser.ParseIncremental(ctx, fchan1)
@@ -301,7 +301,7 @@ func TestIncrementalParserCacheKeyIsolationMode(t *testing.T) {
 	testutil.AssertFieldValue(t, stats1.CacheMisses, 1, "CacheMisses on first semantic parse")
 
 	// Same file with exact mode → should ALSO be a cache miss (different key).
-	exactParser := NewIncrementalParser(cacheDir, false, golang.DetectionModeExact, 0, 0)
+	exactParser := NewIncrementalParser(cacheDir, false, golang.DetectionModeExact, 0, 0, 0)
 	fchan2 := singleFileChannel(setup)
 
 	schan2, statsChan2 := exactParser.ParseIncremental(ctx, fchan2)
@@ -334,7 +334,7 @@ func TestIncrementalParserCacheKeyIsolationMaxChildren(t *testing.T) {
 	ctx := t.Context()
 
 	// Parse with maxChildren=0 → cache miss.
-	parser1 := NewIncrementalParser(cacheDir, false, golang.DetectionModeSemantic, 0, 0)
+	parser1 := NewIncrementalParser(cacheDir, false, golang.DetectionModeSemantic, 0, 0, 0)
 	fchan1 := singleFileChannel(setup)
 
 	schan1, statsChan1 := parser1.ParseIncremental(ctx, fchan1)
@@ -345,7 +345,7 @@ func TestIncrementalParserCacheKeyIsolationMaxChildren(t *testing.T) {
 	testutil.AssertFieldValue(t, stats1.CacheMisses, 1, "CacheMisses on first parse")
 
 	// Same file with maxChildren=5 → should be cache miss (different key).
-	parser2 := NewIncrementalParser(cacheDir, false, golang.DetectionModeSemantic, 5, 0)
+	parser2 := NewIncrementalParser(cacheDir, false, golang.DetectionModeSemantic, 5, 0, 0)
 	fchan2 := singleFileChannel(setup)
 
 	schan2, statsChan2 := parser2.ParseIncremental(ctx, fchan2)
@@ -368,7 +368,7 @@ func TestIncrementalParserCacheKeyFormat(t *testing.T) {
 	t.Run("params format is mode:maxChildren:typeAwareTag", func(t *testing.T) {
 		t.Parallel()
 
-		ip := NewIncrementalParser(t.TempDir(), false, golang.DetectionModeSemantic, 10, 0)
+		ip := NewIncrementalParser(t.TempDir(), false, golang.DetectionModeSemantic, 10, 0, 0)
 		ip.typeAwareTag = "ta"
 
 		// The key should be KeyWithParams(content, "semantic:10:ta").
@@ -384,9 +384,9 @@ func TestIncrementalParserCacheKeyFormat(t *testing.T) {
 	t.Run("different modes produce different keys", func(t *testing.T) {
 		t.Parallel()
 
-		semantic := NewIncrementalParser(t.TempDir(), false, golang.DetectionModeSemantic, 0, 0)
-		exact := NewIncrementalParser(t.TempDir(), false, golang.DetectionModeExact, 0, 0)
-		structural := NewIncrementalParser(t.TempDir(), false, golang.DetectionModeStructural, 0, 0)
+		semantic := NewIncrementalParser(t.TempDir(), false, golang.DetectionModeSemantic, 0, 0, 0)
+		exact := NewIncrementalParser(t.TempDir(), false, golang.DetectionModeExact, 0, 0, 0)
+		structural := NewIncrementalParser(t.TempDir(), false, golang.DetectionModeStructural, 0, 0, 0)
 
 		keyS := semantic.cacheKey(content)
 		keyE := exact.cacheKey(content)
@@ -408,9 +408,9 @@ func TestIncrementalParserCacheKeyFormat(t *testing.T) {
 	t.Run("different maxChildren produce different keys", func(t *testing.T) {
 		t.Parallel()
 
-		p0 := NewIncrementalParser(t.TempDir(), false, golang.DetectionModeSemantic, 0, 0)
-		p5 := NewIncrementalParser(t.TempDir(), false, golang.DetectionModeSemantic, 5, 0)
-		p100 := NewIncrementalParser(t.TempDir(), false, golang.DetectionModeSemantic, 100, 0)
+		p0 := NewIncrementalParser(t.TempDir(), false, golang.DetectionModeSemantic, 0, 0, 0)
+		p5 := NewIncrementalParser(t.TempDir(), false, golang.DetectionModeSemantic, 5, 0, 0)
+		p100 := NewIncrementalParser(t.TempDir(), false, golang.DetectionModeSemantic, 100, 0, 0)
 
 		key0 := p0.cacheKey(content)
 		key5 := p5.cacheKey(content)
@@ -428,13 +428,13 @@ func TestIncrementalParserCacheKeyFormat(t *testing.T) {
 	t.Run("different typeAwareTags produce different keys", func(t *testing.T) {
 		t.Parallel()
 
-		none := NewIncrementalParser(t.TempDir(), false, golang.DetectionModeSemantic, 0, 0)
+		none := NewIncrementalParser(t.TempDir(), false, golang.DetectionModeSemantic, 0, 0, 0)
 		none.typeAwareTag = ""
 
-		ta := NewIncrementalParser(t.TempDir(), false, golang.DetectionModeSemantic, 0, 0)
+		ta := NewIncrementalParser(t.TempDir(), false, golang.DetectionModeSemantic, 0, 0, 0)
 		ta.typeAwareTag = "ta"
 
-		sg := NewIncrementalParser(t.TempDir(), false, golang.DetectionModeSemantic, 0, 0)
+		sg := NewIncrementalParser(t.TempDir(), false, golang.DetectionModeSemantic, 0, 0, 0)
 		sg.typeAwareTag = "sg"
 
 		keyNone := none.cacheKey(content)
@@ -457,10 +457,10 @@ func TestIncrementalParserCacheKeyFormat(t *testing.T) {
 	t.Run("same params produce same key", func(t *testing.T) {
 		t.Parallel()
 
-		p1 := NewIncrementalParser(t.TempDir(), false, golang.DetectionModeExact, 7, 0)
+		p1 := NewIncrementalParser(t.TempDir(), false, golang.DetectionModeExact, 7, 0, 0)
 		p1.typeAwareTag = "sg"
 
-		p2 := NewIncrementalParser(t.TempDir(), false, golang.DetectionModeExact, 7, 0)
+		p2 := NewIncrementalParser(t.TempDir(), false, golang.DetectionModeExact, 7, 0, 0)
 		p2.typeAwareTag = "sg"
 
 		if p1.cacheKey(content) != p2.cacheKey(content) {

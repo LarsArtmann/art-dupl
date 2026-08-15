@@ -29,7 +29,9 @@ func ValidateConfig(cfg *Config) error {
 		func() error { return validateNonNegative("search-workers", cfg.SearchWorkers) },
 		func() error { return validateNonNegative("min-lines", cfg.MinLines) },
 		func() error { return validateNonNegative("min-tokens", cfg.MinTokens) },
+		func() error { return validateNonNegative("suggest-generics-min-lines", cfg.SuggestGenericsMinLines) },
 		func() error { return validateNonNegative("max-cache-entries", cfg.MaxCacheEntries) },
+		func() error { return validateNonNegative("memory-cache-entries", cfg.MemoryCacheEntries) },
 	}
 
 	for _, validate := range validations {

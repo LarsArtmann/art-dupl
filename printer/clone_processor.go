@@ -65,12 +65,41 @@ func syntaxToCloneNode(n *syntax.Node) *domain.CloneNode {
 	return cn
 }
 
+// DefaultGenericsMinLines is the default minimum line count (across all clone
+// instances) for a group to qualify as a generics-extraction candidate. Most
+// noise is 1-2 statement clones; genuine generics candidates are multi-line
+// algorithm blocks.
+const DefaultGenericsMinLines = 4
+
+// ProcessOption customizes how ProcessClones classifies clone groups.
+type ProcessOption func(*processConfig)
+
+type processConfig struct {
+	// genericsMinLines is the minimum line count (across all instances) for a
+	// generics-extraction candidate. Values <= 0 disable the line gate.
+	genericsMinLines int
+}
+
+// WithGenericsMinLines sets the minimum line count for generics-extraction
+// candidates. The minimum is taken across all clone instances in the group,
+// mirroring --min-lines suppression semantics. Pass 0 to disable the gate.
+func WithGenericsMinLines(minLines int) ProcessOption {
+	return func(conf *processConfig) {
+		conf.genericsMinLines = minLines
+	}
+}
+
 // ProcessClones converts raw syntax.Node groups into ProcessedClone slices.
 // This is the single point where [][]*syntax.Node is decoded into domain types,
 // eliminating the need for each printer to understand AST internals.
-func ProcessClones(fread ReadFile, dups [][]*syntax.Node) ([]domain.ProcessedClone, error) {
+func ProcessClones(fread ReadFile, dups [][]*syntax.Node, opts ...ProcessOption) ([]domain.ProcessedClone, error) {
 	if len(dups) == 0 {
 		return nil, nil
+	}
+
+	conf := processConfig{genericsMinLines: DefaultGenericsMinLines}
+	for _, opt := range opts {
+		opt(&conf)
 	}
 
 	clones := make([]domain.ProcessedClone, len(dups))
@@ -123,7 +152,19 @@ func ProcessClones(fread ReadFile, dups [][]*syntax.Node) ([]domain.ProcessedClo
 	// in a clone group shares the same actionability verdict and clone type.
 	label, verdict := actionability.EvaluateActionabilityWithLabel(toCloneNodeSeqs(dups))
 	cloneType := classifyCloneType(dups)
-	genericsCandidate, genericsHint := ClassifyGenericsCandidate(toCloneNodeSeqs(dups))
+
+	// Generics-extraction candidacy is precision-gated: a group qualifies only
+	// when it is NOT recognized boilerplate (any matched actionability pattern
+	// disqualifies — error-propagation, guard-clause, single-call-expression,
+	// etc. have type differences but are idioms, not generics candidates) and
+	// every instance reaches the minimum line count.
+	var genericsCandidate bool
+
+	var genericsHint string
+
+	if label == actionability.PatternNone && passesGenericsLineGate(conf, clones) {
+		genericsCandidate, genericsHint = ClassifyGenericsCandidate(toCloneNodeSeqs(dups))
+	}
 
 	for i := range clones {
 		clones[i].Classification.Actionability = verdict
@@ -149,6 +190,23 @@ func ProcessClones(fread ReadFile, dups [][]*syntax.Node) ([]domain.ProcessedClo
 	}
 
 	return clones, nil
+}
+
+// passesGenericsLineGate reports whether every clone instance in the group
+// reaches the configured minimum line count. Mirrors --min-lines suppression
+// semantics: the weakest instance decides. Values <= 0 disable the gate.
+func passesGenericsLineGate(conf processConfig, clones []domain.ProcessedClone) bool {
+	if conf.genericsMinLines <= 0 {
+		return true
+	}
+
+	for i := range clones {
+		if clones[i].LineCount() < conf.genericsMinLines {
+			return false
+		}
+	}
+
+	return true
 }
 
 // classifyCloneType determines the Bellon clone type (1/2/3) for a group of

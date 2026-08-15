@@ -321,3 +321,87 @@ func assertNonActionable(t *testing.T, msg string, seqs [][]*domain.CloneNode) {
 		t.Errorf("%s\nexpected NonActionable, got %s (label=%s)", msg, actionability, label)
 	}
 }
+
+func TestDiscordSync_ErrorGuardWithTrailingReturn(t *testing.T) {
+	// if err != nil { return nil, queryError(err, "unique") }; return progress, nil
+	// The 2-statement form escapes the single-statement error patterns.
+	seqs := [][]*domain.CloneNode{
+		{mustIfErrReturnWrappingCall("queryError"), mustReturnTwoValues("progress")},
+		{mustIfErrReturnWrappingCall("queryError"), mustReturnTwoValues("count")},
+	}
+
+	assertNonActionable(t,
+		"error guard with trailing return should be non-actionable (error-guard-fallthrough)",
+		seqs)
+}
+
+func TestDiscordSync_HTTPErrorGuardWithFallthrough(t *testing.T) {
+	// if err != nil { writeError(w, r, err, ""); return }; _ = x; return nil
+	// The 3-statement form the suffix tree reports at real thresholds.
+	seqs := [][]*domain.CloneNode{
+		{mustHTTPErrorGuard(), mustBlankAssign("bundle"), mustReturnSingleValue("nil")},
+		{mustHTTPErrorGuard(), mustBlankAssign("profile"), mustReturnSingleValue("nil")},
+	}
+
+	assertNonActionable(t,
+		"HTTP error guard with fallthrough tail should be non-actionable (error-guard-fallthrough)",
+		seqs)
+}
+
+func TestDiscordSync_ErrorGuardWithRichTailStillActionable(t *testing.T) {
+	// if err != nil { return err }; process(x); return result
+	// The tail carries extractable logic (a call statement) — must NOT be suppressed.
+	callTail := &domain.CloneNode{
+		BaseType: golang.ExprStmt,
+		Children: []*domain.CloneNode{
+			{BaseType: golang.CallExpr, Children: []*domain.CloneNode{{BaseType: golang.Ident, Name: "process"}}},
+		},
+	}
+
+	guard := mustIfErrReturnWrappingCall("queryError")
+	guardBody := guard.Children[1]
+	guardBody.Children = []*domain.CloneNode{
+		{BaseType: golang.ReturnStmt, Children: []*domain.CloneNode{{BaseType: golang.Ident, Name: "err"}}},
+	}
+
+	seqs := [][]*domain.CloneNode{
+		{guard, callTail, mustReturnSingleValue("nil")},
+		{guard, callTail, mustReturnSingleValue("nil")},
+	}
+
+	label, _ := EvaluateActionabilityWithLabel(seqs)
+	if label == PatternErrorGuardFallthrough {
+		t.Error(
+			"error guard followed by a call statement must NOT match error-guard-fallthrough (rich tail carries extractable logic)",
+		)
+	}
+}
+
+func mustReturnTwoValues(first string) *domain.CloneNode {
+	return &domain.CloneNode{
+		BaseType: golang.ReturnStmt,
+		Children: []*domain.CloneNode{
+			{BaseType: golang.Ident, Name: first},
+			{BaseType: golang.Ident, Name: "nil"},
+		},
+	}
+}
+
+func mustReturnSingleValue(value string) *domain.CloneNode {
+	return &domain.CloneNode{
+		BaseType: golang.ReturnStmt,
+		Children: []*domain.CloneNode{
+			{BaseType: golang.Ident, Name: value},
+		},
+	}
+}
+
+func mustBlankAssign(name string) *domain.CloneNode {
+	return &domain.CloneNode{
+		BaseType: golang.AssignStmt,
+		Children: []*domain.CloneNode{
+			{BaseType: golang.Ident, Name: "_"},
+			{BaseType: golang.Ident, Name: name},
+		},
+	}
+}

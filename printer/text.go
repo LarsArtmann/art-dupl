@@ -144,33 +144,13 @@ func (p *TextPrinter) writeCloneHeader(clones []domain.ProcessedClone) error {
 
 func (p *TextPrinter) PrintFooter() error {
 	s := p.suppressionStats
+
 	if s.DetectedTotal > s.Shown && s.DetectedTotal > 0 {
-		if _, err := fmt.Fprintf(p.w, "\nDetected %d clone groups, %d shown", s.DetectedTotal, s.Shown); err != nil {
+		if err := p.writeSuppressionSummary(s); err != nil {
 			return err
 		}
-
-		if s.SuppressedActionable > 0 || s.SuppressedOther > 0 {
-			parts := make([]string, 0, 2)
-			if s.SuppressedActionable > 0 {
-				parts = append(parts, fmt.Sprintf("%d non-actionable", s.SuppressedActionable))
-			}
-
-			if s.SuppressedOther > 0 {
-				parts = append(parts, fmt.Sprintf("%d filtered", s.SuppressedOther))
-			}
-
-			if _, err := fmt.Fprintf(p.w, " (%s suppressed)", strings.Join(parts, ", ")); err != nil {
-				return err
-			}
-		}
-
-		if _, err := fmt.Fprintln(p.w, "."); err != nil {
-			return err
-		}
-	} else {
-		if _, err := fmt.Fprintf(p.w, "\nFound total %d clone groups.\n", p.cnt); err != nil {
-			return err
-		}
+	} else if _, err := fmt.Fprintf(p.w, "\nFound total %d clone groups.\n", p.cnt); err != nil {
+		return err
 	}
 
 	if len(p.diffHintFiles) >= 2 {
@@ -180,6 +160,36 @@ func (p *TextPrinter) PrintFooter() error {
 		if _, err := fmt.Fprintf(p.w, "\n\u2192 diff %s %s\n", file1, file2); err != nil {
 			return err
 		}
+	}
+
+	return nil
+}
+
+// writeSuppressionSummary prints the "Detected N clone groups, M shown (...)"
+// footer line, including the per-mechanism suppression breakdown.
+func (p *TextPrinter) writeSuppressionSummary(s SuppressionStats) error {
+	if _, err := fmt.Fprintf(p.w, "\nDetected %d clone groups, %d shown", s.DetectedTotal, s.Shown); err != nil {
+		return err
+	}
+
+	if s.SuppressedActionable > 0 || s.SuppressedOther > 0 {
+		parts := make([]string, 0, 2)
+
+		if s.SuppressedActionable > 0 {
+			parts = append(parts, fmt.Sprintf("%d non-actionable", s.SuppressedActionable))
+		}
+
+		if s.SuppressedOther > 0 {
+			parts = append(parts, fmt.Sprintf("%d filtered", s.SuppressedOther))
+		}
+
+		if _, err := fmt.Fprintf(p.w, " (%s suppressed)", strings.Join(parts, ", ")); err != nil {
+			return err
+		}
+	}
+
+	if _, err := fmt.Fprintln(p.w, "."); err != nil {
+		return err
 	}
 
 	return nil

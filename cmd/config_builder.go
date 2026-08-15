@@ -22,6 +22,7 @@ func BuildConfigFromFlags(cmd *cobra.Command, args []string) (*config.Config, er
 	warnStructural(cmd)
 	warnTypeAwareIncremental(cmd)
 	warnSemanticDeprecation(cmd)
+	warnTypeAwareSuggestGenerics(cmd)
 
 	appConfig, err := buildCLIConfig(cmd, args)
 	if err != nil {
@@ -186,9 +187,19 @@ func applyChangedIntFlags(cmd *cobra.Command, cfg *config.Config) {
 		cfg.MinTokens = val
 	}
 
+	if cmd.Flags().Changed("suggest-generics-min-lines") {
+		val, _ := cmd.Flags().GetInt("suggest-generics-min-lines")
+		cfg.SuggestGenericsMinLines = val
+	}
+
 	if cmd.Flags().Changed("max-cache-entries") {
 		val, _ := cmd.Flags().GetInt("max-cache-entries")
 		cfg.MaxCacheEntries = val
+	}
+
+	if cmd.Flags().Changed("memory-cache-entries") {
+		val, _ := cmd.Flags().GetInt("memory-cache-entries")
+		cfg.MemoryCacheEntries = val
 	}
 }
 
@@ -281,6 +292,21 @@ func warnStructural(cmd *cobra.Command) {
 // warnTypeAwareIncremental is now a no-op — type-aware mode IS compatible with
 // incremental mode since M07 (IncrementalParser threads typeInfos via SetTypeAwareData).
 func warnTypeAwareIncremental(_ *cobra.Command) {}
+
+// warnTypeAwareSuggestGenerics warns when both --type-aware and
+// --suggest-generics are set: suggest-generics erases types from the hash
+// (EraseHash=true) and takes precedence, so the type-aware hashing the user
+// asked for is silently discarded.
+func warnTypeAwareSuggestGenerics(cmd *cobra.Command) {
+	if cmd.Flags().Changed("type-aware") && cmd.Flags().Changed("suggest-generics") {
+		fmt.Fprintf(
+			cmd.ErrOrStderr(),
+			"Note: --suggest-generics takes precedence over --type-aware (types are erased from the "+
+				"hash so structurally-identical clones on different types still match). "+
+				"Drop --type-aware unless this is intentional.\n",
+		)
+	}
+}
 
 // warnSemanticDeprecation prints a gentle notice when --semantic is explicitly
 // used. Semantic is the default mode, so the flag is redundant.

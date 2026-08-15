@@ -7,11 +7,11 @@ import (
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
-// defaultMemoryEntries is the maximum number of AST node slices held in the
-// in-memory LRU layer. This is intentionally larger than a typical hot-set of
-// frequently-changed files, so that repeated runs (the common workflow) hit
-// memory instead of re-deserializing gob files from disk.
-const defaultMemoryEntries = 512
+// DefaultMemoryEntries is the default maximum number of AST node slices held
+// in the in-memory LRU layer. This is intentionally larger than a typical
+// hot-set of frequently-changed files, so that repeated runs (the common
+// workflow) hit memory instead of re-deserializing gob files from disk.
+const DefaultMemoryEntries = 512
 
 // lru is an in-memory least-recently-used cache for deserialized AST node
 // slices. It sits on top of FileCache's on-disk store and eliminates redundant
@@ -22,6 +22,10 @@ const defaultMemoryEntries = 512
 // callers can freely mutate the result without corrupting the cache.
 //
 // Concurrency: all methods are goroutine-safe via a single sync.Mutex.
+//
+// LOCK ORDERING: FileCache.mu is always acquired BEFORE lru.mu (never the
+// reverse). This is safe because the LRU never calls back into FileCache. Do
+// not add methods that violate this ordering.
 type lru struct {
 	mu      sync.Mutex
 	cap     int
@@ -37,7 +41,7 @@ type lruEntry struct {
 
 func newLRU(capacity int) *lru {
 	if capacity <= 0 {
-		capacity = defaultMemoryEntries
+		capacity = DefaultMemoryEntries
 	}
 
 	return &lru{
@@ -66,7 +70,16 @@ func (l *lru) get(key string) []*syntax.Node {
 		return nil
 	}
 
-	return cloneNodes(entry.data)
+	return syntax.CloneNodes(entry.data)
+}
+
+// hits returns the number of in-memory hits served since construction.
+// Callers must NOT hold lru.mu.
+func (l *lru) hits() int64 {
+	l.mu.Lock()
+	defer l.mu.Unlock()
+
+	return l.memHits
 }
 
 // put stores nodes as the canonical copy for key. If the cache is full, the
@@ -119,15 +132,4 @@ func (l *lru) clear() {
 
 	l.entries = make(map[string]*list.Element, l.cap)
 	l.order = list.New()
-}
-
-// cloneNodes creates independent copies of all nodes (no shared pointers).
-func cloneNodes(nodes []*syntax.Node) []*syntax.Node {
-	result := make([]*syntax.Node, len(nodes))
-
-	for i, node := range nodes {
-		result[i] = node.Clone()
-	}
-
-	return result
 }

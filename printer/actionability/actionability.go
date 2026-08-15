@@ -33,6 +33,7 @@ var actionabilityPatternTable = []patternEntry{ //nolint:gochecknoglobals // sta
 	{isTypeAliasBlock, PatternTypeAliasBlock},
 	{isTestHelperDelegate, PatternTestHelperDelegate},
 	{isErrorWrappingReturn, PatternErrorWrapping},
+	{isErrorGuardFallthrough, PatternErrorGuardFallthrough},
 	{isAssertionChain, PatternAssertionChain},
 	{isCobraCommandBoilerplate, PatternCobraBoilerplate},
 	{isTestDataFilePair, PatternTestData},
@@ -157,6 +158,7 @@ const (
 	PatternRAIIDefer                  PatternLabel = "raii-defer"
 	PatternErrorPropagation           PatternLabel = "error-propagation"
 	PatternErrorWrapping              PatternLabel = "error-wrapping"
+	PatternErrorGuardFallthrough      PatternLabel = "error-guard-fallthrough"
 	PatternAssertionChain             PatternLabel = "assertion-chain"
 	PatternCobraBoilerplate           PatternLabel = "cobra-boilerplate"
 	PatternInterfaceImpl              PatternLabel = "interface-implementation"
