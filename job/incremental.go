@@ -354,6 +354,11 @@ func (ip *IncrementalParser) parseFile(file string) ([]*syntax.Node, int, bool) 
 
 	// The singleflight result is shared across all waiting callers —
 	// deep-clone before stamping the filename to prevent cross-caller mutation.
+	// stampFilename mutates nodes in place, so a no-clone "shared" cache API
+	// would corrupt the canonical LRU copy when several waiters stamp different
+	// filenames onto it. The per-caller clone is therefore mandatory; the only
+	// redundant copy is the closure's double-check Get clone, which occurs only
+	// on the rare wait-then-cached race and costs one extra clone per group.
 	parsedNodes, ok := v.([]*syntax.Node)
 	if !ok {
 		return ip.handleFileError(file, fmt.Errorf("%w: %T", errUnexpectedSingleflightType, v), "parse")

@@ -1034,3 +1034,71 @@ func TestFileCache_HysteresisPruning(t *testing.T) {
 		}
 	})
 }
+
+// benchTree builds a balanced node tree of the given depth (2^depth - 1 nodes),
+// roughly the serialized size of a small source file.
+func benchTree(depth int) []*syntax.Node {
+	var build func(level int) *syntax.Node
+
+	build = func(level int) *syntax.Node {
+		node := &syntax.Node{
+			Type: int32(100 + level), Pos: int32(10 * level), End: int32(10*level + 9), Owns: 5, Filename: "bench.go",
+		}
+		if level < depth {
+			node.Children = []*syntax.Node{build(level + 1), build(level + 1)}
+		}
+
+		return node
+	}
+
+	return []*syntax.Node{build(0)}
+}
+
+// BenchmarkFileCacheGet measures the cost of Get on the in-memory LRU path vs
+// the disk path (gob deserialization). This validates the lru.go claim that
+// avoiding gob deserialization is the main perf win of the memory layer.
+func BenchmarkFileCacheGet(b *testing.B) {
+	const depth = 8 // 255 nodes
+
+	b.Run("memory-hit", func(b *testing.B) {
+		dir := b.TempDir()
+		fc := NewFileCacheWithMemoryEntries(dir, 8)
+
+		key := Key([]byte("bench content"))
+		if err := fc.Set(key, benchTree(depth)); err != nil {
+			b.Fatalf("Set failed: %v", err)
+		}
+
+		b.ReportAllocs()
+		b.ResetTimer()
+
+		for b.Loop() {
+			if _, hit := fc.Get(key); !hit {
+				b.Fatal("expected cache hit")
+			}
+		}
+	})
+
+	b.Run("disk-hit", func(b *testing.B) {
+		dir := b.TempDir()
+		fc := NewFileCacheWithMemoryEntries(dir, 8)
+
+		key := Key([]byte("bench content"))
+		if err := fc.Set(key, benchTree(depth)); err != nil {
+			b.Fatalf("Set failed: %v", err)
+		}
+
+		b.ReportAllocs()
+		b.ResetTimer()
+
+		for b.Loop() {
+			// Drop the LRU entry so every Get exercises the disk path
+			// (ReadFile + gob decode + LRU repopulation + clone).
+			fc.mem.remove(key)
+
+			if _, hit := fc.Get(key); !hit {
+				b.Fatal("expected cache hit")
+			}
+		}
+	})
+}
