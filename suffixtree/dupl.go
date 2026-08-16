@@ -31,13 +31,19 @@ type contextList struct {
 	lists map[TokenValue]*posList
 }
 
+// maxStackKeys is the threshold for stack-allocated key buffers in map
+// iteration. Maps with <= maxStackKeys entries use a fixed-size stack array
+// instead of heap-allocating a slice. Most suffix tree states have very few
+// transitions (typically 1-5), so 32 covers the common case. The root state
+// (which has one transition per distinct token) may exceed this and fall back
+// to heap allocation.
+const maxStackKeys = 32
+
 func newContextList() *contextList {
 	return &contextList{make(map[TokenValue]*posList)}
 }
 
 func (c *contextList) getAll() []Pos {
-	const maxStackKeys = 32
-
 	var (
 		stackBuf [maxStackKeys]TokenValue
 		keys     []TokenValue
@@ -137,14 +143,12 @@ func walkTrans(
 	// For small transition maps (the common case — most suffix tree states
 	// have very few transitions), use a stack-allocated buffer to avoid
 	// the heap allocation that make([]TokenValue, ...) would trigger.
-	const maxStackTransKeys = 32
-
 	var (
-		stackBuf  [maxStackTransKeys]TokenValue
+		stackBuf  [maxStackKeys]TokenValue
 		transKeys []TokenValue
 	)
 
-	if n := len(s.trans); n <= maxStackTransKeys {
+	if n := len(s.trans); n <= maxStackKeys {
 		idx := 0
 
 		for k := range s.trans {
