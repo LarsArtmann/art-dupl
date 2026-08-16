@@ -309,6 +309,7 @@ func (p *htmlprinter) OutputHTML(threshold int, sortBy config.SortCriteria) erro
 	for i := range len(p.dupls) {
 		allClones = append(allClones, p.dupls[i]...)
 	}
+
 	p.iota = 0
 	p.mu.Unlock()
 

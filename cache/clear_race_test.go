@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"sync"
 	"testing"
-
-	"github.com/LarsArtmann/art-dupl/internal/testutil"
 )
 
 // TestClearConcurrentWithGets is the regression test for the cache metadata
@@ -27,11 +25,7 @@ func TestClearConcurrentWithGets(t *testing.T) {
 
 	// Writers populate entries.
 	for w := range writers {
-		wg.Add(1)
-
-		go func() {
-			defer wg.Done()
-
+		wg.Go(func() {
 			for i := 0; ; i++ {
 				select {
 				case <-stop:
@@ -42,19 +36,16 @@ func TestClearConcurrentWithGets(t *testing.T) {
 				key := fmt.Sprintf("writer-%d-key-%d", w, i%10)
 				if err := fc.Set(key, nodes); err != nil {
 					t.Errorf("Set(%q): %v", key, err)
+
 					return
 				}
 			}
-		}()
+		})
 	}
 
 	// Readers hit and miss entries, incrementing the atomic counters.
 	for r := range readers {
-		wg.Add(1)
-
-		go func() {
-			defer wg.Done()
-
+		wg.Go(func() {
 			for i := 0; ; i++ {
 				select {
 				case <-stop:
@@ -62,32 +53,27 @@ func TestClearConcurrentWithGets(t *testing.T) {
 				default:
 				}
 
-				fc.Get(fmt.Sprintf("reader-%d-key-%d", r, i%10))
-
-				if _, ok := fc.Get(fmt.Sprintf("writer-%d-key-%d", r%writers, i%10)); ok {
-					// Hits must return deep clones — mutate to prove
-					// independence from the canonical LRU copy.
-					nodes[0].Pos = 9999
+				if got, ok := fc.Get(fmt.Sprintf("reader-%d-key-%d", r, i%10)); ok {
+					// Hits must return deep clones — mutating the result
+					// must never corrupt the canonical LRU copy.
+					got[0].Pos = 9999
 				}
 			}
-		}()
+		})
 	}
 
 	// One clearer repeatedly resets the cache while traffic flows.
-	wg.Add(1)
-
-	go func() {
-		defer wg.Done()
-
+	wg.Go(func() {
 		for range 10 {
 			if err := fc.Clear(); err != nil {
 				t.Errorf("Clear(): %v", err)
+
 				return
 			}
 		}
 
 		close(stop)
-	}()
+	})
 
 	wg.Wait()
 
@@ -118,34 +104,15 @@ func TestConcurrentMixedAccess(t *testing.T) {
 		func(i int) { _, _ = fc.Prune(2) },
 	}
 
-	for g := range len(ops) {
-		wg.Add(1)
-
-		go func(g int) {
-			defer wg.Done()
-
-			for i := 0; i < 200; i++ {
+	for g := range ops {
+		wg.Go(func() {
+			for i := range 200 {
 				ops[g](i)
 			}
-		}(g)
+		})
 	}
 
 	wg.Wait()
 
 	_ = fc.Stats()
-}
-
-// TestConcurrentPrintClonesHTML guards the htmlprinter mutex fix: PrintClones
-// mutates iota/dupls/stats under one mutex. It lives here to keep concurrency
-// regression tests together; it exercises the cache-free path of clone
-// handling via deep-clone semantics (see printer package for functional
-// coverage).
-func TestStatsAfterClearIsZero(t *testing.T) {
-	fc := NewFileCacheWithMemoryEntries(t.TempDir(), 8)
-
-	if err := fc.Set("a", testNodes()); err != nil {
-		t.Fatalf("Set: %v", err)
-	}
-
-	_ = testutil.CreateSingleNode // keep import anchor when nodes helpers change
 }

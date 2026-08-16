@@ -63,6 +63,39 @@ Rule: **a test that captures or reassigns `os.Stdout`/`os.Stderr` must NOT call
 globals directly). Prefer keeping such tests serial — the parallelism win on a
 fast capture test is negligible and the race is silent and intermittent.
 
+## Concurrency: Atomic/Mutex Mixing
+
+The cache once shipped a real data race of the *mixing* class: `Get` incremented
+`HitCount`/`MissCount` with `atomic.AddInt64` (no lock), while `Clear` reset
+them by replacing the whole `metadata` struct under `fc.mu` — a plain write
+racing with the atomic adds. Full-repo audit (2026-08-16) found one sibling
+(`printer/html.go` mutated `iota`/`stats` unguarded next to a mutex-guarded
+`dupls`); both are fixed.
+
+Rules that prevent the class:
+
+1. **One shared word, one access discipline.** If any access to a field is
+   atomic, EVERY access must be atomic (Add/Load/Store/Swap) — even accesses
+   that already hold a mutex. Holding a mutex does not make a plain read/write
+   of the same word race-free against lock-free atomic accessors.
+2. **Never reset by struct replacement.** Reset shared counter fields
+   individually with `atomic.Store*`; copying over a struct that contains
+   atomically-accessed fields silently reintroduces plain accesses.
+3. **Guard everything a method mutates, or nothing.** A method that locks a
+   mutex around ONE field while mutating sibling fields unguarded advertises
+   concurrency safety it does not provide (see `htmlprinter.PrintClones`).
+4. **Immutable-after-construction fields need no lock** — but say so in a
+   comment (e.g. `FilterStats.reasons`, `AcceptedSet.readFile`), so later
+   readers do not "fix" them into the locked path nor mutate them.
+5. **Hand off via channel or goroutine spawn.** The suffix tree is built by
+   one goroutine and searched read-only by many; the happens-before edges
+   (channel close, `go` statement) are the entire proof. Never add a write
+   path to the tree after search starts.
+
+Regression tests: `cache/clear_race_test.go`
+(`TestClearConcurrentWithGets`, `TestConcurrentMixedAccess`) — run the suite
+with `go test -race ./...` to re-verify.
+
 ## BDD Tests (Ginkgo/Gomega)
 
 Location: `bdd/` directory. Helpers in `internal/testutil/bdd.go`.

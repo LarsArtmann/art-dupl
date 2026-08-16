@@ -150,6 +150,7 @@ func (ip *IncrementalParser) ParseIncremental(
 
 			parseStart := time.Now()
 			nodes, lines, fromCache := ip.parseFile(file)
+
 			RecordStage(ctx, StageParse, time.Since(parseStart))
 
 			stats.LinesCount += lines
@@ -247,6 +248,7 @@ func startIncrementalWorkers(
 
 				parseStart := time.Now()
 				nodes, lines, fromCache := ip.parseFile(file)
+
 				RecordStage(ctx, StageParse, time.Since(parseStart))
 
 				if !sendCtx(ctx, resultChan, incrementalResult{

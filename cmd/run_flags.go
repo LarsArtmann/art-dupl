@@ -230,13 +230,13 @@ func runStandardAnalysis(
 				sortBy,
 				mergedConfig.Threshold,
 			),
-			)
-		}
-
-		timing.finish(ctx, cmd.ErrOrStderr())
-
-		return nil
+		)
 	}
+
+	timing.finish(ctx, cmd.ErrOrStderr())
+
+	return nil
+}
 
 // buildDisabledPatternSet converts a list of pattern label strings to a set
 // for O(1) lookup during actionability evaluation.

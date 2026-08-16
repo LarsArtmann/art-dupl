@@ -62,7 +62,9 @@ func Parse(
 
 			parseStart := time.Now()
 			ast, lines, err := ParseFileByExtensionWithConfig(file, mode, typeInfos.LookupPreloaded(file))
+
 			RecordStage(ctx, StageParse, time.Since(parseStart))
+
 			if err != nil {
 				logger.Default.Error("failed to parse file", "file", file, "err", err)
 
@@ -170,6 +172,7 @@ func startWorkers(
 
 				parseStart := time.Now()
 				result := parseFileWithConfig(file, mode, typeInfos.LookupPreloaded(file))
+
 				RecordStage(ctx, StageParse, time.Since(parseStart))
 
 				select {
@@ -260,6 +263,7 @@ func serializeAST(ctx context.Context, achan <-chan *syntax.Node, schan chan<- [
 
 		serializeStart := time.Now()
 		seq := syntax.SerializeWithMaxChildren(ast, maxChildren)
+
 		RecordStage(ctx, StageSerialize, time.Since(serializeStart))
 
 		if !sendCtx(ctx, schan, seq) {
