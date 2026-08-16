@@ -28,6 +28,16 @@ Remaining candidates:
 - [ ] **`TestMain` boilerplate**: Go requires one `TestMain` per package (go-cqrs-lite)
 - [ ] **`defer-cleanup-of-arbitrary-resource`**: `defer rows.Close()` / `defer tx.Rollback()` (discordsync — 12 groups)
 
+### Correctness hardening
+**Source:** `docs/status/2026-08-16_04-23_suffixtree-followup-slice-transitions-race-fixes.md` §e/§f — fallout of the cache metadata race fix.
+- [ ] **Atomic/mutex-mixing audit**: grep-driven sweep for struct fields touched by `atomic.*` in one method and read plainly in another (the class that caused the cache race). Fix or document each hit.
+- [ ] **Cache `Clear()` concurrent-stats regression test**: assert hit/miss counters survive concurrent `Get` during `Clear` under `-race` (locks in this session's fix).
+- [ ] **CI `-race` cadence + flake gate**: run `nix flake check`; decide whether full `-race ./...` runs every push or nightly (it is green now for the first time); wire the decision.
+
+### Code hygiene
+- [ ] **Suffixtree cleanup trio**: verify `benchmarkFindTranMethod` is dead → delete; modernize `b.N` → `b.Loop()` (3 sites in `parallel_bench_test.go`); verify/fix the stale "Workers routing" bullet in `AGENTS.md`.
+- [ ] **Suffixtree doc polish**: refresh package doc type list; name the `benchmarkMemoryUsage` magic numbers; evaluate `maxStackKeys` getAll helper dedup.
+
 ### Cache stats visibility
 - [ ] **Surface cache stats in `stats` subcommand**: `Stats.MemHits`/`Hits`/`Misses` are printed in verbose mode only (`cmd/run_analysis.go::printCacheStats`). Wire into `stats` output so non-verbose users see cache effectiveness.
 
@@ -43,6 +53,10 @@ The core layout work (slice transitions, arena, pool, budgets) is DONE — see C
 - [ ] **CI allocation regression detection**: `suffixtree/alloc_budget_test.go` covers the suffix tree; extend `testing.AllocsPerRun` budgets to `syntax/` serialization, or add a CI benchstat job on allocation columns (timing too noisy for CI).
 - [ ] **Real-world benchmark**: benchmark against an actual Go project repo (not synthetic tokens) to measure end-to-end impact of the suffix tree work.
 - [ ] **`taskset -c 1` benchmark protocol**: pin benchmarks to one core to cut thermal noise; current timing comparisons stay noisy.
+- [ ] **Slice-vs-reference-map property test**: build both transition representations from one token stream; assert identical `findTran` results and transition sets (guards insert-sort/binary-search bugs).
+- [ ] **Fuzz high-fanout seeds**: extend `FuzzSuffixTreeUpdate` with many-distinct-token alphabets to stress binary-search `findTran` + insert-sorted `addTran`.
+- [ ] **`linearScanMax` boundary micro-benchmark**: exact 8 vs 9 transitions per state, assert the crossover holds.
+- [ ] **`perf stat` cache-miss evidence**: hardware-counter proof (or refutation) of ADR-0022's cache-locality claims via git worktree A/B against `23fa1b4f`.
 
 ---
 
