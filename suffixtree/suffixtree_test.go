@@ -42,56 +42,56 @@ func TestConstruction(t *testing.T) {
 	t.Parallel()
 
 	str := "cacao"
-	_, s := genStates(8, str)
+	tree, s := genStates(8, str)
 	// s[0] is root
-	s[0].addTran(0, 1, s[1]) // ca
-	s[0].addTran(1, 1, s[2]) // a
-	s[0].addTran(4, 4, s[3]) // o
+	tree.addTran(s[0], 0, 1, s[1]) // ca
+	tree.addTran(s[0], 1, 1, s[2]) // a
+	tree.addTran(s[0], 4, 4, s[3]) // o
 
-	s[1].addTran(2, 4, s[4]) // cao
-	s[1].addTran(4, 4, s[5]) // o
+	tree.addTran(s[1], 2, 4, s[4]) // cao
+	tree.addTran(s[1], 4, 4, s[5]) // o
 
-	s[2].addTran(2, 4, s[4]) // cao
-	s[2].addTran(4, 4, s[5]) // o
+	tree.addTran(s[2], 2, 4, s[4]) // cao
+	tree.addTran(s[2], 4, 4, s[5]) // o
 
 	cacao := New()
 	_ = cacao.Update(str2tok(str)...)
-	compareTrees(t, s[0], cacao.root)
+	compareTrees(t, tree.data, s[0], cacao.data, cacao.root)
 
 	str2 := "banana"
-	_, r := genStates(4, str2)
-	r[0].addTran(0, 5, r[1]) // banana
-	r[0].addTran(1, 5, r[2]) // anana
-	r[0].addTran(2, 5, r[3]) // nana
+	tree2, r := genStates(4, str2)
+	tree2.addTran(r[0], 0, 5, r[1]) // banana
+	tree2.addTran(r[0], 1, 5, r[2]) // anana
+	tree2.addTran(r[0], 2, 5, r[3]) // nana
 
 	banana := New()
 	mustUpdate(banana, str2tok(str2)...)
-	compareTrees(t, r[0], banana.root)
+	compareTrees(t, tree2.data, r[0], banana.data, banana.root)
 
-	_, q := genStates(11, str2+"$")
+	tree3, q := genStates(11, str2+"$")
 	// r[0] is root
-	q[0].addTran(0, 6, q[1]) // banana$
-	q[0].addTran(1, 1, q[2]) // a
-	q[0].addTran(2, 3, q[3]) // na
-	q[0].addTran(6, 6, q[4]) // $
+	tree3.addTran(q[0], 0, 6, q[1]) // banana$
+	tree3.addTran(q[0], 1, 1, q[2]) // a
+	tree3.addTran(q[0], 2, 3, q[3]) // na
+	tree3.addTran(q[0], 6, 6, q[4]) // $
 
-	q[2].addTran(2, 3, q[5]) // na
-	q[2].addTran(6, 6, q[6]) // $
+	tree3.addTran(q[2], 2, 3, q[5]) // na
+	tree3.addTran(q[2], 6, 6, q[6]) // $
 
-	q[3].addTran(4, 6, q[7]) // na$
-	q[3].addTran(6, 6, q[8]) // $
+	tree3.addTran(q[3], 4, 6, q[7]) // na$
+	tree3.addTran(q[3], 6, 6, q[8]) // $
 
-	q[5].addTran(4, 6, q[9])  // na$
-	q[5].addTran(6, 6, q[10]) // $
+	tree3.addTran(q[5], 4, 6, q[9])  // na$
+	tree3.addTran(q[5], 6, 6, q[10]) // $
 
 	mustUpdate(banana, char('$'))
-	compareTrees(t, q[0], banana.root)
+	compareTrees(t, tree3.data, q[0], banana.data, banana.root)
 
 	foo := New()
 	_ = foo.Update(str2tok("a b ac c ")...)
 }
 
-func compareTrees(t *testing.T, expected, actual *state) {
+func compareTrees(t *testing.T, expectedData []TokenValue, expected *state, actualData []TokenValue, actual *state) {
 	t.Helper()
 
 	ch1, ch2 := walker(expected), walker(actual)
@@ -109,11 +109,11 @@ func compareTrees(t *testing.T, expected, actual *state) {
 			break
 		}
 
-		if etran.start != atran.start || etran.ActEnd() != atran.ActEnd() {
+		if etran.start != atran.start || etran.actEnd(expectedData) != atran.actEnd(actualData) {
 			t.Errorf(
 				"got transition (%d, %d) %v, want (%d, %d) %v",
-				atran.start, atran.ActEnd(), actual.tree.data[atran.start:atran.ActEnd()+1],
-				etran.start, etran.ActEnd(), expected.tree.data[etran.start:etran.ActEnd()+1],
+				atran.start, atran.actEnd(actualData), actualData[atran.start:atran.actEnd(actualData)+1],
+				etran.start, etran.actEnd(expectedData), expectedData[etran.start:etran.actEnd(expectedData)+1],
 			)
 		}
 	}
@@ -133,8 +133,8 @@ func walker(s *state) <-chan *tran {
 func walk(s *state, ch chan<- *tran) {
 	// Collect and sort transitions by start position for deterministic order
 	transList := make([]*tran, 0, len(s.trans))
-	for _, tr := range s.trans {
-		transList = append(transList, tr)
+	for i := range s.trans {
+		transList = append(transList, &s.trans[i])
 	}
 
 	slices.SortFunc(transList, func(a, b *tran) int {
@@ -154,7 +154,7 @@ func genStates(count int, data string) (*STree, []*state) {
 
 	states := make([]*state, 0, count)
 	for range count {
-		states = append(states, newState(t))
+		states = append(states, t.newState())
 	}
 
 	return t, states
@@ -170,9 +170,9 @@ func TestCanonize(t *testing.T) {
 
 	tree, s := genStates(5, "somebanana")
 	tree.auxState, tree.root = s[4], s[0]
-	s[0].addTran(0, 3, s[1])
-	s[1].addTran(4, 6, s[2])
-	s[2].addTran(7, infinity, s[3])
+	tree.addTran(s[0], 0, 3, s[1])
+	tree.addTran(s[1], 4, 6, s[2])
+	tree.addTran(s[2], 7, infinity, s[3])
 
 	find := func(needle *state) int {
 		for i, state := range s {
@@ -221,9 +221,9 @@ func TestSplitting(t *testing.T) {
 
 	tree := new(STree)
 	tree.data = str2vals("banana|cbao")
-	s1 := newState(tree)
-	s2 := newState(tree)
-	s1.addTran(0, 3, s2)
+	s1 := tree.newState()
+	s2 := tree.newState()
+	tree.addTran(s1, 0, 3, s2)
 
 	// active point is (s1, 0, -1), an explicit state
 	tree.end = 7 // c
@@ -260,14 +260,14 @@ func TestSplitting(t *testing.T) {
 	tree.end = 10 // o
 	rets, end = tree.testAndSplit(s1, 0, 2)
 
-	tr := s1.findTran(TokenValue('b'))
+	tr := s1.findTran(tree.data, TokenValue('b'))
 	if tr == nil {
 		t.Error("should have a b-transition")
 	} else if tr.state != rets {
 		t.Errorf("got state %p, want %p", tr.state, rets)
 	}
 
-	tr2 := rets.findTran(TokenValue('a'))
+	tr2 := rets.findTran(tree.data, TokenValue('a'))
 	if tr2 == nil {
 		t.Error("should have an a-transition")
 	} else if tr2.state != s2 {

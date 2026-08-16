@@ -301,7 +301,13 @@ func (fc *FileCache) Clear() error {
 	}
 
 	fc.mem.clear()
-	fc.metadata = newMetadata()
+
+	// Reset metadata without replacing the struct: HitCount/MissCount are
+	// also accessed atomically by Get, which does not hold fc.mu.
+	fc.metadata.CreatedAt = time.Now()
+	fc.metadata.UpdatedAt = time.Now()
+	atomic.StoreInt64(&fc.metadata.HitCount, 0)
+	atomic.StoreInt64(&fc.metadata.MissCount, 0)
 
 	return nil
 }
@@ -475,10 +481,20 @@ func (fc *FileCache) loadMetadata() {
 }
 
 // saveMetadata saves cache metadata to disk.
+// The hit/miss counters are read atomically: Get increments them without
+// holding fc.mu, so a plain struct copy would be a data race.
 func (fc *FileCache) saveMetadata() error {
 	metadataPath := filepath.Join(fc.cacheDir, "metadata.json")
 
-	data, err := errors.SafeMarshalIndent(fc.metadata, "", "  ", "cache metadata")
+	snapshot := Metadata{
+		Version:   fc.metadata.Version,   // immutable after loadMetadata
+		CreatedAt: fc.metadata.CreatedAt, // mutated only under fc.mu
+		UpdatedAt: fc.metadata.UpdatedAt, // mutated only under fc.mu
+		HitCount:  atomic.LoadInt64(&fc.metadata.HitCount),
+		MissCount: atomic.LoadInt64(&fc.metadata.MissCount),
+	}
+
+	data, err := errors.SafeMarshalIndent(snapshot, "", "  ", "cache metadata")
 	if err != nil {
 		return errors.Wrap(err, errors.CacheError, "failed to marshal cache metadata")
 	}

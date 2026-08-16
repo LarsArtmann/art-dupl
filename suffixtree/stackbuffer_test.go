@@ -9,18 +9,17 @@ import (
 )
 
 // TestFindDuplOverExceedsStackThreshold verifies that FindDuplOver produces
-// correct results when the suffix tree's root state has more than
-// maxStackKeys (32) transitions. This exercises the heap-allocation fallback
-// path in walkTrans where the transition map exceeds the stack buffer.
+// correct results when the suffix tree's root state has a high fanout (40
+// transitions, above findTran's linearScanMax of 8, exercising the binary
+// search path). A 5-character prefix is repeated to create a detectable
+// duplicate.
 //
-// The input uses 40 distinct characters so the root state has 40 transitions
-// (>32), forcing walkTrans to use make([]TokenValue, ...) instead of the
-// stack-allocated [32]TokenValue buffer. A 5-character prefix is repeated to
-// create a detectable duplicate.
+// The input uses 40 distinct characters so the root state has 40 transitions.
+// A 5-character prefix is repeated to create a duplicate of length 5 at positions 0 and 40.
 func TestFindDuplOverExceedsStackThreshold(t *testing.T) {
 	t.Parallel()
 
-	// 40 distinct characters — root state will have 40 transitions (>maxStackKeys).
+	// 40 distinct characters — root state will have 40 transitions (>linearScanMax).
 	chars := "abcdefghijklmnopqrstuvwxyz0123456789!@#$"
 	if utf8.RuneCountInString(chars) != 40 {
 		t.Fatalf("test setup: expected 40 distinct chars, got %d", utf8.RuneCountInString(chars))
@@ -71,7 +70,7 @@ func TestFindDuplOverExceedsStackThreshold(t *testing.T) {
 func TestContextListGetAllExceedsStackThreshold(t *testing.T) {
 	t.Parallel()
 
-	cl := newContextList()
+	cl := acquireContextList()
 
 	// Add maxStackKeys + 8 entries to exceed the stack buffer threshold.
 	numEntries := maxStackKeys + 8
@@ -87,10 +86,7 @@ func TestContextListGetAllExceedsStackThreshold(t *testing.T) {
 			key:  TokenValue(i + 1),
 			poss: []Pos{Pos(i * 10), Pos(i*10 + 1)},
 		}
-		pl := newPosList()
-		pl.add(entries[i].poss[0])
-		pl.add(entries[i].poss[1])
-		cl.lists[entries[i].key] = pl
+		cl.lists[entries[i].key] = entries[i].poss
 	}
 
 	if len(cl.lists) != numEntries {
@@ -126,21 +122,21 @@ func TestContextListGetAllExceedsStackThreshold(t *testing.T) {
 	}
 }
 
-// TestWalkTransStackAndHeapPathsProduceSameResults verifies that the stack
-// buffer path (<=maxStackKeys transitions) and the heap fallback path
-// (>maxStackKeys transitions) produce identical match results for the same
-// duplicate pattern. This is the strongest correctness guarantee: regardless
-// of which code path executes, the output must be the same.
+// TestWalkTransStackAndHeapPathsProduceSameResults verifies that low-fanout
+// and high-fanout trees (relative to findTran's linearScanMax threshold)
+// produce identical match results for the same duplicate pattern. This is
+// the strongest correctness guarantee: regardless of whether findTran uses
+// its linear scan or binary search path, the output must be the same.
 func TestWalkTransStackAndHeapPathsProduceSameResults(t *testing.T) {
 	t.Parallel()
 
 	// A 5-char duplicate pattern "abcde" repeated twice.
 	dup := "abcde"
 
-	// Input with < 32 distinct chars (stack path): just the duplicate + sentinel.
+	// Input with < 8 distinct follow tokens (linear scan path): just the duplicate + sentinel.
 	smallInput := dup + dup + "$"
 
-	// Input with > 32 distinct chars (heap path for root): 40 unique chars + dup + sentinel.
+	// Input with > 8 distinct first tokens (binary search path for root): 33 unique chars + dup + sentinel.
 	extraChars := "fghijklmnopqrstuvwxyz0123456789!@#$"
 	largeInput := extraChars + dup + dup + "$"
 

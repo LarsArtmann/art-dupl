@@ -63,6 +63,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`--list-patterns` output format**: All patterns listed flat (denylist first, then property labels), no comment separator line. Non-breaking for existing consumers.
 - **`--suggest-generics` help text**: Changed from "incompatible with --type-aware" to "takes precedence over --type-aware" since `--type-aware --suggest-generics` combined works correctly (type-aware loads type info, suggest-generics uses `eraseHash=true` which overrides type-aware hashing).
 - **`getSuggestion` refactored**: 13-case switch replaced with `productionSuggestions` map lookup (gocyclo 16→3).
+- **Suffix tree data layout overhaul** (see ADR-0022): state transitions are now a sorted `[]tran` of values (linear scan ≤ 8 entries, binary search above) instead of `map[TokenValue]*tran` — leaves (80–90% of states) never allocate, and search iterates slices instead of hashing maps. States are arena-allocated in 16 KB blocks; the `tree` back-pointer was removed in favor of `data []TokenValue` parameters; `ActEnd` unexported to `actEnd`; `addTran` is a method on `*STree` (consistent with `fork`). Construction: −67% allocs, −39% bytes (2k-token trees); search: map CPU overhead fell from ~32% to ~14%, par4/10k-tokens ~2.5× faster than two sessions ago. Allocation budgets are regression-tested via `testing.AllocsPerRun` (`alloc_budget_test.go`).
 
 ### Fixed
 
@@ -79,6 +80,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **EraseHash invariant not enforced** (`job/incremental.go`): `SetTypeAwareData` read only the first map entry's `EraseHash` to derive the cache tag, trusting a global invariant. Now iterates ALL entries; mismatches log a warning.
 - **Baseline captured directive-suppressed groups** (`cmd/baseline_cmd.go`): `runBaseline` honored `//art-dupl:accept` directives during recording, so directive-suppressed groups were absent from the baseline, then appeared as "new" clones when directives were removed — with no audit trail. Fixed by setting `AcceptDirectives = nil` before recording so the baseline captures ALL detected groups.
 - **Crashing benchmarks** (`suffixtree/suffixtree_bench_test.go`): `BenchmarkFindTran` indexed a map as a slice (nil pointer dereference). `BenchmarkTestAndSplit` indexed out of range. Both fixed.
+- **Data race in `cache` metadata counters** (`cache/file_cache.go`): `Metadata.HitCount`/`MissCount` are incremented atomically (without the mutex) by `Get`, but `saveMetadata` read them via plain struct copy during JSON marshaling, and `Clear` replaced the whole struct — both mixed atomic and non-atomic access to the same words. Found by running `go test -race ./...` (previously only `./suffixtree/` was race-checked). Fixed by atomic-load snapshot in `saveMetadata` and atomic-store reset in `Clear`.
 
 ### Removed
 

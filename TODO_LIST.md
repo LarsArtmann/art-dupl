@@ -1,6 +1,6 @@
 # TODO List
 
-**Last Updated:** 2026-08-15
+**Last Updated:** 2026-08-16
 
 Actionable items for the next 2-4 weeks. Completed work lives in `CHANGELOG.md`.
 This file is OPEN work only — no completed, rejected, or resolved items.
@@ -35,6 +35,15 @@ Remaining candidates:
 - [ ] **`--exclude-pattern` UX**: Warn when pattern matches zero files; document glob vs regex (licenseforge feedback)
 - [ ] **Coverage baseline**: Run `go test -cover` across all packages and commit a coverage baseline. We have benchmark baselines but no coverage baseline.
 
+### Suffix tree / performance follow-ups
+**Source:** `docs/status/2026-08-16_03-34_data-layout-allocation-optimization-sprint.md` §f + ADR-0022.
+The core layout work (slice transitions, arena, pool, budgets) is DONE — see CHANGELOG.
+- [ ] **`serial()` bulk Node allocation** (`syntax/syntax.go`): pre-allocate `make([]Node, count)` and index instead of `&Node{}` per node — nodes become cache-line adjacent. Identified twice, never attempted.
+- [ ] **`sync.Pool` for `[]*Node` stream slices**: `SerializeWithMaxChildren` allocates `make([]*Node, 0, 10)` per call.
+- [ ] **CI allocation regression detection**: `suffixtree/alloc_budget_test.go` covers the suffix tree; extend `testing.AllocsPerRun` budgets to `syntax/` serialization, or add a CI benchstat job on allocation columns (timing too noisy for CI).
+- [ ] **Real-world benchmark**: benchmark against an actual Go project repo (not synthetic tokens) to measure end-to-end impact of the suffix tree work.
+- [ ] **`taskset -c 1` benchmark protocol**: pin benchmarks to one core to cut thermal noise; current timing comparisons stay noisy.
+
 ---
 
 ## DEFERRED: Architecturally Constrained
@@ -43,5 +52,6 @@ Blocked by fundamental design constraints. Cannot be resolved without significan
 
 - [ ] **Branded `NodeType int32`**: Per-package `NodeType` types would prevent cross-package constant collision. **HIGH RISK**: touches gob cache format. Current 8-bit shared encoding is intentional (ADR-0008).
 - [ ] **Hide `syntax/golang` behind facade**: **BLOCKED** by import cycle (`syntax/golang` imports `syntax` for Node type; `printer/actionability*.go` imports `syntax/golang` for AST constants).
-- [ ] **Hybrid slice/map transition storage**: Map already O(1); slice optimization deferred as low-value.
+- [ ] **`int32` arena indices instead of `*state` pointers**: slice-based transitions (ADR-0022) already removed most pointer chasing; the remaining win is small vs the risk of converting every `*state` to index arithmetic. Revisit only with profile evidence. (Supersedes the old "hybrid slice/map" item — implemented as pure sorted slices in ADR-0022.)
+- [ ] **`sync.Pool` for contextList `[]Pos` slices**: rejected in ADR-0022 — slices transfer between contextLists via `append` (which may reallocate), so lifetime tracking would out-complex the savings. Revisit only if search allocations become dominant again.
 - [ ] **Restructure `TypeAwareData` so `EraseHash` is collection-level**: Currently per-entry on `PreloadedAST`, validated at runtime with a warning (`job/incremental.go::SetTypeAwareData`). A collection-level type would enforce the invariant at compile time. Breaking change to `syntax/golang/typeinfo.go` with large blast radius.

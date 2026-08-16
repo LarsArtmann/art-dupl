@@ -56,8 +56,8 @@ func benchmarkFindTranMethod(b *testing.B, stateCount, transPerState int) {
 }
 
 // findTranFunc is a helper function that wraps s.findTran for benchmarking.
-func findTranFunc(s *state, c TokenValue) *tran {
-	return s.findTran(c)
+func findTranFunc(s *state, data []TokenValue, c TokenValue) *tran {
+	return s.findTran(data, c)
 }
 
 // benchmarkFindTran is a helper for benchmarking findTran functions.
@@ -66,7 +66,7 @@ func benchmarkFindTran(
 	b *testing.B,
 	stateCount, transPerState int,
 	setup func() *STree,
-	fn func(*state, TokenValue) *tran,
+	fn func(*state, []TokenValue, TokenValue) *tran,
 ) {
 	b.Helper()
 
@@ -77,22 +77,17 @@ func benchmarkFindTran(
 		tree = generateTreeWithTransitions(stateCount, transPerState)
 	}
 
+	// Grab the first available transition from the root's sorted slice.
 	if len(tree.root.trans) == 0 {
 		b.Skip("No transitions to benchmark")
 	}
 
-	// trans is a map[TokenValue]*tran — grab the first available transition.
-	var target *tran
-	for _, t := range tree.root.trans {
-		target = t
-
-		break
-	}
+	target := &tree.root.trans[0]
 
 	token := tree.data[target.start]
 
 	for b.Loop() {
-		fn(tree.root, token)
+		fn(tree.root, tree.data, token)
 	}
 }
 
@@ -260,7 +255,7 @@ func BenchmarkSearch(b *testing.B) {
 		// Simulate a search by traversing transitions
 		s := tree.root
 		for _, token := range searchTokens {
-			tr := s.findTran(token.Val())
+			tr := s.findTran(tree.data, token.Val())
 			if tr == nil {
 				break
 			}

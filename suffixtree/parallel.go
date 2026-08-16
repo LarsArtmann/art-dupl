@@ -3,7 +3,6 @@ package suffixtree
 import (
 	"context"
 	"runtime"
-	"slices"
 	"sync"
 )
 
@@ -37,9 +36,8 @@ func (t *STree) FindDuplOverParallel(ctx context.Context, threshold, workers int
 // parallelWalkRoot dispatches each root transition's subtree to a worker
 // goroutine. The semaphore limits concurrency to workers. Context cancellation
 // stops dispatching new subtrees; already-running workers check ctx in
-// walkTrans and return early.
-//
-//nolint:wsl_v5 // dispatch loop pattern doesn't benefit from forced whitespace
+// walkTrans and return early. The root's transition slice is already sorted
+// by key, so dispatch order is deterministic without an extra allocation.
 func (t *STree) parallelWalkRoot(
 	ctx context.Context,
 	threshold, workers int,
@@ -49,16 +47,11 @@ func (t *STree) parallelWalkRoot(
 		return
 	}
 
-	rootKeys := make([]TokenValue, 0, len(t.root.trans))
-	for k := range t.root.trans {
-		rootKeys = append(rootKeys, k)
-	}
-	slices.Sort(rootKeys)
-
 	var wg sync.WaitGroup
+
 	sem := make(chan struct{}, workers)
 
-	for _, k := range rootKeys {
+	for i := range t.root.trans {
 		select {
 		case sem <- struct{}{}:
 		case <-ctx.Done():
@@ -67,14 +60,16 @@ func (t *STree) parallelWalkRoot(
 			return
 		}
 
-		tr := t.root.trans[k]
+		tr := &t.root.trans[i]
+
 		wg.Add(1)
 
 		go func(tr *tran) {
 			defer wg.Done()
 			defer func() { <-sem }()
 
-			walkTrans(ctx, tr, tr.len(), threshold, ch)
+			cl := walkTrans(ctx, t.data, tr, tr.len(), threshold, ch)
+			releaseContextList(cl)
 		}(tr)
 	}
 
