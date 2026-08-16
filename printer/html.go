@@ -33,13 +33,16 @@ type ReportMetadata struct {
 }
 
 // htmlprinter generates HTML output for code duplication reports.
+// mu guards all mutable per-run state mutated by PrintClones (iota, dupls,
+// stats) so concurrent PrintClones calls stay race-free; the writer itself
+// remains caller-serialized.
 type htmlprinter struct {
 	ReadFile
 
 	iota             int
 	w                io.Writer
 	threshold        int
-	dupMutex         sync.Mutex
+	mu               sync.Mutex
 	dupls            [][]domain.ProcessedClone
 	diffMode         config.DiffMode
 	stats            classificationStats
@@ -111,13 +114,14 @@ func (p *htmlprinter) PrintClones(
 	group domain.ProcessedCloneGroup,
 	sortBy ...config.SortCriteria,
 ) error {
-	p.iota++
-
 	clones := SortGroupClones(group, sortBy...)
 
-	p.dupMutex.Lock()
+	// All mutated per-run state is guarded by mu — previously only dupls was
+	// locked while iota and stats mutated unguarded next to it, a mixed-access
+	// race if PrintClones ever ran concurrently.
+	p.mu.Lock()
+	p.iota++
 	p.dupls = append(p.dupls, clones)
-	p.dupMutex.Unlock()
 
 	for _, cl := range clones {
 		p.stats.categoryCounts[cl.Classification.Category]++
@@ -133,14 +137,17 @@ func (p *htmlprinter) PrintClones(
 		p.stats.totalTokens += cl.Classification.Tokens
 	}
 
+	groupIndex := p.iota
+	p.mu.Unlock()
+
 	sort.Sort(byNameAndLineProcessed(clones))
-	viewData := toCloneGroupView(p.iota, group.Hash, clones)
+	viewData := toCloneGroupView(groupIndex, group.Hash, clones)
 
 	ctx := context.Background()
 
 	if p.diffMode.IsEnabled() && len(clones) > 1 {
 		groupDiff := ComputeCloneGroupDiff(clones)
-		diffData := toDiffView(p.iota, groupDiff)
+		diffData := toDiffView(groupIndex, groupDiff)
 
 		if len(groupDiff.Others) == 0 {
 			return cloneGroupFull(viewData).Render(ctx, p.w)
@@ -298,15 +305,14 @@ document.addEventListener('DOMContentLoaded', function() {
 func (p *htmlprinter) OutputHTML(threshold int, sortBy config.SortCriteria) error {
 	var allClones []domain.ProcessedClone
 
-	p.dupMutex.Lock()
+	p.mu.Lock()
 	for i := range len(p.dupls) {
 		allClones = append(allClones, p.dupls[i]...)
 	}
-	p.dupMutex.Unlock()
+	p.iota = 0
+	p.mu.Unlock()
 
 	SortProcessedClonesByCriteria(allClones, sortBy)
-
-	p.iota = 0
 
 	for _, cl := range allClones {
 		err := p.PrintClones(

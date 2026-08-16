@@ -4,6 +4,7 @@ import (
 	"context"
 	"runtime"
 	"sync"
+	"time"
 
 	"github.com/LarsArtmann/art-dupl/pkg/logger"
 	"github.com/LarsArtmann/art-dupl/syntax"
@@ -57,12 +58,11 @@ func Parse(
 			var (
 				ast   *syntax.Node
 				lines int
-				err   error
 			)
 
-			// Dispatch to appropriate parser based on file extension
-
-			ast, lines, err = ParseFileByExtensionWithConfig(file, mode, typeInfos.LookupPreloaded(file))
+			parseStart := time.Now()
+			ast, lines, err := ParseFileByExtensionWithConfig(file, mode, typeInfos.LookupPreloaded(file))
+			RecordStage(ctx, StageParse, time.Since(parseStart))
 			if err != nil {
 				logger.Default.Error("failed to parse file", "file", file, "err", err)
 
@@ -168,7 +168,9 @@ func startWorkers(
 				default:
 				}
 
+				parseStart := time.Now()
 				result := parseFileWithConfig(file, mode, typeInfos.LookupPreloaded(file))
+				RecordStage(ctx, StageParse, time.Since(parseStart))
 
 				select {
 				case resultChan <- result:
@@ -256,7 +258,9 @@ func serializeAST(ctx context.Context, achan <-chan *syntax.Node, schan chan<- [
 		default:
 		}
 
+		serializeStart := time.Now()
 		seq := syntax.SerializeWithMaxChildren(ast, maxChildren)
+		RecordStage(ctx, StageSerialize, time.Since(serializeStart))
 
 		if !sendCtx(ctx, schan, seq) {
 			close(schan)

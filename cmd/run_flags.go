@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"time"
 
 	"github.com/LarsArtmann/art-dupl/config"
 	duplerrors "github.com/LarsArtmann/art-dupl/errors"
@@ -99,13 +100,24 @@ func runCmd(cmd *cobra.Command, args []string) error {
 	//art-dupl:accept standard context cleanup idiom
 	defer cancel()
 
-	return dispatchAnalysis(ctx, cmd, mergedConfig, sortBy)
+	var timing *runTiming
+	if enableTiming, _ := cmd.Flags().GetBool("timing"); enableTiming {
+		timing, ctx = startRunTiming(ctx)
+	}
+
+	return dispatchAnalysis(ctx, cmd, mergedConfig, sortBy, timing)
 }
 
 // dispatchAnalysis routes to the appropriate analysis mode based on CLI flags.
 // Handles --all (batch generation), --dump-tokens (token inspection), and the
 // default standard-analysis path.
-func dispatchAnalysis(ctx context.Context, cmd *cobra.Command, mergedConfig *config.Config, sortBy string) error {
+func dispatchAnalysis(
+	ctx context.Context,
+	cmd *cobra.Command,
+	mergedConfig *config.Config,
+	sortBy string,
+	timing *runTiming,
+) error {
 	allFlag, _ := cmd.Flags().GetBool("all")
 	outputDir, _ := cmd.Flags().GetString("output-dir")
 
@@ -133,11 +145,17 @@ func dispatchAnalysis(ctx context.Context, cmd *cobra.Command, mergedConfig *con
 		return runDiffReport(ctx, mergedConfig, diffReportPath, useJSON, cmd.ErrOrStderr())
 	}
 
-	return runStandardAnalysis(ctx, cmd, mergedConfig, sortBy)
+	return runStandardAnalysis(ctx, cmd, mergedConfig, sortBy, timing)
 }
 
 // runStandardAnalysis runs the default clone-detection pipeline and prints results.
-func runStandardAnalysis(ctx context.Context, cmd *cobra.Command, mergedConfig *config.Config, sortBy string) error {
+func runStandardAnalysis(
+	ctx context.Context,
+	cmd *cobra.Command,
+	mergedConfig *config.Config,
+	sortBy string,
+	timing *runTiming,
+) error {
 	duplChan, parseStats, _, err := executeAnalysis(
 		ctx,
 		mergedConfig,
@@ -188,6 +206,8 @@ func runStandardAnalysis(ctx context.Context, cmd *cobra.Command, mergedConfig *
 
 	suppression := buildSuppressionConfig(mergedConfig)
 
+	printStart := time.Now()
+
 	err = printDupls(
 		ctx,
 		p,
@@ -199,6 +219,8 @@ func runStandardAnalysis(ctx context.Context, cmd *cobra.Command, mergedConfig *
 		mergedConfig.DetectionMode.IsSemantic(),
 		suppression,
 	)
+	timing.recordPrintPhase(ctx, printStart)
+
 	if err != nil {
 		return duplerrors.Wrap(
 			err,
@@ -208,11 +230,13 @@ func runStandardAnalysis(ctx context.Context, cmd *cobra.Command, mergedConfig *
 				sortBy,
 				mergedConfig.Threshold,
 			),
-		)
-	}
+			)
+		}
 
-	return nil
-}
+		timing.finish(ctx, cmd.ErrOrStderr())
+
+		return nil
+	}
 
 // buildDisabledPatternSet converts a list of pattern label strings to a set
 // for O(1) lookup during actionability evaluation.

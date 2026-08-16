@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/LarsArtmann/art-dupl/cache"
 	"github.com/LarsArtmann/art-dupl/config"
@@ -402,6 +403,8 @@ func executeAnalysis(
 		return ch, ps, fs, err
 	}
 
+	ingestStart := time.Now()
+
 	result := buildSuffixTree(buildParams{
 		ctx:          ctx,
 		paths:        paths,
@@ -411,6 +414,8 @@ func executeAnalysis(
 		outputFormat: outputFormat,
 		stderr:       stderr,
 	})
+	job.RecordStage(ctx, job.PhaseIngest, time.Since(ingestStart))
+
 	if result.err != nil {
 		return nil, job.ParseStats{}, nil, duplerrors.Wrap(
 			result.err,
@@ -447,6 +452,8 @@ func spawnCloneDetection(
 	go func() {
 		defer close(duplChan)
 
+		searchStart := time.Now()
+
 		matches := detector.FindDuplOver(ctx, threshold)
 		for match := range matches {
 			select {
@@ -455,6 +462,8 @@ func spawnCloneDetection(
 				return
 			}
 		}
+
+		job.RecordStage(ctx, job.PhaseSearch, time.Since(searchStart))
 	}()
 
 	return duplChan

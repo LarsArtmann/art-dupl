@@ -4,6 +4,7 @@ import (
 	"context"
 	"math"
 	"sync/atomic"
+	"time"
 
 	"github.com/LarsArtmann/art-dupl/pkg/logger"
 	"github.com/LarsArtmann/art-dupl/suffixtree"
@@ -41,6 +42,8 @@ func BuildTree(
 			default:
 			}
 
+			buildStart := time.Now()
+
 			data = append(data, seq...)
 			for _, node := range seq {
 				if err := t.Update(node); err != nil {
@@ -59,6 +62,8 @@ func BuildTree(
 			}
 			data = append(data, sentinel)
 			_ = t.Update(sentinel)
+
+			RecordStage(ctx, StageTreeBuild, time.Since(buildStart))
 		}
 
 		done <- nil

@@ -158,6 +158,10 @@ func AddFlags(rootCmd *cobra.Command) {
 
 	rootCmd.Flags().
 		Bool("recommend-threshold", false, "suggest a threshold based on codebase size and exit")
+
+	// Root-only: performance measurement
+	rootCmd.Flags().
+		Bool("timing", false, "print per-stage timing and allocation statistics to stderr after the run")
 }
 
 // addDeprecatedIncludeGeneratedFlags registers the old per-generator --include-*

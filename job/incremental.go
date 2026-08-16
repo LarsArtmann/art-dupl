@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"sync"
+	"time"
 
 	"github.com/LarsArtmann/art-dupl/cache"
 	"github.com/LarsArtmann/art-dupl/pkg/logger"
@@ -146,7 +147,11 @@ func (ip *IncrementalParser) ParseIncremental(
 			}
 
 			stats.FilesCount++
+
+			parseStart := time.Now()
 			nodes, lines, fromCache := ip.parseFile(file)
+			RecordStage(ctx, StageParse, time.Since(parseStart))
+
 			stats.LinesCount += lines
 
 			if fromCache {
@@ -240,7 +245,9 @@ func startIncrementalWorkers(
 				default:
 				}
 
+				parseStart := time.Now()
 				nodes, lines, fromCache := ip.parseFile(file)
+				RecordStage(ctx, StageParse, time.Since(parseStart))
 
 				if !sendCtx(ctx, resultChan, incrementalResult{
 					nodes:     nodes,

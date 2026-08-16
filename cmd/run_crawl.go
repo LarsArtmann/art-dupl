@@ -9,8 +9,10 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/LarsArtmann/art-dupl/config"
+	"github.com/LarsArtmann/art-dupl/job"
 	"github.com/LarsArtmann/gogenfilter/v3"
 )
 
@@ -58,6 +60,11 @@ func feedFromStdin(
 
 	go func() {
 		defer close(fchan)
+
+		crawlStart := time.Now()
+		defer func() {
+			job.RecordStage(ctx, job.StageCrawl, time.Since(crawlStart))
+		}()
 
 		done := make(chan struct{})
 
@@ -220,6 +227,11 @@ func crawlPathsWithFileCheck(
 	fchan := make(chan string)
 
 	go func() {
+		crawlStart := time.Now()
+		defer func() {
+			job.RecordStage(ctx, job.StageCrawl, time.Since(crawlStart))
+		}()
+
 		for _, path := range paths {
 			if ctx.Err() != nil {
 				break
