@@ -105,6 +105,21 @@ func (ip *IncrementalParser) cacheKey(content []byte) string {
 type ParseStatsMixin struct {
 	FilesCount int
 	LinesCount int
+	// Cache reports this run's incremental-parse cache effectiveness; nil
+	// for non-incremental runs and hash-only analysis. Hit/miss counts are
+	// run-scoped (per file), unlike the cache's persisted lifetime counters.
+	Cache *RunCacheStats
+}
+
+// RunCacheStats describes incremental-cache effectiveness for one analysis
+// run. Hits/Misses count files served from cache vs parsed fresh; MemoryHits
+// is the in-memory LRU hit count (naturally per-process); Entries is the
+// on-disk entry count after the run.
+type RunCacheStats struct {
+	Hits       int
+	Misses     int
+	MemoryHits int64
+	Entries    int
 }
 
 // IncrementalStats holds statistics from incremental parsing.

@@ -180,12 +180,19 @@ func buildSuffixTreeIncremental(params buildParams) treeBuildResult {
 	return finalizeTreeBuild(params, schan, func() job.ParseStats {
 		incStats := <-incStatsChan
 
-		printCacheStats(params.stderr, params.cfg, incParser.GetCacheStats())
+		cacheStats := incParser.GetCacheStats()
+		printCacheStats(params.stderr, params.cfg, cacheStats)
 
 		return job.ParseStats{
 			ParseStatsMixin: job.ParseStatsMixin{
 				FilesCount: incStats.FilesCount,
 				LinesCount: incStats.LinesCount,
+				Cache: &job.RunCacheStats{
+					Hits:       incStats.CacheHits,
+					Misses:     incStats.CacheMisses,
+					MemoryHits: cacheStats.MemHits,
+					Entries:    cacheStats.Size,
+				},
 			},
 		}
 	})
@@ -392,10 +399,7 @@ func executeAnalysis(
 		)
 	}
 
-	var filterStats *FilterStats
-	if filterParam != nil {
-		filterStats = NewFilterStats(filterParam.FilterReasons())
-	}
+	var filterStats *FilterStats = newTrackedFilterStats(filterParam, cfg)
 
 	if cfg.DetectionMethods.IsHashOnly() {
 		ch, ps, fs, err := executeHashOnlyAnalysis(ctx, cfg, paths, filterParam, filterStats, outputFormat, stderr)

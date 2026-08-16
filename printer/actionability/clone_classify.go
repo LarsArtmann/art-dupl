@@ -229,9 +229,25 @@ var patternLabelConfigs = map[PatternLabel]patternLabelConfig{ //nolint:gocheckn
 		suggestion:  suggestTestScaffolding,
 		priority:    domain.PriorityLow,
 	},
-	PatternDataDominated:    {suggestion: suggestDataDominated, priority: domain.PriorityLow},
-	PatternSignatureOnly:    {suggestion: suggestSignatureOnly, priority: domain.PriorityLow},
-	PatternRAIIDefer:        {suggestion: suggestRAIIDefer, priority: domain.PriorityLow},
+	PatternDataDominated: {suggestion: suggestDataDominated, priority: domain.PriorityLow},
+	PatternSignatureOnly: {suggestion: suggestSignatureOnly, priority: domain.PriorityLow},
+	PatternRAIIDefer:     {suggestion: suggestRAIIDefer, priority: domain.PriorityLow},
+	PatternTestPreamble: {
+		category:    domain.CategoryTestBoilerplate,
+		setCategory: true,
+		suggestion:  "t.Parallel()/t.Helper() + setup preamble — each test picks its own setup",
+		priority:    domain.PriorityLow,
+	},
+	PatternTestMainBoilerplate: {
+		category:    domain.CategoryTestBoilerplate,
+		setCategory: true,
+		suggestion:  "TestMain body — Go requires one in-package per package; inextractable",
+		priority:    domain.PriorityLow,
+	},
+	PatternEmbedDirective: {
+		suggestion: "//go:embed embed.FS bootstrap — directive is package-bound, extraction impossible",
+		priority:   domain.PriorityLow,
+	},
 	PatternErrorPropagation: {suggestion: suggestErrorPropagation, priority: domain.PriorityLow},
 	PatternErrorWrapping: {
 		suggestion: "error-wrapping idiom (if err != nil { return fmt.Errorf(...) })",

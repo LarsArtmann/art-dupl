@@ -23,6 +23,19 @@ type TopCloneGroup struct {
 	FirstLineStart int                  `json:"firstLineStart"`
 }
 
+// CacheMetrics reports this run's incremental-parse cache effectiveness in
+// the stats output. Hit/miss counts are run-scoped (per file), not the
+// cache's persisted lifetime counters. It mirrors job.RunCacheStats at the
+// printer boundary so the printer package stays independent of the cache and
+// job packages.
+type CacheMetrics struct {
+	Hits       int64   `json:"hits"`
+	Misses     int64   `json:"misses"`
+	MemoryHits int64   `json:"memory_hits"` // LRU hits that skipped gob deserialization
+	Entries    int     `json:"entries"`     // Cached ASTs on disk after the run
+	HitRatePct float64 `json:"hit_rate_pct"`
+}
+
 // StatsView holds all aggregated statistics about code duplication analysis.
 //
 // Fields:
@@ -93,4 +106,7 @@ type StatsView struct {
 	// Metadata
 	DetectionMethods  string `json:"detection_methods"`  // Comma-separated detection methods used
 	SemanticDetection bool   `json:"semantic_detection"` // Whether semantic-aware detection was enabled
+
+	// Cache metrics (incremental mode only)
+	Cache *CacheMetrics `json:"cache,omitempty"` // nil when the incremental cache was not used
 }

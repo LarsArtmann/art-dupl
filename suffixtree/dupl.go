@@ -59,6 +59,11 @@ func releaseContextList(cl *contextList) {
 	contextListPool.Put(cl)
 }
 
+// getAll concatenates all tracked positions, ordered by their preceding
+// token value. No dedup is needed: every Pos is filed under exactly one map
+// key (the token value immediately preceding it), both at leaf coverage and
+// through the per-key merge in append, so the per-key position lists are
+// disjoint by construction and concatenation can never yield a duplicate.
 func (c *contextList) getAll() []Pos {
 	var (
 		stackBuf [maxStackKeys]TokenValue

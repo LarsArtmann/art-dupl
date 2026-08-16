@@ -23,10 +23,7 @@ type runTiming struct {
 // startRunTiming begins timing a run and returns the context the analysis
 // pipeline should use so its stages record into the collector.
 func startRunTiming(ctx context.Context) (*runTiming, context.Context) {
-	var before runtime.MemStats
-	runtime.ReadMemStats(&before)
-
-	rt := &runTiming{stages: job.NewStageTiming(), startedAt: time.Now(), memBefore: before}
+	rt := &runTiming{stages: job.NewStageTiming(), startedAt: time.Now(), memBefore: job.ReadMemStats()}
 
 	return rt, job.WithStageTiming(ctx, rt.stages)
 }

@@ -35,6 +35,10 @@ bench_out="$tmp/bench.txt"
 	-bench '^(BenchmarkSTreeUpdate|BenchmarkFindDuplOver|BenchmarkMemoryUsage)' \
 	-benchmem -count=1 | tee "$bench_out") >&2
 
+(cd "$repo_root" && GOEXPERIMENT=jsonv2 go test ./syntax/ -run '^$' \
+	-bench '^BenchmarkSerialize' \
+	-benchmem -count=1 | tee -a "$bench_out") >&2
+
 fail=0
 improved=0
 
@@ -45,9 +49,11 @@ while IFS=$'\t' read -r bench budget _note; do
 	bench="${bench%%-*}"
 
 	# Find the allocs/op field: the field immediately before "allocs/op".
+	# The bench output name carries a -<procs> suffix; strip it before
+	# comparing so the match is exact (not prefix-loose).
 	actual="$(
 		awk -v b="$bench" \
-			'$1 == b {for (i = 2; i <= NF; i++) if ($(i+1) == "allocs/op") {print $i; exit}}' \
+			'{ name = $1; sub(/-[0-9]+$/, "", name); if (name == b) {for (i = 2; i <= NF; i++) if ($(i+1) == "allocs/op") {print $i; exit}}}' \
 			"$bench_out"
 	)"
 

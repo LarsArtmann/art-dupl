@@ -90,6 +90,15 @@ header h1 {
 	color: var(--text-primary);
 	font-size: 1.1rem;
 }
+.clone-header h3 .anchor-link {
+	color: var(--text-secondary);
+	text-decoration: none;
+	font-size: 0.85em;
+	margin-left: 6px;
+	opacity: 0.4;
+	transition: opacity 0.15s;
+}
+.clone-header h3 .anchor-link:hover { opacity: 1; color: var(--accent); }
 .clone-header .badge {
 	background: var(--accent);
 	color: white;

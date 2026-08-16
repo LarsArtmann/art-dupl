@@ -67,6 +67,7 @@ type jsonStatsOutput struct {
 	} `json:"testVsProduction"`
 	TopClones []printer.TopCloneGroup `json:"topClones,omitempty"`
 	TopFiles  []jsonTopFile           `json:"topFiles"`
+	Cache     *printer.CacheMetrics   `json:"cache,omitempty"`
 }
 
 type jsonTopFile struct {
@@ -113,6 +114,14 @@ func (p *stats) printCSV() {
 	write("Timestamp", p.statsData.Timestamp)
 	write("Analysis Time", p.statsData.AnalysisDuration)
 
+	if p.statsData.Cache != nil {
+		write("Cache Hit Rate", fmt.Sprintf("%.1f%%", p.statsData.Cache.HitRatePct))
+		write("Cache Hits", strconv.FormatInt(p.statsData.Cache.Hits, 10))
+		write("Cache Misses", strconv.FormatInt(p.statsData.Cache.Misses, 10))
+		write("Cache Memory Hits", strconv.FormatInt(p.statsData.Cache.MemoryHits, 10))
+		write("Cache Entries", strconv.Itoa(p.statsData.Cache.Entries))
+	}
+
 	// Blank separator
 	write()
 
@@ -153,9 +162,28 @@ func (p *stats) printText() {
 	p.printTextHeader()
 	p.printTextConfiguration()
 	p.printTextOverview()
+	p.printTextCache()
 	p.printTextDuplicateCode()
 	p.printTextDistributions()
 	p.printTextRecommendations()
+}
+
+// printTextCache renders the incremental-cache effectiveness section; it is
+// skipped entirely for runs that did not use the incremental parser.
+func (p *stats) printTextCache() {
+	if p.statsData.Cache == nil {
+		return
+	}
+
+	p.printSection("Cache:")
+	p.printMetric(
+		"Hit Rate",
+		fmt.Sprintf("%.1f%% (%d hits, %d misses)",
+			p.statsData.Cache.HitRatePct, p.statsData.Cache.Hits, p.statsData.Cache.Misses),
+	)
+	p.printMetric("Memory Hits", strconv.FormatInt(p.statsData.Cache.MemoryHits, 10))
+	p.printMetric("Cached Entries", strconv.Itoa(p.statsData.Cache.Entries))
+	_, _ = fmt.Fprintf(p.w, "\n")
 }
 
 func (p *stats) printTextHeader() {
@@ -391,6 +419,7 @@ func (p *stats) buildJSONData() jsonStatsOutput {
 	p.fillJSONMetrics(&jsonData)
 	p.fillJSONBreakdowns(&jsonData)
 	p.fillJSONTopFiles(&jsonData)
+	jsonData.Cache = p.statsData.Cache
 
 	jsonData.Note = "Metrics count unique duplicate patterns, not total occurrences. A clone group with 3 instances counts once for line calculations."
 

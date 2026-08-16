@@ -81,6 +81,8 @@ func feedFromStdin(
 			f := sc.Text()
 			path := strings.TrimPrefix(f, "./")
 
+			filterStats.recordPatternCandidate(path)
+
 			if !shouldIncludeFile(filter, path, filterStats, includes) {
 				continue
 			}
@@ -101,6 +103,8 @@ func feedFromStdin(
 		if err := sc.Err(); err != nil && ctx.Err() == nil {
 			fmt.Fprintf(stderr, "reading stdin: %v\n", err)
 		}
+
+		filterStats.WarnUnmatchedExcludePatterns(stderr)
 	}()
 
 	return fchan
@@ -253,6 +257,8 @@ func crawlPathsWithFileCheck(
 		}
 
 		close(fchan)
+
+		filterStats.WarnUnmatchedExcludePatterns(stderr)
 	}()
 
 	return fchan
@@ -323,9 +329,12 @@ func handleWalkEntry(opts CrawlOptions, path string, info os.FileInfo) error {
 		return nil
 	}
 
-	if !info.IsDir() && passesFileCheck(info.Name(), opts.FileCheck) &&
-		shouldIncludeFile(opts.Filter, path, opts.FilterStats, opts.Includes) {
-		opts.sendFile(path)
+	if !info.IsDir() && passesFileCheck(info.Name(), opts.FileCheck) {
+		opts.FilterStats.recordPatternCandidate(path)
+
+		if shouldIncludeFile(opts.Filter, path, opts.FilterStats, opts.Includes) {
+			opts.sendFile(path)
+		}
 	}
 
 	return nil

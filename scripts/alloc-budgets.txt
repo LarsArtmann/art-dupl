@@ -1,0 +1,39 @@
+# Allocation budgets for the guarded suffixtree + syntax benchmarks (allocs/op).
+# Enforced by scripts/check-alloc-regression.sh (±1 tolerance for env variance).
+# Baseline captured 2026-08-16 on Go 1.26.5 after the ADR-0022 layout overhaul
+# (commit 081e347f). When you deliberately change allocations, update this file
+# in the same commit and note why.
+#
+# syntax/ budgets captured 2026-08-16 after T13 bulk-arena serialization:
+# one pre-counted []Node arena + one exactly-sized []*Node stream = 2 allocs
+# regardless of tree size (Idempotent serializes twice = 4). Budgets are exact;
+# any per-node allocation reintroduced in serial() fails the gate by 100x.
+BenchmarkSerialize/Size10	2
+BenchmarkSerialize/Size100	2
+BenchmarkSerialize/Size1000	2
+BenchmarkSerialize/Size10000	2
+BenchmarkSerialize_Small	2
+BenchmarkSerialize_Large	2
+BenchmarkSerialize_Statements	2
+BenchmarkSerialize_Idempotent	4
+BenchmarkSTreeUpdate/tokens_100	101
+BenchmarkSTreeUpdate/tokens_500	547
+BenchmarkSTreeUpdate/tokens_2000	2046
+BenchmarkFindDuplOver/threshold_10	1543
+BenchmarkFindDuplOver/threshold_50	1539
+BenchmarkFindDuplOver/threshold_200	1518
+BenchmarkMemoryUsageFewTokens	23
+BenchmarkMemoryUsageManyTokens	44
+BenchmarkMemoryUsage	4802
+BenchmarkFindDuplOverParallel/seq/tokens_1000	3071
+BenchmarkFindDuplOverParallel/par2/tokens_1000	3126
+BenchmarkFindDuplOverParallel/par4/tokens_1000	3126
+BenchmarkFindDuplOverParallel/par32/tokens_1000	3127
+BenchmarkFindDuplOverParallel/seq/tokens_5000	15437
+BenchmarkFindDuplOverParallel/par2/tokens_5000	15492
+BenchmarkFindDuplOverParallel/par4/tokens_5000	15493
+BenchmarkFindDuplOverParallel/par32/tokens_5000	15497
+BenchmarkFindDuplOverParallel/seq/tokens_10000	30742
+BenchmarkFindDuplOverParallel/par2/tokens_10000	30798
+BenchmarkFindDuplOverParallel/par4/tokens_10000	30798
+BenchmarkFindDuplOverParallel/par32/tokens_10000	30803

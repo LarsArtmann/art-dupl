@@ -12,6 +12,7 @@ import (
 	"github.com/LarsArtmann/art-dupl/internal/utils"
 	"github.com/LarsArtmann/art-dupl/printer"
 	"github.com/LarsArtmann/art-dupl/printer/actionability"
+	"github.com/charmbracelet/x/term"
 	"github.com/spf13/cobra"
 )
 
@@ -173,7 +174,7 @@ func runStandardAnalysis(
 
 	metadata := newReportMetadata(mergedConfig, sortBy)
 
-	out, cleanup, err := openHTMLOutput(cmd)
+	out, cleanup, err := openHTMLOutput(cmd, mergedConfig.OutputFormat)
 	if err != nil {
 		return err
 	}
@@ -253,17 +254,65 @@ func buildDisabledPatternSet(labels []string) map[actionability.PatternLabel]boo
 	return set
 }
 
-// openHTMLOutput returns the output writer for the printer. When --html-out is
-// set, it creates the file and returns a cleanup function to close it.
-func openHTMLOutput(cmd *cobra.Command) (io.Writer, func(), error) {
-	htmlOut, _ := cmd.Flags().GetString("html-out")
-	if htmlOut == "" {
+// defaultHTMLReportPath is where the HTML report is auto-written when HTML
+// output would go to a terminal and no --html-out is given. Raw HTML dumped
+// on a terminal is unreadable, so the report goes to a file instead.
+const defaultHTMLReportPath = "art-dupl-report.html"
+
+// openHTMLOutput returns the output writer for the printer.
+//
+// Resolution order (HTML format only; other formats always get stdout):
+//  1. --html-out set          → that file (explicit flag wins, no notice)
+//  2. stdout is a terminal    → defaultHTMLReportPath + notice on stderr
+//  3. stdout piped/redirected → stdout (script-friendly)
+//
+// When --html-out is set, it creates the file and returns a cleanup function
+// to close it.
+func openHTMLOutput(cmd *cobra.Command, format config.OutputFormat) (io.Writer, func(), error) {
+	return resolveHTMLOutput(
+		cmd,
+		format,
+		defaultHTMLReportPath,
+		func() bool { return term.IsTerminal(os.Stdout.Fd()) },
+		cmd.ErrOrStderr(),
+	)
+}
+
+// resolveHTMLOutput is the testable core of openHTMLOutput: stdoutIsTTY is
+// injected so tests can exercise the terminal branch without a real TTY.
+func resolveHTMLOutput(
+	cmd *cobra.Command,
+	format config.OutputFormat,
+	defaultPath string,
+	stdoutIsTTY func() bool,
+	stderr io.Writer,
+) (io.Writer, func(), error) {
+	if format != config.OutputFormatHTML {
 		return os.Stdout, nil, nil
 	}
 
-	f, err := os.Create(htmlOut)
+	target, _ := cmd.Flags().GetString("html-out")
+	auto := false
+
+	if target == "" && stdoutIsTTY() {
+		target, auto = defaultPath, true
+	}
+
+	if target == "" {
+		return os.Stdout, nil, nil
+	}
+
+	f, err := os.Create(target)
 	if err != nil {
-		return nil, nil, duplerrors.Wrap(err, duplerrors.IOError, "creating HTML output file "+htmlOut)
+		return nil, nil, duplerrors.Wrap(err, duplerrors.IOError, "creating HTML output file "+target)
+	}
+
+	if auto {
+		fmt.Fprintf(
+			stderr,
+			"stdout is a terminal: HTML report goes to %s (use --html-out <path> to override, or redirect stdout for pipe mode)\n",
+			target,
+		)
 	}
 
 	return f, func() { _ = f.Close() }, nil

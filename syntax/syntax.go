@@ -213,17 +213,33 @@ func SerializeWithMaxChildren(n *Node, maxChildren int) []*Node {
 		maxChildren = maxChildrenSerial
 	}
 
-	stream := make([]*Node, 0, 10)
-	serial(n, &stream, maxChildren)
+	arena := make([]Node, countSerializedNodes(n, maxChildren))
+	stream := make([]*Node, 0, len(arena))
 
-	return stream
+	s := nodeSerializer{arena: arena, stream: stream}
+	s.serial(n, maxChildren)
+
+	return s.stream
 }
 
-func serial(n *Node, stream *[]*Node, maxChildren int) int {
-	// Shallow-copy the node so mutations (fingerprinting, Owns counting)
-	// never corrupt the original tree. This makes Serialize idempotent and
-	// safe for concurrent access to cached trees.
-	node := &Node{
+// nodeSerializer writes shallow node copies into a pre-counted arena instead
+// of allocating one Node per emitted token. The arena index always equals the
+// stream length, so the serializer needs no separate cursor.
+//
+// The tree must not be mutated between countSerializedNodes and serial —
+// both are invoked back-to-back inside SerializeWithMaxChildren, which is the
+// only supported entry point.
+type nodeSerializer struct {
+	arena  []Node
+	stream []*Node
+}
+
+func (s *nodeSerializer) serial(n *Node, maxChildren int) int {
+	// Shallow-copy the node into the arena so mutations (fingerprinting, Owns
+	// counting) never corrupt the original tree. This makes Serialize
+	// idempotent and safe for concurrent access to cached trees.
+	node := &s.arena[len(s.stream)]
+	*node = Node{
 		Children:             n.Children,
 		Filename:             n.Filename,
 		Name:                 n.Name,
@@ -238,7 +254,7 @@ func serial(n *Node, stream *[]*Node, maxChildren int) int {
 		InterfaceMethod:      n.InterfaceMethod,
 		IsAlias:              n.IsAlias,
 	}
-	*stream = append(*stream, node)
+	s.stream = append(s.stream, node)
 
 	if n.Statement {
 		// Statement-level tokenization: fingerprint the entire subtree into
@@ -257,17 +273,41 @@ func serial(n *Node, stream *[]*Node, maxChildren int) int {
 
 	var count int
 
+	// Mirrors countSerializedNodes exactly: children with index > maxChildren
+	// are skipped (i.e. at most maxChildren+1 children are visited).
 	for i, child := range n.Children {
 		if i > maxChildren {
 			break
 		}
 
-		count += serial(child, stream, maxChildren)
+		count += s.serial(child, maxChildren)
 	}
 
 	node.Owns = int32(count) // #nosec G115 -- Child count bounded by maxChildren
 
 	return int(node.Owns) + 1
+}
+
+// countSerializedNodes returns the exact number of nodes serial() will emit
+// for the subtree, so the arena and stream can be allocated once at the
+// final size. It must traverse with identical semantics: a statement node
+// emits only itself, children beyond index maxChildren are skipped.
+func countSerializedNodes(n *Node, maxChildren int) int {
+	if n.Statement {
+		return 1
+	}
+
+	count := 1
+
+	for i := range n.Children {
+		if i > maxChildren {
+			break
+		}
+
+		count += countSerializedNodes(n.Children[i], maxChildren)
+	}
+
+	return count
 }
 
 // fingerprintSubtree hashes the pre-order Type sequence of a node and all its

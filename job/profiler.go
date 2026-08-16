@@ -43,10 +43,18 @@ func printSeparatorLine(w io.Writer) {
 	_, _ = fmt.Fprintln(w)
 }
 
-// Profile captures performance metrics at a point in time.
-func Profile() ProfileResult {
+// ReadMemStats captures a runtime.MemStats snapshot. It is the single home
+// for the declare-and-read idiom so repeated snapshot sites do not duplicate.
+func ReadMemStats() runtime.MemStats {
 	var m runtime.MemStats
 	runtime.ReadMemStats(&m)
+
+	return m
+}
+
+// Profile captures performance metrics at a point in time.
+func Profile() ProfileResult {
+	m := ReadMemStats()
 
 	return ProfileResult{ // Duration/Timestamp computed later by ProfileDiff
 		TotalAllocMB: float64(m.TotalAlloc) / 1024 / 1024,
@@ -76,8 +84,7 @@ func EndProfile(start ProfileResult) ProfileResult {
 
 // PrintProfileResult outputs profile metrics to stderr.
 func PrintProfileResult(result ProfileResult) {
-	var m runtime.MemStats
-	runtime.ReadMemStats(&m)
+	m := ReadMemStats()
 
 	printProfileHeader(os.Stderr, "                    PERFORMANCE PROFILING RESULTS")
 

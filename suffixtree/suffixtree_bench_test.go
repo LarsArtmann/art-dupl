@@ -215,11 +215,16 @@ func BenchmarkAt(b *testing.B) {
 	}
 }
 
+// memoryUsageTokens is the token count for memory-usage benchmarks: large
+// enough for arena growth and transition storage to dominate, shared with
+// the Few/ManyTokens benchmarks in memory_bench_test.go.
+const memoryUsageTokens = 10000
+
 // BenchmarkMemoryUsage measures memory usage during tree construction.
 func BenchmarkMemoryUsage(b *testing.B) {
 	b.ReportAllocs()
 
-	tokens := generateRandomTokens(10000)
+	tokens := generateRandomTokens(memoryUsageTokens)
 
 	for b.Loop() {
 		tree := New()

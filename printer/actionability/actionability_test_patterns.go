@@ -179,7 +179,7 @@ func walkForTestScaffoldingSignals(node *domain.CloneNode, hasFileIO *bool, asse
 					*hasFileIO = true
 				case "WriteFile", "ReadFile", "MkdirAll", "MkdirTemp":
 					*hasFileIO = true
-				case "Expect", "Should", "So", "Assert", "Check", "Require":
+				case "Expect", "Should", "So", "Assert", "Check", "Require": //nolint:goconst
 					(*assertionNames)["expect-family"] = true
 				case "NotTo", "To", "Not", "ToNot":
 					(*assertionNames)["matcher-chain"] = true
@@ -188,7 +188,7 @@ func walkForTestScaffoldingSignals(node *domain.CloneNode, hasFileIO *bool, asse
 					"ConsistOf", "HaveCap", "HaveKey", "HaveValue", "OccurOnlyOnce",
 					"HaveOccurred", "ShouldNot":
 					(*assertionNames)["assertion"] = true
-				case "Fatalf", calleeErrorf, "Skipf", "Logf", "FailNow":
+				case "Fatalf", calleeErrorf, "Skipf", "Logf", "FailNow": //nolint:goconst
 					(*assertionNames)["testing-t"] = true
 				}
 			}

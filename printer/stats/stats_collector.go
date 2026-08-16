@@ -17,6 +17,10 @@ func (p *stats) ApplyStatsConfig(config printer.StatsConfig) {
 	p.SetAnalysisDuration(config.AnalysisDuration)
 	p.SetTotalEstimatedLines(config.TotalEstimatedLines)
 
+	if config.Cache != nil {
+		p.statsData.Cache = config.Cache
+	}
+
 	if config.FilesFiltered > 0 || len(config.FilterBreakdown) > 0 {
 		p.SetFilterStats(config.FilesFiltered, config.FilterBreakdown)
 	}

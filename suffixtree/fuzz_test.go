@@ -14,6 +14,14 @@ func FuzzFindDuplOver(f *testing.F) {
 	f.Add([]byte(""))
 	f.Add([]byte("x"))
 
+	// High-fanout seeds: many distinct first tokens force root (and internal
+	// states) past the linearScanMax cutoff into the binary-search branch of
+	// findTran, and stress addTran's sorted insertion across the full byte
+	// alphabet.
+	f.Add(fullAlphabetRamp(64))
+	f.Add(fullAlphabetRamp(200))
+	f.Add(interleaveRamp(100))
+
 	f.Fuzz(func(t *testing.T, data []byte) {
 		if len(data) > 1000 {
 			return // keep test fast
@@ -149,4 +157,76 @@ func FuzzCtxCancelFindDuplOverParallel(f *testing.F) {
 		for range ch {
 		}
 	})
+}
+
+// fullAlphabetRamp returns n strictly ascending distinct byte values — the
+// maximum-fanout shape: the root ends up with n transitions, far above
+// linearScanMax.
+func fullAlphabetRamp(n int) []byte {
+	out := make([]byte, n)
+	for i := range n {
+		out[i] = byte(i % 256)
+	}
+
+	return out
+}
+
+// interleaveRamp alternates ascending ramps with descending probes so addTran
+// sees insertions at both ends and the middle of the sorted slice.
+func interleaveRamp(n int) []byte {
+	out := make([]byte, 0, n)
+	for i := range n {
+		if i%2 == 0 {
+			out = append(out, byte(i%256))
+		} else {
+			out = append(out, byte(255-(i%256)))
+		}
+	}
+
+	return out
+}
+
+// FuzzTranLookupSemantics builds a tree from arbitrary bytes and verifies
+// that findTran agrees with the naive reference scan on every state for
+// every distinct token in the stream plus boundary probes. Stronger than a
+// no-panic check: a binary-search off-by-one on high-fanout states fails
+// here even without crashing.
+func FuzzTranLookupSemantics(f *testing.F) {
+	f.Add(fullAlphabetRamp(64))
+	f.Add(interleaveRamp(100))
+	f.Add([]byte("abababab"))
+	f.Add([]byte{0, 255, 0, 255, 128})
+
+	f.Fuzz(func(t *testing.T, data []byte) {
+		if len(data) > 500 {
+			return
+		}
+
+		tree := New()
+		mustUpdate(tree, valueTokens(byteValues(data))...)
+
+		probes := map[TokenValue]bool{0: true, 1: true, -1: true}
+		for _, b := range data {
+			probes[TokenValue(b+1)] = true
+		}
+
+		for _, s := range enumerateStates(tree) {
+			for probe := range probes {
+				if s.findTran(tree.data, probe) != referenceFindTran(s, tree.data, probe) {
+					t.Fatalf("findTran(%d) disagrees with reference scan", probe)
+				}
+			}
+		}
+	})
+}
+
+// byteValues converts raw bytes to the +1 token domain the fuzz targets use
+// (0 is reserved as the sentinel separator in the tree).
+func byteValues(data []byte) []TokenValue {
+	out := make([]TokenValue, 0, len(data))
+	for _, b := range data {
+		out = append(out, TokenValue(b+1))
+	}
+
+	return out
 }

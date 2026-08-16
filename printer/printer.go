@@ -63,6 +63,7 @@ type StatsConfig struct {
 	FilesFiltered         int
 	FilterBreakdown       map[string]int
 	FilterSourceBreakdown map[string]int
+	Cache                 *CacheMetrics
 }
 
 // StatsPrinter extends Printer interface with stats configuration.

@@ -5,67 +5,61 @@
 Actionable items for the next 2-4 weeks. Completed work lives in `CHANGELOG.md`.
 This file is OPEN work only — no completed, rejected, or resolved items.
 
+Master plan `docs/planning/2026-08-16_04-27_measure-first-trust-and-signal-master-plan.md`
+is complete (24/26 done or no-go-verified). Remaining items below.
+
 ---
 
 ## HIGH Priority
 
-### HTML output improvements (remainder)
-**Source:** `docs/status/2026-08-10_05-29_feedback-review-implementation-sprint.md` §b
-"Detected vs Actionable" summary is DONE (both text and HTML printers). Remaining:
-- [ ] **TTY-aware HTML output**: Auto-write to `art-dupl-report.html` when TTY detected (currently requires `--html-out` explicitly).
-- [ ] **Stable display IDs**: `GroupNum` is not stable across runs (content hash IDs ARE stable). Add stable `id` attributes for deep-linking.
+### Timing evidence for ADR-0022 (parked on machine load)
 
----
+**Source:** master plan T2.2 + T23; `docs/status/2026-08-16_12-27_master-plan-wave2-flake-green.md`.
+**Entry criterion:** machine idle — `uptime` load sustained < ~4, no foreign nixbld/govulncheck/service jobs.
+Never compare pinned and unpinned runs taken hours apart (machine state dominates; only interleaved A/B counts).
+
+- [ ] **T2.2: Interleaved pinned/unpinned A/B** — `taskset -c 0-7,16-23` vs full machine, ≥6 alternations on `FindDuplOver/threshold_10` + `par4/tokens_10000`; annotate `docs/benchmarks/baseline-2026-08-16-v3_notes.md` (replaces the "still open, see TODO_LIST" note).
+- [ ] **T23: `perf stat` cache-miss A/B vs `23fa1b4f`** — `git worktree add /tmp/artdupl-23fa1b4f 23fa1b4f`; counters `cache-references,cache-misses,LLC-load-misses` on suffixtree benches; verdict into baseline notes + ADR-0022 addendum.
+- [ ] Pinned `benchstat` for `BenchmarkFindTranBoundary8/9`; record in `docs/benchmarks/` and as a comment on `linearScanMax` justifying the cutoff.
 
 ## MEDIUM Priority
 
-### Feedback-driven actionability patterns (remainder)
-**Source:** feedback files in `docs/feedback/new/`
-`go-http-error-guard` and `go-error-wrap-idiom` are DONE — unified into the single
-`error-guard-fallthrough` pattern (validated on DiscordSync: 82 groups → 2 shown, 0 FPs).
-Remaining candidates:
-- [ ] **`//go:embed` directive pattern**: Detect `//go:embed` + `embed.FS` + `fs.Sub` as compiler-bound (go-sse feedback)
-- [ ] **`TestMain` boilerplate**: Go requires one `TestMain` per package (go-cqrs-lite)
-- [ ] **`defer-cleanup-of-arbitrary-resource`**: `defer rows.Close()` / `defer tx.Rollback()` (discordsync — 12 groups)
+### Wave-3 quality follow-ups
 
-### Correctness hardening
-**Source:** `docs/status/2026-08-16_04-23_suffixtree-followup-slice-transitions-race-fixes.md` §e/§f — fallout of the cache metadata race fix.
-- [ ] **Atomic/mutex-mixing audit**: grep-driven sweep for struct fields touched by `atomic.*` in one method and read plainly in another (the class that caused the cache race). Fix or document each hit.
-- [ ] **Cache `Clear()` concurrent-stats regression test**: assert hit/miss counters survive concurrent `Get` during `Clear` under `-race` (locks in this session's fix).
-- [ ] **CI `-race` cadence + flake gate**: run `nix flake check`; decide whether full `-race ./...` runs every push or nightly (it is green now for the first time); wire the decision.
+**Source:** `docs/status/2026-08-16_13-13_master-plan-wave3-signal-hardening.md` §f.
 
-### Code hygiene
-- [ ] **Suffixtree cleanup trio**: verify `benchmarkFindTranMethod` is dead → delete; modernize `b.N` → `b.Loop()` (3 sites in `parallel_bench_test.go`); verify/fix the stale "Workers routing" bullet in `AGENTS.md`.
-- [ ] **Suffixtree doc polish**: refresh package doc type list; name the `benchmarkMemoryUsage` magic numbers; evaluate `maxStackKeys` getAll helper dedup.
+- [ ] **BDD/PTY test for HTML auto-write**: current tests inject the TTY probe; a real-PTY end-to-end test (via `script(1)` or a pty lib) would lock the full path.
+- [ ] **Decide + document `--quiet` vs zero-match warning**: should `WarnUnmatchedExcludePatterns` respect `--quiet`? Currently unconditional.
+- [ ] **Symmetric zero-match warning for `--include-pattern`**: same misconfig trap as `--exclude-pattern` (T12), opposite direction.
+- [ ] **Coverage script: filter test-only packages**: `scripts/check-coverage.sh` reports 0.0% rows for test-only packages — noise.
+- [ ] **TESTING.md: property/parity-test conventions**: document the reference-implementation parity pattern (T20) + coverage-guard-in-test pattern (assert the interesting branch actually ran).
+- [ ] **a11y: focus style for `.anchor-link`**: anchor perm links have hover styling but no visible keyboard focus ring.
+- [ ] **JSON output: expose stable anchor id**: cross-format linking (HTML deep link ↔ JSON record) needs the `AnchorID` in JSON too.
+- [ ] **`--html-out`: mkdir -p parent dir** on demand instead of erroring on a missing directory.
 
-### Cache stats visibility
-- [ ] **Surface cache stats in `stats` subcommand**: `Stats.MemHits`/`Hits`/`Misses` are printed in verbose mode only (`cmd/run_analysis.go::printCacheStats`). Wire into `stats` output so non-verbose users see cache effectiveness.
+### Carry-over questions
 
-### Infrastructure
-- [ ] **`--exclude-pattern` UX**: Warn when pattern matches zero files; document glob vs regex (licenseforge feedback)
-- [ ] **Coverage baseline**: Run `go test -cover` across all packages and commit a coverage baseline. We have benchmark baselines but no coverage baseline.
+- [ ] **Corpus drift 2665 → 2670**: which feedback-corpus clone count grew by 5 between validations?
+- [ ] **Budget ratchet**: `MemoryUsage` measures 4783 < 4802 budget — tighten the budget or leave headroom for map-iteration-order variance?
 
-### Suffix tree / performance follow-ups
-**Source:** `docs/status/2026-08-16_03-34_data-layout-allocation-optimization-sprint.md` §f + ADR-0022.
-The core layout work (slice transitions, arena, pool, budgets) is DONE — see CHANGELOG.
-- [ ] **`serial()` bulk Node allocation** (`syntax/syntax.go`): pre-allocate `make([]Node, count)` and index instead of `&Node{}` per node — nodes become cache-line adjacent. Identified twice, never attempted.
-- [ ] **`sync.Pool` for `[]*Node` stream slices**: `SerializeWithMaxChildren` allocates `make([]*Node, 0, 10)` per call.
-- [ ] **CI allocation regression detection**: `suffixtree/alloc_budget_test.go` covers the suffix tree; extend `testing.AllocsPerRun` budgets to `syntax/` serialization, or add a CI benchstat job on allocation columns (timing too noisy for CI).
-- [ ] **Real-world benchmark**: benchmark against an actual Go project repo (not synthetic tokens) to measure end-to-end impact of the suffix tree work.
-- [ ] **`taskset -c 1` benchmark protocol**: pin benchmarks to one core to cut thermal noise; current timing comparisons stay noisy.
-- [ ] **Slice-vs-reference-map property test**: build both transition representations from one token stream; assert identical `findTran` results and transition sets (guards insert-sort/binary-search bugs).
-- [ ] **Fuzz high-fanout seeds**: extend `FuzzSuffixTreeUpdate` with many-distinct-token alphabets to stress binary-search `findTran` + insert-sorted `addTran`.
-- [ ] **`linearScanMax` boundary micro-benchmark**: exact 8 vs 9 transitions per state, assert the crossover holds.
-- [ ] **`perf stat` cache-miss evidence**: hardware-counter proof (or refutation) of ADR-0022's cache-locality claims via git worktree A/B against `23fa1b4f`.
+## PARKED: Explicit Entry Criteria (not amnesia)
 
----
+Items live in ROADMAP/DEFERRED until their trigger fires. Triggers mirror plan §5.
 
-## DEFERRED: Architecturally Constrained
+| Item (detail in ROADMAP / ADR)                                                            | Entry criterion                                                   |
+| ----------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| Suffix Array + LCP detector (ADR-0020)                                                    | T1 stage split shows suffix tree ≥30% of wall clock on real repos |
+| Per-file offset map (8N→2N memory)                                                        | T1 + memory profile on a 100k-file corpus                         |
+| Winnowing pre-filter                                                                      | A user actually hits 100k-file scale                              |
+| `int32` arena indices, `[]Pos` pool                                                       | Profile shows pointer-chasing / search allocs dominant again      |
+| Threshold cliff, `.art-duplignore`, `--ci-gate`, `--diff-baseline`, test-aware thresholds | Post-T10 corpus numbers define which UX lever pays first          |
+| TS/Python support, LSP, watch mode, ML actionability                                      | Explicit user pull                                                |
+| TypeAwareData restructure, branded `NodeType`, `syntax/golang` facade                     | Breaking-change windows only (major version)                      |
 
-Blocked by fundamental design constraints. Cannot be resolved without significant architectural changes.
+### Architecturally constrained (DEFERRED)
 
-- [ ] **Branded `NodeType int32`**: Per-package `NodeType` types would prevent cross-package constant collision. **HIGH RISK**: touches gob cache format. Current 8-bit shared encoding is intentional (ADR-0008).
-- [ ] **Hide `syntax/golang` behind facade**: **BLOCKED** by import cycle (`syntax/golang` imports `syntax` for Node type; `printer/actionability*.go` imports `syntax/golang` for AST constants).
-- [ ] **`int32` arena indices instead of `*state` pointers**: slice-based transitions (ADR-0022) already removed most pointer chasing; the remaining win is small vs the risk of converting every `*state` to index arithmetic. Revisit only with profile evidence. (Supersedes the old "hybrid slice/map" item — implemented as pure sorted slices in ADR-0022.)
-- [ ] **`sync.Pool` for contextList `[]Pos` slices**: rejected in ADR-0022 — slices transfer between contextLists via `append` (which may reallocate), so lifetime tracking would out-complex the savings. Revisit only if search allocations become dominant again.
-- [ ] **Restructure `TypeAwareData` so `EraseHash` is collection-level**: Currently per-entry on `PreloadedAST`, validated at runtime with a warning (`job/incremental.go::SetTypeAwareData`). A collection-level type would enforce the invariant at compile time. Breaking change to `syntax/golang/typeinfo.go` with large blast radius.
+- [ ] **Branded `NodeType int32`**: prevents cross-package constant collision, but touches the gob cache format. Current 8-bit shared encoding is intentional (ADR-0008).
+- [ ] **Hide `syntax/golang` behind facade**: blocked by import cycle (`syntax/golang` imports `syntax` for Node; `printer/actionability` imports `syntax/golang` for AST constants).
+- [ ] **`sync.Pool` for `[]*Node` stream slices**: NO-GO, measured 2026-08-16 — after the T13 arena, serialization costs 2 allocs/file (~0.03% of run allocs); pooling would add cross-package lifetime plumbing for no measurable win. Re-evaluate only if serialization allocations regress.
+- [ ] **`sync.Pool` for contextList `[]Pos` slices**: rejected in ADR-0022 — slices transfer between contextLists via `append` (which may reallocate); lifetime tracking would out-complex the savings.
+- [ ] **Restructure `TypeAwareData` so `EraseHash` is collection-level**: per-entry on `PreloadedAST`, validated at runtime with a warning (`job/incremental.go::SetTypeAwareData`). Collection-level type would enforce the invariant at compile time. Breaking change to `syntax/golang/typeinfo.go`.

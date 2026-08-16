@@ -257,7 +257,7 @@ func isExprStmtCallExpr(node *domain.CloneNode) bool {
 var loggingMethodNames = []string{ //nolint:gochecknoglobals // static name set
 	"Print", "Printf", "Println",
 	"Error", calleeErrorf, "Warn", "Warnf", "Info", "Infof", "Debug", "Debugf", //nolint:goconst
-	"Fatal", "Fatalf", "Panic", "Panicf",
+	"Fatal", "Fatalf", "Panic", "Panicf", //nolint:goconst
 }
 
 // isGuardClause reports whether every clone is a single IfStmt used as a guard

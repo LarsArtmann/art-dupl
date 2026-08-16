@@ -1,10 +1,19 @@
-// Package suffixtree implements suffix tree for clone detection.
-// Core types: STree (tree), state (node), tran (edge), Match (duplicate), Token (interface).
-// Algorithm: Build incrementally, FindDuplOver() searches for sequences >= threshold.
-// Performance: O(n*m) worst case, typically O(n). Memory: O(n*k).
-// Optimization: Transitions are stored as a sorted []tran slice per state —
+// Package suffixtree implements a suffix tree for clone detection.
+// Core types: STree (tree + token stream), state (node, arena-allocated),
+// tran (edge, stored as a value in a sorted slice), Match (duplicated
+// sequence), Token (input interface; the tree stores only its compact
+// TokenValue, never the Token itself).
+// Algorithm: build incrementally (Ukkonen's algorithm, inherently
+// sequential); FindDuplOver searches for repeated sequences >= threshold,
+// FindDuplOverParallel dispatches disjoint root subtrees to workers.
+// Performance: amortized O(n) construction, typically O(n) search, O(n*m)
+// worst case. Memory: O(n) for the token stream plus one state per suffix.
+// Optimization: transitions are stored as a sorted []tran slice per state:
 // linear scan for the common case (<= linearScanMax transitions), binary
-// search for high-fanout states like the root. No per-state map allocation.
+// search for high-fanout states like the root. Leaf states never allocate
+// transition storage; states are allocated from contiguous arena blocks
+// (stateBlockSize). Lookup parity with the pre-ADR-0022 map layout is
+// enforced by property tests (tran_parity_test.go).
 package suffixtree
 
 import (

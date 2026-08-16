@@ -33,7 +33,7 @@ func addSharedFlags(cmd *cobra.Command) {
 	cmd.Flags().
 		StringArray("include-pattern", []string{}, "file patterns to always include (takes precedence over filter)")
 	cmd.Flags().
-		StringArray("exclude-pattern", []string{}, "additional file patterns to exclude")
+		StringArray("exclude-pattern", []string{}, "additional file patterns to exclude (globs, not regexes: \"*_test.go\" matches at any depth, \"**/gen/*.go\" across directories; warns when a pattern matches nothing)")
 
 	// Semantic-aware detection flags
 	cmd.Flags().
@@ -69,6 +69,22 @@ func addSharedFlags(cmd *cobra.Command) {
 		String("only", "", "only analyze specific file type: 'go' or 'templ' (default: both)")
 }
 
+// addIncrementalFlags registers the incremental-analysis (AST caching) flag
+// group. Shared by the root command and the stats subcommand so `stats`
+// reports cache effectiveness alongside duplication metrics.
+func addIncrementalFlags(cmd *cobra.Command) {
+	cmd.Flags().
+		Bool("incremental", false, "enable incremental analysis with AST caching")
+	cmd.Flags().
+		String("cache-dir", "", "cache directory for AST caching (requires --incremental, default: .cache/art-dupl)")
+	cmd.Flags().
+		Bool("clear-cache", false, "clear cache before running (requires --incremental)")
+	cmd.Flags().
+		Int("max-cache-entries", 0, "maximum number of cached AST files to keep on disk (0 = unlimited, requires --incremental)")
+	cmd.Flags().
+		Int("memory-cache-entries", config.DefaultMemoryCacheEntries, "number of AST node slices held in the in-memory cache layer (0 = default; requires --incremental)")
+}
+
 // AddFlags adds all flags to the root command.
 func AddFlags(rootCmd *cobra.Command) {
 	addSharedFlags(rootCmd)
@@ -97,17 +113,8 @@ func AddFlags(rootCmd *cobra.Command) {
 	rootCmd.Flags().
 		Bool("include-examples", false, "include example/demo directories (examples/, demo/, etc.) in analysis (excluded by default)")
 
-	// Root-only: incremental analysis flags
-	rootCmd.Flags().
-		Bool("incremental", false, "enable incremental analysis with AST caching")
-	rootCmd.Flags().
-		String("cache-dir", "", "cache directory for AST caching (requires --incremental, default: .cache/art-dupl)")
-	rootCmd.Flags().
-		Bool("clear-cache", false, "clear cache before running (requires --incremental)")
-	rootCmd.Flags().
-		Int("max-cache-entries", 0, "maximum number of cached AST files to keep on disk (0 = unlimited, requires --incremental)")
-	rootCmd.Flags().
-		Int("memory-cache-entries", config.DefaultMemoryCacheEntries, "number of AST node slices held in the in-memory cache layer (0 = default; requires --incremental)")
+	// Root-only: incremental analysis flags (also on stats, see addIncrementalFlags)
+	addIncrementalFlags(rootCmd)
 
 	// Root-only: concurrent processing flag
 	rootCmd.Flags().
@@ -151,7 +158,7 @@ func AddFlags(rootCmd *cobra.Command) {
 		String("diff-report", "", "compare current scan against a baseline file and show new/suppressed/resolved clones")
 
 	rootCmd.Flags().
-		String("html-out", "", "write HTML report to a file instead of stdout (use with --html)")
+		String("html-out", "", "write HTML report to this file instead of stdout (use with --html); when stdout is a terminal, the report auto-writes to art-dupl-report.html with a notice")
 
 	rootCmd.Flags().
 		Bool("list-patterns", false, "list all actionability pattern labels and exit")

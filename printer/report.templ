@@ -52,9 +52,13 @@ script toggleCollapsed() {
 	this.parentElement.classList.toggle('collapsed');
 }
 
+script anchorClick() {
+	event.stopPropagation();
+}
+
 templ cloneHeader(data CloneGroupView) {
 	<div class="clone-header" onclick={ toggleCollapsed() }>
-		<h3>Clone Group #{ strconv.Itoa(data.GroupNum) }</h3>
+		<h3>Clone Group #{ strconv.Itoa(data.GroupNum) } <a class="anchor-link" href={ templ.SafeURL("#" + data.AnchorID) } onclick={ anchorClick() } title="Deep link to this group">#</a></h3>
 		<div class="badge-group">
 			@templ.Raw(data.BadgesHTML)
 			<span class="badge">{ strconv.Itoa(data.Occurrences) } occurrences · { strconv.Itoa(data.TotalTokens) } tokens</span>
@@ -69,7 +73,7 @@ templ suggestionBlock(data CloneGroupView) {
 }
 
 templ cloneGroupFull(data CloneGroupView) {
-	<div class="clone-group" id={ "group-" + data.Hash } data-category={ string(data.Category) } data-priority={ string(data.Priority) } data-test={ strconv.FormatBool(data.HasTest) }>
+	<div class="clone-group" id={ data.AnchorID } data-category={ string(data.Category) } data-priority={ string(data.Priority) } data-test={ strconv.FormatBool(data.HasTest) }>
 		@cloneHeader(data)
 		<div class="clone-body">
 			@suggestionBlock(data)
@@ -81,7 +85,7 @@ templ cloneGroupFull(data CloneGroupView) {
 }
 
 templ cloneGroupDiffFull(data CloneGroupView, diffData DiffView) {
-	<div class="clone-group" id={ "group-" + data.Hash } data-category={ string(data.Category) } data-priority={ string(data.Priority) } data-test={ strconv.FormatBool(data.HasTest) }>
+	<div class="clone-group" id={ data.AnchorID } data-category={ string(data.Category) } data-priority={ string(data.Priority) } data-test={ strconv.FormatBool(data.HasTest) }>
 		@cloneHeader(data)
 		<div class="clone-body">
 			@suggestionBlock(data)

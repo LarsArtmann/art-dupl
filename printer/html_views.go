@@ -19,6 +19,7 @@ type CloneOccurrenceView struct {
 type CloneGroupView struct {
 	GroupNum    int
 	Hash        string
+	AnchorID    string
 	Category    CloneCategory
 	Priority    ClonePriority
 	HasTest     bool
@@ -67,6 +68,34 @@ func toCloneOccurrenceView(cl domain.ProcessedClone) CloneOccurrenceView {
 		CloneRef:   cl.CloneRef,
 		VSCodeLink: templ.SafeURL(fmt.Sprintf("vscode://file/%s:%d", cl.Filename, cl.LineStart)),
 	}
+}
+
+// groupAnchorID derives the HTML anchor id for a clone group from its
+// content hash, so deep links survive re-sorting and reordering: the same
+// duplicated code always yields the same anchor. Hashes are hex by
+// construction (format.Hash / hashSeq); the sanitization loop is defense
+// against future producers emitting other characters. A degenerate empty
+// hash (hashSeq of zero nodes) falls back to the positional group number —
+// unique within one report, the best possible when there is no content to
+// derive from.
+func groupAnchorID(hash string, groupNum int) string {
+	var b strings.Builder
+	b.Grow(len(hash) + 6)
+
+	b.WriteString("group-")
+
+	for _, r := range hash {
+		switch {
+		case r >= '0' && r <= '9', r >= 'a' && r <= 'z', r >= 'A' && r <= 'Z':
+			b.WriteRune(r)
+		}
+	}
+
+	if b.Len() == len("group-") {
+		b.WriteString(strconv.Itoa(groupNum))
+	}
+
+	return b.String()
 }
 
 func toCloneGroupView(
@@ -134,6 +163,7 @@ func toCloneGroupView(
 	return CloneGroupView{
 		GroupNum:    groupNum,
 		Hash:        hash,
+		AnchorID:    groupAnchorID(hash, groupNum),
 		Category:    primaryCategory,
 		Priority:    highestPriority,
 		HasTest:     hasTest,

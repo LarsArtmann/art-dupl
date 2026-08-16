@@ -45,6 +45,9 @@ var actionabilityPatternTable = []patternEntry{ //nolint:gochecknoglobals // sta
 	{isTemplRenderingIdiom, PatternTemplRenderingIdiom},
 	{isDeferCallPattern, PatternDeferCall},
 	{isTestFrameworkCallPattern, PatternTestFrameworkCall},
+	{isTestPreamblePattern, PatternTestPreamble},
+	{isTestMainBoilerplate, PatternTestMainBoilerplate},
+	{isEmbedDirectivePattern, PatternEmbedDirective},
 	{isStateFlagMutation, PatternStateFlagMutation},
 	{isEmptyDefault, PatternEmptyDefault},
 }
@@ -182,6 +185,9 @@ const (
 	PatternTemplRenderingIdiom        PatternLabel = "templ-rendering-idiom"
 	PatternDeferCall                  PatternLabel = "defer-call"
 	PatternTestFrameworkCall          PatternLabel = "test-framework-call"
+	PatternTestPreamble               PatternLabel = "test-preamble"
+	PatternTestMainBoilerplate        PatternLabel = "testmain-boilerplate"
+	PatternEmbedDirective             PatternLabel = "embed-directive"
 	PatternStateFlagMutation          PatternLabel = "state-flag-mutation"
 	PatternEmptyDefault               PatternLabel = "empty-default"
 )

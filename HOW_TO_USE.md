@@ -61,6 +61,17 @@ open dupl_report.html  # macOS
 xdg-open dupl_report.html  # Linux
 ```
 
+When stdout is a **terminal** (no redirection), `--html` automatically writes
+the report to `art-dupl-report.html` in the current directory and prints a
+notice — raw HTML on a terminal is unreadable. Redirect or pipe stdout, or pass
+`--html-out <path>`, to control the destination explicitly:
+
+```bash
+./art-dupl --html -t 30                 # terminal → art-dupl-report.html + notice
+./art-dupl --html -t 30 | cat           # pipe → stdout
+./art-dupl --html -t 30 --html-out r.html  # explicit file, no notice
+```
+
 #### JSON for Automation
 
 ```bash
@@ -124,6 +135,28 @@ art-dupl --include-generated all ./src
 art-dupl --include-pattern "vendor/*" ./src
 art-dupl --exclude-pattern "*_test.go" ./src
 ```
+
+### Pattern Semantics and Zero-Match Warnings
+
+`--exclude-pattern` values are **globs, not regular expressions**:
+
+- `*` matches any run of characters except `/`
+- `**` matches across directory separators (any depth)
+- A pattern without a separator (e.g. `*_test.go`) matches the file name at any depth
+- A pattern with a separator (e.g. `gen/*.go`, `**/mocks/*.go`) matches against the path relative to the analyzed root
+
+Because a regex-style pattern like `.*_gen\.go` silently matches nothing as a glob,
+art-dupl warns on stderr when a `--exclude-pattern` matches no candidate file:
+
+```bash
+art-dupl --exclude-pattern ".*_gen\\.go" ./src
+# warning: --exclude-pattern ".*_gen\\.go" matched no files — patterns are globs
+# (e.g. "**/gen/*.go", "*_mock.go"), not regular expressions
+```
+
+A warning means the pattern is either a typo or written as a regex; replace it
+with the glob equivalent (usually: drop the leading `.*`, escape nothing,
+use `**/` for depth). The warning is advisory — the run still succeeds.
 
 ### .gitignore Honoring
 
@@ -296,13 +329,13 @@ Create `dupl.json` for team consistency:
 
 ```json
 {
-	"threshold": 30,
-	"outputFormat": "json",
-	"paths": ["./cmd", "./internal"],
-	"includeVendor": false,
-	"ignoreFiles": ["*_test.go", "*_mock.go", "*_gen.go"],
-	"verbose": true,
-	"outputFile": "reports/art-dupl.json"
+  "threshold": 30,
+  "outputFormat": "json",
+  "paths": ["./cmd", "./internal"],
+  "includeVendor": false,
+  "ignoreFiles": ["*_test.go", "*_mock.go", "*_gen.go"],
+  "verbose": true,
+  "outputFile": "reports/art-dupl.json"
 }
 ```
 
@@ -359,7 +392,22 @@ echo "Large clones (50+ tokens): $LARGE_CLONES"
 echo "Duplication ratio: $(echo "scale=2; $ALL_CLONES / $FILES_ANALYZED" | bc) per file"
 ```
 
-### 4. Type-Aware Detection
+### 4. Incremental Analysis and Cache Statistics
+
+`--incremental` caches parsed ASTs keyed by file content hash, so unchanged files skip parsing on re-runs:
+
+```bash
+# First run populates the cache, second run hits it
+art-dupl --incremental ./src
+art-dupl --incremental ./src
+
+# See cache effectiveness inside the stats subcommand (text, JSON, or CSV)
+art-dupl stats --incremental ./src
+```
+
+The stats output gains a `Cache:` section reporting this run's hit rate, hits/misses (per file), in-memory LRU hits, and cached entry count. All values are run-scoped — a fresh run on a warm cache reports 100%. Without `--incremental`, the section is omitted entirely.
+
+### 5. Type-Aware Detection
 
 Type-aware mode uses `go/types` to encode each local variable's static type into its hash.
 This eliminates false positives where the same method name has different receiver types
@@ -450,7 +498,7 @@ line range (between `LineStart` and `LineEnd`).
 For precision, include the group hash from the clone report:
 
 ```go
-	//art-dupl:accept a1b2c3d4e5f6
+//art-dupl:accept a1b2c3d4e5f6
 ```
 
 This only suppresses the group with hash `a1b2c3d4e5f6`. Other clone groups
@@ -616,29 +664,29 @@ internal/handlers/user.go:89-117
 
 ```json
 {
-	"version": "1.0",
-	"timestamp": "2025-12-14T09:19:06.351297Z",
-	"threshold": 15,
-	"files_analyzed": 2,
-	"clone_groups": [
-		{
-			"hash": "5e8f50b6f5a834485490605819523fd92711f92ba855f603bc2375925bc4753a",
-			"size": 4,
-			"files": [
-				{
-					"filename": "./cli.go",
-					"line_start": 80,
-					"line_end": 88,
-					"fragment": "if err != nil {\n\tif _, err := fmt.Fprintf(..."
-				}
-			]
-		}
-	],
-	"summary": {
-		"total_clone_groups": 8,
-		"total_clones": 19,
-		"complexity_score": 2.11
-	}
+  "version": "1.0",
+  "timestamp": "2025-12-14T09:19:06.351297Z",
+  "threshold": 15,
+  "files_analyzed": 2,
+  "clone_groups": [
+    {
+      "hash": "5e8f50b6f5a834485490605819523fd92711f92ba855f603bc2375925bc4753a",
+      "size": 4,
+      "files": [
+        {
+          "filename": "./cli.go",
+          "line_start": 80,
+          "line_end": 88,
+          "fragment": "if err != nil {\n\tif _, err := fmt.Fprintf(..."
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "total_clone_groups": 8,
+    "total_clones": 19,
+    "complexity_score": 2.11
+  }
 }
 ```
 
@@ -688,15 +736,15 @@ means "report clones with at least 5 duplicated statements."
 
 ```json
 {
-	"ignoreFiles": [
-		"*_test.go", // Test files often repeat setup code
-		"*_mock.go", // Generated mocks
-		"*_gen.go", // Generated code
-		"vendor/*", // Dependencies
-		"*.pb.go", // Protocol buffers
-		"*.mock.go", // Mock implementations
-		"testdata/*" // Test data
-	]
+  "ignoreFiles": [
+    "*_test.go", // Test files often repeat setup code
+    "*_mock.go", // Generated mocks
+    "*_gen.go", // Generated code
+    "vendor/*", // Dependencies
+    "*.pb.go", // Protocol buffers
+    "*.mock.go", // Mock implementations
+    "testdata/*" // Test data
+  ]
 }
 ```
 

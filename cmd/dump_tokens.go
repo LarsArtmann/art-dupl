@@ -32,10 +32,7 @@ func dumpTokensOutput(ctx context.Context, cfg *config.Config, w io.Writer, stde
 		return err
 	}
 
-	var filterStats *FilterStats
-	if filterParam != nil {
-		filterStats = NewFilterStats(filterParam.FilterReasons())
-	}
+	var filterStats *FilterStats = newTrackedFilterStats(filterParam, cfg)
 
 	params := buildParams{
 		ctx:          ctx,

@@ -53,7 +53,7 @@
           vendorHash = "sha256-hCQFZQx2t0C7HUkJizZTKuLdoETdCjvqw3tGCRsyVH8=";
           proxyVendor = true;
 
-          overrideModAttrs = old: {
+          overrideModAttrs = _old: {
             preBuild = ''
               mkdir -p dummy
               cat > dummy/go.mod << 'DUMMYEOF'
@@ -256,6 +256,23 @@
               checkPhase = ''
                 runHook preCheck
                 go test -run='^TestPerfRegression' -v ./syntax/...
+                runHook postCheck
+              '';
+              installPhase = ''
+                touch $out
+              '';
+            });
+
+            # Allocation-regression gate: guarded suffixtree benchmarks must
+            # stay within scripts/alloc-budgets.txt (allocs/op, ±1 tolerance).
+            # Allocation counts are deterministic; wall time is not.
+            alloc-gate = config.packages.default.overrideAttrs (old: {
+              name = "${old.pname}-alloc-gate";
+              doCheck = true;
+              nativeBuildInputs = old.nativeBuildInputs ++ [ pkgs.gawk ];
+              checkPhase = ''
+                runHook preCheck
+                bash scripts/check-alloc-regression.sh
                 runHook postCheck
               '';
               installPhase = ''

@@ -22,12 +22,14 @@ func NewStatsCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "stats [flags] [paths...]",
 		Short: "Show aggregated duplication statistics",
-		Long:  "Prints comprehensive duplication statistics: clone counts, token totals, and file impact metrics in text, JSON, or CSV format.",
-		Args:  cobra.ArbitraryArgs,
-		RunE:  runStats,
+		Long: "Prints comprehensive duplication statistics: clone counts, token totals, and file impact metrics in text, JSON, or CSV format." +
+			" With --incremental, also reports this run's AST-cache effectiveness (hit rate, memory hits, entry count).",
+		Args: cobra.ArbitraryArgs,
+		RunE: runStats,
 	}
 
 	addSharedFlags(cmd)
+	addIncrementalFlags(cmd)
 
 	// Stats-specific: output format
 	cmd.Flags().String("format", "text", "output format: text, json, csv (default: text)")
@@ -172,9 +174,32 @@ func configureStatsPrinter(
 		Timestamp:           time.Now().UTC().Format(time.RFC3339),
 		AnalysisDuration:    duration,
 		TotalEstimatedLines: parseStats.LinesCount,
+		Cache:               cacheMetricsFrom(parseStats.Cache),
 	})
 
 	applyFilterStats(sp, filterStats)
+}
+
+// cacheMetricsFrom converts this run's incremental-cache statistics into the
+// printer-boundary view, computing the hit rate. Returns nil when the run did
+// not use the incremental cache so output sections are skipped entirely.
+func cacheMetricsFrom(stats *job.RunCacheStats) *printer.CacheMetrics {
+	if stats == nil {
+		return nil
+	}
+
+	metrics := &printer.CacheMetrics{
+		Hits:       int64(stats.Hits),
+		Misses:     int64(stats.Misses),
+		MemoryHits: stats.MemoryHits,
+		Entries:    stats.Entries,
+	}
+
+	if total := stats.Hits + stats.Misses; total > 0 {
+		metrics.HitRatePct = float64(stats.Hits) / float64(total) * 100
+	}
+
+	return metrics
 }
 
 // parseDuration parses a duration string using time package.
