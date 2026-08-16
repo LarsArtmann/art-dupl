@@ -122,10 +122,10 @@ output, err := setup.RunArtDupl("--threshold", "10")
 | Package              | Purpose              | Status  | Quality              |
 | -------------------- | -------------------- | ------- | -------------------- |
 | `testutil/bdd.go`    | BDD test setup       | ✅ Good | Well-structured      |
-| `testutil/binary.go` | Binary build helpers | ⚠️ OK   | Standalone functions |
-| `testutil/file.go`   | File operations      | ⚠️ OK   | Basic operations     |
-| `testutil/helper.go` | General helpers      | ⚠️ OK   | Limited scope        |
-| `testutil/node.go`   | Test node utilities  | ⚠️ OK   | Specialized          |
+| `testutil/binary.go` | Binary build helpers | ⚠️ OK    | Standalone functions |
+| `testutil/file.go`   | File operations      | ⚠️ OK    | Basic operations     |
+| `testutil/helper.go` | General helpers      | ⚠️ OK    | Limited scope        |
+| `testutil/node.go`   | Test node utilities  | ⚠️ OK    | Specialized          |
 | `utils/file.go`      | File processor       | ✅ Good | Used by tests        |
 
 **testutil.BDDTestSetup Methods:**
@@ -163,18 +163,18 @@ output, err := setup.RunArtDupl("--threshold", "10")
 
 ### Prioritized Action Items
 
-| #   | Step                                        | Work     | Impact | Value      | Status |
-| --- | ------------------------------------------- | -------- | ------ | ---------- | ------ |
-| 1   | Remove dead code (Configuration Management) | Very Low | High   | 🟢 Ready   |
-| 2   | Add test helper methods                     | Low      | Medium | 🟢 Ready   |
-| 3   | Refactor File Targeting Scenarios           | Medium   | High   | 🟢 Ready   |
-| 4   | Refactor Integration Scenarios              | Medium   | High   | 🟢 Ready   |
-| 5   | Check detection_methods_test.go             | Low      | Medium | 🔍 Unknown |
-| 6   | Check filter_features_test.go               | Low      | Medium | 🔍 Unknown |
-| 7   | Extract common assertions                   | Medium   | Low    | 🟡 TBD     |
-| 8   | Add documentation                           | Low      | Medium | 🟡 TBD     |
-| 9   | Type safety improvements                    | High     | Medium | 🔴 TBD     |
-| 10  | Performance benchmarks                      | High     | Low    | 🔴 TBD     |
+| #  | Step                                        | Work     | Impact | Value      | Status |
+| -- | ------------------------------------------- | -------- | ------ | ---------- | ------ |
+| 1  | Remove dead code (Configuration Management) | Very Low | High   | 🟢 Ready   |        |
+| 2  | Add test helper methods                     | Low      | Medium | 🟢 Ready   |        |
+| 3  | Refactor File Targeting Scenarios           | Medium   | High   | 🟢 Ready   |        |
+| 4  | Refactor Integration Scenarios              | Medium   | High   | 🟢 Ready   |        |
+| 5  | Check detection_methods_test.go             | Low      | Medium | 🔍 Unknown |        |
+| 6  | Check filter_features_test.go               | Low      | Medium | 🔍 Unknown |        |
+| 7  | Extract common assertions                   | Medium   | Low    | 🟡 TBD     |        |
+| 8  | Add documentation                           | Low      | Medium | 🟡 TBD     |        |
+| 9  | Type safety improvements                    | High     | Medium | 🔴 TBD     |        |
+| 10 | Performance benchmarks                      | High     | Low    | 🔴 TBD     |        |
 
 ---
 
@@ -683,16 +683,16 @@ git reset --hard HEAD~1
 
 |                           | Task   | Estimated | Status |
 | ------------------------- | ------ | --------- | ------ |
-| Remove dead code          | 5 min  | 🟢 Ready  |
-| Add helper methods        | 30 min | 🟢 Ready  |
-| Refactor File Targeting   | 20 min | 🟢 Ready  |
-| Refactor Integration      | 15 min | 🟢 Ready  |
-| Analyze detection_methods | 10 min | 🟢 Ready  |
-| Analyze filter_features   | 10 min | 🟢 Ready  |
-| Extract assertions        | 45 min | 🟡 TBD    |
-| Add documentation         | 30 min | 🟡 TBD    |
-| Type safety               | 60 min | 🔴 TBD    |
-| Performance benchmarks    | 60 min | 🔴 TBD    |
+| Remove dead code          | 5 min  | 🟢 Ready  |        |
+| Add helper methods        | 30 min | 🟢 Ready  |        |
+| Refactor File Targeting   | 20 min | 🟢 Ready  |        |
+| Refactor Integration      | 15 min | 🟢 Ready  |        |
+| Analyze detection_methods | 10 min | 🟢 Ready  |        |
+| Analyze filter_features   | 10 min | 🟢 Ready  |        |
+| Extract assertions        | 45 min | 🟡 TBD    |        |
+| Add documentation         | 30 min | 🟡 TBD    |        |
+| Type safety               | 60 min | 🔴 TBD    |        |
+| Performance benchmarks    | 60 min | 🔴 TBD    |        |
 
 **Total High-Priority Time:** 90 minutes (Steps 1-6)
 **Total Medium-Priority Time:** 135 minutes (Steps 7-8)

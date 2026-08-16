@@ -1502,7 +1502,6 @@ Output Formatting (printer/\*)
 Text/HTML/JSON/Plumbing
 
 ```
-
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.

@@ -1,8 +1,8 @@
 # Status Report: Smart Actionability Filtering — Guard Clauses + Terminal Statements
 
-**Date:** 2026-07-25 04:31  
-**Session Focus:** Eliminate false positives from art-dupl's actionability filtering by adding two new non-actionable patterns  
-**Branch:** `fork`  
+**Date:** 2026-07-25 04:31\
+**Session Focus:** Eliminate false positives from art-dupl's actionability filtering by adding two new non-actionable patterns\
+**Branch:** `fork`\
 **Previous report:** `2026-07-25_04-08_actionability-exprstmt-gap-fix.md`
 
 ---

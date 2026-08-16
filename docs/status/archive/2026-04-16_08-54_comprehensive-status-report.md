@@ -1,11 +1,11 @@
 # Comprehensive Status Report — art-dupl
 
-**Date:** 2026-04-16 08:54  
-**Branch:** `fork` (6 commits ahead of `origin/fork` — needs push)  
-**Head Commit:** `1142c06` docs(status): add code deduplication session status report  
-**Working Tree:** CLEAN  
-**Build Status:** PASSING ✅  
-**Total Production Go LOC:** ~19,153  
+**Date:** 2026-04-16 08:54\
+**Branch:** `fork` (6 commits ahead of `origin/fork` — needs push)\
+**Head Commit:** `1142c06` docs(status): add code deduplication session status report\
+**Working Tree:** CLEAN\
+**Build Status:** PASSING ✅\
+**Total Production Go LOC:** ~19,153\
 **Go Version:** 1.26.0 (arm64/darwin)
 
 ---
@@ -87,24 +87,24 @@
 
 ## C) NOT STARTED ⬜
 
-| #   | Item                                                                    | Priority | Impact | Effort |
-| --- | ----------------------------------------------------------------------- | -------- | ------ | ------ |
-| 1   | Decide fate of 4 "maybe" ghost packages                                 | HIGH     | HIGH   | LOW    |
-| 2   | Delete 2 unambiguous ghost packages (`pkg/errors/`, `testutils/`)       | HIGH     | MEDIUM | LOW    |
-| 3   | Fix 6 pre-existing BDD test failures                                    | HIGH     | HIGH   | MEDIUM |
-| 4   | Extract shared `addCommonFlags()` for flag deduplication                | HIGH     | MEDIUM | MEDIUM |
-| 5   | Update FEATURES.md with protobuf/mockgen/stringer + all recent features | HIGH     | HIGH   | LOW    |
-| 6   | Update HOW_TO_USE.md with new flags and examples                        | HIGH     | MEDIUM | LOW    |
-| 7   | Update README.md with semantic default behavior                         | MEDIUM   | MEDIUM | LOW    |
-| 8   | Update TODO_LIST.md                                                     | MEDIUM   | LOW    | LOW    |
-| 9   | Fix remaining 4 lint warnings                                           | LOW      | LOW    | LOW    |
-| 10  | Add BDD tests for --include-protobuf/mockgen/stringer                   | MEDIUM   | HIGH   | MEDIUM |
-| 11  | Improve printer test coverage (63% → 80%)                               | MEDIUM   | MEDIUM | MEDIUM |
-| 12  | Improve syntax test coverage (67% → 80%)                                | MEDIUM   | MEDIUM | MEDIUM |
-| 13  | Implement TokenValue type                                               | HIGH     | HIGH   | HIGH   |
-| 14  | Fix SIMD race condition                                                 | MEDIUM   | MEDIUM | MEDIUM |
-| 15  | Create `go.work` for multi-module development                           | LOW      | LOW    | LOW    |
-| 16  | Fix justfile `build-all` (missing source path)                          | MEDIUM   | LOW    | LOW    |
+| #  | Item                                                                    | Priority | Impact | Effort |
+| -- | ----------------------------------------------------------------------- | -------- | ------ | ------ |
+| 1  | Decide fate of 4 "maybe" ghost packages                                 | HIGH     | HIGH   | LOW    |
+| 2  | Delete 2 unambiguous ghost packages (`pkg/errors/`, `testutils/`)       | HIGH     | MEDIUM | LOW    |
+| 3  | Fix 6 pre-existing BDD test failures                                    | HIGH     | HIGH   | MEDIUM |
+| 4  | Extract shared `addCommonFlags()` for flag deduplication                | HIGH     | MEDIUM | MEDIUM |
+| 5  | Update FEATURES.md with protobuf/mockgen/stringer + all recent features | HIGH     | HIGH   | LOW    |
+| 6  | Update HOW_TO_USE.md with new flags and examples                        | HIGH     | MEDIUM | LOW    |
+| 7  | Update README.md with semantic default behavior                         | MEDIUM   | MEDIUM | LOW    |
+| 8  | Update TODO_LIST.md                                                     | MEDIUM   | LOW    | LOW    |
+| 9  | Fix remaining 4 lint warnings                                           | LOW      | LOW    | LOW    |
+| 10 | Add BDD tests for --include-protobuf/mockgen/stringer                   | MEDIUM   | HIGH   | MEDIUM |
+| 11 | Improve printer test coverage (63% → 80%)                               | MEDIUM   | MEDIUM | MEDIUM |
+| 12 | Improve syntax test coverage (67% → 80%)                                | MEDIUM   | MEDIUM | MEDIUM |
+| 13 | Implement TokenValue type                                               | HIGH     | HIGH   | HIGH   |
+| 14 | Fix SIMD race condition                                                 | MEDIUM   | MEDIUM | MEDIUM |
+| 15 | Create `go.work` for multi-module development                           | LOW      | LOW    | LOW    |
+| 16 | Fix justfile `build-all` (missing source path)                          | MEDIUM   | LOW    | LOW    |
 
 ---
 
@@ -154,43 +154,43 @@
 
 ### Tier 1: Decisions + Quick Wins (1-10)
 
-| #   | Task                                                                    | Impact | Effort | Est. Time | Customer Value    |
-| --- | ----------------------------------------------------------------------- | ------ | ------ | --------- | ----------------- |
-| 1   | **DECIDE**: Keep or delete `internal/enum/` (684 lines)                 | HIGH   | ZERO   | 2min      | Unblocks cleanup  |
-| 2   | **DECIDE**: Wire `git/` into `--incremental` or delete (1,064 lines)    | HIGH   | ZERO   | 2min      | Unblocks cleanup  |
-| 3   | **DECIDE**: Keep `migration/` + `adapter/` for future use (1,239 lines) | MEDIUM | ZERO   | 2min      | Unblocks cleanup  |
-| 4   | Delete `pkg/errors/` (24 lines, zero imports, pure duplicate)           | HIGH   | LOW    | 5min      | Codebase clarity  |
-| 5   | Delete `testutils/` (173 lines, zero imports, pure duplicate)           | HIGH   | LOW    | 5min      | Codebase clarity  |
-| 6   | Fix 4 remaining lint warnings (gci, golines, nlreturn, wsl_v5)          | LOW    | LOW    | 10min     | CI green          |
-| 7   | Update FEATURES.md with all new features                                | HIGH   | LOW    | 20min     | User discovery    |
-| 8   | Update HOW_TO_USE.md with new filter flags                              | HIGH   | LOW    | 15min     | User education    |
-| 9   | Update README.md with semantic default                                  | MEDIUM | LOW    | 10min     | First impression  |
-| 10  | Update TODO_LIST.md to reflect reality                                  | MEDIUM | LOW    | 10min     | Planning accuracy |
+| #  | Task                                                                    | Impact | Effort | Est. Time | Customer Value    |
+| -- | ----------------------------------------------------------------------- | ------ | ------ | --------- | ----------------- |
+| 1  | **DECIDE**: Keep or delete `internal/enum/` (684 lines)                 | HIGH   | ZERO   | 2min      | Unblocks cleanup  |
+| 2  | **DECIDE**: Wire `git/` into `--incremental` or delete (1,064 lines)    | HIGH   | ZERO   | 2min      | Unblocks cleanup  |
+| 3  | **DECIDE**: Keep `migration/` + `adapter/` for future use (1,239 lines) | MEDIUM | ZERO   | 2min      | Unblocks cleanup  |
+| 4  | Delete `pkg/errors/` (24 lines, zero imports, pure duplicate)           | HIGH   | LOW    | 5min      | Codebase clarity  |
+| 5  | Delete `testutils/` (173 lines, zero imports, pure duplicate)           | HIGH   | LOW    | 5min      | Codebase clarity  |
+| 6  | Fix 4 remaining lint warnings (gci, golines, nlreturn, wsl_v5)          | LOW    | LOW    | 10min     | CI green          |
+| 7  | Update FEATURES.md with all new features                                | HIGH   | LOW    | 20min     | User discovery    |
+| 8  | Update HOW_TO_USE.md with new filter flags                              | HIGH   | LOW    | 15min     | User education    |
+| 9  | Update README.md with semantic default                                  | MEDIUM | LOW    | 10min     | First impression  |
+| 10 | Update TODO_LIST.md to reflect reality                                  | MEDIUM | LOW    | 10min     | Planning accuracy |
 
 ### Tier 2: Structural Improvements (11-18)
 
-| #   | Task                                                         | Impact | Effort | Est. Time | Customer Value       |
-| --- | ------------------------------------------------------------ | ------ | ------ | --------- | -------------------- |
-| 11  | Extract `addCommonFlags()` — deduplicate 18 flag definitions | HIGH   | MEDIUM | 45min     | Maintainability      |
-| 12  | Fix 6 pre-existing BDD test failures                         | HIGH   | HIGH   | 90min     | Test reliability     |
-| 13  | Add BDD tests for --include-protobuf/mockgen/stringer        | HIGH   | MEDIUM | 45min     | Feature coverage     |
-| 14  | Improve printer test coverage (63% → 80%)                    | MEDIUM | MEDIUM | 60min     | Reliability          |
-| 15  | Improve syntax test coverage (67% → 80%)                     | MEDIUM | MEDIUM | 60min     | Reliability          |
-| 16  | Fix justfile `build-all` and `test` double-run               | MEDIUM | LOW    | 15min     | Developer experience |
-| 17  | Create `go.work` for multi-module setup                      | LOW    | LOW    | 5min      | Developer experience |
-| 18  | Fix SIMD race condition                                      | MEDIUM | MEDIUM | 60min     | Stability            |
+| #  | Task                                                         | Impact | Effort | Est. Time | Customer Value       |
+| -- | ------------------------------------------------------------ | ------ | ------ | --------- | -------------------- |
+| 11 | Extract `addCommonFlags()` — deduplicate 18 flag definitions | HIGH   | MEDIUM | 45min     | Maintainability      |
+| 12 | Fix 6 pre-existing BDD test failures                         | HIGH   | HIGH   | 90min     | Test reliability     |
+| 13 | Add BDD tests for --include-protobuf/mockgen/stringer        | HIGH   | MEDIUM | 45min     | Feature coverage     |
+| 14 | Improve printer test coverage (63% → 80%)                    | MEDIUM | MEDIUM | 60min     | Reliability          |
+| 15 | Improve syntax test coverage (67% → 80%)                     | MEDIUM | MEDIUM | 60min     | Reliability          |
+| 16 | Fix justfile `build-all` and `test` double-run               | MEDIUM | LOW    | 15min     | Developer experience |
+| 17 | Create `go.work` for multi-module setup                      | LOW    | LOW    | 5min      | Developer experience |
+| 18 | Fix SIMD race condition                                      | MEDIUM | MEDIUM | 60min     | Stability            |
 
 ### Tier 3: Future Work (19-25)
 
-| #   | Task                                                      | Impact | Effort | Est. Time | Customer Value  |
-| --- | --------------------------------------------------------- | ------ | ------ | --------- | --------------- |
-| 19  | Implement TokenValue type with validation                 | HIGH   | HIGH   | 4h        | Type safety     |
-| 20  | Consolidate clone representations (SB-1 split brain)      | HIGH   | HIGH   | 4h        | Architecture    |
-| 21  | Unify detection pipelines (SB-2 split brain)              | HIGH   | HIGH   | 4h        | Architecture    |
-| 22  | Extract shared printer clone-info prep (SB-3 split brain) | MEDIUM | MEDIUM | 2h        | Maintainability |
-| 23  | Implement CSV output via encoding/csv                     | LOW    | MEDIUM | 2h        | Robustness      |
-| 24  | Optimize memory layouts for SIMD                          | LOW    | HIGH   | 4h        | Performance     |
-| 25  | Add Go Example\* functions for godoc                      | LOW    | MEDIUM | 3h        | Documentation   |
+| #  | Task                                                      | Impact | Effort | Est. Time | Customer Value  |
+| -- | --------------------------------------------------------- | ------ | ------ | --------- | --------------- |
+| 19 | Implement TokenValue type with validation                 | HIGH   | HIGH   | 4h        | Type safety     |
+| 20 | Consolidate clone representations (SB-1 split brain)      | HIGH   | HIGH   | 4h        | Architecture    |
+| 21 | Unify detection pipelines (SB-2 split brain)              | HIGH   | HIGH   | 4h        | Architecture    |
+| 22 | Extract shared printer clone-info prep (SB-3 split brain) | MEDIUM | MEDIUM | 2h        | Maintainability |
+| 23 | Implement CSV output via encoding/csv                     | LOW    | MEDIUM | 2h        | Robustness      |
+| 24 | Optimize memory layouts for SIMD                          | LOW    | HIGH   | 4h        | Performance     |
+| 25 | Add Go Example\* functions for godoc                      | LOW    | MEDIUM | 3h        | Documentation   |
 
 ---
 
@@ -222,35 +222,35 @@ I cannot proceed with cleanup without your call on these.
 
 ### Full Test Suite: ALL PASS (except 6 pre-existing BDD failures)
 
-| Package             | Coverage  | Status                  |
-| ------------------- | --------- | ----------------------- |
-| adapter             | 97.7%     | ✅                      |
-| cache               | 87.4%     | ✅                      |
-| cli                 | 62.5%     | ✅                      |
-| cmd                 | 75.9%     | ✅                      |
-| config              | 70.4%     | ✅                      |
-| detection           | 83.6%     | ✅                      |
-| domain              | 97.0%     | ✅                      |
-| errors              | 89.4%     | ✅                      |
-| examples            | 0.0%      | ✅                      |
-| git                 | 83.1%     | ✅ (but unused)         |
-| hash                | 70.0%     | ✅                      |
-| internal/configtest | —         | ✅                      |
-| internal/enum       | 76.6%     | ✅ (but unused)         |
-| internal/filtertest | 41.2%     | ✅                      |
-| internal/simd       | 95.8%     | ✅ (race fails)         |
-| internal/utils      | 93.3%     | ✅                      |
-| job                 | 76.7%     | ✅                      |
-| migration           | 83.3%     | ✅ (but unused)         |
-| pkg/artdupl         | 85.2%     | ✅                      |
-| pkg/format          | 100.0%    | ✅                      |
-| pkg/logger          | 87.5%     | ✅                      |
-| pkg/position        | 100.0%    | ✅                      |
-| printer             | 63.3%     | ✅                      |
-| suffixtree          | 91.0%     | ✅                      |
-| syntax              | 67.6%     | ✅                      |
-| syntax/golang       | 93.9%     | ✅                      |
-| syntax/templ        | 85.3%     | ✅                      |
+| Package             | Coverage  | Status                 |
+| ------------------- | --------- | ---------------------- |
+| adapter             | 97.7%     | ✅                     |
+| cache               | 87.4%     | ✅                     |
+| cli                 | 62.5%     | ✅                     |
+| cmd                 | 75.9%     | ✅                     |
+| config              | 70.4%     | ✅                     |
+| detection           | 83.6%     | ✅                     |
+| domain              | 97.0%     | ✅                     |
+| errors              | 89.4%     | ✅                     |
+| examples            | 0.0%      | ✅                     |
+| git                 | 83.1%     | ✅ (but unused)        |
+| hash                | 70.0%     | ✅                     |
+| internal/configtest | —         | ✅                     |
+| internal/enum       | 76.6%     | ✅ (but unused)        |
+| internal/filtertest | 41.2%     | ✅                     |
+| internal/simd       | 95.8%     | ✅ (race fails)        |
+| internal/utils      | 93.3%     | ✅                     |
+| job                 | 76.7%     | ✅                     |
+| migration           | 83.3%     | ✅ (but unused)        |
+| pkg/artdupl         | 85.2%     | ✅                     |
+| pkg/format          | 100.0%    | ✅                     |
+| pkg/logger          | 87.5%     | ✅                     |
+| pkg/position        | 100.0%    | ✅                     |
+| printer             | 63.3%     | ✅                     |
+| suffixtree          | 91.0%     | ✅                     |
+| syntax              | 67.6%     | ✅                     |
+| syntax/golang       | 93.9%     | ✅                     |
+| syntax/templ        | 85.3%     | ✅                     |
 | **bdd**             | **70.0%** | **⚠️ 234 pass, 6 fail** |
 
 ### Lint: 4 warnings remaining

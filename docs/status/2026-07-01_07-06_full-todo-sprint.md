@@ -219,33 +219,33 @@ before the final verification gate. No broken code was committed.
 
 ## f) TOP 25 THINGS TO DO NEXT
 
-| #   | Task                                                | Impact | Effort | Status                        |
-| --- | --------------------------------------------------- | ------ | ------ | ----------------------------- |
-| 1   | T25 Split printer/ (stats, html, analyze)           | HIGH   | 2-3d   | Needs design                  |
-| 2   | T32 Watch mode (`--watch`)                          | MED    | 1d     | Not started                   |
-| 3   | T38 TypeScript/JS support                           | HIGH   | 1w+    | Not started                   |
-| 4   | T39 Python support                                  | HIGH   | 1w+    | Not started                   |
-| 5   | T24 Branded NodeType (per-package types)            | MED    | 180m   | Needs design                  |
-| 6   | SDK streaming backpressure handling                 | LOW    | 40m    | Not started                   |
-| 7   | Cache eviction policy (beyond LRU)                  | LOW    | 40m    | Not started                   |
-| 8   | Extend CloneRef to JSONClone + CloneOccurrenceView  | LOW    | 30m    | Not started                   |
-| 9   | Add test for config migration shim                  | LOW    | 15m    | Not started                   |
-| 10  | HTML collapse-all localStorage persistence          | LOW    | 20m    | Not started                   |
-| 11  | "How art-dupl detects clones" deep-dive doc         | LOW    | 40m    | Not started                   |
-| 12  | Perf threshold tuning for slow CI runners           | LOW    | 20m    | Needs data                    |
-| 13  | T26 Fang v2 migration                               | LOW    | —      | Blocked (Fang v2)             |
-| 14  | T12 encoding/json v2 migration                      | LOW    | —      | Blocked (Go 1.27)             |
-| 15  | T40 syntax/golang facade                            | LOW    | —      | Blocked (import cycle)        |
-| 16  | Hide `syntax/golang` behind facade                  | LOW    | —      | Blocked (import cycle)        |
-| 17  | Thread context through stdin scanner                | LOW    | —      | Blocked (inherently blocking) |
-| 18  | Hybrid slice/map transition storage                 | LOW    | 60m    | Deferred (map is O(1))        |
-| 19  | SARIF: add more rules (per-clone-type)              | LOW    | 40m    | Not started                   |
-| 20  | Baseline diff mode (show new clones since baseline) | MED    | 2h     | Not started                   |
-| 21  | `--since <git-ref>` incremental analysis            | MED    | 4h     | Not started                   |
-| 22  | Go module proxy caching in CI                       | LOW    | 30m    | Not started                   |
-| 23  | Templ semantic mode (identifier/operator encoding)  | MED    | 4h     | Not started                   |
-| 24  | SDK examples package (godoc-renderable)             | LOW    | 2h     | Not started                   |
-| 25  | Performance profiling dashboard (HTML)              | LOW    | 3h     | Not started                   |
+| #  | Task                                                | Impact | Effort | Status                        |
+| -- | --------------------------------------------------- | ------ | ------ | ----------------------------- |
+| 1  | T25 Split printer/ (stats, html, analyze)           | HIGH   | 2-3d   | Needs design                  |
+| 2  | T32 Watch mode (`--watch`)                          | MED    | 1d     | Not started                   |
+| 3  | T38 TypeScript/JS support                           | HIGH   | 1w+    | Not started                   |
+| 4  | T39 Python support                                  | HIGH   | 1w+    | Not started                   |
+| 5  | T24 Branded NodeType (per-package types)            | MED    | 180m   | Needs design                  |
+| 6  | SDK streaming backpressure handling                 | LOW    | 40m    | Not started                   |
+| 7  | Cache eviction policy (beyond LRU)                  | LOW    | 40m    | Not started                   |
+| 8  | Extend CloneRef to JSONClone + CloneOccurrenceView  | LOW    | 30m    | Not started                   |
+| 9  | Add test for config migration shim                  | LOW    | 15m    | Not started                   |
+| 10 | HTML collapse-all localStorage persistence          | LOW    | 20m    | Not started                   |
+| 11 | "How art-dupl detects clones" deep-dive doc         | LOW    | 40m    | Not started                   |
+| 12 | Perf threshold tuning for slow CI runners           | LOW    | 20m    | Needs data                    |
+| 13 | T26 Fang v2 migration                               | LOW    | —      | Blocked (Fang v2)             |
+| 14 | T12 encoding/json v2 migration                      | LOW    | —      | Blocked (Go 1.27)             |
+| 15 | T40 syntax/golang facade                            | LOW    | —      | Blocked (import cycle)        |
+| 16 | Hide `syntax/golang` behind facade                  | LOW    | —      | Blocked (import cycle)        |
+| 17 | Thread context through stdin scanner                | LOW    | —      | Blocked (inherently blocking) |
+| 18 | Hybrid slice/map transition storage                 | LOW    | 60m    | Deferred (map is O(1))        |
+| 19 | SARIF: add more rules (per-clone-type)              | LOW    | 40m    | Not started                   |
+| 20 | Baseline diff mode (show new clones since baseline) | MED    | 2h     | Not started                   |
+| 21 | `--since <git-ref>` incremental analysis            | MED    | 4h     | Not started                   |
+| 22 | Go module proxy caching in CI                       | LOW    | 30m    | Not started                   |
+| 23 | Templ semantic mode (identifier/operator encoding)  | MED    | 4h     | Not started                   |
+| 24 | SDK examples package (godoc-renderable)             | LOW    | 2h     | Not started                   |
+| 25 | Performance profiling dashboard (HTML)              | LOW    | 3h     | Not started                   |
 
 ---
 

@@ -140,7 +140,7 @@ wrapcheck:
 | Race Condition Tests | ✅ PASSED   | 1m 12s duration                          |
 | Coverage Tests       | ✅ PASSED   | 20s duration                             |
 | Fuzz Tests           | ✅ PASSED   | 2 targets, 3.57M executions, 2m duration |
-| Migration Suite      | ⚠️ TIMEOUT  | Ginkgo timeout (infrastructure issue)    |
+| Migration Suite      | ⚠️ TIMEOUT   | Ginkgo timeout (infrastructure issue)    |
 | Code Duplication     | ❌ EXPECTED | 108 clone groups (self-analysis)         |
 
 ### Non-Critical Issues

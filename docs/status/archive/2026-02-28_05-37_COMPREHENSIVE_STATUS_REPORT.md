@@ -13,7 +13,7 @@
 | ---------------- | ------------------------- | ------ |
 | **Build Status** | PASSING                   | ✅     |
 | **Test Status**  | ALL PASSING (29 packages) | ✅     |
-| **Lint Status**  | 387 issues (non-blocking) | ⚠️     |
+| **Lint Status**  | 387 issues (non-blocking) | ⚠️      |
 | **Health Score** | A (1.7% duplication)      | ✅     |
 | **Working Tree** | CLEAN                     | ✅     |
 | **Go Files**     | 211                       | -      |
@@ -124,13 +124,13 @@
 
 | File                         | Lines | Status | Action Needed      |
 | ---------------------------- | ----- | ------ | ------------------ |
-| domain/coverage_test.go      | 1348  | ⚠️     | Split by feature   |
-| pkg/artdupl/detector_test.go | 1323  | ⚠️     | Split by test type |
-| cmd/cmd_test.go              | 1156  | ⚠️     | Split by command   |
-| domain/domain_types_test.go  | 1027  | ⚠️     | Split by type      |
-| git/change_detector_test.go  | 650   | ⚠️     | Consider splitting |
-| pkg/filter/filter_test.go    | 932   | ⚠️     | Consider splitting |
-| printer/stats_test.go        | 954   | ⚠️     | Consider splitting |
+| domain/coverage_test.go      | 1348  | ⚠️      | Split by feature   |
+| pkg/artdupl/detector_test.go | 1323  | ⚠️      | Split by test type |
+| cmd/cmd_test.go              | 1156  | ⚠️      | Split by command   |
+| domain/domain_types_test.go  | 1027  | ⚠️      | Split by type      |
+| git/change_detector_test.go  | 650   | ⚠️      | Consider splitting |
+| pkg/filter/filter_test.go    | 932   | ⚠️      | Consider splitting |
+| printer/stats_test.go        | 954   | ⚠️      | Consider splitting |
 
 ---
 
@@ -222,53 +222,53 @@
 
 ### Immediate (This Week) - Quality Fixes
 
-| #   | Task                                    | Effort | Impact |
-| --- | --------------------------------------- | ------ | ------ |
-| 1   | Fix wrapcheck errors (13)               | Medium | High   |
-| 2   | Add t.Helper() to test helpers (4)      | Low    | Medium |
-| 3   | Fix t.Parallel() in subtests (1)        | Low    | Medium |
-| 4   | Replace os.MkdirTemp with t.TempDir (2) | Low    | Medium |
-| 5   | Fix noctx warnings (3)                  | Low    | Medium |
+| # | Task                                    | Effort | Impact |
+| - | --------------------------------------- | ------ | ------ |
+| 1 | Fix wrapcheck errors (13)               | Medium | High   |
+| 2 | Add t.Helper() to test helpers (4)      | Low    | Medium |
+| 3 | Fix t.Parallel() in subtests (1)        | Low    | Medium |
+| 4 | Replace os.MkdirTemp with t.TempDir (2) | Low    | Medium |
+| 5 | Fix noctx warnings (3)                  | Low    | Medium |
 
 ### Short Term (Next 2 Weeks) - Code Organization
 
-| #   | Task                                            | Effort | Impact |
-| --- | ----------------------------------------------- | ------ | ------ |
-| 6   | Split domain/coverage_test.go (1348 lines)      | High   | Medium |
-| 7   | Split pkg/artdupl/detector_test.go (1323 lines) | High   | Medium |
-| 8   | Split cmd/cmd_test.go (1156 lines)              | High   | Medium |
-| 9   | Split domain/domain_types_test.go (1027 lines)  | High   | Medium |
-| 10  | Address revive warnings (50)                    | Medium | Medium |
+| #  | Task                                            | Effort | Impact |
+| -- | ----------------------------------------------- | ------ | ------ |
+| 6  | Split domain/coverage_test.go (1348 lines)      | High   | Medium |
+| 7  | Split pkg/artdupl/detector_test.go (1323 lines) | High   | Medium |
+| 8  | Split cmd/cmd_test.go (1156 lines)              | High   | Medium |
+| 9  | Split domain/domain_types_test.go (1027 lines)  | High   | Medium |
+| 10 | Address revive warnings (50)                    | Medium | Medium |
 
 ### Medium Term (Next Month) - Distribution
 
-| #   | Task                           | Effort | Impact |
-| --- | ------------------------------ | ------ | ------ |
-| 11  | Create Homebrew formula        | Low    | High   |
-| 12  | Add GitHub Actions workflow    | Low    | High   |
-| 13  | Create pre-commit hook example | Low    | High   |
-| 14  | Create Docker image            | Medium | Medium |
-| 15  | Write CI/CD integration guide  | Low    | Medium |
+| #  | Task                           | Effort | Impact |
+| -- | ------------------------------ | ------ | ------ |
+| 11 | Create Homebrew formula        | Low    | High   |
+| 12 | Add GitHub Actions workflow    | Low    | High   |
+| 13 | Create pre-commit hook example | Low    | High   |
+| 14 | Create Docker image            | Medium | Medium |
+| 15 | Write CI/CD integration guide  | Low    | Medium |
 
 ### Long Term (Quarterly) - Features
 
-| #   | Task                                            | Effort | Impact |
-| --- | ----------------------------------------------- | ------ | ------ |
-| 16  | Add watch mode                                  | High   | High   |
-| 17  | Improve HTML output (interactivity)             | Medium | Medium |
-| 18  | Add more output examples to docs                | Low    | Medium |
-| 19  | Configure .golangci.yml (suppress low priority) | Low    | Low    |
-| 20  | Add performance benchmarks                      | Medium | Medium |
+| #  | Task                                            | Effort | Impact |
+| -- | ----------------------------------------------- | ------ | ------ |
+| 16 | Add watch mode                                  | High   | High   |
+| 17 | Improve HTML output (interactivity)             | Medium | Medium |
+| 18 | Add more output examples to docs                | Low    | Medium |
+| 19 | Configure .golangci.yml (suppress low priority) | Low    | Low    |
+| 20 | Add performance benchmarks                      | Medium | Medium |
 
 ### Future (Backlog)
 
-| #   | Task                               | Effort    | Impact |
-| --- | ---------------------------------- | --------- | ------ |
-| 21  | TypeScript language support        | High      | High   |
-| 22  | Python language support            | High      | High   |
-| 23  | Web dashboard for reports          | High      | Medium |
-| 24  | Plugin system for custom detectors | High      | High   |
-| 25  | ML-based false-positive detection  | Very High | High   |
+| #  | Task                               | Effort    | Impact |
+| -- | ---------------------------------- | --------- | ------ |
+| 21 | TypeScript language support        | High      | High   |
+| 22 | Python language support            | High      | High   |
+| 23 | Web dashboard for reports          | High      | Medium |
+| 24 | Plugin system for custom detectors | High      | High   |
+| 25 | ML-based false-positive detection  | Very High | High   |
 
 ---
 

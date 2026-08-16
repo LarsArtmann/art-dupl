@@ -1,8 +1,8 @@
 # Status Report — 2026-05-21 18:14
 
-**Session Type:** Comprehensive Status Update  
-**Branch:** `fork`  
-**Working Tree:** 1 modified file (status report from previous session)  
+**Session Type:** Comprehensive Status Update\
+**Branch:** `fork`\
+**Working Tree:** 1 modified file (status report from previous session)\
 **Last 3 Commits:**
 
 ```
@@ -35,14 +35,14 @@ The project is in **strong shape** with 23/25 packages passing, 72% total covera
 
 ### Version Command BDD Fix (This Session)
 
-**Commit:** `55cc3dd`  
-**File:** `bdd/execute.go:22`  
-**What:** Changed `SetVersionTemplate(cmd.GetVersion() + "\n")` to `SetVersionTemplate("art-dupl version " + cmd.GetVersion() + "\n")`.  
+**Commit:** `55cc3dd`\
+**File:** `bdd/execute.go:22`\
+**What:** Changed `SetVersionTemplate(cmd.GetVersion() + "\n")` to `SetVersionTemplate("art-dupl version " + cmd.GetVersion() + "\n")`.\
 **Why:** The in-process executor ran `rootCmd.Execute()` directly, which used the bare version template. Production uses `fang.Execute()` with `fang.WithVersion()` which adds "art-dupl" branding. The test expected `ContainSubstring("art-dupl")` OR `ContainSubstring("version")` — neither matched "dev" alone.
 
 ### In-Process BDD Test Migration (Previous Session)
 
-**Commits:** `2c7517c`, `1a9a32c`, `a5ec860`  
+**Commits:** `2c7517c`, `1a9a32c`, `a5ec860`\
 **Impact:** 333 lines net reduction, eliminated subprocess overhead
 
 - All 13 BDD test files migrated to `setup.Executor(args...)` pattern
@@ -77,7 +77,7 @@ The project is in **strong shape** with 23/25 packages passing, 72% total covera
 
 ### os.Exit Refactoring in statError
 
-**Status:** Attempted, reverted due to cascading test failures  
+**Status:** Attempted, reverted due to cascading test failures\
 **What was tried:**
 
 1. Removed `os.Exit(1)` from `statError()` → added `return` after `statError` call
@@ -123,7 +123,7 @@ The project is in **strong shape** with 23/25 packages passing, 72% total covera
 
 ### CRITICAL: Flaky BDD Tests — os.Exit(1) in statError
 
-**File:** `cmd/run_crawl.go:32-36`  
+**File:** `cmd/run_crawl.go:32-36`\
 **Root cause:** `statError()` calls `os.Exit(1)` when a path doesn't exist. In the in-process execution model, this kills the **entire test process**, not just the test function.
 
 **Impact:**
@@ -148,7 +148,7 @@ Ginkgo reports "FAIL" with only partial spec count
 
 ### 9 Stats BDD Tests Running on Wrong Directory
 
-**Files:** `bdd/stats_command_test.go` (lines 117, 129, 136, 163, 176, 180, 213, 334, 394, 448)  
+**Files:** `bdd/stats_command_test.go` (lines 117, 129, 136, 163, 176, 180, 213, 334, 394, 448)\
 **Root cause:** `prepareSubcommandArgs()` in `internal/testutil/bdd_runners.go:147` treats flag values as paths. For `["stats", "--threshold", "5"]`, the `"5"` is seen as a non-flag non-subcommand argument, so TmpDir is NOT appended. The command runs on `"."` (project root) instead.
 
 **Impact:** All 9 stats BDD tests show project-wide stats (27 files, 264 clone groups) instead of test-specific results.
@@ -185,33 +185,33 @@ The previous session reported "254/255 BDD specs passing" but this was only true
 
 ## f) Top 25 Things to Do Next
 
-| #   | Item                                                        | Impact   | Effort | Category     |
-| --- | ----------------------------------------------------------- | -------- | ------ | ------------ |
-| 1   | Fix `os.Exit(1)` in `statError` — return errors via channel | Critical | Medium | Bug fix      |
-| 2   | Fix `prepareSubcommandArgs` — parse flags properly          | High     | Small  | Bug fix      |
-| 3   | Add nolint directives for pre-existing lint warnings        | Medium   | Small  | Quality      |
-| 4   | Update `docs/status/README.md` with real metrics            | Medium   | Small  | Docs         |
-| 5   | Implement `TokenValue` type with validation                 | High     | Medium | Architecture |
-| 6   | Create `ProcessedClone` DTO for printer decoupling          | High     | High   | Architecture |
-| 7   | Consolidate 3 Clone types into unified types                | High     | High   | Architecture |
-| 8   | Move `clone_classify.go` language maps behind interface     | Medium   | Medium | Architecture |
-| 9   | Archive old `docs/status/` files (304)                      | Medium   | Small  | Cleanup      |
-| 10  | Add `ConstantCSSProperty` position tracking upstream issue  | Medium   | Small  | Upstream     |
-| 11  | Unify enum patterns across config/                          | Medium   | Medium | Refactor     |
-| 12  | Refactor `transform.go` 300-line switch                     | Medium   | Medium | Refactor     |
-| 13  | Implement remaining SIMD optimizations                      | Medium   | Medium | Performance  |
-| 14  | Use `encoding/csv` for clone CSV output                     | Low      | Small  | Quality      |
-| 15  | String interning for suffix tree tokens                     | Medium   | Medium | Performance  |
-| 16  | Add integration test for `--all` flag                       | Medium   | Small  | Testing      |
-| 17  | Add fuzz tests for templ parser edge cases                  | Medium   | Small  | Testing      |
-| 18  | Fix remaining LSP hints                                     | Low      | Small  | Quality      |
-| 19  | Add benchmark: in-process vs subprocess BDD                 | Medium   | Small  | Testing      |
-| 20  | Profile memory usage during large repo analysis             | Medium   | Medium | Performance  |
-| 21  | Consider `go:embed` for HTML template                       | Low      | Small  | Quality      |
-| 22  | Add SARIF output integration test                           | Low      | Small  | Testing      |
-| 23  | Evaluate `a-h/templ` v3 for `ConstantCSSProperty` Range     | Low      | Small  | Upstream     |
-| 24  | Create GitHub release workflow                              | Medium   | Medium | CI/CD        |
-| 25  | Add `--version` flag registration in `NewRootCommand`       | Low      | Small  | Bug fix      |
+| #  | Item                                                        | Impact   | Effort | Category     |
+| -- | ----------------------------------------------------------- | -------- | ------ | ------------ |
+| 1  | Fix `os.Exit(1)` in `statError` — return errors via channel | Critical | Medium | Bug fix      |
+| 2  | Fix `prepareSubcommandArgs` — parse flags properly          | High     | Small  | Bug fix      |
+| 3  | Add nolint directives for pre-existing lint warnings        | Medium   | Small  | Quality      |
+| 4  | Update `docs/status/README.md` with real metrics            | Medium   | Small  | Docs         |
+| 5  | Implement `TokenValue` type with validation                 | High     | Medium | Architecture |
+| 6  | Create `ProcessedClone` DTO for printer decoupling          | High     | High   | Architecture |
+| 7  | Consolidate 3 Clone types into unified types                | High     | High   | Architecture |
+| 8  | Move `clone_classify.go` language maps behind interface     | Medium   | Medium | Architecture |
+| 9  | Archive old `docs/status/` files (304)                      | Medium   | Small  | Cleanup      |
+| 10 | Add `ConstantCSSProperty` position tracking upstream issue  | Medium   | Small  | Upstream     |
+| 11 | Unify enum patterns across config/                          | Medium   | Medium | Refactor     |
+| 12 | Refactor `transform.go` 300-line switch                     | Medium   | Medium | Refactor     |
+| 13 | Implement remaining SIMD optimizations                      | Medium   | Medium | Performance  |
+| 14 | Use `encoding/csv` for clone CSV output                     | Low      | Small  | Quality      |
+| 15 | String interning for suffix tree tokens                     | Medium   | Medium | Performance  |
+| 16 | Add integration test for `--all` flag                       | Medium   | Small  | Testing      |
+| 17 | Add fuzz tests for templ parser edge cases                  | Medium   | Small  | Testing      |
+| 18 | Fix remaining LSP hints                                     | Low      | Small  | Quality      |
+| 19 | Add benchmark: in-process vs subprocess BDD                 | Medium   | Small  | Testing      |
+| 20 | Profile memory usage during large repo analysis             | Medium   | Medium | Performance  |
+| 21 | Consider `go:embed` for HTML template                       | Low      | Small  | Quality      |
+| 22 | Add SARIF output integration test                           | Low      | Small  | Testing      |
+| 23 | Evaluate `a-h/templ` v3 for `ConstantCSSProperty` Range     | Low      | Small  | Upstream     |
+| 24 | Create GitHub release workflow                              | Medium   | Medium | CI/CD        |
+| 25 | Add `--version` flag registration in `NewRootCommand`       | Low      | Small  | Bug fix      |
 
 ---
 

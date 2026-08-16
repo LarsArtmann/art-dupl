@@ -13,17 +13,17 @@
 
 ### Session: Semantic Detection Hardening (2026-06-09)
 
-| #   | Task                                                                                 | Commit  | Impact                                                                     |
-| --- | ------------------------------------------------------------------------------------ | ------- | -------------------------------------------------------------------------- |
-| 1   | Fix classification bug — decode base type before category switch                     | 68d3d6e | CRITICAL — every FuncDecl/Ident/SelectorExpr was `unknown` in default mode |
-| 2   | Fix actionability Type comparisons via baseTypeOf                                    | 68d3d6e | Prevents breakage from operator encoding                                   |
-| 3   | Encode operators into semantic types (BinaryExpr, UnaryExpr, IncDecStmt, AssignStmt) | 68d3d6e | Eliminates inverse-condition false positives                               |
-| 4   | Fix hashSeq truncation (1 byte → 4 bytes per node)                                   | 68d3d6e | Fixes incorrect group merging                                              |
-| 5   | Add CategoryIdiom for <5 token clones                                                | 68d3d6e | Direct triage improvement                                                  |
-| 6   | BDD tests for operator differences and inverse conditions                            | 68d3d6e | Confidence in semantic mode                                                |
-| 7   | Update AGENTS.md with semantic encoding conventions                                  | 68d3d6e | Documentation                                                              |
-| 8   | Add real-world feedback document from overview dedup session                         | 48537b2 | Feedback loop                                                              |
-| 9   | Add comprehensive Pareto execution plan                                              | 8e170e8 | Planning                                                                   |
+| # | Task                                                                                 | Commit  | Impact                                                                     |
+| - | ------------------------------------------------------------------------------------ | ------- | -------------------------------------------------------------------------- |
+| 1 | Fix classification bug — decode base type before category switch                     | 68d3d6e | CRITICAL — every FuncDecl/Ident/SelectorExpr was `unknown` in default mode |
+| 2 | Fix actionability Type comparisons via baseTypeOf                                    | 68d3d6e | Prevents breakage from operator encoding                                   |
+| 3 | Encode operators into semantic types (BinaryExpr, UnaryExpr, IncDecStmt, AssignStmt) | 68d3d6e | Eliminates inverse-condition false positives                               |
+| 4 | Fix hashSeq truncation (1 byte → 4 bytes per node)                                   | 68d3d6e | Fixes incorrect group merging                                              |
+| 5 | Add CategoryIdiom for <5 token clones                                                | 68d3d6e | Direct triage improvement                                                  |
+| 6 | BDD tests for operator differences and inverse conditions                            | 68d3d6e | Confidence in semantic mode                                                |
+| 7 | Update AGENTS.md with semantic encoding conventions                                  | 68d3d6e | Documentation                                                              |
+| 8 | Add real-world feedback document from overview dedup session                         | 48537b2 | Feedback loop                                                              |
+| 9 | Add comprehensive Pareto execution plan                                              | 8e170e8 | Planning                                                                   |
 
 ### Previously Done (project-level)
 
@@ -139,33 +139,33 @@ From feedback (2026-06-08-overview-dedup-session.md):
 
 Sorted by impact × effort (Pareto ordering):
 
-| #   | Task                                                               | Impact | Effort | Category       |
-| --- | ------------------------------------------------------------------ | ------ | ------ | -------------- |
-| 1   | **Fix nix vendorHash** — set `""`, build, copy hash                | HIGH   | 5min   | Tooling        |
-| 2   | **Suppress test-only low-priority clones** in output               | HIGH   | 30min  | False Positive |
-| 3   | **Add hashSeq unit tests** (currently zero)                        | HIGH   | 30min  | Testing        |
-| 4   | **Decouple clone_classify from syntax/golang** via interface       | HIGH   | 2h     | Architecture   |
-| 5   | **ProcessedClone DTO** — decouple printer from syntax.Node         | HIGH   | 4h     | Architecture   |
-| 6   | **Consolidate three Clone types** into one                         | HIGH   | 3h     | Architecture   |
-| 7   | **Implement TokenValue type with validation**                      | MED    | 1h     | Type Safety    |
-| 8   | **Test-table pattern detection** in classification                 | MED    | 1h     | False Positive |
-| 9   | **Cross-reference with existing helpers** detection                | MED    | 4h     | Feature        |
-| 10  | **Semantic mode for Templ** — identifier/operator encoding         | MED    | 3h     | Feature        |
-| 11  | **Fix 3 godoclint warnings** — duplicate package docs              | LOW    | 10min  | Quality        |
-| 12  | **Fix bufio scanner `sc.Err()` check** in run_crawl.go             | LOW    | 5min   | Quality        |
-| 13  | **Migrate fang v1 → fang/v2**                                      | LOW    | 1h     | Dependencies   |
-| 14  | **Replace SHA-1 in file_cache.go** with SHA-256                    | LOW    | 15min  | Security       |
-| 15  | **CSV output using encoding/csv**                                  | MED    | 2h     | Feature        |
-| 16  | **`--output-file` flag for stats subcommand**                      | LOW    | 30min  | Feature        |
-| 17  | **Split printer/stats_test.go** (975L → 3 files)                   | LOW    | 30min  | Quality        |
-| 18  | **Refactor syntax/golang/transform.go** (369L switch)              | LOW    | 2h     | Quality        |
-| 19  | **Create domain.HealthScore typed enum**                           | LOW    | 15min  | Type Safety    |
-| 20  | **Unify enum patterns** across codebase                            | LOW    | 1h     | Quality        |
-| 21  | **Write SDK documentation** with examples                          | MED    | 2h     | Documentation  |
-| 22  | **BDD tests for `--only templ`, `--only go`, `--include-generic`** | MED    | 1h     | Testing        |
-| 23  | **Fuzz tests for templ parser**                                    | MED    | 2h     | Testing        |
-| 24  | **Watch mode** — re-run on file changes                            | HIGH   | 4h     | Feature        |
-| 25  | **Performance baseline benchmarks** — CI regression tracking       | MED    | 2h     | Performance    |
+| #  | Task                                                               | Impact | Effort | Category       |
+| -- | ------------------------------------------------------------------ | ------ | ------ | -------------- |
+| 1  | **Fix nix vendorHash** — set `""`, build, copy hash                | HIGH   | 5min   | Tooling        |
+| 2  | **Suppress test-only low-priority clones** in output               | HIGH   | 30min  | False Positive |
+| 3  | **Add hashSeq unit tests** (currently zero)                        | HIGH   | 30min  | Testing        |
+| 4  | **Decouple clone_classify from syntax/golang** via interface       | HIGH   | 2h     | Architecture   |
+| 5  | **ProcessedClone DTO** — decouple printer from syntax.Node         | HIGH   | 4h     | Architecture   |
+| 6  | **Consolidate three Clone types** into one                         | HIGH   | 3h     | Architecture   |
+| 7  | **Implement TokenValue type with validation**                      | MED    | 1h     | Type Safety    |
+| 8  | **Test-table pattern detection** in classification                 | MED    | 1h     | False Positive |
+| 9  | **Cross-reference with existing helpers** detection                | MED    | 4h     | Feature        |
+| 10 | **Semantic mode for Templ** — identifier/operator encoding         | MED    | 3h     | Feature        |
+| 11 | **Fix 3 godoclint warnings** — duplicate package docs              | LOW    | 10min  | Quality        |
+| 12 | **Fix bufio scanner `sc.Err()` check** in run_crawl.go             | LOW    | 5min   | Quality        |
+| 13 | **Migrate fang v1 → fang/v2**                                      | LOW    | 1h     | Dependencies   |
+| 14 | **Replace SHA-1 in file_cache.go** with SHA-256                    | LOW    | 15min  | Security       |
+| 15 | **CSV output using encoding/csv**                                  | MED    | 2h     | Feature        |
+| 16 | **`--output-file` flag for stats subcommand**                      | LOW    | 30min  | Feature        |
+| 17 | **Split printer/stats_test.go** (975L → 3 files)                   | LOW    | 30min  | Quality        |
+| 18 | **Refactor syntax/golang/transform.go** (369L switch)              | LOW    | 2h     | Quality        |
+| 19 | **Create domain.HealthScore typed enum**                           | LOW    | 15min  | Type Safety    |
+| 20 | **Unify enum patterns** across codebase                            | LOW    | 1h     | Quality        |
+| 21 | **Write SDK documentation** with examples                          | MED    | 2h     | Documentation  |
+| 22 | **BDD tests for `--only templ`, `--only go`, `--include-generic`** | MED    | 1h     | Testing        |
+| 23 | **Fuzz tests for templ parser**                                    | MED    | 2h     | Testing        |
+| 24 | **Watch mode** — re-run on file changes                            | HIGH   | 4h     | Feature        |
+| 25 | **Performance baseline benchmarks** — CI regression tracking       | MED    | 2h     | Performance    |
 
 ---
 

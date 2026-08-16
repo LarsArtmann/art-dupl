@@ -1,9 +1,9 @@
 # COMPREHENSIVE PROJECT STATUS REPORT
 
-**Project:** art-dupl - Go Code Duplication Detection Tool  
-**Date:** 2026-03-28 10:56:26  
-**Branch:** fork  
-**Status:** UP TO DATE with origin/fork  
+**Project:** art-dupl - Go Code Duplication Detection Tool\
+**Date:** 2026-03-28 10:56:26\
+**Branch:** fork\
+**Status:** UP TO DATE with origin/fork\
 **Working Tree:** CLEAN
 
 ---
@@ -181,38 +181,38 @@ The project is in excellent shape. No critical issues, no broken builds, no fail
 
 ### High Priority (Do First)
 
-| #   | Task                                                | Effort  | Impact |
-| --- | --------------------------------------------------- | ------- | ------ |
-| 1   | Commit go.mod version fix (1.26.1 → 1.26.0)         | 5 min   | HIGH   |
-| 2   | Update README with semantic detection default       | 30 min  | HIGH   |
-| 3   | Add SARIF format to `--all` flag workflow           | 1 hour  | MEDIUM |
-| 4   | Improve printer package test coverage (63.8% → 80%) | 2 hours | HIGH   |
-| 5   | Create GitHub Actions SARIF upload example          | 1 hour  | HIGH   |
+| # | Task                                                | Effort  | Impact |
+| - | --------------------------------------------------- | ------- | ------ |
+| 1 | Commit go.mod version fix (1.26.1 → 1.26.0)         | 5 min   | HIGH   |
+| 2 | Update README with semantic detection default       | 30 min  | HIGH   |
+| 3 | Add SARIF format to `--all` flag workflow           | 1 hour  | MEDIUM |
+| 4 | Improve printer package test coverage (63.8% → 80%) | 2 hours | HIGH   |
+| 5 | Create GitHub Actions SARIF upload example          | 1 hour  | HIGH   |
 
 ### Medium Priority (Do Soon)
 
-| #   | Task                                          | Effort  | Impact |
-| --- | --------------------------------------------- | ------- | ------ |
-| 6   | Implement TokenValue type with validation     | 3 hours | HIGH   |
-| 7   | Create ADR for SARIF implementation           | 1 hour  | MEDIUM |
-| 8   | Create ADR for semantic detection             | 1 hour  | MEDIUM |
-| 9   | Add package examples for godoc                | 2 hours | MEDIUM |
-| 10  | Improve CLI package coverage (62.5% → 80%)    | 2 hours | HIGH   |
-| 11  | Improve syntax package coverage (67.6% → 80%) | 2 hours | MEDIUM |
-| 12  | Implement proper CSV output with encoding/csv | 2 hours | LOW    |
+| #  | Task                                          | Effort  | Impact |
+| -- | --------------------------------------------- | ------- | ------ |
+| 6  | Implement TokenValue type with validation     | 3 hours | HIGH   |
+| 7  | Create ADR for SARIF implementation           | 1 hour  | MEDIUM |
+| 8  | Create ADR for semantic detection             | 1 hour  | MEDIUM |
+| 9  | Add package examples for godoc                | 2 hours | MEDIUM |
+| 10 | Improve CLI package coverage (62.5% → 80%)    | 2 hours | HIGH   |
+| 11 | Improve syntax package coverage (67.6% → 80%) | 2 hours | MEDIUM |
+| 12 | Implement proper CSV output with encoding/csv | 2 hours | LOW    |
 
 ### Low Priority (Do Eventually)
 
-| #   | Task                                     | Effort  | Impact |
-| --- | ---------------------------------------- | ------- | ------ |
-| 13  | Optimize memory layouts for SIMD         | 4 hours | MEDIUM |
-| 14  | Implement string interning               | 4 hours | MEDIUM |
-| 15  | Create performance baseline benchmarks   | 3 hours | HIGH   |
-| 16  | Create GitHub Actions workflow templates | 2 hours | MEDIUM |
-| 17  | Create pre-commit hook examples          | 1 hour  | MEDIUM |
-| 18  | Add TypeScript/JavaScript AST support    | 8 hours | HIGH   |
-| 19  | Add Python AST support                   | 8 hours | HIGH   |
-| 20  | Implement watch mode                     | 4 hours | MEDIUM |
+| #  | Task                                     | Effort  | Impact |
+| -- | ---------------------------------------- | ------- | ------ |
+| 13 | Optimize memory layouts for SIMD         | 4 hours | MEDIUM |
+| 14 | Implement string interning               | 4 hours | MEDIUM |
+| 15 | Create performance baseline benchmarks   | 3 hours | HIGH   |
+| 16 | Create GitHub Actions workflow templates | 2 hours | MEDIUM |
+| 17 | Create pre-commit hook examples          | 1 hour  | MEDIUM |
+| 18 | Add TypeScript/JavaScript AST support    | 8 hours | HIGH   |
+| 19 | Add Python AST support                   | 8 hours | HIGH   |
+| 20 | Implement watch mode                     | 4 hours | MEDIUM |
 
 ### Future Considerations
 
@@ -266,10 +266,10 @@ Currently, the `--all` flag generates multiple output formats (text, HTML, JSON,
 | hash                | 73.8%    | ✅ Good      |
 | cmd                 | 73.5%    | ✅ Good      |
 | bdd                 | 70.0%    | ✅ Good      |
-| syntax              | 67.6%    | ⚠️ Improve   |
-| cli                 | 62.5%    | ⚠️ Improve   |
-| printer             | 63.8%    | ⚠️ Improve   |
-| internal/filtertest | 58.3%    | ⚠️ Improve   |
+| syntax              | 67.6%    | ⚠️ Improve    |
+| cli                 | 62.5%    | ⚠️ Improve    |
+| printer             | 63.8%    | ⚠️ Improve    |
+| internal/filtertest | 58.3%    | ⚠️ Improve    |
 
 ---
 
@@ -308,5 +308,5 @@ bbdd60c feat(sarif): add SARIF output format for security tool integration
 
 ---
 
-**Report Generated:** 2026-03-28 10:56:26  
+**Report Generated:** 2026-03-28 10:56:26\
 **Generated By:** Crush AI Assistant

@@ -2073,7 +2073,6 @@ We regularly review our linting approach:
 - [Go Code Review Comments](https://github.com/golang/go/wiki/CodeReviewComments)
 
 ````
-
 **Success Criteria**:
 - All current nolint directives documented
 - Clear philosophy explained
@@ -2827,7 +2826,6 @@ func TestCLI_HTMLOutput(t *testing.T) {
    ```
 
    ```
-
    ```
 
 3. **Development Section**:
@@ -2873,7 +2871,6 @@ func TestCLI_HTMLOutput(t *testing.T) {
    See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
 
    ```
-
    ```
 
 4. **Linting Standards**:
@@ -3479,8 +3476,8 @@ This requires systematic testing, possibly with different linter configurations 
 | funlen           | 5       | 0      | -5      | ✅ Fixed     |
 | forbidigo        | 7       | 0      | -7      | ✅ Fixed     |
 | errorlint        | 1       | 0      | -1      | ✅ Fixed     |
-| makezero         | 0       | 1      | +1      | ⚠️ New       |
-| cyclop           | 16      | 20     | +4      | ⚠️ Increased |
+| makezero         | 0       | 1      | +1      | ⚠️ New        |
+| cyclop           | 16      | 20     | +4      | ⚠️ Increased  |
 | gosec            | 26      | 26     | 0       | 🔄 Unchanged |
 | ireturn          | 13      | 12     | -1      | ✅ Improved  |
 | staticcheck      | 20      | 20     | 0       | 🔄 Unchanged |

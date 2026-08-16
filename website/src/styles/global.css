@@ -77,7 +77,11 @@
 }
 
 body {
-  background-image: radial-gradient(circle at 1px 1px, var(--color-grid-dot) 1px, transparent 0);
+  background-image: radial-gradient(
+    circle at 1px 1px,
+    var(--color-grid-dot) 1px,
+    transparent 0
+  );
   background-size: 28px 28px;
 }
 

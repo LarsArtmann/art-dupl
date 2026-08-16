@@ -1,8 +1,8 @@
 # Brutal Analysis & Comprehensive Execution Plan
 
-**Date:** 2026-03-20 22:41 CET  
-**Branch:** fork  
-**Commit:** 76be8af  
+**Date:** 2026-03-20 22:41 CET\
+**Branch:** fork\
+**Commit:** 76be8af\
 **Author:** AI Agent Self-Reflection Session
 
 ---
@@ -222,7 +222,7 @@ Semantic detection is implemented but opt-in. It should be the default behavior.
 
 ## PART 3: COMPREHENSIVE 24-TASK EXECUTION PLAN
 
-**Estimated Total Time:** 24-40 hours  
+**Estimated Total Time:** 24-40 hours\
 **Priority Order:** High Impact / Low Effort first
 
 ### Priority Matrix
@@ -258,19 +258,19 @@ Semantic detection is implemented but opt-in. It should be the default behavior.
 
 #### **TASK 1: Fix Broken Generics Tests** (30min)
 
-**Problem:** Test strings have syntax errors  
-**Solution:** Fix newlines in test code strings  
+**Problem:** Test strings have syntax errors\
+**Solution:** Fix newlines in test code strings\
 **Commit:** `fix(tests): correct generics test code syntax`
 
 #### **TASK 2: Add Missing go-diff Dependency** (10min) ✅ DONE
 
-**Problem:** Tests fail due to missing dependency  
-**Solution:** Already fixed with `go get`  
+**Problem:** Tests fail due to missing dependency\
+**Solution:** Already fixed with `go get`\
 **Commit:** `fix(deps): add missing go-diff dependency for diff visualization`
 
 #### **TASK 3: Clean Up Ghost Systems** (90min)
 
-**Problem:** Unused code adds maintenance burden  
+**Problem:** Unused code adds maintenance burden\
 **Actions:**
 
 1. Verify SIMD package is used or remove
@@ -281,7 +281,7 @@ Semantic detection is implemented but opt-in. It should be the default behavior.
 
 #### **TASK 4: Consolidate Duplicate Code** (60min)
 
-**Problem:** DRY violations across codebase  
+**Problem:** DRY violations across codebase\
 **Actions:**
 
 1. Extract common `findNodeType` function
@@ -291,7 +291,7 @@ Semantic detection is implemented but opt-in. It should be the default behavior.
 
 #### **TASK 5: Fix Lint Errors** (120min)
 
-**Problem:** 39+ warnings pollute output  
+**Problem:** 39+ warnings pollute output\
 **Actions:**
 
 1. Fix depguard configuration
@@ -302,7 +302,7 @@ Semantic detection is implemented but opt-in. It should be the default behavior.
 
 #### **TASK 6: Remove Dead Code** (60min)
 
-**Problem:** Unused functions and types  
+**Problem:** Unused functions and types\
 **Actions:**
 
 1. Run `staticcheck` to find unused code
@@ -312,7 +312,7 @@ Semantic detection is implemented but opt-in. It should be the default behavior.
 
 #### **TASK 7: Simplify Configuration** (90min)
 
-**Problem:** Three overlapping config systems  
+**Problem:** Three overlapping config systems\
 **Actions:**
 
 1. Consolidate CLI and JSON config
@@ -322,7 +322,7 @@ Semantic detection is implemented but opt-in. It should be the default behavior.
 
 #### **TASK 8: Remove Status Report Hoarding** (30min)
 
-**Problem:** 150+ obsolete status files  
+**Problem:** 150+ obsolete status files\
 **Actions:**
 
 1. Archive files older than 30 days
@@ -332,7 +332,7 @@ Semantic detection is implemented but opt-in. It should be the default behavior.
 
 #### **TASK 9: Fix Split Brain Error Handling** (60min)
 
-**Problem:** Inconsistent error handling  
+**Problem:** Inconsistent error handling\
 **Actions:**
 
 1. Standardize on idiomatic Go errors
@@ -342,7 +342,7 @@ Semantic detection is implemented but opt-in. It should be the default behavior.
 
 #### **TASK 10: Optimize Test Speed** (60min)
 
-**Problem:** Tests take 15+ seconds  
+**Problem:** Tests take 15+ seconds\
 **Actions:**
 
 1. Parallelize test execution
@@ -352,7 +352,7 @@ Semantic detection is implemented but opt-in. It should be the default behavior.
 
 #### **TASK 11: Document Real Architecture** (45min)
 
-**Problem:** Architecture docs don't match reality  
+**Problem:** Architecture docs don't match reality\
 **Actions:**
 
 1. Create accurate architecture diagram
@@ -362,7 +362,7 @@ Semantic detection is implemented but opt-in. It should be the default behavior.
 
 #### **TASK 12: Remove Premature Optimization** (60min)
 
-**Problem:** Complexity without benefit  
+**Problem:** Complexity without benefit\
 **Actions:**
 
 1. Evaluate TokenValue necessity
@@ -372,7 +372,7 @@ Semantic detection is implemented but opt-in. It should be the default behavior.
 
 #### **TASK 13: Simplify Domain Types** (60min)
 
-**Problem:** Types wrap primitives without value  
+**Problem:** Types wrap primitives without value\
 **Actions:**
 
 1. Remove unnecessary type wrappers
@@ -382,7 +382,7 @@ Semantic detection is implemented but opt-in. It should be the default behavior.
 
 #### **TASK 14: Make Semantic Detection Default** (30min)
 
-**Problem:** Best feature is opt-in  
+**Problem:** Best feature is opt-in\
 **Actions:**
 
 1. Change default to semantic
@@ -392,7 +392,7 @@ Semantic detection is implemented but opt-in. It should be the default behavior.
 
 #### **TASK 15: Remove Unused Flags** (20min)
 
-**Problem:** --profile and --timeout unimplemented  
+**Problem:** --profile and --timeout unimplemented\
 **Actions:**
 
 1. Remove flag definitions
@@ -402,7 +402,7 @@ Semantic detection is implemented but opt-in. It should be the default behavior.
 
 #### **TASK 16: Consolidate Printers** (90min)
 
-**Problem:** adapter/ and printer/ overlap  
+**Problem:** adapter/ and printer/ overlap\
 **Actions:**
 
 1. Merge adapter into printer
@@ -412,7 +412,7 @@ Semantic detection is implemented but opt-in. It should be the default behavior.
 
 #### **TASK 17: Fix Node Type Safety** (60min)
 
-**Problem:** int32 types without safety  
+**Problem:** int32 types without safety\
 **Actions:**
 
 1. Add type-safe wrapper
@@ -422,7 +422,7 @@ Semantic detection is implemented but opt-in. It should be the default behavior.
 
 #### **TASK 18: Simplify Filtering** (60min)
 
-**Problem:** Filter logic scattered  
+**Problem:** Filter logic scattered\
 **Actions:**
 
 1. Consolidate in pkg/filter
@@ -432,7 +432,7 @@ Semantic detection is implemented but opt-in. It should be the default behavior.
 
 #### **TASK 19: Remove Cache Ghost** (45min)
 
-**Problem:** Cache package unused  
+**Problem:** Cache package unused\
 **Actions:**
 
 1. Verify no integration points
@@ -442,7 +442,7 @@ Semantic detection is implemented but opt-in. It should be the default behavior.
 
 #### **TASK 20: Clean Up lib/ Legacy** (45min)
 
-**Problem:** Legacy utility functions  
+**Problem:** Legacy utility functions\
 **Actions:**
 
 1. Identify used functions
@@ -452,7 +452,7 @@ Semantic detection is implemented but opt-in. It should be the default behavior.
 
 #### **TASK 21: Document Public API** (60min)
 
-**Problem:** Unclear what's public API  
+**Problem:** Unclear what's public API\
 **Actions:**
 
 1. Add package documentation
@@ -462,7 +462,7 @@ Semantic detection is implemented but opt-in. It should be the default behavior.
 
 #### **TASK 22: Add Integration Tests** (90min)
 
-**Problem:** Missing end-to-end coverage  
+**Problem:** Missing end-to-end coverage\
 **Actions:**
 
 1. Test full CLI workflow
@@ -472,7 +472,7 @@ Semantic detection is implemented but opt-in. It should be the default behavior.
 
 #### **TASK 23: Performance Profiling** (90min)
 
-**Problem:** No performance baselines  
+**Problem:** No performance baselines\
 **Actions:**
 
 1. Create benchmark suite
@@ -482,7 +482,7 @@ Semantic detection is implemented but opt-in. It should be the default behavior.
 
 #### **TASK 24: Create Contribution Guide** (30min)
 
-**Problem:** No contributor documentation  
+**Problem:** No contributor documentation\
 **Actions:**
 
 1. Write CONTRIBUTING.md
@@ -844,32 +844,32 @@ But I don't have data on:
 
 ### ADR-001: Multi-Layer Architecture
 
-**Decision:** 10+ layers of abstraction  
-**Problem:** Over-engineered  
+**Decision:** 10+ layers of abstraction\
+**Problem:** Over-engineered\
 **Alternative:** Flatten to 3-4 layers
 
 ### ADR-002: Domain Types
 
-**Decision:** Wrap all primitives  
-**Problem:** No actual validation  
+**Decision:** Wrap all primitives\
+**Problem:** No actual validation\
 **Alternative:** Use primitives with validation functions
 
 ### ADR-003: Multiple Detection Methods
 
-**Decision:** Support hash + suffix tree  
-**Problem:** Hash method has critical flaws  
+**Decision:** Support hash + suffix tree\
+**Problem:** Hash method has critical flaws\
 **Alternative:** Remove hash, improve suffix tree
 
 ### ADR-004: Semantic as Opt-In
 
-**Decision:** Default to structural matching  
-**Problem:** Produces worse results  
+**Decision:** Default to structural matching\
+**Problem:** Produces worse results\
 **Alternative:** Make semantic default
 
 ### ADR-005: Configuration Files
 
-**Decision:** Support JSON configs  
-**Problem:** Overlaps with CLI flags  
+**Decision:** Support JSON configs\
+**Problem:** Overlaps with CLI flags\
 **Alternative:** Remove JSON, use CLI only
 
 ---

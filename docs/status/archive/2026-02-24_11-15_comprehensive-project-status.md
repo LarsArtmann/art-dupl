@@ -1,7 +1,7 @@
 # Comprehensive Project Status Report - art-dupl
 
-**Date:** 2026-02-24 11:15  
-**Branch:** fork  
+**Date:** 2026-02-24 11:15\
+**Branch:** fork\
 **Session Type:** Documentation + Consolidation + Git Operations
 
 ---
@@ -107,33 +107,33 @@
 
 ### High Priority
 
-| #   | Task                                            | Why Important                                | Effort  |
-| --- | ----------------------------------------------- | -------------------------------------------- | ------- |
-| 1   | Add test for `--semantic --structural` conflict | No automated test exists for this validation | 10 min  |
-| 2   | Add test for stats command semantic flags       | Stats semantic detection not tested          | 15 min  |
-| 3   | Refactor files >300 lines                       | AGENTS.md mandates immediate split           | 2-3 hrs |
-| 4   | Fix `noctx` linting issues (8)                  | Context propagation best practice            | 30 min  |
-| 5   | Fix `errcheck` linting issues (3)               | Error handling completeness                  | 20 min  |
+| # | Task                                            | Why Important                                | Effort  |
+| - | ----------------------------------------------- | -------------------------------------------- | ------- |
+| 1 | Add test for `--semantic --structural` conflict | No automated test exists for this validation | 10 min  |
+| 2 | Add test for stats command semantic flags       | Stats semantic detection not tested          | 15 min  |
+| 3 | Refactor files >300 lines                       | AGENTS.md mandates immediate split           | 2-3 hrs |
+| 4 | Fix `noctx` linting issues (8)                  | Context propagation best practice            | 30 min  |
+| 5 | Fix `errcheck` linting issues (3)               | Error handling completeness                  | 20 min  |
 
 ### Medium Priority
 
-| #   | Task                                          | Why Important                      | Effort |
-| --- | --------------------------------------------- | ---------------------------------- | ------ |
-| 6   | Extract common flag setup between root/stats  | DRY principle, 60 lines duplicated | 30 min |
-| 7   | Convert `SemanticHashEnabled` global to DI    | Better testability, architecture   | 1 hr   |
-| 8   | Add benchmark for semantic detection          | Performance regression detection   | 30 min |
-| 9   | Profile semantic detection overhead           | Understand performance impact      | 30 min |
-| 10  | Add integration test for incremental analysis | Feature validation                 | 45 min |
+| #  | Task                                          | Why Important                      | Effort |
+| -- | --------------------------------------------- | ---------------------------------- | ------ |
+| 6  | Extract common flag setup between root/stats  | DRY principle, 60 lines duplicated | 30 min |
+| 7  | Convert `SemanticHashEnabled` global to DI    | Better testability, architecture   | 1 hr   |
+| 8  | Add benchmark for semantic detection          | Performance regression detection   | 30 min |
+| 9  | Profile semantic detection overhead           | Understand performance impact      | 30 min |
+| 10 | Add integration test for incremental analysis | Feature validation                 | 45 min |
 
 ### Low Priority
 
-| #   | Task                                           | Why Important              | Effort |
-| --- | ---------------------------------------------- | -------------------------- | ------ |
-| 11  | Remove `--structural` flag entirely            | Post-deprecation cleanup   | 15 min |
-| 12  | Update FEATURES.md semantic status             | Documentation completeness | 10 min |
-| 13  | Add semantic detection examples in `examples/` | User guidance              | 30 min |
-| 14  | Add shell completion for new flags             | UX improvement             | 10 min |
-| 15  | Review and address 56 TODO comments            | Technical debt             | 2 hrs  |
+| #  | Task                                           | Why Important              | Effort |
+| -- | ---------------------------------------------- | -------------------------- | ------ |
+| 11 | Remove `--structural` flag entirely            | Post-deprecation cleanup   | 15 min |
+| 12 | Update FEATURES.md semantic status             | Documentation completeness | 10 min |
+| 13 | Add semantic detection examples in `examples/` | User guidance              | 30 min |
+| 14 | Add shell completion for new flags             | UX improvement             | 10 min |
+| 15 | Review and address 56 TODO comments            | Technical debt             | 2 hrs  |
 
 ---
 
@@ -202,33 +202,33 @@
 
 ## F) TOP 25 THINGS TO GET DONE NEXT
 
-| Priority    | #   | Action                                               | Effort | Impact    | Category      |
-| ----------- | --- | ---------------------------------------------------- | ------ | --------- | ------------- |
-| 🔴 Critical | 1   | **Commit and push current changes**                  | 5 min  | 🔴 High   | Git Ops       |
-| 🔴 Critical | 2   | **Add test for conflicting flags validation**        | 10 min | 🔴 High   | Testing       |
-| 🔴 Critical | 3   | **Split git/change_detector.go (361 lines)**         | 30 min | 🔴 High   | Refactoring   |
-| 🔴 Critical | 4   | **Split bdd/semantic_detection_test.go (348 lines)** | 20 min | 🔴 High   | Refactoring   |
-| 🔴 Critical | 5   | **Fix `noctx` linting issues**                       | 30 min | 🟡 Medium | Quality       |
-| 🟡 High     | 6   | **Extract common flag setup function**               | 30 min | 🟡 Medium | Architecture  |
-| 🟡 High     | 7   | **Add stats command semantic flag tests**            | 15 min | 🟡 Medium | Testing       |
-| 🟡 High     | 8   | **Convert SemanticHashEnabled to DI**                | 1 hr   | 🟡 Medium | Architecture  |
-| 🟡 High     | 9   | **Fix `errcheck` linting issues**                    | 20 min | 🟡 Medium | Quality       |
-| 🟡 High     | 10  | **Split domain/coverage_test.go (1278 lines)**       | 1 hr   | 🟡 Medium | Refactoring   |
-| 🟡 High     | 11  | **Split pkg/artdupl/detector_test.go (1252 lines)**  | 1 hr   | 🟡 Medium | Refactoring   |
-| 🟡 High     | 12  | **Add benchmark for semantic detection**             | 30 min | 🟡 Medium | Performance   |
-| 🟢 Medium   | 13  | **Profile semantic detection overhead**              | 30 min | 🟢 Low    | Performance   |
-| 🟢 Medium   | 14  | **Audit and prioritize 56 TODO comments**            | 1 hr   | 🟢 Low    | Maintenance   |
-| 🟢 Medium   | 15  | **Fix `cyclop` issue in job/parse.go**               | 30 min | 🟢 Low    | Quality       |
-| 🟢 Medium   | 16  | **Fix `gocognit` issue in cmd/run_flags.go**         | 20 min | 🟢 Low    | Quality       |
-| 🟢 Medium   | 17  | **Address global variable linting issue**            | 30 min | 🟢 Low    | Architecture  |
-| 🟢 Medium   | 18  | **Update FEATURES.md semantic status**               | 10 min | 🟢 Low    | Documentation |
-| 🟢 Medium   | 19  | **Add semantic detection examples**                  | 30 min | 🟢 Low    | Documentation |
-| 🟢 Medium   | 20  | **Add shell completion for new flags**               | 10 min | 🟢 Low    | UX            |
-| 🟢 Medium   | 21  | **Review 19 FIXME/XXX/HACK comments**                | 45 min | 🟢 Low    | Maintenance   |
-| 🟢 Medium   | 22  | **Split cmd/cmd_test.go (1070 lines)**               | 45 min | 🟢 Low    | Refactoring   |
-| 🟢 Medium   | 23  | **Plan --structural flag removal timeline**          | 15 min | 🟢 Low    | Planning      |
-| 🟢 Medium   | 24  | **Add semantic detection to CI workflow**            | 20 min | 🟢 Low    | CI/CD         |
-| 🟢 Medium   | 25  | **Document semantic algorithm in docs/**             | 30 min | 🟢 Low    | Documentation |
+| Priority    | #  | Action                                               | Effort | Impact    | Category      |
+| ----------- | -- | ---------------------------------------------------- | ------ | --------- | ------------- |
+| 🔴 Critical | 1  | **Commit and push current changes**                  | 5 min  | 🔴 High   | Git Ops       |
+| 🔴 Critical | 2  | **Add test for conflicting flags validation**        | 10 min | 🔴 High   | Testing       |
+| 🔴 Critical | 3  | **Split git/change_detector.go (361 lines)**         | 30 min | 🔴 High   | Refactoring   |
+| 🔴 Critical | 4  | **Split bdd/semantic_detection_test.go (348 lines)** | 20 min | 🔴 High   | Refactoring   |
+| 🔴 Critical | 5  | **Fix `noctx` linting issues**                       | 30 min | 🟡 Medium | Quality       |
+| 🟡 High     | 6  | **Extract common flag setup function**               | 30 min | 🟡 Medium | Architecture  |
+| 🟡 High     | 7  | **Add stats command semantic flag tests**            | 15 min | 🟡 Medium | Testing       |
+| 🟡 High     | 8  | **Convert SemanticHashEnabled to DI**                | 1 hr   | 🟡 Medium | Architecture  |
+| 🟡 High     | 9  | **Fix `errcheck` linting issues**                    | 20 min | 🟡 Medium | Quality       |
+| 🟡 High     | 10 | **Split domain/coverage_test.go (1278 lines)**       | 1 hr   | 🟡 Medium | Refactoring   |
+| 🟡 High     | 11 | **Split pkg/artdupl/detector_test.go (1252 lines)**  | 1 hr   | 🟡 Medium | Refactoring   |
+| 🟡 High     | 12 | **Add benchmark for semantic detection**             | 30 min | 🟡 Medium | Performance   |
+| 🟢 Medium   | 13 | **Profile semantic detection overhead**              | 30 min | 🟢 Low    | Performance   |
+| 🟢 Medium   | 14 | **Audit and prioritize 56 TODO comments**            | 1 hr   | 🟢 Low    | Maintenance   |
+| 🟢 Medium   | 15 | **Fix `cyclop` issue in job/parse.go**               | 30 min | 🟢 Low    | Quality       |
+| 🟢 Medium   | 16 | **Fix `gocognit` issue in cmd/run_flags.go**         | 20 min | 🟢 Low    | Quality       |
+| 🟢 Medium   | 17 | **Address global variable linting issue**            | 30 min | 🟢 Low    | Architecture  |
+| 🟢 Medium   | 18 | **Update FEATURES.md semantic status**               | 10 min | 🟢 Low    | Documentation |
+| 🟢 Medium   | 19 | **Add semantic detection examples**                  | 30 min | 🟢 Low    | Documentation |
+| 🟢 Medium   | 20 | **Add shell completion for new flags**               | 10 min | 🟢 Low    | UX            |
+| 🟢 Medium   | 21 | **Review 19 FIXME/XXX/HACK comments**                | 45 min | 🟢 Low    | Maintenance   |
+| 🟢 Medium   | 22 | **Split cmd/cmd_test.go (1070 lines)**               | 45 min | 🟢 Low    | Refactoring   |
+| 🟢 Medium   | 23 | **Plan --structural flag removal timeline**          | 15 min | 🟢 Low    | Planning      |
+| 🟢 Medium   | 24 | **Add semantic detection to CI workflow**            | 20 min | 🟢 Low    | CI/CD         |
+| 🟢 Medium   | 25 | **Document semantic algorithm in docs/**             | 30 min | 🟢 Low    | Documentation |
 
 ---
 
@@ -371,6 +371,6 @@ git push origin fork
 
 ---
 
-_Generated: 2026-02-24 11:15_  
-_Status: Ready for commit and push_  
+_Generated: 2026-02-24 11:15_\
+_Status: Ready for commit and push_\
 _Next Actions: See Top 25 list above_

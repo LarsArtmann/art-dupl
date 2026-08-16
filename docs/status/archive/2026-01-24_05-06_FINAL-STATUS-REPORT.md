@@ -2204,20 +2204,20 @@ This refactoring session is **COMPLETE** when:
 
 |                               | Task   | Estimated | Actual      | Status |
 | ----------------------------- | ------ | --------- | ----------- | ------ |
-| Fix original := error         | 5 min  | 5 min     | ✅ Complete |
-| Remove dead code              | 5 min  | 5 min     | ✅ Complete |
-| Add testutil helpers          | 30 min | 25 min    | ✅ Complete |
-| Refactor File Targeting       | 20 min | 15 min    | ✅ Complete |
-| Refactor Integration          | 15 min | 15 min    | ✅ Complete |
-| Refactor detection_methods    | 25 min | 60 min    | ✅ Complete |
-| Comprehensive reports         | 30 min | 30 min    | ✅ Complete |
-| Complete filter_features      | 60 min | -         | ⏳ Pending  |
-| Verify all tests              | 10 min | -         | ⏳ Pending  |
-| Implement type-safe flags     | 60 min | -         | ⏳ Pending  |
-| Implement type-safe detection | 45 min | -         | ⏳ Pending  |
-| Implement type-safe output    | 90 min | -         | ⏳ Pending  |
-| Extract assertion helpers     | 60 min | -         | ⏳ Pending  |
-| Create testutil docs          | 30 min | -         | ⏳ Pending  |
+| Fix original := error         | 5 min  | 5 min     | ✅ Complete |        |
+| Remove dead code              | 5 min  | 5 min     | ✅ Complete |        |
+| Add testutil helpers          | 30 min | 25 min    | ✅ Complete |        |
+| Refactor File Targeting       | 20 min | 15 min    | ✅ Complete |        |
+| Refactor Integration          | 15 min | 15 min    | ✅ Complete |        |
+| Refactor detection_methods    | 25 min | 60 min    | ✅ Complete |        |
+| Comprehensive reports         | 30 min | 30 min    | ✅ Complete |        |
+| Complete filter_features      | 60 min | -         | ⏳ Pending  |        |
+| Verify all tests              | 10 min | -         | ⏳ Pending  |        |
+| Implement type-safe flags     | 60 min | -         | ⏳ Pending  |        |
+| Implement type-safe detection | 45 min | -         | ⏳ Pending  |        |
+| Implement type-safe output    | 90 min | -         | ⏳ Pending  |        |
+| Extract assertion helpers     | 60 min | -         | ⏳ Pending  |        |
+| Create testutil docs          | 30 min | -         | ⏳ Pending  |        |
 
 **Total High-Priority Time:** 155 min (actual) vs 190 min (estimated)
 **Productive Time:** 155 min

@@ -1,8 +1,8 @@
 # art-dupl BDD Test Suite - Implementation Status Report
 
-**Date:** 2026-01-19 07:04 CET  
-**Project:** art-dupl  
-**Focus:** Comprehensive BDD Test Suite Implementation  
+**Date:** 2026-01-19 07:04 CET\
+**Project:** art-dupl\
+**Focus:** Comprehensive BDD Test Suite Implementation\
 **Status:** TESTS IMPLEMENTED, AWAITING VERIFICATION
 
 ---
@@ -610,6 +610,6 @@ This MUST be answered before proceeding with test fixes.
 
 ---
 
-**Report Generated:** 2026-01-19 07:04 CET  
-**Next Review:** After test verification and fixes  
+**Report Generated:** 2026-01-19 07:04 CET\
+**Next Review:** After test verification and fixes\
 **Contact:** For questions, ask about test assertion accuracy

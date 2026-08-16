@@ -69,27 +69,27 @@ This is a correctness bug, not an improvement. It affects every single user runn
 
 ## Comprehensive Plan — Medium Granularity (30min-100min tasks)
 
-| #   | Task                                                            | Impact   | Effort | Files                                                                      |
-| --- | --------------------------------------------------------------- | -------- | ------ | -------------------------------------------------------------------------- |
-| 1   | **Fix classification: decode base type before category switch** | CRITICAL | 30min  | `printer/clone_processor.go`, `printer/clone_classify.go`                  |
-| 2   | **Add baseTypeOf helper to actionability.go**                   | HIGH     | 30min  | `printer/actionability.go`                                                 |
-| 3   | **Add unit tests for classification in semantic mode**          | HIGH     | 45min  | `printer/clone_classify_test.go`                                           |
-| 4   | **Encode BinaryExpr operator into Type**                        | HIGH     | 45min  | `syntax/golang/transform.go`, `syntax/golang/identifier_hash.go`           |
-| 5   | **Encode UnaryExpr/IncDecStmt/AssignStmt operators**            | HIGH     | 45min  | `syntax/golang/transform.go`                                               |
-| 6   | **Add operator encoding unit tests**                            | HIGH     | 60min  | `syntax/golang/identifier_hash_test.go`, `syntax/golang/transform_test.go` |
-| 7   | **Fix hashSeq: use 4 bytes per node**                           | HIGH     | 30min  | `syntax/hash_simd.go`                                                      |
-| 8   | **Add hashSeq unit tests (currently zero)**                     | MEDIUM   | 45min  | `syntax/hash_test.go` (new)                                                |
-| 9   | **Add CategoryIdiom to domain types**                           | MEDIUM   | 15min  | `domain/processed_clone.go`                                                |
-| 10  | **Add idiom detection to clone_classify.go**                    | MEDIUM   | 30min  | `printer/clone_classify.go`                                                |
-| 11  | **Wire idiom into HTML display + orderedCategories**            | MEDIUM   | 15min  | `printer/html_summary.go`, `domain/processed_clone.go`                     |
-| 12  | **Update nodeTypeToCategory to use decoded type**               | CRITICAL | 15min  | `printer/clone_classify.go`                                                |
-| 13  | **Add idiom suggestion constant**                               | LOW      | 10min  | `printer/clone_classify.go`                                                |
-| 14  | **BDD: semantic operator detection test**                       | MEDIUM   | 45min  | `bdd/semantic_detection_test.go`                                           |
-| 15  | **BDD: idiom classification test**                              | MEDIUM   | 30min  | `bdd/` (new or existing)                                                   |
-| 16  | **Update hashSeq benchmarks for 4-byte encoding**               | LOW      | 15min  | `syntax/hash_bench_test.go`                                                |
-| 17  | **Verify all tests pass, fix nix vendorHash**                   | HIGH     | 30min  | `flake.nix`, all test files                                                |
-| 18  | **Commit with detailed messages + push**                        | —        | 15min  | git                                                                        |
-| 19  | **Update AGENTS.md with new patterns**                          | LOW      | 10min  | `AGENTS.md`                                                                |
+| #  | Task                                                            | Impact   | Effort | Files                                                                      |
+| -- | --------------------------------------------------------------- | -------- | ------ | -------------------------------------------------------------------------- |
+| 1  | **Fix classification: decode base type before category switch** | CRITICAL | 30min  | `printer/clone_processor.go`, `printer/clone_classify.go`                  |
+| 2  | **Add baseTypeOf helper to actionability.go**                   | HIGH     | 30min  | `printer/actionability.go`                                                 |
+| 3  | **Add unit tests for classification in semantic mode**          | HIGH     | 45min  | `printer/clone_classify_test.go`                                           |
+| 4  | **Encode BinaryExpr operator into Type**                        | HIGH     | 45min  | `syntax/golang/transform.go`, `syntax/golang/identifier_hash.go`           |
+| 5  | **Encode UnaryExpr/IncDecStmt/AssignStmt operators**            | HIGH     | 45min  | `syntax/golang/transform.go`                                               |
+| 6  | **Add operator encoding unit tests**                            | HIGH     | 60min  | `syntax/golang/identifier_hash_test.go`, `syntax/golang/transform_test.go` |
+| 7  | **Fix hashSeq: use 4 bytes per node**                           | HIGH     | 30min  | `syntax/hash_simd.go`                                                      |
+| 8  | **Add hashSeq unit tests (currently zero)**                     | MEDIUM   | 45min  | `syntax/hash_test.go` (new)                                                |
+| 9  | **Add CategoryIdiom to domain types**                           | MEDIUM   | 15min  | `domain/processed_clone.go`                                                |
+| 10 | **Add idiom detection to clone_classify.go**                    | MEDIUM   | 30min  | `printer/clone_classify.go`                                                |
+| 11 | **Wire idiom into HTML display + orderedCategories**            | MEDIUM   | 15min  | `printer/html_summary.go`, `domain/processed_clone.go`                     |
+| 12 | **Update nodeTypeToCategory to use decoded type**               | CRITICAL | 15min  | `printer/clone_classify.go`                                                |
+| 13 | **Add idiom suggestion constant**                               | LOW      | 10min  | `printer/clone_classify.go`                                                |
+| 14 | **BDD: semantic operator detection test**                       | MEDIUM   | 45min  | `bdd/semantic_detection_test.go`                                           |
+| 15 | **BDD: idiom classification test**                              | MEDIUM   | 30min  | `bdd/` (new or existing)                                                   |
+| 16 | **Update hashSeq benchmarks for 4-byte encoding**               | LOW      | 15min  | `syntax/hash_bench_test.go`                                                |
+| 17 | **Verify all tests pass, fix nix vendorHash**                   | HIGH     | 30min  | `flake.nix`, all test files                                                |
+| 18 | **Commit with detailed messages + push**                        | —        | 15min  | git                                                                        |
+| 19 | **Update AGENTS.md with new patterns**                          | LOW      | 10min  | `AGENTS.md`                                                                |
 
 ---
 

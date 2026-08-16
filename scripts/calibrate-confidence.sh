@@ -10,8 +10,8 @@
 set -euo pipefail
 
 if [ $# -eq 0 ]; then
-    echo "Usage: $0 <project-dir> [<project-dir> ...]" >&2
-    exit 1
+	echo "Usage: $0 <project-dir> [<project-dir> ...]" >&2
+	exit 1
 fi
 
 BINARY="${ARTDUPL_BINARY:-$(go build -o /tmp/art-dupl-calibrate ./cmd/art-dupl/ && echo /tmp/art-dupl-calibrate)}"
@@ -27,36 +27,36 @@ echo "# Threshold: 5, Mode: semantic"
 echo ""
 
 for dir in "$@"; do
-    if [ ! -d "$dir" ]; then
-        echo "WARN: $dir not found, skipping" >&2
-        continue
-    fi
+	if [ ! -d "$dir" ]; then
+		echo "WARN: $dir not found, skipping" >&2
+		continue
+	fi
 
-    total_projects=$((total_projects + 1))
-    proj_name=$(basename "$dir")
+	total_projects=$((total_projects + 1))
+	proj_name=$(basename "$dir")
 
-    output=$("$BINARY" --threshold 5 --semantic --explain --quiet "$dir" 2>/dev/null || true)
+	output=$("$BINARY" --threshold 5 --semantic --explain --quiet "$dir" 2>/dev/null || true)
 
-    clone_count=$(echo "$output" | grep -c "^  explain:" || true)
-    actionable_count=$(echo "$output" | grep -c "actionable" || true)
-    non_actionable_count=$(echo "$output" | grep -c "non-actionable" || true)
+	clone_count=$(echo "$output" | grep -c "^  explain:" || true)
+	actionable_count=$(echo "$output" | grep -c "actionable" || true)
+	non_actionable_count=$(echo "$output" | grep -c "non-actionable" || true)
 
-    total_clones=$((total_clones + clone_count))
-    total_actionable=$((total_actionable + actionable_count))
-    total_non_actionable=$((total_non_actionable + non_actionable_count))
+	total_clones=$((total_clones + clone_count))
+	total_actionable=$((total_actionable + actionable_count))
+	total_non_actionable=$((total_non_actionable + non_actionable_count))
 
-    echo "## $proj_name"
-    echo "- Clone groups: $clone_count"
-    echo "- Actionable: $actionable_count"
-    echo "- Non-actionable: $non_actionable_count"
+	echo "## $proj_name"
+	echo "- Clone groups: $clone_count"
+	echo "- Actionable: $actionable_count"
+	echo "- Non-actionable: $non_actionable_count"
 
-    if [ "$clone_count" -gt 0 ]; then
-        echo "$output" | grep "^  explain:" | while IFS= read -r line; do
-            echo "  - $line"
-        done
-    fi
+	if [ "$clone_count" -gt 0 ]; then
+		echo "$output" | grep "^  explain:" | while IFS= read -r line; do
+			echo "  - $line"
+		done
+	fi
 
-    echo ""
+	echo ""
 done
 
 echo "---"

@@ -1,8 +1,8 @@
 # Execution Progress Report - art-dupl Project
 
-**Date:** 2026-02-25 04:01  
-**Branch:** fork  
-**Commits Ahead:** 4 (all pushed)  
+**Date:** 2026-02-25 04:01\
+**Branch:** fork\
+**Commits Ahead:** 4 (all pushed)\
 **Session:** Systematic TODO List Execution
 
 ---
@@ -32,7 +32,7 @@
 | `git/helpers.go`         | 51    | IsGitRepo, FindGitRoot, deduplicateChanges |
 | `git/change_detector.go` | 285   | Core ChangeDetector struct                 |
 
-**Commit:** 821027b  
+**Commit:** 821027b\
 **Status:** Merged, tests pass
 
 ### 2. BDD Test Refactoring (100% Complete)
@@ -53,7 +53,7 @@
 5. handlerTestCode1/2 - Ginkgo patterns
 6. enumPatternCode1/2 - Enum method patterns
 
-**Commit:** 3d432be  
+**Commit:** 3d432be\
 **Status:** Merged, tests pass
 
 ### 3. Cache Bug Fix (100% Complete)
@@ -70,7 +70,7 @@
 - Prevents "file does not exist" errors on subsequent Set() calls
 - Proper error handling for directory recreation
 
-**Commit:** 5009110  
+**Commit:** 5009110\
 **Status:** Merged, tests pass
 
 ---
@@ -100,23 +100,23 @@
 
 ### High Priority (Remaining)
 
-| #   | Task                                      | Original Status | Blocker                |
-| --- | ----------------------------------------- | --------------- | ---------------------- |
-| 1   | Split remaining 29 files >300 lines       | Not started     | Time constraint        |
-| 2   | Fix cyclop issue in job/parse.go          | Not started     | Needs refactoring      |
-| 3   | Address depguard linting issues           | Not started     | Config or code changes |
-| 4   | Add --semantic --structural conflict test | Not started     | -                      |
-| 5   | Extract common flag setup                 | Not started     | -                      |
-| 6   | Convert SemanticHashEnabled to DI         | Not started     | -                      |
+| # | Task                                      | Original Status | Blocker                |
+| - | ----------------------------------------- | --------------- | ---------------------- |
+| 1 | Split remaining 29 files >300 lines       | Not started     | Time constraint        |
+| 2 | Fix cyclop issue in job/parse.go          | Not started     | Needs refactoring      |
+| 3 | Address depguard linting issues           | Not started     | Config or code changes |
+| 4 | Add --semantic --structural conflict test | Not started     | -                      |
+| 5 | Extract common flag setup                 | Not started     | -                      |
+| 6 | Convert SemanticHashEnabled to DI         | Not started     | -                      |
 
 ### Medium Priority
 
-| #   | Task                                 | Status      |
-| --- | ------------------------------------ | ----------- |
-| 7   | Address 56 TODO comments             | Not started |
-| 8   | Address 19 FIXME/XXX/HACK comments   | Not started |
-| 9   | Add benchmark for semantic detection | Not started |
-| 10  | Update AGENTS.md with new patterns   | Not started |
+| #  | Task                                 | Status      |
+| -- | ------------------------------------ | ----------- |
+| 7  | Address 56 TODO comments             | Not started |
+| 8  | Address 19 FIXME/XXX/HACK comments   | Not started |
+| 9  | Add benchmark for semantic detection | Not started |
+| 10 | Update AGENTS.md with new patterns   | Not started |
 
 ---
 
@@ -182,48 +182,48 @@
 
 ### 🔴 Critical - Today
 
-| #   | Task                                    | Effort | Impact    | Status  |
-| --- | --------------------------------------- | ------ | --------- | ------- |
-| 1   | Fix depguard linting config             | 15 min | 🔴 High   | NEW     |
-| 2   | Fix cyclop in job/parse.go              | 30 min | 🟡 Medium | PENDING |
-| 3   | Split syntax/templ/templ.go (622 lines) | 1 hr   | 🔴 High   | PENDING |
-| 4   | Push current commits                    | 1 min  | 🔴 High   | ✅ DONE |
+| # | Task                                    | Effort | Impact    | Status  |
+| - | --------------------------------------- | ------ | --------- | ------- |
+| 1 | Fix depguard linting config             | 15 min | 🔴 High   | NEW     |
+| 2 | Fix cyclop in job/parse.go              | 30 min | 🟡 Medium | PENDING |
+| 3 | Split syntax/templ/templ.go (622 lines) | 1 hr   | 🔴 High   | PENDING |
+| 4 | Push current commits                    | 1 min  | 🔴 High   | ✅ DONE |
 
 ### 🟡 High Priority - This Week
 
-| #   | Task                                            | Effort | Impact    | Status  |
-| --- | ----------------------------------------------- | ------ | --------- | ------- |
-| 5   | Split cmd/cmd_test.go (1070 lines)              | 1 hr   | 🟡 Medium | PENDING |
-| 6   | Split pkg/artdupl/detector_test.go (1252 lines) | 1 hr   | 🟡 Medium | PENDING |
-| 7   | Add --semantic --structural conflict test       | 15 min | 🟡 Medium | PENDING |
-| 8   | Extract common flag setup                       | 30 min | 🟡 Medium | PENDING |
-| 9   | Convert SemanticHashEnabled to DI               | 1 hr   | 🟡 Medium | PENDING |
-| 10  | Fix remaining linting issues                    | 1 hr   | 🟡 Medium | PENDING |
+| #  | Task                                            | Effort | Impact    | Status  |
+| -- | ----------------------------------------------- | ------ | --------- | ------- |
+| 5  | Split cmd/cmd_test.go (1070 lines)              | 1 hr   | 🟡 Medium | PENDING |
+| 6  | Split pkg/artdupl/detector_test.go (1252 lines) | 1 hr   | 🟡 Medium | PENDING |
+| 7  | Add --semantic --structural conflict test       | 15 min | 🟡 Medium | PENDING |
+| 8  | Extract common flag setup                       | 30 min | 🟡 Medium | PENDING |
+| 9  | Convert SemanticHashEnabled to DI               | 1 hr   | 🟡 Medium | PENDING |
+| 10 | Fix remaining linting issues                    | 1 hr   | 🟡 Medium | PENDING |
 
 ### 🟢 Medium Priority - Next 2 Weeks
 
-| #   | Task                                        | Effort | Impact    | Status  |
-| --- | ------------------------------------------- | ------ | --------- | ------- |
-| 11  | Split remaining 26 large files              | 4 hrs  | 🟢 Low    | PENDING |
-| 12  | Address 56 TODO comments                    | 2 hrs  | 🟢 Low    | PENDING |
-| 13  | Address 19 FIXME/XXX/HACK                   | 1 hr   | 🟢 Low    | PENDING |
-| 14  | Add semantic detection benchmarks           | 30 min | 🟢 Low    | PENDING |
-| 15  | Update AGENTS.md patterns                   | 30 min | 🟢 Low    | PENDING |
-| 16  | Add tests for job/buildtree.go              | 1 hr   | 🟡 Medium | PENDING |
-| 17  | Add tests for detection/multidetector.go    | 1 hr   | 🟡 Medium | PENDING |
-| 18  | Complete worker pool wiring                 | 2 hrs  | 🟡 Medium | PENDING |
-| 19  | Remove --structural flag (post-deprecation) | 15 min | 🟢 Low    | PENDING |
-| 20  | Add Architecture Decision Records           | 4 hrs  | 🟢 Low    | PENDING |
+| #  | Task                                        | Effort | Impact    | Status  |
+| -- | ------------------------------------------- | ------ | --------- | ------- |
+| 11 | Split remaining 26 large files              | 4 hrs  | 🟢 Low    | PENDING |
+| 12 | Address 56 TODO comments                    | 2 hrs  | 🟢 Low    | PENDING |
+| 13 | Address 19 FIXME/XXX/HACK                   | 1 hr   | 🟢 Low    | PENDING |
+| 14 | Add semantic detection benchmarks           | 30 min | 🟢 Low    | PENDING |
+| 15 | Update AGENTS.md patterns                   | 30 min | 🟢 Low    | PENDING |
+| 16 | Add tests for job/buildtree.go              | 1 hr   | 🟡 Medium | PENDING |
+| 17 | Add tests for detection/multidetector.go    | 1 hr   | 🟡 Medium | PENDING |
+| 18 | Complete worker pool wiring                 | 2 hrs  | 🟡 Medium | PENDING |
+| 19 | Remove --structural flag (post-deprecation) | 15 min | 🟢 Low    | PENDING |
+| 20 | Add Architecture Decision Records           | 4 hrs  | 🟢 Low    | PENDING |
 
 ### 🟢 Low Priority - Next Month
 
-| #   | Task                          | Effort | Impact  | Status  |
-| --- | ----------------------------- | ------ | ------- | ------- |
-| 21  | HTML template enhancements    | 2 hrs  | 🟢 Low  | PENDING |
-| 22  | Advanced sorting options      | 1 hr   | 🟢 Low  | PENDING |
-| 23  | Configuration migration tools | 4 hrs  | 🟢 Low  | PENDING |
-| 24  | Plugin architecture design    | 1 week | 🔴 High | PENDING |
-| 25  | Web interface prototype       | 1 week | 🔴 High | PENDING |
+| #  | Task                          | Effort | Impact  | Status  |
+| -- | ----------------------------- | ------ | ------- | ------- |
+| 21 | HTML template enhancements    | 2 hrs  | 🟢 Low  | PENDING |
+| 22 | Advanced sorting options      | 1 hr   | 🟢 Low  | PENDING |
+| 23 | Configuration migration tools | 4 hrs  | 🟢 Low  | PENDING |
+| 24 | Plugin architecture design    | 1 week | 🔴 High | PENDING |
+| 25 | Web interface prototype       | 1 week | 🔴 High | PENDING |
 
 ---
 
@@ -306,5 +306,5 @@ This is blocking because:
 
 ---
 
-_Generated: 2026-02-25 04:01_  
+_Generated: 2026-02-25 04:01_\
 _Status: Awaiting instructions on depguard handling_

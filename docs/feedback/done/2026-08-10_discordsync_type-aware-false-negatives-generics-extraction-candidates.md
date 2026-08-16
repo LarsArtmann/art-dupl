@@ -3,6 +3,7 @@
 **Date:** 2026-08-10
 **Project:** `DiscordSync`, a Go 1.26 Discord backup/archiving daemon (CQRS + SQLite/Turso + templ dashboard, ~878 Go files)
 **Commands compared:**
+
 - `art-dupl --sort total-tokens -t 1` (no type filter) → **31 clone groups**
 - `art-dupl --type-aware --sort total-tokens -t 1` → **0 clone groups** (all 31 suppressed)
 
@@ -44,39 +45,39 @@ art-dupl --type-aware --sort total-tokens -t 1
 
 ### Group-by-group verdict
 
-| #   | Clone shape                                                | Locations (abbreviated)                                | Verdict               | `--type-aware` correct? |
-| --- | ---------------------------------------------------------- | ------------------------------------------------------ | --------------------- | ----------------------- |
-| 1   | `if err != nil { queryRowErr(...) }` boilerplate × 7      | `internal/db/*.go`                                     | **Correctly filtered** | Yes                     |
-| 2   | Same `if err != nil { queryRowErr }` × 5 in one file      | `internal/db/query_phase2_detail.go`                   | **Correctly filtered** | Yes                     |
-| 3   | `var highest int64; for ... { if X > highest }` × 3       | `internal/web/activity_helpers.go`, `handlers_extras.go` | **FALSE NEGATIVE**     | **No — real dup hidden** |
-| 4   | `if err != nil \|\| ch == nil { return nil }` × 3         | `internal/web/types.go`                                | **Correctly filtered** | Yes                     |
-| 5   | `if err != nil { return nil }` detail-author guard × 3    | `internal/web/handlers_phase2_detail.go`               | **Correctly filtered** | Yes                     |
-| 6   | `context.WithTimeout(ctx, 30*time.Second)` × 2            | `cmd/gallery/capture.go`, `visual_regression_test.go`  | **Correctly filtered** | Yes                     |
-| 7   | `if result.GuildID != "" { ... paginateOverfetch }` × 5   | `internal/web/handlers_phase2.go`                      | **Correctly filtered** | Yes                     |
-| 8   | `if X.CreatedAt.IsZero() { X.CreatedAt = time.Now() }` × 3 | `internal/db/entities.go`                             | **Correctly filtered** | Yes                     |
-| 9   | `var total int64; for ... { total += X.Count }` × 2       | `internal/web/activity_helpers.go`, `attachment_analytics_helpers.go` | **FALSE NEGATIVE** | **No — real dup hidden** |
-| 10  | `kind := user.Kind; if kind == "" { if IsBot ... }` × 2   | `internal/db/entities.go`, `internal/projection/users.go` | **FALSE NEGATIVE**     | **No — real dup hidden** |
-| 11  | `if avatar == "" { return "" }` vs `if icon == ""` × 2    | `internal/provider/discord.go`                         | **Correctly filtered** | Yes                     |
-| 12  | `resolveMentionUsers`/`resolveMentionChannels` map→slice × 2 | `internal/web/mentions.go`                          | **Correctly filtered** | Yes                     |
-| 13  | `restFetchUser`/`restFetchGuild` error-wrapping tail × 2  | `internal/bot/bot_fetchers.go`                         | **Correctly filtered** | Yes                     |
-| 14  | `envDuration`/`envInt` env-var-with-default × 2           | `internal/db/turso_sync.go`                            | **Correctly filtered** | Yes                     |
-| 15  | `withDefaultDuration`/`withDefaultInt` × 2                | `internal/config/config_file.go`                       | **Correctly filtered** | Yes                     |
-| 16  | `if X != "" { query += " WHERE ..." }` × 2                | `internal/api/handlers_dlq.go`, `internal/db/query_phase2_counts.go` | **Correctly filtered** | Yes |
-| 17  | `http.NewServeMux()` × 2                                  | `internal/e2e/smoke_test.go`, `internal/gallery/server.go` | **Correctly filtered** | Yes                  |
-| 18  | `for _, k := range kinds { ... k.Count ... }` × 2         | `internal/web/activity_helpers.go`, `helpers.go`       | **Correctly filtered** | Yes                     |
-| 19  | `if ch != nil && ch.Name != ""` vs `if g != nil && g.Name` × 2 | `internal/web/types.go`                           | **Correctly filtered** | Yes                     |
-| 20  | `if err != nil { queryRowErr }` embed_media vs embeds × 2 | `internal/db/embed_media.go`, `embeds.go`              | **Correctly filtered** | Yes                     |
-| 21  | `if err != nil { queryRowErr }` member detail × 2         | `internal/db/query_member_detail.go`                   | **Correctly filtered** | Yes                     |
-| 22  | `downloadUserAvatar`/`downloadGuildIcon` refresh tail × 2 | `internal/bot/avatars.go`, `icons.go`                  | **Correctly filtered** | Yes (also `//nolint:dupl`) |
-| 23  | `if err != nil { return defaultValue }` env parse × 2     | `internal/db/turso_sync.go`                            | **Correctly filtered** | Yes                     |
-| 24  | `args := make([]any, 0, len(X)+1)` × 2                    | `internal/db/query_phase2.go`, `projection/emojis_relational.go` | **Correctly filtered** | Yes          |
-| 25  | Error-chain-walk `for unwrapped := err; ...` (prod vs test) × 2 | `internal/storage/encryption.go`, `encryption_metrics_test.go` | **Correctly filtered** | Yes      |
-| 26  | `if pct < 1 { pct = 1 }` vs `if offset < 0 { offset = 0 }` × 2 | `internal/web/activity_helpers.go`, `handler_helpers.go` | **Correctly filtered** | Yes   |
-| 27  | `if err != nil \|\| user == nil` vs `if err != nil \|\| guild == nil` × 2 | `internal/web/handlers_attachments.go` | **Correctly filtered** | Yes               |
-| 28  | `if ch.ParentID() != nil` vs `if thread.ParentID() != nil` × 2 | `internal/bot/discordadapter/misc.go`            | **Correctly filtered** | Yes                     |
-| 29  | `for id := range ids { keys = append(keys, id) }` × 2     | `internal/web/mentions.go`                             | **Correctly filtered** | Yes                     |
-| 30  | `if att.URL == ""` vs `if media.URL == ""` repair skip × 2 | `internal/bot/integrity_repair.go`                    | **Correctly filtered** | Yes                     |
-| 31  | `if !content.IsAttachmentGoneError(err)` avatar vs icon × 2 | `internal/bot/avatars.go`, `icons.go`                | **Correctly filtered** | Yes                     |
+| #  | Clone shape                                                               | Locations (abbreviated)                                               | Verdict                | `--type-aware` correct?    |
+| -- | ------------------------------------------------------------------------- | --------------------------------------------------------------------- | ---------------------- | -------------------------- |
+| 1  | `if err != nil { queryRowErr(...) }` boilerplate × 7                      | `internal/db/*.go`                                                    | **Correctly filtered** | Yes                        |
+| 2  | Same `if err != nil { queryRowErr }` × 5 in one file                      | `internal/db/query_phase2_detail.go`                                  | **Correctly filtered** | Yes                        |
+| 3  | `var highest int64; for ... { if X > highest }` × 3                       | `internal/web/activity_helpers.go`, `handlers_extras.go`              | **FALSE NEGATIVE**     | **No — real dup hidden**   |
+| 4  | `if err != nil \|\| ch == nil { return nil }` × 3                         | `internal/web/types.go`                                               | **Correctly filtered** | Yes                        |
+| 5  | `if err != nil { return nil }` detail-author guard × 3                    | `internal/web/handlers_phase2_detail.go`                              | **Correctly filtered** | Yes                        |
+| 6  | `context.WithTimeout(ctx, 30*time.Second)` × 2                            | `cmd/gallery/capture.go`, `visual_regression_test.go`                 | **Correctly filtered** | Yes                        |
+| 7  | `if result.GuildID != "" { ... paginateOverfetch }` × 5                   | `internal/web/handlers_phase2.go`                                     | **Correctly filtered** | Yes                        |
+| 8  | `if X.CreatedAt.IsZero() { X.CreatedAt = time.Now() }` × 3                | `internal/db/entities.go`                                             | **Correctly filtered** | Yes                        |
+| 9  | `var total int64; for ... { total += X.Count }` × 2                       | `internal/web/activity_helpers.go`, `attachment_analytics_helpers.go` | **FALSE NEGATIVE**     | **No — real dup hidden**   |
+| 10 | `kind := user.Kind; if kind == "" { if IsBot ... }` × 2                   | `internal/db/entities.go`, `internal/projection/users.go`             | **FALSE NEGATIVE**     | **No — real dup hidden**   |
+| 11 | `if avatar == "" { return "" }` vs `if icon == ""` × 2                    | `internal/provider/discord.go`                                        | **Correctly filtered** | Yes                        |
+| 12 | `resolveMentionUsers`/`resolveMentionChannels` map→slice × 2              | `internal/web/mentions.go`                                            | **Correctly filtered** | Yes                        |
+| 13 | `restFetchUser`/`restFetchGuild` error-wrapping tail × 2                  | `internal/bot/bot_fetchers.go`                                        | **Correctly filtered** | Yes                        |
+| 14 | `envDuration`/`envInt` env-var-with-default × 2                           | `internal/db/turso_sync.go`                                           | **Correctly filtered** | Yes                        |
+| 15 | `withDefaultDuration`/`withDefaultInt` × 2                                | `internal/config/config_file.go`                                      | **Correctly filtered** | Yes                        |
+| 16 | `if X != "" { query += " WHERE ..." }` × 2                                | `internal/api/handlers_dlq.go`, `internal/db/query_phase2_counts.go`  | **Correctly filtered** | Yes                        |
+| 17 | `http.NewServeMux()` × 2                                                  | `internal/e2e/smoke_test.go`, `internal/gallery/server.go`            | **Correctly filtered** | Yes                        |
+| 18 | `for _, k := range kinds { ... k.Count ... }` × 2                         | `internal/web/activity_helpers.go`, `helpers.go`                      | **Correctly filtered** | Yes                        |
+| 19 | `if ch != nil && ch.Name != ""` vs `if g != nil && g.Name` × 2            | `internal/web/types.go`                                               | **Correctly filtered** | Yes                        |
+| 20 | `if err != nil { queryRowErr }` embed_media vs embeds × 2                 | `internal/db/embed_media.go`, `embeds.go`                             | **Correctly filtered** | Yes                        |
+| 21 | `if err != nil { queryRowErr }` member detail × 2                         | `internal/db/query_member_detail.go`                                  | **Correctly filtered** | Yes                        |
+| 22 | `downloadUserAvatar`/`downloadGuildIcon` refresh tail × 2                 | `internal/bot/avatars.go`, `icons.go`                                 | **Correctly filtered** | Yes (also `//nolint:dupl`) |
+| 23 | `if err != nil { return defaultValue }` env parse × 2                     | `internal/db/turso_sync.go`                                           | **Correctly filtered** | Yes                        |
+| 24 | `args := make([]any, 0, len(X)+1)` × 2                                    | `internal/db/query_phase2.go`, `projection/emojis_relational.go`      | **Correctly filtered** | Yes                        |
+| 25 | Error-chain-walk `for unwrapped := err; ...` (prod vs test) × 2           | `internal/storage/encryption.go`, `encryption_metrics_test.go`        | **Correctly filtered** | Yes                        |
+| 26 | `if pct < 1 { pct = 1 }` vs `if offset < 0 { offset = 0 }` × 2            | `internal/web/activity_helpers.go`, `handler_helpers.go`              | **Correctly filtered** | Yes                        |
+| 27 | `if err != nil \|\| user == nil` vs `if err != nil \|\| guild == nil` × 2 | `internal/web/handlers_attachments.go`                                | **Correctly filtered** | Yes                        |
+| 28 | `if ch.ParentID() != nil` vs `if thread.ParentID() != nil` × 2            | `internal/bot/discordadapter/misc.go`                                 | **Correctly filtered** | Yes                        |
+| 29 | `for id := range ids { keys = append(keys, id) }` × 2                     | `internal/web/mentions.go`                                            | **Correctly filtered** | Yes                        |
+| 30 | `if att.URL == ""` vs `if media.URL == ""` repair skip × 2                | `internal/bot/integrity_repair.go`                                    | **Correctly filtered** | Yes                        |
+| 31 | `if !content.IsAttachmentGoneError(err)` avatar vs icon × 2               | `internal/bot/avatars.go`, `icons.go`                                 | **Correctly filtered** | Yes                        |
 
 ---
 
@@ -361,15 +362,15 @@ Rather than changing `--type-aware`'s default behavior (which is well-calibrated
 
 ## Summary
 
-| Metric | Value |
-| ------ | ----- |
-| Clone groups (no type filter) | 31 |
-| Clone groups (`--type-aware`) | 0 |
-| Correctly suppressed by `--type-aware` | 28 (90%) |
-| Incorrectly suppressed (false-negatives) | 3 (10%) |
-| False-positives in `--type-aware` output | 0 (vacuously — it showed nothing) |
-| Highest-value missed fix | `maxValue[T]` / `sumValue[T]` generics (6 functions → 2) |
-| Root cause | Type-aware filter treats different container types as different semantics, even when fields are structurally identical |
+| Metric                                   | Value                                                                                                                  |
+| ---------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| Clone groups (no type filter)            | 31                                                                                                                     |
+| Clone groups (`--type-aware`)            | 0                                                                                                                      |
+| Correctly suppressed by `--type-aware`   | 28 (90%)                                                                                                               |
+| Incorrectly suppressed (false-negatives) | 3 (10%)                                                                                                                |
+| False-positives in `--type-aware` output | 0 (vacuously — it showed nothing)                                                                                      |
+| Highest-value missed fix                 | `maxValue[T]` / `sumValue[T]` generics (6 functions → 2)                                                               |
+| Root cause                               | Type-aware filter treats different container types as different semantics, even when fields are structurally identical |
 
 **Bottom line:** `--type-aware` is well-calibrated for false-positive reduction but has a systematic blind spot for generics-extraction candidates. The blind spot is small (10% of real duplicates in this codebase) but high-value (the missed groups are the ones most amenable to clean elimination). A structural field-access equivalence pass — either integrated or as an opt-in `--suggest-generics` flag — would close the gap.
 
@@ -388,11 +389,11 @@ art-dupl --type-aware --suggest-generics -t 1 .
 
 All 3 false-negatives from the original analysis are surfaced:
 
-| Original finding | art-dupl `--suggest-generics` output | Clones |
-| --- | --- | --- |
-| Finding 1: `maxXxxCount` loops | `generics: same algorithm, different types: AuthorKindActivity vs TopReaction vs MemberGrowthPoint` at `activity_helpers.go:142`, `:168`, `handlers_extras.go:289` | 3 |
-| Finding 2: `sumValue` loops | `generics: same algorithm, different types: AttachmentCategoryStat vs AuthorKindActivity` at `activity_helpers.go:192`, `attachment_analytics_helpers.go:167` | 2 |
-| Finding 3: kind-derivation logic twin | `generics: same algorithm, different types: events.UserPayload vs *db.User` at `entities.go:131`, `projection/users.go:23` | 2 |
+| Original finding                      | art-dupl `--suggest-generics` output                                                                                                                               | Clones |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------ |
+| Finding 1: `maxXxxCount` loops        | `generics: same algorithm, different types: AuthorKindActivity vs TopReaction vs MemberGrowthPoint` at `activity_helpers.go:142`, `:168`, `handlers_extras.go:289` | 3      |
+| Finding 2: `sumValue` loops           | `generics: same algorithm, different types: AttachmentCategoryStat vs AuthorKindActivity` at `activity_helpers.go:192`, `attachment_analytics_helpers.go:167`      | 2      |
+| Finding 3: kind-derivation logic twin | `generics: same algorithm, different types: events.UserPayload vs *db.User` at `entities.go:131`, `projection/users.go:23`                                         | 2      |
 
 The remaining 19 groups are all the correctly-identified generics-extraction candidates for irreducible boilerplate (error-handling guards, named-method calls, intentional mirror pairs) — these are technically "same algorithm, different types" but not worth extracting.
 

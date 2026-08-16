@@ -23,13 +23,13 @@ The remaining 15 groups are single-statement Go idioms that are not fixable with
 | Pattern                                | Examples                                                    | Count | Verdict                                        |
 | -------------------------------------- | ----------------------------------------------------------- | ----- | ---------------------------------------------- |
 | `return nil`                           | `cmd/upd/main.go`, `packagejson.go`, `render.go`, `diff.go` | 6     | Idiomatic terminal statement.                  |
-| `return false`                         | `config.go`, `pnpm.go`, `engine.go`, `manifest.go`           | 4+    | Standard boolean guard result.                 |
+| `return false`                         | `config.go`, `pnpm.go`, `engine.go`, `manifest.go`          | 4+    | Standard boolean guard result.                 |
 | `return true`                          | `engine.go`, `manifest.go`                                  | 3     | Same as above.                                 |
 | `return updates, errors`               | `engine.go`                                                 | 2     | Named-return pair in different functions.      |
 | `var x []string`                       | `benchmark_test.go`, `packagejson.go`                       | 2     | Variable declaration shape.                    |
-| `err := json.Unmarshal(raw, &v)`       | `pnpm.go`, `packagejson.go`                                  | 3     | Standard JSON parsing pattern; targets differ. |
+| `err := json.Unmarshal(raw, &v)`       | `pnpm.go`, `packagejson.go`                                 | 3     | Standard JSON parsing pattern; targets differ. |
 | `_, err := dec.ReadToken()`            | `packagejson.go`                                            | 2     | JSON decoder streaming pattern.                |
-| `seconds, err := strconv.Atoi(header)` | `pnpm.go`, `progress.go`                                     | 2     | Standard string parsing.                       |
+| `seconds, err := strconv.Atoi(header)` | `pnpm.go`, `progress.go`                                    | 2     | Standard string parsing.                       |
 | `if r.noColor { return text }`         | `render.go`                                                 | 2     | Color-guard early return; semantics differ.    |
 | `cfg := DefaultConfig()`               | `config.go`, `config_test.go`                               | 2     | Test setup pattern.                            |
 

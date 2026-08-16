@@ -82,33 +82,33 @@ From TODO_LIST.md, these items remain untouched:
 
 Sorted by **impact × effort⁻¹** (highest value first):
 
-| #   | Item                                                                              | Impact    | Effort                       | Type         |
-| --- | --------------------------------------------------------------------------------- | --------- | ---------------------------- | ------------ |
-| 1   | Move PatternLabel to domain package                                               | Medium    | Low (30 min)                 | Architecture |
-| 2   | Fix 3 godoclint warnings (remove duplicate doc.go files)                          | Low       | Low (15 min)                 | Lint         |
-| 3   | Type TodoIssue.Type and LegacyIssue.Type as domain enums                          | Low       | Low (30 min)                 | Type safety  |
-| 4   | Add NodeType typed int32 to domain, unify ClassificationInput/CloneClassification | Medium    | Medium (1 hr)                | Type safety  |
-| 5   | Extract actionability node-type checks into syntax/ abstraction                   | High      | Medium (2 hr)                | Architecture |
-| 6   | Lower interface impl detector threshold to 2 files + package signal               | Low       | Low (30 min)                 | Feature      |
-| 7   | Validate GoReleaser release config                                                | Low       | Low (30 min)                 | Ops          |
-| 8   | Add BDD test for `--only templ` and `--only go`                                   | Medium    | Low (1 hr)                   | Testing      |
-| 9   | Add BDD test for `--include-generic` end-to-end                                   | Medium    | Low (1 hr)                   | Testing      |
-| 10  | Write SDK documentation for `pkg/artdupl/`                                        | Medium    | Medium (2 hr)                | Docs         |
-| 11  | Add `--output-file` flag to stats subcommand                                      | Medium    | Low (1 hr)                   | Feature      |
-| 12  | Implement CSV output format using encoding/csv                                    | Medium    | Medium (2 hr)                | Feature      |
-| 13  | Unify enum patterns with config's generic helpers                                 | Low       | Medium (2 hr)                | Architecture |
-| 14  | Add fuzz tests for templ parser edge cases                                        | Medium    | Medium (2 hr)                | Testing      |
-| 15  | Refactor `syntax/golang/transform.go` (table-driven)                              | Medium    | Medium (3 hr)                | Code quality |
-| 16  | Implement TokenValue type with validation                                         | High      | Medium (3 hr)                | Architecture |
-| 17  | ProcessedClone DTO — decouple Printer from syntax.Node                            | Very High | Very High (1-2 days)         | Architecture |
-| 18  | Consolidate three parallel Clone types                                            | High      | High (1 day, blocked on #17) | Architecture |
-| 19  | Optimize memory layouts for SIMD + string interning                               | Medium    | High (1-2 days)              | Performance  |
-| 20  | Investigate using `go/types` for precise interface satisfaction                   | Medium    | Medium (2 hr)                | Feature      |
-| 21  | Dogfood on external projects (test real-world precision)                          | High      | Low (1 hr)                   | Validation   |
-| 22  | Add `--min-files` flag to filter by minimum file count                            | Low       | Low (30 min)                 | Feature      |
-| 23  | Fix `cmd/run_crawl.go` scanner.Err() unchecked                                    | Low       | Low (15 min)                 | Bug          |
-| 24  | Add actionability metrics to stats output                                         | Medium    | Medium (2 hr)                | Feature      |
-| 25  | Benchmark actionability filters on large codebases                                | Medium    | Medium (2 hr)                | Performance  |
+| #  | Item                                                                              | Impact    | Effort                       | Type         |
+| -- | --------------------------------------------------------------------------------- | --------- | ---------------------------- | ------------ |
+| 1  | Move PatternLabel to domain package                                               | Medium    | Low (30 min)                 | Architecture |
+| 2  | Fix 3 godoclint warnings (remove duplicate doc.go files)                          | Low       | Low (15 min)                 | Lint         |
+| 3  | Type TodoIssue.Type and LegacyIssue.Type as domain enums                          | Low       | Low (30 min)                 | Type safety  |
+| 4  | Add NodeType typed int32 to domain, unify ClassificationInput/CloneClassification | Medium    | Medium (1 hr)                | Type safety  |
+| 5  | Extract actionability node-type checks into syntax/ abstraction                   | High      | Medium (2 hr)                | Architecture |
+| 6  | Lower interface impl detector threshold to 2 files + package signal               | Low       | Low (30 min)                 | Feature      |
+| 7  | Validate GoReleaser release config                                                | Low       | Low (30 min)                 | Ops          |
+| 8  | Add BDD test for `--only templ` and `--only go`                                   | Medium    | Low (1 hr)                   | Testing      |
+| 9  | Add BDD test for `--include-generic` end-to-end                                   | Medium    | Low (1 hr)                   | Testing      |
+| 10 | Write SDK documentation for `pkg/artdupl/`                                        | Medium    | Medium (2 hr)                | Docs         |
+| 11 | Add `--output-file` flag to stats subcommand                                      | Medium    | Low (1 hr)                   | Feature      |
+| 12 | Implement CSV output format using encoding/csv                                    | Medium    | Medium (2 hr)                | Feature      |
+| 13 | Unify enum patterns with config's generic helpers                                 | Low       | Medium (2 hr)                | Architecture |
+| 14 | Add fuzz tests for templ parser edge cases                                        | Medium    | Medium (2 hr)                | Testing      |
+| 15 | Refactor `syntax/golang/transform.go` (table-driven)                              | Medium    | Medium (3 hr)                | Code quality |
+| 16 | Implement TokenValue type with validation                                         | High      | Medium (3 hr)                | Architecture |
+| 17 | ProcessedClone DTO — decouple Printer from syntax.Node                            | Very High | Very High (1-2 days)         | Architecture |
+| 18 | Consolidate three parallel Clone types                                            | High      | High (1 day, blocked on #17) | Architecture |
+| 19 | Optimize memory layouts for SIMD + string interning                               | Medium    | High (1-2 days)              | Performance  |
+| 20 | Investigate using `go/types` for precise interface satisfaction                   | Medium    | Medium (2 hr)                | Feature      |
+| 21 | Dogfood on external projects (test real-world precision)                          | High      | Low (1 hr)                   | Validation   |
+| 22 | Add `--min-files` flag to filter by minimum file count                            | Low       | Low (30 min)                 | Feature      |
+| 23 | Fix `cmd/run_crawl.go` scanner.Err() unchecked                                    | Low       | Low (15 min)                 | Bug          |
+| 24 | Add actionability metrics to stats output                                         | Medium    | Medium (2 hr)                | Feature      |
+| 25 | Benchmark actionability filters on large codebases                                | Medium    | Medium (2 hr)                | Performance  |
 
 ## g) Top #1 Question I Cannot Figure Out Myself
 

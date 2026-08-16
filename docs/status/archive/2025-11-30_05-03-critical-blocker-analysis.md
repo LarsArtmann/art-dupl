@@ -1,7 +1,7 @@
 # dupl Status Report
 
-**Date:** 2025-11-30_05-03  
-**Phase:** JSON Output Implementation (Critical Fixes Needed)  
+**Date:** 2025-11-30_05-03\
+**Phase:** JSON Output Implementation (Critical Fixes Needed)\
 **Overall Progress:** 28% Complete (foundation done, JSON implementation blocked)
 
 ## Executive Summary

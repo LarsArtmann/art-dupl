@@ -69,28 +69,28 @@
 
 ### High Priority (Post-Completion)
 
-| #   | Task                                      | Why Important            | Effort  |
-| --- | ----------------------------------------- | ------------------------ | ------- |
-| 1   | Add test for conflicting flags validation | No automated test exists | 10 min  |
-| 2   | Add test for stats command semantic flags | Feature not tested       | 15 min  |
-| 3   | Split files >300 lines                    | AGENTS.md mandate        | 2-3 hrs |
-| 4   | Fix `noctx` linting issues (8)            | Best practice            | 30 min  |
+| # | Task                                      | Why Important            | Effort  |
+| - | ----------------------------------------- | ------------------------ | ------- |
+| 1 | Add test for conflicting flags validation | No automated test exists | 10 min  |
+| 2 | Add test for stats command semantic flags | Feature not tested       | 15 min  |
+| 3 | Split files >300 lines                    | AGENTS.md mandate        | 2-3 hrs |
+| 4 | Fix `noctx` linting issues (8)            | Best practice            | 30 min  |
 
 ### Medium Priority
 
-| #   | Task                                       | Effort |
-| --- | ------------------------------------------ | ------ |
-| 5   | Extract common flag setup function         | 30 min |
-| 6   | Convert `SemanticHashEnabled` global to DI | 1 hr   |
-| 7   | Add benchmark for semantic detection       | 30 min |
-| 8   | Audit 56 TODO comments                     | 1 hr   |
+| # | Task                                       | Effort |
+| - | ------------------------------------------ | ------ |
+| 5 | Extract common flag setup function         | 30 min |
+| 6 | Convert `SemanticHashEnabled` global to DI | 1 hr   |
+| 7 | Add benchmark for semantic detection       | 30 min |
+| 8 | Audit 56 TODO comments                     | 1 hr   |
 
 ### Low Priority
 
-| #   | Task                                          | Effort |
-| --- | --------------------------------------------- | ------ |
-| 9   | Remove `--structural` flag (post-deprecation) | 15 min |
-| 10  | Add semantic detection examples               | 30 min |
+| #  | Task                                          | Effort |
+| -- | --------------------------------------------- | ------ |
+| 9  | Remove `--structural` flag (post-deprecation) | 15 min |
+| 10 | Add semantic detection examples               | 30 min |
 
 ---
 
@@ -253,6 +253,6 @@ just check
 
 ---
 
-_Generated: 2026-02-24 12:25_  
-_Status: Ready for commit and push_  
+_Generated: 2026-02-24 12:25_\
+_Status: Ready for commit and push_\
 _Next: Commit staged changes + status reports_

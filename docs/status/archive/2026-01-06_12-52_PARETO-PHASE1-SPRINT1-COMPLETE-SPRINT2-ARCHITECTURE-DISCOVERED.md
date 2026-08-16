@@ -1492,7 +1492,7 @@ grep -rn "total-tokens\|TotalTokens" --include="*.go" . | head -10
    - Line 87: Restored sequence to include all b0 nodes
    - Status: ✅ COMMITTED (5898083)
 
-3. **docs/status/2026-01-05*11-39*\*.md** - Comprehensive status report
+3. **docs/status/2026-01-05_11-39_\*.md** - Comprehensive status report
    - Size: ~4KB, 500+ lines
    - Content: Root cause analysis, algorithm explanations, git history
    - Status: ✅ COMMITTED (5898083)

@@ -88,28 +88,28 @@
 
 ### High Priority Tasks
 
-| #   | Task                           | Impact | Effort | Reason               |
-| --- | ------------------------------ | ------ | ------ | -------------------- |
-| 1   | Commit uncommitted changes     | Medium | 2min   | Waiting for approval |
-| 2   | Fix pre-existing linter issues | Low    | 15min  | Not blocking         |
+| # | Task                           | Impact | Effort | Reason               |
+| - | ------------------------------ | ------ | ------ | -------------------- |
+| 1 | Commit uncommitted changes     | Medium | 2min   | Waiting for approval |
+| 2 | Fix pre-existing linter issues | Low    | 15min  | Not blocking         |
 
 ### Medium Priority Tasks
 
-| #   | Task                                     | Impact | Effort | Reason                 |
-| --- | ---------------------------------------- | ------ | ------ | ---------------------- |
-| 3   | Increase pkg/artdupl coverage (54%→80%)  | Medium | 1h     | More test cases needed |
-| 4   | Increase pkg/filter coverage (56%→80%)   | Medium | 45min  | More test cases needed |
-| 5   | Increase pkg/position coverage (47%→80%) | Medium | 30min  | More test cases needed |
-| 6   | Increase job package coverage (37%→80%)  | Medium | 2h     | Complex orchestration  |
+| # | Task                                     | Impact | Effort | Reason                 |
+| - | ---------------------------------------- | ------ | ------ | ---------------------- |
+| 3 | Increase pkg/artdupl coverage (54%→80%)  | Medium | 1h     | More test cases needed |
+| 4 | Increase pkg/filter coverage (56%→80%)   | Medium | 45min  | More test cases needed |
+| 5 | Increase pkg/position coverage (47%→80%) | Medium | 30min  | More test cases needed |
+| 6 | Increase job package coverage (37%→80%)  | Medium | 2h     | Complex orchestration  |
 
 ### Low Priority Tasks
 
-| #   | Task                              | Impact | Effort | Reason         |
-| --- | --------------------------------- | ------ | ------ | -------------- |
-| 7   | Add package examples              | Low    | 45min  | Documentation  |
-| 8   | Update README install commands    | Low    | 15min  | Current works  |
-| 9   | Create GitHub issues for tracking | Low    | 30min  | Manual process |
-| 10  | Documentation completeness review | Low    | 1h     | Core docs done |
+| #  | Task                              | Impact | Effort | Reason         |
+| -- | --------------------------------- | ------ | ------ | -------------- |
+| 7  | Add package examples              | Low    | 45min  | Documentation  |
+| 8  | Update README install commands    | Low    | 15min  | Current works  |
+| 9  | Create GitHub issues for tracking | Low    | 30min  | Manual process |
+| 10 | Documentation completeness review | Low    | 1h     | Core docs done |
 
 ---
 
@@ -189,48 +189,48 @@ FAIL github.com/LarsArtmann/art-dupl/testutils [build failed]
 
 ### Priority 1: CRITICAL (Do First)
 
-| #   | Task                                                  | Effort | Blocking? |
-| --- | ----------------------------------------------------- | ------ | --------- |
-| 1   | **Free disk space** (clean Docker, downloads, caches) | 30min  | 🔴 YES    |
-| 2   | Commit uncommitted test files                         | 2min   | No        |
-| 3   | Fix pre-existing linter issues in git tests           | 15min  | No        |
+| # | Task                                                  | Effort | Blocking? |
+| - | ----------------------------------------------------- | ------ | --------- |
+| 1 | **Free disk space** (clean Docker, downloads, caches) | 30min  | 🔴 YES    |
+| 2 | Commit uncommitted test files                         | 2min   | No        |
+| 3 | Fix pre-existing linter issues in git tests           | 15min  | No        |
 
 ### Priority 2: HIGH (This Week)
 
-| #   | Task                                  | Effort | Impact |
-| --- | ------------------------------------- | ------ | ------ |
-| 4   | Increase pkg/artdupl coverage to 80%  | 1h     | Medium |
-| 5   | Increase pkg/filter coverage to 80%   | 45min  | Medium |
-| 6   | Increase pkg/position coverage to 80% | 30min  | Medium |
-| 7   | Fix all 10 FIXME comments             | 2h     | Medium |
-| 8   | Review and resolve 20+ TODOs          | 2h     | Low    |
+| # | Task                                  | Effort | Impact |
+| - | ------------------------------------- | ------ | ------ |
+| 4 | Increase pkg/artdupl coverage to 80%  | 1h     | Medium |
+| 5 | Increase pkg/filter coverage to 80%   | 45min  | Medium |
+| 6 | Increase pkg/position coverage to 80% | 30min  | Medium |
+| 7 | Fix all 10 FIXME comments             | 2h     | Medium |
+| 8 | Review and resolve 20+ TODOs          | 2h     | Low    |
 
 ### Priority 3: MEDIUM (Next 2 Weeks)
 
-| #   | Task                                       | Effort | Impact |
-| --- | ------------------------------------------ | ------ | ------ |
-| 9   | Increase job package coverage to 80%       | 2h     | Medium |
-| 10  | Increase internal/utils coverage to 80%    | 1h     | Low    |
-| 11  | Add package examples for godoc             | 45min  | Low    |
-| 12  | Update README with latest install commands | 15min  | Low    |
-| 13  | Create GitHub issues for remaining tasks   | 30min  | Low    |
-| 14  | Add more BDD scenarios                     | 2h     | Medium |
-| 15  | Performance benchmark automation           | 1h     | Medium |
+| #  | Task                                       | Effort | Impact |
+| -- | ------------------------------------------ | ------ | ------ |
+| 9  | Increase job package coverage to 80%       | 2h     | Medium |
+| 10 | Increase internal/utils coverage to 80%    | 1h     | Low    |
+| 11 | Add package examples for godoc             | 45min  | Low    |
+| 12 | Update README with latest install commands | 15min  | Low    |
+| 13 | Create GitHub issues for remaining tasks   | 30min  | Low    |
+| 14 | Add more BDD scenarios                     | 2h     | Medium |
+| 15 | Performance benchmark automation           | 1h     | Medium |
 
 ### Priority 4: LOW (Nice to Have)
 
-| #   | Task                                        | Effort | Impact |
-| --- | ------------------------------------------- | ------ | ------ |
-| 16  | Documentation completeness review           | 1h     | Low    |
-| 17  | Add fuzz tests for edge cases               | 2h     | Low    |
-| 18  | Expand CI/CD with more workflows            | 1h     | Low    |
-| 19  | Create CONTRIBUTING.md                      | 30min  | Low    |
-| 20  | Add troubleshooting to README               | 30min  | Low    |
-| 21  | Create migration guide for version upgrades | 1h     | Low    |
-| 22  | Watch mode for continuous monitoring        | 4h     | Low    |
-| 23  | Git diff integration for PR reviews         | 4h     | Low    |
-| 24  | Web dashboard for visual reporting          | 8h     | Low    |
-| 25  | Multi-language support                      | 40h    | Low    |
+| #  | Task                                        | Effort | Impact |
+| -- | ------------------------------------------- | ------ | ------ |
+| 16 | Documentation completeness review           | 1h     | Low    |
+| 17 | Add fuzz tests for edge cases               | 2h     | Low    |
+| 18 | Expand CI/CD with more workflows            | 1h     | Low    |
+| 19 | Create CONTRIBUTING.md                      | 30min  | Low    |
+| 20 | Add troubleshooting to README               | 30min  | Low    |
+| 21 | Create migration guide for version upgrades | 1h     | Low    |
+| 22 | Watch mode for continuous monitoring        | 4h     | Low    |
+| 23 | Git diff integration for PR reviews         | 4h     | Low    |
+| 24 | Web dashboard for visual reporting          | 8h     | Low    |
+| 25 | Multi-language support                      | 40h    | Low    |
 
 ---
 

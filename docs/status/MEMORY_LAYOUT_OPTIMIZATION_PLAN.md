@@ -30,17 +30,17 @@
 
 ### Task 1: Remove CloneID validation from CloneGroup.IsValid()
 
-**File:** `domain/clone.go:148`  
+**File:** `domain/clone.go:148`\
 **Changes:**
 
 - Remove `if cg.ID == ""` check
 - Update error message: remove `cg.ID` from `fmt.Errorf()`
-  **Risk:** Low - pure validation logic  
+  **Risk:** Low - pure validation logic\
   **Impact:** Eliminates unnecessary string comparison
 
 ### Task 2: Remove CloneID validation from Analysis.IsValid()
 
-**File:** `domain/clone.go:229`  
+**File:** `domain/clone.go:229`\
 **Changes:**
 
 - Remove `if a.ID == ""` check
@@ -49,7 +49,7 @@
 
 ### Task 3: Update NodeToClone() - remove ID generation
 
-**File:** `domain/clone.go:375`  
+**File:** `domain/clone.go:375`\
 **Changes:**
 
 - Delete: `cloneID, _ := NewCloneID(fmt.Sprintf(...))`
@@ -59,7 +59,7 @@
 
 ### Task 4: Remove CloneID from Clone struct with comment
 
-**File:** `domain/clone.go:99`  
+**File:** `domain/clone.go:99`\
 **Changes:**
 
 ```go
@@ -77,7 +77,7 @@ type Clone struct {
 
 ### Task 5: Delete CloneID type from domain_types.go
 
-**File:** `domain/domain_types.go:85-112`  
+**File:** `domain/domain_types.go:85-112`\
 **Changes:**
 
 - Remove `type CloneID string`
@@ -88,7 +88,7 @@ type Clone struct {
 
 ### Task 8: Remove CloneID test cases
 
-**File:** `domain/domain_types_test.go`  
+**File:** `domain/domain_types_test.go`\
 **Changes:**
 
 - Remove `TestCloneID_NewCloneID`
@@ -103,7 +103,7 @@ type Clone struct {
 
 ### Task 6: Optimize syntax.Node layout for cache efficiency
 
-**File:** `syntax/syntax.go:20-26`  
+**File:** `syntax/syntax.go:20-26`\
 **Current layout (padded):**
 
 ```go
@@ -143,7 +143,7 @@ type Node struct {
 
 ### Task 7: Optimize domain.Clone layout (reorder fields)
 
-**File:** `domain/clone.go:99-111`  
+**File:** `domain/clone.go:99-111`\
 **Current layout (with padding):**
 
 ```go
@@ -191,7 +191,7 @@ type Clone struct {
 
 ### Task 10: Optimize suffixtree.state/tran layout
 
-**Files:** `suffixtree/suffixtree.go:170-199`, `suffixtree/findtran_simd.go`  
+**Files:** `suffixtree/suffixtree.go:170-199`, `suffixtree/findtran_simd.go`\
 **Current layout:**
 
 ```go
@@ -236,7 +236,7 @@ type tran struct {
 
 ### Task 9: Implement string interning pool for filenames
 
-**Files:** New `domain/stringpool.go`, `domain/clone.go`, `syntax/syntax.go`  
+**Files:** New `domain/stringpool.go`, `domain/clone.go`, `syntax/syntax.go`\
 **Implementation:**
 
 ```go
@@ -267,7 +267,7 @@ func (p *StringInternPool) Get(s string) StringID {
 
 ### Task 11: Create Structure-of-Arrays (SoA) for Node.Type fields
 
-**Files:** New `syntax/node_soa.go`  
+**Files:** New `syntax/node_soa.go`\
 **Implementation:**
 
 ```go
@@ -291,7 +291,7 @@ type NodeBatch struct {
 
 ### Task 12: Add SIMD alignment helpers
 
-**Files:** `internal/simd/simd.go` (extend)  
+**Files:** `internal/simd/simd.go` (extend)\
 **Implementation:**
 
 ```go
@@ -335,7 +335,7 @@ func PadToVectorSize(n int) int {
 
 ### Task 14: Run full test suite verification
 
-**Command:** `make test` (all packages)  
+**Command:** `make test` (all packages)\
 **Coverage checks:**
 
 - domain package tests
@@ -389,6 +389,6 @@ func PadToVectorSize(n int) int {
 3. **Advanced Features**: SIMD prep (Tasks 9, 11, 12)
 4. **Verification**: Benchmarks and tests (Tasks 13, 14)
 
-**Total Estimated Time:** ~2-3 hours  
-**Risk Level:** Medium (breaking JSON API change)  
+**Total Estimated Time:** ~2-3 hours\
+**Risk Level:** Medium (breaking JSON API change)\
 **Rollback Plan:** Git revert + re-run tests

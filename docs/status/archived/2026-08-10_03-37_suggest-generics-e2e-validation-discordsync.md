@@ -9,32 +9,32 @@
 
 ### E2E comparison completed (4 scan modes)
 
-| Scan Mode | Old (`0.6.1-c170f4d`) | New (local `dev`) | Match? |
-| --- | --- | --- | --- |
-| Plain (`-t 1 --sort total-tokens`) | 31 groups | 31 groups | **Identical hashes** (zero regression) |
-| `--type-aware` | 0 groups | 0 groups | Identical |
-| `--suggest-generics` | _(flag doesn't exist)_ | **24 groups** | New feature |
-| `--suggest-generics --no-actionability` | N/A | **135 groups** | New feature |
+| Scan Mode                               | Old (`0.6.1-c170f4d`)  | New (local `dev`) | Match?                                 |
+| --------------------------------------- | ---------------------- | ----------------- | -------------------------------------- |
+| Plain (`-t 1 --sort total-tokens`)      | 31 groups              | 31 groups         | **Identical hashes** (zero regression) |
+| `--type-aware`                          | 0 groups               | 0 groups          | Identical                              |
+| `--suggest-generics`                    | _(flag doesn't exist)_ | **24 groups**     | New feature                            |
+| `--suggest-generics --no-actionability` | N/A                    | **135 groups**    | New feature                            |
 
 ### All 3 known false-negatives recovered (100% recall)
 
 The feedback doc identified 3 groups that `--type-aware` incorrectly suppressed. All 3 are recovered by `--suggest-generics`:
 
-| Feedback # | Shape | Files | Type diff in hint |
-| --- | --- | --- | --- |
-| #3 | `var highest int64; for...{ if X > highest }` | activity_helpers:142,168 + handlers_extras:289 | `AuthorKindActivity` vs `TopReaction` vs `MemberGrowthPoint` |
-| #9 | `var total int64; for...{ total += X }` | activity_helpers:192 + attachment_analytics:167 | `AttachmentCategoryStat` vs `AuthorKindActivity` |
-| #10 | `kind := user.Kind; if kind == "" {...}` | db/entities:131 + projection/users:23 | `events.UserPayload` vs `*db.User` |
+| Feedback # | Shape                                         | Files                                           | Type diff in hint                                            |
+| ---------- | --------------------------------------------- | ----------------------------------------------- | ------------------------------------------------------------ |
+| #3         | `var highest int64; for...{ if X > highest }` | activity_helpers:142,168 + handlers_extras:289  | `AuthorKindActivity` vs `TopReaction` vs `MemberGrowthPoint` |
+| #9         | `var total int64; for...{ total += X }`       | activity_helpers:192 + attachment_analytics:167 | `AttachmentCategoryStat` vs `AuthorKindActivity`             |
+| #10        | `kind := user.Kind; if kind == "" {...}`      | db/entities:131 + projection/users:23           | `events.UserPayload` vs `*db.User`                           |
 
 ### Output format verification
 
-| Format | Generics fields present? | Details |
-| --- | --- | --- |
-| Text | **Yes** | `generics: same algorithm, different types: ...` line before each group |
-| `--explain` (text) | **Yes** | `generics:` line shown alongside `explain:` line |
-| JSON | **Yes** | `generics_candidate: true` + `generics_hint: "..."` on every clone in every group (59 clones across 24 groups) |
-| SARIF | **NO** | 59 results, zero generics fields anywhere |
-| Plumbing | **NO** | File:line ranges only, no generics info |
+| Format             | Generics fields present? | Details                                                                                                        |
+| ------------------ | ------------------------ | -------------------------------------------------------------------------------------------------------------- |
+| Text               | **Yes**                  | `generics: same algorithm, different types: ...` line before each group                                        |
+| `--explain` (text) | **Yes**                  | `generics:` line shown alongside `explain:` line                                                               |
+| JSON               | **Yes**                  | `generics_candidate: true` + `generics_hint: "..."` on every clone in every group (59 clones across 24 groups) |
+| SARIF              | **NO**                   | 59 results, zero generics fields anywhere                                                                      |
+| Plumbing           | **NO**                   | File:line ranges only, no generics info                                                                        |
 
 ### No-regression verification
 
@@ -46,9 +46,9 @@ Old and new plain scans produce byte-identical clone group hashes (31/31 match v
 
 ### Performance measured
 
-| Mode | Time | Notes |
-| --- | --- | --- |
-| Plain (old binary) | 0.55s | Parse-only |
+| Mode                              | Time  | Notes                     |
+| --------------------------------- | ----- | ------------------------- |
+| Plain (old binary)                | 0.55s | Parse-only                |
 | `--suggest-generics` (new binary) | 57.7s | go/packages type checking |
 
 **~105x slower**, confirming the AGENTS.md claim of "10-100x slower than parsing alone."
@@ -88,28 +88,28 @@ The feedback doc manually analyzed all 31 clone groups from the plain scan. It j
 
 `--suggest-generics` surfaces **24 groups** (all 24 have type differences). But only **3 of those 24** are real generics candidates per the feedback doc's manual analysis. The other **21** are boilerplate that the feedback doc explicitly marked "correctly filtered":
 
-| Surfaced group | Feedback verdict | Why it's noise |
-| --- | --- | --- |
-| `if err != nil { queryRowErr(...) }` x7 | Correctly filtered (#1,#2) | Already a shared helper; different entity types don't make this a generics candidate |
-| `if err != nil || ch == nil` x3 | Correctly filtered (#4) | Nil-guard boilerplate, not algorithmic duplication |
-| `if err != nil` detail-author x3 | Correctly filtered (#5) | Same pattern |
-| `if result.GuildID != ""` x5 | Correctly filtered (#7) | Pagination guard, different view-model types |
-| `envDuration`/`envInt` x2 | Correctly filtered (#14) | Already a helper; `time.Duration` vs `int` doesn't make it genericizable |
-| `avatars/icons` refresh x2 | Correctly filtered (#22) | Already has `//nolint:dupl`; different download types |
-| `if ch != nil && ch.Name` x2 | Correctly filtered (#19) | Nil-check boilerplate |
-| `resolveMention` map->slice x2 | Correctly filtered (#12) | Different collection types, already extracted |
-| `if avatar == "" vs icon == ""` x2 | Correctly filtered (#11) | Guard clause |
-| `withDefaultDuration/Int` x2 | Correctly filtered (#15) | Same as #14 |
-| `args := make([]any, ...)` x2 | Correctly filtered (#24) | SQL args boilerplate |
-| `if projectionName != "" vs guildID != ""` x2 | Correctly filtered (#16) | SQL WHERE guard |
-| `restFetchUser/Guild` x2 | Correctly filtered (#13) | Error-wrapping tail |
-| `for _, k := range kinds` x2 | Correctly filtered (#18) | Different element types, but iteration boilerplate |
-| `if pct < 1 vs offset < 0` x2 | Correctly filtered (#26) | Clamp guard |
-| `if err != nil || user/guild == nil` x2 | Correctly filtered (#27) | Nil-guard |
-| `IsAttachmentGoneError` x2 | Correctly filtered (#31) | Error-check tail |
-| `ParentID() != nil` x2 | Correctly filtered (#28) | Nil-guard |
-| `for id := range ids` x2 | Correctly filtered (#29) | Keys extraction idiom |
-| `if att.URL == "" vs media.URL == ""` x2 | Correctly filtered (#30) | Skip guard |
+| Surfaced group                                | Feedback verdict           | Why it's noise                                                                       |
+| --------------------------------------------- | -------------------------- | ------------------------------------------------------------------------------------ |
+| `if err != nil { queryRowErr(...) }` x7       | Correctly filtered (#1,#2) | Already a shared helper; different entity types don't make this a generics candidate |
+| `if err != nil                                |                            | ch == nil` x3                                                                        |
+| `if err != nil` detail-author x3              | Correctly filtered (#5)    | Same pattern                                                                         |
+| `if result.GuildID != ""` x5                  | Correctly filtered (#7)    | Pagination guard, different view-model types                                         |
+| `envDuration`/`envInt` x2                     | Correctly filtered (#14)   | Already a helper; `time.Duration` vs `int` doesn't make it genericizable             |
+| `avatars/icons` refresh x2                    | Correctly filtered (#22)   | Already has `//nolint:dupl`; different download types                                |
+| `if ch != nil && ch.Name` x2                  | Correctly filtered (#19)   | Nil-check boilerplate                                                                |
+| `resolveMention` map->slice x2                | Correctly filtered (#12)   | Different collection types, already extracted                                        |
+| `if avatar == "" vs icon == ""` x2            | Correctly filtered (#11)   | Guard clause                                                                         |
+| `withDefaultDuration/Int` x2                  | Correctly filtered (#15)   | Same as #14                                                                          |
+| `args := make([]any, ...)` x2                 | Correctly filtered (#24)   | SQL args boilerplate                                                                 |
+| `if projectionName != "" vs guildID != ""` x2 | Correctly filtered (#16)   | SQL WHERE guard                                                                      |
+| `restFetchUser/Guild` x2                      | Correctly filtered (#13)   | Error-wrapping tail                                                                  |
+| `for _, k := range kinds` x2                  | Correctly filtered (#18)   | Different element types, but iteration boilerplate                                   |
+| `if pct < 1 vs offset < 0` x2                 | Correctly filtered (#26)   | Clamp guard                                                                          |
+| `if err != nil                                |                            | user/guild == nil` x2                                                                |
+| `IsAttachmentGoneError` x2                    | Correctly filtered (#31)   | Error-check tail                                                                     |
+| `ParentID() != nil` x2                        | Correctly filtered (#28)   | Nil-guard                                                                            |
+| `for id := range ids` x2                      | Correctly filtered (#29)   | Keys extraction idiom                                                                |
+| `if att.URL == "" vs media.URL == ""` x2      | Correctly filtered (#30)   | Skip guard                                                                           |
 
 **Scorecard: 3 true positives, 21 false positives. 12.5% precision, 100% recall.**
 
@@ -263,6 +263,7 @@ The current tests are unit-level (construct `CloneNode` trees manually, test `Cl
 ### G1. Precision target: what false-positive rate is acceptable?
 
 The feature currently has 12.5% precision (3 true / 24 surfaced). I can add heuristics (min-lines, pattern exclusion, multi-position requirement) to improve this, but each filter risks missing real candidates. What precision/recall tradeoff do you want? Options:
+
 - **Conservative** (surface only high-confidence, may miss some real candidates) — target <5 groups on DiscordSync
 - **Balanced** (moderate filtering, some noise acceptable) — target ~10 groups
 - **Permissive** (current behavior, let users filter manually) — keep 24 groups

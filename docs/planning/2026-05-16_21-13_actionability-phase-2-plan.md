@@ -1,6 +1,6 @@
 # Actionability Phase 2 — Execution Plan
 
-**Date:** 2026-05-16 21:13  
+**Date:** 2026-05-16 21:13\
 **Context:** Previous session added `CloneActionability` type, `EvaluateActionability` analyzer, `--rich-text` flag, and wired semantic mode filtering. Critical bugs discovered in post-session review.
 
 ---
@@ -19,7 +19,7 @@
 
 ### 1.1 Populate Actionability in `ProcessClones`
 
-**File:** `printer/clone_processor.go`  
+**File:** `printer/clone_processor.go`\
 **Bug:** `CloneClassification.Actionability` is never set — it's an empty string.
 
 **Fix:** Call `EvaluateActionability(dups)` before the loop and set on every `ProcessedClone.Classification`.
@@ -30,7 +30,7 @@
 
 ### 1.2 Keep semantic filtering in `cmd` (performance)
 
-**File:** `cmd/run_output.go`  
+**File:** `cmd/run_output.go`\
 **Decision:** Do NOT remove semantic filtering from `cmd`. Filtering at `cmd` layer skips file I/O for non-actionable groups (performance win). Filtering at printer layer would require reading files first.
 
 **Architecture:**
@@ -41,14 +41,14 @@
 
 ### 1.3 Fix text output line range notation
 
-**File:** `printer/text.go`  
+**File:** `printer/text.go`\
 **Bug:** `writeCloneLines` uses `%d,%d` format (`store.go:97,103`). User explicitly called this "confusing" — they read it as "tokens 97-103" when it means "lines 97-103".
 
 **Fix:** Change format to `%d-%d` (`store.go:97-103`). Also check `OutputText` for `97,103` patterns.
 
 ### 1.4 Fix gci import formatting
 
-**File:** `printer/actionability_test.go`  
+**File:** `printer/actionability_test.go`\
 **Bug:** `gci` linter warning. Fix import grouping.
 
 ---
@@ -57,7 +57,7 @@
 
 ### 2.1 Implement `isPureErrorPropagation`
 
-**File:** `printer/actionability.go`  
+**File:** `printer/actionability.go`\
 **Current:** `len(seq) == 1 && seq[0].Type == golang.IfStmt`
 **Real:** An error propagation match spans multiple nodes:
 
@@ -75,7 +75,7 @@ IfStmt
 
 ### 2.2 Implement `isPureDeferPattern`
 
-**File:** `printer/actionability.go`  
+**File:** `printer/actionability.go`\
 **Current:** `len(seq) == 1 && seq[0].Type == golang.DeferStmt`
 **Real:** Need to distinguish:
 
@@ -85,7 +85,7 @@ IfStmt
 
 ### 2.3 Add `Actionability` to JSON output
 
-**File:** `printer/json.go`  
+**File:** `printer/json.go`\
 **Current:** `JSONClone` struct only has `Filename`, `LineStart`, `LineEnd`, `Fragment`.
 **Fix:** Add `Actionability string` field.
 
@@ -95,27 +95,27 @@ IfStmt
 
 ### 3.1 Add Actionability to text output in structural mode
 
-**File:** `printer/text.go`  
+**File:** `printer/text.go`\
 When `--structural` + `--rich-text`: show `[HIGH] method [non-actionable]` badge. This answers the priority/actionability relationship question — keep orthogonal but make both visible.
 
 ### 3.2 Add Actionability to HTML report
 
-**File:** `printer/html.go`, `html_summary.go`  
+**File:** `printer/html.go`, `html_summary.go`\
 Add `[non-actionable]` badges to clone group headers and filter button.
 
 ### 3.3 Add Actionability to plumbing output
 
-**File:** `printer/plumbing.go`  
+**File:** `printer/plumbing.go`\
 Add comment line `# non-actionable` or similar when rich-text enabled.
 
 ### 3.4 BDD test for `--semantic` suppression
 
-**File:** `bdd/` (new file)  
+**File:** `bdd/` (new file)\
 Test that `--semantic` suppresses interface signature clones while `--structural` shows them.
 
 ### 3.5 BDD test for `--rich-text`
 
-**File:** `bdd/` (new file)  
+**File:** `bdd/` (new file)\
 Test that `--rich-text` produces enhanced output with badges.
 
 ### 3.6 Update AGENTS.md

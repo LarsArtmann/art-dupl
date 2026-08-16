@@ -75,7 +75,7 @@ derivable as `data[tr.start]`** — no key field is stored. Consequences:
 **Pointer-stability contract:** `findTran` returns `&s.trans[i]`, valid
 only until the next `addTran` on the same state (insertion may grow the
 backing array). All call sites (`testAndSplit`, `canonize`, search) hold
-the pointer only across reads or across an `addTran` on a *different*
+the pointer only across reads or across an `addTran` on a _different_
 state, so the contract holds; `findTran`'s doc comment states it.
 
 `state` is now 32 B (slice header + `linkState`), `tran` 16 B. Layout
@@ -90,7 +90,7 @@ eliminated: positions are stored directly as `[]Pos` map values.
 
 **Ownership contract** (documented on `releaseContextList`, guarded by
 `TestContextListPoolSliceSurvival`): `contextList.append` copies slice
-*headers* into the destination map; releasing the source clears only its
+_headers_ into the destination map; releasing the source clears only its
 map entries — the `[]Pos` backing arrays survive via the destination's
 headers. After release, the caller must not touch the contextList at all
 (another goroutine may acquire it immediately).
@@ -105,13 +105,13 @@ race instrumentation inflates allocation counts.
 
 ## Results (deterministic allocation data, 10-sample baselines)
 
-| Benchmark                    | ADR-0019 era | This ADR      | Delta        |
-| ---------------------------- | ------------ | ------------- | ------------ |
-| STreeUpdate 100 tokens       | 304 allocs / 80 KB  | 101 allocs / 24 KB   | −67% / −70% |
-| STreeUpdate 2000 tokens      | 6,214 allocs / 378 KB | 2,046 allocs / 232 KB | −67% / −39% |
-| MemoryUsage 10k tokens (5k unique) | 10,067 allocs / 914 KB | 44 allocs / 591 KB | −99.6% / −35% |
-| FindDuplOver (search allocs) | 1,543       | 1,543         | unchanged (inherent `[]Pos`/`Match`) |
-| Parallel search par4/10k     | ~2.5 ms      | ~1.0 ms       | ~2.5× faster |
+| Benchmark                          | ADR-0019 era           | This ADR              | Delta                                |
+| ---------------------------------- | ---------------------- | --------------------- | ------------------------------------ |
+| STreeUpdate 100 tokens             | 304 allocs / 80 KB     | 101 allocs / 24 KB    | −67% / −70%                          |
+| STreeUpdate 2000 tokens            | 6,214 allocs / 378 KB  | 2,046 allocs / 232 KB | −67% / −39%                          |
+| MemoryUsage 10k tokens (5k unique) | 10,067 allocs / 914 KB | 44 allocs / 591 KB    | −99.6% / −35%                        |
+| FindDuplOver (search allocs)       | 1,543                  | 1,543                 | unchanged (inherent `[]Pos`/`Match`) |
+| Parallel search par4/10k           | ~2.5 ms                | ~1.0 ms               | ~2.5× faster                         |
 
 CPU profile after: map machinery fell from ~32% to ~14% of search samples;
 what remains is the `contextList` maps (positions keyed by preceding token).

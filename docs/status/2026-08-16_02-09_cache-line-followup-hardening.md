@@ -1,8 +1,8 @@
 # Cache Line Optimization Follow-Up Sprint — Status Report
 
-**Date**: 2026-08-16 02:09  
-**Session**: Follow-up to `2026-08-16_01-32_cache-line-optimizations.md` — hardening, testing, benchmarking  
-**Branch**: fork  
+**Date**: 2026-08-16 02:09\
+**Session**: Follow-up to `2026-08-16_01-32_cache-line-optimizations.md` — hardening, testing, benchmarking\
+**Branch**: fork\
 **Prior Session**: Initial cache line optimizations (field reordering + stack buffers)
 
 ---
@@ -66,14 +66,14 @@
 
 ### Benchmark Results (deterministic allocation data)
 
-| Benchmark | Baseline allocs/op | Current allocs/op | Delta |
-|-----------|-------------------|-------------------|-------|
-| FindDuplOver/threshold_10 | 7179 | 7158 | -21 (-0.29%) |
-| FindDuplOver/threshold_50 | 7173 | 7152 | -21 (-0.29%) |
-| FindDuplOver/threshold_200 | 7129 | 7108 | -21 (-0.29%) |
-| FindDuplOverParallel/par4/tokens_10000 | 143.1k | 142.8k | ~-300 (-0.25%) |
-| STreeUpdate (all sizes) | unchanged | unchanged | 0% |
-| Serialize (all sizes) | unchanged | unchanged | 0% |
+| Benchmark                              | Baseline allocs/op | Current allocs/op | Delta          |
+| -------------------------------------- | ------------------ | ----------------- | -------------- |
+| FindDuplOver/threshold_10              | 7179               | 7158              | -21 (-0.29%)   |
+| FindDuplOver/threshold_50              | 7173               | 7152              | -21 (-0.29%)   |
+| FindDuplOver/threshold_200             | 7129               | 7108              | -21 (-0.29%)   |
+| FindDuplOverParallel/par4/tokens_10000 | 143.1k             | 142.8k            | ~-300 (-0.25%) |
+| STreeUpdate (all sizes)                | unchanged          | unchanged         | 0%             |
+| Serialize (all sizes)                  | unchanged          | unchanged         | 0%             |
 
 Timing comparison is **inconclusive** — the baseline had only 5 samples (±∞ CI) and the CPU thermally throttles under sustained benchmark load. The allocation reduction is the only trustworthy signal: ~21 fewer allocs per `FindDuplOver` call, ~300-400 fewer at 10k tokens.
 

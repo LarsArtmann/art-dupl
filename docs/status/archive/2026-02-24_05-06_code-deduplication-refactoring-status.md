@@ -11,7 +11,7 @@
 | Metric                               | Value         | Status |
 | ------------------------------------ | ------------- | ------ |
 | **Build**                            | Passing       | ✅     |
-| **Test Packages**                    | 31/33 passing | ⚠️     |
+| **Test Packages**                    | 31/33 passing | ⚠️      |
 | **Failing Tests**                    | 5 total       | 🔴     |
 | **Code Duplicates (100% threshold)** | 0             | ✅     |
 | **Code Duplicates (50% threshold)**  | ~20           | 🟡     |
@@ -64,11 +64,11 @@ db99779 feat(semantic): implement semantic hashing for receiver and type declara
 
 ## C) NOT STARTED 📋
 
-| #   | Task                                                  | Priority |
-| --- | ----------------------------------------------------- | -------- |
-| 1   | Update BDD tests for new semantic default             | High     |
-| 2   | Address remaining ~20 duplicates at threshold 50      | Medium   |
-| 3   | Add migration guide for `--semantic` → `--structural` | Low      |
+| # | Task                                                  | Priority |
+| - | ----------------------------------------------------- | -------- |
+| 1 | Update BDD tests for new semantic default             | High     |
+| 2 | Address remaining ~20 duplicates at threshold 50      | Medium   |
+| 3 | Add migration guide for `--semantic` → `--structural` | Low      |
 
 ---
 

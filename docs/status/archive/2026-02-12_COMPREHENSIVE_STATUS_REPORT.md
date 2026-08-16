@@ -213,33 +213,33 @@ This report provides a comprehensive reflection on the art-dupl project status a
 
 ### Sorted by Impact/Effort Ratio
 
-| #   | Task                                            | Impact | Effort | Ratio | Priority |
-| --- | ----------------------------------------------- | ------ | ------ | ----- | -------- |
-| 1   | Update README with .templ analysis support      | HIGH   | LOW    | 🔥    | P1       |
-| 2   | Create CHANGELOG.md                             | MEDIUM | LOW    | 🔥    | P1       |
-| 3   | Fix Estimated Lines (actually count)            | HIGH   | MEDIUM | ⭐    | P1       |
-| 4   | Fix double-counting in stats                    | HIGH   | MEDIUM | ⭐    | P1       |
-| 5   | Update FEATURES.md                              | MEDIUM | LOW    | ⭐    | P2       |
-| 6   | Add disclaimer to stats output                  | MEDIUM | LOW    | ⭐    | P2       |
-| 7   | Add tests for `internal/enum`                   | LOW    | LOW    | ✅    | P2       |
-| 8   | Add tests for `pkg/logger`                      | LOW    | LOW    | ✅    | P2       |
-| 9   | Split `domain/domain_types_test.go`             | LOW    | MEDIUM | ✅    | P2       |
-| 10  | Split `printer/stats_test.go`                   | LOW    | MEDIUM | ✅    | P2       |
-| 11  | Split `pkg/filter/filter_test.go`               | LOW    | MEDIUM | ✅    | P3       |
-| 12  | Extract validation from `domain/clone.go`       | MEDIUM | MEDIUM | ✅    | P3       |
-| 13  | Split `pkg/filter/filter.go`                    | LOW    | MEDIUM | ✅    | P3       |
-| 14  | Extract helpers from `syntax/golang/golang.go`  | LOW    | MEDIUM | ✅    | P3       |
-| 15  | Extract validation from `config/config.go`      | LOW    | MEDIUM | ✅    | P3       |
-| 16  | Add tests for `internal/treesitter/templ`       | MEDIUM | HIGH   | ⚠️    | P3       |
-| 17  | Improve detection package coverage              | HIGH   | HIGH   | ⚠️    | P3       |
-| 18  | Improve pkg/artdupl coverage                    | HIGH   | HIGH   | ⚠️    | P3       |
-| 19  | Improve syntax/golang coverage                  | HIGH   | HIGH   | ⚠️    | P4       |
-| 20  | Add tests for `internal/simd`                   | LOW    | MEDIUM | ⚠️    | P4       |
-| 21  | Extract helpers from `internal/testutil/bdd.go` | LOW    | MEDIUM | ⚠️    | P4       |
-| 22  | Extract parsing from `detection/todos.go`       | LOW    | MEDIUM | ⚠️    | P4       |
-| 23  | Rename ComplexityScore to SpreadScore           | LOW    | LOW    | ✅    | P4       |
-| 24  | Make Health Score thresholds configurable       | MEDIUM | HIGH   | ⚠️    | P5       |
-| 25  | Add confidence intervals to stats               | MEDIUM | HIGH   | ⚠️    | P5       |
+| #  | Task                                            | Impact | Effort | Ratio | Priority |
+| -- | ----------------------------------------------- | ------ | ------ | ----- | -------- |
+| 1  | Update README with .templ analysis support      | HIGH   | LOW    | 🔥    | P1       |
+| 2  | Create CHANGELOG.md                             | MEDIUM | LOW    | 🔥    | P1       |
+| 3  | Fix Estimated Lines (actually count)            | HIGH   | MEDIUM | ⭐    | P1       |
+| 4  | Fix double-counting in stats                    | HIGH   | MEDIUM | ⭐    | P1       |
+| 5  | Update FEATURES.md                              | MEDIUM | LOW    | ⭐    | P2       |
+| 6  | Add disclaimer to stats output                  | MEDIUM | LOW    | ⭐    | P2       |
+| 7  | Add tests for `internal/enum`                   | LOW    | LOW    | ✅    | P2       |
+| 8  | Add tests for `pkg/logger`                      | LOW    | LOW    | ✅    | P2       |
+| 9  | Split `domain/domain_types_test.go`             | LOW    | MEDIUM | ✅    | P2       |
+| 10 | Split `printer/stats_test.go`                   | LOW    | MEDIUM | ✅    | P2       |
+| 11 | Split `pkg/filter/filter_test.go`               | LOW    | MEDIUM | ✅    | P3       |
+| 12 | Extract validation from `domain/clone.go`       | MEDIUM | MEDIUM | ✅    | P3       |
+| 13 | Split `pkg/filter/filter.go`                    | LOW    | MEDIUM | ✅    | P3       |
+| 14 | Extract helpers from `syntax/golang/golang.go`  | LOW    | MEDIUM | ✅    | P3       |
+| 15 | Extract validation from `config/config.go`      | LOW    | MEDIUM | ✅    | P3       |
+| 16 | Add tests for `internal/treesitter/templ`       | MEDIUM | HIGH   | ⚠️     | P3       |
+| 17 | Improve detection package coverage              | HIGH   | HIGH   | ⚠️     | P3       |
+| 18 | Improve pkg/artdupl coverage                    | HIGH   | HIGH   | ⚠️     | P3       |
+| 19 | Improve syntax/golang coverage                  | HIGH   | HIGH   | ⚠️     | P4       |
+| 20 | Add tests for `internal/simd`                   | LOW    | MEDIUM | ⚠️     | P4       |
+| 21 | Extract helpers from `internal/testutil/bdd.go` | LOW    | MEDIUM | ⚠️     | P4       |
+| 22 | Extract parsing from `detection/todos.go`       | LOW    | MEDIUM | ⚠️     | P4       |
+| 23 | Rename ComplexityScore to SpreadScore           | LOW    | LOW    | ✅    | P4       |
+| 24 | Make Health Score thresholds configurable       | MEDIUM | HIGH   | ⚠️     | P5       |
+| 25 | Add confidence intervals to stats               | MEDIUM | HIGH   | ⚠️     | P5       |
 
 ### Legend
 

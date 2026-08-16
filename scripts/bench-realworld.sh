@@ -112,7 +112,7 @@ fi
 		done
 		if [[ ${#medians[@]} -gt 0 ]]; then
 			sorted=($(printf '%s\n' "${medians[@]}" | sort))
-			echo "| $stage | ${sorted[$(( ${#sorted[@]} / 2 ))]} |"
+			echo "| $stage | ${sorted[$((${#sorted[@]} / 2))]} |"
 		fi
 	done
 	echo

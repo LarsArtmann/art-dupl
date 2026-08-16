@@ -105,7 +105,7 @@ All 30 tasks from the plan have been at least started (flag + config field added
 
 ### D2: Em-dash Cleanup via Python Script
 
-**What happened:** I used `python3` to bulk-replace em-dashes with commas in AGENTS.md and ADR docs. The replacement was `—` to `, ` globally.
+**What happened:** I used `python3` to bulk-replace em-dashes with commas in AGENTS.md and ADR docs. The replacement was `—` to `,` globally.
 
 **Problem:** Not all em-dashes were in `—` context. Some were at line starts, some in mid-sentence without spaces. The Python script handled the common case but I did NOT verify each replacement line for grammatical correctness.
 

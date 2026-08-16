@@ -186,48 +186,48 @@ This is a **stale gopls cache issue**. To fix:
 
 ### 🔴 Critical (Today)
 
-| #   | Task                       | Effort | Impact |
-| --- | -------------------------- | ------ | ------ |
-| 1   | Commit uncommitted changes | Low    | High   |
-| 2   | Add `.templ` to README     | Low    | Medium |
-| 3   | Restart LSP server         | Low    | Low    |
+| # | Task                       | Effort | Impact |
+| - | -------------------------- | ------ | ------ |
+| 1 | Commit uncommitted changes | Low    | High   |
+| 2 | Add `.templ` to README     | Low    | Medium |
+| 3 | Restart LSP server         | Low    | Low    |
 
 ### 🟠 High Priority (This Week)
 
-| #   | Task                                            | Effort | Impact |
-| --- | ----------------------------------------------- | ------ | ------ |
-| 4   | Split `domain/domain_types_test.go` (875 lines) | Medium | Medium |
-| 5   | Split `printer/stats_test.go` (796 lines)       | Medium | Medium |
-| 6   | Split `pkg/filter/filter_test.go` (725 lines)   | Medium | Medium |
-| 7   | Add unique duplicate lines metric               | Medium | High   |
-| 8   | Add `.templ` BDD tests                          | Medium | Medium |
+| # | Task                                            | Effort | Impact |
+| - | ----------------------------------------------- | ------ | ------ |
+| 4 | Split `domain/domain_types_test.go` (875 lines) | Medium | Medium |
+| 5 | Split `printer/stats_test.go` (796 lines)       | Medium | Medium |
+| 6 | Split `pkg/filter/filter_test.go` (725 lines)   | Medium | Medium |
+| 7 | Add unique duplicate lines metric               | Medium | High   |
+| 8 | Add `.templ` BDD tests                          | Medium | Medium |
 
 ### 🟡 Medium Priority (This Month)
 
-| #   | Task                                | Effort | Impact |
-| --- | ----------------------------------- | ------ | ------ |
-| 9   | Split `bdd/plumbing_output_test.go` | Low    | Low    |
-| 10  | Extract vendor/SQLC helpers         | Medium | Medium |
-| 11  | Add CSV output format               | Medium | Medium |
-| 12  | Add SARIF output format             | Medium | High   |
-| 13  | Complete `--profile` flag           | Low    | Medium |
-| 14  | Complete `--timeout` flag           | Low    | Medium |
-| 15  | Add concurrent file processing      | Medium | High   |
+| #  | Task                                | Effort | Impact |
+| -- | ----------------------------------- | ------ | ------ |
+| 9  | Split `bdd/plumbing_output_test.go` | Low    | Low    |
+| 10 | Extract vendor/SQLC helpers         | Medium | Medium |
+| 11 | Add CSV output format               | Medium | Medium |
+| 12 | Add SARIF output format             | Medium | High   |
+| 13 | Complete `--profile` flag           | Low    | Medium |
+| 14 | Complete `--timeout` flag           | Low    | Medium |
+| 15 | Add concurrent file processing      | Medium | High   |
 
 ### 🟢 Lower Priority (Eventually)
 
-| #   | Task                          | Effort | Impact |
-| --- | ----------------------------- | ------ | ------ |
-| 16  | Add TypeScript/JS support     | High   | High   |
-| 17  | Add Python support            | High   | Medium |
-| 18  | Add API documentation         | Medium | Medium |
-| 19  | Add package examples          | Medium | Low    |
-| 20  | Create `.duplignore` support  | Medium | Medium |
-| 21  | Add web UI visualization      | High   | Medium |
-| 22  | Add VS Code extension         | High   | Medium |
-| 23  | Add JetBrains plugin          | High   | Low    |
-| 24  | Add historical trend analysis | High   | Medium |
-| 25  | Add similarity scoring        | High   | Low    |
+| #  | Task                          | Effort | Impact |
+| -- | ----------------------------- | ------ | ------ |
+| 16 | Add TypeScript/JS support     | High   | High   |
+| 17 | Add Python support            | High   | Medium |
+| 18 | Add API documentation         | Medium | Medium |
+| 19 | Add package examples          | Medium | Low    |
+| 20 | Create `.duplignore` support  | Medium | Medium |
+| 21 | Add web UI visualization      | High   | Medium |
+| 22 | Add VS Code extension         | High   | Medium |
+| 23 | Add JetBrains plugin          | High   | Low    |
+| 24 | Add historical trend analysis | High   | Medium |
+| 25 | Add similarity scoring        | High   | Low    |
 
 ---
 

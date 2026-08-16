@@ -1,8 +1,8 @@
 # Data Layout & Allocation Optimization Sprint — Status Report
 
-**Date**: 2026-08-16 03:34  
-**Session**: Suffix tree data layout, I/O, cache, and RAM access performance optimizations  
-**Branch**: fork  
+**Date**: 2026-08-16 03:34\
+**Session**: Suffix tree data layout, I/O, cache, and RAM access performance optimizations\
+**Branch**: fork\
 **Prior Sessions**: `2026-08-16_01-32_cache-line-optimizations.md`, `2026-08-16_02-09_cache-line-followup-hardening.md`
 
 ---
@@ -90,18 +90,18 @@ The prior two sessions did field reordering on `syntax.Node`/`domain.CloneNode` 
 
 ### Benchmark Results (deterministic allocation data)
 
-| Benchmark | Before allocs/op | After allocs/op | Delta |
-|---|---|---|---|
-| FindDuplOver/threshold_10 | 7,158 | 1,543 | **-78.5%** |
-| FindDuplOver/threshold_50 | 7,152 | 1,539 | **-78.5%** |
-| FindDuplOver/threshold_200 | 7,118 | 1,518 | **-78.7%** |
-| par4/tokens_10000 (allocs) | 142,761 | 30,798 | **-78.5%** |
-| par4/tokens_10000 (bytes) | 7.4 MB | 175 KB | **-97.6%** |
-| STreeUpdate/tokens_100 | 434 | 304 | **-30.0%** |
-| STreeUpdate/tokens_500 | 2,378 | 1,678 | **-29.4%** |
-| STreeUpdate/tokens_2000 | 8,917 | 6,214 | **-30.3%** |
-| MemoryUsageFewTokens | 176 | 126 | **-28.4%** |
-| MemoryUsageManyTokens | 15,065 | 10,067 | **-33.2%** |
+| Benchmark                  | Before allocs/op | After allocs/op | Delta      |
+| -------------------------- | ---------------- | --------------- | ---------- |
+| FindDuplOver/threshold_10  | 7,158            | 1,543           | **-78.5%** |
+| FindDuplOver/threshold_50  | 7,152            | 1,539           | **-78.5%** |
+| FindDuplOver/threshold_200 | 7,118            | 1,518           | **-78.7%** |
+| par4/tokens_10000 (allocs) | 142,761          | 30,798          | **-78.5%** |
+| par4/tokens_10000 (bytes)  | 7.4 MB           | 175 KB          | **-97.6%** |
+| STreeUpdate/tokens_100     | 434              | 304             | **-30.0%** |
+| STreeUpdate/tokens_500     | 2,378            | 1,678           | **-29.4%** |
+| STreeUpdate/tokens_2000    | 8,917            | 6,214           | **-30.3%** |
+| MemoryUsageFewTokens       | 176              | 126             | **-28.4%** |
+| MemoryUsageManyTokens      | 15,065           | 10,067          | **-33.2%** |
 
 Timing: par4/tokens_10000 went from ~2.5ms to ~1.3ms (consistent across all 10 samples, ~48% faster). Timing data is thermally noisy but the improvement is large enough to be real. Allocation counts are deterministic and are the primary signal.
 

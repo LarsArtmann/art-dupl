@@ -1,8 +1,8 @@
 # Comprehensive Status Report - art-dupl Project
 
-**Date:** 2026-02-25 11:52:26  
-**Branch:** fork  
-**Commit:** 72d7d3e (ci: fix and standardize GitHub Actions workflows)  
+**Date:** 2026-02-25 11:52:26\
+**Branch:** fork\
+**Commit:** 72d7d3e (ci: fix and standardize GitHub Actions workflows)\
 **Author:** Lars Artmann
 
 ---
@@ -11,8 +11,8 @@
 
 The art-dupl project is a **mature, production-ready code duplication detector** for Go with advanced features including multi-method detection, professional CLI, and comprehensive output formats. Recent work focused on CI/CD improvements, code cleanup, and architectural refinements.
 
-**Current Status:** ✅ Production Ready  
-**Overall Completion:** ~85% (core features complete, refinements ongoing)  
+**Current Status:** ✅ Production Ready\
+**Overall Completion:** ~85% (core features complete, refinements ongoing)\
 **Test Coverage:** Mixed (high in domain/adapter, low in job/lib)
 
 ---
@@ -368,5 +368,5 @@ The project demonstrates mature software engineering practices with strong typin
 
 ---
 
-_Report generated: 2026-02-25 11:52:26_  
+_Report generated: 2026-02-25 11:52:26_\
 _Status: Awaiting instructions for next steps_

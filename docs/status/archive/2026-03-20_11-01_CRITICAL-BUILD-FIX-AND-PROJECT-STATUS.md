@@ -1,7 +1,7 @@
 # Comprehensive Project Status Report
 
-**Date:** 2026-03-20 11:01 UTC  
-**Branch:** fork  
+**Date:** 2026-03-20 11:01 UTC\
+**Branch:** fork\
 **Commit:** b3753e8 (refactor: improve code formatting and fix benchmark syntax)
 
 ---
@@ -357,5 +357,5 @@ $ ./dist/art-dupl stats --semantic -t 50
 
 ---
 
-_Report generated: 2026-03-20 11:01 UTC_  
+_Report generated: 2026-03-20 11:01 UTC_\
 _Status: READY FOR DEVELOPMENT_

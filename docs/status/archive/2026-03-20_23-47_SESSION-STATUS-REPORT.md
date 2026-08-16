@@ -1,8 +1,8 @@
 # Comprehensive Status Report: art-dupl Project
 
-**Date:** 2026-03-20 23:47 CET  
-**Session:** Architectural Refactoring & SDK Stabilization  
-**Branch:** fork  
+**Date:** 2026-03-20 23:47 CET\
+**Session:** Architectural Refactoring & SDK Stabilization\
+**Branch:** fork\
 **Overall Health Score: A- (92/100)** ⬆️ UP FROM B+ (85/100)
 
 ---
@@ -153,8 +153,8 @@ func readFileDefault(filename string) ([]byte, error) {
 
 ### 1. Threshold Type Migration (int → domain.Threshold)
 
-**Impact:** HIGH  
-**Effort:** 2-3 hours  
+**Impact:** HIGH\
+**Effort:** 2-3 hours\
 **Risk:** Breaking change to public API
 
 **Scope:**
@@ -166,7 +166,7 @@ func readFileDefault(filename string) ([]byte, error) {
 
 ### 2. Remove Unused Domain Types
 
-**Impact:** LOW  
+**Impact:** LOW\
 **Effort:** 30 minutes
 
 **Types to Check:**
@@ -179,8 +179,8 @@ func readFileDefault(filename string) ([]byte, error) {
 
 ### 3. Magic Number Extraction
 
-**Impact:** LOW  
-**Effort:** 1 hour  
+**Impact:** LOW\
+**Effort:** 1 hour\
 **Count:** ~50 instances (mostly threshold=15)
 
 **Example:**
@@ -196,8 +196,8 @@ if threshold != DefaultThreshold { ... }
 
 ### 4. Linter Panic Fix
 
-**Impact:** CRITICAL  
-**Effort:** Unknown  
+**Impact:** CRITICAL\
+**Effort:** Unknown\
 **Status:** STILL BLOCKING CI/CD
 
 **Problem:** golangci-lint LSP panics on `cmd/cmd_utils_test.go`
@@ -421,7 +421,7 @@ This session successfully completed all Tier 1 architectural refactoring tasks:
 
 ---
 
-**Report Generated:** 2026-03-20 23:47 CET  
-**Author:** Crush AI Assistant  
-**Branch:** fork  
+**Report Generated:** 2026-03-20 23:47 CET\
+**Author:** Crush AI Assistant\
+**Branch:** fork\
 **Commit Range:** d57abda..HEAD

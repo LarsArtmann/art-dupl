@@ -1,8 +1,8 @@
 # Status Report: Actionability & Semantic Detection — Complete
 
-**Date:** 2026-05-16 21:31  
-**Branch:** fork  
-**Commits:** 5 ahead of origin/fork  
+**Date:** 2026-05-16 21:31\
+**Branch:** fork\
+**Commits:** 5 ahead of origin/fork\
 **Test Status:** ✅ All 31 packages pass, 253 BDD specs pass
 
 ---
@@ -186,33 +186,33 @@ clean. All builds and tests pass.
 
 ## f) Top #25 Things To Get Done Next
 
-| #   | Task                                                                           | Priority | Effort | Impact                                         |
-| --- | ------------------------------------------------------------------------------ | -------- | ------ | ---------------------------------------------- |
-| 1   | Add `IdentValue` field to `syntax.Node` for precise defer/selector name lookup | P0       | Medium | Enables real `Unlock` vs `Cleanup` distinction |
-| 2   | Fix `isErrorOnlyIf` false negatives by inspecting BinaryExpr operator type     | P1       | Low    | Reduces false positives in error propagation   |
-| 3   | Add Actionability badges to HTML report                                        | P1       | Medium | Parity with text output                        |
-| 4   | Add Actionability to SARIF output                                              | P2       | Low    | Security tool integration needs classification |
-| 5   | Add Actionability to Simple-JSON output                                        | P2       | Low    | Simple API parity                              |
-| 6   | Add `# non-actionable` comment to plumbing output                              | P3       | Low    | Machine-readable flag                          |
-| 7   | Stats subcommand `--rich-text` support                                         | P3       | Low    | Consistency across commands                    |
-| 8   | Benchmark `EvaluateActionability` on large repos (>1M LOC)                     | P3       | Low    | Performance confidence                         |
-| 9   | Update AGENTS.md with actionability patterns                                   | P4       | Low    | Memory maintenance                             |
-| 10  | Update README.md / FEATURES.md for `--rich-text`                               | P4       | Low    | User discoverability                           |
-| 11  | Add `--explain` flag showing per-clone classification rationale                | P4       | Medium | UX improvement                                 |
-| 12  | Weighted token analysis for partial-body boilerplate                           | P5       | Medium | Catches "mostly boilerplate" functions         |
-| 13  | Extend to goroutine patterns `go func(){ ... }()`                              | P5       | Low    | Common boilerplate in Go                       |
-| 14  | Extend to `context.WithCancel` boilerplate                                     | P5       | Low    | Standard Go pattern                            |
-| 15  | Extend to `nil` check patterns                                                 | P5       | Low    | `if x == nil { return nil, err }`              |
-| 16  | Extend to type assertion boilerplate                                           | P5       | Low    | `if v, ok := x.(T); ok`                        |
-| 17  | Add `--semantic` deprecation timeline for default switch                       | P5       | Low    | Breaking change planning                       |
-| 18  | Actionability filter buttons on HTML report (JS)                               | P5       | Medium | Interactive filtering                          |
-| 19  | Integration test on `go-cqrs-lite` repo                                        | P5       | Low    | Validate ~60-70% claim                         |
-| 20  | Add `ActionabilityThreshold` config (strictness)                               | P6       | Low    | Tunable behavior                               |
-| 21  | Error handling pattern: `errors.Is` / `errors.As`                              | P6       | Low    | More Go 1.13+ idioms                           |
-| 22  | Constructor pattern detection                                                  | P6       | Low    | `return &Type{Field: val}`                     |
-| 23  | Package-level variable declaration clones                                      | P6       | Low    | var blocks across files                        |
-| 24  | Interface embedding boilerplate                                                | P6       | Low    | `type X interface { Y }`                       |
-| 25  | Map/slice literal initialization patterns                                      | P6       | Low    | Common in config files                         |
+| #  | Task                                                                           | Priority | Effort | Impact                                         |
+| -- | ------------------------------------------------------------------------------ | -------- | ------ | ---------------------------------------------- |
+| 1  | Add `IdentValue` field to `syntax.Node` for precise defer/selector name lookup | P0       | Medium | Enables real `Unlock` vs `Cleanup` distinction |
+| 2  | Fix `isErrorOnlyIf` false negatives by inspecting BinaryExpr operator type     | P1       | Low    | Reduces false positives in error propagation   |
+| 3  | Add Actionability badges to HTML report                                        | P1       | Medium | Parity with text output                        |
+| 4  | Add Actionability to SARIF output                                              | P2       | Low    | Security tool integration needs classification |
+| 5  | Add Actionability to Simple-JSON output                                        | P2       | Low    | Simple API parity                              |
+| 6  | Add `# non-actionable` comment to plumbing output                              | P3       | Low    | Machine-readable flag                          |
+| 7  | Stats subcommand `--rich-text` support                                         | P3       | Low    | Consistency across commands                    |
+| 8  | Benchmark `EvaluateActionability` on large repos (>1M LOC)                     | P3       | Low    | Performance confidence                         |
+| 9  | Update AGENTS.md with actionability patterns                                   | P4       | Low    | Memory maintenance                             |
+| 10 | Update README.md / FEATURES.md for `--rich-text`                               | P4       | Low    | User discoverability                           |
+| 11 | Add `--explain` flag showing per-clone classification rationale                | P4       | Medium | UX improvement                                 |
+| 12 | Weighted token analysis for partial-body boilerplate                           | P5       | Medium | Catches "mostly boilerplate" functions         |
+| 13 | Extend to goroutine patterns `go func(){ ... }()`                              | P5       | Low    | Common boilerplate in Go                       |
+| 14 | Extend to `context.WithCancel` boilerplate                                     | P5       | Low    | Standard Go pattern                            |
+| 15 | Extend to `nil` check patterns                                                 | P5       | Low    | `if x == nil { return nil, err }`              |
+| 16 | Extend to type assertion boilerplate                                           | P5       | Low    | `if v, ok := x.(T); ok`                        |
+| 17 | Add `--semantic` deprecation timeline for default switch                       | P5       | Low    | Breaking change planning                       |
+| 18 | Actionability filter buttons on HTML report (JS)                               | P5       | Medium | Interactive filtering                          |
+| 19 | Integration test on `go-cqrs-lite` repo                                        | P5       | Low    | Validate ~60-70% claim                         |
+| 20 | Add `ActionabilityThreshold` config (strictness)                               | P6       | Low    | Tunable behavior                               |
+| 21 | Error handling pattern: `errors.Is` / `errors.As`                              | P6       | Low    | More Go 1.13+ idioms                           |
+| 22 | Constructor pattern detection                                                  | P6       | Low    | `return &Type{Field: val}`                     |
+| 23 | Package-level variable declaration clones                                      | P6       | Low    | var blocks across files                        |
+| 24 | Interface embedding boilerplate                                                | P6       | Low    | `type X interface { Y }`                       |
+| 25 | Map/slice literal initialization patterns                                      | P6       | Low    | Common in config files                         |
 
 ---
 

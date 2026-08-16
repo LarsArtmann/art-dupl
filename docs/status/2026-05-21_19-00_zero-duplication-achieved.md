@@ -199,33 +199,33 @@ b) Or use subprocess-based testing for commands that exit
 
 ## f) Top #25 Things We Should Get Done Next
 
-| #   | Task                                                                  | Priority | Effort | Impact           |
-| --- | --------------------------------------------------------------------- | -------- | ------ | ---------------- |
-| 1   | Fix os.Exit test flakiness (bdd + cmd packages)                       | CRITICAL | M      | CI trust         |
-| 2   | Fix 10 errcheck issues in test code                                   | HIGH     | S      | Linter clean     |
-| 3   | Extract buildJSONData into smaller functions (gocyclo 16→<10)         | HIGH     | S      | Maintainability  |
-| 4   | Extract `--threshold` and `art-dupl` string constants in tests        | LOW      | S      | Linter clean     |
-| 5   | Wire TodoDetector and LegacyDetector to CLI `-m` flag                 | HIGH     | M      | Feature complete |
-| 6   | Fix 2 exhaustruct issues in testutil                                  | LOW      | S      | Linter clean     |
-| 7   | Fix 2 err113 issues in testutil                                       | LOW      | S      | Linter clean     |
-| 8   | Introduce ProcessedClone DTO to decouple Printer from syntax.Node     | HIGH     | L      | Architecture     |
-| 9   | Consolidate 3 parallel Clone types                                    | MEDIUM   | L      | Simplicity       |
-| 10  | Implement proper CSV output using encoding/csv                        | MEDIUM   | S      | Correctness      |
-| 11  | Implement TokenValue type with validation                             | HIGH     | M      | Type safety      |
-| 12  | Unify enum patterns (domain → config generic helpers)                 | MEDIUM   | M      | Consistency      |
-| 13  | Refactor transform.go (369L, 300L switch)                             | MEDIUM   | M      | Maintainability  |
-| 14  | Optimize memory layouts for SIMD-friendly structures                  | MEDIUM   | L      | Performance      |
-| 15  | Implement string interning for large codebases                        | LOW      | M      | Memory           |
-| 16  | Wire remaining SIMD TODOs (6 items)                                   | LOW      | M      | Performance      |
-| 17  | Fix ConstantCSSProperty position (upstream PR or workaround)          | LOW      | S      | Correctness      |
-| 18  | Archive old docs/status/ files (keep last 30 days)                    | LOW      | S      | Cleanliness      |
-| 19  | Fix remaining LSP hints: unused params, unnecessary type args         | LOW      | S      | Cleanliness      |
-| 20  | Implement SDK from SDK_DESIGN.md                                      | LOW      | XL     | Extensibility    |
-| 21  | Add more fuzz tests for edge cases                                    | LOW      | M      | Robustness       |
-| 22  | Coverage improvement: domain (67%), job (77%), detection (78%)        | MEDIUM   | M      | Quality          |
-| 23  | Add benchmark regression CI (performance.yml exists but needs tuning) | MEDIUM   | S      | Performance      |
-| 24  | Consider modularization (go-modularize skill exists)                  | LOW      | XL     | Architecture     |
-| 25  | Migrate justfile → nix flake (per AGENTS.md preference)               | LOW      | M      | Tooling          |
+| #  | Task                                                                  | Priority | Effort | Impact           |
+| -- | --------------------------------------------------------------------- | -------- | ------ | ---------------- |
+| 1  | Fix os.Exit test flakiness (bdd + cmd packages)                       | CRITICAL | M      | CI trust         |
+| 2  | Fix 10 errcheck issues in test code                                   | HIGH     | S      | Linter clean     |
+| 3  | Extract buildJSONData into smaller functions (gocyclo 16→<10)         | HIGH     | S      | Maintainability  |
+| 4  | Extract `--threshold` and `art-dupl` string constants in tests        | LOW      | S      | Linter clean     |
+| 5  | Wire TodoDetector and LegacyDetector to CLI `-m` flag                 | HIGH     | M      | Feature complete |
+| 6  | Fix 2 exhaustruct issues in testutil                                  | LOW      | S      | Linter clean     |
+| 7  | Fix 2 err113 issues in testutil                                       | LOW      | S      | Linter clean     |
+| 8  | Introduce ProcessedClone DTO to decouple Printer from syntax.Node     | HIGH     | L      | Architecture     |
+| 9  | Consolidate 3 parallel Clone types                                    | MEDIUM   | L      | Simplicity       |
+| 10 | Implement proper CSV output using encoding/csv                        | MEDIUM   | S      | Correctness      |
+| 11 | Implement TokenValue type with validation                             | HIGH     | M      | Type safety      |
+| 12 | Unify enum patterns (domain → config generic helpers)                 | MEDIUM   | M      | Consistency      |
+| 13 | Refactor transform.go (369L, 300L switch)                             | MEDIUM   | M      | Maintainability  |
+| 14 | Optimize memory layouts for SIMD-friendly structures                  | MEDIUM   | L      | Performance      |
+| 15 | Implement string interning for large codebases                        | LOW      | M      | Memory           |
+| 16 | Wire remaining SIMD TODOs (6 items)                                   | LOW      | M      | Performance      |
+| 17 | Fix ConstantCSSProperty position (upstream PR or workaround)          | LOW      | S      | Correctness      |
+| 18 | Archive old docs/status/ files (keep last 30 days)                    | LOW      | S      | Cleanliness      |
+| 19 | Fix remaining LSP hints: unused params, unnecessary type args         | LOW      | S      | Cleanliness      |
+| 20 | Implement SDK from SDK_DESIGN.md                                      | LOW      | XL     | Extensibility    |
+| 21 | Add more fuzz tests for edge cases                                    | LOW      | M      | Robustness       |
+| 22 | Coverage improvement: domain (67%), job (77%), detection (78%)        | MEDIUM   | M      | Quality          |
+| 23 | Add benchmark regression CI (performance.yml exists but needs tuning) | MEDIUM   | S      | Performance      |
+| 24 | Consider modularization (go-modularize skill exists)                  | LOW      | XL     | Architecture     |
+| 25 | Migrate justfile → nix flake (per AGENTS.md preference)               | LOW      | M      | Tooling          |
 
 ---
 

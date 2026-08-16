@@ -16,28 +16,28 @@ One linter finding was resolved properly: `printer/text.go::formatBytes` (18-lin
 
 ## a) FULLY DONE
 
-| #   | Item                                                               | Evidence                                                     |
-| --- | ------------------------------------------------------------------ | ------------------------------------------------------------ |
-| 1   | `printer/text.go` `formatBytes` rewritten using `humanize.IBytes`  | `printer/text.go:364-371` (3 lines vs 18)                    |
-| 2   | Doc comment added explaining unit choice (IEC, `du -h` convention) | `printer/text.go:364-368`                                    |
-| 3   | Negative-byte safety preserved (`int`→`uint64` trap avoided)       | `printer/text.go:370`                                        |
-| 4   | Test expectations updated for new labels (`KiB/MiB/GiB`)           | `printer/text_utils_test.go:104-108`                         |
-| 5   | `github.com/dustin/go-humanize v1.0.1` added as direct dependency  | `go.mod`, `go.sum`                                           |
-| 6   | `flake.nix` `vendorHash` recomputed (`sha256-xaky…→sha256-j7xK…`)  | `flake.nix:53`; `nix build` succeeds                         |
-| 7   | Linter reports zero findings                                       | `/tmp/go-humanize-linter .` → `0 findings`                   |
-| 8   | `go test ./...` passes (all 28 packages)                           | full suite green                                             |
-| 9   | `go test -race ./printer/...` passes                               | race detector clean                                          |
-| 10  | `nix build` succeeds                                               | `/nix/store/…-art-dupl-0.6.1` produced                       |
-| 11  | `nix flake check` `fmt` and `bench` checks pass                    | both derivations built                                       |
-| 12  | All changes committed via auto-commit daemon                       | `cd14e44a` (refactor), `133e1391` (vendorHash + templ regen) |
+| #  | Item                                                               | Evidence                                                     |
+| -- | ------------------------------------------------------------------ | ------------------------------------------------------------ |
+| 1  | `printer/text.go` `formatBytes` rewritten using `humanize.IBytes`  | `printer/text.go:364-371` (3 lines vs 18)                    |
+| 2  | Doc comment added explaining unit choice (IEC, `du -h` convention) | `printer/text.go:364-368`                                    |
+| 3  | Negative-byte safety preserved (`int`→`uint64` trap avoided)       | `printer/text.go:370`                                        |
+| 4  | Test expectations updated for new labels (`KiB/MiB/GiB`)           | `printer/text_utils_test.go:104-108`                         |
+| 5  | `github.com/dustin/go-humanize v1.0.1` added as direct dependency  | `go.mod`, `go.sum`                                           |
+| 6  | `flake.nix` `vendorHash` recomputed (`sha256-xaky…→sha256-j7xK…`)  | `flake.nix:53`; `nix build` succeeds                         |
+| 7  | Linter reports zero findings                                       | `/tmp/go-humanize-linter .` → `0 findings`                   |
+| 8  | `go test ./...` passes (all 28 packages)                           | full suite green                                             |
+| 9  | `go test -race ./printer/...` passes                               | race detector clean                                          |
+| 10 | `nix build` succeeds                                               | `/nix/store/…-art-dupl-0.6.1` produced                       |
+| 11 | `nix flake check` `fmt` and `bench` checks pass                    | both derivations built                                       |
+| 12 | All changes committed via auto-commit daemon                       | `cd14e44a` (refactor), `133e1391` (vendorHash + templ regen) |
 
 ---
 
 ## b) PARTIALLY DONE
 
-| #   | Item                         | Status                                                                                     |
-| --- | ---------------------------- | ------------------------------------------------------------------------------------------ |
-| P1  | `nix flake check` full suite | `fmt` ✓, `bench` ✓, `disabled-linters` ✗ (pre-existing, NOT mine), `lint` ✗ (pre-existing) |
+| #  | Item                         | Status                                                                                     |
+| -- | ---------------------------- | ------------------------------------------------------------------------------------------ |
+| P1 | `nix flake check` full suite | `fmt` ✓, `bench` ✓, `disabled-linters` ✗ (pre-existing, NOT mine), `lint` ✗ (pre-existing) |
 
 `disabled-linters` and `lint` failures are **pre-existing on `cd14e44a^`** (verified by stashing my changes — baseline fails the same way). They are NOT caused by this session.
 
@@ -45,14 +45,14 @@ One linter finding was resolved properly: `printer/text.go::formatBytes` (18-lin
 
 ## c) NOT STARTED (Out of Scope)
 
-| #   | Item                                                                                                          |
-| --- | ------------------------------------------------------------------------------------------------------------- |
-| N1  | Fixing pre-existing `tagliatelle` re-enabling in `.golangci.yml` (50 issues)                                  |
-| N2  | Fixing pre-existing `godox` + `nlreturn` lint issues                                                          |
-| N3  | Investigating/auditing other rules (H002-H009) for additional findings in the repo                            |
-| N4  | Updating AGENTS.md / TODO_LIST.md / FEATURES.md / ROADMAP.md / CHANGELOG.md to record the new dep             |
-| N5  | Adding a `TestFormatBytes_NegativeBytes` table case if we ever lift the negative-handling into the public SDK |
-| N6  | Updating `.golangci.yml` to recognize `humanize.IBytes` style or marking the file exempt                      |
+| #  | Item                                                                                                          |
+| -- | ------------------------------------------------------------------------------------------------------------- |
+| N1 | Fixing pre-existing `tagliatelle` re-enabling in `.golangci.yml` (50 issues)                                  |
+| N2 | Fixing pre-existing `godox` + `nlreturn` lint issues                                                          |
+| N3 | Investigating/auditing other rules (H002-H009) for additional findings in the repo                            |
+| N4 | Updating AGENTS.md / TODO_LIST.md / FEATURES.md / ROADMAP.md / CHANGELOG.md to record the new dep             |
+| N5 | Adding a `TestFormatBytes_NegativeBytes` table case if we ever lift the negative-handling into the public SDK |
+| N6 | Updating `.golangci.yml` to recognize `humanize.IBytes` style or marking the file exempt                      |
 
 ---
 
@@ -92,38 +92,38 @@ Nothing. No regressions introduced. All tests that passed before still pass. The
 
 Priority order — Pareto (1% → 51% impact first):
 
-| #   | Task                                                                                                | Impact | Effort |
-| --- | --------------------------------------------------------------------------------------------------- | ------ | ------ |
-| 1   | Run the same linter against the WHOLE repo with all H rules enabled — find what else is hand-rolled | High   | Low    |
-| 2   | Audit `.golangci.yml` for the `tagliatelle` re-enabling (50 errors reported by `nix flake check`)   | High   | Low    |
-| 3   | Fix the `godox` + `nlreturn` issues in `nix flake check lint`                                       | Medium | Low    |
-| 4   | Update CHANGELOG.md with the `KB`→`KiB` user-visible output change                                  | Medium | Low    |
-| 5   | Update FEATURES.md to mention `go-humanize` as a new direct dependency                              | Low    | Low    |
-| 6   | Audit `printer/` for any other hand-rolled formatting (relative time, percentages, pluralization)   | Medium | Medium |
-| 7   | Audit `cmd/` for manual progress/timing formatting (often a hand-rolled `humanize` candidate)       | Medium | Medium |
-| 8   | Consider exposing `formatBytes` (or similar helpers) as `pkg/format` exports for SDK consumers      | Medium | Medium |
-| 9   | Add `golangci-lint` exclusion for the `templ-rendering-idiom` false-positive on `.templ` files      | Medium | Medium |
-| 10  | Profile startup time impact of the new `go-humanize` import (negligible but worth measuring)        | Low    | Low    |
-| 11  | Add `gocyclo`/`gocognit` exclusions for the regex-heavy acceptance-directive scanner                | Low    | Low    |
-| 12  | Consider `go.mod` `toolchain` directive pinning (currently just `go 1.26.5`)                        | Medium | Low    |
-| 13  | Migrate `flake.nix` from `proxyVendor = true` to direct vendor tracking if any CI flakiness         | Low    | Medium |
-| 14  | Add an integration test that the text-printer header is byte-correct vs `len(content)`              | Low    | Low    |
-| 15  | Audit `errors/` package for any hand-rolled error-message formatting that could use `humanize`      | Low    | Medium |
-| 16  | Document the `buildflow pre-commit` hook in AGENTS.md (discovered this session)                     | Low    | Low    |
-| 17  | Add a CONTRIBUTING.md note that H001-H009 are enforced by a pre-commit-grade linter                 | Low    | Low    |
-| 18  | Check if `go-humanize` has a stable v2 (it doesn't as of 2026-08) — revisit annually                | Low    | Low    |
-| 19  | Verify `nix flake check` from a clean cache (the eval-cache SQLite busy errors suggest dirty state) | Low    | Low    |
-| 20  | Consider vendoring `go-humanize` directly (skip the proxy) — already covered by `proxyVendor`       | Low    | Low    |
-| 21  | Run `golangci-lint run --timeout 5m ./...` with the project-default config and diff vs my changes   | Low    | Low    |
-| 22  | Re-run `/tmp/go-humanize-linter` against `examples/` and `bdd/` test fixtures                       | Low    | Low    |
-| 23  | Profile `nix build` time delta from the new dep (likely <1s)                                        | Low    | Low    |
-| 24  | Verify `nix develop` (devShell) still works with the new `vendorHash`                               | Low    | Low    |
-| 25  | Consider replacing any other hand-rolled `fmt.Sprintf("%.1f X", n/Y)` patterns with `humanize.SI`   | Medium | Medium |
-| 26  | Check if `templ` has its own byte/duration formatting that supersedes `humanize` for `.templ` files | Low    | Low    |
-| 27  | Verify the `--explain` flag (mentioned in AGENTS.md) still works after the label change             | Low    | Low    |
-| 28  | Run `go test -bench=. ./...` to confirm no benchmark regression                                     | Low    | Low    |
-| 29  | Add a `// Code generated by … DO NOT EDIT` guard to `printer/report_templ.go` if missing            | Low    | Low    |
-| 30  | Confirm the `auto-git-commit` daemon's two-commit split (refactor + chore) was correct semantically | Low    | Low    |
+| #  | Task                                                                                                | Impact | Effort |
+| -- | --------------------------------------------------------------------------------------------------- | ------ | ------ |
+| 1  | Run the same linter against the WHOLE repo with all H rules enabled — find what else is hand-rolled | High   | Low    |
+| 2  | Audit `.golangci.yml` for the `tagliatelle` re-enabling (50 errors reported by `nix flake check`)   | High   | Low    |
+| 3  | Fix the `godox` + `nlreturn` issues in `nix flake check lint`                                       | Medium | Low    |
+| 4  | Update CHANGELOG.md with the `KB`→`KiB` user-visible output change                                  | Medium | Low    |
+| 5  | Update FEATURES.md to mention `go-humanize` as a new direct dependency                              | Low    | Low    |
+| 6  | Audit `printer/` for any other hand-rolled formatting (relative time, percentages, pluralization)   | Medium | Medium |
+| 7  | Audit `cmd/` for manual progress/timing formatting (often a hand-rolled `humanize` candidate)       | Medium | Medium |
+| 8  | Consider exposing `formatBytes` (or similar helpers) as `pkg/format` exports for SDK consumers      | Medium | Medium |
+| 9  | Add `golangci-lint` exclusion for the `templ-rendering-idiom` false-positive on `.templ` files      | Medium | Medium |
+| 10 | Profile startup time impact of the new `go-humanize` import (negligible but worth measuring)        | Low    | Low    |
+| 11 | Add `gocyclo`/`gocognit` exclusions for the regex-heavy acceptance-directive scanner                | Low    | Low    |
+| 12 | Consider `go.mod` `toolchain` directive pinning (currently just `go 1.26.5`)                        | Medium | Low    |
+| 13 | Migrate `flake.nix` from `proxyVendor = true` to direct vendor tracking if any CI flakiness         | Low    | Medium |
+| 14 | Add an integration test that the text-printer header is byte-correct vs `len(content)`              | Low    | Low    |
+| 15 | Audit `errors/` package for any hand-rolled error-message formatting that could use `humanize`      | Low    | Medium |
+| 16 | Document the `buildflow pre-commit` hook in AGENTS.md (discovered this session)                     | Low    | Low    |
+| 17 | Add a CONTRIBUTING.md note that H001-H009 are enforced by a pre-commit-grade linter                 | Low    | Low    |
+| 18 | Check if `go-humanize` has a stable v2 (it doesn't as of 2026-08) — revisit annually                | Low    | Low    |
+| 19 | Verify `nix flake check` from a clean cache (the eval-cache SQLite busy errors suggest dirty state) | Low    | Low    |
+| 20 | Consider vendoring `go-humanize` directly (skip the proxy) — already covered by `proxyVendor`       | Low    | Low    |
+| 21 | Run `golangci-lint run --timeout 5m ./...` with the project-default config and diff vs my changes   | Low    | Low    |
+| 22 | Re-run `/tmp/go-humanize-linter` against `examples/` and `bdd/` test fixtures                       | Low    | Low    |
+| 23 | Profile `nix build` time delta from the new dep (likely <1s)                                        | Low    | Low    |
+| 24 | Verify `nix develop` (devShell) still works with the new `vendorHash`                               | Low    | Low    |
+| 25 | Consider replacing any other hand-rolled `fmt.Sprintf("%.1f X", n/Y)` patterns with `humanize.SI`   | Medium | Medium |
+| 26 | Check if `templ` has its own byte/duration formatting that supersedes `humanize` for `.templ` files | Low    | Low    |
+| 27 | Verify the `--explain` flag (mentioned in AGENTS.md) still works after the label change             | Low    | Low    |
+| 28 | Run `go test -bench=. ./...` to confirm no benchmark regression                                     | Low    | Low    |
+| 29 | Add a `// Code generated by … DO NOT EDIT` guard to `printer/report_templ.go` if missing            | Low    | Low    |
+| 30 | Confirm the `auto-git-commit` daemon's two-commit split (refactor + chore) was correct semantically | Low    | Low    |
 
 (Stopping at 30 — the remaining 20 would be nits, refactors downstream, or speculative.)
 

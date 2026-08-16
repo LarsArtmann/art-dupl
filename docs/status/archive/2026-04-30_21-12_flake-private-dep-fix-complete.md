@@ -60,15 +60,15 @@
 
 ### Failed Approaches (for the record)
 
-| #   | Approach                                                                                 | Why It Failed                                                                                |
-| --- | ---------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| 1   | `vendorHash = null` + `go mod vendor` in source tree                                     | No vendor/ existed; broken by design                                                         |
-| 2   | `go mod edit -replace` pointing to `${gogenfilter}` Nix store path directly in goModules | Fixed-output derivations cannot reference other store paths                                  |
-| 3   | Dummy with empty go.mod (just `package gogenfilter`)                                     | `go mod vendor` needs actual package files to resolve imports                                |
-| 4   | `cp -r vendor vendor-tmp` then modify                                                    | Symlinks from Nix store are read-only; cp -r preserves them                                  |
-| 5   | `cp -rL vendor vendor-tmp` then modify                                                   | Still failed on nested read-only files; `rm -rf` couldn't delete                             |
-| 6   | Main `preBuild` inherited by goModules                                                   | preBuild is inherited; created vendor/ in goModules, triggering "vendor folder exists" check |
-| 7   | Replace in main go.mod without fixing vendor/modules.txt                                 | "inconsistent vendoring" — modules.txt said `./dummy`, go.mod said `./vendor/...`            |
+| # | Approach                                                                                 | Why It Failed                                                                                |
+| - | ---------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| 1 | `vendorHash = null` + `go mod vendor` in source tree                                     | No vendor/ existed; broken by design                                                         |
+| 2 | `go mod edit -replace` pointing to `${gogenfilter}` Nix store path directly in goModules | Fixed-output derivations cannot reference other store paths                                  |
+| 3 | Dummy with empty go.mod (just `package gogenfilter`)                                     | `go mod vendor` needs actual package files to resolve imports                                |
+| 4 | `cp -r vendor vendor-tmp` then modify                                                    | Symlinks from Nix store are read-only; cp -r preserves them                                  |
+| 5 | `cp -rL vendor vendor-tmp` then modify                                                   | Still failed on nested read-only files; `rm -rf` couldn't delete                             |
+| 6 | Main `preBuild` inherited by goModules                                                   | preBuild is inherited; created vendor/ in goModules, triggering "vendor folder exists" check |
+| 7 | Replace in main go.mod without fixing vendor/modules.txt                                 | "inconsistent vendoring" — modules.txt said `./dummy`, go.mod said `./vendor/...`            |
 
 ---
 

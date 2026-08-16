@@ -28,8 +28,8 @@
 
 ## B) PARTIALLY DONE ⚠️
 
-| Component        | Status          | What's Missing                                                                                                        |
-| ---------------- | --------------- | --------------------------------------------------------------------------------------------------------------------- |
+| Component        | Status         | What's Missing                                                                                                        |
+| ---------------- | -------------- | --------------------------------------------------------------------------------------------------------------------- |
 | **Status Doc**   | ⚠️ Outdated     | `docs/status/2026-02-15_08-29_semantic-detection-implementation.md` shows all tasks as "PENDING" but work is complete |
 | **Type Safety**  | ⚠️ Partial      | `SemanticHashEnabled` is a global bool, not passed through transformer struct                                         |
 | **Domain Types** | ⚠️ Inconsistent | `pkg/artdupl/types.go` uses primitives instead of domain types                                                        |
@@ -84,48 +84,48 @@ The semantic detection feature is working correctly. No critical issues.
 
 ### High Impact / Low Effort (Do First)
 
-| #   | Task                                                       | Effort | Impact | Category     |
-| --- | ---------------------------------------------------------- | ------ | ------ | ------------ |
-| 1   | Update outdated status doc to reflect completion           | Low    | Low    | Cleanup      |
-| 2   | Add Semantic field test to `config/config_test.go`         | Low    | Medium | Testing      |
-| 3   | Consolidate `printer/format.go` into `config.OutputFormat` | Medium | Medium | Architecture |
-| 4   | Use `domain.CloneGroupID` in `domain/clone.go`             | Low    | Medium | Type Safety  |
-| 5   | Use `domain.Hash` in `domain/clone.go`                     | Low    | Medium | Type Safety  |
-| 6   | Use `domain.AnalysisID` in `domain/analysis.go`            | Low    | Medium | Type Safety  |
+| # | Task                                                       | Effort | Impact | Category     |
+| - | ---------------------------------------------------------- | ------ | ------ | ------------ |
+| 1 | Update outdated status doc to reflect completion           | Low    | Low    | Cleanup      |
+| 2 | Add Semantic field test to `config/config_test.go`         | Low    | Medium | Testing      |
+| 3 | Consolidate `printer/format.go` into `config.OutputFormat` | Medium | Medium | Architecture |
+| 4 | Use `domain.CloneGroupID` in `domain/clone.go`             | Low    | Medium | Type Safety  |
+| 5 | Use `domain.Hash` in `domain/clone.go`                     | Low    | Medium | Type Safety  |
+| 6 | Use `domain.AnalysisID` in `domain/analysis.go`            | Low    | Medium | Type Safety  |
 
 ### High Impact / Medium Effort
 
-| #   | Task                                                                     | Effort | Impact | Category       |
-| --- | ------------------------------------------------------------------------ | ------ | ------ | -------------- |
-| 7   | Migrate `pkg/artdupl/types.go` Clone to use domain types                 | Medium | High   | Type Safety    |
-| 8   | Migrate `pkg/artdupl/types.go` CloneGroup to use domain types            | Medium | High   | Type Safety    |
-| 9   | Change `config/outputformat.go` Timeout from `string` to `time.Duration` | Medium | Medium | Type Safety    |
-| 10  | Expand `samber/mo` Result[T] usage across codebase                       | Medium | High   | Error Handling |
-| 11  | Add `go-playground/validator` for config validation                      | Medium | High   | Validation     |
+| #  | Task                                                                     | Effort | Impact | Category       |
+| -- | ------------------------------------------------------------------------ | ------ | ------ | -------------- |
+| 7  | Migrate `pkg/artdupl/types.go` Clone to use domain types                 | Medium | High   | Type Safety    |
+| 8  | Migrate `pkg/artdupl/types.go` CloneGroup to use domain types            | Medium | High   | Type Safety    |
+| 9  | Change `config/outputformat.go` Timeout from `string` to `time.Duration` | Medium | Medium | Type Safety    |
+| 10 | Expand `samber/mo` Result[T] usage across codebase                       | Medium | High   | Error Handling |
+| 11 | Add `go-playground/validator` for config validation                      | Medium | High   | Validation     |
 
 ### Medium Impact / Low Effort
 
-| #   | Task                                                       | Effort | Impact | Category     |
-| --- | ---------------------------------------------------------- | ------ | ------ | ------------ |
-| 12  | Convert `SemanticHashEnabled` from global to struct field  | Low    | Low    | Architecture |
-| 13  | Add domain types to `domain/options.go` Paths field        | Low    | Medium | Type Safety  |
-| 14  | Address TODO at `syntax/syntax.go:110-115` for type safety | Low    | Medium | Type Safety  |
-| 15  | Add BasicLit semantic encoding (if needed)                 | Medium | Low    | Feature      |
+| #  | Task                                                       | Effort | Impact | Category     |
+| -- | ---------------------------------------------------------- | ------ | ------ | ------------ |
+| 12 | Convert `SemanticHashEnabled` from global to struct field  | Low    | Low    | Architecture |
+| 13 | Add domain types to `domain/options.go` Paths field        | Low    | Medium | Type Safety  |
+| 14 | Address TODO at `syntax/syntax.go:110-115` for type safety | Low    | Medium | Type Safety  |
+| 15 | Add BasicLit semantic encoding (if needed)                 | Medium | Low    | Feature      |
 
 ### Lower Priority / Future Work
 
-| #   | Task                                                  | Effort | Impact | Category       |
-| --- | ----------------------------------------------------- | ------ | ------ | -------------- |
-| 16  | Consider viper for environment variable configuration | Medium | Medium | Config         |
-| 17  | Add Result chaining pattern for error handling        | High   | High   | Error Handling |
-| 18  | Create unified type migration guide                   | Low    | Low    | Documentation  |
-| 19  | Benchmark semantic detection performance impact       | Low    | Low    | Performance    |
-| 20  | Add semantic detection to hash-based method           | Medium | Medium | Feature        |
-| 21  | Add semantic detection for templ files                | Medium | Medium | Feature        |
-| 22  | Create semantic detection examples in examples/       | Low    | Low    | Documentation  |
-| 23  | Add semantic detection to stats output                | Low    | Low    | Feature        |
-| 24  | Consider semantic weighting (partial matches)         | High   | Low    | Feature        |
-| 25  | Add semantic exclusion patterns                       | Medium | Medium | Feature        |
+| #  | Task                                                  | Effort | Impact | Category       |
+| -- | ----------------------------------------------------- | ------ | ------ | -------------- |
+| 16 | Consider viper for environment variable configuration | Medium | Medium | Config         |
+| 17 | Add Result chaining pattern for error handling        | High   | High   | Error Handling |
+| 18 | Create unified type migration guide                   | Low    | Low    | Documentation  |
+| 19 | Benchmark semantic detection performance impact       | Low    | Low    | Performance    |
+| 20 | Add semantic detection to hash-based method           | Medium | Medium | Feature        |
+| 21 | Add semantic detection for templ files                | Medium | Medium | Feature        |
+| 22 | Create semantic detection examples in examples/       | Low    | Low    | Documentation  |
+| 23 | Add semantic detection to stats output                | Low    | Low    | Feature        |
+| 24 | Consider semantic weighting (partial matches)         | High   | Low    | Feature        |
+| 25 | Add semantic exclusion patterns                       | Medium | Medium | Feature        |
 
 ---
 
@@ -182,7 +182,7 @@ The semantic detection feature is working correctly. No critical issues.
 | ---------------- | -------------------------- | ------- |
 | `syntax/golang/` | 14 unit + 2 benchmarks     | ✅ Pass |
 | `bdd/`           | 4 BDD scenarios            | ✅ Pass |
-| `config/`        | No Semantic-specific tests | ⚠️ Gap  |
+| `config/`        | No Semantic-specific tests | ⚠️ Gap   |
 | Overall          | 221/221 BDD tests          | ✅ Pass |
 
 ---

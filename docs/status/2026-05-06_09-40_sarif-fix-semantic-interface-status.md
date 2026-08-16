@@ -2,8 +2,8 @@
 
 ## Executive Summary
 
-**Date:** 2026-05-06 09:40 AM CEST  
-**Branch:** `fork`  
+**Date:** 2026-05-06 09:40 AM CEST\
+**Branch:** `fork`\
 **Last Commit:** `a098597` — fix: SARIF output now uses real clone hashes instead of position strings
 
 ---
@@ -256,5 +256,5 @@ ok  github.com/LarsArtmann/art-dupl/syntax/golang  0.030s
 
 ---
 
-**Report Generated:** 2026-05-06 09:40 AM CEST  
+**Report Generated:** 2026-05-06 09:40 AM CEST\
 **By:** Crush (AI Assistant)

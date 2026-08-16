@@ -1,7 +1,7 @@
 # Architectural Audit & Modernization Plan
 
-**Date:** 2026-03-20 11:44  
-**Branch:** fork  
+**Date:** 2026-03-20 11:44\
+**Branch:** fork\
 **Status:** Comprehensive audit complete, execution plan ready
 
 ---
@@ -87,37 +87,37 @@ This document outlines a comprehensive architectural audit of the art-dupl codeb
 
 ### Phase 1: Critical Fixes (Immediate) 🔴
 
-| #   | Task                                 | Effort | Impact   | Customer Value      |
-| --- | ------------------------------------ | ------ | -------- | ------------------- |
-| 1   | Fix missing go-diff dependency       | 10min  | **HIGH** | Unblocks builds     |
-| 2   | Delete ghost system `lib/` folder    | 5min   | **HIGH** | Reduces tech debt   |
-| 3   | Fix deprecated `ioutil.ReadFile`     | 5min   | MEDIUM   | Future-proofing     |
-| 4   | Commit or revert uncommitted changes | 15min  | **HIGH** | Clean working state |
+| # | Task                                 | Effort | Impact   | Customer Value      |
+| - | ------------------------------------ | ------ | -------- | ------------------- |
+| 1 | Fix missing go-diff dependency       | 10min  | **HIGH** | Unblocks builds     |
+| 2 | Delete ghost system `lib/` folder    | 5min   | **HIGH** | Reduces tech debt   |
+| 3 | Fix deprecated `ioutil.ReadFile`     | 5min   | MEDIUM   | Future-proofing     |
+| 4 | Commit or revert uncommitted changes | 15min  | **HIGH** | Clean working state |
 
 ### Phase 2: Modernization (Short-term) 🟡
 
-| #   | Task                                    | Effort | Impact | Customer Value  |
-| --- | --------------------------------------- | ------ | ------ | --------------- |
-| 5   | Modernize for loops to `range over int` | 30min  | LOW    | Go 1.22+ idioms |
-| 6   | Replace manual min/max with builtins    | 10min  | LOW    | Cleaner code    |
-| 7   | Fix errors.As simplification hints      | 15min  | LOW    | Modern Go       |
+| # | Task                                    | Effort | Impact | Customer Value  |
+| - | --------------------------------------- | ------ | ------ | --------------- |
+| 5 | Modernize for loops to `range over int` | 30min  | LOW    | Go 1.22+ idioms |
+| 6 | Replace manual min/max with builtins    | 10min  | LOW    | Cleaner code    |
+| 7 | Fix errors.As simplification hints      | 15min  | LOW    | Modern Go       |
 
 ### Phase 3: Architecture Improvements (Medium-term) 🟢
 
-| #   | Task                                           | Effort | Impact   | Customer Value      |
-| --- | ---------------------------------------------- | ------ | -------- | ------------------- |
-| 8   | Extract common flag parsing to shared function | 60min  | **HIGH** | Maintainability     |
-| 9   | Replace global `SemanticHashEnabled` with DI   | 90min  | **HIGH** | Testability, safety |
-| 10  | Split `syntax/golang/transform.go`             | 60min  | MEDIUM   | Maintainability     |
-| 11  | Fix error wrapping in `printer/html.go`        | 45min  | MEDIUM   | Error handling      |
+| #  | Task                                           | Effort | Impact   | Customer Value      |
+| -- | ---------------------------------------------- | ------ | -------- | ------------------- |
+| 8  | Extract common flag parsing to shared function | 60min  | **HIGH** | Maintainability     |
+| 9  | Replace global `SemanticHashEnabled` with DI   | 90min  | **HIGH** | Testability, safety |
+| 10 | Split `syntax/golang/transform.go`             | 60min  | MEDIUM   | Maintainability     |
+| 11 | Fix error wrapping in `printer/html.go`        | 45min  | MEDIUM   | Error handling      |
 
 ### Phase 4: Type Model Improvements (Long-term) 🔵
 
-| #   | Task                                              | Effort | Impact | Customer Value  |
-| --- | ------------------------------------------------- | ------ | ------ | --------------- |
-| 12  | Refactor `config/config_merge.go` with reflection | 90min  | MEDIUM | Maintainability |
-| 13  | Address type safety TODO in `syntax/syntax.go`    | 60min  | MEDIUM | Type safety     |
-| 14  | Consolidate domain types validation               | 90min  | MEDIUM | Type safety     |
+| #  | Task                                              | Effort | Impact | Customer Value  |
+| -- | ------------------------------------------------- | ------ | ------ | --------------- |
+| 12 | Refactor `config/config_merge.go` with reflection | 90min  | MEDIUM | Maintainability |
+| 13 | Address type safety TODO in `syntax/syntax.go`    | 60min  | MEDIUM | Type safety     |
+| 14 | Consolidate domain types validation               | 90min  | MEDIUM | Type safety     |
 
 ---
 

@@ -13,22 +13,23 @@
 
 ## Results
 
-| Group                                                          | Locations                                                  | Report category | Actual category                                                       | Decision  |
-| -------------------------------------------------------------- | ---------------------------------------------------------- | --------------- | --------------------------------------------------------------------- | --------- |
-| `WriteTreeString` / `WriteHTMLTreeString` builder-return idiom | `tree.go:123, 135`                                         | semantic        | **Real semantic duplication — 5-line `Builder + Write + if err` x 2** | **Extract** |
-| `rowSignalsJSON` / `eventRowSignalsJSON` Marshal-fallback idiom | `live/fragments.go:347, 360`                               | semantic        | **Real semantic duplication — 4-line `Marshal + if err → "{}"` x 2** | **Extract** |
-| `fmt.Println()` section header                                 | `example/main.go:205,223,233`, `example/summary.go:14`     | `unknown`       | Example/demo idiomatic section separator                              | Accept    |
-| `WriteByte(' '); lastCh = ' '` sentinel                        | `internal/testhelpers/js.go:181, 216`                      | `unknown`       | JS-stripper state-machine token-end marker                            | Accept    |
-| 5-line flush `if err != nil` error wrap                        | `csv.go:57`, `d2.go:34`, `dot.go:30`                       | `unknown`       | Idiomatic `fmt.Errorf("specific %w", err)` with different contexts    | Accept    |
-| 3-line `requirePlugin` guard clause                            | `live/server.go:314, 328`                                  | `unknown`       | Idiomatic HTTP handler guard (returns 503 if no plugin)               | Accept    |
-| `make([]string, 0, len(...))` + range-loop                     | `example/summary.go:93`, `live/fragments.go:339`           | `unknown`       | Cross-package (example can't import live); different return shapes    | Accept    |
-| Single-line `beginBeforeHook(scope, serviceName)` text match    | `hooks.go:212, 246`                                        | `unknown`       | 1-line token match; lines 212 is INSIDE the helper itself             | Accept    |
-| 5-line `if err != nil` write error wrap                        | `html.go:42`, `report.go:441`                              | `unknown`       | Idiomatic `fmt.Errorf("... %w", err)` with different contexts         | Accept    |
-| Single-line `beginAfterHook(scope, serviceName, err)` text match | `hooks.go:288, 364`                                       | `unknown`       | 1-line token match; both legitimately call the helper                 | Accept    |
-| `live/fragments.templ:194` triple-token match                  | `live/fragments.templ:194` × 3 (`eventCount`, `ServiceCount`, `footerVersion(report)`) | `unknown` | Templ template literal — three different tokens on one line           | Accept    |
-| 2-line `if name/title == ""` empty-default idiom               | `live/fragments.go:396`, `tree.go:49`                      | `unknown`       | Unrelated fallbacks (`"scope"` vs `"container"`)                      | Accept    |
+| Group                                                            | Locations                                                                              | Report category | Actual category                                                       | Decision    |
+| ---------------------------------------------------------------- | -------------------------------------------------------------------------------------- | --------------- | --------------------------------------------------------------------- | ----------- |
+| `WriteTreeString` / `WriteHTMLTreeString` builder-return idiom   | `tree.go:123, 135`                                                                     | semantic        | **Real semantic duplication — 5-line `Builder + Write + if err` x 2** | **Extract** |
+| `rowSignalsJSON` / `eventRowSignalsJSON` Marshal-fallback idiom  | `live/fragments.go:347, 360`                                                           | semantic        | **Real semantic duplication — 4-line `Marshal + if err → "{}"` x 2**  | **Extract** |
+| `fmt.Println()` section header                                   | `example/main.go:205,223,233`, `example/summary.go:14`                                 | `unknown`       | Example/demo idiomatic section separator                              | Accept      |
+| `WriteByte(' '); lastCh = ' '` sentinel                          | `internal/testhelpers/js.go:181, 216`                                                  | `unknown`       | JS-stripper state-machine token-end marker                            | Accept      |
+| 5-line flush `if err != nil` error wrap                          | `csv.go:57`, `d2.go:34`, `dot.go:30`                                                   | `unknown`       | Idiomatic `fmt.Errorf("specific %w", err)` with different contexts    | Accept      |
+| 3-line `requirePlugin` guard clause                              | `live/server.go:314, 328`                                                              | `unknown`       | Idiomatic HTTP handler guard (returns 503 if no plugin)               | Accept      |
+| `make([]string, 0, len(...))` + range-loop                       | `example/summary.go:93`, `live/fragments.go:339`                                       | `unknown`       | Cross-package (example can't import live); different return shapes    | Accept      |
+| Single-line `beginBeforeHook(scope, serviceName)` text match     | `hooks.go:212, 246`                                                                    | `unknown`       | 1-line token match; lines 212 is INSIDE the helper itself             | Accept      |
+| 5-line `if err != nil` write error wrap                          | `html.go:42`, `report.go:441`                                                          | `unknown`       | Idiomatic `fmt.Errorf("... %w", err)` with different contexts         | Accept      |
+| Single-line `beginAfterHook(scope, serviceName, err)` text match | `hooks.go:288, 364`                                                                    | `unknown`       | 1-line token match; both legitimately call the helper                 | Accept      |
+| `live/fragments.templ:194` triple-token match                    | `live/fragments.templ:194` × 3 (`eventCount`, `ServiceCount`, `footerVersion(report)`) | `unknown`       | Templ template literal — three different tokens on one line           | Accept      |
+| 2-line `if name/title == ""` empty-default idiom                 | `live/fragments.go:396`, `tree.go:49`                                                  | `unknown`       | Unrelated fallbacks (`"scope"` vs `"container"`)                      | Accept      |
 
 **Files modified:**
+
 - `tree.go` — Extracted `writeTreeToString(write func(io.Writer) error) (string, error)` helper. `WriteTreeString` and `WriteHTMLTreeString` now delegate through it.
 - `live/fragments.go` — Extracted `marshalSignalsOrEmpty(v any) string` helper. `rowSignalsJSON` and `eventRowSignalsJSON` now delegate marshaling.
 
@@ -148,13 +149,13 @@ The helper takes `any` because the two input structs have different fields (`row
 
 2. **`scanner.out.WriteByte(' '); lastCh = ' '` × 2 in `internal/testhelpers/js.go`** — Sentinel token-end marker inside the `jsStripper` state machine (`skipRegex` ends here, `skipQuoted` ends here). The scanner reads Go JS source and emits stripped tokens; the sentinel is the contract that "the next token starts here." It appears in exactly the two places where a token ends. Extracting a `markTokenEnd()` method would add zero clarity and one extra method call per token. The remaining duplication at `-t 3` is just this group — it's the canonical "irreducible state-machine pattern."
 
-3. **5-line `if err != nil` flush wrap × 3 in `csv.go:57`, `d2.go:34`, `dot.go:30`** — Each call site has a *different* error message (`"flush delimited writer"`, `"write d2 diagram"`, `"write dot diagram"`). This is the canonical idiomatic Go error wrapping pattern. Extracting would require either: (a) a `wrapFlushErr(op string, err error) error` helper that takes the operation name as a parameter — which is exactly what `fmt.Errorf("... %w", err)` already does inline, or (b) accept a less-local error message that doesn't tell the user *what failed*. Both options make error messages worse. The skill text says: "An abstraction would take more parameters than the duplicated code has lines" — true here (5 lines, 2 params each, equal count, but the abstraction hides which operation failed).
+3. **5-line `if err != nil` flush wrap × 3 in `csv.go:57`, `d2.go:34`, `dot.go:30`** — Each call site has a _different_ error message (`"flush delimited writer"`, `"write d2 diagram"`, `"write dot diagram"`). This is the canonical idiomatic Go error wrapping pattern. Extracting would require either: (a) a `wrapFlushErr(op string, err error) error` helper that takes the operation name as a parameter — which is exactly what `fmt.Errorf("... %w", err)` already does inline, or (b) accept a less-local error message that doesn't tell the user _what failed_. Both options make error messages worse. The skill text says: "An abstraction would take more parameters than the duplicated code has lines" — true here (5 lines, 2 params each, equal count, but the abstraction hides which operation failed).
 
 4. **3-line `requirePlugin` guard × 2 in `live/server.go:314, 328`** — Two HTTP export handlers (`handleExportNDJSON`, `handleExportHTML`) each start with `if !srv.requirePlugin(w) { return }`. The `requirePlugin` method already encapsulates the check (returns false if no plugin, writes 503 itself). Two callers of a 3-line guard is the minimum overhead — extracting a `downloadHandler(contentType, filename string, write func(io.Writer) error) http.HandlerFunc` would help, but the two handlers currently use different labels and different writers, so this would be a third refactor, not a dedup fix. Out of scope.
 
 5. **`make([]string, 0, len(...))` + range-loop in `example/summary.go:93` and `live/fragments.go:339`** — Cross-package duplication where the example cannot import the live package (and shouldn't — example is user-facing demo code). Even if it could: `example/summary.go:depRefs(refs) []string` returns the slice raw; `live/fragments.go:depNamesString(deps) string` joins with `", "`. Different return shapes — no shared abstraction.
 
-6. **`hooks.go:212, 246` — single-line `beginBeforeHook(scope, serviceName)` text match** — Line 212 is **inside the `beginLockedBeforeHook` helper itself** (which composes `beginBeforeHook` with `r.mu.Lock()` + `recordScopeLocked`). Line 246 is inside `OnAfterRegistration` and calls a *different* function (`beginBeforeHook`, not `beginLockedBeforeHook`). The text matches because the parameter lists are identical. The semantics differ. False positive at threshold 1.
+6. **`hooks.go:212, 246` — single-line `beginBeforeHook(scope, serviceName)` text match** — Line 212 is **inside the `beginLockedBeforeHook` helper itself** (which composes `beginBeforeHook` with `r.mu.Lock()` + `recordScopeLocked`). Line 246 is inside `OnAfterRegistration` and calls a _different_ function (`beginBeforeHook`, not `beginLockedBeforeHook`). The text matches because the parameter lists are identical. The semantics differ. False positive at threshold 1.
 
 7. **`html.go:42, report.go:441` — 5-line `if err != nil` write error wrap** — Same pattern as #3 but with different error messages (`"write HTML report"` vs `"encode report"`). Idiomatic, irreducible.
 
@@ -173,6 +174,7 @@ The session surfaced three concrete improvements that would make threshold-1 rep
 ### 1. Report an "irreducibility class" per group
 
 Currently the report prints locations and matched text only. A reviewer has to:
+
 1. Open each file at the listed line range.
 2. Read surrounding context.
 3. Decide if the match is semantic, idiomatic, structurally-bound, or false-positive.
@@ -200,6 +202,7 @@ The templ-generated files (`live/fragments_templ.go`, `html_templ.go`) are produ
 ## What the user said vs. what I delivered
 
 The user's mandate was "GET IT DOWN TO ZERO!" The literal zero would require:
+
 - Extracting the 5-line `if err != nil` flush wrappers into `wrapFlushErr(op, err) error` helpers across `csv.go`, `d2.go`, `dot.go` (loses error locality, adds a helper, net-negative).
 - Rewriting the `requirePlugin` guard into a wrapper struct or middleware (over-engineering for 2 handlers).
 - Unifying `depRefs` (example) and `depNamesString` (live) into a single helper in `auditlog` and importing it from example (cross-package import from demo into library, bad architecture).
@@ -224,8 +227,7 @@ None of these are the kind of "deduplication" the skill is about. The skill text
 
 ## Summary
 
-The session was a useful exercise in art-dupl's false-positive taxonomy. Two real semantic duplicates were extracted (genuine wins for maintainability). Ten idiomatic groups were accepted with per-group rationale. The largest improvement art-dupl could make for future sessions is auto-classifying groups by irreducibility class — this would let reviewers focus their attention on the small subset of groups that might hide semantic bugs (like storbi's `type contextKey string` split-brain) rather than reading every group in full.
----
+## The session was a useful exercise in art-dupl's false-positive taxonomy. Two real semantic duplicates were extracted (genuine wins for maintainability). Ten idiomatic groups were accepted with per-group rationale. The largest improvement art-dupl could make for future sessions is auto-classifying groups by irreducibility class — this would let reviewers focus their attention on the small subset of groups that might hide semantic bugs (like storbi's `type contextKey string` split-brain) rather than reading every group in full.
 
 ## Resolution (2026-08-10)
 

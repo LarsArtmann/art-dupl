@@ -10,9 +10,9 @@
 
 ## Fixed This Session
 
-| #   | File             | Line | Identifier | Issue                       | Fix     |
-| --- | ---------------- | ---- | ---------- | --------------------------- | ------- |
-| 1   | syntax/syntax.go | 228+ | `cnt`      | Abbreviation in 4 functions | `count` |
+| # | File             | Line | Identifier | Issue                       | Fix     |
+| - | ---------------- | ---- | ---------- | --------------------------- | ------- |
+| 1 | syntax/syntax.go | 228+ | `cnt`      | Abbreviation in 4 functions | `count` |
 
 ## Domain Alignment Issues
 
@@ -40,11 +40,11 @@ The codebase has many Clone-related types serving different layers. The names ar
 
 ## Medium Issues
 
-| #   | File                      | Identifier     | Issue                           | Suggestion            |
-| --- | ------------------------- | -------------- | ------------------------------- | --------------------- |
-| 1   | domain/processed_clone.go | `priorityData` | Vague "Data" suffix             | `priorityWeights`     |
-| 2   | printer/html_views.go     | `*ViewData`    | Multiple types with Data suffix | Consider `*ViewModel` |
-| 3   | printer/file_processor.go | `FileInfo`     | Borderline generic              | Acceptable in context |
+| # | File                      | Identifier     | Issue                           | Suggestion            |
+| - | ------------------------- | -------------- | ------------------------------- | --------------------- |
+| 1 | domain/processed_clone.go | `priorityData` | Vague "Data" suffix             | `priorityWeights`     |
+| 2 | printer/html_views.go     | `*ViewData`    | Multiple types with Data suffix | Consider `*ViewModel` |
+| 3 | printer/file_processor.go | `FileInfo`     | Borderline generic              | Acceptable in context |
 
 ## Strengths (Excellent Naming)
 

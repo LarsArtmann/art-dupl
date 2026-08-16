@@ -1,7 +1,7 @@
 # Status Report — 2026-05-21 17:29
 
-**Session Type:** Comprehensive Status Update  
-**Branch:** `fork`  
+**Session Type:** Comprehensive Status Update\
+**Branch:** `fork`\
 **Working Tree:** 1 modified file (version template fix) + 1 new file (this report)
 
 ---
@@ -121,8 +121,8 @@ The project is in **strong shape** with 23/25 packages fully passing, 72% total 
 
 ### Test Failure #1: Version Command (BDD)
 
-**File:** `bdd/cli_commands_test.go:70`  
-**Test:** `Version Command / When running version command / should display version information`  
+**File:** `bdd/cli_commands_test.go:70`\
+**Test:** `Version Command / When running version command / should display version information`\
 **Root cause:** In-process execution runs `cmd.NewRootCommand()` directly. The `--version` flag is registered by `fang.Execute()` in `main.go`, not in `NewRootCommand()`. So the version subcommand/flag doesn't exist when we bypass `main()`.
 
 **Impact:** 1/255 BDD specs fail (0.4%)
@@ -133,7 +133,7 @@ The project is in **strong shape** with 23/25 packages fully passing, 72% total 
 
 ### Test Failure #2: Stats Non-Existent Path (cmd)
 
-**File:** `cmd/stats_integration_test.go` — `TestStatsCommandErrorCases/stats_with_non-existent-path`  
+**File:** `cmd/stats_integration_test.go` — `TestStatsCommandErrorCases/stats_with_non-existent-path`\
 **Root cause:** `statError()` in `run_crawl.go` calls `os.Exit(1)`, which terminates the test process in in-process mode. In subprocess mode, the exit happened in a child process and was captured.
 
 **Impact:** 1 cmd test fails
@@ -183,33 +183,33 @@ This is misleading for anyone reading project docs.
 
 ## f) Top 25 Things to Do Next
 
-| #   | Item                                                               | Impact   | Effort | Category     |
-| --- | ------------------------------------------------------------------ | -------- | ------ | ------------ |
-| 1   | Fix `os.Exit(1)` in `statError()` → return error                   | Critical | Small  | Bug fix      |
-| 2   | Move `--version` flag to `NewRootCommand()`                        | Critical | Small  | Bug fix      |
-| 3   | Update `docs/status/README.md` with real metrics                   | High     | Small  | Docs         |
-| 4   | Implement `TokenValue` type with validation                        | High     | Medium | Architecture |
-| 5   | Create `ProcessedClone` DTO for printer decoupling                 | High     | High   | Architecture |
-| 6   | Consolidate 3 Clone types into unified types                       | High     | High   | Architecture |
-| 7   | Move `clone_classify.go` language maps behind interface            | Medium   | Medium | Architecture |
-| 8   | Archive old `docs/status/` files (304)                             | Medium   | Small  | Cleanup      |
-| 9   | Add `ConstantCSSProperty` position tracking upstream issue         | Medium   | Small  | Upstream     |
-| 10  | Unify enum patterns across config/                                 | Medium   | Medium | Refactor     |
-| 11  | Refactor `transform.go` 300-line switch to table-driven            | Medium   | Medium | Refactor     |
-| 12  | Implement remaining 6 SIMD optimizations                           | Medium   | Medium | Performance  |
-| 13  | Use `encoding/csv` for clone CSV output                            | Low      | Small  | Quality      |
-| 14  | String interning for suffix tree tokens                            | Medium   | Medium | Performance  |
-| 15  | Add integration test for `--all` flag with multiple output formats | Medium   | Small  | Testing      |
-| 16  | Add fuzz tests for templ parser edge cases                         | Medium   | Small  | Testing      |
-| 17  | Wire TODO/Legacy detectors to CLI flags (if still desired)         | Low      | Small  | Feature      |
-| 18  | Fix remaining LSP hints (unused params, unnecessary type args)     | Low      | Small  | Quality      |
-| 19  | Add benchmark comparison: in-process vs subprocess BDD execution   | Medium   | Small  | Testing      |
-| 20  | Profile memory usage during large repo analysis                    | Medium   | Medium | Performance  |
-| 21  | Consider `go:embed` for HTML template instead of const             | Low      | Small  | Quality      |
-| 22  | Add SARIF output integration test                                  | Low      | Small  | Testing      |
-| 23  | Document `syscall.Dup2` pattern in `bdd/execute.go` with comments  | Low      | Small  | Docs         |
-| 24  | Evaluate `a-h/templ` v3 for `ConstantCSSProperty` Range field      | Low      | Small  | Upstream     |
-| 25  | Create GitHub release workflow (tag → binary → release)            | Medium   | Medium | CI/CD        |
+| #  | Item                                                               | Impact   | Effort | Category     |
+| -- | ------------------------------------------------------------------ | -------- | ------ | ------------ |
+| 1  | Fix `os.Exit(1)` in `statError()` → return error                   | Critical | Small  | Bug fix      |
+| 2  | Move `--version` flag to `NewRootCommand()`                        | Critical | Small  | Bug fix      |
+| 3  | Update `docs/status/README.md` with real metrics                   | High     | Small  | Docs         |
+| 4  | Implement `TokenValue` type with validation                        | High     | Medium | Architecture |
+| 5  | Create `ProcessedClone` DTO for printer decoupling                 | High     | High   | Architecture |
+| 6  | Consolidate 3 Clone types into unified types                       | High     | High   | Architecture |
+| 7  | Move `clone_classify.go` language maps behind interface            | Medium   | Medium | Architecture |
+| 8  | Archive old `docs/status/` files (304)                             | Medium   | Small  | Cleanup      |
+| 9  | Add `ConstantCSSProperty` position tracking upstream issue         | Medium   | Small  | Upstream     |
+| 10 | Unify enum patterns across config/                                 | Medium   | Medium | Refactor     |
+| 11 | Refactor `transform.go` 300-line switch to table-driven            | Medium   | Medium | Refactor     |
+| 12 | Implement remaining 6 SIMD optimizations                           | Medium   | Medium | Performance  |
+| 13 | Use `encoding/csv` for clone CSV output                            | Low      | Small  | Quality      |
+| 14 | String interning for suffix tree tokens                            | Medium   | Medium | Performance  |
+| 15 | Add integration test for `--all` flag with multiple output formats | Medium   | Small  | Testing      |
+| 16 | Add fuzz tests for templ parser edge cases                         | Medium   | Small  | Testing      |
+| 17 | Wire TODO/Legacy detectors to CLI flags (if still desired)         | Low      | Small  | Feature      |
+| 18 | Fix remaining LSP hints (unused params, unnecessary type args)     | Low      | Small  | Quality      |
+| 19 | Add benchmark comparison: in-process vs subprocess BDD execution   | Medium   | Small  | Testing      |
+| 20 | Profile memory usage during large repo analysis                    | Medium   | Medium | Performance  |
+| 21 | Consider `go:embed` for HTML template instead of const             | Low      | Small  | Quality      |
+| 22 | Add SARIF output integration test                                  | Low      | Small  | Testing      |
+| 23 | Document `syscall.Dup2` pattern in `bdd/execute.go` with comments  | Low      | Small  | Docs         |
+| 24 | Evaluate `a-h/templ` v3 for `ConstantCSSProperty` Range field      | Low      | Small  | Upstream     |
+| 25 | Create GitHub release workflow (tag → binary → release)            | Medium   | Medium | CI/CD        |
 
 ---
 

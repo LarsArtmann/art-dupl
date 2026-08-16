@@ -117,45 +117,45 @@ Layer 7 — Entry points:
 ### Module Dependency DAG
 
 ```
-                    ┌─────────────────────┐
-                    │   art-dupl-core     │
-                    │   (root module)     │
-                    │                     │
-                    │ domain, errors,     │
-                    │ suffixtree, syntax, │
-                    │ config, cache,      │
-                    │ hash, job,          │
-                    │ pkg/format,         │
-                    │ pkg/logger,         │
-                    │ pkg/position,       │
-                    │ testutil,           │
-                    │ testhelpers,        │
-                    │ bdd, examples       │
-                    └────────┬────────────┘
-                             │
-              ┌──────────────┼──────────────┐
-              │              │              │
-              ▼              ▼              ▼
-    ┌─────────────┐ ┌──────────────┐ ┌──────────────┐
-    │ detection   │ │   printer    │ │  pkg/artdupl │
-    │ (./detect.) │ │ (./printer/) │ │ (./pkg/..)   │
-    │             │ │              │ │              │
-    │ MultiDetect.│ │ 6 formats    │ │ SDK Detector │
-    │ MethodDetect│ │ stats, diff  │ │ Result,Clone │
-    │ TodoDetect. │ │ sort, class. │ │ Options      │
-    │ LegacyDetect│ │              │ │              │
-    └──────┬──────┘ └──────┬───────┘ └──────┬───────┘
-           │               │                │
-           │    ┌──────────┘                │
-           │    │                           │
-           ▼    ▼                           │
-    ┌───────────────────────────────────────┐
-    │          cmd (./cmd/)                 │◀┘
-    │                                       │
-    │ CLI orchestration                     │
-    │ Cobra + Fang + gogenfilter            │
-    │ cmd/art-dupl binary entry point       │
-    └───────────────────────────────────────┘
+                ┌─────────────────────┐
+                │   art-dupl-core     │
+                │   (root module)     │
+                │                     │
+                │ domain, errors,     │
+                │ suffixtree, syntax, │
+                │ config, cache,      │
+                │ hash, job,          │
+                │ pkg/format,         │
+                │ pkg/logger,         │
+                │ pkg/position,       │
+                │ testutil,           │
+                │ testhelpers,        │
+                │ bdd, examples       │
+                └────────┬────────────┘
+                         │
+          ┌──────────────┼──────────────┐
+          │              │              │
+          ▼              ▼              ▼
+┌─────────────┐ ┌──────────────┐ ┌──────────────┐
+│ detection   │ │   printer    │ │  pkg/artdupl │
+│ (./detect.) │ │ (./printer/) │ │ (./pkg/..)   │
+│             │ │              │ │              │
+│ MultiDetect.│ │ 6 formats    │ │ SDK Detector │
+│ MethodDetect│ │ stats, diff  │ │ Result,Clone │
+│ TodoDetect. │ │ sort, class. │ │ Options      │
+│ LegacyDetect│ │              │ │              │
+└──────┬──────┘ └──────┬───────┘ └──────┬───────┘
+       │               │                │
+       │    ┌──────────┘                │
+       │    │                           │
+       ▼    ▼                           │
+┌───────────────────────────────────────┐
+│          cmd (./cmd/)                 │◀┘
+│                                       │
+│ CLI orchestration                     │
+│ Cobra + Fang + gogenfilter            │
+│ cmd/art-dupl binary entry point       │
+└───────────────────────────────────────┘
 ```
 
 ### Module Detail Table

@@ -13,14 +13,14 @@
 art-dupl codebase itself. All 6 are idiomatic or intentional duplication that
 should be suppressed:
 
-| #   | Clone                                  | Lines                                                         | Category                                 |
-| --- | -------------------------------------- | ------------------------------------------------------------- | ---------------------------------------- |
-| 1   | `MethodArtDupl = domain.MethodArtDupl` | `detection/config.go:19-21` vs `pkg/artdupl/types.go:20-23`   | Architectural alias (arch-lint boundary) |
-| 2   | `opts := artdupl.DefaultOptions()`     | `examples/examples_sdk_demo.go:112-114` vs `:136-137`         | Self-contained example                   |
-| 3   | `t.Helper()` + delegate                | `internal/testutil/assert.go:34-37` vs `tabletest.go:149-151` | Irreducible Go boilerplate               |
-| 4   | `t.Helper()` + delegate                | `assert.go:51-54` vs `:95-97`                                 | Irreducible Go boilerplate               |
-| 5   | `t.Helper()` + delegate                | `assert.go:59-62` vs `:150-152`                               | Irreducible Go boilerplate               |
-| 6   | `t.Helper()` + delegate                | `assert.go:262-265` vs `:272-274`                             | Irreducible Go boilerplate               |
+| # | Clone                                  | Lines                                                         | Category                                 |
+| - | -------------------------------------- | ------------------------------------------------------------- | ---------------------------------------- |
+| 1 | `MethodArtDupl = domain.MethodArtDupl` | `detection/config.go:19-21` vs `pkg/artdupl/types.go:20-23`   | Architectural alias (arch-lint boundary) |
+| 2 | `opts := artdupl.DefaultOptions()`     | `examples/examples_sdk_demo.go:112-114` vs `:136-137`         | Self-contained example                   |
+| 3 | `t.Helper()` + delegate                | `internal/testutil/assert.go:34-37` vs `tabletest.go:149-151` | Irreducible Go boilerplate               |
+| 4 | `t.Helper()` + delegate                | `assert.go:51-54` vs `:95-97`                                 | Irreducible Go boilerplate               |
+| 5 | `t.Helper()` + delegate                | `assert.go:59-62` vs `:150-152`                               | Irreducible Go boilerplate               |
+| 6 | `t.Helper()` + delegate                | `assert.go:262-265` vs `:272-274`                             | Irreducible Go boilerplate               |
 
 Two suppression mechanisms exist but neither handles these cases:
 

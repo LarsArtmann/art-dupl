@@ -75,23 +75,23 @@ Nothing. All planned items for this session are complete.
 
 ## c) NOT STARTED
 
-| #   | Item                                                                    | Priority | Effort | Why                                                                                |
-| --- | ----------------------------------------------------------------------- | -------- | ------ | ---------------------------------------------------------------------------------- |
-| 1   | Extract `printer/clone_classify.go` language coupling                   | LOW      | M      | Imports `syntax/golang` directly; blocks multi-language support                    |
-| 2   | Extract printer conversion layer to subpackage                          | LOW      | L      | `clone_processor`, `file_processor`, `groups`, `actionability` all import `syntax` |
-| 3   | Use `encoding/csv` for clone CSV output                                 | LOW      | S      | Stats CSV already uses it; clone CSV uses manual formatting                        |
-| 4   | Implement remaining 6 SIMD TODOs                                        | LOW      | M      | `hash_simd.go` vectorized operations                                               |
-| 5   | Implement `art-dupl man` subcommand                                     | LOW      | M      | BDD test exists but subcommand not implemented                                     |
-| 6   | Add `TokenValue` type validation                                        | LOW      | S      | Currently raw `int32` alias, no bounds checking                                    |
-| 7   | Archive old docs/status/ files (331 files)                              | LOW      | S      | Only ~5 from last 30 days                                                          |
-| 8   | Increase `domain/` coverage from 67.2% to 80%+                          | MEDIUM   | M      | Lowest production package coverage                                                 |
-| 9   | Consolidate clone types (3 parallel types)                              | MEDIUM   | L      | Depends on Printer DTO migration                                                   |
-| 10  | Review and reduce `//nolint:` directives (45+)                          | LOW      | M      | Code cleanliness                                                                   |
-| 11  | Add changelog (CHANGELOG.md)                                            | LOW      | S      | Release management                                                                 |
-| 12  | SDK examples in `pkg/artdupl/` docs                                     | LOW      | S      | Developer experience                                                               |
-| 13  | Benchmark art-dupl vs original dupl                                     | LOW      | M      | Performance visibility                                                             |
-| 14  | Add integration tests for `--include-templ`, `--include-protobuf`, etc. | MEDIUM   | M      | Coverage for filter override flags                                                 |
-| 15  | Set up GitHub Actions for README link checking                          | LOW      | S      | CI quality                                                                         |
+| #  | Item                                                                    | Priority | Effort | Why                                                                                |
+| -- | ----------------------------------------------------------------------- | -------- | ------ | ---------------------------------------------------------------------------------- |
+| 1  | Extract `printer/clone_classify.go` language coupling                   | LOW      | M      | Imports `syntax/golang` directly; blocks multi-language support                    |
+| 2  | Extract printer conversion layer to subpackage                          | LOW      | L      | `clone_processor`, `file_processor`, `groups`, `actionability` all import `syntax` |
+| 3  | Use `encoding/csv` for clone CSV output                                 | LOW      | S      | Stats CSV already uses it; clone CSV uses manual formatting                        |
+| 4  | Implement remaining 6 SIMD TODOs                                        | LOW      | M      | `hash_simd.go` vectorized operations                                               |
+| 5  | Implement `art-dupl man` subcommand                                     | LOW      | M      | BDD test exists but subcommand not implemented                                     |
+| 6  | Add `TokenValue` type validation                                        | LOW      | S      | Currently raw `int32` alias, no bounds checking                                    |
+| 7  | Archive old docs/status/ files (331 files)                              | LOW      | S      | Only ~5 from last 30 days                                                          |
+| 8  | Increase `domain/` coverage from 67.2% to 80%+                          | MEDIUM   | M      | Lowest production package coverage                                                 |
+| 9  | Consolidate clone types (3 parallel types)                              | MEDIUM   | L      | Depends on Printer DTO migration                                                   |
+| 10 | Review and reduce `//nolint:` directives (45+)                          | LOW      | M      | Code cleanliness                                                                   |
+| 11 | Add changelog (CHANGELOG.md)                                            | LOW      | S      | Release management                                                                 |
+| 12 | SDK examples in `pkg/artdupl/` docs                                     | LOW      | S      | Developer experience                                                               |
+| 13 | Benchmark art-dupl vs original dupl                                     | LOW      | M      | Performance visibility                                                             |
+| 14 | Add integration tests for `--include-templ`, `--include-protobuf`, etc. | MEDIUM   | M      | Coverage for filter override flags                                                 |
+| 15 | Set up GitHub Actions for README link checking                          | LOW      | S      | CI quality                                                                         |
 
 ---
 
@@ -137,43 +137,43 @@ Nothing. All planned items for this session are complete.
 
 ### P1 — High Impact, Low Effort (under 1 hour each)
 
-| #   | Task                                                                      | Impact                      |
-| --- | ------------------------------------------------------------------------- | --------------------------- |
-| 1   | Increase `domain/` test coverage from 67.2% to 80%+                       | Type safety, catches bugs   |
-| 2   | Add integration tests for filter override flags (`--include-sqlc`, etc.)  | Coverage for real workflows |
-| 3   | Archive old docs/status/ files (keep last 30 days, move rest to archive/) | Repo cleanliness            |
-| 4   | Use `encoding/csv` for clone CSV output (match stats CSV pattern)         | Consistency                 |
-| 5   | Add CHANGELOG.md with initial version entries                             | Release management          |
+| # | Task                                                                      | Impact                      |
+| - | ------------------------------------------------------------------------- | --------------------------- |
+| 1 | Increase `domain/` test coverage from 67.2% to 80%+                       | Type safety, catches bugs   |
+| 2 | Add integration tests for filter override flags (`--include-sqlc`, etc.)  | Coverage for real workflows |
+| 3 | Archive old docs/status/ files (keep last 30 days, move rest to archive/) | Repo cleanliness            |
+| 4 | Use `encoding/csv` for clone CSV output (match stats CSV pattern)         | Consistency                 |
+| 5 | Add CHANGELOG.md with initial version entries                             | Release management          |
 
 ### P2 — Medium Impact, Medium Effort (1-4 hours each)
 
-| #   | Task                                                                    | Impact                        |
-| --- | ----------------------------------------------------------------------- | ----------------------------- |
-| 6   | Extract `printer/clone_classify.go` language coupling → interface-based | Multi-language prep           |
-| 7   | Split `printer/` into formatters vs. processing logic                   | Package clarity, 44→~20 files |
-| 8   | Add `TokenValue` type validation (bounds checking)                      | Type safety                   |
-| 9   | Implement `art-dupl man` subcommand (BDD test exists)                   | CLI completeness              |
-| 10  | Add BDD tests for `-m todos` and `-m legacy` workflows                  | Feature coverage              |
-| 11  | SDK examples in `pkg/artdupl/` documentation                            | Developer experience          |
-| 12  | Benchmark art-dupl vs original dupl                                     | Performance visibility        |
-| 13  | Add JSON schema for `dupl.json` config validation                       | Team consistency              |
-| 14  | Review and reduce `//nolint:` directives                                | Code cleanliness              |
-| 15  | Add `--only` flag to stats subcommand (consistent with root)            | UX consistency                |
+| #  | Task                                                                    | Impact                        |
+| -- | ----------------------------------------------------------------------- | ----------------------------- |
+| 6  | Extract `printer/clone_classify.go` language coupling → interface-based | Multi-language prep           |
+| 7  | Split `printer/` into formatters vs. processing logic                   | Package clarity, 44→~20 files |
+| 8  | Add `TokenValue` type validation (bounds checking)                      | Type safety                   |
+| 9  | Implement `art-dupl man` subcommand (BDD test exists)                   | CLI completeness              |
+| 10 | Add BDD tests for `-m todos` and `-m legacy` workflows                  | Feature coverage              |
+| 11 | SDK examples in `pkg/artdupl/` documentation                            | Developer experience          |
+| 12 | Benchmark art-dupl vs original dupl                                     | Performance visibility        |
+| 13 | Add JSON schema for `dupl.json` config validation                       | Team consistency              |
+| 14 | Review and reduce `//nolint:` directives                                | Code cleanliness              |
+| 15 | Add `--only` flag to stats subcommand (consistent with root)            | UX consistency                |
 
 ### P3 — Architecture (larger efforts)
 
-| #   | Task                                                                | Impact                 |
-| --- | ------------------------------------------------------------------- | ---------------------- |
-| 16  | Consolidate 3 parallel clone types into single canonical type       | Eliminates split brain |
-| 17  | Extract printer conversion layer to `processor/` subpackage         | Clean separation       |
-| 18  | Implement remaining 6 SIMD TODOs in `hash_simd.go`                  | Performance            |
-| 19  | Add non-Go language support framework (interface-based classifiers) | Extensibility          |
-| 20  | Generate API documentation from Go doc comments                     | Developer experience   |
-| 21  | Add pre-commit hook example for art-dupl                            | CI/CD integration      |
-| 22  | Create GitHub Actions reusable workflow for art-dupl                | CI/CD integration      |
-| 23  | Add SARIF output integration test with schema validation            | Output reliability     |
-| 24  | Investigate `state` struct memory layout optimization (24 bytes)    | Performance            |
-| 25  | Consider extracting `internal/testutil/` into shared test library   | Reusability            |
+| #  | Task                                                                | Impact                 |
+| -- | ------------------------------------------------------------------- | ---------------------- |
+| 16 | Consolidate 3 parallel clone types into single canonical type       | Eliminates split brain |
+| 17 | Extract printer conversion layer to `processor/` subpackage         | Clean separation       |
+| 18 | Implement remaining 6 SIMD TODOs in `hash_simd.go`                  | Performance            |
+| 19 | Add non-Go language support framework (interface-based classifiers) | Extensibility          |
+| 20 | Generate API documentation from Go doc comments                     | Developer experience   |
+| 21 | Add pre-commit hook example for art-dupl                            | CI/CD integration      |
+| 22 | Create GitHub Actions reusable workflow for art-dupl                | CI/CD integration      |
+| 23 | Add SARIF output integration test with schema validation            | Output reliability     |
+| 24 | Investigate `state` struct memory layout optimization (24 bytes)    | Performance            |
+| 25 | Consider extracting `internal/testutil/` into shared test library   | Reusability            |
 
 ---
 
@@ -226,10 +226,10 @@ The processing layer imports `syntax` and `syntax/golang`. The formatter layer o
 | `pkg/logger/`          | 87.5%    | ✅                 |
 | `syntax/templ/`        | 85.3%    | ✅                 |
 | `printer/`             | 82.7%    | ✅                 |
-| `job/`                 | 76.7%    | ⚠️                 |
-| `detection/`           | 78.3%    | ⚠️                 |
-| `cmd/`                 | 75.0%    | ⚠️                 |
-| `bdd/`                 | 70.0%    | ⚠️ (BDD, expected) |
+| `job/`                 | 76.7%    | ⚠️                  |
+| `detection/`           | 78.3%    | ⚠️                  |
+| `cmd/`                 | 75.0%    | ⚠️                  |
+| `bdd/`                 | 70.0%    | ⚠️ (BDD, expected)  |
 | `domain/`              | 67.2%    | ❌ Needs attention |
 | `internal/filtertest/` | 50.0%    | — (test helper)    |
 

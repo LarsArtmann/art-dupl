@@ -6,11 +6,11 @@
 
 ## 📊 EXECUTIVE SUMMARY
 
-**Progress**: 18/91 tasks completed (19.8%)  
-**Duration**: Utility & Enum consolidation phases  
-**Build Status**: ✅ Successful (compiles without errors)  
-**Runtime Status**: ❌ CRITICAL - CLI binary non-functional  
-**Critical Issues**: 1 (cmd/run.go stub breaks execution)  
+**Progress**: 18/91 tasks completed (19.8%)\
+**Duration**: Utility & Enum consolidation phases\
+**Build Status**: ✅ Successful (compiles without errors)\
+**Runtime Status**: ❌ CRITICAL - CLI binary non-functional\
+**Critical Issues**: 1 (cmd/run.go stub breaks execution)\
 **Key Achievement**: Complete utility and enum consolidation
 
 ---
@@ -847,7 +847,7 @@ internal/
 
 ---
 
-**Report Generated**: 2026-01-14 @ 02:13 CET  
-**Project**: art-dupl  
-**Phase**: Utility & Enum Consolidation Complete - Awaiting CLI Architecture Decision  
+**Report Generated**: 2026-01-14 @ 02:13 CET\
+**Project**: art-dupl\
+**Phase**: Utility & Enum Consolidation Complete - Awaiting CLI Architecture Decision\
 **Status**: 🟡 PARTIAL - 19.8% Complete, 1 Critical Issue

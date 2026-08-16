@@ -1,8 +1,8 @@
 # Pareto Optimization Plan - Critical Path to Maximum Value
 
-**Created:** 2026-01-07  
-**Branch:** fork  
-**Status:** Planning Phase  
+**Created:** 2026-01-07\
+**Branch:** fork\
+**Status:** Planning Phase\
 **Goal:** Execute 20% of tasks delivering 80% of value
 
 ---
@@ -28,8 +28,8 @@ This plan applies **Pareto Principle (80/20 Rule)** to identify and execute high
 | P0-CRITICAL | Fix 4 unchecked fmt.Errorf calls   | HIGH   | 15min  | 267x      | Pending |
 | P0-CRITICAL | Fix 2 unchecked file.Close() calls | HIGH   | 15min  | 267x      | Pending |
 
-**Total Work:** 30 minutes  
-**Total Value Delivered:** 51%  
+**Total Work:** 30 minutes\
+**Total Value Delivered:** 51%\
 **Rationale:** Security risk mitigation, reliability improvements, customer-facing error messages
 
 ---
@@ -44,9 +44,9 @@ This plan applies **Pareto Principle (80/20 Rule)** to identify and execute high
 | P1-HIGH  | Remove unused filesFeed() function                  | LOW    | 10min  | 30x       | Pending |
 | P1-HIGH  | Fix MultiDetector integration (3 architecture gaps) | HIGH   | 60min  | 40x       | Pending |
 
-**Total Work:** 100 minutes  
-**Additional Value Delivered:** 13%  
-**Cumulative Value:** 64%  
+**Total Work:** 100 minutes\
+**Additional Value Delivered:** 13%\
+**Cumulative Value:** 64%\
 **Rationale:** Code quality, modern Go practices, feature readiness (multi-detection)
 
 ---
@@ -66,9 +66,9 @@ This plan applies **Pareto Principle (80/20 Rule)** to identify and execute high
 | P2-MEDIUM | Consolidate enum helper implementations           | MEDIUM | 45min  | 22x       | Pending |
 | P2-MEDIUM | Create EnumValidationError type in errors package | MEDIUM | 30min  | 33x       | Pending |
 
-**Total Work:** 540 minutes (9 hours)  
-**Additional Value Delivered:** 16%  
-**Cumulative Value:** 80%  
+**Total Work:** 540 minutes (9 hours)\
+**Additional Value Delivered:** 16%\
+**Cumulative Value:** 80%\
 **Rationale:** Feature completeness, developer experience, architectural improvements
 
 ---
@@ -77,16 +77,16 @@ This plan applies **Pareto Principle (80/20 Rule)** to identify and execute high
 
 | ID   | Task                                                 | Priority    | Impact | Effort | Dependencies | Order |
 | ---- | ---------------------------------------------------- | ----------- | ------ | ------ | ------------ | ----- |
-| T1.1 | Fix critical error handling (6 golangci-lint issues) | P0-CRITICAL | HIGH   | None   | 1            |
-| T1.2 | Fix MultiDetector integration (3 architecture gaps)  | P1-HIGH     | HIGH   | T1.1   | 2            |
-| T1.3 | Replace deprecated APIs (rand.Seed, fang.WithTheme)  | P1-HIGH     | MEDIUM | None   | 3            |
-| T1.4 | Remove unused code (paths var, filesFeed func)       | P1-HIGH     | LOW    | None   | 4            |
-| T1.5 | Implement --profile flag (performance profiling)     | P2-MEDIUM   | MEDIUM | T1.2   | 5            |
-| T1.6 | Implement --timeout flag (execution timeout)         | P2-MEDIUM   | MEDIUM | None   | 6            |
-| T1.7 | Generate API documentation with go doc               | P2-MEDIUM   | MEDIUM | None   | 7            |
+| T1.1 | Fix critical error handling (6 golangci-lint issues) | P0-CRITICAL | HIGH   | None   | 1            |       |
+| T1.2 | Fix MultiDetector integration (3 architecture gaps)  | P1-HIGH     | HIGH   | T1.1   | 2            |       |
+| T1.3 | Replace deprecated APIs (rand.Seed, fang.WithTheme)  | P1-HIGH     | MEDIUM | None   | 3            |       |
+| T1.4 | Remove unused code (paths var, filesFeed func)       | P1-HIGH     | LOW    | None   | 4            |       |
+| T1.5 | Implement --profile flag (performance profiling)     | P2-MEDIUM   | MEDIUM | T1.2   | 5            |       |
+| T1.6 | Implement --timeout flag (execution timeout)         | P2-MEDIUM   | MEDIUM | None   | 6            |       |
+| T1.7 | Generate API documentation with go doc               | P2-MEDIUM   | MEDIUM | None   | 7            |       |
 
-**Total Level 1 Tasks:** 7  
-**Total Effort:** ~7 hours  
+**Total Level 1 Tasks:** 7\
+**Total Effort:** ~7 hours\
 **Expected Value:** 80% of total project value
 
 ---
@@ -104,7 +104,7 @@ This plan applies **Pareto Principle (80/20 Rule)** to identify and execute high
 | T2.5 | Fix file.Close() error in cli.go:803             | T1.1   | P0-CRITICAL | 15min  | 5     |
 | T2.6 | Fix w.Close() error in cli/runtime_test.go:93    | T1.1   | P0-CRITICAL | 15min  | 6     |
 
-**Critical Path Total:** 6 subtasks, 90 minutes  
+**Critical Path Total:** 6 subtasks, 90 minutes\
 **Value Delivered:** 51%
 
 ---
@@ -122,8 +122,8 @@ This plan applies **Pareto Principle (80/20 Rule)** to identify and execute high
 | T2.13 | Connect single-method execution to MultiDetector | T1.2   | P1-HIGH  | 15min  | 13    |
 | T2.14 | Test multi-detection end-to-end                  | T1.2   | P1-HIGH  | 15min  | 14    |
 
-**High Impact Total:** 8 subtasks, 110 minutes  
-**Additional Value Delivered:** 13%  
+**High Impact Total:** 8 subtasks, 110 minutes\
+**Additional Value Delivered:** 13%\
 **Cumulative Value:** 64%
 
 ---
@@ -144,8 +144,8 @@ This plan applies **Pareto Principle (80/20 Rule)** to identify and execute high
 | T2.24 | Consolidate enum helpers (deprecate config/unmarshal_helper) | T1.3   | P2-MEDIUM | 30min  | 24    |
 | T2.25 | Create EnumValidationError type in errors package            | T1.3   | P2-MEDIUM | 30min  | 25    |
 
-**Feature Complete Total:** 11 subtasks, 225 minutes  
-**Additional Value Delivered:** 16%  
+**Feature Complete Total:** 11 subtasks, 225 minutes\
+**Additional Value Delivered:** 16%\
 **Cumulative Value:** 80%
 
 ---
@@ -293,7 +293,7 @@ graph TD
   - Consolidate enum helpers
   - Create EnumValidationError type
 
-**Total Execution Time:** ~11 hours (3 days @ 4 hours/day)  
+**Total Execution Time:** ~11 hours (3 days @ 4 hours/day)\
 **Total Value Delivered:** 80% of project potential
 
 ---
@@ -327,9 +327,9 @@ graph TD
 
 | Tier                      | Tasks | Hours | Value        | Value/Hour |
 | ------------------------- | ----- | ----- | ------------ | ---------- |
-| Critical (Tier 1)         | 6     | 51%   | 17% per hour |
-| High Impact (Tier 2)      | 8     | 13%   | 2% per hour  |
-| Feature Complete (Tier 3) | 11    | 16%   | 1% per hour  |
+| Critical (Tier 1)         | 6     | 51%   | 17% per hour |            |
+| High Impact (Tier 2)      | 8     | 13%   | 2% per hour  |            |
+| Feature Complete (Tier 3) | 11    | 16%   | 1% per hour  |            |
 
 ### Cumulative Value
 
@@ -381,7 +381,7 @@ just build    # Verify build
 
 ---
 
-**Document Status:** Ready for execution  
-**Last Updated:** 2026-01-07  
-**Version:** 1.0  
+**Document Status:** Ready for execution\
+**Last Updated:** 2026-01-07\
+**Version:** 1.0\
 **Author:** AI Assistant via Crush

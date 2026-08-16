@@ -1,8 +1,8 @@
 # Feedback: `-t 1` reports independent boolean flags as a clone group
 
-**Date:** 2026-08-05  
-**Project:** `go-humanize-linter`, an AST-based Go linter detecting hand-rolled reimplementations of `dustin/go-humanize`  
-**Command:** `art-dupl --type-aware --sort total-tokens -t 1`  
+**Date:** 2026-08-05\
+**Project:** `go-humanize-linter`, an AST-based Go linter detecting hand-rolled reimplementations of `dustin/go-humanize`\
+**Command:** `art-dupl --type-aware --sort total-tokens -t 1`\
 **Goal:** Verify whether any harmful duplication exists in the linter's AST-pattern helpers.
 
 > **Verdict:** The report found **1 clone group / 2 occurrences**, but it is a structural false positive. The matched code is two independent pairs of local boolean flags initialized to `false` before unrelated `ast.Inspect` walks. There is zero shared logic and no sensible extraction.

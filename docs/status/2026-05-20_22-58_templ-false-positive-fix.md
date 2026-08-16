@@ -1,8 +1,8 @@
 # Status Report — 2026-05-20 22:58
 
-**Session Focus:** Bug report review → templ package declaration false positive → root cause analysis → fix → tests  
-**Branch:** `fork` (3 commits ahead, 4 behind `origin/fork`)  
-**Go Version:** 1.26.2 linux/amd64  
+**Session Focus:** Bug report review → templ package declaration false positive → root cause analysis → fix → tests\
+**Branch:** `fork` (3 commits ahead, 4 behind `origin/fork`)\
+**Go Version:** 1.26.2 linux/amd64\
 **Lint:** 0 issues | **Tests:** 253 BDD + all unit tests PASS | **Coverage:** 85.3% (syntax/templ)
 
 ---
@@ -114,53 +114,53 @@ From TODO_LIST.md (prioritized by impact):
 
 ### P0 — Immediate (unblock other work)
 
-| #   | Task                                                                  | Impact        | Effort |
-| --- | --------------------------------------------------------------------- | ------------- | ------ |
-| 1   | **Rebase/merge with origin/fork** — resolve gogenfilter v3 divergence | Unblocks push | S      |
-| 2   | **Push all commits** — get local work to remote                       | Safety net    | S      |
-| 3   | **Archive old docs/status/** — 304 files → keep 30 days               | Repo hygiene  | S      |
+| # | Task                                                                  | Impact        | Effort |
+| - | --------------------------------------------------------------------- | ------------- | ------ |
+| 1 | **Rebase/merge with origin/fork** — resolve gogenfilter v3 divergence | Unblocks push | S      |
+| 2 | **Push all commits** — get local work to remote                       | Safety net    | S      |
+| 3 | **Archive old docs/status/** — 304 files → keep 30 days               | Repo hygiene  | S      |
 
 ### P1 — High Impact Architecture
 
-| #   | Task                                                                                        | Impact                       | Effort |
-| --- | ------------------------------------------------------------------------------------------- | ---------------------------- | ------ |
-| 4   | **Introduce `ProcessedClone` DTO** — decouple Printer from `syntax.Node`                    | Unblocks 5, 6, 7, multi-lang | L      |
-| 5   | **Consolidate 3 Clone types** — `printer.clone` → `pkg/artdupl.Clone` → single type         | Eliminates split brain       | M      |
-| 6   | **Decouple `printer/clone_classify.go`** from `syntax/golang`                               | Multi-language prep          | M      |
-| 7   | **Change Printer interface** — accept `[]ProcessedCloneGroup` instead of `[][]*syntax.Node` | Clean architecture           | M      |
-| 8   | **Update 111 test call sites** for new Printer interface                                    | Complete the refactor        | L      |
+| # | Task                                                                                        | Impact                       | Effort |
+| - | ------------------------------------------------------------------------------------------- | ---------------------------- | ------ |
+| 4 | **Introduce `ProcessedClone` DTO** — decouple Printer from `syntax.Node`                    | Unblocks 5, 6, 7, multi-lang | L      |
+| 5 | **Consolidate 3 Clone types** — `printer.clone` → `pkg/artdupl.Clone` → single type         | Eliminates split brain       | M      |
+| 6 | **Decouple `printer/clone_classify.go`** from `syntax/golang`                               | Multi-language prep          | M      |
+| 7 | **Change Printer interface** — accept `[]ProcessedCloneGroup` instead of `[][]*syntax.Node` | Clean architecture           | M      |
+| 8 | **Update 111 test call sites** for new Printer interface                                    | Complete the refactor        | L      |
 
 ### P1 — Code Quality
 
-| #   | Task                                                                         | Impact                | Effort |
-| --- | ---------------------------------------------------------------------------- | --------------------- | ------ |
-| 9   | **Implement `TokenValue` type** with validation, refactor suffixtree/syntax  | Type safety           | M      |
-| 10  | **Unify enum patterns** — domain enums use config's generic helpers          | Consistency           | S      |
-| 11  | **Refactor `syntax/golang/transform.go`** — extract switch arms to functions | Readability           | M      |
-| 12  | **Fix LSP hints** — unused params, unnecessary type args in tests            | Clean compiler output | S      |
+| #  | Task                                                                         | Impact                | Effort |
+| -- | ---------------------------------------------------------------------------- | --------------------- | ------ |
+| 9  | **Implement `TokenValue` type** with validation, refactor suffixtree/syntax  | Type safety           | M      |
+| 10 | **Unify enum patterns** — domain enums use config's generic helpers          | Consistency           | S      |
+| 11 | **Refactor `syntax/golang/transform.go`** — extract switch arms to functions | Readability           | M      |
+| 12 | **Fix LSP hints** — unused params, unnecessary type args in tests            | Clean compiler output | S      |
 
 ### P2 — Feature Completeness
 
-| #   | Task                                                                     | Impact                   | Effort |
-| --- | ------------------------------------------------------------------------ | ------------------------ | ------ |
-| 13  | **CSV output via `encoding/csv`**                                        | Proper format compliance | S      |
-| 14  | **Wire TodoDetector** through CLI (`-m todos`)                           | Feature parity           | S      |
-| 15  | **Wire LegacyDetector** through CLI (`-m legacy`)                        | Feature parity           | S      |
-| 16  | **SIMD hash implementations** — complete 6 TODOs                         | Performance              | M      |
-| 17  | **Memory layout optimization** — SIMD-friendly structs, string interning | Performance              | M      |
+| #  | Task                                                                     | Impact                   | Effort |
+| -- | ------------------------------------------------------------------------ | ------------------------ | ------ |
+| 13 | **CSV output via `encoding/csv`**                                        | Proper format compliance | S      |
+| 14 | **Wire TodoDetector** through CLI (`-m todos`)                           | Feature parity           | S      |
+| 15 | **Wire LegacyDetector** through CLI (`-m legacy`)                        | Feature parity           | S      |
+| 16 | **SIMD hash implementations** — complete 6 TODOs                         | Performance              | M      |
+| 17 | **Memory layout optimization** — SIMD-friendly structs, string interning | Performance              | M      |
 
 ### P2 — Infrastructure
 
-| #   | Task                                                               | Impact                   | Effort |
-| --- | ------------------------------------------------------------------ | ------------------------ | ------ |
-| 18  | **Bump test coverage to 80%+** on bdd (currently 70%)              | Reliability              | M      |
-| 19  | **Add fuzz tests for templ parser** — property-based edge cases    | Robustness               | S      |
-| 20  | **CI pipeline audit** — verify all checks run on PR                | Process                  | S      |
-| 21  | **Update FEATURES.md** — reflect templ false-positive fix          | Docs accuracy            | S      |
-| 22  | **SDK dogfooding** — run art-dupl on itself, publish results       | Self-validation          | M      |
-| 23  | **Performance benchmarking** — compare pre/post SIMD               | Data-driven optimization | M      |
-| 24  | **Nix flake check** — verify `nix build` works with latest changes | Alternative build        | S      |
-| 25  | **Update HOW_TO_USE.md** — add templ false-positive section to FAQ | User education           | S      |
+| #  | Task                                                               | Impact                   | Effort |
+| -- | ------------------------------------------------------------------ | ------------------------ | ------ |
+| 18 | **Bump test coverage to 80%+** on bdd (currently 70%)              | Reliability              | M      |
+| 19 | **Add fuzz tests for templ parser** — property-based edge cases    | Robustness               | S      |
+| 20 | **CI pipeline audit** — verify all checks run on PR                | Process                  | S      |
+| 21 | **Update FEATURES.md** — reflect templ false-positive fix          | Docs accuracy            | S      |
+| 22 | **SDK dogfooding** — run art-dupl on itself, publish results       | Self-validation          | M      |
+| 23 | **Performance benchmarking** — compare pre/post SIMD               | Data-driven optimization | M      |
+| 24 | **Nix flake check** — verify `nix build` works with latest changes | Alternative build        | S      |
+| 25 | **Update HOW_TO_USE.md** — add templ false-positive section to FAQ | User education           | S      |
 
 ---
 

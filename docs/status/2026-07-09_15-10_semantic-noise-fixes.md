@@ -10,26 +10,26 @@ Fix false-positive clone detection noise in semantic mode, as reported in `/home
 
 ## A) FULLY DONE ✅
 
-| #   | Task                                                                                                                                                                                                                                                                                                                 | Files                                                                                                     | Verified                                                                              |
-| --- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
-| 1   | **Root cause analysis** — Identified 3 root causes: (a) default threshold=1, (b) ValueSpec not marked as Statement → partial prefix matching, (c) no boilerplate filters for assign+err-check or single-CallExpr                                                                                                     | `docs/feedback/2026-07-09-semantic-noise-declaration-files.md`                                            | ✅                                                                                    |
-| 2   | **Default threshold 1→5** — `config.DefaultThreshold` raised from 1 to 5. Updated help text, CLI flag description                                                                                                                                                                                                    | `config/config.go:170`, `cmd/flags.go:16`                                                                 | ✅ Tests passed (before cache invalidation)                                           |
-| 3   | **ValueSpec as Statement** — GenDecl spec children now marked `Statement=true`, causing each `var`/`const`/`type` declaration to be fingerprinted as a single composite token. Different string literal values produce different fingerprints → no more partial expression prefix matching in declaration-only files | `syntax/golang/transform.go:187-189`                                                                      | ✅ Verified against `/home/lars/forks/upd/` — Group #1 eliminated even at threshold 1 |
-| 4   | **Assign+error-check pattern** — New actionability pattern detecting 2-stmt `err := f(); if err != nil { return ... }` boilerplate. Classified as NonActionable                                                                                                                                                      | `printer/actionability.go:88-90`, `printer/actionability_boilerplate.go` (new)                            | ✅ Unit tests pass                                                                    |
-| 5   | **Single-CallExpr pattern** — New actionability pattern detecting lone CallExpr nodes like `errors.New("foo")`. Classified as NonActionable                                                                                                                                                                          | Same file                                                                                                 | ✅ Unit tests pass                                                                    |
-| 6   | **Tests updated** — Fixed 4 test files that asserted threshold=1 defaults. Added explicit `-t 1` to stats integration tests that need clones                                                                                                                                                                         | `config/config_test.go`, `config/config_enum_test.go`, `cmd/cmd_test.go`, `cmd/stats_integration_test.go` | ✅                                                                                    |
-| 7   | **New unit tests** — 11 test cases for the two new actionability patterns                                                                                                                                                                                                                                            | `printer/actionability_boilerplate_test.go` (new)                                                         | ✅                                                                                    |
-| 8   | **AGENTS.md updated** — Added statement-level tokenization convention, default threshold note, actionability patterns list                                                                                                                                                                                           | `AGENTS.md`                                                                                               | ✅                                                                                    |
-| 9   | **End-to-end verification** — Ran art-dupl against `/home/lars/forks/upd/`: 0 clone groups at threshold 2 AND default threshold 5. Real duplicates still detected at threshold 3 in our own `printer/` package                                                                                                       | —                                                                                                         | ✅ (before cache invalidation)                                                        |
+| # | Task                                                                                                                                                                                                                                                                                                                 | Files                                                                                                     | Verified                                                                              |
+| - | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| 1 | **Root cause analysis** — Identified 3 root causes: (a) default threshold=1, (b) ValueSpec not marked as Statement → partial prefix matching, (c) no boilerplate filters for assign+err-check or single-CallExpr                                                                                                     | `docs/feedback/2026-07-09-semantic-noise-declaration-files.md`                                            | ✅                                                                                    |
+| 2 | **Default threshold 1→5** — `config.DefaultThreshold` raised from 1 to 5. Updated help text, CLI flag description                                                                                                                                                                                                    | `config/config.go:170`, `cmd/flags.go:16`                                                                 | ✅ Tests passed (before cache invalidation)                                           |
+| 3 | **ValueSpec as Statement** — GenDecl spec children now marked `Statement=true`, causing each `var`/`const`/`type` declaration to be fingerprinted as a single composite token. Different string literal values produce different fingerprints → no more partial expression prefix matching in declaration-only files | `syntax/golang/transform.go:187-189`                                                                      | ✅ Verified against `/home/lars/forks/upd/` — Group #1 eliminated even at threshold 1 |
+| 4 | **Assign+error-check pattern** — New actionability pattern detecting 2-stmt `err := f(); if err != nil { return ... }` boilerplate. Classified as NonActionable                                                                                                                                                      | `printer/actionability.go:88-90`, `printer/actionability_boilerplate.go` (new)                            | ✅ Unit tests pass                                                                    |
+| 5 | **Single-CallExpr pattern** — New actionability pattern detecting lone CallExpr nodes like `errors.New("foo")`. Classified as NonActionable                                                                                                                                                                          | Same file                                                                                                 | ✅ Unit tests pass                                                                    |
+| 6 | **Tests updated** — Fixed 4 test files that asserted threshold=1 defaults. Added explicit `-t 1` to stats integration tests that need clones                                                                                                                                                                         | `config/config_test.go`, `config/config_enum_test.go`, `cmd/cmd_test.go`, `cmd/stats_integration_test.go` | ✅                                                                                    |
+| 7 | **New unit tests** — 11 test cases for the two new actionability patterns                                                                                                                                                                                                                                            | `printer/actionability_boilerplate_test.go` (new)                                                         | ✅                                                                                    |
+| 8 | **AGENTS.md updated** — Added statement-level tokenization convention, default threshold note, actionability patterns list                                                                                                                                                                                           | `AGENTS.md`                                                                                               | ✅                                                                                    |
+| 9 | **End-to-end verification** — Ran art-dupl against `/home/lars/forks/upd/`: 0 clone groups at threshold 2 AND default threshold 5. Real duplicates still detected at threshold 3 in our own `printer/` package                                                                                                       | —                                                                                                         | ✅ (before cache invalidation)                                                        |
 
 ---
 
 ## B) PARTIALLY DONE ⚠️
 
-| #   | Task                                                                                                                                                                                               | Status                                                         | What's Missing                     |
-| --- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- | ---------------------------------- |
-| 1   | **Feedback document** — Written but contains recommendations that are now implemented. Should be updated to reflect "FIXED" status                                                                 | `docs/feedback/2026-07-09-semantic-noise-declaration-files.md` | Update status to "resolved"        |
-| 2   | **Full test suite verification** — All 24 packages passed earlier in session, but build cache has since been invalidated. Cannot re-verify due to pre-existing json/v2 build break (see section D) | —                                                              | Need json/v2 migration fixed first |
+| # | Task                                                                                                                                                                                               | Status                                                         | What's Missing                     |
+| - | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- | ---------------------------------- |
+| 1 | **Feedback document** — Written but contains recommendations that are now implemented. Should be updated to reflect "FIXED" status                                                                 | `docs/feedback/2026-07-09-semantic-noise-declaration-files.md` | Update status to "resolved"        |
+| 2 | **Full test suite verification** — All 24 packages passed earlier in session, but build cache has since been invalidated. Cannot re-verify due to pre-existing json/v2 build break (see section D) | —                                                              | Need json/v2 migration fixed first |
 
 ---
 
@@ -114,73 +114,73 @@ These were identified in the feedback doc as future improvements but not impleme
 
 ### Critical (blocks everything)
 
-| #   | Task                                                                                                                                             | Effort |
-| --- | ------------------------------------------------------------------------------------------------------------------------------------------------ | ------ |
-| 1   | **Fix `errors/marshal.go` json/v2 types** — Replace `json.UnsupportedValueError`/`json.UnsupportedTypeError` with v2 equivalents or revert to v1 | 15 min |
-| 2   | **Add `GOEXPERIMENT=jsonv2` to `flake.nix` devShell** — Or decide to abandon json/v2 migration                                                   | 5 min  |
-| 3   | **Verify full test suite passes after json/v2 fix**                                                                                              | 5 min  |
+| # | Task                                                                                                                                             | Effort |
+| - | ------------------------------------------------------------------------------------------------------------------------------------------------ | ------ |
+| 1 | **Fix `errors/marshal.go` json/v2 types** — Replace `json.UnsupportedValueError`/`json.UnsupportedTypeError` with v2 equivalents or revert to v1 | 15 min |
+| 2 | **Add `GOEXPERIMENT=jsonv2` to `flake.nix` devShell** — Or decide to abandon json/v2 migration                                                   | 5 min  |
+| 3 | **Verify full test suite passes after json/v2 fix**                                                                                              | 5 min  |
 
 ### High Impact
 
-| #   | Task                                                                                                  | Effort |
-| --- | ----------------------------------------------------------------------------------------------------- | ------ |
-| 4   | **Enforce minimum threshold floor of 3** in `config_validate.go`                                      | 5 min  |
-| 5   | **Fix `buildMatch` partial-match rendering** — Only extend to `Owns` when match covers full subtree   | 30 min |
-| 6   | **Add regression test** — Declaration-only file (`var ErrFoo = errors.New(...)`) produces zero clones | 10 min |
-| 7   | **Add regression test** — `err := f(); if err != nil { return }` classified as NonActionable          | 10 min |
-| 8   | **Update HOW_TO_USE.md** — Default threshold examples                                                 | 10 min |
-| 9   | **Update feedback doc** — Mark as resolved with implementation details                                | 5 min  |
-| 10  | **Run `golangci-lint`** — The `.golangci.yml` was changed (pre-existing); verify linting passes       | 10 min |
+| #  | Task                                                                                                  | Effort |
+| -- | ----------------------------------------------------------------------------------------------------- | ------ |
+| 4  | **Enforce minimum threshold floor of 3** in `config_validate.go`                                      | 5 min  |
+| 5  | **Fix `buildMatch` partial-match rendering** — Only extend to `Owns` when match covers full subtree   | 30 min |
+| 6  | **Add regression test** — Declaration-only file (`var ErrFoo = errors.New(...)`) produces zero clones | 10 min |
+| 7  | **Add regression test** — `err := f(); if err != nil { return }` classified as NonActionable          | 10 min |
+| 8  | **Update HOW_TO_USE.md** — Default threshold examples                                                 | 10 min |
+| 9  | **Update feedback doc** — Mark as resolved with implementation details                                | 5 min  |
+| 10 | **Run `golangci-lint`** — The `.golangci.yml` was changed (pre-existing); verify linting passes       | 10 min |
 
 ### Medium Impact
 
-| #   | Task                                                                                                                                                         | Effort |
-| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------ |
-| 11  | **Add `--min-lines` flag** — Complementary line-count threshold filter                                                                                       | 45 min |
-| 12  | **Pre-compute `fileContainsStatements` as a map** — Eliminate O(n) scan per match                                                                            | 20 min |
-| 13  | **Document actionability pattern precedence** — Add comment explaining why order matters                                                                     | 10 min |
-| 14  | **Add BDD test for ValueSpec fingerprinting** — Verify `var` blocks with different values don't match                                                        | 20 min |
-| 15  | **Review `.golangci.yml` reduction** — 125 lines of linter rules removed; verify nothing important was lost                                                  | 30 min |
-| 16  | **Review `go.mod` dependency changes** — 22 lines changed; verify no unwanted upgrades                                                                       | 15 min |
-| 17  | **Review `printer/clone_classify.go` inlining** — `isTestFile()` was removed and inlined; verify no callers remain                                           | 10 min |
-| 18  | **Add integration test with fixture files** for stats — Replace fragile `./printer` dependency                                                               | 30 min |
-| 19  | **Consider TypeSpec `Statement=true` implications** — We mark ALL GenDecl children as Statement; verify type aliases and generic types fingerprint correctly | 20 min |
-| 20  | **Test import-only GenDecl** — `import` GenDecls are already skipped in `transform.go:134`, but verify the new Statement marking doesn't affect them         | 10 min |
+| #  | Task                                                                                                                                                         | Effort |
+| -- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------ |
+| 11 | **Add `--min-lines` flag** — Complementary line-count threshold filter                                                                                       | 45 min |
+| 12 | **Pre-compute `fileContainsStatements` as a map** — Eliminate O(n) scan per match                                                                            | 20 min |
+| 13 | **Document actionability pattern precedence** — Add comment explaining why order matters                                                                     | 10 min |
+| 14 | **Add BDD test for ValueSpec fingerprinting** — Verify `var` blocks with different values don't match                                                        | 20 min |
+| 15 | **Review `.golangci.yml` reduction** — 125 lines of linter rules removed; verify nothing important was lost                                                  | 30 min |
+| 16 | **Review `go.mod` dependency changes** — 22 lines changed; verify no unwanted upgrades                                                                       | 15 min |
+| 17 | **Review `printer/clone_classify.go` inlining** — `isTestFile()` was removed and inlined; verify no callers remain                                           | 10 min |
+| 18 | **Add integration test with fixture files** for stats — Replace fragile `./printer` dependency                                                               | 30 min |
+| 19 | **Consider TypeSpec `Statement=true` implications** — We mark ALL GenDecl children as Statement; verify type aliases and generic types fingerprint correctly | 20 min |
+| 20 | **Test import-only GenDecl** — `import` GenDecls are already skipped in `transform.go:134`, but verify the new Statement marking doesn't affect them         | 10 min |
 
 ### Lower Priority
 
-| #   | Task                                                                                                                         | Effort   |
-| --- | ---------------------------------------------------------------------------------------------------------------------------- | -------- |
-| 21  | **Run `nix flake check`** — Verify reproducible build                                                                        | 10 min   |
-| 22  | **Run `nix build`** — Verify Nix packaging works with new changes                                                            | 5 min    |
-| 23  | **Commit all changes** — Create a proper commit with the threshold + ValueSpec + actionability fixes                         | 10 min   |
-| 24  | **Consider `--threshold` minimum in CLI** — Currently accepts 1; could warn below 3                                          | 15 min   |
-| 25  | **Add `--aggressive` / `--sensitive` preset flags** — Convenience presets for threshold + mode                               | 30 min   |
-| 26  | **Audit all actionability patterns for ordering** — Some patterns may shadow others                                          | 20 min   |
-| 27  | **Add `PatternAssignErrorCheck` to suggestion text** — New patterns should have user-facing explanations                     | 10 min   |
-| 28  | **Add `PatternSingleCallExpr` to suggestion text** — Same                                                                    | 10 min   |
-| 29  | **Consider normalizing import paths** — Multiple import styles might cause false negatives                                   | 30 min   |
-| 30  | **Test templ files with ValueSpec equivalent** — Verify templ files aren't affected by GenDecl change                        | 15 min   |
-| 31  | **Profile performance impact** of ValueSpec fingerprinting — More fingerprinting = more CPU per node                         | 15 min   |
-| 32  | **Consider hash collisions** in fingerprintSubtree — int32 FNV hash; with more fingerprints, collision probability increases | 20 min   |
-| 33  | **Add SARIF rule IDs for new patterns** — AssignErrorCheck, SingleCallExpr should have SARIF metadata                        | 15 min   |
-| 34  | **Update `domain/analysis_errors.go`** — `ErrInvalidThreshold` message says ">= 1"; should say ">= 3" if floor changes       | 5 min    |
-| 35  | **Consider `--no-boilerplate-filter` flag** — Power users may want to see ALL matches including boilerplate                  | 20 min   |
-| 36  | **Add `--explain` flag** — Show WHY a group is classified as actionable/non-actionable                                       | 45 min   |
-| 37  | **Review all `isTestFile` usages** — The function was inlined in `clone_classify.go`; check if it exists elsewhere           | 10 min   |
-| 38  | **Consider semantic mode for templ** — Currently structural-only; could add identifier hashing                               | 2 hours+ |
-| 39  | **Add clone group deduplication** — Same clone may appear in multiple groups via different match paths                       | 30 min   |
-| 40  | **Document the suffix tree partial-match behavior** — Users should understand that partial expression prefixes can match     | 15 min   |
-| 41  | **Consider `--max-occurrences` flag** — Filter groups with too many occurrences (often generated code)                       | 20 min   |
-| 42  | **Add `--category` filter flag** — Show only specific categories (function, method, etc.)                                    | 30 min   |
-| 43  | **Test with real-world repos** — Run against Kubernetes, Go stdlib, etc. to validate noise reduction                         | 1 hour   |
-| 44  | **Benchmark detection speed** — Verify threshold 5 is faster than threshold 1 (fewer comparisons)                            | 15 min   |
-| 45  | **Consider `--threshold-mode` flag** — `statements` (current) vs `tokens` (legacy) vs `lines`                                | 1 hour+  |
-| 46  | **Add `--diff-threshold` flag** — Only report clones whose diff is below N% of total size                                    | 45 min   |
-| 47  | **Review `isCyclic` filter** — May produce false negatives for legitimately repeated patterns                                | 20 min   |
-| 48  | **Add `--ignore-pattern` for actionability** — Let users mark specific patterns as non-actionable                            | 30 min   |
-| 49  | **Consider machine-learning-based actionability** — Train on labeled clone groups                                            | 4 hours+ |
-| 50  | **Write ADR for threshold change** — Document the decision to raise default from 1 to 5                                      | 20 min   |
+| #  | Task                                                                                                                         | Effort   |
+| -- | ---------------------------------------------------------------------------------------------------------------------------- | -------- |
+| 21 | **Run `nix flake check`** — Verify reproducible build                                                                        | 10 min   |
+| 22 | **Run `nix build`** — Verify Nix packaging works with new changes                                                            | 5 min    |
+| 23 | **Commit all changes** — Create a proper commit with the threshold + ValueSpec + actionability fixes                         | 10 min   |
+| 24 | **Consider `--threshold` minimum in CLI** — Currently accepts 1; could warn below 3                                          | 15 min   |
+| 25 | **Add `--aggressive` / `--sensitive` preset flags** — Convenience presets for threshold + mode                               | 30 min   |
+| 26 | **Audit all actionability patterns for ordering** — Some patterns may shadow others                                          | 20 min   |
+| 27 | **Add `PatternAssignErrorCheck` to suggestion text** — New patterns should have user-facing explanations                     | 10 min   |
+| 28 | **Add `PatternSingleCallExpr` to suggestion text** — Same                                                                    | 10 min   |
+| 29 | **Consider normalizing import paths** — Multiple import styles might cause false negatives                                   | 30 min   |
+| 30 | **Test templ files with ValueSpec equivalent** — Verify templ files aren't affected by GenDecl change                        | 15 min   |
+| 31 | **Profile performance impact** of ValueSpec fingerprinting — More fingerprinting = more CPU per node                         | 15 min   |
+| 32 | **Consider hash collisions** in fingerprintSubtree — int32 FNV hash; with more fingerprints, collision probability increases | 20 min   |
+| 33 | **Add SARIF rule IDs for new patterns** — AssignErrorCheck, SingleCallExpr should have SARIF metadata                        | 15 min   |
+| 34 | **Update `domain/analysis_errors.go`** — `ErrInvalidThreshold` message says ">= 1"; should say ">= 3" if floor changes       | 5 min    |
+| 35 | **Consider `--no-boilerplate-filter` flag** — Power users may want to see ALL matches including boilerplate                  | 20 min   |
+| 36 | **Add `--explain` flag** — Show WHY a group is classified as actionable/non-actionable                                       | 45 min   |
+| 37 | **Review all `isTestFile` usages** — The function was inlined in `clone_classify.go`; check if it exists elsewhere           | 10 min   |
+| 38 | **Consider semantic mode for templ** — Currently structural-only; could add identifier hashing                               | 2 hours+ |
+| 39 | **Add clone group deduplication** — Same clone may appear in multiple groups via different match paths                       | 30 min   |
+| 40 | **Document the suffix tree partial-match behavior** — Users should understand that partial expression prefixes can match     | 15 min   |
+| 41 | **Consider `--max-occurrences` flag** — Filter groups with too many occurrences (often generated code)                       | 20 min   |
+| 42 | **Add `--category` filter flag** — Show only specific categories (function, method, etc.)                                    | 30 min   |
+| 43 | **Test with real-world repos** — Run against Kubernetes, Go stdlib, etc. to validate noise reduction                         | 1 hour   |
+| 44 | **Benchmark detection speed** — Verify threshold 5 is faster than threshold 1 (fewer comparisons)                            | 15 min   |
+| 45 | **Consider `--threshold-mode` flag** — `statements` (current) vs `tokens` (legacy) vs `lines`                                | 1 hour+  |
+| 46 | **Add `--diff-threshold` flag** — Only report clones whose diff is below N% of total size                                    | 45 min   |
+| 47 | **Review `isCyclic` filter** — May produce false negatives for legitimately repeated patterns                                | 20 min   |
+| 48 | **Add `--ignore-pattern` for actionability** — Let users mark specific patterns as non-actionable                            | 30 min   |
+| 49 | **Consider machine-learning-based actionability** — Train on labeled clone groups                                            | 4 hours+ |
+| 50 | **Write ADR for threshold change** — Document the decision to raise default from 1 to 5                                      | 20 min   |
 
 ---
 

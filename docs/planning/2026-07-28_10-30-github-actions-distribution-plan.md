@@ -308,7 +308,11 @@ Add `.github/workflows/action-validation.yml`:
 name: Action Validation
 on:
   push:
-    paths: ["action.yml", "scripts/install-art-dupl.sh", ".github/workflows/action-validation.yml"]
+    paths: [
+      "action.yml",
+      "scripts/install-art-dupl.sh",
+      ".github/workflows/action-validation.yml",
+    ]
   pull_request:
     paths: ["action.yml", "scripts/install-art-dupl.sh"]
 jobs:

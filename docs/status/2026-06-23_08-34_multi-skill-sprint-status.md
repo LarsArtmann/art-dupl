@@ -11,20 +11,20 @@
 
 ### Code Fixes (6 commits, all verified)
 
-| #   | Commit    | What                                                                     | Impact                           |
-| --- | --------- | ------------------------------------------------------------------------ | -------------------------------- |
-| 1   | `d25028f` | gosec G115 lint fixes in FNV hash conversions                            | Lint: 2→0 issues                 |
-| 2   | `d25028f` | Fix broken SDK godoc (`FindClonesStreamResult.esult`)                    | Public API doc now correct       |
-| 3   | `d25028f` | Update stale clone-type classification comment                           | Docs match 3-mode architecture   |
-| 4   | `8c1ef0e` | Fix suffixtree canonize error swallow (`_` discard → panic-with-context) | Prevents nil-pointer crash       |
-| 5   | `8c1ef0e` | Fix cache atomic read race (`Stats()`/`GetStats()` → `atomic.LoadInt64`) | Prevents torn reads              |
-| 6   | `8c1ef0e` | Remove dead `DuplError.Line` field (never set, always `:0`)              | Cleaner error type               |
-| 7   | `1d49da1` | Remove dead `SortNodesByCriteria` (zero callers)                         | -20 LOC dead code                |
-| 8   | `1d49da1` | Remove dead SARIF rules (todo/legacy never produced)                     | -22 LOC, cleaner SARIF           |
-| 9   | `4ec0f90` | Unify `FileReaderFunc` across domain/printer/SDK                         | Eliminates split-brain func type |
-| 10  | `4ec0f90` | Add `Config.Validate()` method                                           | Single validation entry point    |
-| 11  | `4eba87b` | Replace stringly-typed JSON DTO fields with domain enums                 | Type-safe JSON output            |
-| 12  | `cdd04bc` | Fix stale AGENTS.md build commands (just→go/nix)                         | Docs match reality               |
+| #  | Commit    | What                                                                     | Impact                           |
+| -- | --------- | ------------------------------------------------------------------------ | -------------------------------- |
+| 1  | `d25028f` | gosec G115 lint fixes in FNV hash conversions                            | Lint: 2→0 issues                 |
+| 2  | `d25028f` | Fix broken SDK godoc (`FindClonesStreamResult.esult`)                    | Public API doc now correct       |
+| 3  | `d25028f` | Update stale clone-type classification comment                           | Docs match 3-mode architecture   |
+| 4  | `8c1ef0e` | Fix suffixtree canonize error swallow (`_` discard → panic-with-context) | Prevents nil-pointer crash       |
+| 5  | `8c1ef0e` | Fix cache atomic read race (`Stats()`/`GetStats()` → `atomic.LoadInt64`) | Prevents torn reads              |
+| 6  | `8c1ef0e` | Remove dead `DuplError.Line` field (never set, always `:0`)              | Cleaner error type               |
+| 7  | `1d49da1` | Remove dead `SortNodesByCriteria` (zero callers)                         | -20 LOC dead code                |
+| 8  | `1d49da1` | Remove dead SARIF rules (todo/legacy never produced)                     | -22 LOC, cleaner SARIF           |
+| 9  | `4ec0f90` | Unify `FileReaderFunc` across domain/printer/SDK                         | Eliminates split-brain func type |
+| 10 | `4ec0f90` | Add `Config.Validate()` method                                           | Single validation entry point    |
+| 11 | `4eba87b` | Replace stringly-typed JSON DTO fields with domain enums                 | Type-safe JSON output            |
+| 12 | `cdd04bc` | Fix stale AGENTS.md build commands (just→go/nix)                         | Docs match reality               |
 
 ### Skills Executed (9 of 14 fully completed)
 
@@ -59,20 +59,20 @@
 
 ### Code Review Findings Identified But Not Fixed
 
-| #   | Finding                                                                       | Severity | Why Deferred                                                    |
-| --- | ----------------------------------------------------------------------------- | -------- | --------------------------------------------------------------- |
-| 1   | Incremental cache data race (`job/incremental.go:139`)                        | Critical | Needs deep-copy design decision (memory vs safety tradeoff)     |
-| 2   | Broad panic recovery in `addWithNilCheck` (`syntax/golang/parse.go:63`)       | High     | Scoping requires understanding what AST nodes actually panic    |
-| 3   | `debug.Stack()` on every error (`errors/types.go:39`)                         | Medium   | Needs gating behind debug flag — touches all error constructors |
-| 4   | Non-deterministic map iteration in hash detector (`hash/file_detector.go:58`) | Medium   | Needs sort keys like suffixtree already does                    |
-| 5   | Repeated file reads per clone in SDK (`detector_conversion.go:78`)            | Medium   | Needs per-filename content cache                                |
-| 6   | `chan bool` signal in `buildtree.go` (should be `chan struct{}`)              | Low      | API change, needs all callers                                   |
-| 7   | `*[]*syntax.Node` return in `buildtree.go` (should be `[]*syntax.Node`)       | Low      | API change across packages                                      |
-| 8   | Magic sentinel `Type: -1` in `detector_pipeline.go:81`                        | Low      | Needs named constant                                            |
-| 9   | `NewLogger` returns unexported `*charmLogger`                                 | Low      | Should return `Logger` interface                                |
-| 10  | `FileProcessor` / `ProcessClones` vague naming                                | Low      | Rename touches many call sites                                  |
-| 11  | Stale comment in `detection/detector.go` referencing `[]string`               | Low      | Docs only                                                       |
-| 12  | `cache/file_cache.go` uses `fmt.Fprintf(os.Stderr)` instead of logger         | Low      | Needs logger injection into cache package                       |
+| #  | Finding                                                                       | Severity | Why Deferred                                                    |
+| -- | ----------------------------------------------------------------------------- | -------- | --------------------------------------------------------------- |
+| 1  | Incremental cache data race (`job/incremental.go:139`)                        | Critical | Needs deep-copy design decision (memory vs safety tradeoff)     |
+| 2  | Broad panic recovery in `addWithNilCheck` (`syntax/golang/parse.go:63`)       | High     | Scoping requires understanding what AST nodes actually panic    |
+| 3  | `debug.Stack()` on every error (`errors/types.go:39`)                         | Medium   | Needs gating behind debug flag — touches all error constructors |
+| 4  | Non-deterministic map iteration in hash detector (`hash/file_detector.go:58`) | Medium   | Needs sort keys like suffixtree already does                    |
+| 5  | Repeated file reads per clone in SDK (`detector_conversion.go:78`)            | Medium   | Needs per-filename content cache                                |
+| 6  | `chan bool` signal in `buildtree.go` (should be `chan struct{}`)              | Low      | API change, needs all callers                                   |
+| 7  | `*[]*syntax.Node` return in `buildtree.go` (should be `[]*syntax.Node`)       | Low      | API change across packages                                      |
+| 8  | Magic sentinel `Type: -1` in `detector_pipeline.go:81`                        | Low      | Needs named constant                                            |
+| 9  | `NewLogger` returns unexported `*charmLogger`                                 | Low      | Should return `Logger` interface                                |
+| 10 | `FileProcessor` / `ProcessClones` vague naming                                | Low      | Rename touches many call sites                                  |
+| 11 | Stale comment in `detection/detector.go` referencing `[]string`               | Low      | Docs only                                                       |
+| 12 | `cache/file_cache.go` uses `fmt.Fprintf(os.Stderr)` instead of logger         | Low      | Needs logger injection into cache package                       |
 
 ---
 
@@ -137,48 +137,48 @@
 
 ### 🔴 Critical (Do First)
 
-| #   | Task                                                                                                          | Effort | Impact                                   |
-| --- | ------------------------------------------------------------------------------------------------------------- | ------ | ---------------------------------------- |
-| 1   | Fix incremental cache data race (`job/incremental.go:139` — mutate shared cached nodes)                       | Medium | Prevents corruption under parallel parse |
-| 2   | Add `Name()` to `MethodDetector` interface, eliminate type switch at `multidetector.go:117`                   | Small  | Removes encapsulation leak               |
-| 3   | Fix non-deterministic hash detector output (`hash/file_detector.go:58` — sort map keys)                       | Small  | Reproducible CI results                  |
-| 4   | Scope `addWithNilCheck` panic recovery (`syntax/golang/parse.go:63`) — catches ALL panics including real bugs | Medium | Prevents silent incomplete ASTs          |
+| # | Task                                                                                                          | Effort | Impact                                   |
+| - | ------------------------------------------------------------------------------------------------------------- | ------ | ---------------------------------------- |
+| 1 | Fix incremental cache data race (`job/incremental.go:139` — mutate shared cached nodes)                       | Medium | Prevents corruption under parallel parse |
+| 2 | Add `Name()` to `MethodDetector` interface, eliminate type switch at `multidetector.go:117`                   | Small  | Removes encapsulation leak               |
+| 3 | Fix non-deterministic hash detector output (`hash/file_detector.go:58` — sort map keys)                       | Small  | Reproducible CI results                  |
+| 4 | Scope `addWithNilCheck` panic recovery (`syntax/golang/parse.go:63`) — catches ALL panics including real bugs | Medium | Prevents silent incomplete ASTs          |
 
 ### 🟡 High (Do Next Sprint)
 
-| #   | Task                                                                                                  | Effort | Impact                            |
-| --- | ----------------------------------------------------------------------------------------------------- | ------ | --------------------------------- |
-| 5   | Gate `debug.Stack()` behind debug flag (`errors/types.go:39`)                                         | Small  | Eliminates per-error overhead     |
-| 6   | Add per-filename content cache in SDK (`detector_conversion.go:78` — reads file N times for N clones) | Small  | Major perf win for large analyses |
-| 7   | Rename `FileProcessor` → `FileStore`, `ProcessClones` → `BuildProcessedClones` (naming review)        | Medium | Clearer intent                    |
-| 8   | Cache package: replace `fmt.Fprintf(os.Stderr)` with `logger.Default`                                 | Small  | Consistent logging                |
-| 9   | Extract magic sentinel `Type: -1` to `syntax.SentinelType` constant                                   | Small  | Self-documenting                  |
-| 10  | Fix `chan bool` → `chan struct{}` in `buildtree.go`                                                   | Small  | Idiomatic Go                      |
+| #  | Task                                                                                                  | Effort | Impact                            |
+| -- | ----------------------------------------------------------------------------------------------------- | ------ | --------------------------------- |
+| 5  | Gate `debug.Stack()` behind debug flag (`errors/types.go:39`)                                         | Small  | Eliminates per-error overhead     |
+| 6  | Add per-filename content cache in SDK (`detector_conversion.go:78` — reads file N times for N clones) | Small  | Major perf win for large analyses |
+| 7  | Rename `FileProcessor` → `FileStore`, `ProcessClones` → `BuildProcessedClones` (naming review)        | Medium | Clearer intent                    |
+| 8  | Cache package: replace `fmt.Fprintf(os.Stderr)` with `logger.Default`                                 | Small  | Consistent logging                |
+| 9  | Extract magic sentinel `Type: -1` to `syntax.SentinelType` constant                                   | Small  | Self-documenting                  |
+| 10 | Fix `chan bool` → `chan struct{}` in `buildtree.go`                                                   | Small  | Idiomatic Go                      |
 
 ### 🔵 Medium (Do This Quarter)
 
-| #   | Task                                                                                           | Effort | Impact                                       |
-| --- | ---------------------------------------------------------------------------------------------- | ------ | -------------------------------------------- |
-| 11  | Introduce shared `CloneRef` value object in domain (embed across 7 Clone types)                | Large  | Unifies parallel types                       |
-| 12  | Relocate `SortCriteria`/`OutputFormat` from config to domain                                   | Medium | Decouples printer from config                |
-| 13  | Split `printer/` into sub-packages (stats, html, analyze)                                      | Large  | 29 files / 3500 LOC too many for one package |
-| 14  | Add `Config.Validate()` calls at all entry points (currently exists but not called everywhere) | Small  | Defense in depth                             |
-| 15  | Fix `NewLogger` to return `Logger` interface instead of `*charmLogger`                         | Small  | Proper encapsulation                         |
-| 16  | Add language parser registry (SDK hardcodes `syntax/golang`)                                   | Large  | Unblocks multi-language support              |
-| 17  | Fix `AnalysisTime` JSON tag (`time.Duration` marshals as ns, tag says `_ms`)                   | Small  | Honest output                                |
-| 18  | Thread `context.Context` through `cmd/run_crawl.go` file feeders                               | Medium | Proper cancellation                          |
-| 19  | Unexport dead `SortClonesBy*` functions in `printer/sorter.go` (only test callers remain)      | Small  | API surface reduction                        |
-| 20  | Consolidate `countDiffStats` and `countDiffLineStats` (split-brain duplicate)                  | Small  | Eliminates duplication                       |
+| #  | Task                                                                                           | Effort | Impact                                       |
+| -- | ---------------------------------------------------------------------------------------------- | ------ | -------------------------------------------- |
+| 11 | Introduce shared `CloneRef` value object in domain (embed across 7 Clone types)                | Large  | Unifies parallel types                       |
+| 12 | Relocate `SortCriteria`/`OutputFormat` from config to domain                                   | Medium | Decouples printer from config                |
+| 13 | Split `printer/` into sub-packages (stats, html, analyze)                                      | Large  | 29 files / 3500 LOC too many for one package |
+| 14 | Add `Config.Validate()` calls at all entry points (currently exists but not called everywhere) | Small  | Defense in depth                             |
+| 15 | Fix `NewLogger` to return `Logger` interface instead of `*charmLogger`                         | Small  | Proper encapsulation                         |
+| 16 | Add language parser registry (SDK hardcodes `syntax/golang`)                                   | Large  | Unblocks multi-language support              |
+| 17 | Fix `AnalysisTime` JSON tag (`time.Duration` marshals as ns, tag says `_ms`)                   | Small  | Honest output                                |
+| 18 | Thread `context.Context` through `cmd/run_crawl.go` file feeders                               | Medium | Proper cancellation                          |
+| 19 | Unexport dead `SortClonesBy*` functions in `printer/sorter.go` (only test callers remain)      | Small  | API surface reduction                        |
+| 20 | Consolidate `countDiffStats` and `countDiffLineStats` (split-brain duplicate)                  | Small  | Eliminates duplication                       |
 
 ### ⚪ Lower Priority
 
-| #   | Task                                                                 | Effort     | Impact                                |
-| --- | -------------------------------------------------------------------- | ---------- | ------------------------------------- |
-| 21  | Branded `NodeType int32` type (prevent cross-package collision)      | Very Large | Type safety (high risk: cache format) |
-| 22  | Remove dead `crawlPaths` in `cmd/run_crawl.go` (only test callers)   | Small      | Dead code cleanup                     |
-| 23  | Fix broken BDD test variable assignments (5 ginkgolinter warnings)   | Small      | Lint clean                            |
-| 24  | Add gosec `#nosec` audit — review all suppressions are still needed  | Small      | Security hygiene                      |
-| 25  | Consider `go-error-family` library (flagged by library-policy check) | Medium     | Structured error classification       |
+| #  | Task                                                                 | Effort     | Impact                                |
+| -- | -------------------------------------------------------------------- | ---------- | ------------------------------------- |
+| 21 | Branded `NodeType int32` type (prevent cross-package collision)      | Very Large | Type safety (high risk: cache format) |
+| 22 | Remove dead `crawlPaths` in `cmd/run_crawl.go` (only test callers)   | Small      | Dead code cleanup                     |
+| 23 | Fix broken BDD test variable assignments (5 ginkgolinter warnings)   | Small      | Lint clean                            |
+| 24 | Add gosec `#nosec` audit — review all suppressions are still needed  | Small      | Security hygiene                      |
+| 25 | Consider `go-error-family` library (flagged by library-policy check) | Medium     | Structured error classification       |
 
 ---
 

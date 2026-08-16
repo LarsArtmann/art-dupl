@@ -473,22 +473,22 @@ e548064 - feat(filter): Filter templ files by default and make --include-templ i
 
 | Metric                     | Value      | Status           |
 | -------------------------- | ---------- | ---------------- |
-| **Code Deduplication**     |
+| **Code Deduplication**     |            |                  |
 | Dead Code Removed          | 605 lines  | ✅ Complete      |
 | Duplicate Groups           | 16 → 13    | ✅ 19% reduction |
 | Total Lines Removed        | ~700       | ✅ Significant   |
-| **Project Structure**      |
+| **Project Structure**      |            |                  |
 | Root-level Go Files        | 4 → 0      | ✅ Complete      |
 | Critical Issues            | 1 → 0      | ✅ Fixed         |
 | High Priority Issues       | 3 → 0      | ✅ Fixed         |
 | Test Packages Created      | 2          | ✅ Complete      |
-| **Quality**                |
+| **Quality**                |            |                  |
 | Tests Passing (modified)   | 6/6        | ✅ 100%          |
 | Code Quality (fmt/vet)     | 0 issues   | ✅ Pass          |
 | Commits Made               | 10         | ✅ Complete      |
 | Git Push                   | Success    | ✅ Complete      |
-| Binary Build               | Blocked    | ⚠️ Disk full     |
-| Pre-existing Test Failures | 3 packages | ⚠️ Unrelated     |
+| Binary Build               | Blocked    | ⚠️ Disk full      |
+| Pre-existing Test Failures | 3 packages | ⚠️ Unrelated      |
 
 ---
 

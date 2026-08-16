@@ -1,8 +1,8 @@
 # Comprehensive Status Report: art-dupl Project
 
-**Date:** 2026-03-20 23:50 CET  
-**Session:** Architectural Refactoring, SDK Stabilization & Test Fixes  
-**Branch:** fork  
+**Date:** 2026-03-20 23:50 CET\
+**Session:** Architectural Refactoring, SDK Stabilization & Test Fixes\
+**Branch:** fork\
 **Overall Health Score: A- (92/100)** ⬆️ UP FROM B+ (85/100)
 
 ---
@@ -320,6 +320,6 @@ output, err := testutil.RunArtDupl(dir, "--structural", "-t", "10")
 
 ---
 
-**Report Generated:** 2026-03-20 23:50 CET  
-**Author:** Crush AI Assistant  
+**Report Generated:** 2026-03-20 23:50 CET\
+**Author:** Crush AI Assistant\
 **Branch:** fork

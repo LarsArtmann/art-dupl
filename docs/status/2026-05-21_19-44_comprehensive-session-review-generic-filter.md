@@ -192,33 +192,33 @@ These are **structural patterns, not bugs**:
 
 ## f) TOP 25 THINGS TO DO NEXT
 
-| #   | Task                                                | Priority | Effort | Impact               | Why                                  |
-| --- | --------------------------------------------------- | -------- | ------ | -------------------- | ------------------------------------ |
-| 1   | Fix BuildFlow hook to only lint changed files       | P0       | 1hr    | Unblocks all commits | Every commit requires --no-verify    |
-| 2   | Fix os.Exit flaky tests                             | P0       | 2hr    | CI green             | 2 packages always fail               |
-| 3   | Remove committed binaries from git                  | P0       | 30min  | Clean repo           | 4 binaries tracked                   |
-| 4   | Refactor setupFilter to table-driven                | P1       | 30min  | Maintainability      | 6 if blocks → slice                  |
-| 5   | Wire TodoDetector to CLI                            | P1       | 1hr    | Feature complete     | Code exists, untested                |
-| 6   | Wire LegacyDetector to CLI                          | P1       | 1hr    | Feature complete     | Code exists, untested                |
-| 7   | ProcessedClone DTO design                           | P1       | 3-5d   | Architecture         | Unlocks 5 other items                |
-| 8   | Clone type consolidation                            | P1       | 2-3d   | Code quality         | 3 parallel types                     |
-| 9   | Extract test helpers (reduce t=15 clones)           | P2       | 2-3hr  | Test quality         | 61 clone groups                      |
-| 10  | AGENTS.md reduction (853 → ≤377 lines)              | P2       | 2hr    | AI efficiency        | Injected every session               |
-| 11  | clone_classify.go decoupling                        | P2       | 1d     | Multi-language       | Direct syntax/golang import          |
-| 12  | TokenValue named type                               | P2       | 1d     | Type safety          | int tokens in suffix tree            |
-| 13  | Proper CSV output                                   | P2       | 4hr    | UX                   | Headers, escaping                    |
-| 14  | SDK v1 stable API review                            | P2       | 3-5d   | API stability        | Before v1.0                          |
-| 15  | Enum unification                                    | P3       | 1-2d   | Code quality         | Shared parsing                       |
-| 16  | Memory optimization (pools)                         | P3       | 2-3d   | Performance          | Hot path allocations                 |
-| 17  | gogenfilter FilterAll exclusion API                 | P3       | 4hr    | Upstream             | Prevent future wiring gaps           |
-| 18  | BDD test for --include-generic E2E                  | P3       | 30min  | Coverage             | New feature untested in BDD          |
-| 19  | Update AGENTS.md with generic filter                | P3       | 15min  | Docs                 | New --include-generic flag           |
-| 20  | SHA-1 → SHA-256 in cache                            | P3       | 1hr    | Security             | golangci-lint flags it               |
-| 21  | Migrate fang v1 → v2                                | P3       | 2hr    | Dependencies         | charm.land/fang/v2                   |
-| 22  | Benchmark: generic filter overhead                  | P3       | 1hr    | Performance          | Measure content-read impact          |
-| 23  | Integration test: typespec-eventsourcing as fixture | P4       | 2hr    | Dogfooding           | The project that triggered this work |
-| 24  | Non-Go language architecture proposal               | P4       | 1d     | Vision               | Needs DTO first                      |
-| 25  | Website docs update for --include-generic           | P4       | 30min  | Users                | New flag undocumented                |
+| #  | Task                                                | Priority | Effort | Impact               | Why                                  |
+| -- | --------------------------------------------------- | -------- | ------ | -------------------- | ------------------------------------ |
+| 1  | Fix BuildFlow hook to only lint changed files       | P0       | 1hr    | Unblocks all commits | Every commit requires --no-verify    |
+| 2  | Fix os.Exit flaky tests                             | P0       | 2hr    | CI green             | 2 packages always fail               |
+| 3  | Remove committed binaries from git                  | P0       | 30min  | Clean repo           | 4 binaries tracked                   |
+| 4  | Refactor setupFilter to table-driven                | P1       | 30min  | Maintainability      | 6 if blocks → slice                  |
+| 5  | Wire TodoDetector to CLI                            | P1       | 1hr    | Feature complete     | Code exists, untested                |
+| 6  | Wire LegacyDetector to CLI                          | P1       | 1hr    | Feature complete     | Code exists, untested                |
+| 7  | ProcessedClone DTO design                           | P1       | 3-5d   | Architecture         | Unlocks 5 other items                |
+| 8  | Clone type consolidation                            | P1       | 2-3d   | Code quality         | 3 parallel types                     |
+| 9  | Extract test helpers (reduce t=15 clones)           | P2       | 2-3hr  | Test quality         | 61 clone groups                      |
+| 10 | AGENTS.md reduction (853 → ≤377 lines)              | P2       | 2hr    | AI efficiency        | Injected every session               |
+| 11 | clone_classify.go decoupling                        | P2       | 1d     | Multi-language       | Direct syntax/golang import          |
+| 12 | TokenValue named type                               | P2       | 1d     | Type safety          | int tokens in suffix tree            |
+| 13 | Proper CSV output                                   | P2       | 4hr    | UX                   | Headers, escaping                    |
+| 14 | SDK v1 stable API review                            | P2       | 3-5d   | API stability        | Before v1.0                          |
+| 15 | Enum unification                                    | P3       | 1-2d   | Code quality         | Shared parsing                       |
+| 16 | Memory optimization (pools)                         | P3       | 2-3d   | Performance          | Hot path allocations                 |
+| 17 | gogenfilter FilterAll exclusion API                 | P3       | 4hr    | Upstream             | Prevent future wiring gaps           |
+| 18 | BDD test for --include-generic E2E                  | P3       | 30min  | Coverage             | New feature untested in BDD          |
+| 19 | Update AGENTS.md with generic filter                | P3       | 15min  | Docs                 | New --include-generic flag           |
+| 20 | SHA-1 → SHA-256 in cache                            | P3       | 1hr    | Security             | golangci-lint flags it               |
+| 21 | Migrate fang v1 → v2                                | P3       | 2hr    | Dependencies         | charm.land/fang/v2                   |
+| 22 | Benchmark: generic filter overhead                  | P3       | 1hr    | Performance          | Measure content-read impact          |
+| 23 | Integration test: typespec-eventsourcing as fixture | P4       | 2hr    | Dogfooding           | The project that triggered this work |
+| 24 | Non-Go language architecture proposal               | P4       | 1d     | Vision               | Needs DTO first                      |
+| 25 | Website docs update for --include-generic           | P4       | 30min  | Users                | New flag undocumented                |
 
 ---
 

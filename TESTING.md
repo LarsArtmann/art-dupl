@@ -65,7 +65,7 @@ fast capture test is negligible and the race is silent and intermittent.
 
 ## Concurrency: Atomic/Mutex Mixing
 
-The cache once shipped a real data race of the *mixing* class: `Get` incremented
+The cache once shipped a real data race of the _mixing_ class: `Get` incremented
 `HitCount`/`MissCount` with `atomic.AddInt64` (no lock), while `Clear` reset
 them by replacing the whole `metadata` struct under `fc.mu` — a plain write
 racing with the atomic adds. Full-repo audit (2026-08-16) found one sibling

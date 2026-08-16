@@ -1,8 +1,8 @@
 # Status Report — Remove TODO/Legacy Detection, Focus on Duplicates
 
-> **Date:** 2026-06-17 10:44  
-> **Branch:** fork  
-> **Base Commit:** 26e75f1 chore(deps): bump nixpkgs, charmbracelet/x, ginkgo, gomega  
+> **Date:** 2026-06-17 10:44\
+> **Branch:** fork\
+> **Base Commit:** 26e75f1 chore(deps): bump nixpkgs, charmbracelet/x, ginkgo, gomega\
 > **Session Goal:** Remove non-duplicate detection (TODO/Legacy), keep art-dupl focused on code clones only.
 
 ---
@@ -191,7 +191,7 @@ None. All modified packages compile. Unit tests pass. The removed code was clean
 | `go test ./examples/...`         | ✅     | Pass                                         |
 | `go test ./pkg/artdupl/...`      | ✅     | Pass                                         |
 | `go test ./printer/...`          | ✅     | Pass                                         |
-| `go test ./bdd/...`              | ⚠️     | 256/264 pass, 8 pre-existing filter failures |
+| `go test ./bdd/...`              | ⚠️      | 256/264 pass, 8 pre-existing filter failures |
 | `buildflow todo-check`           | ✅     | 0 TODO comments                              |
 | `buildflow duplications-checker` | ❌     | 1 clone group >30 tokens (pre-existing)      |
 | `buildflow jscpd`                | ❌     | Signal killed (pre-existing)                 |

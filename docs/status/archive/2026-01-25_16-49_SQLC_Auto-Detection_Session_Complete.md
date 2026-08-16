@@ -286,7 +286,6 @@ art-dupl --filter-generated ./internal ./db
 **Note:** Auto-detection searches parent directories (up to 10 levels) for `sqlc.yaml` or `sqlc.yml` files.
 
 ````
-
 **Deliverables:**
 - `cmd/flags.go` (±3 lines, clarified help text)
 - `docs/SMART_FILTERING.md` (+30, -6 lines, parent directory behavior)
@@ -543,9 +542,9 @@ for _, marker := range markers {
 
 ### Total Changes
 
-**Lines Added:** ~320 (code + tests + documentation)  
-**Lines Modified:** ~0 (all additions, no deletions except help text updates)  
-**Test Files Added:** 2 (unit + integration)  
+**Lines Added:** ~320 (code + tests + documentation)\
+**Lines Modified:** ~0 (all additions, no deletions except help text updates)\
+**Test Files Added:** 2 (unit + integration)\
 **Status Reports Added:** 3
 
 ---
@@ -594,10 +593,10 @@ c172518 feat(utils): add FindProjectRoot utility for parent directory search
 
 ### Commit Statistics
 
-**Total Commits:** 10  
-**Messages:** All detailed with "feat:", "docs:", "test:" prefixes  
-**Time Period:** January 25, 2026, 14:16 - 16:49  
-**Branch:** `fork`  
+**Total Commits:** 10\
+**Messages:** All detailed with "feat:", "docs:", "test:" prefixes\
+**Time Period:** January 25, 2026, 14:16 - 16:49\
+**Branch:** `fork`\
 **Remote Status:** All pushed to `origin/fork`
 
 ---
@@ -606,8 +605,8 @@ c172518 feat(utils): add FindProjectRoot utility for parent directory search
 
 ### Unit Tests
 
-**Package:** `internal/utils`  
-**Test File:** `file_test.go`  
+**Package:** `internal/utils`\
+**Test File:** `file_test.go`\
 **Tests:** 8 | **Passed:** 8 | **Failed:** 0 | **Pass Rate:** 100%
 
 ```bash
@@ -627,8 +626,8 @@ ok  	github.com/LarsArtmann/art-dupl/internal/utils
 
 ### Integration Tests
 
-**Package:** `internal/filtertest`  
-**Test File:** `integration_filter_test.go`  
+**Package:** `internal/filtertest`\
+**Test File:** `integration_filter_test.go`\
 **Tests:** 1 | **Passed:** 1 | **Failed:** 0 | **Pass Rate:** 100%
 
 ```bash
@@ -641,7 +640,7 @@ ok  	github.com/LarsArtmann/art-dupl/internal/filtertest
 
 ### Existing Tests
 
-**Package:** `pkg/filter`  
+**Package:** `pkg/filter`\
 **Tests:** All existing | **Passed:** All | **Failed:** 0 | **Pass Rate:** 100%
 
 ```bash
@@ -656,7 +655,7 @@ PASS
 ok  	github.com/LarsArtmann/art-dupl/pkg/filter
 ```
 
-**Package:** `cmd`  
+**Package:** `cmd`\
 **Tests:** All existing | **Passed:** All | **Failed:** 0 | **Pass Rate:** 100%
 
 ```bash
@@ -1032,10 +1031,10 @@ Successfully implemented and verified SQLC auto-detection enhancements for art-d
 
 ### Production Status
 
-**Status:** ✅ PRODUCTION READY  
-**Tests:** 100% Passing  
-**Build:** Success  
-**Documentation:** Complete  
+**Status:** ✅ PRODUCTION READY\
+**Tests:** 100% Passing\
+**Build:** Success\
+**Documentation:** Complete\
 **Remote:** All pushed
 
 ---

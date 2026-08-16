@@ -10,13 +10,13 @@ All facts below were verified on this machine via sysfs and A/B benchmarks
 
 ## Topology Facts (verified via sysfs)
 
-| Topology level     | Count | Details                                                       |
-| ------------------ | ----- | ------------------------------------------------------------- |
-| Socket/package     | 1     | `physical_package_id=0` for all CPUs                          |
-| Die (CCD)          | 2     | die 0 = CPUs `0-7,16-23`, die 1 = CPUs `8-15,24-31`           |
-| L3 (LLC) domain    | 2     | 32 MB each; `shared_cpu_list` matches the die split exactly   |
-| NUMA node          | 1     | `node0` covers CPUs `0-31`; LPDDR5X, UMA                      |
-| Cores / threads    | 16 / 32 | 2 threads per core (SMT)                                    |
+| Topology level  | Count   | Details                                                     |
+| --------------- | ------- | ----------------------------------------------------------- |
+| Socket/package  | 1       | `physical_package_id=0` for all CPUs                        |
+| Die (CCD)       | 2       | die 0 = CPUs `0-7,16-23`, die 1 = CPUs `8-15,24-31`         |
+| L3 (LLC) domain | 2       | 32 MB each; `shared_cpu_list` matches the die split exactly |
+| NUMA node       | 1       | `node0` covers CPUs `0-31`; LPDDR5X, UMA                    |
+| Cores / threads | 16 / 32 | 2 threads per core (SMT)                                    |
 
 The kernel is not blind to the two dies: `die_cpus_list` and the L3
 `shared_cpu_list` both expose the split, and the scheduler's LLC (MC)
@@ -47,11 +47,11 @@ proximity domain and Linux exposes one node.
 (`GOEXPERIMENT=jsonv2`, two independent run orderings to control for
 thermal effects):
 
-| Config                          | HW threads | parN | Median         |
-| ------------------------------- | ---------- | ---- | -------------- |
+| Config                           | HW threads | parN | Median           |
+| -------------------------------- | ---------- | ---- | ---------------- |
 | `taskset -c 0-7,16-23` (one CCX) | 16 (SMT)   | 16   | **1.71–1.72 ms** |
-| `taskset -c 0-7` (8 physical)    | 8          | 8    | ~1.83 ms       |
-| Unpinned (both CCXes)            | 32         | 32   | ~2.17–2.31 ms  |
+| `taskset -c 0-7` (8 physical)    | 8          | 8    | ~1.83 ms         |
+| Unpinned (both CCXes)            | 32         | 32   | ~2.17–2.31 ms    |
 
 Findings:
 

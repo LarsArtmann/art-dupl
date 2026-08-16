@@ -192,10 +192,12 @@ Some users may actually want to see ONLY generics candidates (the old behavior).
 ### 2. Should the `generics:` hint line be merged into the `explain:` line when `--explain` is used?
 
 Currently, `--suggest-generics --explain` produces two separate lines per group:
+
 ```
-  generics: same algorithm, different types: ...
-  explain: type-2 | actionable | call | 6 tokens, 18 lines
+generics: same algorithm, different types: ...
+explain: type-2 | actionable | call | 6 tokens, 18 lines
 ```
+
 Merging would produce one cleaner line but loses visual separation. I cannot decide this without knowing your terminal UX preference.
 
 ### 3. The working tree has unrelated changes (`flake.nix` vendorHash busted, `.golangci.yml` tagliatelle added, `go.mod`/`go.sum` dep bumped). Should I investigate/revert these, or are they from another session?

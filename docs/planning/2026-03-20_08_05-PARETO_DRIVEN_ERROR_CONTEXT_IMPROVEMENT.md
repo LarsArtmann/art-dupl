@@ -1,8 +1,8 @@
 # Pareto-Driven Error Context Improvement Plan
 
-**Date:** 2026-03-20  
-**Project:** art-dupl (Code Duplication Detection Tool for Go)  
-**Analysis Source:** Branching-Flow Comprehensive Analysis  
+**Date:** 2026-03-20\
+**Project:** art-dupl (Code Duplication Detection Tool for Go)\
+**Analysis Source:** Branching-Flow Comprehensive Analysis\
 **Document Type:** Strategic Implementation Plan with Pareto Optimization
 
 ---
@@ -32,9 +32,9 @@ This document presents a **Pareto-optimized implementation strategy** for addres
 
 ### 🔴 TIER 1: The 1% that Delivers 51% of Results
 
-**Scope:** 7-8 issues out of 752 (0.9% - 1.1%)  
-**Impact:** 51% of total value  
-**Time Investment:** 45-60 minutes (2.9% - 3.8% of total effort)  
+**Scope:** 7-8 issues out of 752 (0.9% - 1.1%)\
+**Impact:** 51% of total value\
+**Time Investment:** 45-60 minutes (2.9% - 3.8% of total effort)\
 **ROI:** 13.4x
 
 **The Core Insight:**
@@ -65,9 +65,9 @@ Simple error message enhancements using existing `fmt.Errorf` patterns. No archi
 
 ### 🟠 TIER 2: The 4% that Delivers 64% of Results
 
-**Scope:** 30 issues out of 752 (4.0%)  
-**Impact:** 64% of total value (13% incremental over Tier 1)  
-**Time Investment:** 3-4 hours (10-13% of total effort)  
+**Scope:** 30 issues out of 752 (4.0%)\
+**Impact:** 64% of total value (13% incremental over Tier 1)\
+**Time Investment:** 3-4 hours (10-13% of total effort)\
 **ROI:** 4.9x
 
 **The Core Insight:**
@@ -103,9 +103,9 @@ Building on Tier 1, we add **22 additional context propagation issues** that:
 
 ### 🟡 TIER 3: The 20% that Delivers 80% of Results
 
-**Scope:** 150 issues out of 752 (19.9%)  
-**Impact:** 80% of total value (16% incremental over Tier 2)  
-**Time Investment:** 12-15 hours (32-39% of total effort)  
+**Scope:** 150 issues out of 752 (19.9%)\
+**Impact:** 80% of total value (16% incremental over Tier 2)\
+**Time Investment:** 12-15 hours (32-39% of total effort)\
 **ROI:** 2.5x
 
 **The Core Insight:**
@@ -159,49 +159,49 @@ Each task is designed to be completed in **30-100 minutes**. Sorted by importanc
 
 ### Phase 1: Tier 1 - The 1% (51% Value) - CRITICAL PATH
 
-| #   | Task                                                         | Time | Impact | Effort | Value | Priority |
-| --- | ------------------------------------------------------------ | ---- | ------ | ------ | ----- | -------- |
-| 1   | Fix enum marshaling context loss (marshal.go:107)            | 30m  | 10/10  | 2/10   | 11/11 | P0       |
-| 2   | Fix detection method context loss (detectionmethod.go:32)    | 30m  | 10/10  | 2/10   | 11/11 | P0       |
-| 3   | Fix detector initialization context (detector.go:32)         | 45m  | 9/10   | 3/10   | 10/10 | P0       |
-| 4   | Fix detector streaming context (detector.go:61)              | 45m  | 9/10   | 3/10   | 10/10 | P0       |
-| 5   | Fix detector pipeline context (detector.go:67)               | 45m  | 9/10   | 3/10   | 10/10 | P0       |
-| 6   | Fix detector detection context (detector.go:77)              | 30m  | 9/10   | 2/10   | 10/10 | P0       |
-| 7   | Fix detector streaming validation (detector.go:94)           | 45m  | 9/10   | 3/10   | 10/10 | P0       |
-| 8   | Fix detector pipeline context loss (detector_pipeline.go:60) | 45m  | 9/10   | 3/10   | 10/10 | P0       |
+| # | Task                                                         | Time | Impact | Effort | Value | Priority |
+| - | ------------------------------------------------------------ | ---- | ------ | ------ | ----- | -------- |
+| 1 | Fix enum marshaling context loss (marshal.go:107)            | 30m  | 10/10  | 2/10   | 11/11 | P0       |
+| 2 | Fix detection method context loss (detectionmethod.go:32)    | 30m  | 10/10  | 2/10   | 11/11 | P0       |
+| 3 | Fix detector initialization context (detector.go:32)         | 45m  | 9/10   | 3/10   | 10/10 | P0       |
+| 4 | Fix detector streaming context (detector.go:61)              | 45m  | 9/10   | 3/10   | 10/10 | P0       |
+| 5 | Fix detector pipeline context (detector.go:67)               | 45m  | 9/10   | 3/10   | 10/10 | P0       |
+| 6 | Fix detector detection context (detector.go:77)              | 30m  | 9/10   | 2/10   | 10/10 | P0       |
+| 7 | Fix detector streaming validation (detector.go:94)           | 45m  | 9/10   | 3/10   | 10/10 | P0       |
+| 8 | Fix detector pipeline context loss (detector_pipeline.go:60) | 45m  | 9/10   | 3/10   | 10/10 | P0       |
 
 **Phase 1 Total:** 6 tasks, 5.25 hours, 51% of total value
 
 ### Phase 2: Tier 2 - The 4% (64% Value) - HIGH PRIORITY
 
-| #   | Task                                                                | Time | Impact | Effort | Value | Priority |
-| --- | ------------------------------------------------------------------- | ---- | ------ | ------ | ----- | -------- |
-| 9   | Fix detector pipeline context (detector_pipeline.go:62)             | 45m  | 8/10   | 3/10   | 9/11  | P1       |
-| 10  | Fix syntax parser context (parse.go) - 3 issues                     | 60m  | 8/10   | 4/10   | 9/11  | P1       |
-| 11  | Fix CLI run_flags context (run_flags.go) - 2 issues                 | 45m  | 8/10   | 3/10   | 9/11  | P1       |
-| 12  | Fix incremental parsing context (incremental.go) - 3 issues         | 60m  | 8/10   | 4/10   | 9/11  | P1       |
-| 13  | Fix HTML printer context (html.go) - 2 issues                       | 45m  | 7/10   | 3/10   | 8/11  | P1       |
-| 14  | Fix detector validation context (detector_validation.go) - 2 issues | 45m  | 8/10   | 3/10   | 9/11  | P1       |
-| 15  | Fix testutil BDD context (bdd.go) - 2 issues                        | 45m  | 6/10   | 3/10   | 7/11  | P1       |
+| #  | Task                                                                | Time | Impact | Effort | Value | Priority |
+| -- | ------------------------------------------------------------------- | ---- | ------ | ------ | ----- | -------- |
+| 9  | Fix detector pipeline context (detector_pipeline.go:62)             | 45m  | 8/10   | 3/10   | 9/11  | P1       |
+| 10 | Fix syntax parser context (parse.go) - 3 issues                     | 60m  | 8/10   | 4/10   | 9/11  | P1       |
+| 11 | Fix CLI run_flags context (run_flags.go) - 2 issues                 | 45m  | 8/10   | 3/10   | 9/11  | P1       |
+| 12 | Fix incremental parsing context (incremental.go) - 3 issues         | 60m  | 8/10   | 4/10   | 9/11  | P1       |
+| 13 | Fix HTML printer context (html.go) - 2 issues                       | 45m  | 7/10   | 3/10   | 8/11  | P1       |
+| 14 | Fix detector validation context (detector_validation.go) - 2 issues | 45m  | 8/10   | 3/10   | 9/11  | P1       |
+| 15 | Fix testutil BDD context (bdd.go) - 2 issues                        | 45m  | 6/10   | 3/10   | 7/11  | P1       |
 
 **Phase 2 Total:** 7 tasks, 5.75 hours, 13% incremental value (64% cumulative)
 
 ### Phase 3: Tier 3 - The 20% (80% Value) - MEDIUM PRIORITY
 
-| #   | Task                                                              | Time | Impact | Effort | Value | Priority |
-| --- | ----------------------------------------------------------------- | ---- | ------ | ------ | ----- | -------- |
-| 16  | Fix domain helpers context (helpers.go) - 4 issues                | 60m  | 7/10   | 4/10   | 8/11  | P2       |
-| 17  | Fix domain types metadata context (types_metadata.go) - 3 issues  | 60m  | 7/10   | 4/10   | 8/11  | P2       |
-| 18  | Fix errors types context (types.go) - 3 issues                    | 60m  | 7/10   | 4/10   | 8/11  | P2       |
-| 19  | Fix errors marshal context (marshal.go) - 2 issues                | 45m  | 7/10   | 3/10   | 8/11  | P2       |
-| 20  | Fix printer common context (common.go) - 3 issues                 | 60m  | 7/10   | 4/10   | 8/11  | P2       |
-| 21  | Fix printer issuer context (issuer.go) - 2 issues                 | 45m  | 7/10   | 3/10   | 8/11  | P2       |
-| 22  | Fix printer stats context (stats.go) - 2 issues                   | 45m  | 7/10   | 3/10   | 8/11  | P2       |
-| 23  | Fix domain types file context (types_file.go) - 2 issues          | 45m  | 7/10   | 3/10   | 8/11  | P2       |
-| 24  | Fix printer file processor context (file_processor.go) - 2 issues | 45m  | 7/10   | 3/10   | 8/11  | P2       |
-| 25  | Fix printer JSON context (json.go) - 2 issues                     | 45m  | 7/10   | 3/10   | 8/11  | P2       |
-| 26  | Fix printer plumbing context (plumbing.go) - 2 issues             | 45m  | 7/10   | 3/10   | 8/11  | P2       |
-| 27  | Fix suffixtree context (suffixtree.go) - 2 issues                 | 60m  | 7/10   | 4/10   | 8/11  | P2       |
+| #  | Task                                                              | Time | Impact | Effort | Value | Priority |
+| -- | ----------------------------------------------------------------- | ---- | ------ | ------ | ----- | -------- |
+| 16 | Fix domain helpers context (helpers.go) - 4 issues                | 60m  | 7/10   | 4/10   | 8/11  | P2       |
+| 17 | Fix domain types metadata context (types_metadata.go) - 3 issues  | 60m  | 7/10   | 4/10   | 8/11  | P2       |
+| 18 | Fix errors types context (types.go) - 3 issues                    | 60m  | 7/10   | 4/10   | 8/11  | P2       |
+| 19 | Fix errors marshal context (marshal.go) - 2 issues                | 45m  | 7/10   | 3/10   | 8/11  | P2       |
+| 20 | Fix printer common context (common.go) - 3 issues                 | 60m  | 7/10   | 4/10   | 8/11  | P2       |
+| 21 | Fix printer issuer context (issuer.go) - 2 issues                 | 45m  | 7/10   | 3/10   | 8/11  | P2       |
+| 22 | Fix printer stats context (stats.go) - 2 issues                   | 45m  | 7/10   | 3/10   | 8/11  | P2       |
+| 23 | Fix domain types file context (types_file.go) - 2 issues          | 45m  | 7/10   | 3/10   | 8/11  | P2       |
+| 24 | Fix printer file processor context (file_processor.go) - 2 issues | 45m  | 7/10   | 3/10   | 8/11  | P2       |
+| 25 | Fix printer JSON context (json.go) - 2 issues                     | 45m  | 7/10   | 3/10   | 8/11  | P2       |
+| 26 | Fix printer plumbing context (plumbing.go) - 2 issues             | 45m  | 7/10   | 3/10   | 8/11  | P2       |
+| 27 | Fix suffixtree context (suffixtree.go) - 2 issues                 | 60m  | 7/10   | 4/10   | 8/11  | P2       |
 
 **Phase 3 Total:** 12 tasks, 10.5 hours, 16% incremental value (80% cumulative)
 
@@ -487,8 +487,8 @@ return nil, errors.Wrap(err, errors.AnalysisError, fmt.Sprintf("analysis failed 
 
 ---
 
-**Document Version:** 1.0  
-**Last Updated:** 2026-03-20 08:05  
-**Next Review:** 2026-03-27  
-**Owner:** Engineering Team  
+**Document Version:** 1.0\
+**Last Updated:** 2026-03-20 08:05\
+**Next Review:** 2026-03-27\
+**Owner:** Engineering Team\
 **Status:** Ready for Implementation

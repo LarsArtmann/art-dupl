@@ -145,33 +145,33 @@ Speed over rigor. Rushed through tier transitions without verifying claims. The 
 
 Sorted by `(impact × customer_value) / effort`, highest first.
 
-| #   | Task                                                             | Impact | Value | Effort   | Priority |
-| --- | ---------------------------------------------------------------- | ------ | ----- | -------- | -------- |
-| 1   | Fix AGENTS.md stale limitations (Fragment, Clone types sections) | 3      | 3     | 10m      | 0.90     |
-| 2   | Fix 2 pre-existing gosec G115 warnings in syntax/syntax.go       | 2      | 2     | 15m      | 0.53     |
-| 3   | Create GitHub Actions workflow templates for users               | 3      | 5     | 1h       | 0.83     |
-| 4   | Add performance baseline benchmarks                              | 4      | 4     | 2h       | 0.67     |
-| 5   | Write "Getting Started" SDK quickstart guide                     | 3      | 5     | 1h       | 0.83     |
-| 6   | Extract shared `CloneLocation` struct in domain                  | 4      | 3     | 2h       | 0.50     |
-| 7   | Add branded `Filename` type                                      | 3      | 2     | 2h       | 0.30     |
-| 8   | Split `config.Config` god struct into sub-configs                | 4      | 2     | 3h       | 0.27     |
-| 9   | Add `OutputWriter` interface for printers                        | 3      | 3     | 2h       | 0.45     |
-| 10  | Create performance regression test suite                         | 3      | 4     | 3h       | 0.40     |
-| 11  | Split `printer/` into sub-packages                               | 4      | 3     | 1-2 days | 0.15     |
-| 11  | Decouple actionability from `syntax.Node` (DTO)                  | 5      | 3     | 2-3 days | 0.13     |
-| 13  | Normalize golden file tests (remove timestamps/paths)            | 2      | 3     | 3h       | 0.20     |
-| 14  | Speed up BDD tests (injected clocks)                             | 2      | 2     | 4h       | 0.10     |
-| 15  | Archive old status reports (200+ files)                          | 1      | 2     | 1h       | 0.17     |
-| 16  | Implement hybrid slice/map transition storage                    | 2      | 1     | 4h       | 0.05     |
-| 17  | Thread `context.Context` through file feeders                    | 3      | 2     | 1 day    | 0.06     |
-| 18  | Add watch mode                                                   | 5      | 5     | Weeks    | Low      |
-| 19  | Add TypeScript/JS language support                               | 5      | 5     | Weeks    | Low      |
-| 20  | Add Python language support                                      | 5      | 5     | Weeks    | Low      |
-| 21  | Create `syntax/golang` facade                                    | 3      | 1     | Blocked  | —        |
-| 22  | Consolidate 5 clone types into fewer                             | 3      | 2     | 1 day    | 0.06     |
-| 23  | Add SARIF rule metadata enrichment                               | 2      | 3     | 2h       | 0.30     |
-| 24  | Create SDK examples (CI/CD integration)                          | 3      | 4     | 2h       | 0.60     |
-| 25  | Add `--dry-run` flag (show what would be analyzed)               | 2      | 3     | 2h       | 0.30     |
+| #  | Task                                                             | Impact | Value | Effort   | Priority |
+| -- | ---------------------------------------------------------------- | ------ | ----- | -------- | -------- |
+| 1  | Fix AGENTS.md stale limitations (Fragment, Clone types sections) | 3      | 3     | 10m      | 0.90     |
+| 2  | Fix 2 pre-existing gosec G115 warnings in syntax/syntax.go       | 2      | 2     | 15m      | 0.53     |
+| 3  | Create GitHub Actions workflow templates for users               | 3      | 5     | 1h       | 0.83     |
+| 4  | Add performance baseline benchmarks                              | 4      | 4     | 2h       | 0.67     |
+| 5  | Write "Getting Started" SDK quickstart guide                     | 3      | 5     | 1h       | 0.83     |
+| 6  | Extract shared `CloneLocation` struct in domain                  | 4      | 3     | 2h       | 0.50     |
+| 7  | Add branded `Filename` type                                      | 3      | 2     | 2h       | 0.30     |
+| 8  | Split `config.Config` god struct into sub-configs                | 4      | 2     | 3h       | 0.27     |
+| 9  | Add `OutputWriter` interface for printers                        | 3      | 3     | 2h       | 0.45     |
+| 10 | Create performance regression test suite                         | 3      | 4     | 3h       | 0.40     |
+| 11 | Split `printer/` into sub-packages                               | 4      | 3     | 1-2 days | 0.15     |
+| 11 | Decouple actionability from `syntax.Node` (DTO)                  | 5      | 3     | 2-3 days | 0.13     |
+| 13 | Normalize golden file tests (remove timestamps/paths)            | 2      | 3     | 3h       | 0.20     |
+| 14 | Speed up BDD tests (injected clocks)                             | 2      | 2     | 4h       | 0.10     |
+| 15 | Archive old status reports (200+ files)                          | 1      | 2     | 1h       | 0.17     |
+| 16 | Implement hybrid slice/map transition storage                    | 2      | 1     | 4h       | 0.05     |
+| 17 | Thread `context.Context` through file feeders                    | 3      | 2     | 1 day    | 0.06     |
+| 18 | Add watch mode                                                   | 5      | 5     | Weeks    | Low      |
+| 19 | Add TypeScript/JS language support                               | 5      | 5     | Weeks    | Low      |
+| 20 | Add Python language support                                      | 5      | 5     | Weeks    | Low      |
+| 21 | Create `syntax/golang` facade                                    | 3      | 1     | Blocked  | —        |
+| 22 | Consolidate 5 clone types into fewer                             | 3      | 2     | 1 day    | 0.06     |
+| 23 | Add SARIF rule metadata enrichment                               | 2      | 3     | 2h       | 0.30     |
+| 24 | Create SDK examples (CI/CD integration)                          | 3      | 4     | 2h       | 0.60     |
+| 25 | Add `--dry-run` flag (show what would be analyzed)               | 2      | 3     | 2h       | 0.30     |
 
 ---
 

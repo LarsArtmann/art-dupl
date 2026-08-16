@@ -1,8 +1,8 @@
 # Art-Dupl Code Duplication Elimination Plan
 
-**Date**: 2025-12-17  
-**Version**: 1.0  
-**Author**: Crush AI Assistant  
+**Date**: 2025-12-17\
+**Version**: 1.0\
+**Author**: Crush AI Assistant\
 **Target**: Eliminate 35 clone groups with threshold 30 using 80/20, 64/4, 51/1 principles
 
 ---
@@ -91,7 +91,7 @@ This plan addresses the 35 clone groups detected by art-dupl with threshold 30. 
 
 ### Phase 1: Critical Impact (Tasks 1-12)
 
-**Timeline**: 6 hours  
+**Timeline**: 6 hours\
 **Focus**: Eliminate highest-value duplications
 
 ```mermaid
@@ -117,7 +117,7 @@ gantt
 
 ### Phase 2: High Impact (Tasks 13-39)
 
-**Timeline**: 6.5 hours  
+**Timeline**: 6.5 hours\
 **Focus**: Consolidate major functional duplications
 
 ```mermaid
@@ -143,7 +143,7 @@ gantt
 
 ### Phase 3: Medium Impact (Tasks 40-125)
 
-**Timeline**: 34.5 hours  
+**Timeline**: 34.5 hours\
 **Focus**: Systematic cleanup and optimization
 
 ---
@@ -186,20 +186,20 @@ gantt
 
 **Phase 1: Critical Impact (Tasks 1-12)** - Focus on CLI core functionality
 
-| ID  | Task                                                      | Priority | Est. Time | Dependencies |
-| --- | --------------------------------------------------------- | -------- | --------- | ------------ |
-| 1   | Analyze CLI output format switch blocks in cli.go:194,663 | HIGH     | 15min     | -            |
-| 2   | Design createPrinter() function signature                 | HIGH     | 10min     | 1            |
-| 3   | Implement createPrinter() function skeleton               | HIGH     | 15min     | 2            |
-| 4   | Replace first switch block with createPrinter() call      | HIGH     | 10min     | 3            |
-| 5   | Replace second switch block with createPrinter() call     | HIGH     | 10min     | 4            |
-| 6   | Test createPrinter() function with unit tests             | HIGH     | 15min     | 5            |
-| 7   | Analyze config error handling in cli.go:606,621           | HIGH     | 15min     | -            |
-| 8   | Design handleConfigError() function signature             | HIGH     | 10min     | 7            |
-| 9   | Implement handleConfigError() function                    | HIGH     | 15min     | 8            |
-| 10  | Replace first error handling block                        | HIGH     | 10min     | 9            |
-| 11  | Replace second error handling block                       | HIGH     | 10min     | 10           |
-| 12  | Test handleConfigError() with unit tests                  | HIGH     | 15min     | 11           |
+| ID | Task                                                      | Priority | Est. Time | Dependencies |
+| -- | --------------------------------------------------------- | -------- | --------- | ------------ |
+| 1  | Analyze CLI output format switch blocks in cli.go:194,663 | HIGH     | 15min     | -            |
+| 2  | Design createPrinter() function signature                 | HIGH     | 10min     | 1            |
+| 3  | Implement createPrinter() function skeleton               | HIGH     | 15min     | 2            |
+| 4  | Replace first switch block with createPrinter() call      | HIGH     | 10min     | 3            |
+| 5  | Replace second switch block with createPrinter() call     | HIGH     | 10min     | 4            |
+| 6  | Test createPrinter() function with unit tests             | HIGH     | 15min     | 5            |
+| 7  | Analyze config error handling in cli.go:606,621           | HIGH     | 15min     | -            |
+| 8  | Design handleConfigError() function signature             | HIGH     | 10min     | 7            |
+| 9  | Implement handleConfigError() function                    | HIGH     | 15min     | 8            |
+| 10 | Replace first error handling block                        | HIGH     | 10min     | 9            |
+| 11 | Replace second error handling block                       | HIGH     | 10min     | 10           |
+| 12 | Test handleConfigError() with unit tests                  | HIGH     | 15min     | 11           |
 
 **Phase 2: High Impact (Tasks 13-39)** - Focus on functional consolidation
 

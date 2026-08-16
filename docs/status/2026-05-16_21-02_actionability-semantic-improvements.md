@@ -1,8 +1,8 @@
 # Status Report: Actionability & Semantic Detection Improvements
 
-**Date:** 2026-05-16  
-**Branch:** fork  
-**Author:** Parakletos (Crush AI)  
+**Date:** 2026-05-16\
+**Branch:** fork\
+**Author:** Parakletos (Crush AI)\
 **Topic:** Reduce false positives in `--semantic` mode; add `--rich-text` enhanced output
 
 ---
@@ -171,33 +171,33 @@ Nothing. All tests pass, all builds clean, all changes are minimal and focused.
 
 ### f) Top #25 Things To Do Next
 
-| #   | Task                                                                    | Priority | Effort | Impact                                             |
-| --- | ----------------------------------------------------------------------- | -------- | ------ | -------------------------------------------------- |
-| 1   | Weighted token analysis for actionability (not just single-node)        | P0       | Medium | Fixes real false positives on partial-body matches |
-| 2   | Standardize text output line notation `:` → `-`                         | P1       | Low    | UX fix user explicitly complained about            |
-| 3   | Add `Actionability` to JSON output                                      | P1       | Low    | CI pipelines need structured actionability data    |
-| 4   | Extend `--rich-text` to HTML (filter badges)                            | P1       | Medium | HTML already rich, should show actionability       |
-| 5   | Implement real `isPureErrorPropagation` (inspect IfStmt body)           | P2       | Medium | Current is a heuristic placeholder                 |
-| 6   | Implement real `isPureDeferPattern` (inspect call target)               | P2       | Medium | Distinguish `Unlock` from business defer           |
-| 7   | Actionability filtering for `stats` subcommand                          | P2       | Low    | Consistent behavior across commands                |
-| 8   | Benchmark `EvaluateActionability` overhead on large repos               | P2       | Low    | Performance confidence                             |
-| 9   | Add `--rich-text` behavior docs / `--help` examples                     | P2       | Low    | User discoverability                               |
-| 10  | Extend actionability to goroutine patterns                              | P3       | Medium | `go func() { ... }()` is common boilerplate        |
-| 11  | Extend actionability to context.WithCancel patterns                     | P3       | Low    | Standard Go pattern                                |
-| 12  | Add `CategoryInterfaceImpl` to `CloneCategory` enum                     | P3       | Low    | Precise classification vs generic `method`         |
-| 13  | Add actionability filter buttons to HTML report                         | P3       | Medium | Parity with Production/Test/Category filters       |
-| 14  | Actionability should set `Suggestion` to "Required by interface"        | P3       | Low    | Better UX on non-actionable reports                |
-| 15  | Add BDD test for `--semantic` suppressing interface signatures          | P3       | Medium | Integration test for core feature                  |
-| 16  | Add BDD test for `--rich-text` flag                                     | P3       | Low    | CLI behavior coverage                              |
-| 17  | Consider `ActionabilityThreshold` config (weighted score cutoff)        | P4       | Medium | Tunable strictness                                 |
-| 18  | Document actionability patterns in FEATURES.md / AGENTS.md              | P4       | Low    | Keep documentation current                         |
-| 19  | Add `--only-actionable` as alias (if user debate continues)             | P4       | Low    | Future-proofing                                    |
-| 20  | Check `RunWithSetAnalysisData` in text output for rich-text             | P5       | Low    | Text output has two paths                          |
-| 21  | Error handling pattern detection: inspect `errors.Is` / `As`            | P5       | Medium | More Go idioms                                     |
-| 22  | `nil` check patterns: `if x == nil { return nil, err }`                 | P5       | Low    | Common boilerplate                                 |
-| 23  | Type assertion boilerplate: `if v, ok := x.(T); ok { ... }`             | P5       | Low    | Go idiom                                           |
-| 24  | Vendor directory exclusion in actionability (already handled by filter) | P5       | Low    | Already works                                      |
-| 25  | Investigate if semantic mode should become default                      | P5       | High   | Big UX shift, needs user validation                |
+| #  | Task                                                                    | Priority | Effort | Impact                                             |
+| -- | ----------------------------------------------------------------------- | -------- | ------ | -------------------------------------------------- |
+| 1  | Weighted token analysis for actionability (not just single-node)        | P0       | Medium | Fixes real false positives on partial-body matches |
+| 2  | Standardize text output line notation `:` → `-`                         | P1       | Low    | UX fix user explicitly complained about            |
+| 3  | Add `Actionability` to JSON output                                      | P1       | Low    | CI pipelines need structured actionability data    |
+| 4  | Extend `--rich-text` to HTML (filter badges)                            | P1       | Medium | HTML already rich, should show actionability       |
+| 5  | Implement real `isPureErrorPropagation` (inspect IfStmt body)           | P2       | Medium | Current is a heuristic placeholder                 |
+| 6  | Implement real `isPureDeferPattern` (inspect call target)               | P2       | Medium | Distinguish `Unlock` from business defer           |
+| 7  | Actionability filtering for `stats` subcommand                          | P2       | Low    | Consistent behavior across commands                |
+| 8  | Benchmark `EvaluateActionability` overhead on large repos               | P2       | Low    | Performance confidence                             |
+| 9  | Add `--rich-text` behavior docs / `--help` examples                     | P2       | Low    | User discoverability                               |
+| 10 | Extend actionability to goroutine patterns                              | P3       | Medium | `go func() { ... }()` is common boilerplate        |
+| 11 | Extend actionability to context.WithCancel patterns                     | P3       | Low    | Standard Go pattern                                |
+| 12 | Add `CategoryInterfaceImpl` to `CloneCategory` enum                     | P3       | Low    | Precise classification vs generic `method`         |
+| 13 | Add actionability filter buttons to HTML report                         | P3       | Medium | Parity with Production/Test/Category filters       |
+| 14 | Actionability should set `Suggestion` to "Required by interface"        | P3       | Low    | Better UX on non-actionable reports                |
+| 15 | Add BDD test for `--semantic` suppressing interface signatures          | P3       | Medium | Integration test for core feature                  |
+| 16 | Add BDD test for `--rich-text` flag                                     | P3       | Low    | CLI behavior coverage                              |
+| 17 | Consider `ActionabilityThreshold` config (weighted score cutoff)        | P4       | Medium | Tunable strictness                                 |
+| 18 | Document actionability patterns in FEATURES.md / AGENTS.md              | P4       | Low    | Keep documentation current                         |
+| 19 | Add `--only-actionable` as alias (if user debate continues)             | P4       | Low    | Future-proofing                                    |
+| 20 | Check `RunWithSetAnalysisData` in text output for rich-text             | P5       | Low    | Text output has two paths                          |
+| 21 | Error handling pattern detection: inspect `errors.Is` / `As`            | P5       | Medium | More Go idioms                                     |
+| 22 | `nil` check patterns: `if x == nil { return nil, err }`                 | P5       | Low    | Common boilerplate                                 |
+| 23 | Type assertion boilerplate: `if v, ok := x.(T); ok { ... }`             | P5       | Low    | Go idiom                                           |
+| 24 | Vendor directory exclusion in actionability (already handled by filter) | P5       | Low    | Already works                                      |
+| 25 | Investigate if semantic mode should become default                      | P5       | High   | Big UX shift, needs user validation                |
 
 ---
 

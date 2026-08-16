@@ -8,15 +8,15 @@
 
 ### This Session (2026-06-12)
 
-| #   | Task                                                                                   | Files Changed                                            | Impact                                                                                                           |
-| --- | -------------------------------------------------------------------------------------- | -------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| 1   | **Add `IsValid()/String()` to `CloneCategory`, `ClonePriority`, `CloneActionability`** | `domain/processed_clone.go`, `domain/analysis_errors.go` | All 6 domain enum types now have consistent validation + stringer. 3 new error sentinels added.                  |
-| 2   | **Fix `priorityScore()` to use `domain.ClonePriority`**                                | `printer/stats.go`, `printer/stats_data.go`              | Eliminated raw string comparison. `TopCloneGroup` fields upgraded from `string` to typed domain values.          |
-| 3   | **Update TODO_LIST.md** — mark 6 completed items                                       | `TODO_LIST.md`                                           | CSV, --output-file, SDK docs, BDD tests, GoReleaser, godoclint all marked done.                                  |
-| 4   | **Rewrite CHANGELOG.md** — fix lies, restructure                                       | `CHANGELOG.md`                                           | Fixed "Semantic OFF by default" lie (it's ON). Removed dead SIMD/string-interning claims. Proper dated sections. |
-| 5   | **Update FEATURES.md** — reflect reality                                               | `FEATURES.md`                                            | CSV → FULLY_FUNCTIONAL, added --output-file, added actionability, removed SIMD, removed stale limitations.       |
-| 6   | **Populate `docs/DOMAIN_LANGUAGE.md`**                                                 | `docs/DOMAIN_LANGUAGE.md`                                | 20 glossary terms, 3 entities, 9 value objects, 3 events, 5 commands, 6 bounded contexts. Was empty template.    |
-| 7   | **Restart LSP** — cleared stale cache                                                  | —                                                        | Zero diagnostics across project.                                                                                 |
+| # | Task                                                                                   | Files Changed                                            | Impact                                                                                                           |
+| - | -------------------------------------------------------------------------------------- | -------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| 1 | **Add `IsValid()/String()` to `CloneCategory`, `ClonePriority`, `CloneActionability`** | `domain/processed_clone.go`, `domain/analysis_errors.go` | All 6 domain enum types now have consistent validation + stringer. 3 new error sentinels added.                  |
+| 2 | **Fix `priorityScore()` to use `domain.ClonePriority`**                                | `printer/stats.go`, `printer/stats_data.go`              | Eliminated raw string comparison. `TopCloneGroup` fields upgraded from `string` to typed domain values.          |
+| 3 | **Update TODO_LIST.md** — mark 6 completed items                                       | `TODO_LIST.md`                                           | CSV, --output-file, SDK docs, BDD tests, GoReleaser, godoclint all marked done.                                  |
+| 4 | **Rewrite CHANGELOG.md** — fix lies, restructure                                       | `CHANGELOG.md`                                           | Fixed "Semantic OFF by default" lie (it's ON). Removed dead SIMD/string-interning claims. Proper dated sections. |
+| 5 | **Update FEATURES.md** — reflect reality                                               | `FEATURES.md`                                            | CSV → FULLY_FUNCTIONAL, added --output-file, added actionability, removed SIMD, removed stale limitations.       |
+| 6 | **Populate `docs/DOMAIN_LANGUAGE.md`**                                                 | `docs/DOMAIN_LANGUAGE.md`                                | 20 glossary terms, 3 entities, 9 value objects, 3 events, 5 commands, 6 bounded contexts. Was empty template.    |
+| 7 | **Restart LSP** — cleared stale cache                                                  | —                                                        | Zero diagnostics across project.                                                                                 |
 
 ### Previous Sessions (Cumulative)
 
@@ -111,48 +111,48 @@ Nothing is broken. But here's what's **misleading or wrong**:
 
 ### Tier 1: High Impact (Do First)
 
-| #   | Task                                                                        | Impact | Effort           | Rationale                                                                           |
-| --- | --------------------------------------------------------------------------- | ------ | ---------------- | ----------------------------------------------------------------------------------- |
-| 1   | **Wire ProcessedClone DTO through printer pipeline**                        | HIGH   | L (2-3 sessions) | Eliminates the deepest coupling in the codebase. Unblocks Clone type consolidation. |
-| 2   | **Consolidate Clone types to use ProcessedClone/ProcessedCloneGroup**       | HIGH   | L                | 3→1 Clone type. Reduces confusion, enables future format changes.                   |
-| 3   | **Add JSON marshaling to CloneCategory, ClonePriority, CloneActionability** | MEDIUM | S (30min)        | Pattern already exists for CloneSeverity/HealthScore. Trivial to add.               |
-| 4   | **Unify enum patterns: use config generic helpers in domain**               | MEDIUM | M (2h)           | Eliminates duplicate validation/marshal code across 5 enum types.                   |
-| 5   | **Wire TODO/Legacy detectors to CLI (`--method todos`)**                    | MEDIUM | S (1h)           | Already implemented + tested. Just needs flag wiring.                               |
+| # | Task                                                                        | Impact | Effort           | Rationale                                                                           |
+| - | --------------------------------------------------------------------------- | ------ | ---------------- | ----------------------------------------------------------------------------------- |
+| 1 | **Wire ProcessedClone DTO through printer pipeline**                        | HIGH   | L (2-3 sessions) | Eliminates the deepest coupling in the codebase. Unblocks Clone type consolidation. |
+| 2 | **Consolidate Clone types to use ProcessedClone/ProcessedCloneGroup**       | HIGH   | L                | 3→1 Clone type. Reduces confusion, enables future format changes.                   |
+| 3 | **Add JSON marshaling to CloneCategory, ClonePriority, CloneActionability** | MEDIUM | S (30min)        | Pattern already exists for CloneSeverity/HealthScore. Trivial to add.               |
+| 4 | **Unify enum patterns: use config generic helpers in domain**               | MEDIUM | M (2h)           | Eliminates duplicate validation/marshal code across 5 enum types.                   |
+| 5 | **Wire TODO/Legacy detectors to CLI (`--method todos`)**                    | MEDIUM | S (1h)           | Already implemented + tested. Just needs flag wiring.                               |
 
 ### Tier 2: Quality & Safety
 
-| #   | Task                                                                  | Impact | Effort | Rationale                                                             |
-| --- | --------------------------------------------------------------------- | ------ | ------ | --------------------------------------------------------------------- |
-| 6   | **Implement TokenValue type with validation**                         | MEDIUM | M      | Type safety at suffix tree boundary.                                  |
-| 7   | **Add fuzz tests for templ parser edge cases**                        | MEDIUM | M      | Templ parser handles 28 node types, fuzz coverage would catch panics. |
-| 8   | **Refactor `syntax/golang/transform.go` to table-driven**             | LOW    | M      | 300L switch → map lookup. Same pattern as GetCategoryEmoji refactor.  |
-| 9   | **Generate stringer for domain enums**                                | LOW    | S      | Compile-time exhaustive switch enforcement.                           |
-| 10  | **Add integration test: end-to-end clone detection + stats + output** | MEDIUM | M      | Verify the full pipeline works, not just individual packages.         |
-| 11  | **Fix remaining LSP hints: unused params, unnecessary type args**     | LOW    | S      | Hygiene.                                                              |
-| 12  | **Add `--method todos` CLI flag and BDD test**                        | MEDIUM | S      | Closes the TODO detector gap.                                         |
+| #  | Task                                                                  | Impact | Effort | Rationale                                                             |
+| -- | --------------------------------------------------------------------- | ------ | ------ | --------------------------------------------------------------------- |
+| 6  | **Implement TokenValue type with validation**                         | MEDIUM | M      | Type safety at suffix tree boundary.                                  |
+| 7  | **Add fuzz tests for templ parser edge cases**                        | MEDIUM | M      | Templ parser handles 28 node types, fuzz coverage would catch panics. |
+| 8  | **Refactor `syntax/golang/transform.go` to table-driven**             | LOW    | M      | 300L switch → map lookup. Same pattern as GetCategoryEmoji refactor.  |
+| 9  | **Generate stringer for domain enums**                                | LOW    | S      | Compile-time exhaustive switch enforcement.                           |
+| 10 | **Add integration test: end-to-end clone detection + stats + output** | MEDIUM | M      | Verify the full pipeline works, not just individual packages.         |
+| 11 | **Fix remaining LSP hints: unused params, unnecessary type args**     | LOW    | S      | Hygiene.                                                              |
+| 12 | **Add `--method todos` CLI flag and BDD test**                        | MEDIUM | S      | Closes the TODO detector gap.                                         |
 
 ### Tier 3: Documentation & Process
 
-| #   | Task                                                  | Impact | Effort | Rationale                           |
-| --- | ----------------------------------------------------- | ------ | ------ | ----------------------------------- |
-| 13  | **Create ROADMAP.md** from scattered status reports   | LOW    | S      | Consolidate long-term ideas.        |
-| 14  | **Add ADR for ProcessedClone DTO migration**          | LOW    | S      | Document the architecture decision. |
-| 15  | **Write HOW_TO_USE.md examples for SDK**              | MEDIUM | M      | SDK has godoc but no usage guide.   |
-| 16  | **Clean up `examples/` — add real runnable examples** | LOW    | S      | Currently 0% coverage.              |
-| 17  | **Archive completed status reports**                  | LOW    | S      | Keep docs/status/ lean.             |
+| #  | Task                                                  | Impact | Effort | Rationale                           |
+| -- | ----------------------------------------------------- | ------ | ------ | ----------------------------------- |
+| 13 | **Create ROADMAP.md** from scattered status reports   | LOW    | S      | Consolidate long-term ideas.        |
+| 14 | **Add ADR for ProcessedClone DTO migration**          | LOW    | S      | Document the architecture decision. |
+| 15 | **Write HOW_TO_USE.md examples for SDK**              | MEDIUM | M      | SDK has godoc but no usage guide.   |
+| 16 | **Clean up `examples/` — add real runnable examples** | LOW    | S      | Currently 0% coverage.              |
+| 17 | **Archive completed status reports**                  | LOW    | S      | Keep docs/status/ lean.             |
 
 ### Tier 4: Nice-to-Have
 
-| #   | Task                                                                        | Impact | Effort | Rationale                                                                 |
-| --- | --------------------------------------------------------------------------- | ------ | ------ | ------------------------------------------------------------------------- |
-| 18  | **Add `--version` JSON output format**                                      | LOW    | S      | Machine-readable version for CI scripts.                                  |
-| 19  | **Add git hook for pre-push lint check**                                    | LOW    | S      | Prevent lint regressions.                                                 |
-| 20  | **Benchmark: suffix tree vs hash detection performance comparison**         | LOW    | M      | Data-driven method selection guidance.                                    |
-| 21  | **Add `--quiet` flag for CI mode**                                          | LOW    | S      | Suppress all output except errors and exit code.                          |
-| 22  | **Templ semantic mode**                                                     | MEDIUM | L      | Currently structural-only. Would need identifier hashing for templ nodes. |
-| 23  | **CSV output for clone groups (not just stats)**                            | LOW    | M      | `encoding/csv` now used for stats; extend to clone listing.               |
-| 24  | **Config validation: reject conflicting flag combinations**                 | LOW    | S      | e.g., `--semantic --structural` together.                                 |
-| 25  | **Add `art-dupl check` subcommand (CI exit code: 0=clean, 1=clones found)** | MEDIUM | M      | Enable CI gating on duplication threshold.                                |
+| #  | Task                                                                        | Impact | Effort | Rationale                                                                 |
+| -- | --------------------------------------------------------------------------- | ------ | ------ | ------------------------------------------------------------------------- |
+| 18 | **Add `--version` JSON output format**                                      | LOW    | S      | Machine-readable version for CI scripts.                                  |
+| 19 | **Add git hook for pre-push lint check**                                    | LOW    | S      | Prevent lint regressions.                                                 |
+| 20 | **Benchmark: suffix tree vs hash detection performance comparison**         | LOW    | M      | Data-driven method selection guidance.                                    |
+| 21 | **Add `--quiet` flag for CI mode**                                          | LOW    | S      | Suppress all output except errors and exit code.                          |
+| 22 | **Templ semantic mode**                                                     | MEDIUM | L      | Currently structural-only. Would need identifier hashing for templ nodes. |
+| 23 | **CSV output for clone groups (not just stats)**                            | LOW    | M      | `encoding/csv` now used for stats; extend to clone listing.               |
+| 24 | **Config validation: reject conflicting flag combinations**                 | LOW    | S      | e.g., `--semantic --structural` together.                                 |
+| 25 | **Add `art-dupl check` subcommand (CI exit code: 0=clean, 1=clones found)** | MEDIUM | M      | Enable CI gating on duplication threshold.                                |
 
 ---
 
@@ -177,9 +177,9 @@ This is a product owner / architect decision. The codebase could support either 
 | Tests        | ✅ GREEN   | 25/25 packages pass, avg ~85% coverage                                   |
 | Lint         | ✅ GREEN   | 0 issues (golangci-lint, go vet, LSP)                                    |
 | Nix          | ✅ GREEN   | `nix flake check` passes (post-format fix)                               |
-| Coverage     | ⚠️ Varies  | domain 65.9%, printer 76.6%, cmd 75.3% — could improve                   |
+| Coverage     | ⚠️ Varies   | domain 65.9%, printer 76.6%, cmd 75.3% — could improve                   |
 | Docs         | ✅ CURRENT | CHANGELOG, FEATURES, TODO_LIST, DOMAIN_LANGUAGE all updated this session |
-| Architecture | ⚠️ DEBT    | Printer ↔ syntax.Node coupling, 3 Clone types                            |
+| Architecture | ⚠️ DEBT     | Printer ↔ syntax.Node coupling, 3 Clone types                            |
 
 ---
 

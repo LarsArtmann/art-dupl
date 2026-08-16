@@ -1,7 +1,7 @@
 # Dogfooding Report: Actionability & Semantic Detection
 
-**Date:** 2026-05-16 21:40  
-**Target:** github.com/LarsArtmann/go-cqrs-lite (228 files, ~10K LOC)  
+**Date:** 2026-05-16 21:40\
+**Target:** github.com/LarsArtmann/go-cqrs-lite (228 files, ~10K LOC)\
 **Tool:** art-dupl built from fork branch (6 commits ahead)
 
 ---
@@ -57,12 +57,12 @@ correct behavior.
 
 ```json
 {
-	"filename": "storage/sqlite_transactional_store.go",
-	"line_start": 1,
-	"line_end": 87,
-	"category": "unknown",
-	"priority": "low",
-	"actionability": "actionable"
+  "filename": "storage/sqlite_transactional_store.go",
+  "line_start": 1,
+  "line_end": 87,
+  "category": "unknown",
+  "priority": "low",
+  "actionability": "actionable"
 }
 ```
 

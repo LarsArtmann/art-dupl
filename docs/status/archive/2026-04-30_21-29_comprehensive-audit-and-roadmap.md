@@ -117,33 +117,33 @@ Minor concerns:
 
 Sorted by **Impact × Effort** (high impact / low effort first):
 
-| #   | Task                                                                     | Impact | Effort | Rationale                                 |
-| --- | ------------------------------------------------------------------------ | ------ | ------ | ----------------------------------------- |
-| 1   | Create CONTRIBUTING.md                                                   | Medium | Low    | Referenced in go.mod, quick win           |
-| 2   | Fix `domain.Options.OutputFormat` → `config.OutputFormat`                | Medium | Low    | 1-line type fix, improves type safety     |
-| 3   | Fix `config.Config.Only` → `config.FileType`                             | Medium | Low    | 1-line type fix                           |
-| 4   | Use `time.Time` for domain timestamps                                    | Medium | Low    | Replace 3-4 string fields                 |
-| 5   | Replace `errors.As` with `errors.AsType` (3 instances)                   | Low    | Low    | gopls modernization hint                  |
-| 6   | Fix `//nolint:err113` — use typed errors                                 | Medium | Low    | 2 files, cleaner linting                  |
-| 7   | Clean `.golangci.yml` dead package refs                                  | Low    | Low    | Remove `lib/`, `migration/` exclusions    |
-| 8   | Update TODO_LIST.md with current state                                   | Medium | Low    | Currently stale, references deleted files |
-| 9   | Add justfile recipe for vendor hash updates                              | Medium | Low    | Developer workflow improvement            |
-| 10  | Archive old docs/status/ files (keep last 30 days)                       | Low    | Low    | 304 files → ~10                           |
-| 11  | Fix LSP hints: unnecessary type args, unused params                      | Low    | Low    | 15+ instances in test code                |
-| 12  | Add basic CI pipeline (build + test + lint)                              | High   | Medium | No automated quality gates                |
-| 13  | Refactor `printer/html.go` (1484L → 3 files)                             | High   | Medium | Largest file, multiple 80+ line functions |
-| 14  | Split `detection/todos.go` (TodoDetector + LegacyDetector)               | Medium | Low    | Two unrelated detectors in one file       |
-| 15  | Add explicit conversion `domain.Clone` → `artdupl.Clone`                 | Medium | Medium | Bridge between internal/SDK types         |
-| 16  | Unify enum patterns (domain → config generic helpers)                    | Medium | Medium | Consistency across codebase               |
-| 17  | Make `GetStatsData()` return concrete type                               | Medium | Medium | Replace `any` with typed struct           |
-| 18  | Add `Repository.Path` as `Filepath` domain type                          | Low    | Low    | Use existing domain type                  |
-| 19  | Refactor `cmd/run_analysis.go` (447L)                                    | Medium | Medium | Multiple responsibilities                 |
-| 20  | Refactor `printer/diff.go` (398L)                                        | Medium | Medium | Long functions                            |
-| 21  | Split `config/config.go` (391L)                                          | Medium | Medium | Config + validation mixed                 |
-| 22  | Type safety in `syntax/syntax.go:132` — TODO comment about int positions | Medium | Medium | Existing TODO acknowledged                |
-| 23  | Refactor `syntax/golang/transform.go` (355L, 300L switch)                | Medium | High   | Giant switch statement                    |
-| 24  | Implement SIMD TODOs (6 items)                                           | Medium | High   | Performance improvement                   |
-| 25  | Create GitHub Actions CI with multi-OS matrix                            | High   | High   | Full CI coverage                          |
+| #  | Task                                                                     | Impact | Effort | Rationale                                 |
+| -- | ------------------------------------------------------------------------ | ------ | ------ | ----------------------------------------- |
+| 1  | Create CONTRIBUTING.md                                                   | Medium | Low    | Referenced in go.mod, quick win           |
+| 2  | Fix `domain.Options.OutputFormat` → `config.OutputFormat`                | Medium | Low    | 1-line type fix, improves type safety     |
+| 3  | Fix `config.Config.Only` → `config.FileType`                             | Medium | Low    | 1-line type fix                           |
+| 4  | Use `time.Time` for domain timestamps                                    | Medium | Low    | Replace 3-4 string fields                 |
+| 5  | Replace `errors.As` with `errors.AsType` (3 instances)                   | Low    | Low    | gopls modernization hint                  |
+| 6  | Fix `//nolint:err113` — use typed errors                                 | Medium | Low    | 2 files, cleaner linting                  |
+| 7  | Clean `.golangci.yml` dead package refs                                  | Low    | Low    | Remove `lib/`, `migration/` exclusions    |
+| 8  | Update TODO_LIST.md with current state                                   | Medium | Low    | Currently stale, references deleted files |
+| 9  | Add justfile recipe for vendor hash updates                              | Medium | Low    | Developer workflow improvement            |
+| 10 | Archive old docs/status/ files (keep last 30 days)                       | Low    | Low    | 304 files → ~10                           |
+| 11 | Fix LSP hints: unnecessary type args, unused params                      | Low    | Low    | 15+ instances in test code                |
+| 12 | Add basic CI pipeline (build + test + lint)                              | High   | Medium | No automated quality gates                |
+| 13 | Refactor `printer/html.go` (1484L → 3 files)                             | High   | Medium | Largest file, multiple 80+ line functions |
+| 14 | Split `detection/todos.go` (TodoDetector + LegacyDetector)               | Medium | Low    | Two unrelated detectors in one file       |
+| 15 | Add explicit conversion `domain.Clone` → `artdupl.Clone`                 | Medium | Medium | Bridge between internal/SDK types         |
+| 16 | Unify enum patterns (domain → config generic helpers)                    | Medium | Medium | Consistency across codebase               |
+| 17 | Make `GetStatsData()` return concrete type                               | Medium | Medium | Replace `any` with typed struct           |
+| 18 | Add `Repository.Path` as `Filepath` domain type                          | Low    | Low    | Use existing domain type                  |
+| 19 | Refactor `cmd/run_analysis.go` (447L)                                    | Medium | Medium | Multiple responsibilities                 |
+| 20 | Refactor `printer/diff.go` (398L)                                        | Medium | Medium | Long functions                            |
+| 21 | Split `config/config.go` (391L)                                          | Medium | Medium | Config + validation mixed                 |
+| 22 | Type safety in `syntax/syntax.go:132` — TODO comment about int positions | Medium | Medium | Existing TODO acknowledged                |
+| 23 | Refactor `syntax/golang/transform.go` (355L, 300L switch)                | Medium | High   | Giant switch statement                    |
+| 24 | Implement SIMD TODOs (6 items)                                           | Medium | High   | Performance improvement                   |
+| 25 | Create GitHub Actions CI with multi-OS matrix                            | High   | High   | Full CI coverage                          |
 
 ---
 

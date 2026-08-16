@@ -1,7 +1,7 @@
 # 🚨 EXECUTIVE STATUS REPORT - ART-DUPL PROJECT
 
-**Generated:** 2026-02-24 12:45 CET  
-**Branch:** fork  
+**Generated:** 2026-02-24 12:45 CET\
+**Branch:** fork\
 **Commit:** c6383f4
 
 ---
@@ -110,7 +110,7 @@ syntax/templ/templ.go:12: cannot import internal/treesitter/templ
 syntax/templ/templ.go:13: cannot import github.com/tree-sitter/go-tree-sitter
 ```
 
-**Impact:** templ file parsing non-functional  
+**Impact:** templ file parsing non-functional\
 **Evidence:**
 
 - File exists at internal/treesitter/templ/binding.go
@@ -119,8 +119,8 @@ syntax/templ/templ.go:13: cannot import github.com/tree-sitter/go-tree-sitter
 
 ### 2. Failing Test: --clear-cache 🔴
 
-**Test:** bdd/incremental_detection_test.go:178  
-**Failure:** "When using --clear-cache flag should clear cache before running"  
+**Test:** bdd/incremental_detection_test.go:178\
+**Failure:** "When using --clear-cache flag should clear cache before running"\
 **Root Cause:**
 
 - `cache.Clear()` removes `files/` directory at cache/file_cache.go:182
@@ -234,48 +234,48 @@ os.WriteFile(cachePath, data, 0o600)  // Fails - no directory
 
 ### 🔴 CRITICAL - Do Today
 
-| #   | Task                    | Why               | Effort  | Impact |
-| --- | ----------------------- | ----------------- | ------- | ------ |
-| 1   | Fix cache.Clear() bug   | Breaking test     | 5 min   | HIGH   |
-| 2   | Fix templ import issues | Compilation error | 1-4 hrs | HIGH   |
-| 3   | Commit current changes  | Prevent data loss | 15 min  | HIGH   |
-| 4   | Run full test suite     | Verify fixes      | 5 min   | HIGH   |
+| # | Task                    | Why               | Effort  | Impact |
+| - | ----------------------- | ----------------- | ------- | ------ |
+| 1 | Fix cache.Clear() bug   | Breaking test     | 5 min   | HIGH   |
+| 2 | Fix templ import issues | Compilation error | 1-4 hrs | HIGH   |
+| 3 | Commit current changes  | Prevent data loss | 15 min  | HIGH   |
+| 4 | Run full test suite     | Verify fixes      | 5 min   | HIGH   |
 
 ### 🟡 HIGH PRIORITY - This Week
 
-| #   | Task                                     | Why            | Effort | Impact |
-| --- | ---------------------------------------- | -------------- | ------ | ------ |
-| 5   | Split syntax/templ/templ.go              | 300-line limit | 2 hrs  | MEDIUM |
-| 6   | Split git/change_detector.go             | 300-line limit | 1 hr   | MEDIUM |
-| 7   | Add tests for job/buildtree.go           | Coverage gap   | 2 hrs  | MEDIUM |
-| 8   | Add tests for detection/multidetector.go | Coverage gap   | 2 hrs  | MEDIUM |
-| 9   | Complete worker pool wiring              | Performance    | 2 hrs  | HIGH   |
-| 10  | Add package documentation                | DX             | 3 hrs  | LOW    |
+| #  | Task                                     | Why            | Effort | Impact |
+| -- | ---------------------------------------- | -------------- | ------ | ------ |
+| 5  | Split syntax/templ/templ.go              | 300-line limit | 2 hrs  | MEDIUM |
+| 6  | Split git/change_detector.go             | 300-line limit | 1 hr   | MEDIUM |
+| 7  | Add tests for job/buildtree.go           | Coverage gap   | 2 hrs  | MEDIUM |
+| 8  | Add tests for detection/multidetector.go | Coverage gap   | 2 hrs  | MEDIUM |
+| 9  | Complete worker pool wiring              | Performance    | 2 hrs  | HIGH   |
+| 10 | Add package documentation                | DX             | 3 hrs  | LOW    |
 
 ### 🟢 MEDIUM PRIORITY - Next 2 Weeks
 
-| #   | Task                       | Why           | Effort | Impact |
-| --- | -------------------------- | ------------- | ------ | ------ |
-| 11  | Create ADRs                | Documentation | 4 hrs  | LOW    |
-| 12  | Formalize benchmarks       | Performance   | 3 hrs  | MEDIUM |
-| 13  | Global state elimination   | Architecture  | 1 day  | MEDIUM |
-| 14  | HTML template enhancements | UX            | 2 hrs  | LOW    |
-| 15  | Configuration migration    | Versioning    | 4 hrs  | MEDIUM |
-| 16  | Add fuzz tests             | Robustness    | 3 hrs  | MEDIUM |
-| 17  | Race condition audit       | Stability     | 2 hrs  | MEDIUM |
-| 18  | Memory profiling           | Performance   | 2 hrs  | MEDIUM |
+| #  | Task                       | Why           | Effort | Impact |
+| -- | -------------------------- | ------------- | ------ | ------ |
+| 11 | Create ADRs                | Documentation | 4 hrs  | LOW    |
+| 12 | Formalize benchmarks       | Performance   | 3 hrs  | MEDIUM |
+| 13 | Global state elimination   | Architecture  | 1 day  | MEDIUM |
+| 14 | HTML template enhancements | UX            | 2 hrs  | LOW    |
+| 15 | Configuration migration    | Versioning    | 4 hrs  | MEDIUM |
+| 16 | Add fuzz tests             | Robustness    | 3 hrs  | MEDIUM |
+| 17 | Race condition audit       | Stability     | 2 hrs  | MEDIUM |
+| 18 | Memory profiling           | Performance   | 2 hrs  | MEDIUM |
 
 ### 🟢 LOW PRIORITY - Next Month
 
-| #   | Task                       | Why            | Effort  | Impact |
-| --- | -------------------------- | -------------- | ------- | ------ |
-| 19  | Plugin architecture design | Extensibility  | 1 week  | HIGH   |
-| 20  | Web interface prototype    | User adoption  | 1 week  | HIGH   |
-| 21  | IDE integration research   | Developer tool | 3 days  | MEDIUM |
-| 22  | Advanced sorting options   | Flexibility    | 2 hrs   | LOW    |
-| 23  | Cache eviction policies    | Resource mgmt  | 3 hrs   | LOW    |
-| 24  | Distributed analysis       | Scale          | 1 week  | HIGH   |
-| 25  | Machine learning detection | Innovation     | 2 weeks | HIGH   |
+| #  | Task                       | Why            | Effort  | Impact |
+| -- | -------------------------- | -------------- | ------- | ------ |
+| 19 | Plugin architecture design | Extensibility  | 1 week  | HIGH   |
+| 20 | Web interface prototype    | User adoption  | 1 week  | HIGH   |
+| 21 | IDE integration research   | Developer tool | 3 days  | MEDIUM |
+| 22 | Advanced sorting options   | Flexibility    | 2 hrs   | LOW    |
+| 23 | Cache eviction policies    | Resource mgmt  | 3 hrs   | LOW    |
+| 24 | Distributed analysis       | Scale          | 1 week  | HIGH   |
+| 25 | Machine learning detection | Innovation     | 2 weeks | HIGH   |
 
 ---
 
@@ -344,5 +344,5 @@ This is blocking because:
 
 ---
 
-**Report Generated:** AI Agent via Crush  
+**Report Generated:** AI Agent via Crush\
 **Confidence Level:** High (based on concrete code analysis)

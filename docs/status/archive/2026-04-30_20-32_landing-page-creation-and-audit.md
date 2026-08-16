@@ -141,33 +141,33 @@ Created a single-file landing page for art-dupl at `site/index.html`. The page h
 
 Sorted by **Impact × Ease** (highest first):
 
-| #   | Task                                                          | Impact | Effort | Type     |
-| --- | ------------------------------------------------------------- | ------ | ------ | -------- |
-| 1   | Fix "5 Output Formats" → "7 Output Formats"                   | HIGH   | 5min   | Bug fix  |
-| 2   | Fix "Three modes" vs "2 Detection Methods" inconsistency      | HIGH   | 5min   | Bug fix  |
-| 3   | Fix "Zero config required" → "Works out of the box"           | MED    | 2min   | Copy fix |
-| 4   | Fix pipeline step 6 output list (add SARIF, CSV, simple-json) | MED    | 5min   | Bug fix  |
-| 5   | Add `<main>` landmark + skip-to-content link                  | HIGH   | 10min  | A11y     |
-| 6   | Add focus-visible styles                                      | HIGH   | 10min  | A11y     |
-| 7   | Fix --text-muted color contrast (2.4:1 → 4.5:1+)              | HIGH   | 10min  | A11y     |
-| 8   | Add aria-expanded on mobile toggle + close on outside click   | MED    | 10min  | A11y     |
-| 9   | Add aria-hidden="true" on hero canvas                         | MED    | 2min   | A11y     |
-| 10  | Add Open Graph + Twitter Card meta tags                       | HIGH   | 15min  | SEO      |
-| 11  | Add favicon (generate from "AD" mark)                         | MED    | 10min  | SEO      |
-| 12  | Add canonical URL + theme-color meta                          | MED    | 5min   | SEO      |
-| 13  | Fix Google Fonts `&display=swap`                              | MED    | 2min   | Perf     |
-| 14  | Fix copyInstall() — add visual feedback + error handling      | MED    | 10min  | UX       |
-| 15  | Add ARIA roles on format tabs (tablist/tab/tabpanel)          | HIGH   | 15min  | A11y     |
-| 16  | Add "Why art-dupl?" comparison section vs original dupl       | HIGH   | 30min  | Content  |
-| 17  | Add CI/CD integration section (GitHub Actions, pre-commit)    | HIGH   | 20min  | Content  |
-| 18  | Add SARIF format to output tabs                               | MED    | 15min  | Content  |
-| 19  | Add Homebrew install method alongside go install              | MED    | 5min   | Content  |
-| 20  | Add benchmark section (23.7% faster on Prometheus)            | MED    | 20min  | Content  |
-| 21  | Add stats health score showcase (A-F grading)                 | MED    | 15min  | Content  |
-| 22  | Add diff visualization feature mention                        | MED    | 10min  | Content  |
-| 23  | Extract CSS to external file for caching                      | MED    | 10min  | Perf     |
-| 24  | Debounce canvas resize handler                                | LOW    | 5min   | Perf     |
-| 25  | Replace particle canvas with suffix tree visualization        | HIGH   | 60min  | Design   |
+| #  | Task                                                          | Impact | Effort | Type     |
+| -- | ------------------------------------------------------------- | ------ | ------ | -------- |
+| 1  | Fix "5 Output Formats" → "7 Output Formats"                   | HIGH   | 5min   | Bug fix  |
+| 2  | Fix "Three modes" vs "2 Detection Methods" inconsistency      | HIGH   | 5min   | Bug fix  |
+| 3  | Fix "Zero config required" → "Works out of the box"           | MED    | 2min   | Copy fix |
+| 4  | Fix pipeline step 6 output list (add SARIF, CSV, simple-json) | MED    | 5min   | Bug fix  |
+| 5  | Add `<main>` landmark + skip-to-content link                  | HIGH   | 10min  | A11y     |
+| 6  | Add focus-visible styles                                      | HIGH   | 10min  | A11y     |
+| 7  | Fix --text-muted color contrast (2.4:1 → 4.5:1+)              | HIGH   | 10min  | A11y     |
+| 8  | Add aria-expanded on mobile toggle + close on outside click   | MED    | 10min  | A11y     |
+| 9  | Add aria-hidden="true" on hero canvas                         | MED    | 2min   | A11y     |
+| 10 | Add Open Graph + Twitter Card meta tags                       | HIGH   | 15min  | SEO      |
+| 11 | Add favicon (generate from "AD" mark)                         | MED    | 10min  | SEO      |
+| 12 | Add canonical URL + theme-color meta                          | MED    | 5min   | SEO      |
+| 13 | Fix Google Fonts `&display=swap`                              | MED    | 2min   | Perf     |
+| 14 | Fix copyInstall() — add visual feedback + error handling      | MED    | 10min  | UX       |
+| 15 | Add ARIA roles on format tabs (tablist/tab/tabpanel)          | HIGH   | 15min  | A11y     |
+| 16 | Add "Why art-dupl?" comparison section vs original dupl       | HIGH   | 30min  | Content  |
+| 17 | Add CI/CD integration section (GitHub Actions, pre-commit)    | HIGH   | 20min  | Content  |
+| 18 | Add SARIF format to output tabs                               | MED    | 15min  | Content  |
+| 19 | Add Homebrew install method alongside go install              | MED    | 5min   | Content  |
+| 20 | Add benchmark section (23.7% faster on Prometheus)            | MED    | 20min  | Content  |
+| 21 | Add stats health score showcase (A-F grading)                 | MED    | 15min  | Content  |
+| 22 | Add diff visualization feature mention                        | MED    | 10min  | Content  |
+| 23 | Extract CSS to external file for caching                      | MED    | 10min  | Perf     |
+| 24 | Debounce canvas resize handler                                | LOW    | 5min   | Perf     |
+| 25 | Replace particle canvas with suffix tree visualization        | HIGH   | 60min  | Design   |
 
 ## G) TOP #1 QUESTION
 

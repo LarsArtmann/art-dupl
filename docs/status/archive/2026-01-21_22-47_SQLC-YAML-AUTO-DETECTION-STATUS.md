@@ -508,7 +508,6 @@ art-dupl --no-sqlc-auto ./myapp  # (Need to implement this flag)
 ```
 
 ````
-
 #### 6. Update Help Text
 **File:** `cmd/root.go`
 

@@ -189,33 +189,33 @@
 
 ## F) TOP 25 THINGS TO GET DONE NEXT
 
-| #   | Task                                               | Impact | Effort | Priority |
-| --- | -------------------------------------------------- | ------ | ------ | -------- |
-| 1   | Fix pre-commit binary check false positives        | High   | Low    | P0       |
-| 2   | Fix 29 linter issues                               | High   | Medium | P0       |
-| 3   | Split `syntax/golang/parse_test.go` (1,284 lines)  | High   | Medium | P1       |
-| 4   | Split `domain/coverage_test.go` (1,281 lines)      | High   | Medium | P1       |
-| 5   | Split `pkg/artdupl/detector_test.go` (1,252 lines) | High   | Medium | P1       |
-| 6   | Split `cmd/cmd_test.go` (1,121 lines)              | High   | Medium | P1       |
-| 7   | Add coverage to `job` package (26.9% → 80%)        | High   | Medium | P1       |
-| 8   | Add coverage to `internal/utils` (38.8% → 80%)     | High   | Medium | P1       |
-| 9   | Add coverage to `testutils` (24.1% → 80%)          | High   | Medium | P1       |
-| 10  | Add UniquePair domain type                         | Medium | Medium | P2       |
-| 11  | Fix version ldflags                                | Medium | Low    | P2       |
-| 12  | Create GitHub issue templates                      | Medium | Low    | P2       |
-| 13  | Fix noctx linter issues (8 occurrences)            | Medium | Low    | P2       |
-| 14  | Convert in-code TODOs to GitHub issues             | Medium | Medium | P2       |
-| 15  | Add progress callback to SDK                       | Medium | Medium | P2       |
-| 16  | Add project-level fingerprinting                   | Medium | Medium | P2       |
-| 17  | Document non-Go file decision                      | Low    | Low    | P3       |
-| 18  | Add ARM64 SIMD detection                           | Low    | Medium | P3       |
-| 19  | Create benchmark suite                             | Low    | Medium | P3       |
-| 20  | Add API examples to packages                       | Low    | Low    | P3       |
-| 21  | Remove binary files from git history               | Low    | High   | P3       |
-| 22  | Add TypeScript/JS support                          | Low    | High   | P4       |
-| 23  | Create Web UI                                      | Low    | High   | P4       |
-| 24  | IDE plugin integration                             | Low    | High   | P4       |
-| 25  | Historical trend analysis                          | Low    | High   | P4       |
+| #  | Task                                               | Impact | Effort | Priority |
+| -- | -------------------------------------------------- | ------ | ------ | -------- |
+| 1  | Fix pre-commit binary check false positives        | High   | Low    | P0       |
+| 2  | Fix 29 linter issues                               | High   | Medium | P0       |
+| 3  | Split `syntax/golang/parse_test.go` (1,284 lines)  | High   | Medium | P1       |
+| 4  | Split `domain/coverage_test.go` (1,281 lines)      | High   | Medium | P1       |
+| 5  | Split `pkg/artdupl/detector_test.go` (1,252 lines) | High   | Medium | P1       |
+| 6  | Split `cmd/cmd_test.go` (1,121 lines)              | High   | Medium | P1       |
+| 7  | Add coverage to `job` package (26.9% → 80%)        | High   | Medium | P1       |
+| 8  | Add coverage to `internal/utils` (38.8% → 80%)     | High   | Medium | P1       |
+| 9  | Add coverage to `testutils` (24.1% → 80%)          | High   | Medium | P1       |
+| 10 | Add UniquePair domain type                         | Medium | Medium | P2       |
+| 11 | Fix version ldflags                                | Medium | Low    | P2       |
+| 12 | Create GitHub issue templates                      | Medium | Low    | P2       |
+| 13 | Fix noctx linter issues (8 occurrences)            | Medium | Low    | P2       |
+| 14 | Convert in-code TODOs to GitHub issues             | Medium | Medium | P2       |
+| 15 | Add progress callback to SDK                       | Medium | Medium | P2       |
+| 16 | Add project-level fingerprinting                   | Medium | Medium | P2       |
+| 17 | Document non-Go file decision                      | Low    | Low    | P3       |
+| 18 | Add ARM64 SIMD detection                           | Low    | Medium | P3       |
+| 19 | Create benchmark suite                             | Low    | Medium | P3       |
+| 20 | Add API examples to packages                       | Low    | Low    | P3       |
+| 21 | Remove binary files from git history               | Low    | High   | P3       |
+| 22 | Add TypeScript/JS support                          | Low    | High   | P4       |
+| 23 | Create Web UI                                      | Low    | High   | P4       |
+| 24 | IDE plugin integration                             | Low    | High   | P4       |
+| 25 | Historical trend analysis                          | Low    | High   | P4       |
 
 ---
 

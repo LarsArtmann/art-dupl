@@ -1,8 +1,8 @@
 # Pareto-Optimal Execution Plan
 
-**Date**: 2026-02-14 06:07 CET  
-**Project**: art-dupl - Code Duplication Detection Tool  
-**Current State**: Production-ready, 68% completion, 13.9% self-duplication  
+**Date**: 2026-02-14 06:07 CET\
+**Project**: art-dupl - Code Duplication Detection Tool\
+**Current State**: Production-ready, 68% completion, 13.9% self-duplication\
 **Objective**: Maximize impact with minimal effort using Pareto principle
 
 ---
@@ -32,12 +32,12 @@ This plan applies the **Pareto Principle** (80/20 rule) to identify the highest-
 
 These foundational improvements create a multiplier effect for all subsequent work.
 
-| #   | Task                                            | Impact       | Effort | Value                        |
-| --- | ----------------------------------------------- | ------------ | ------ | ---------------------------- |
-| 1   | Fix cmd package test coverage (10.8% → 50%)     | **CRITICAL** | Medium | Foundation for CLI stability |
-| 2   | Fix detection package test coverage (24% → 50%) | **CRITICAL** | Medium | Core algorithm reliability   |
-| 3   | Eliminate top 3 clone groups (18,650 lines)     | **HIGH**     | Low    | Massive code reduction       |
-| 4   | Complete global variable elimination            | **HIGH**     | Low    | Architecture integrity       |
+| # | Task                                            | Impact       | Effort | Value                        |
+| - | ----------------------------------------------- | ------------ | ------ | ---------------------------- |
+| 1 | Fix cmd package test coverage (10.8% → 50%)     | **CRITICAL** | Medium | Foundation for CLI stability |
+| 2 | Fix detection package test coverage (24% → 50%) | **CRITICAL** | Medium | Core algorithm reliability   |
+| 3 | Eliminate top 3 clone groups (18,650 lines)     | **HIGH**     | Low    | Massive code reduction       |
+| 4 | Complete global variable elimination            | **HIGH**     | Low    | Architecture integrity       |
 
 **Deliverable**: 51% of total project value with 4 tasks (~90 minutes)
 
@@ -49,12 +49,12 @@ These foundational improvements create a multiplier effect for all subsequent wo
 
 Building on Tier 1 foundation, these tasks solidify core functionality.
 
-| #   | Task                                              | Impact     | Effort | Value                            |
-| --- | ------------------------------------------------- | ---------- | ------ | -------------------------------- |
-| 5   | Add benchmark suite for core algorithms           | **HIGH**   | Medium | Performance regression detection |
-| 6   | Split files >300 lines (cli.go, coverage_test.go) | **HIGH**   | Medium | Maintainability                  |
-| 7   | Complete ignore file support                      | **MEDIUM** | Low    | User experience                  |
-| 8   | Improve error handling edge cases                 | **MEDIUM** | Low    | Robustness                       |
+| # | Task                                              | Impact     | Effort | Value                            |
+| - | ------------------------------------------------- | ---------- | ------ | -------------------------------- |
+| 5 | Add benchmark suite for core algorithms           | **HIGH**   | Medium | Performance regression detection |
+| 6 | Split files >300 lines (cli.go, coverage_test.go) | **HIGH**   | Medium | Maintainability                  |
+| 7 | Complete ignore file support                      | **MEDIUM** | Low    | User experience                  |
+| 8 | Improve error handling edge cases                 | **MEDIUM** | Low    | Robustness                       |
 
 **Deliverable**: 64% cumulative value with 8 tasks (~150 minutes)
 
@@ -66,27 +66,27 @@ Building on Tier 1 foundation, these tasks solidify core functionality.
 
 These tasks complete the optimization for production excellence.
 
-| #   | Task                                      | Impact     | Effort | Value                      |
-| --- | ----------------------------------------- | ---------- | ------ | -------------------------- |
-| 9   | Fix errors package coverage (50.6% → 80%) | **MEDIUM** | Low    | Error handling reliability |
-| 10  | Fix internal/enum coverage (75% → 80%)    | **LOW**    | Low    | Complete coverage goals    |
-| 11  | Add memory profiling for large codebases  | **MEDIUM** | Medium | Performance insights       |
-| 12  | Create CI/CD integration templates        | **MEDIUM** | Medium | Adoption enablement        |
-| 13  | Improve error messages with suggestions   | **LOW**    | Low    | User experience            |
-| 14  | Add progress reporting for long ops       | **LOW**    | Low    | User experience            |
-| 15  | Complete CLI module splitting             | **MEDIUM** | Medium | Architecture               |
-| 16  | Add troubleshooting documentation         | **LOW**    | Low    | Support reduction          |
-| 17  | Verify all partial TODO items             | **MEDIUM** | Low    | Completeness               |
-| 18  | Clean up remaining duplication <100 lines | **LOW**    | Low    | Code quality               |
-| 19  | Create GitHub issues for tracking         | **LOW**    | Low    | Project management         |
-| 20  | Update README install commands            | **LOW**    | Low    | Documentation              |
-| 21  | Add package examples                      | **LOW**    | Low    | Documentation              |
-| 22  | Final integration test verification       | **MEDIUM** | Low    | Quality assurance          |
-| 23  | Performance regression test suite         | **MEDIUM** | Medium | Performance stability      |
-| 24  | Documentation completeness review         | **LOW**    | Low    | Documentation              |
-| 25  | Code review for architectural consistency | **MEDIUM** | Low    | Architecture               |
-| 26  | Final build verification                  | **LOW**    | Low    | Release readiness          |
-| 27  | Commit and push all changes               | **LOW**    | Low    | Version control            |
+| #  | Task                                      | Impact     | Effort | Value                      |
+| -- | ----------------------------------------- | ---------- | ------ | -------------------------- |
+| 9  | Fix errors package coverage (50.6% → 80%) | **MEDIUM** | Low    | Error handling reliability |
+| 10 | Fix internal/enum coverage (75% → 80%)    | **LOW**    | Low    | Complete coverage goals    |
+| 11 | Add memory profiling for large codebases  | **MEDIUM** | Medium | Performance insights       |
+| 12 | Create CI/CD integration templates        | **MEDIUM** | Medium | Adoption enablement        |
+| 13 | Improve error messages with suggestions   | **LOW**    | Low    | User experience            |
+| 14 | Add progress reporting for long ops       | **LOW**    | Low    | User experience            |
+| 15 | Complete CLI module splitting             | **MEDIUM** | Medium | Architecture               |
+| 16 | Add troubleshooting documentation         | **LOW**    | Low    | Support reduction          |
+| 17 | Verify all partial TODO items             | **MEDIUM** | Low    | Completeness               |
+| 18 | Clean up remaining duplication <100 lines | **LOW**    | Low    | Code quality               |
+| 19 | Create GitHub issues for tracking         | **LOW**    | Low    | Project management         |
+| 20 | Update README install commands            | **LOW**    | Low    | Documentation              |
+| 21 | Add package examples                      | **LOW**    | Low    | Documentation              |
+| 22 | Final integration test verification       | **MEDIUM** | Low    | Quality assurance          |
+| 23 | Performance regression test suite         | **MEDIUM** | Medium | Performance stability      |
+| 24 | Documentation completeness review         | **LOW**    | Low    | Documentation              |
+| 25 | Code review for architectural consistency | **MEDIUM** | Low    | Architecture               |
+| 26 | Final build verification                  | **LOW**    | Low    | Release readiness          |
+| 27 | Commit and push all changes               | **LOW**    | Low    | Version control            |
 
 **Deliverable**: 80% cumulative value with 27 tasks (~400 minutes)
 
@@ -564,5 +564,5 @@ flowchart TD
 
 ---
 
-**Plan Created**: 2026-02-14 06:07 CET  
+**Plan Created**: 2026-02-14 06:07 CET\
 **Next Action**: Execute Phase 1, Task 1

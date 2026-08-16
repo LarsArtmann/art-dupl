@@ -12,49 +12,49 @@
 
 These are critical bug fixes and quick wins — each is isolated, safe, and high-impact:
 
-| #   | Task                                                       | Impact                           | Effort |
-| --- | ---------------------------------------------------------- | -------------------------------- | ------ |
-| 1   | Fix `Clone.IsValid()` StartPos==0 bypass                   | Correctness — validation gap     | 5min   |
-| 2   | Wire `ErrNoDuplicatesFound` sentinel in `FindClones`       | API honesty — dead sentinel      | 10min  |
-| 3   | Deep-copy `Options` in `NewDetector`                       | Safety — prevents panic          | 15min  |
-| 4   | Remove dead `Patterns`/`Imports` fields in `LegacyPattern` | Dead code cleanup                | 5min   |
-| 5   | Fix `issue_helpers.go` Frags filter                        | Correctness — broken guard       | 10min  |
-| 6   | Fix `.go-arch-lint.yml` sdk/pkg-utils glob overlap         | Config accuracy                  | 5min   |
-| 7   | Fix `todo_detector.go:43` silent parse error               | Logging gap                      | 5min   |
-| 8   | Document detection method help text                        | UX — missing `todos`/`legacy`    | 5min   |
-| 9   | Add `ClonePriority.Rank()` to domain                       | DRY — deduplicates ordinal logic | 10min  |
-| 10  | Wire `Actionability` field in `CloneClassification`        | Correctness — always invalid     | 10min  |
-| 11  | Move test constants out of `actionability.go`              | Clean code                       | 10min  |
+| #  | Task                                                       | Impact                           | Effort |
+| -- | ---------------------------------------------------------- | -------------------------------- | ------ |
+| 1  | Fix `Clone.IsValid()` StartPos==0 bypass                   | Correctness — validation gap     | 5min   |
+| 2  | Wire `ErrNoDuplicatesFound` sentinel in `FindClones`       | API honesty — dead sentinel      | 10min  |
+| 3  | Deep-copy `Options` in `NewDetector`                       | Safety — prevents panic          | 15min  |
+| 4  | Remove dead `Patterns`/`Imports` fields in `LegacyPattern` | Dead code cleanup                | 5min   |
+| 5  | Fix `issue_helpers.go` Frags filter                        | Correctness — broken guard       | 10min  |
+| 6  | Fix `.go-arch-lint.yml` sdk/pkg-utils glob overlap         | Config accuracy                  | 5min   |
+| 7  | Fix `todo_detector.go:43` silent parse error               | Logging gap                      | 5min   |
+| 8  | Document detection method help text                        | UX — missing `todos`/`legacy`    | 5min   |
+| 9  | Add `ClonePriority.Rank()` to domain                       | DRY — deduplicates ordinal logic | 10min  |
+| 10 | Wire `Actionability` field in `CloneClassification`        | Correctness — always invalid     | 10min  |
+| 11 | Move test constants out of `actionability.go`              | Clean code                       | 10min  |
 
 ### The 4% that delivers 64% of the result
 
 Architecture and safety improvements that compound:
 
-| #   | Task                                              | Impact                        | Effort |
-| --- | ------------------------------------------------- | ----------------------------- | ------ |
-| 12  | Fix SDK `FindClonesStream` error handling         | Correctness — silent failure  | 30min  |
-| 13  | Fix `legacy_detector.go` string matching          | Correctness — false positives | 30min  |
-| 14  | Add `context.Context` to MultiDetector goroutines | Safety — goroutine leak       | 30min  |
-| 15  | Document detector thread-safety contract          | Safety docs                   | 10min  |
-| 16  | Add JSON validation to 3 domain enums             | Type safety                   | 30min  |
-| 17  | Collapse `CloneSeverity` into `ClonePriority`     | Type safety — split-brain     | 45min  |
-| 18  | Break SDK type aliases                            | API isolation                 | 30min  |
-| 19  | Fix HealthScore legend vs formula                 | UX correctness                | 15min  |
-| 20  | Extract `everySequenceMatch` helper               | Code quality — DRY            | 15min  |
-| 21  | Extract `validateLocation` helper                 | Code quality — DRY            | 15min  |
-| 22  | Create ADR for actionability system               | Documentation                 | 15min  |
+| #  | Task                                              | Impact                        | Effort |
+| -- | ------------------------------------------------- | ----------------------------- | ------ |
+| 12 | Fix SDK `FindClonesStream` error handling         | Correctness — silent failure  | 30min  |
+| 13 | Fix `legacy_detector.go` string matching          | Correctness — false positives | 30min  |
+| 14 | Add `context.Context` to MultiDetector goroutines | Safety — goroutine leak       | 30min  |
+| 15 | Document detector thread-safety contract          | Safety docs                   | 10min  |
+| 16 | Add JSON validation to 3 domain enums             | Type safety                   | 30min  |
+| 17 | Collapse `CloneSeverity` into `ClonePriority`     | Type safety — split-brain     | 45min  |
+| 18 | Break SDK type aliases                            | API isolation                 | 30min  |
+| 19 | Fix HealthScore legend vs formula                 | UX correctness                | 15min  |
+| 20 | Extract `everySequenceMatch` helper               | Code quality — DRY            | 15min  |
+| 21 | Extract `validateLocation` helper                 | Code quality — DRY            | 15min  |
+| 22 | Create ADR for actionability system               | Documentation                 | 15min  |
 
 ### The 20% that delivers 80% of the result
 
 Major architectural improvements:
 
-| #   | Task                                | Impact                               | Effort |
-| --- | ----------------------------------- | ------------------------------------ | ------ |
-| 23  | Activate `MethodDetector` interface | Composability — polymorphic dispatch | 90min  |
-| 24  | Add `--suppress-test-low` flag      | UX feature                           | 30min  |
-| 25  | Separate test/production threshold  | UX feature                           | 30min  |
-| 26  | Hide `syntax/golang` behind facade  | Modularity — stop leakage            | 60min  |
-| 27  | Unify enum patterns                 | Code quality                         | 30min  |
+| #  | Task                                | Impact                               | Effort |
+| -- | ----------------------------------- | ------------------------------------ | ------ |
+| 23 | Activate `MethodDetector` interface | Composability — polymorphic dispatch | 90min  |
+| 24 | Add `--suppress-test-low` flag      | UX feature                           | 30min  |
+| 25 | Separate test/production threshold  | UX feature                           | 30min  |
+| 26 | Hide `syntax/golang` behind facade  | Modularity — stop leakage            | 60min  |
+| 27 | Unify enum patterns                 | Code quality                         | 30min  |
 
 ### Deferred (High risk, multi-session)
 

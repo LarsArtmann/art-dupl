@@ -87,7 +87,7 @@ Executed 38 tasks from the comprehensive Pareto roadmap (`docs/planning/2026-07-
 | W1  | Website visual QA                          | Cannot run browser preview in CLI session  |
 | W2  | OG image generation                        | Requires image creation tooling            |
 | W3  | OG meta tags                               | Depends on OG image                        |
-| W4  | `pnpm dlx astro check` + TS fixes               | Website is in subdirectory, separate build |
+| W4  | `pnpm dlx astro check` + TS fixes          | Website is in subdirectory, separate build |
 | CQ9 | Unify Type/Fingerprint model               | MEDIUM risk, deferred (needs ADR first)    |
 | I10 | Cache versioning for serialization changes | MEDIUM risk, deferred                      |
 | I11 | Store Fingerprint in incremental cache     | MEDIUM risk, deferred                      |

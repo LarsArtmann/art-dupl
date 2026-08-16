@@ -255,16 +255,16 @@ Lines 308 and 325 use `panic(err)` for invalid timeout/diff-mode flags instead o
 
 ## Priority Order
 
-| #   | Candidate                   | Impact    | Effort                   | ROI          |
-| --- | --------------------------- | --------- | ------------------------ | ------------ |
-| 1   | Duplicated pipeline         | 🔴 High   | Medium                   | **Highest**  |
-| 2   | Decorative domain           | 🔴 High   | Large                    | High         |
-| 3   | Keystone `syntax.Node`      | 🟡 Medium | Medium                   | High         |
-| 4   | God file `cmd/run_analysis` | 🔴 High   | Medium (unblocked by #1) | High         |
-| 5   | Domain purity breach        | 🟡 Medium | Small                    | High         |
-| 6   | Printer → golang coupling   | 🟡 Medium | Small                    | Medium       |
-| 7   | Dead modules                | 🟢 Low    | Trivial                  | **Easy win** |
-| 8   | Printer interface bypass    | 🟡 Medium | Small                    | Medium       |
+| # | Candidate                   | Impact    | Effort                   | ROI          |
+| - | --------------------------- | --------- | ------------------------ | ------------ |
+| 1 | Duplicated pipeline         | 🔴 High   | Medium                   | **Highest**  |
+| 2 | Decorative domain           | 🔴 High   | Large                    | High         |
+| 3 | Keystone `syntax.Node`      | 🟡 Medium | Medium                   | High         |
+| 4 | God file `cmd/run_analysis` | 🔴 High   | Medium (unblocked by #1) | High         |
+| 5 | Domain purity breach        | 🟡 Medium | Small                    | High         |
+| 6 | Printer → golang coupling   | 🟡 Medium | Small                    | Medium       |
+| 7 | Dead modules                | 🟢 Low    | Trivial                  | **Easy win** |
+| 8 | Printer interface bypass    | 🟡 Medium | Small                    | Medium       |
 
 **#7 (dead modules) is the easy win.** #1 + #4 are the highest impact — they eliminate the core duplication and god-file problem together. #2 + #3 are the deep structural fix but require the most work. #5 and #6 are quick hygiene.
 

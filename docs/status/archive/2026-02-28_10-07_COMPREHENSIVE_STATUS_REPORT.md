@@ -1,8 +1,8 @@
 # Comprehensive Status Report - art-dupl
 
-**Date:** 2026-02-28 10:07  
-**Branch:** fork  
-**Commit:** db1115c  
+**Date:** 2026-02-28 10:07\
+**Branch:** fork\
+**Commit:** db1115c\
 **Status:** ACTIVE DEVELOPMENT - LINT FIX INITIATIVE PHASE 1 COMPLETE
 
 ---
@@ -167,31 +167,31 @@ var ErrNoPathsInConfig  = errors.New("no paths found in config")
 
 ### 1. Build Verification Process
 
-**Current:** Run lint, then build  
-**Better:** Build first (catches syntax errors), then lint  
+**Current:** Run lint, then build\
+**Better:** Build first (catches syntax errors), then lint\
 **Why:** Lint can fail on uncompilable code
 
 ### 2. Commit Frequency
 
-**Current:** Batched 3-5 files per commit  
-**Better:** One logical change per commit  
+**Current:** Batched 3-5 files per commit\
+**Better:** One logical change per commit\
 **Why:** Easier to bisect issues
 
 ### 3. Test Coverage
 
-**Current:** Relying on existing tests  
-**Better:** Add tests for new error variables  
+**Current:** Relying on existing tests\
+**Better:** Add tests for new error variables\
 **Why:** Ensure errors work with `errors.Is()`
 
 ### 4. Documentation Pattern
 
-**Current:** Fixing lint issues reactively  
-**Better:** Document patterns in AGENTS.md  
+**Current:** Fixing lint issues reactively\
+**Better:** Document patterns in AGENTS.md\
 **Why:** Consistency for future contributors
 
 ### 5. Linter Configuration Review
 
-**Observation:** `exhaustruct` triggers on 3rd party types (cobra.Command)  
+**Observation:** `exhaustruct` triggers on 3rd party types (cobra.Command)\
 **Solution:** ✅ DONE - Added exclusions for cmd/
 
 ---
@@ -200,48 +200,48 @@ var ErrNoPathsInConfig  = errors.New("no paths found in config")
 
 ### Immediate (Next 2 Hours) - P2 Completion
 
-| #   | Priority    | Task                           | Linter      | Effort | Impact |
-| --- | ----------- | ------------------------------ | ----------- | ------ | ------ |
-| 1   | 🔴 CRITICAL | Fix unused nolint directives   | nolintlint  | 10 min | LOW    |
-| 2   | 🟠 HIGH     | Add unused parameters fix      | unparam     | 20 min | MEDIUM |
-| 3   | 🟠 HIGH     | Add slice preallocations       | prealloc    | 15 min | MEDIUM |
-| 4   | 🟠 HIGH     | Fix inline errors              | noinlineerr | 10 min | LOW    |
-| 5   | 🟠 HIGH     | Remove unnecessary conversions | unconvert   | 5 min  | LOW    |
+| # | Priority    | Task                           | Linter      | Effort | Impact |
+| - | ----------- | ------------------------------ | ----------- | ------ | ------ |
+| 1 | 🔴 CRITICAL | Fix unused nolint directives   | nolintlint  | 10 min | LOW    |
+| 2 | 🟠 HIGH     | Add unused parameters fix      | unparam     | 20 min | MEDIUM |
+| 3 | 🟠 HIGH     | Add slice preallocations       | prealloc    | 15 min | MEDIUM |
+| 4 | 🟠 HIGH     | Fix inline errors              | noinlineerr | 10 min | LOW    |
+| 5 | 🟠 HIGH     | Remove unnecessary conversions | unconvert   | 5 min  | LOW    |
 
 ### Short Term (Today) - P3 Quality
 
-| #   | Priority  | Task                           | Linter     | Effort | Impact |
-| --- | --------- | ------------------------------ | ---------- | ------ | ------ |
-| 6   | 🟡 MEDIUM | Fix revive batch 1 (cmd/)      | revive     | 20 min | MEDIUM |
-| 7   | 🟡 MEDIUM | Fix revive batch 2 (domain/)   | revive     | 20 min | MEDIUM |
-| 8   | 🟡 MEDIUM | Fix revive batch 3 (internal/) | revive     | 20 min | MEDIUM |
-| 9   | 🟡 MEDIUM | Fix revive batch 4 (pkg/)      | revive     | 20 min | MEDIUM |
-| 10  | 🟡 MEDIUM | Add t.Helper() to tests        | thelper    | 10 min | LOW    |
-| 11  | 🟡 MEDIUM | Enable parallel tests          | tparallel  | 5 min  | LOW    |
-| 12  | 🟡 MEDIUM | Use t.TempDir()                | usetesting | 10 min | LOW    |
+| #  | Priority  | Task                           | Linter     | Effort | Impact |
+| -- | --------- | ------------------------------ | ---------- | ------ | ------ |
+| 6  | 🟡 MEDIUM | Fix revive batch 1 (cmd/)      | revive     | 20 min | MEDIUM |
+| 7  | 🟡 MEDIUM | Fix revive batch 2 (domain/)   | revive     | 20 min | MEDIUM |
+| 8  | 🟡 MEDIUM | Fix revive batch 3 (internal/) | revive     | 20 min | MEDIUM |
+| 9  | 🟡 MEDIUM | Fix revive batch 4 (pkg/)      | revive     | 20 min | MEDIUM |
+| 10 | 🟡 MEDIUM | Add t.Helper() to tests        | thelper    | 10 min | LOW    |
+| 11 | 🟡 MEDIUM | Enable parallel tests          | tparallel  | 5 min  | LOW    |
+| 12 | 🟡 MEDIUM | Use t.TempDir()                | usetesting | 10 min | LOW    |
 
 ### Medium Term (This Week) - P4 Testing
 
-| #   | Priority | Task                       | Linter           | Effort | Impact |
-| --- | -------- | -------------------------- | ---------------- | ------ | ------ |
-| 13  | 🟢 LOW   | Fix receiver naming        | recvcheck        | 25 min | LOW    |
-| 14  | 🟢 LOW   | Add package documentation  | godoclint        | 15 min | MEDIUM |
-| 15  | 🟢 LOW   | Add function documentation | godoclint        | 15 min | MEDIUM |
-| 16  | 🟢 LOW   | Resolve TODO markers       | godox            | 10 min | LOW    |
-| 17  | 🟢 LOW   | Fix named returns          | nonamedreturns   | 10 min | LOW    |
-| 18  | 🟢 LOW   | Fix printf naming          | goprintffuncname | 10 min | LOW    |
+| #  | Priority | Task                       | Linter           | Effort | Impact |
+| -- | -------- | -------------------------- | ---------------- | ------ | ------ |
+| 13 | 🟢 LOW   | Fix receiver naming        | recvcheck        | 25 min | LOW    |
+| 14 | 🟢 LOW   | Add package documentation  | godoclint        | 15 min | MEDIUM |
+| 15 | 🟢 LOW   | Add function documentation | godoclint        | 15 min | MEDIUM |
+| 16 | 🟢 LOW   | Resolve TODO markers       | godox            | 10 min | LOW    |
+| 17 | 🟢 LOW   | Fix named returns          | nonamedreturns   | 10 min | LOW    |
+| 18 | 🟢 LOW   | Fix printf naming          | goprintffuncname | 10 min | LOW    |
 
 ### Long Term (Next Week) - P6 Structural
 
-| #   | Priority    | Task                             | Linter      | Effort | Impact |
-| --- | ----------- | -------------------------------- | ----------- | ------ | ------ |
-| 19  | ⚪ VERY LOW | Extract magic numbers batch 1    | mnd         | 30 min | LOW    |
-| 20  | ⚪ VERY LOW | Extract magic numbers batch 2    | mnd         | 30 min | LOW    |
-| 21  | ⚪ VERY LOW | Fix struct tags batch 1          | tagliatelle | 30 min | LOW    |
-| 22  | ⚪ VERY LOW | Fix struct tags batch 2          | tagliatelle | 30 min | LOW    |
-| 23  | ⚪ VERY LOW | Fix variable names batch 1       | varnamelen  | 30 min | LOW    |
-| 24  | ⚪ VERY LOW | Fix variable names batch 2       | varnamelen  | 30 min | LOW    |
-| 25  | ⚪ VERY LOW | Add nolint for 3rd party structs | exhaustruct | 30 min | LOW    |
+| #  | Priority    | Task                             | Linter      | Effort | Impact |
+| -- | ----------- | -------------------------------- | ----------- | ------ | ------ |
+| 19 | ⚪ VERY LOW | Extract magic numbers batch 1    | mnd         | 30 min | LOW    |
+| 20 | ⚪ VERY LOW | Extract magic numbers batch 2    | mnd         | 30 min | LOW    |
+| 21 | ⚪ VERY LOW | Fix struct tags batch 1          | tagliatelle | 30 min | LOW    |
+| 22 | ⚪ VERY LOW | Fix struct tags batch 2          | tagliatelle | 30 min | LOW    |
+| 23 | ⚪ VERY LOW | Fix variable names batch 1       | varnamelen  | 30 min | LOW    |
+| 24 | ⚪ VERY LOW | Fix variable names batch 2       | varnamelen  | 30 min | LOW    |
+| 25 | ⚪ VERY LOW | Add nolint for 3rd party structs | exhaustruct | 30 min | LOW    |
 
 ---
 
@@ -343,5 +343,5 @@ var ErrNoPathsInConfig  = errors.New("no paths found in config")
 
 ---
 
-**Report Generated:** 2026-02-28 10:07  
+**Report Generated:** 2026-02-28 10:07\
 **Assisted-by:** Claude via Crush <crush@charm.land>

@@ -2,9 +2,9 @@
 
 ## 🎯 MISSION ACCOMPLISHED!
 
-**Execution Request:** Run date (cli), write full status report at docs/status/<YYYY-MM-DD_HH-MM_WELL-NAMED>.md  
-**Execution Date:** December 15, 2025, 13:35 CET  
-**Completion Date:** December 15, 2025, 13:38 CET  
+**Execution Request:** Run date (cli), write full status report at docs/status/<YYYY-MM-DD_HH-MM_WELL-NAMED>.md\
+**Execution Date:** December 15, 2025, 13:35 CET\
+**Completion Date:** December 15, 2025, 13:38 CET\
 **Total Execution Time:** 3 minutes
 
 ---

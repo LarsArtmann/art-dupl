@@ -1,8 +1,8 @@
 # Comprehensive Status Report - art-dupl
 
-**Date:** 2026-03-20 18:06  
-**Branch:** fork  
-**Status:** AHEAD of origin by 2 commits  
+**Date:** 2026-03-20 18:06\
+**Branch:** fork\
+**Status:** AHEAD of origin by 2 commits\
 **Reporter:** Crush via architectural audit protocol
 
 ---
@@ -211,48 +211,48 @@ Nearly identical flag parsing logic duplicated:
 
 ### Critical (Do First - Day 1)
 
-| #   | Task                            | Effort | Impact       | Priority Score\* |
-| --- | ------------------------------- | ------ | ------------ | ---------------- |
-| 1   | Fix generics test code strings  | 5min   | **BLOCKING** | 120.0            |
-| 2   | Fix ioutil.ReadFile deprecation | 5min   | Future-proof | 60.0             |
-| 3   | Verify all tests pass           | 10min  | Confidence   | 30.0             |
-| 4   | Commit test fixes               | 5min   | History      | 40.0             |
-| 5   | Push to origin/fork             | 5min   | Sync         | 40.0             |
+| # | Task                            | Effort | Impact       | Priority Score\* |
+| - | ------------------------------- | ------ | ------------ | ---------------- |
+| 1 | Fix generics test code strings  | 5min   | **BLOCKING** | 120.0            |
+| 2 | Fix ioutil.ReadFile deprecation | 5min   | Future-proof | 60.0             |
+| 3 | Verify all tests pass           | 10min  | Confidence   | 30.0             |
+| 4 | Commit test fixes               | 5min   | History      | 40.0             |
+| 5 | Push to origin/fork             | 5min   | Sync         | 40.0             |
 
 ### High Priority (Week 1)
 
-| #   | Task                                | Effort | Impact          | Priority Score |
-| --- | ----------------------------------- | ------ | --------------- | -------------- |
-| 6   | Extract flag parsing - Part 1       | 12min  | Maintainability | 10.0           |
-| 7   | Extract flag parsing - Part 2       | 12min  | Maintainability | 10.0           |
-| 8   | Extract flag parsing - Part 3       | 12min  | Maintainability | 10.0           |
-| 9   | Extract flag parsing - Part 4       | 12min  | Maintainability | 10.0           |
-| 10  | Design SemanticHash DI approach     | 20min  | Architecture    | 7.5            |
-| 11  | Add SemanticHash to Config struct   | 15min  | Type safety     | 10.0           |
-| 12  | Wire SemanticHash through transform | 30min  | Testability     | 5.0            |
-| 13  | Update CLI commands for DI          | 15min  | Integration     | 10.0           |
-| 14  | Remove global SemanticHashEnabled   | 10min  | Cleanup         | 15.0           |
+| #  | Task                                | Effort | Impact          | Priority Score |
+| -- | ----------------------------------- | ------ | --------------- | -------------- |
+| 6  | Extract flag parsing - Part 1       | 12min  | Maintainability | 10.0           |
+| 7  | Extract flag parsing - Part 2       | 12min  | Maintainability | 10.0           |
+| 8  | Extract flag parsing - Part 3       | 12min  | Maintainability | 10.0           |
+| 9  | Extract flag parsing - Part 4       | 12min  | Maintainability | 10.0           |
+| 10 | Design SemanticHash DI approach     | 20min  | Architecture    | 7.5            |
+| 11 | Add SemanticHash to Config struct   | 15min  | Type safety     | 10.0           |
+| 12 | Wire SemanticHash through transform | 30min  | Testability     | 5.0            |
+| 13 | Update CLI commands for DI          | 15min  | Integration     | 10.0           |
+| 14 | Remove global SemanticHashEnabled   | 10min  | Cleanup         | 15.0           |
 
 ### Medium Priority (Week 2-3)
 
-| #   | Task                           | Effort | Impact          | Priority Score |
-| --- | ------------------------------ | ------ | --------------- | -------------- |
-| 15  | Modernize for loops - batch 1  | 12min  | Modern Go       | 2.5            |
-| 16  | Modernize for loops - batch 2  | 12min  | Modern Go       | 2.5            |
-| 17  | Modernize for loops - batch 3  | 12min  | Modern Go       | 2.5            |
-| 18  | Replace manual min/max         | 10min  | Cleaner code    | 3.0            |
-| 19  | Fix errors.As simplification   | 15min  | Modern patterns | 2.0            |
-| 20  | Fix wrapcheck in html.go (1/3) | 12min  | Error handling  | 5.0            |
-| 21  | Fix wrapcheck in html.go (2/3) | 12min  | Error handling  | 5.0            |
-| 22  | Fix wrapcheck in html.go (3/3) | 12min  | Error handling  | 5.0            |
+| #  | Task                           | Effort | Impact          | Priority Score |
+| -- | ------------------------------ | ------ | --------------- | -------------- |
+| 15 | Modernize for loops - batch 1  | 12min  | Modern Go       | 2.5            |
+| 16 | Modernize for loops - batch 2  | 12min  | Modern Go       | 2.5            |
+| 17 | Modernize for loops - batch 3  | 12min  | Modern Go       | 2.5            |
+| 18 | Replace manual min/max         | 10min  | Cleaner code    | 3.0            |
+| 19 | Fix errors.As simplification   | 15min  | Modern patterns | 2.0            |
+| 20 | Fix wrapcheck in html.go (1/3) | 12min  | Error handling  | 5.0            |
+| 21 | Fix wrapcheck in html.go (2/3) | 12min  | Error handling  | 5.0            |
+| 22 | Fix wrapcheck in html.go (3/3) | 12min  | Error handling  | 5.0            |
 
 ### Lower Priority (Month 2)
 
-| #   | Task                       | Effort | Impact          | Priority Score |
-| --- | -------------------------- | ------ | --------------- | -------------- |
-| 23  | Split transform.go helpers | 30min  | Complexity      | 2.0            |
-| 24  | Refactor config merge      | 60min  | Maintainability | 1.5            |
-| 25  | Address type safety TODO   | 30min  | Type safety     | 2.0            |
+| #  | Task                       | Effort | Impact          | Priority Score |
+| -- | -------------------------- | ------ | --------------- | -------------- |
+| 23 | Split transform.go helpers | 30min  | Complexity      | 2.0            |
+| 24 | Refactor config merge      | 60min  | Maintainability | 1.5            |
+| 25 | Address type safety TODO   | 30min  | Type safety     | 2.0            |
 
 \* Priority Score = Impact / (Effort × Risk), higher is better
 
@@ -408,6 +408,6 @@ grep -rn "SemanticHashEnabled" --include="*.go" . | wc -l
 
 ---
 
-_Report generated via Crush architectural audit protocol_  
+_Report generated via Crush architectural audit protocol_\
 _Assisted-by: Crush <crush@charm.land>_
 _Timestamp: 2026-03-20 18:06 UTC_

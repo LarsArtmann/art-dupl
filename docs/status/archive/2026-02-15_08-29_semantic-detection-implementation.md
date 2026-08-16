@@ -81,51 +81,51 @@ Default: `false` for backward compatibility.
 
 ### Phase 1: Core Wiring (~9 min)
 
-| #   | Task                                             | Est | Status  |
-| --- | ------------------------------------------------ | --- | ------- |
-| 1   | Add `--semantic` flag to `cmd/flags.go`          | 3m  | PENDING |
-| 2   | Read semantic flag in `run_flags.go`             | 2m  | PENDING |
-| 3   | Wire `golang.SemanticHashEnabled = cfg.Semantic` | 3m  | PENDING |
-| 4   | Add import for `golang` package                  | 1m  | PENDING |
+| # | Task                                             | Est | Status  |
+| - | ------------------------------------------------ | --- | ------- |
+| 1 | Add `--semantic` flag to `cmd/flags.go`          | 3m  | PENDING |
+| 2 | Read semantic flag in `run_flags.go`             | 2m  | PENDING |
+| 3 | Wire `golang.SemanticHashEnabled = cfg.Semantic` | 3m  | PENDING |
+| 4 | Add import for `golang` package                  | 1m  | PENDING |
 
 **Location for wiring:** `cmd/run_flags.go:142` after `config.MergeConfigs()`
 
 ### Phase 2: Unit Tests (~23 min)
 
-| #   | Task                                       | Est | Status  |
-| --- | ------------------------------------------ | --- | ------- |
-| 5   | Create `identifier_hash_test.go`           | 2m  | PENDING |
-| 6   | Test `hashIdentifierFast` consistency      | 5m  | PENDING |
-| 7   | Test `encodeSemanticType` bit manipulation | 5m  | PENDING |
-| 8   | Test `DecodeBaseType`                      | 3m  | PENDING |
-| 9   | Test `DecodeSemanticHash`                  | 3m  | PENDING |
-| 10  | Test collision behavior                    | 5m  | PENDING |
+| #  | Task                                       | Est | Status  |
+| -- | ------------------------------------------ | --- | ------- |
+| 5  | Create `identifier_hash_test.go`           | 2m  | PENDING |
+| 6  | Test `hashIdentifierFast` consistency      | 5m  | PENDING |
+| 7  | Test `encodeSemanticType` bit manipulation | 5m  | PENDING |
+| 8  | Test `DecodeBaseType`                      | 3m  | PENDING |
+| 9  | Test `DecodeSemanticHash`                  | 3m  | PENDING |
+| 10 | Test collision behavior                    | 5m  | PENDING |
 
 ### Phase 3: Integration Tests (~26 min)
 
-| #   | Task                                     | Est | Status  |
-| --- | ---------------------------------------- | --- | ------- |
-| 11  | Create test fixture: Ginkgo patterns     | 5m  | PENDING |
-| 12  | BDD test: semantic OFF (finds duplicate) | 8m  | PENDING |
-| 13  | BDD test: semantic ON (no duplicate)     | 8m  | PENDING |
-| 14  | Test config file with `semantic: true`   | 5m  | PENDING |
+| #  | Task                                     | Est | Status  |
+| -- | ---------------------------------------- | --- | ------- |
+| 11 | Create test fixture: Ginkgo patterns     | 5m  | PENDING |
+| 12 | BDD test: semantic OFF (finds duplicate) | 8m  | PENDING |
+| 13 | BDD test: semantic ON (no duplicate)     | 8m  | PENDING |
+| 14 | Test config file with `semantic: true`   | 5m  | PENDING |
 
 ### Phase 4: Documentation (~21 min)
 
-| #   | Task                              | Est | Status  |
-| --- | --------------------------------- | --- | ------- |
-| 15  | Update `cmd/root.go` with example | 5m  | PENDING |
-| 16  | Update `AGENTS.md`                | 8m  | PENDING |
-| 17  | Update `README.md`                | 8m  | PENDING |
+| #  | Task                              | Est | Status  |
+| -- | --------------------------------- | --- | ------- |
+| 15 | Update `cmd/root.go` with example | 5m  | PENDING |
+| 16 | Update `AGENTS.md`                | 8m  | PENDING |
+| 17 | Update `README.md`                | 8m  | PENDING |
 
 ### Phase 5: Validation (~16 min)
 
-| #   | Task                          | Est | Status  |
-| --- | ----------------------------- | --- | ------- |
-| 18  | Run `just test`               | 5m  | PENDING |
-| 19  | Run `just check`              | 3m  | PENDING |
-| 20  | Manual test with `--semantic` | 3m  | PENDING |
-| 21  | Final review and cleanup      | 5m  | PENDING |
+| #  | Task                          | Est | Status  |
+| -- | ----------------------------- | --- | ------- |
+| 18 | Run `just test`               | 5m  | PENDING |
+| 19 | Run `just check`              | 3m  | PENDING |
+| 20 | Manual test with `--semantic` | 3m  | PENDING |
+| 21 | Final review and cleanup      | 5m  | PENDING |
 
 ---
 

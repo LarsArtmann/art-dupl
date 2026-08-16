@@ -31,7 +31,7 @@ File Path → crawlPaths() → isSourceFile() filter → AST parsing → hash de
 
 ### Architecture Change
 
-**Before:** Hash detection received `[]*syntax.Node` from AST parsing  
+**Before:** Hash detection received `[]*syntax.Node` from AST parsing\
 **After:** Hash-only mode bypasses AST parsing, works directly with file paths
 
 ```

@@ -211,12 +211,12 @@ Honest self-critique on this session:
 ## Files changed this session
 
 ```
- printer/actionability_boilerplate_test.go |  52 ++++----
- printer/sort_unified_test.go              |  54 ++++----
- printer/sorter.go                         |  12 +-
- syntax/golang/normalizer_test.go          |  70 +++++-----
- syntax/templ/transform_components_test.go |  57 ++++----
- 5 files changed, 86 insertions(+), 159 deletions(-)
+printer/actionability_boilerplate_test.go |  52 ++++----
+printer/sort_unified_test.go              |  54 ++++----
+printer/sorter.go                         |  12 +-
+syntax/golang/normalizer_test.go          |  70 +++++-----
+syntax/templ/transform_components_test.go |  57 ++++----
+5 files changed, 86 insertions(+), 159 deletions(-)
 ```
 
 ## Helpers introduced this session

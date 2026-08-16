@@ -13,14 +13,15 @@
 
 ## Results
 
-| Group             | Locations                                                                | Initial decision  | Actual category                                              | Final decision |
-| ----------------- | ------------------------------------------------------------------------ | ----------------- | ------------------------------------------------------------ | -------------- |
-| `type contextKey string` | `internal/middleware/middleware.go:164`, `pkg/logger/context.go:10`      | Accept (idiom)    | **Split-brain: each package also defines a `RequestIDKey` with a different value, both dead** | **Eliminate** |
-| `t.Helper()` (3 groups) | `internal/testutil/{assertions,helpers,database,response_assertions}.go` | Accept (idiom)    | Test helper marker                                           | Accept         |
-| `ctx := request.Context()` | `internal/ui/handler.go:36-37`, `internal/ui/handler.go:71-72`           | Accept (idiom)    | HTTP handler context extraction                              | Accept         |
-| `query := `` | `internal/repository/quantity_repository.go:55-63`, `:93-101`            | Accept (idiom)    | First line of different SQL queries (`ReserveQuantity` vs `CommitReservedQuantity`) | Accept         |
+| Group                      | Locations                                                                | Initial decision | Actual category                                                                               | Final decision |
+| -------------------------- | ------------------------------------------------------------------------ | ---------------- | --------------------------------------------------------------------------------------------- | -------------- |
+| `type contextKey string`   | `internal/middleware/middleware.go:164`, `pkg/logger/context.go:10`      | Accept (idiom)   | **Split-brain: each package also defines a `RequestIDKey` with a different value, both dead** | **Eliminate**  |
+| `t.Helper()` (3 groups)    | `internal/testutil/{assertions,helpers,database,response_assertions}.go` | Accept (idiom)   | Test helper marker                                                                            | Accept         |
+| `ctx := request.Context()` | `internal/ui/handler.go:36-37`, `internal/ui/handler.go:71-72`           | Accept (idiom)   | HTTP handler context extraction                                                               | Accept         |
+| `query := ``               | `internal/repository/quantity_repository.go:55-63`, `:93-101`            | Accept (idiom)   | First line of different SQL queries (`ReserveQuantity` vs `CommitReservedQuantity`)           | Accept         |
 
 **Files modified:**
+
 - `pkg/logger/context.go` — removed `RequestIDKey`, `WithRequestID`, `RequestIDFromContext`; kept only `LoggerKey`, `FromContext`, `ToContext`.
 - `pkg/logger/logger.go` — removed `WithContext(ctx)` from the `Logger` interface and the `slogger` implementation (it read the dead key and was never called anywhere).
 - `internal/middleware/middleware.go` — removed the local `type contextKey`, the local `RequestIDKey = "requestID"`, and the unsafe `r.Context().Value(RequestIDKey).(string)`; `GetRequestID` now delegates to `chi/middleware.GetReqID(r.Context())`.
@@ -288,7 +289,7 @@ query := `
 
 ### Why it is not harmful
 
-The match is on the literal byte sequence `query := `` ` (eight characters: backtick-newline). art-dupl is correctly identifying that the same opening token appears in both functions, but the SQL bodies are completely different:
+The match is on the literal byte sequence `query :=` `` (eight characters: backtick-newline). art-dupl is correctly identifying that the same opening token appears in both functions, but the SQL bodies are completely different:
 
 - `ReserveQuantity` touches both `quantity` and `reserved_quantity`, branches on `(quantity - reserved_quantity) >= ?`, and uses three placeholders plus the standard two-suffix pair.
 - `CommitReservedQuantity` decrements `reserved_quantity` and conditionally decrements `quantity`, branches on `reserved_quantity >= ?`, and uses four placeholders plus the standard two-suffix pair.
@@ -305,11 +306,11 @@ This is the same class of false positive as the boolean-initializer case (`2026-
 
 2. **Idiom clones can hide real bugs when the duplicated surface sits next to non-duplicated content.** `type contextKey string` is the textbook idiomatic private type. In `storbi`, it sat next to a `RequestIDKey` constant whose value disagreed across the two copies, and neither copy was ever written to. art-dupl cannot see the constant value or the absence of writers — the human must look past the matched lines.
 
-3. **Two unrelated idioms are not the same idiom.** `type contextKey string` per package is correct *when the package actually owns a context value*. When the package doesn't (the case in `internal/middleware` once `RequestIDKey` was eliminated), keeping the type declaration is cargo-culted duplication: there is nothing left for it to protect.
+3. **Two unrelated idioms are not the same idiom.** `type contextKey string` per package is correct _when the package actually owns a context value_. When the package doesn't (the case in `internal/middleware` once `RequestIDKey` was eliminated), keeping the type declaration is cargo-culted duplication: there is nothing left for it to protect.
 
 4. **Check for writers before accepting a read-only helper.** `WithRequestID`, `WithContext`, `GetRequestID`, `RequestIDFromContext` were all readers with no matching writers. The grep for `context.WithValue.*RequestIDKey` returning zero hits was the single decisive check that turned "Accept" into "Eliminate." This should be the first question on every "leave it as idiom" decision: does anything write the value these helpers read?
 
-5. **Status-report "fixed" entries can paper over live bugs.** `docs/status/2026-05-26_07-11_SDK-UPGRADE-AND-ARCHITECTURE-IMPROVEMENTS.md:120` celebrated a fix for "Unsafe Type Assertion in `GetRequestID`" by replacing the panic-prone assertion with a checked one. That fix was correct as far as it went, but the deeper invariant — *that the key gets set* — was already broken. Status reports are point-in-time snapshots; the duplicate detected today is the truth that report was missing.
+5. **Status-report "fixed" entries can paper over live bugs.** `docs/status/2026-05-26_07-11_SDK-UPGRADE-AND-ARCHITECTURE-IMPROVEMENTS.md:120` celebrated a fix for "Unsafe Type Assertion in `GetRequestID`" by replacing the panic-prone assertion with a checked one. That fix was correct as far as it went, but the deeper invariant — _that the key gets set_ — was already broken. Status reports are point-in-time snapshots; the duplicate detected today is the truth that report was missing.
 
 ---
 

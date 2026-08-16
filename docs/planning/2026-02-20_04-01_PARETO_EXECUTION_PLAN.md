@@ -1,7 +1,7 @@
 # Pareto Execution Plan - art-dupl Project
 
-**Date:** February 20, 2026, 04:01 UTC  
-**Strategy:** 1% → 4% → 20% Impact Cascade  
+**Date:** February 20, 2026, 04:01 UTC\
+**Strategy:** 1% → 4% → 20% Impact Cascade\
 **Standards:** HOW_TO_GOLANG.md (250-line limit, 30-line functions, zero duplication)
 
 ---
@@ -25,8 +25,8 @@
 
 ## Phase 1: The 1% (Infrastructure Unblock)
 
-**Goal:** Fix the 3 largest file violations to unblock all other work  
-**Impact:** 51% of total project improvement  
+**Goal:** Fix the 3 largest file violations to unblock all other work\
+**Impact:** 51% of total project improvement\
 **Time Estimate:** 90 minutes (3 tasks × 30min)
 
 ### Tasks (30-100min each, max 3 for this phase)
@@ -43,8 +43,8 @@
 
 ## Phase 2: The 4% (High-Value Features)
 
-**Goal:** Add concurrent processing + modernize HTML + extract utilities  
-**Impact:** Additional 13% (64% cumulative)  
+**Goal:** Add concurrent processing + modernize HTML + extract utilities\
+**Impact:** Additional 13% (64% cumulative)\
 **Time Estimate:** 180 minutes (6 tasks × 30min)
 
 ### Tasks (30-100min each, max 6 for this phase)
@@ -55,7 +55,7 @@
 | 2.2 | Add --workers CLI flag with auto-detection                    | 15min | HIGH   | cmd/flags.go: Add flag, default to runtime.GOMAXPROCS(0), min 1, max 32                            |
 | 2.3 | Modernize HTML template with dark theme + syntax highlighting | 45min | HIGH   | printer/html.go: Add CSS variables, syntax highlighting classes, responsive layout                 |
 | 2.4 | Add VSCode integration links to HTML output                   | 15min | MEDIUM | printer/html.go: vscode://file/ links for one-click navigation                                     |
-| 2.5 | Extract unique() function to shared testutils                 | 30min | MEDIUM | testutils/unique.go: Refactor to generic unique[T comparable](<>) function, update all callers     |
+| 2.5 | Extract unique() function to shared testutils                 | 30min | MEDIUM | testutils/unique.go: Refactor to generic unique[T comparable]() function, update all callers       |
 | 2.6 | Add HTML template statistics dashboard                        | 30min | MEDIUM | printer/html.go: Add summary stats at top of report                                                |
 
 **Total Phase 2:** 6 tasks, ~180 minutes
@@ -64,8 +64,8 @@
 
 ## Phase 3: The 20% (Complete TODO List)
 
-**Goal:** Finish all remaining TODO items from TODO_LIST.md  
-**Impact:** Additional 16% (80% cumulative)  
+**Goal:** Finish all remaining TODO items from TODO_LIST.md\
+**Impact:** Additional 16% (80% cumulative)\
 **Time Estimate:** 450 minutes (18 tasks × 25min average)
 
 ### Tasks (30-100min each, max 18 for this phase)
@@ -218,7 +218,7 @@ flowchart TB
 | 2.3.4 | Add dark/light mode toggle                        | 2     | 2.3    |
 | 2.4.1 | Generate vscode://file/ links in HTML             | 2     | 2.4    |
 | 2.4.2 | Test link functionality                           | 2     | 2.4    |
-| 2.5.1 | Design generic unique[T](<>) function signature   | 2     | 2.5    |
+| 2.5.1 | Design generic unique[T]() function signature     | 2     | 2.5    |
 | 2.5.2 | Implement unique() in testutils                   | 2     | 2.5    |
 | 2.5.3 | Update bdd_test.go to use shared unique()         | 2     | 2.5    |
 | 2.5.4 | Update other test files to use shared unique()    | 2     | 2.5    |
@@ -340,6 +340,6 @@ flowchart TB
 
 ---
 
-**Plan Created:** 2026-02-20 04:01 UTC  
-**Estimated Total Time:** 12 hours (can be parallelized where safe)  
+**Plan Created:** 2026-02-20 04:01 UTC\
+**Estimated Total Time:** 12 hours (can be parallelized where safe)\
 **Execution Start:** Immediate

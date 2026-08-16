@@ -1,7 +1,7 @@
 # art-dupl Status Report: Sorting Implementation Fixed
 
-**Date:** 2025-12-15  
-**Time:** 08:02 CET  
+**Date:** 2025-12-15\
+**Time:** 08:02 CET\
 **Project:** art-dupl - Go Code Clone Detection Tool
 
 ## 📋 Executive Summary

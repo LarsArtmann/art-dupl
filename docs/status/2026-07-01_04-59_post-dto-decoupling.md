@@ -129,33 +129,33 @@ tests pass. Zero lint issues.
 
 ## f) TOP 25 THINGS TO DO NEXT
 
-| #   | Task                                                | Impact | Effort                 |
-| --- | --------------------------------------------------- | ------ | ---------------------- |
-| 1   | T25 Split printer/ (stats, html, analyze)           | HIGH   | 90m                    |
-| 2   | T36 Perf regression CI (threshold assertions)       | HIGH   | 40m                    |
-| 3   | T23 CloneRef value object (unify 7 Clone types)     | MED    | 80m                    |
-| 4   | T28 Sort comparator factory                         | LOW    | 12m                    |
-| 5   | T18 Hash pipeline consolidation                     | LOW    | 12m                    |
-| 6   | T41 Context through file feeders                    | LOW    | 60m                    |
-| 7   | T24 Branded NodeType (HIGH RISK: cache format)      | MED    | 180m                   |
-| 8   | Test GitHub Actions template in real CI             | MED    | 30m                    |
-| 9   | Test pre-commit hook template                       | MED    | 30m                    |
-| 10  | Apply sendCtx to remaining 10 send sites            | LOW    | 12m                    |
-| 11  | Cache version-mismatch warning log                  | MED    | 8m                     |
-| 12  | JSON config migration shim (semantic→detectionMode) | MED    | 10m                    |
-| 13  | ADR for semantic encoding layout                    | LOW    | 30m                    |
-| 14  | "How art-dupl detects clones" deep-dive             | LOW    | 40m                    |
-| 15  | go.mod dependency audit in CI                       | LOW    | 20m                    |
-| 16  | HTML report: collapsible clone groups               | LOW    | 40m                    |
-| 17  | T32 Watch mode (`--watch`)                          | MED    | 1d                     |
-| 18  | T38 TypeScript/JS support                           | HIGH   | 1w+                    |
-| 19  | T39 Python support                                  | HIGH   | 1w+                    |
-| 20  | SDK streaming backpressure handling                 | LOW    | 40m                    |
-| 21  | SARIF rule metadata enrichment                      | LOW    | 20m                    |
-| 22  | Cache eviction policy (beyond LRU)                  | LOW    | 40m                    |
-| 23  | T26 Fang v2 migration                               | LOW    | blocked                |
-| 24  | T12 encoding/json v2 migration                      | LOW    | blocked (Go 1.27)      |
-| 25  | T40 syntax/golang facade                            | LOW    | blocked (import cycle) |
+| #  | Task                                                | Impact | Effort                 |
+| -- | --------------------------------------------------- | ------ | ---------------------- |
+| 1  | T25 Split printer/ (stats, html, analyze)           | HIGH   | 90m                    |
+| 2  | T36 Perf regression CI (threshold assertions)       | HIGH   | 40m                    |
+| 3  | T23 CloneRef value object (unify 7 Clone types)     | MED    | 80m                    |
+| 4  | T28 Sort comparator factory                         | LOW    | 12m                    |
+| 5  | T18 Hash pipeline consolidation                     | LOW    | 12m                    |
+| 6  | T41 Context through file feeders                    | LOW    | 60m                    |
+| 7  | T24 Branded NodeType (HIGH RISK: cache format)      | MED    | 180m                   |
+| 8  | Test GitHub Actions template in real CI             | MED    | 30m                    |
+| 9  | Test pre-commit hook template                       | MED    | 30m                    |
+| 10 | Apply sendCtx to remaining 10 send sites            | LOW    | 12m                    |
+| 11 | Cache version-mismatch warning log                  | MED    | 8m                     |
+| 12 | JSON config migration shim (semantic→detectionMode) | MED    | 10m                    |
+| 13 | ADR for semantic encoding layout                    | LOW    | 30m                    |
+| 14 | "How art-dupl detects clones" deep-dive             | LOW    | 40m                    |
+| 15 | go.mod dependency audit in CI                       | LOW    | 20m                    |
+| 16 | HTML report: collapsible clone groups               | LOW    | 40m                    |
+| 17 | T32 Watch mode (`--watch`)                          | MED    | 1d                     |
+| 18 | T38 TypeScript/JS support                           | HIGH   | 1w+                    |
+| 19 | T39 Python support                                  | HIGH   | 1w+                    |
+| 20 | SDK streaming backpressure handling                 | LOW    | 40m                    |
+| 21 | SARIF rule metadata enrichment                      | LOW    | 20m                    |
+| 22 | Cache eviction policy (beyond LRU)                  | LOW    | 40m                    |
+| 23 | T26 Fang v2 migration                               | LOW    | blocked                |
+| 24 | T12 encoding/json v2 migration                      | LOW    | blocked (Go 1.27)      |
+| 25 | T40 syntax/golang facade                            | LOW    | blocked (import cycle) |
 
 ---
 

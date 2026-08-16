@@ -1,7 +1,7 @@
 # Status Report — 2026-05-20 23:39 (Session Final)
 
-**Session:** Bug report → root cause → deep audit → 6 position bugs fixed → AGENTS.md updated → all green  
-**Branch:** `fork` (up to date with `origin/fork`)  
+**Session:** Bug report → root cause → deep audit → 6 position bugs fixed → AGENTS.md updated → all green\
+**Branch:** `fork` (up to date with `origin/fork`)\
 **Go:** 1.26.2 | **Tests:** 25/25 pass (255 BDD specs) | **Lint:** 0 issues
 
 ---
@@ -10,14 +10,14 @@
 
 ### Bugs Fixed (6 total)
 
-| #   | Bug                                                      | File                       | Commit    |
-| --- | -------------------------------------------------------- | -------------------------- | --------- |
-| 1   | File root End = node count, not byte length              | `transform.go`             | `ab92d64` |
-| 2   | ConstantAttribute Pos=0,End=0 (Range exists)             | `transform_node.go`        | `e9e8eff` |
-| 3   | BoolConstantAttribute Pos=0,End=0 (Range exists)         | `transform_node.go`        | `e9e8eff` |
-| 4   | ChildrenExpression Pos=0,End=0 (Range exists)            | `transform_components.go`  | `e9e8eff` |
-| 5   | CaseExpression Pos=0,End=0 (Expression.Range available)  | `transform_expressions.go` | `e9e8eff` |
-| 6   | ConstantCSSProperty Pos=0,End=0 (inherited parent range) | `transform.go`             | `8390608` |
+| # | Bug                                                      | File                       | Commit    |
+| - | -------------------------------------------------------- | -------------------------- | --------- |
+| 1 | File root End = node count, not byte length              | `transform.go`             | `ab92d64` |
+| 2 | ConstantAttribute Pos=0,End=0 (Range exists)             | `transform_node.go`        | `e9e8eff` |
+| 3 | BoolConstantAttribute Pos=0,End=0 (Range exists)         | `transform_node.go`        | `e9e8eff` |
+| 4 | ChildrenExpression Pos=0,End=0 (Range exists)            | `transform_components.go`  | `e9e8eff` |
+| 5 | CaseExpression Pos=0,End=0 (Expression.Range available)  | `transform_expressions.go` | `e9e8eff` |
+| 6 | ConstantCSSProperty Pos=0,End=0 (inherited parent range) | `transform.go`             | `8390608` |
 
 ### Tests Added (6 unit + 2 BDD)
 
@@ -64,18 +64,18 @@ d9a0082 fix(cmd): make --only flag available on stats subcommand
 
 From TODO_LIST.md (priority order):
 
-| #   | Task                                                                    | Impact                 |
-| --- | ----------------------------------------------------------------------- | ---------------------- |
-| 1   | ProcessedClone DTO — decouple Printer from syntax.Node (111 test sites) | Unblocks multi-lang    |
-| 2   | Consolidate 3 parallel Clone types                                      | Eliminates split brain |
-| 3   | printer/clone_classify.go decouple from syntax/golang                   | Multi-language prep    |
-| 4   | TokenValue type with validation                                         | Type safety            |
-| 5   | CSV output via encoding/csv                                             | Format compliance      |
-| 6   | SIMD hash implementations (6 TODOs)                                     | Performance            |
-| 7   | Memory layout optimization                                              | Performance            |
-| 8   | Unify enum patterns                                                     | Consistency            |
-| 9   | Refactor syntax/golang/transform.go (355L)                              | Readability            |
-| 10  | Archive old docs/status/ (304 files)                                    | Repo hygiene           |
+| #  | Task                                                                    | Impact                 |
+| -- | ----------------------------------------------------------------------- | ---------------------- |
+| 1  | ProcessedClone DTO — decouple Printer from syntax.Node (111 test sites) | Unblocks multi-lang    |
+| 2  | Consolidate 3 parallel Clone types                                      | Eliminates split brain |
+| 3  | printer/clone_classify.go decouple from syntax/golang                   | Multi-language prep    |
+| 4  | TokenValue type with validation                                         | Type safety            |
+| 5  | CSV output via encoding/csv                                             | Format compliance      |
+| 6  | SIMD hash implementations (6 TODOs)                                     | Performance            |
+| 7  | Memory layout optimization                                              | Performance            |
+| 8  | Unify enum patterns                                                     | Consistency            |
+| 9  | Refactor syntax/golang/transform.go (355L)                              | Readability            |
+| 10 | Archive old docs/status/ (304 files)                                    | Repo hygiene           |
 
 ---
 
@@ -100,48 +100,48 @@ From TODO_LIST.md (priority order):
 
 ### P0 — Hygiene (small effort, immediate)
 
-| #   | Task                                                              | Effort |
-| --- | ----------------------------------------------------------------- | ------ |
-| 1   | Archive old docs/status/ (304 → keep 30 days)                     | S      |
-| 2   | Fix pre-commit hook: allowlist for existing TODOs and gitleaks FP | S      |
-| 3   | Dogfood: run art-dupl on itself, publish results                  | S      |
+| # | Task                                                              | Effort |
+| - | ----------------------------------------------------------------- | ------ |
+| 1 | Archive old docs/status/ (304 → keep 30 days)                     | S      |
+| 2 | Fix pre-commit hook: allowlist for existing TODOs and gitleaks FP | S      |
+| 3 | Dogfood: run art-dupl on itself, publish results                  | S      |
 
 ### P1 — Architecture (high impact)
 
-| #   | Task                                                      | Effort |
-| --- | --------------------------------------------------------- | ------ |
-| 4   | Introduce ProcessedClone DTO                              | L      |
-| 5   | Consolidate 3 Clone types → single type                   | M      |
-| 6   | Decouple printer/clone_classify.go from syntax/golang     | M      |
-| 7   | Change Printer interface → []ProcessedCloneGroup          | M      |
-| 8   | Update 111 test call sites                                | L      |
-| 9   | Implement TokenValue type with validation                 | M      |
-| 10  | Unify enum patterns                                       | S      |
-| 11  | Refactor syntax/golang/transform.go — extract switch arms | M      |
-| 12  | Fix remaining LSP hints                                   | S      |
+| #  | Task                                                      | Effort |
+| -- | --------------------------------------------------------- | ------ |
+| 4  | Introduce ProcessedClone DTO                              | L      |
+| 5  | Consolidate 3 Clone types → single type                   | M      |
+| 6  | Decouple printer/clone_classify.go from syntax/golang     | M      |
+| 7  | Change Printer interface → []ProcessedCloneGroup          | M      |
+| 8  | Update 111 test call sites                                | L      |
+| 9  | Implement TokenValue type with validation                 | M      |
+| 10 | Unify enum patterns                                       | S      |
+| 11 | Refactor syntax/golang/transform.go — extract switch arms | M      |
+| 12 | Fix remaining LSP hints                                   | S      |
 
 ### P2 — Features
 
-| #   | Task                                        | Effort |
-| --- | ------------------------------------------- | ------ |
-| 13  | CSV output via encoding/csv                 | S      |
-| 14  | Wire TodoDetector through CLI (-m todos)    | S      |
-| 15  | Wire LegacyDetector through CLI (-m legacy) | S      |
-| 16  | SIMD hash implementations                   | M      |
-| 17  | Memory layout optimization                  | M      |
+| #  | Task                                        | Effort |
+| -- | ------------------------------------------- | ------ |
+| 13 | CSV output via encoding/csv                 | S      |
+| 14 | Wire TodoDetector through CLI (-m todos)    | S      |
+| 15 | Wire LegacyDetector through CLI (-m legacy) | S      |
+| 16 | SIMD hash implementations                   | M      |
+| 17 | Memory layout optimization                  | M      |
 
 ### P2 — Infrastructure
 
-| #   | Task                            | Effort |
-| --- | ------------------------------- | ------ |
-| 18  | Bump BDD test coverage to 80%+  | M      |
-| 19  | Add fuzz tests for templ parser | S      |
-| 20  | CI pipeline audit               | S      |
-| 21  | Update FEATURES.md              | S      |
-| 22  | SDK dogfooding                  | M      |
-| 23  | Performance benchmarking        | M      |
-| 24  | Nix flake check                 | S      |
-| 25  | Update HOW_TO_USE.md FAQ        | S      |
+| #  | Task                            | Effort |
+| -- | ------------------------------- | ------ |
+| 18 | Bump BDD test coverage to 80%+  | M      |
+| 19 | Add fuzz tests for templ parser | S      |
+| 20 | CI pipeline audit               | S      |
+| 21 | Update FEATURES.md              | S      |
+| 22 | SDK dogfooding                  | M      |
+| 23 | Performance benchmarking        | M      |
+| 24 | Nix flake check                 | S      |
+| 25 | Update HOW_TO_USE.md FAQ        | S      |
 
 ---
 

@@ -1,21 +1,21 @@
 # 🚀 art-dupl Status Report
 
-**Date:** 2026-01-22  
-**Time:** 01:37 CET  
-**Branch:** fork  
-**Session:** Session Summary & Next Steps  
-**Reporter:** AI Assistant  
+**Date:** 2026-01-22\
+**Time:** 01:37 CET\
+**Branch:** fork\
+**Session:** Session Summary & Next Steps\
+**Reporter:** AI Assistant\
 **Work Session Duration:** ~2 hours (23:35 - 01:37)
 
 ---
 
 ## 📊 Executive Summary
 
-**Overall Status:** 🟢 EXCELLENT PROGRESS  
-**Task Completion:** 6/13 (46%)  
-**Test Reliability:** 100% ✅ (54/54 BDD tests passing)  
-**Critical Bugs:** 0/0 ✅ (all resolved)  
-**Commits Ahead:** 5 commits ahead of origin/fork  
+**Overall Status:** 🟢 EXCELLENT PROGRESS\
+**Task Completion:** 6/13 (46%)\
+**Test Reliability:** 100% ✅ (54/54 BDD tests passing)\
+**Critical Bugs:** 0/0 ✅ (all resolved)\
+**Commits Ahead:** 5 commits ahead of origin/fork\
 **Status Reports Created:** 2 comprehensive reports
 
 **Session Highlights:**
@@ -44,8 +44,8 @@ Documentation:       0 → 2 reports  [+2] ✅
 
 ### 1. Go Build Cache Issues Resolution ✅
 
-**Status:** COMPLETE  
-**Time:** 23:35 - 23:40 CET (5 minutes)  
+**Status:** COMPLETE\
+**Time:** 23:35 - 23:40 CET (5 minutes)\
 **Impact:** HIGH - Enabled all tests to compile
 
 **Problem:**
@@ -69,25 +69,25 @@ export GOCACHE=/tmp/go-cache-$$ && mkdir -p $GOCACHE
 
 ### 2. BDD Test Fixes ✅
 
-**Status:** COMPLETE  
-**Time:** 23:40 - 00:30 CET (50 minutes)  
-**Tests Fixed:** 10  
+**Status:** COMPLETE\
+**Time:** 23:40 - 00:30 CET (50 minutes)\
+**Tests Fixed:** 10\
 **Impact:** VERY HIGH - Improved test reliability from 81.5% to 100%
 
 **Tests Fixed:**
 
-| #   | Test Name                                         | Issue                     | Solution                                | Time   |
-| --- | ------------------------------------------------- | ------------------------- | --------------------------------------- | ------ |
-| 1   | "should exclude sqlc generated code by default"   | Tokens below threshold    | Increased code size                     | 5 min  |
-| 2   | "should include sqlc files when --include-sqlc"   | Tokens below threshold    | Increased code size                     | 5 min  |
-| 3   | "should exclude templ generated code by default"  | Tokens below threshold    | Increased code size                     | 5 min  |
-| 4   | "should include templ files when --include-templ" | Tokens below threshold    | Increased code size                     | 5 min  |
-| 5   | "should support multiple include patterns"        | Tokens below threshold    | Increased code size                     | 5 min  |
-| 6   | "should exclude files matching exclude patterns"  | Tokens below threshold    | Increased code size                     | 5 min  |
-| 7   | "should give include patterns precedence"         | Tokens below threshold    | Increased code size                     | 5 min  |
-| 8   | "should exclude vendor directory by default"      | Tokens below threshold    | Increased code size                     | 5 min  |
-| 9   | "should include vendor directory when --vendor"   | Tokens below threshold    | Increased code size                     | 5 min  |
-| 10  | "should display most widespread clones first"     | Code patterns too similar | Created structurally different patterns | 10 min |
+| #  | Test Name                                         | Issue                     | Solution                                | Time   |
+| -- | ------------------------------------------------- | ------------------------- | --------------------------------------- | ------ |
+| 1  | "should exclude sqlc generated code by default"   | Tokens below threshold    | Increased code size                     | 5 min  |
+| 2  | "should include sqlc files when --include-sqlc"   | Tokens below threshold    | Increased code size                     | 5 min  |
+| 3  | "should exclude templ generated code by default"  | Tokens below threshold    | Increased code size                     | 5 min  |
+| 4  | "should include templ files when --include-templ" | Tokens below threshold    | Increased code size                     | 5 min  |
+| 5  | "should support multiple include patterns"        | Tokens below threshold    | Increased code size                     | 5 min  |
+| 6  | "should exclude files matching exclude patterns"  | Tokens below threshold    | Increased code size                     | 5 min  |
+| 7  | "should give include patterns precedence"         | Tokens below threshold    | Increased code size                     | 5 min  |
+| 8  | "should exclude vendor directory by default"      | Tokens below threshold    | Increased code size                     | 5 min  |
+| 9  | "should include vendor directory when --vendor"   | Tokens below threshold    | Increased code size                     | 5 min  |
+| 10 | "should display most widespread clones first"     | Code patterns too similar | Created structurally different patterns | 10 min |
 
 **Total Fix Time:** 50 minutes
 
@@ -102,8 +102,8 @@ export GOCACHE=/tmp/go-cache-$$ && mkdir -p $GOCACHE
 
 ### 3. Linting Violations Fix (Test Files) ✅
 
-**Status:** COMPLETE  
-**Time:** 00:30 - 00:45 CET (15 minutes)  
+**Status:** COMPLETE\
+**Time:** 00:30 - 00:45 CET (15 minutes)\
 **Impact:** MEDIUM - Reduced linting noise in test files
 
 **Files Modified:**
@@ -147,8 +147,8 @@ if err != nil {
 
 ### 4. Status Report Creation ✅
 
-**Status:** COMPLETE  
-**Time:** 00:45 - 01:26 CET (41 minutes)  
+**Status:** COMPLETE\
+**Time:** 00:45 - 01:26 CET (41 minutes)\
 **Impact:** HIGH - Comprehensive project documentation
 
 **Reports Created:**
@@ -189,8 +189,8 @@ if err != nil {
 
 ### 5. Session Review & Next Steps Planning ✅
 
-**Status:** COMPLETE  
-**Time:** 01:26 - 01:37 CET (11 minutes)  
+**Status:** COMPLETE\
+**Time:** 01:26 - 01:37 CET (11 minutes)\
 **Impact:** HIGH - Clear direction for future work
 
 **Activities:**
@@ -217,7 +217,7 @@ if err != nil {
 | ------------- | --------- | ------- | ----------- | ------ | ------- |
 | Test Fixes    | 4         | 0       | 0           | 4      | 100% ✅ |
 | Build Issues  | 1         | 0       | 0           | 1      | 100% ✅ |
-| Linting       | 0         | 1       | 0           | 1      | 50% ⚠️  |
+| Linting       | 0         | 1       | 0           | 1      | 50% ⚠️   |
 | Documentation | 2         | 0       | 0           | 2      | 100% ✅ |
 | Code Quality  | 0         | 0       | 6           | 6      | 0% 🔴   |
 | **TOTAL**     | **7**     | **1**   | **6**       | **14** | **50%** |
@@ -246,13 +246,13 @@ _Note: Updated task count from 13 to 14 to include documentation_
 
 ### Git Status
 
-| Metric         | Value                  | Status            |
-| -------------- | ---------------------- | ----------------- |
-| Branch         | fork                   | ✅                |
+| Metric         | Value                  | Status           |
+| -------------- | ---------------------- | ---------------- |
+| Branch         | fork                   | ✅               |
 | Commits Ahead  | 5                      | ⚠️ (needs push)   |
 | Modified Files | 2 (not tracked by git) | ⚠️ (not critical) |
-| Working Tree   | Clean                  | ✅                |
-| Status Reports | 2                      | ✅                |
+| Working Tree   | Clean                  | ✅               |
+| Status Reports | 2                      | ✅               |
 
 ---
 
@@ -315,9 +315,9 @@ _Note: Updated task count from 13 to 14 to include documentation_
 
 ### 1. Git File Tracking Issue 🔴
 
-**Severity:** CRITICAL  
-**Status:** IDENTIFIED  
-**Impact:** MEDIUM (can't commit test file changes)  
+**Severity:** CRITICAL\
+**Status:** IDENTIFIED\
+**Impact:** MEDIUM (can't commit test file changes)\
 **Workaround:** Continue work, resolve later
 
 **Description:**
@@ -644,9 +644,9 @@ git ls-files --stage bdd/error_handling_test.go
 
 ## ✅ Session Conclusion
 
-**Overall Status:** 🟢 EXCELLENT  
-**Session Goal:** ACHIEVED ✅  
-**Time Invested:** 2 hours 2 minutes  
+**Overall Status:** 🟢 EXCELLENT\
+**Session Goal:** ACHIEVED ✅\
+**Time Invested:** 2 hours 2 minutes\
 **Productivity:** HIGH
 
 **Key Achievements:**
@@ -667,7 +667,7 @@ git ls-files --stage bdd/error_handling_test.go
 
 ---
 
-**END OF SESSION REPORT**  
-**Next Session:** TBD  
-**Reporter:** AI Assistant  
+**END OF SESSION REPORT**\
+**Next Session:** TBD\
+**Reporter:** AI Assistant\
 **Date:** 2026-01-22 01:37 CET

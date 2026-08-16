@@ -151,9 +151,9 @@ Create `dupl.json`:
 
 ```json
 {
-	"threshold": 10,
-	"outputFormat": "json",
-	"paths": ["./src", "./lib"]
+  "threshold": 10,
+  "outputFormat": "json",
+  "paths": ["./src", "./lib"]
 }
 ```
 

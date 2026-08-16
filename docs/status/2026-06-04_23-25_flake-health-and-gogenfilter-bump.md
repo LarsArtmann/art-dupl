@@ -1,7 +1,7 @@
 # art-dupl — Full Status Report
 
-**Date:** 2026-06-04 23:25  
-**Branch:** fork  
+**Date:** 2026-06-04 23:25\
+**Branch:** fork\
 **HEAD:** `94db410` refactor(docs),chore(deps): rewrite AGENTS.md to concise enduring-context guide and bump gogenfilter v3.0.2 → v3.1.0
 
 ---
@@ -131,43 +131,43 @@ From TODO_LIST.md, never started:
 
 ### 🔴 Critical (Architecture Debt)
 
-| #   | Item                                                           | Impact                                       | Effort                |
-| --- | -------------------------------------------------------------- | -------------------------------------------- | --------------------- |
-| 1   | Decouple Printer from syntax.Node via ProcessedClone DTO       | Unblocks Clone consolidation, multi-language | High (111 test sites) |
-| 2   | Consolidate three parallel Clone types into one                | Eliminates confusion, reduces code           | High (depends on #1)  |
-| 3   | Wire TODO and Legacy detectors to CLI (`-m todo`, `-m legacy`) | Users get 2 more detection methods for free  | Low                   |
-| 4   | Add `nix flake check` to CI workflow                           | Catches vendorHash drift, Nix sandbox issues | Low                   |
-| 5   | Fix orphaned SIMD TODOs — delete or document as won't-fix      | Removes dead code noise                      | Trivial               |
+| # | Item                                                           | Impact                                       | Effort                |
+| - | -------------------------------------------------------------- | -------------------------------------------- | --------------------- |
+| 1 | Decouple Printer from syntax.Node via ProcessedClone DTO       | Unblocks Clone consolidation, multi-language | High (111 test sites) |
+| 2 | Consolidate three parallel Clone types into one                | Eliminates confusion, reduces code           | High (depends on #1)  |
+| 3 | Wire TODO and Legacy detectors to CLI (`-m todo`, `-m legacy`) | Users get 2 more detection methods for free  | Low                   |
+| 4 | Add `nix flake check` to CI workflow                           | Catches vendorHash drift, Nix sandbox issues | Low                   |
+| 5 | Fix orphaned SIMD TODOs — delete or document as won't-fix      | Removes dead code noise                      | Trivial               |
 
 ### 🟡 Important (Quality & Maintainability)
 
-| #   | Item                                                        | Impact                     | Effort |
-| --- | ----------------------------------------------------------- | -------------------------- | ------ |
-| 6   | Implement CSV output using `encoding/csv`                   | Proper RFC 4180 compliance | Medium |
-| 7   | Refactor `syntax/golang/transform.go` (369L → lookup table) | Maintainability            | Medium |
-| 8   | Split `printer/stats_test.go` (975L → 3 files)              | Test readability           | Low    |
-| 9   | Decouple `printer/clone_classify.go` from `syntax/golang`   | Multi-language readiness   | Medium |
-| 10  | Implement TokenValue type with validation                   | Type safety                | Medium |
-| 11  | Add `--output-file` flag to stats subcommand                | User experience            | Low    |
-| 12  | Unify enum patterns across domain and config                | Consistency                | Medium |
+| #  | Item                                                        | Impact                     | Effort |
+| -- | ----------------------------------------------------------- | -------------------------- | ------ |
+| 6  | Implement CSV output using `encoding/csv`                   | Proper RFC 4180 compliance | Medium |
+| 7  | Refactor `syntax/golang/transform.go` (369L → lookup table) | Maintainability            | Medium |
+| 8  | Split `printer/stats_test.go` (975L → 3 files)              | Test readability           | Low    |
+| 9  | Decouple `printer/clone_classify.go` from `syntax/golang`   | Multi-language readiness   | Medium |
+| 10 | Implement TokenValue type with validation                   | Type safety                | Medium |
+| 11 | Add `--output-file` flag to stats subcommand                | User experience            | Low    |
+| 12 | Unify enum patterns across domain and config                | Consistency                | Medium |
 
 ### 🟢 Nice to Have (Polish)
 
-| #   | Item                                                             | Impact                         | Effort       |
-| --- | ---------------------------------------------------------------- | ------------------------------ | ------------ |
-| 13  | Write SDK documentation for `pkg/artdupl/`                       | Adoption                       | Medium       |
-| 14  | Add ADR: semantic-as-default decision                            | Decision record                | Low          |
-| 15  | Add ADR: reflection-based config merge                           | Decision record                | Low          |
-| 16  | Create `domain.HealthScore` typed enum                           | Type safety                    | Low          |
-| 17  | Add BDD test: `stats --only templ` and `stats --only go`         | Coverage                       | Low          |
-| 18  | Add BDD test: `--include-generic` end-to-end                     | Coverage                       | Low          |
-| 19  | Add fuzz tests for templ parser edge cases                       | Robustness                     | Medium       |
-| 20  | Validate GoReleaser release config                               | Release reliability            | Low          |
-| 21  | Fix remaining LSP hints (unused params, unnecessary type args)   | Clean code                     | Trivial      |
-| 22  | Consider adding `--since` integration tests                      | Incremental feature confidence | Medium       |
-| 23  | Add `--diff-mode` (inline vs side-by-side) to HTML output        | User experience                | Low          |
-| 24  | Investigate `ConstantCSSProperty` Pos=0 upstream fix (a-h/templ) | Accuracy                       | External dep |
-| 25  | Add memory allocation benchmarks for large repos                 | Performance visibility         | Medium       |
+| #  | Item                                                             | Impact                         | Effort       |
+| -- | ---------------------------------------------------------------- | ------------------------------ | ------------ |
+| 13 | Write SDK documentation for `pkg/artdupl/`                       | Adoption                       | Medium       |
+| 14 | Add ADR: semantic-as-default decision                            | Decision record                | Low          |
+| 15 | Add ADR: reflection-based config merge                           | Decision record                | Low          |
+| 16 | Create `domain.HealthScore` typed enum                           | Type safety                    | Low          |
+| 17 | Add BDD test: `stats --only templ` and `stats --only go`         | Coverage                       | Low          |
+| 18 | Add BDD test: `--include-generic` end-to-end                     | Coverage                       | Low          |
+| 19 | Add fuzz tests for templ parser edge cases                       | Robustness                     | Medium       |
+| 20 | Validate GoReleaser release config                               | Release reliability            | Low          |
+| 21 | Fix remaining LSP hints (unused params, unnecessary type args)   | Clean code                     | Trivial      |
+| 22 | Consider adding `--since` integration tests                      | Incremental feature confidence | Medium       |
+| 23 | Add `--diff-mode` (inline vs side-by-side) to HTML output        | User experience                | Low          |
+| 24 | Investigate `ConstantCSSProperty` Pos=0 upstream fix (a-h/templ) | Accuracy                       | External dep |
+| 25 | Add memory allocation benchmarks for large repos                 | Performance visibility         | Medium       |
 
 ---
 

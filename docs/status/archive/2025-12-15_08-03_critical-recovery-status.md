@@ -1,6 +1,6 @@
 # art-dupl Project Status Report
 
-**Generated:** 2025-12-15_08-03  
+**Generated:** 2025-12-15_08-03\
 **Status:** 🟡 CRITICAL RECOVERY NEEDED
 
 ---

@@ -1,7 +1,7 @@
 # dupl Status Report
 
-**Date:** 2025-12-12_18-52  
-**Phase:** Configuration System Implementation & JSON Integration  
+**Date:** 2025-12-12_18-52\
+**Phase:** Configuration System Implementation & JSON Integration\
 **Overall Progress:** 75% Complete (critical features implemented, integration issues resolved)
 
 ## Executive Summary
@@ -137,14 +137,14 @@
 
 ```json
 {
-	"threshold": 15,
-	"includeVendor": false,
-	"outputFormat": "text",
-	"verbose": false,
-	"paths": ["."],
-	"ignoreFiles": ["*_test.go"],
-	"maxChildrenSerial": 10000,
-	"outputFile": ""
+  "threshold": 15,
+  "includeVendor": false,
+  "outputFormat": "text",
+  "verbose": false,
+  "paths": ["."],
+  "ignoreFiles": ["*_test.go"],
+  "maxChildrenSerial": 10000,
+  "outputFile": ""
 }
 ```
 

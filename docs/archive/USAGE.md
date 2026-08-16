@@ -47,15 +47,15 @@ Configuration files use JSON format with the following structure:
 
 ```json
 {
-	"threshold": 30,
-	"includeVendor": false,
-	"filesFromStdin": false,
-	"outputFormat": "text",
-	"verbose": false,
-	"paths": ["./cmd", "./internal"],
-	"ignoreFiles": ["*_test.go", "*_gen.go"],
-	"maxChildrenSerial": 10000,
-	"outputFile": "report.json"
+  "threshold": 30,
+  "includeVendor": false,
+  "filesFromStdin": false,
+  "outputFormat": "text",
+  "verbose": false,
+  "paths": ["./cmd", "./internal"],
+  "ignoreFiles": ["*_test.go", "*_gen.go"],
+  "maxChildrenSerial": 10000,
+  "outputFile": "report.json"
 }
 ```
 
@@ -138,29 +138,29 @@ dupl -json -t 20 > report.json
 
 ```json
 {
-	"version": "1.0",
-	"timestamp": "2025-12-14T09:19:06.351297Z",
-	"threshold": 15,
-	"files_analyzed": 2,
-	"clone_groups": [
-		{
-			"hash": "5e8f50b6f5a834485490605819523fd92711f92ba855f603bc2375925bc4753a",
-			"size": 4,
-			"files": [
-				{
-					"filename": "./cli.go",
-					"line_start": 80,
-					"line_end": 88,
-					"fragment": "if err != nil {\n\tif _, err := fmt.Fprintf(..."
-				}
-			]
-		}
-	],
-	"summary": {
-		"total_clone_groups": 8,
-		"total_clones": 19,
-		"complexity_score": 2.11
-	}
+  "version": "1.0",
+  "timestamp": "2025-12-14T09:19:06.351297Z",
+  "threshold": 15,
+  "files_analyzed": 2,
+  "clone_groups": [
+    {
+      "hash": "5e8f50b6f5a834485490605819523fd92711f92ba855f603bc2375925bc4753a",
+      "size": 4,
+      "files": [
+        {
+          "filename": "./cli.go",
+          "line_start": 80,
+          "line_end": 88,
+          "fragment": "if err != nil {\n\tif _, err := fmt.Fprintf(..."
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "total_clone_groups": 8,
+    "total_clones": 19,
+    "complexity_score": 2.11
+  }
 }
 ```
 

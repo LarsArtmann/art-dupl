@@ -358,8 +358,8 @@ FAIL: syntax/syntax_test.go:92
 | syntax        | 91.2%    | ✅ EXCELLENT (BUT TESTS FAILING) |
 | suffixtree    | 90.6%    | ✅ EXCELLENT                     |
 | lib           | 74.3%    | ✅ GOOD                          |
-| printer       | 59.9%    | ⚠️ MODERATE                      |
-| errors        | 35.3%    | ⚠️ NEEDS WORK                    |
+| printer       | 59.9%    | ⚠️ MODERATE                       |
+| errors        | 35.3%    | ⚠️ NEEDS WORK                     |
 | config        | 72.0%    | ✅ GOOD                          |
 | detection     | 12.2%    | 🟡 LOW                           |
 | examples      | 0.0%     | 🔴 NONE                          |

@@ -1,8 +1,8 @@
 # Comprehensive Status Report — 2026-04-30
 
-**Date:** 2026-04-30 23:33 CEST  
-**Branch:** `fork`  
-**Head:** `76313e5` (pushed to `origin/fork`)  
+**Date:** 2026-04-30 23:33 CEST\
+**Branch:** `fork`\
+**Head:** `76313e5` (pushed to `origin/fork`)\
 **Build:** Clean | **Tests:** 27/27 PASS | **Vet:** Clean | **Uncommitted:** 4 domain files (dead code removal, verified)
 
 ---
@@ -120,32 +120,32 @@ Three independent threshold validations exist:
 
 ### High Priority
 
-| #   | Item                                              | Effort | Impact |
-| --- | ------------------------------------------------- | ------ | ------ |
-| 1   | TokenValue type for suffixtree/syntax             | Medium | High   |
-| 2   | Implement CSV output with `encoding/csv`          | Low    | Medium |
-| 3   | Consolidate 3 threshold validation points → 1     | Low    | Medium |
-| 4   | Unify enum patterns (domain switch vs config map) | Medium | Medium |
+| # | Item                                              | Effort | Impact |
+| - | ------------------------------------------------- | ------ | ------ |
+| 1 | TokenValue type for suffixtree/syntax             | Medium | High   |
+| 2 | Implement CSV output with `encoding/csv`          | Low    | Medium |
+| 3 | Consolidate 3 threshold validation points → 1     | Low    | Medium |
+| 4 | Unify enum patterns (domain switch vs config map) | Medium | Medium |
 
 ### Medium Priority
 
-| #   | Item                                                           | Effort | Impact |
-| --- | -------------------------------------------------------------- | ------ | ------ |
-| 5   | Type `domain.Options.OutputFormat` as `config.OutputFormat`    | Low    | Low    |
-| 6   | Refactor `syntax/golang/transform.go` (355L, 300L switch)      | Medium | Medium |
-| 7   | Split `detection/todos.go` (TodoDetector + LegacyDetector)     | Low    | Low    |
-| 8   | Split `config/config.go` (341L) — config + validation mixed    | Low    | Low    |
-| 9   | Split `cmd/run_analysis.go` (447L) — multiple responsibilities | Medium | Low    |
-| 10  | Update README with semantic detection behavior                 | Low    | Medium |
+| #  | Item                                                           | Effort | Impact |
+| -- | -------------------------------------------------------------- | ------ | ------ |
+| 5  | Type `domain.Options.OutputFormat` as `config.OutputFormat`    | Low    | Low    |
+| 6  | Refactor `syntax/golang/transform.go` (355L, 300L switch)      | Medium | Medium |
+| 7  | Split `detection/todos.go` (TodoDetector + LegacyDetector)     | Low    | Low    |
+| 8  | Split `config/config.go` (341L) — config + validation mixed    | Low    | Low    |
+| 9  | Split `cmd/run_analysis.go` (447L) — multiple responsibilities | Medium | Low    |
+| 10 | Update README with semantic detection behavior                 | Low    | Medium |
 
 ### Low Priority
 
-| #   | Item                                                                          | Effort  | Impact  |
-| --- | ----------------------------------------------------------------------------- | ------- | ------- |
-| 11  | Archive old docs/status/ files (312 files)                                    | Low     | Low     |
-| 12  | Fix remaining nolint directives (funlen in 4 cmd/ files)                      | Medium  | Low     |
-| 13  | SIMD TODOs (6 items)                                                          | High    | Unknown |
-| 14  | Remove `fmt` import from `domain/helpers.go` (only used by deleted functions) | Trivial | Trivial |
+| #  | Item                                                                          | Effort  | Impact  |
+| -- | ----------------------------------------------------------------------------- | ------- | ------- |
+| 11 | Archive old docs/status/ files (312 files)                                    | Low     | Low     |
+| 12 | Fix remaining nolint directives (funlen in 4 cmd/ files)                      | Medium  | Low     |
+| 13 | SIMD TODOs (6 items)                                                          | High    | Unknown |
+| 14 | Remove `fmt` import from `domain/helpers.go` (only used by deleted functions) | Trivial | Trivial |
 
 ---
 
@@ -153,7 +153,7 @@ Three independent threshold validations exist:
 
 ### Gopls Phantom Duplicate Errors
 
-**Severity:** Annoying, not blocking  
+**Severity:** Annoying, not blocking\
 **Status:** Known bug, NOT a real compilation error
 
 gopls reports 15+ `DuplicateDecl` / `DuplicateMethod` errors between `printer/html.go` and `printer/html_diff.go` / `printer/html_summary.go`. These are **phantom errors** — `go build` compiles cleanly. This is a known gopls caching bug that appeared after the `html.go` split in commit `24d1902`.
@@ -162,7 +162,7 @@ gopls reports 15+ `DuplicateDecl` / `DuplicateMethod` errors between `printer/ht
 
 ### Vendor Directory Inconsistency
 
-**Severity:** CI-blocking for linter (if using vendor mode)  
+**Severity:** CI-blocking for linter (if using vendor mode)\
 **Status:** Not fixed
 
 The `vendor/modules.txt` is out of sync with `go.mod`. Several packages are at different versions:
@@ -177,7 +177,7 @@ This causes `golangci-lint` to fail when loading packages in vendor mode. Not bl
 
 ### Domain Package Has Zero Test Coverage
 
-**Severity:** Quality concern  
+**Severity:** Quality concern\
 **Status:** Not addressed
 
 `go test ./domain/...` reports `[no test files]`. The domain package defines `Filepath`, `LineNumber`, `CloneSeverity` with validation, JSON marshaling — all untested.
@@ -218,33 +218,33 @@ This causes `golangci-lint` to fail when loading packages in vendor mode. Not bl
 
 Prioritized by **impact × effort** (highest first):
 
-| #   | Item                                                                      | Impact  | Effort  | Category     |
-| --- | ------------------------------------------------------------------------- | ------- | ------- | ------------ |
-| 1   | Commit pending domain dead code removal (-201 lines)                      | High    | Trivial | Dead code    |
-| 2   | Run `go mod vendor` to sync vendor with go.mod                            | High    | Trivial | Infra        |
-| 3   | Consolidate threshold validation (3 → 1)                                  | Medium  | Low     | Type safety  |
-| 4   | Add tests for domain package (Filepath, LineNumber, CloneSeverity)        | Medium  | Low     | Quality      |
-| 5   | Implement CSV output with `encoding/csv`                                  | Medium  | Low     | Feature      |
-| 6   | Fix stale comment in `printer/stats.go:60`                                | Low     | Trivial | Cleanup      |
-| 7   | Unify enum patterns (domain switch → config generic pattern)              | Medium  | Medium  | Architecture |
-| 8   | Restart gopls or clear cache to fix phantom errors                        | Low     | Trivial | DX           |
-| 9   | Archive docs/status/ files older than 30 days                             | Low     | Trivial | Housekeeping |
-| 10  | Refactor `config/config_merge.go` to reduce cyclomatic complexity         | Medium  | Medium  | Quality      |
-| 11  | Split `printer/stats*` files into `printer/stats/` sub-package            | Medium  | Medium  | Architecture |
-| 12  | Update README with semantic detection as default behavior                 | Medium  | Low     | Docs         |
-| 13  | Implement TokenValue type for suffixtree/syntax                           | High    | Medium  | Type safety  |
-| 14  | Split `cmd/run_analysis.go` (447L) into focused files                     | Low     | Low     | Structural   |
-| 15  | Split `detection/todos.go` into TodoDetector + LegacyDetector             | Low     | Low     | Structural   |
-| 16  | Split `config/config.go` (341L) into config + validation                  | Low     | Low     | Structural   |
-| 17  | Type `domain.Options.OutputFormat` as `config.OutputFormat`               | Low     | Low     | Type safety  |
-| 18  | Extract detection mode strings to typed enum (DetectionMode)              | Medium  | Low     | Type safety  |
-| 19  | Add CONTRIBUTING.md section on running tests                              | Low     | Trivial | Docs         |
-| 20  | Fix nolint:funlen directives in cmd/ (4 files)                            | Low     | Medium  | Quality      |
-| 21  | Investigate and document Nix flake → CI integration                       | Medium  | Medium  | Infra        |
-| 22  | Add `fmt` import removal from `domain/helpers.go` (unused after deletion) | Trivial | Trivial | Cleanup      |
-| 23  | Benchmark stats printer performance with large projects                   | Unknown | Medium  | Performance  |
-| 24  | Implement SIMD optimizations (6 TODOs)                                    | Unknown | High    | Performance  |
-| 25  | Investigate `domain/` package purpose — merge or expand                   | Medium  | Medium  | Architecture |
+| #  | Item                                                                      | Impact  | Effort  | Category     |
+| -- | ------------------------------------------------------------------------- | ------- | ------- | ------------ |
+| 1  | Commit pending domain dead code removal (-201 lines)                      | High    | Trivial | Dead code    |
+| 2  | Run `go mod vendor` to sync vendor with go.mod                            | High    | Trivial | Infra        |
+| 3  | Consolidate threshold validation (3 → 1)                                  | Medium  | Low     | Type safety  |
+| 4  | Add tests for domain package (Filepath, LineNumber, CloneSeverity)        | Medium  | Low     | Quality      |
+| 5  | Implement CSV output with `encoding/csv`                                  | Medium  | Low     | Feature      |
+| 6  | Fix stale comment in `printer/stats.go:60`                                | Low     | Trivial | Cleanup      |
+| 7  | Unify enum patterns (domain switch → config generic pattern)              | Medium  | Medium  | Architecture |
+| 8  | Restart gopls or clear cache to fix phantom errors                        | Low     | Trivial | DX           |
+| 9  | Archive docs/status/ files older than 30 days                             | Low     | Trivial | Housekeeping |
+| 10 | Refactor `config/config_merge.go` to reduce cyclomatic complexity         | Medium  | Medium  | Quality      |
+| 11 | Split `printer/stats*` files into `printer/stats/` sub-package            | Medium  | Medium  | Architecture |
+| 12 | Update README with semantic detection as default behavior                 | Medium  | Low     | Docs         |
+| 13 | Implement TokenValue type for suffixtree/syntax                           | High    | Medium  | Type safety  |
+| 14 | Split `cmd/run_analysis.go` (447L) into focused files                     | Low     | Low     | Structural   |
+| 15 | Split `detection/todos.go` into TodoDetector + LegacyDetector             | Low     | Low     | Structural   |
+| 16 | Split `config/config.go` (341L) into config + validation                  | Low     | Low     | Structural   |
+| 17 | Type `domain.Options.OutputFormat` as `config.OutputFormat`               | Low     | Low     | Type safety  |
+| 18 | Extract detection mode strings to typed enum (DetectionMode)              | Medium  | Low     | Type safety  |
+| 19 | Add CONTRIBUTING.md section on running tests                              | Low     | Trivial | Docs         |
+| 20 | Fix nolint:funlen directives in cmd/ (4 files)                            | Low     | Medium  | Quality      |
+| 21 | Investigate and document Nix flake → CI integration                       | Medium  | Medium  | Infra        |
+| 22 | Add `fmt` import removal from `domain/helpers.go` (unused after deletion) | Trivial | Trivial | Cleanup      |
+| 23 | Benchmark stats printer performance with large projects                   | Unknown | Medium  | Performance  |
+| 24 | Implement SIMD optimizations (6 TODOs)                                    | Unknown | High    | Performance  |
+| 25 | Investigate `domain/` package purpose — merge or expand                   | Medium  | Medium  | Architecture |
 
 ---
 

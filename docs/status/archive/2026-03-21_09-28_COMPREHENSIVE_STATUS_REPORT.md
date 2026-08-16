@@ -199,53 +199,53 @@
 
 ### Priority 1-5: Immediate (Today)
 
-| #   | Task                     | Effort | Impact | Why                   |
-| --- | ------------------------ | ------ | ------ | --------------------- |
-| 1   | Tag release v0.2.0       | 5min   | High   | Version current state |
-| 2   | Create GitHub release    | 5min   | High   | Distribution          |
-| 3   | Update CHANGELOG.md      | 10min  | Medium | Documentation         |
-| 4   | Write this status report | 15min  | Medium | Clarity               |
-| 5   | Commit and push          | 5min   | Medium | Persist work          |
+| # | Task                     | Effort | Impact | Why                   |
+| - | ------------------------ | ------ | ------ | --------------------- |
+| 1 | Tag release v0.2.0       | 5min   | High   | Version current state |
+| 2 | Create GitHub release    | 5min   | High   | Distribution          |
+| 3 | Update CHANGELOG.md      | 10min  | Medium | Documentation         |
+| 4 | Write this status report | 15min  | Medium | Clarity               |
+| 5 | Commit and push          | 5min   | Medium | Persist work          |
 
 ### Priority 6-10: This Week
 
-| #   | Task                                     | Effort | Impact | Why            |
-| --- | ---------------------------------------- | ------ | ------ | -------------- |
-| 6   | Migrate int threshold → domain.Threshold | 3h     | High   | Type safety    |
-| 7   | Add SARIF output format                  | 4h     | High   | CI integration |
-| 8   | Create GitHub Actions workflow           | 2h     | High   | CI/CD          |
-| 9   | Add pre-commit hooks                     | 1h     | Medium | Developer UX   |
-| 10  | Fix top 10 phantom type violations       | 2h     | Medium | Error context  |
+| #  | Task                                     | Effort | Impact | Why            |
+| -- | ---------------------------------------- | ------ | ------ | -------------- |
+| 6  | Migrate int threshold → domain.Threshold | 3h     | High   | Type safety    |
+| 7  | Add SARIF output format                  | 4h     | High   | CI integration |
+| 8  | Create GitHub Actions workflow           | 2h     | High   | CI/CD          |
+| 9  | Add pre-commit hooks                     | 1h     | Medium | Developer UX   |
+| 10 | Fix top 10 phantom type violations       | 2h     | Medium | Error context  |
 
 ### Priority 11-15: This Month
 
-| #   | Task                          | Effort | Impact | Why             |
-| --- | ----------------------------- | ------ | ------ | --------------- |
-| 11  | Split domain/coverage_test.go | 4h     | Medium | Maintainability |
-| 12  | Split pkg/artdupl/detector.go | 4h     | Medium | Maintainability |
-| 13  | Increase test coverage to 85% | 8h     | High   | Quality         |
-| 14  | Create ADRs                   | 4h     | Medium | Documentation   |
-| 15  | Add fuzzing tests             | 4h     | Medium | Robustness      |
+| #  | Task                          | Effort | Impact | Why             |
+| -- | ----------------------------- | ------ | ------ | --------------- |
+| 11 | Split domain/coverage_test.go | 4h     | Medium | Maintainability |
+| 12 | Split pkg/artdupl/detector.go | 4h     | Medium | Maintainability |
+| 13 | Increase test coverage to 85% | 8h     | High   | Quality         |
+| 14 | Create ADRs                   | 4h     | Medium | Documentation   |
+| 15 | Add fuzzing tests             | 4h     | Medium | Robustness      |
 
 ### Priority 16-20: Next Quarter
 
-| #   | Task                    | Effort | Impact | Why           |
-| --- | ----------------------- | ------ | ------ | ------------- |
-| 16  | Watch mode MVP          | 8h     | Medium | Feature       |
-| 17  | Web dashboard MVP       | 20h    | Medium | Visualization |
-| 18  | ARM64 SIMD optimization | 8h     | Medium | Performance   |
-| 19  | VSCode extension        | 20h    | High   | Developer UX  |
-| 20  | Cloud/CI templates      | 20h    | Medium | Adoption      |
+| #  | Task                    | Effort | Impact | Why           |
+| -- | ----------------------- | ------ | ------ | ------------- |
+| 16 | Watch mode MVP          | 8h     | Medium | Feature       |
+| 17 | Web dashboard MVP       | 20h    | Medium | Visualization |
+| 18 | ARM64 SIMD optimization | 8h     | Medium | Performance   |
+| 19 | VSCode extension        | 20h    | High   | Developer UX  |
+| 20 | Cloud/CI templates      | 20h    | Medium | Adoption      |
 
 ### Priority 21-25: Future
 
-| #   | Task                | Effort | Impact | Why           |
-| --- | ------------------- | ------ | ------ | ------------- |
-| 21  | Python support      | 40h    | High   | Expansion     |
-| 22  | TypeScript support  | 40h    | High   | Expansion     |
-| 23  | Enterprise features | 40h    | High   | Market        |
-| 24  | Plugin architecture | 60h    | High   | Extensibility |
-| 25  | ML false positive   | 40h    | Medium | Quality       |
+| #  | Task                | Effort | Impact | Why           |
+| -- | ------------------- | ------ | ------ | ------------- |
+| 21 | Python support      | 40h    | High   | Expansion     |
+| 22 | TypeScript support  | 40h    | High   | Expansion     |
+| 23 | Enterprise features | 40h    | High   | Market        |
+| 24 | Plugin architecture | 60h    | High   | Extensibility |
+| 25 | ML false positive   | 40h    | Medium | Quality       |
 
 ---
 

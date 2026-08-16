@@ -2820,7 +2820,6 @@ threshold, _ := domain.NewThreshold(validThreshold)
 ```
 
 ````
-
 **Benefits:**
 - ✅ Clear guidance for contributors
 - ✅ Prevents future type safety issues
@@ -3065,7 +3064,6 @@ func (p *StringInternPool) GetMetrics() StringPoolMetrics {
 - **Large codebases (>10k files):** Pool essential
 
 ````
-
 **Benefits:**
 - ✅ Clear understanding of string pooling benefits
 - ✅ Prevents overuse (unnecessary complexity)
@@ -3829,7 +3827,6 @@ Type-safe filepath with validation.
 ... (document all 15+ domain types)
 
 ````
-
 **Benefits:**
 - Better API documentation
 - Architecture clarity

@@ -2,7 +2,7 @@
 
 ### 🎯 MISSION ACCOMPLISHED!
 
-**Request:** Run date (cli), write full status report at docs/status/<YYYY-MM-DD_HH-MM_WELL-NAMED>.md  
+**Request:** Run date (cli), write full status report at docs/status/<YYYY-MM-DD_HH-MM_WELL-NAMED>.md\
 **Completed:** December 15, 2025, 13:38 CET
 
 ### 📁 DELIVERABLE CREATED

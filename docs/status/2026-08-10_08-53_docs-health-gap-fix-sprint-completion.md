@@ -17,31 +17,31 @@ The docs-health gap-fix sprint had 14 tasks across 4 Pareto layers. Tasks 1-9 we
 
 These changes from the prior session made it into committed code and are verified present at HEAD:
 
-| # | Task | File | Verification |
-|---|------|------|--------------|
-| 1-2 | ACTIONABILITY_PATTERNS.md — 4 new patterns added, count 25→29 | `docs/ACTIONABILITY_PATTERNS.md` | `grep -c "29 pattern"` → 2 matches |
-| 3 | AGENTS.md pattern bullet shortened to concise summary + link | `AGENTS.md` | `grep -c "guard-clause"` → 1 (concise version) |
-| 4 | CHANGELOG.md — removed wrong "See ADR-0020" reference | `CHANGELOG.md` | `grep -c "ADR-0020"` → 0 |
-| 6 | `.gitignore` — added `global.out.css` | `.gitignore` | Present at HEAD |
-| 7 | HOW_TO_USE.md — `--suggest-generics` section added | `HOW_TO_USE.md` | `grep -c "suggest-generics"` → 6 matches |
-| 8 | HOW_TO_USE.md — `--min-tokens` section added | `HOW_TO_USE.md` | Present at HEAD |
-| 9 | SDK_DESIGN.md — `Options.SuggestGenerics` added | `SDK_DESIGN.md` | `grep -c "SuggestGenerics"` → 1 |
+| #   | Task                                                          | File                             | Verification                                   |
+| --- | ------------------------------------------------------------- | -------------------------------- | ---------------------------------------------- |
+| 1-2 | ACTIONABILITY_PATTERNS.md — 4 new patterns added, count 25→29 | `docs/ACTIONABILITY_PATTERNS.md` | `grep -c "29 pattern"` → 2 matches             |
+| 3   | AGENTS.md pattern bullet shortened to concise summary + link  | `AGENTS.md`                      | `grep -c "guard-clause"` → 1 (concise version) |
+| 4   | CHANGELOG.md — removed wrong "See ADR-0020" reference         | `CHANGELOG.md`                   | `grep -c "ADR-0020"` → 0                       |
+| 6   | `.gitignore` — added `global.out.css`                         | `.gitignore`                     | Present at HEAD                                |
+| 7   | HOW_TO_USE.md — `--suggest-generics` section added            | `HOW_TO_USE.md`                  | `grep -c "suggest-generics"` → 6 matches       |
+| 8   | HOW_TO_USE.md — `--min-tokens` section added                  | `HOW_TO_USE.md`                  | Present at HEAD                                |
+| 9   | SDK_DESIGN.md — `Options.SuggestGenerics` added               | `SDK_DESIGN.md`                  | `grep -c "SuggestGenerics"` → 1                |
 
 All 7 items are in committed history across commits `493eb006` and `cc01dffb`.
 
 ## b) PARTIALLY DONE (Staged but NOT committed)
 
-| # | Task | File | Status |
-|---|------|------|--------|
-| 10 | Add `TypeAware` + `SuggestGenerics` rows to FEATURES.md SDK table | `FEATURES.md` | **Staged** — 2 rows added after `Custom FileReader` |
-| 11 | Remove tagliatelle item from TODO_LIST.md HIGH priority section | `TODO_LIST.md` | **Staged** — entire subsection deleted |
-| 12 | Build + test verification | — | **PASSED** — `go build ./...` clean, `go test ./...` 28/28 packages pass |
-| 13 | Lint verification | — | **PASSED** — golangci-lint has only 2 pre-existing warnings (nestif, varnamelen in untouched files). Tagliatelle's 50 violations eliminated. |
+| #  | Task                                                              | File           | Status                                                                                                                                       |
+| -- | ----------------------------------------------------------------- | -------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| 10 | Add `TypeAware` + `SuggestGenerics` rows to FEATURES.md SDK table | `FEATURES.md`  | **Staged** — 2 rows added after `Custom FileReader`                                                                                          |
+| 11 | Remove tagliatelle item from TODO_LIST.md HIGH priority section   | `TODO_LIST.md` | **Staged** — entire subsection deleted                                                                                                       |
+| 12 | Build + test verification                                         | —              | **PASSED** — `go build ./...` clean, `go test ./...` 28/28 packages pass                                                                     |
+| 13 | Lint verification                                                 | —              | **PASSED** — golangci-lint has only 2 pre-existing warnings (nestif, varnamelen in untouched files). Tagliatelle's 50 violations eliminated. |
 
 ## c) NOT STARTED
 
-| Task | Why |
-|------|-----|
+| Task     | Why                                                               |
+| -------- | ----------------------------------------------------------------- |
 | Git push | Commit hasn't happened yet; push is meaningless without a commit. |
 
 ## d) TOTALLY FUCKED UP
@@ -51,6 +51,7 @@ All 7 items are in committed history across commits `493eb006` and `cc01dffb`.
 **What happened:** My staged change removes `- tagliatelle` from `.golangci.yml`. The pre-commit hook (BuildFlow) runs repair steps including `dprint-format` and `nix-fmt`. After the hook runs, the working tree `.golangci.yml` **has tagliatelle re-added** — the exact line I removed is back.
 
 **Evidence:**
+
 ```
 $ git diff -- .golangci.yml      # unstaged (hook's working tree change)
 +        - tagliatelle
@@ -166,19 +167,19 @@ The pre-commit hook's `templ-fmt` step reformatted this file (22 lines). It's no
 
 ## Session Metrics
 
-| Metric | Value |
-|--------|-------|
-| Tasks planned | 14 |
-| Tasks fully committed | 7 (prior session) |
-| Tasks staged (uncommitted) | 3 (this session) |
-| Tasks blocked | 1 (tagliatelle hook conflict) |
-| Tasks not started | 1 (push) |
-| Build | PASS |
-| Tests | 28/28 PASS |
-| Lint | 2 pre-existing warnings (not from this session) |
-| Pre-commit hook | FAIL (dprint + tailwindcss binaries missing) |
-| Files committed | 0 (this session) |
-| Files staged | 3 |
+| Metric                     | Value                                                              |
+| -------------------------- | ------------------------------------------------------------------ |
+| Tasks planned              | 14                                                                 |
+| Tasks fully committed      | 7 (prior session)                                                  |
+| Tasks staged (uncommitted) | 3 (this session)                                                   |
+| Tasks blocked              | 1 (tagliatelle hook conflict)                                      |
+| Tasks not started          | 1 (push)                                                           |
+| Build                      | PASS                                                               |
+| Tests                      | 28/28 PASS                                                         |
+| Lint                       | 2 pre-existing warnings (not from this session)                    |
+| Pre-commit hook            | FAIL (dprint + tailwindcss binaries missing)                       |
+| Files committed            | 0 (this session)                                                   |
+| Files staged               | 3                                                                  |
 | Files contaminated by hook | 2 (.golangci.yml re-adds tagliatelle, report_templ.go reformatted) |
 
 ---

@@ -424,47 +424,47 @@ go mod graph | grep "domain.*types"
 
 ## HIGH IMPACT, LOW EFFORT (Do These First):
 
-| #   | Task                                  | Effort  | Impact | Phase | Status          |
-| --- | ------------------------------------- | ------- | ------ | ----- | --------------- |
-| 1   | **Add tests for domain types**        | 2 hours | HIGH   | 1     | 13% done (1/15) |
-| 2   | **Check for circular dependencies**   | 5 min   | HIGH   | 0     | ✅ Complete     |
-| 3   | **Update Clone.ID to CloneID**        | 30 min  | HIGH   | 2     | ⏸️ Pending      |
-| 4   | **Update Clone.Filename to Filepath** | 30 min  | HIGH   | 2     | ⏸️ Pending      |
-| 5   | **Update Clone.IsValid() method**     | 1 hour  | HIGH   | 3     | ⏸️ Pending      |
+| # | Task                                  | Effort  | Impact | Phase | Status          |
+| - | ------------------------------------- | ------- | ------ | ----- | --------------- |
+| 1 | **Add tests for domain types**        | 2 hours | HIGH   | 1     | 13% done (1/15) |
+| 2 | **Check for circular dependencies**   | 5 min   | HIGH   | 0     | ✅ Complete     |
+| 3 | **Update Clone.ID to CloneID**        | 30 min  | HIGH   | 2     | ⏸️ Pending       |
+| 4 | **Update Clone.Filename to Filepath** | 30 min  | HIGH   | 2     | ⏸️ Pending       |
+| 5 | **Update Clone.IsValid() method**     | 1 hour  | HIGH   | 3     | ⏸️ Pending       |
 
 ## HIGH IMPACT, MEDIUM EFFORT (Do These Next):
 
-| #   | Task                              | Effort  | Impact | Phase | Status     |
-| --- | --------------------------------- | ------- | ------ | ----- | ---------- |
-| 6   | **Update Clone line numbers**     | 45 min  | HIGH   | 2     | ⏸️ Pending |
-| 7   | **Update Clone positions**        | 30 min  | HIGH   | 2     | ⏸️ Pending |
-| 8   | **Update Clone remaining fields** | 30 min  | HIGH   | 2     | ⏸️ Pending |
-| 9   | **Update NodeToClone function**   | 30 min  | HIGH   | 2     | ⏸️ Pending |
-| 10  | **Update printer package**        | 2 hours | HIGH   | 4     | ⏸️ Pending |
+| #  | Task                              | Effort  | Impact | Phase | Status    |
+| -- | --------------------------------- | ------- | ------ | ----- | --------- |
+| 6  | **Update Clone line numbers**     | 45 min  | HIGH   | 2     | ⏸️ Pending |
+| 7  | **Update Clone positions**        | 30 min  | HIGH   | 2     | ⏸️ Pending |
+| 8  | **Update Clone remaining fields** | 30 min  | HIGH   | 2     | ⏸️ Pending |
+| 9  | **Update NodeToClone function**   | 30 min  | HIGH   | 2     | ⏸️ Pending |
+| 10 | **Update printer package**        | 2 hours | HIGH   | 4     | ⏸️ Pending |
 
 ## MEDIUM IMPACT, LOW EFFORT (Do These After):
 
-| #   | Task                             | Effort | Impact | Phase | Status      |
-| --- | -------------------------------- | ------ | ------ | ----- | ----------- |
-| 11  | **Check existing validation**    | 10 min | MEDIUM | 0     | ✅ Complete |
-| 12  | **Check existing value objects** | 5 min  | MEDIUM | 0     | ✅ Complete |
-| 13  | **Update detection package**     | 1 hour | MEDIUM | 5     | ⏸️ Pending  |
-| 14  | **Update CLI/adapters**          | 1 hour | MEDIUM | 6     | ⏸️ Pending  |
-| 15  | **Run full test suite**          | 1 hour | MEDIUM | 7     | ⏸️ Pending  |
+| #  | Task                             | Effort | Impact | Phase | Status      |
+| -- | -------------------------------- | ------ | ------ | ----- | ----------- |
+| 11 | **Check existing validation**    | 10 min | MEDIUM | 0     | ✅ Complete |
+| 12 | **Check existing value objects** | 5 min  | MEDIUM | 0     | ✅ Complete |
+| 13 | **Update detection package**     | 1 hour | MEDIUM | 5     | ⏸️ Pending   |
+| 14 | **Update CLI/adapters**          | 1 hour | MEDIUM | 6     | ⏸️ Pending   |
+| 15 | **Run full test suite**          | 1 hour | MEDIUM | 7     | ⏸️ Pending   |
 
 ## MEDIUM IMPACT, MEDIUM EFFORT (Do These Later):
 
-| #   | Task                               | Effort | Impact | Phase | Status     |
-| --- | ---------------------------------- | ------ | ------ | ----- | ---------- |
-| 16  | **Update other IsValid() methods** | 1 hour | MEDIUM | 3     | ⏸️ Pending |
-| 17  | **Update examples**                | 45 min | MEDIUM | 8     | ⏸️ Pending |
-| 18  | **Update documentation**           | 45 min | MEDIUM | 8     | ⏸️ Pending |
+| #  | Task                               | Effort | Impact | Phase | Status    |
+| -- | ---------------------------------- | ------ | ------ | ----- | --------- |
+| 16 | **Update other IsValid() methods** | 1 hour | MEDIUM | 3     | ⏸️ Pending |
+| 17 | **Update examples**                | 45 min | MEDIUM | 8     | ⏸️ Pending |
+| 18 | **Update documentation**           | 45 min | MEDIUM | 8     | ⏸️ Pending |
 
 ## LOW IMPACT, LOW EFFORT (Do These Last):
 
-| #   | Task                            | Effort  | Impact | Phase | Status     |
-| --- | ------------------------------- | ------- | ------ | ----- | ---------- |
-| 19  | **Research external libraries** | 2 hours | LOW    | 9     | ⏸️ Pending |
+| #  | Task                            | Effort  | Impact | Phase | Status    |
+| -- | ------------------------------- | ------- | ------ | ----- | --------- |
+| 19 | **Research external libraries** | 2 hours | LOW    | 9     | ⏸️ Pending |
 
 ---
 

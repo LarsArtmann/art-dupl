@@ -120,48 +120,48 @@ The art-dupl project is in **excellent health**. All 31 test packages pass, buil
 
 ### Priority 1: CRITICAL (Do Immediately)
 
-| #   | Task                                  | Impact | Effort  |
-| --- | ------------------------------------- | ------ | ------- |
-| 1   | Fix golangci-lint v1/v2 mismatch      | HIGH   | LOW     |
-| 2   | Remove unused assertMapFloat function | LOW    | TRIVIAL |
-| 3   | Add t.Helper() to simd test helper    | LOW    | TRIVIAL |
+| # | Task                                  | Impact | Effort  |
+| - | ------------------------------------- | ------ | ------- |
+| 1 | Fix golangci-lint v1/v2 mismatch      | HIGH   | LOW     |
+| 2 | Remove unused assertMapFloat function | LOW    | TRIVIAL |
+| 3 | Add t.Helper() to simd test helper    | LOW    | TRIVIAL |
 
 ### Priority 2: HIGH (Do This Week)
 
-| #   | Task                                | Impact | Effort  |
-| --- | ----------------------------------- | ------ | ------- |
-| 4   | Improve printer coverage to 80%+    | MEDIUM | MEDIUM  |
-| 5   | Improve syntax coverage to 80%+     | MEDIUM | MEDIUM  |
-| 6   | Add t.Parallel() to subtests        | LOW    | TRIVIAL |
-| 7   | Replace os.MkdirTemp with t.TempDir | LOW    | TRIVIAL |
+| # | Task                                | Impact | Effort  |
+| - | ----------------------------------- | ------ | ------- |
+| 4 | Improve printer coverage to 80%+    | MEDIUM | MEDIUM  |
+| 5 | Improve syntax coverage to 80%+     | MEDIUM | MEDIUM  |
+| 6 | Add t.Parallel() to subtests        | LOW    | TRIVIAL |
+| 7 | Replace os.MkdirTemp with t.TempDir | LOW    | TRIVIAL |
 
 ### Priority 3: MEDIUM (Do This Month)
 
-| #   | Task                                | Impact | Effort |
-| --- | ----------------------------------- | ------ | ------ |
-| 8   | Improve bdd coverage to 80%+        | LOW    | MEDIUM |
-| 9   | Improve cli coverage to 80%+        | LOW    | MEDIUM |
-| 10  | Improve cmd coverage to 80%+        | LOW    | MEDIUM |
-| 11  | Address syntax.go TYPE SAFETY TODO  | MEDIUM | HIGH   |
-| 12  | Standardize error wrapping patterns | LOW    | MEDIUM |
+| #  | Task                                | Impact | Effort |
+| -- | ----------------------------------- | ------ | ------ |
+| 8  | Improve bdd coverage to 80%+        | LOW    | MEDIUM |
+| 9  | Improve cli coverage to 80%+        | LOW    | MEDIUM |
+| 10 | Improve cmd coverage to 80%+        | LOW    | MEDIUM |
+| 11 | Address syntax.go TYPE SAFETY TODO  | MEDIUM | HIGH   |
+| 12 | Standardize error wrapping patterns | LOW    | MEDIUM |
 
 ### Priority 4: LOW (Nice to Have)
 
-| #   | Task                                | Impact | Effort  |
-| --- | ----------------------------------- | ------ | ------- |
-| 13  | Add performance benchmarking suite  | MEDIUM | HIGH    |
-| 14  | Implement ARM64 SIMD when available | MEDIUM | MEDIUM  |
-| 15  | Create generic StringID[T] type     | LOW    | HIGH    |
-| 16  | Extract shared test helpers         | LOW    | MEDIUM  |
-| 17  | Add codecov.io integration          | LOW    | TRIVIAL |
-| 18  | Create contribution guidelines      | LOW    | LOW     |
-| 19  | Add more code examples              | LOW    | LOW     |
-| 20  | Improve README with badges          | LOW    | TRIVIAL |
-| 21  | Add pre-commit hooks                | LOW    | TRIVIAL |
-| 22  | Create release automation           | LOW    | MEDIUM  |
-| 23  | Add changelog generation            | LOW    | LOW     |
-| 24  | Improve CI/CD pipeline              | LOW    | MEDIUM  |
-| 25  | Add security scanning               | LOW    | MEDIUM  |
+| #  | Task                                | Impact | Effort  |
+| -- | ----------------------------------- | ------ | ------- |
+| 13 | Add performance benchmarking suite  | MEDIUM | HIGH    |
+| 14 | Implement ARM64 SIMD when available | MEDIUM | MEDIUM  |
+| 15 | Create generic StringID[T] type     | LOW    | HIGH    |
+| 16 | Extract shared test helpers         | LOW    | MEDIUM  |
+| 17 | Add codecov.io integration          | LOW    | TRIVIAL |
+| 18 | Create contribution guidelines      | LOW    | LOW     |
+| 19 | Add more code examples              | LOW    | LOW     |
+| 20 | Improve README with badges          | LOW    | TRIVIAL |
+| 21 | Add pre-commit hooks                | LOW    | TRIVIAL |
+| 22 | Create release automation           | LOW    | MEDIUM  |
+| 23 | Add changelog generation            | LOW    | LOW     |
+| 24 | Improve CI/CD pipeline              | LOW    | MEDIUM  |
+| 25 | Add security scanning               | LOW    | MEDIUM  |
 
 ---
 

@@ -1,8 +1,8 @@
 # Comprehensive Executive Status Report
 
-**Date:** 2026-03-20 21:54  
-**Branch:** fork  
-**Session:** Architectural Refactoring Sprint  
+**Date:** 2026-03-20 21:54\
+**Branch:** fork\
+**Session:** Architectural Refactoring Sprint\
 **Status:** 🟢 ON TRACK
 
 ---
@@ -67,8 +67,8 @@
 
 ### 1. SemanticHashEnabled DI Migration (BLOCKED)
 
-**Status:** ⚠️ ATTEMPTED → REVERTED  
-**Effort:** 2 hours  
+**Status:** ⚠️ ATTEMPTED → REVERTED\
+**Effort:** 2 hours\
 **Blockers:** 68 compiler errors
 
 **What Was Done:**
@@ -90,7 +90,7 @@
 
 ### 2. Flag Parsing Deduplication (IDENTIFIED)
 
-**Status:** 📋 IDENTIFIED, NOT STARTED  
+**Status:** 📋 IDENTIFIED, NOT STARTED\
 **Evidence:** ~130 lines of near-identical code between `run_flags.go` and `stats.go`
 
 **Duplicate Blocks:** 19 similar patterns found
@@ -103,13 +103,13 @@
 
 ### Tier 1: Critical Architecture (Not Started)
 
-| #   | Task                             | Effort | Impact | Status         |
-| --- | -------------------------------- | ------ | ------ | -------------- |
-| 1   | Fix DetectionMethod split brain  | 20min  | High   | 📝 NOT STARTED |
-| 2   | Migrate Threshold to domain type | 2h     | High   | 📝 NOT STARTED |
-| 3   | Add cmd/run_crawl tests          | 1h     | High   | 📝 NOT STARTED |
-| 4   | Consolidate test helpers         | 1h     | Medium | 📝 NOT STARTED |
-| 5   | Remove unused domain types       | 30min  | Low    | 📝 NOT STARTED |
+| # | Task                             | Effort | Impact | Status         |
+| - | -------------------------------- | ------ | ------ | -------------- |
+| 1 | Fix DetectionMethod split brain  | 20min  | High   | 📝 NOT STARTED |
+| 2 | Migrate Threshold to domain type | 2h     | High   | 📝 NOT STARTED |
+| 3 | Add cmd/run_crawl tests          | 1h     | High   | 📝 NOT STARTED |
+| 4 | Consolidate test helpers         | 1h     | Medium | 📝 NOT STARTED |
+| 5 | Remove unused domain types       | 30min  | Low    | 📝 NOT STARTED |
 
 ### Tier 2: Linter Issues (Not Started)
 
@@ -135,7 +135,7 @@
 
 ## d) TOTALLY FUCKED UP 🚨
 
-**None currently.**  
+**None currently.**\
 All changes have been:
 
 - Committed
@@ -311,7 +311,7 @@ All changes have been:
 
 ---
 
-**Report Generated:** 2026-03-20 21:54  
-**By:** Crush AI Assistant  
-**Branch:** fork  
+**Report Generated:** 2026-03-20 21:54\
+**By:** Crush AI Assistant\
+**Branch:** fork\
 **Status:** Ready for next phase

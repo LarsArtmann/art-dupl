@@ -1,7 +1,7 @@
 # Semantic Fingerprinting Implementation Plan
 
-**Created**: 2026-02-15 03:37  
-**Total Tasks**: 40  
+**Created**: 2026-02-15 03:37\
+**Total Tasks**: 40\
 **Est. Total Time**: ~6 hours (40 tasks × avg 9 min)
 
 ---
@@ -12,52 +12,52 @@ Sorted by: **Impact → Customer Value → Effort (ascending)**
 
 | #                                      | Task                                               | Phase | Impact | Effort | Time | Dependencies |
 | -------------------------------------- | -------------------------------------------------- | ----- | ------ | ------ | ---- | ------------ |
-| **CORE IMPLEMENTATION (Must Have)**    |
+| **CORE IMPLEMENTATION (Must Have)**    |                                                    |       |        |        |      |              |
 | 1                                      | Analyze transform.go for identifier capture points | 1     | HIGH   | LOW    | 8m   | -            |
 | 2                                      | Design identifier hash function (avoid collisions) | 1     | HIGH   | LOW    | 10m  | 1            |
 | 3                                      | Create identifier hash utility function            | 1     | HIGH   | LOW    | 8m   | 2            |
 | 4                                      | Modify SelectorExpr case to include selector name  | 1     | HIGH   | LOW    | 8m   | 3            |
 | 5                                      | Modify CallExpr case to include function name      | 1     | HIGH   | LOW    | 8m   | 3            |
 | 6                                      | Modify Ident case to include identifier name       | 1     | HIGH   | LOW    | 8m   | 3            |
-| **POST-MATCH FILTERING (Should Have)** |
+| **POST-MATCH FILTERING (Should Have)** |                                                    |       |        |        |      |              |
 | 7                                      | Add semantic filtering types to semantic_filter.go | 2     | HIGH   | MED    | 10m  | -            |
 | 8                                      | Implement extractMethodNames helper                | 2     | HIGH   | LOW    | 10m  | 7            |
 | 9                                      | Implement extractIdentifiers helper                | 2     | HIGH   | LOW    | 8m   | 7            |
 | 10                                     | Implement intersection helper for string slices    | 2     | MED    | LOW    | 5m   | -            |
 | 11                                     | Implement IsValidDuplicate with generic filtering  | 2     | HIGH   | MED    | 12m  | 8,9,10       |
-| **CONFIGURATION (Must Have)**          |
+| **CONFIGURATION (Must Have)**          |                                                    |       |        |        |      |              |
 | 12                                     | Add SemanticThreshold field to Config              | 3     | HIGH   | LOW    | 5m   | -            |
 | 13                                     | Add SemanticEnabled convenience field              | 3     | MED    | LOW    | 3m   | 12           |
 | 14                                     | Update DefaultConfig() with default (0.0)          | 3     | HIGH   | LOW    | 3m   | 12           |
 | 15                                     | Add SemanticThreshold JSON validation              | 3     | HIGH   | LOW    | 5m   | 12           |
 | 16                                     | Update ValidateConfig() for range check            | 3     | HIGH   | LOW    | 5m   | 15           |
-| **CLI INTEGRATION (Must Have)**        |
+| **CLI INTEGRATION (Must Have)**        |                                                    |       |        |        |      |              |
 | 17                                     | Add --semantic-threshold CLI flag                  | 3     | HIGH   | LOW    | 8m   | 12           |
 | 18                                     | Wire semantic config to detector pipeline          | 3     | HIGH   | MED    | 10m  | 11,16        |
 | 19                                     | Integrate SemanticFilter into FindSyntaxUnits()    | 3     | HIGH   | MED    | 12m  | 11,18        |
-| **LITERAL HANDLING (Optional)**        |
+| **LITERAL HANDLING (Optional)**        |                                                    |       |        |        |      |              |
 | 20                                     | Modify BasicLit case for literal value hash        | 4     | MED    | MED    | 10m  | 3            |
-| **UNIT TESTS (Must Have)**             |
+| **UNIT TESTS (Must Have)**             |                                                    |       |        |        |      |              |
 | 21                                     | Write unit test for identifier hash function       | 5     | HIGH   | LOW    | 8m   | 3            |
 | 22                                     | Write unit test for extractMethodNames             | 5     | HIGH   | LOW    | 8m   | 8            |
 | 23                                     | Write unit test for IsValidDuplicate               | 5     | HIGH   | MED    | 10m  | 11           |
-| **INTEGRATION TESTS (Must Have)**      |
+| **INTEGRATION TESTS (Must Have)**      |                                                    |       |        |        |      |              |
 | 24                                     | Create test fixture: Ginkgo different methods      | 5     | HIGH   | LOW    | 8m   | -            |
 | 25                                     | Create test fixture: Renamed variables             | 5     | MED    | LOW    | 8m   | -            |
 | 26                                     | Write integration test: semantic disabled          | 5     | HIGH   | LOW    | 8m   | 24           |
 | 27                                     | Write integration test: semantic at 0.8            | 5     | HIGH   | MED    | 10m  | 24,26        |
 | 28                                     | Write integration test: semantic at 1.0            | 5     | MED    | LOW    | 8m   | 24,26        |
-| **PERFORMANCE (Should Have)**          |
+| **PERFORMANCE (Should Have)**          |                                                    |       |        |        |      |              |
 | 29                                     | Add benchmark for identifier hashing               | 6     | MED    | LOW    | 8m   | 6            |
 | 30                                     | Add benchmark for semantic filtering               | 6     | MED    | LOW    | 8m   | 11           |
 | 31                                     | Profile memory impact                              | 6     | MED    | MED    | 12m  | 29,30        |
 | 32                                     | Profile CPU impact                                 | 6     | MED    | MED    | 12m  | 29,30        |
-| **DOCUMENTATION (Should Have)**        |
+| **DOCUMENTATION (Should Have)**        |                                                    |       |        |        |      |              |
 | 33                                     | Update README with semantic filtering              | 7     | MED    | LOW    | 10m  | -            |
 | 34                                     | Update HOW_TO_USE with examples                    | 7     | MED    | LOW    | 10m  | -            |
 | 35                                     | Add section to FEATURES.md                         | 7     | MED    | LOW    | 8m   | -            |
 | 36                                     | Update status report with progress                 | 7     | LOW    | LOW    | 5m   | -            |
-| **VALIDATION (Must Have)**             |
+| **VALIDATION (Must Have)**             |                                                    |       |        |        |      |              |
 | 37                                     | Run full test suite for regressions                | 8     | HIGH   | LOW    | 10m  | ALL          |
 | 38                                     | Test on real-world codebase (BuildFlow)            | 8     | HIGH   | MED    | 12m  | 37           |
 | 39                                     | Tune generic method list based on results          | 8     | MED    | MED    | 10m  | 38           |

@@ -19,12 +19,12 @@ All tests green. All vet clean. Printer coverage: 76.7%.
 
 ### New AST Pattern Detectors (`printer/actionability.go`)
 
-| #   | Pattern Detector        | AST Signals Used                                                                                                                  | Report Patterns Covered                                                 |
-| --- | ----------------------- | --------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
-| 1   | `isTestDataFilePair`    | Node `Filename` field, path component analysis for `testdata/`                                                                    | Pattern 3 (golden/input file pairs)                                     |
-| 2   | `isTableDrivenTestBody` | Root node `RangeStmt` + child `CallExpr(SelectorExpr{Name:"Run"})` in `_test.go`                                                  | Pattern 1 (table-driven test bodies)                                    |
-| 3   | `isTestScaffolding`     | `CallExpr(SelectorExpr{Name:"TempDir"})` + assertion calls (`Expect`, `NotTo`, `Equal`, `HaveLen`, `BeEmpty`, etc.) in `_test.go` | Patterns 2, 4, 6 (Ginkgo/standard test boilerplate)                     |
-| 4   | `isDataDominated`       | Ratio of `BasicLit` + `KeyValueExpr` nodes across the full tree; triggers at >=60%                                                | Patterns 5, 7, 8 (struct init arrays, config blocks, builder callbacks) |
+| # | Pattern Detector        | AST Signals Used                                                                                                                  | Report Patterns Covered                                                 |
+| - | ----------------------- | --------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| 1 | `isTestDataFilePair`    | Node `Filename` field, path component analysis for `testdata/`                                                                    | Pattern 3 (golden/input file pairs)                                     |
+| 2 | `isTableDrivenTestBody` | Root node `RangeStmt` + child `CallExpr(SelectorExpr{Name:"Run"})` in `_test.go`                                                  | Pattern 1 (table-driven test bodies)                                    |
+| 3 | `isTestScaffolding`     | `CallExpr(SelectorExpr{Name:"TempDir"})` + assertion calls (`Expect`, `NotTo`, `Equal`, `HaveLen`, `BeEmpty`, etc.) in `_test.go` | Patterns 2, 4, 6 (Ginkgo/standard test boilerplate)                     |
+| 4 | `isDataDominated`       | Ratio of `BasicLit` + `KeyValueExpr` nodes across the full tree; triggers at >=60%                                                | Patterns 5, 7, 8 (struct init arrays, config blocks, builder callbacks) |
 
 ### Pattern Label System
 
@@ -127,53 +127,53 @@ All tests pass. All vet clean. Build green. No regressions.
 
 ### Tier 1: High Impact, Directly Related (False-Positive Elimination)
 
-| #   | Task                                                                                                                                                   | Impact   | Effort |
-| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------ | -------- | ------ |
-| 1   | **Validate new patterns against real projects** — Run `art-dupl -t 45 --semantic --rich-text` on 5+ projects, compare before/after false-positive rate | Critical | 1hr    |
-| 2   | **Add BDD end-to-end tests** — Parse real Go files with table-driven tests, Ginkgo patterns, testdata fixtures. Verify full pipeline                   | High     | 2hr    |
-| 3   | **CallExpr callee semantic hashing** — Hash `CallExpr.Fun` name in semantic mode. Eliminates cross-function test pattern matches                       | High     | 3hr    |
-| 4   | **Extract assertion name registry** — Replace switch in `walkForTestScaffoldingSignals` with extensible map                                            | Medium   | 30min  |
-| 5   | **Add `--exclude-testdata` and `--exclude-tests` CLI flags** — Pre-detection filtering for users who want to skip test files entirely                  | Medium   | 1hr    |
-| 6   | **Config file support** (`.art-dupl.yaml`) — Project-specific exclusions, thresholds, pattern overrides                                                | High     | 4hr    |
+| # | Task                                                                                                                                                   | Impact   | Effort |
+| - | ------------------------------------------------------------------------------------------------------------------------------------------------------ | -------- | ------ |
+| 1 | **Validate new patterns against real projects** — Run `art-dupl -t 45 --semantic --rich-text` on 5+ projects, compare before/after false-positive rate | Critical | 1hr    |
+| 2 | **Add BDD end-to-end tests** — Parse real Go files with table-driven tests, Ginkgo patterns, testdata fixtures. Verify full pipeline                   | High     | 2hr    |
+| 3 | **CallExpr callee semantic hashing** — Hash `CallExpr.Fun` name in semantic mode. Eliminates cross-function test pattern matches                       | High     | 3hr    |
+| 4 | **Extract assertion name registry** — Replace switch in `walkForTestScaffoldingSignals` with extensible map                                            | Medium   | 30min  |
+| 5 | **Add `--exclude-testdata` and `--exclude-tests` CLI flags** — Pre-detection filtering for users who want to skip test files entirely                  | Medium   | 1hr    |
+| 6 | **Config file support** (`.art-dupl.yaml`) — Project-specific exclusions, thresholds, pattern overrides                                                | High     | 4hr    |
 
 ### Tier 2: Architecture Improvements
 
-| #   | Task                                                                                                                          | Impact    | Effort |
-| --- | ----------------------------------------------------------------------------------------------------------------------------- | --------- | ------ |
-| 7   | **ProcessedClone DTO migration** — Decouple printers from `syntax.Node`. 111 test call sites. #1 HIGH in TODO_LIST.md         | Very High | 8hr    |
-| 8   | **Clone type consolidation** — Merge `printer.clone`, `pkg/artdupl.Clone`, `printer.CloneGroup` into unified type             | High      | 4hr    |
-| 9   | **Thread PatternLabel into ClassifyClone** — Make per-clone classification pattern-aware, not just group-level                | Medium    | 2hr    |
-| 10  | **Test threshold multiplier** — Auto-raise threshold for test-to-test clones at detection time                                | Medium    | 1hr    |
-| 11  | **Refactoring suggestion classification** — Classify recommended fix type: extract helper, table-driven, acceptable, data-dup | Medium    | 2hr    |
+| #  | Task                                                                                                                          | Impact    | Effort |
+| -- | ----------------------------------------------------------------------------------------------------------------------------- | --------- | ------ |
+| 7  | **ProcessedClone DTO migration** — Decouple printers from `syntax.Node`. 111 test call sites. #1 HIGH in TODO_LIST.md         | Very High | 8hr    |
+| 8  | **Clone type consolidation** — Merge `printer.clone`, `pkg/artdupl.Clone`, `printer.CloneGroup` into unified type             | High      | 4hr    |
+| 9  | **Thread PatternLabel into ClassifyClone** — Make per-clone classification pattern-aware, not just group-level                | Medium    | 2hr    |
+| 10 | **Test threshold multiplier** — Auto-raise threshold for test-to-test clones at detection time                                | Medium    | 1hr    |
+| 11 | **Refactoring suggestion classification** — Classify recommended fix type: extract helper, table-driven, acceptable, data-dup | Medium    | 2hr    |
 
 ### Tier 3: Quality & Observability
 
-| #   | Task                                                                                                            | Impact | Effort |
-| --- | --------------------------------------------------------------------------------------------------------------- | ------ | ------ |
-| 12  | **Pattern detection metrics** — Add stats counters for how many clones each pattern catches                     | Medium | 1hr    |
-| 13  | **Printer coverage >85%** — Currently 76.7%. Add tests for new classification paths in HTML/JSON/SARIF printers | Medium | 2hr    |
-| 14  | **Fuzz tests for actionability detectors** — Random AST trees, ensure no panics on edge cases                   | Medium | 2hr    |
-| 15  | **Update FEATURES.md** — Add actionability pattern detection as a feature                                       | Low    | 30min  |
-| 16  | **Update TODO_LIST.md** — Reflect completed work and new items from this session                                | Low    | 30min  |
+| #  | Task                                                                                                            | Impact | Effort |
+| -- | --------------------------------------------------------------------------------------------------------------- | ------ | ------ |
+| 12 | **Pattern detection metrics** — Add stats counters for how many clones each pattern catches                     | Medium | 1hr    |
+| 13 | **Printer coverage >85%** — Currently 76.7%. Add tests for new classification paths in HTML/JSON/SARIF printers | Medium | 2hr    |
+| 14 | **Fuzz tests for actionability detectors** — Random AST trees, ensure no panics on edge cases                   | Medium | 2hr    |
+| 15 | **Update FEATURES.md** — Add actionability pattern detection as a feature                                       | Low    | 30min  |
+| 16 | **Update TODO_LIST.md** — Reflect completed work and new items from this session                                | Low    | 30min  |
 
 ### Tier 4: Semantic Mode Improvements
 
-| #   | Task                                                                                                                                                     | Impact | Effort |
-| --- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ | ------ |
-| 17  | **BasicLit sub-categorization** — Separate string/int/char literals for better data-dominance detection                                                  | Medium | 3hr    |
-| 18  | **FuncLit semantic hashing** — Currently `FuncLit` is type-only. Hashing function literal signatures would reduce false positives in callback-heavy code | Medium | 2hr    |
-| 19  | **Interface method semantic dedup** — Methods declared in interfaces are currently hashed with `~interface~`. Consider per-method-name hashing           | Low    | 2hr    |
-| 20  | **CompositeLit type hashing** — Hash the type name in composite literals to separate `types.Module{}` from `types.Dep{}`                                 | Medium | 1hr    |
+| #  | Task                                                                                                                                                     | Impact | Effort |
+| -- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ | ------ |
+| 17 | **BasicLit sub-categorization** — Separate string/int/char literals for better data-dominance detection                                                  | Medium | 3hr    |
+| 18 | **FuncLit semantic hashing** — Currently `FuncLit` is type-only. Hashing function literal signatures would reduce false positives in callback-heavy code | Medium | 2hr    |
+| 19 | **Interface method semantic dedup** — Methods declared in interfaces are currently hashed with `~interface~`. Consider per-method-name hashing           | Low    | 2hr    |
+| 20 | **CompositeLit type hashing** — Hash the type name in composite literals to separate `types.Module{}` from `types.Dep{}`                                 | Medium | 1hr    |
 
 ### Tier 5: Infrastructure
 
-| #   | Task                                                                    | Impact | Effort |
-| --- | ----------------------------------------------------------------------- | ------ | ------ |
-| 21  | **CSV output using encoding/csv** — Replace manual formatting           | Low    | 1hr    |
-| 22  | **Enum unification** — Domain enums use config's generic helpers        | Low    | 2hr    |
-| 23  | **TokenValue type validation** — Stronger typing for suffix tree tokens | Low    | 3hr    |
-| 24  | **Split printer/stats_test.go** — 975L → 3 files                        | Low    | 1hr    |
-| 25  | **Write SDK documentation for pkg/artdupl/**                            | Low    | 2hr    |
+| #  | Task                                                                    | Impact | Effort |
+| -- | ----------------------------------------------------------------------- | ------ | ------ |
+| 21 | **CSV output using encoding/csv** — Replace manual formatting           | Low    | 1hr    |
+| 22 | **Enum unification** — Domain enums use config's generic helpers        | Low    | 2hr    |
+| 23 | **TokenValue type validation** — Stronger typing for suffix tree tokens | Low    | 3hr    |
+| 24 | **Split printer/stats_test.go** — 975L → 3 files                        | Low    | 1hr    |
+| 25 | **Write SDK documentation for pkg/artdupl/**                            | Low    | 2hr    |
 
 ---
 

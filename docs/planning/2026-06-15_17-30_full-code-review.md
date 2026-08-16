@@ -7,64 +7,64 @@
 
 ### The 1% that delivers 51% of the result
 
-| #   | Task                                                          | Impact        | Effort |
-| --- | ------------------------------------------------------------- | ------------- | ------ |
-| 1   | ✅ Fix assertion matcher typo `(HaveOccurred`                 | Correctness   | Done   |
-| 2   | ✅ Fix `Actionability` field never set in CloneClassification | Correctness   | Done   |
-| 3   | Wire `ErrNoDuplicatesFound` sentinel in `FindClones`          | API honesty   | 15min  |
-| 4   | Fix `Clone.IsValid()` StartPos==0 bypass                      | Type safety   | 5min   |
-| 5   | ✅ Fix emoji collision (handler/test-fixture)                 | UX            | Done   |
-| 6   | ✅ Fix `isReturnOrWrappedReturn` dead code                    | Clean code    | Done   |
-| 7   | ✅ Fix data dominance comment/code mismatch                   | Documentation | Done   |
-| 8   | ✅ Rename `CloneClassification.NodeType` → `NodeTypeName`     | Clarity       | Done   |
-| 9   | ✅ Fix exhaustive switch `PriorityLow`                        | Lint          | Done   |
+| # | Task                                                          | Impact        | Effort |
+| - | ------------------------------------------------------------- | ------------- | ------ |
+| 1 | ✅ Fix assertion matcher typo `(HaveOccurred`                 | Correctness   | Done   |
+| 2 | ✅ Fix `Actionability` field never set in CloneClassification | Correctness   | Done   |
+| 3 | Wire `ErrNoDuplicatesFound` sentinel in `FindClones`          | API honesty   | 15min  |
+| 4 | Fix `Clone.IsValid()` StartPos==0 bypass                      | Type safety   | 5min   |
+| 5 | ✅ Fix emoji collision (handler/test-fixture)                 | UX            | Done   |
+| 6 | ✅ Fix `isReturnOrWrappedReturn` dead code                    | Clean code    | Done   |
+| 7 | ✅ Fix data dominance comment/code mismatch                   | Documentation | Done   |
+| 8 | ✅ Rename `CloneClassification.NodeType` → `NodeTypeName`     | Clarity       | Done   |
+| 9 | ✅ Fix exhaustive switch `PriorityLow`                        | Lint          | Done   |
 
 ### The 4% that delivers 64% of the result
 
-| #   | Task                                                                            | Impact        | Effort |
-| --- | ------------------------------------------------------------------------------- | ------------- | ------ |
-| 10  | Activate `MethodDetector` interface (real polymorphic dispatch)                 | Composability | 2h     |
-| 11  | Fix SDK streaming error handling (errors swallowed in goroutine)                | Correctness   | 1h     |
-| 12  | Deep-copy `Options` in `NewDetector` (prevent post-construction mutation panic) | Safety        | 30min  |
-| 13  | Fix `legacy_detector.go:36` fragile string matching (stringified AST)           | Correctness   | 1h     |
-| 14  | Remove dead `Patterns`/`Imports` fields in `LegacyPattern`                      | Clean code    | 15min  |
-| 15  | Fix `issue_helpers.go:82` broken `Frags` length filter                          | Correctness   | 15min  |
-| 16  | Fix HealthScore legend vs formula mismatch                                      | UX            | 30min  |
-| 17  | Add context.Context to MultiDetector goroutines                                 | Safety        | 1h     |
+| #  | Task                                                                            | Impact        | Effort |
+| -- | ------------------------------------------------------------------------------- | ------------- | ------ |
+| 10 | Activate `MethodDetector` interface (real polymorphic dispatch)                 | Composability | 2h     |
+| 11 | Fix SDK streaming error handling (errors swallowed in goroutine)                | Correctness   | 1h     |
+| 12 | Deep-copy `Options` in `NewDetector` (prevent post-construction mutation panic) | Safety        | 30min  |
+| 13 | Fix `legacy_detector.go:36` fragile string matching (stringified AST)           | Correctness   | 1h     |
+| 14 | Remove dead `Patterns`/`Imports` fields in `LegacyPattern`                      | Clean code    | 15min  |
+| 15 | Fix `issue_helpers.go:82` broken `Frags` length filter                          | Correctness   | 15min  |
+| 16 | Fix HealthScore legend vs formula mismatch                                      | UX            | 30min  |
+| 17 | Add context.Context to MultiDetector goroutines                                 | Safety        | 1h     |
 
 ### The 20% that delivers 80% of the result
 
-| #   | Task                                                                    | Impact        | Effort |
-| --- | ----------------------------------------------------------------------- | ------------- | ------ |
-| 18  | Collapse `CloneSeverity`/`ClonePriority` into one type                  | Type safety   | 2h     |
-| 19  | Add JSON validation to CloneCategory/Priority/Actionability             | Type safety   | 1h     |
-| 20  | Add `ParseClone*` constructors for enum types                           | Type safety   | 1h     |
-| 21  | Break SDK type aliases (`DetectionMethod`, `Logger`)                    | API isolation | 1h     |
-| 22  | Split `printer/` into sub-packages (stats, html, analyze)               | Modularity    | 4h     |
-| 23  | Hide `syntax/golang` behind `syntax` facade                             | Modularity    | 3h     |
-| 24  | Fix streaming path nil CloneGroup inconsistency                         | Correctness   | 30min  |
-| 25  | Add `ClonePriority.Rank()` method to domain (deduplicate ordinal logic) | DRY           | 30min  |
-| 26  | Extract `everySequenceMatch` helper in actionability.go                 | DRY           | 30min  |
-| 27  | Move test-only constants out of production code                         | Clean code    | 15min  |
-| 28  | Document detector thread-safety contract                                | Documentation | 15min  |
+| #  | Task                                                                    | Impact        | Effort |
+| -- | ----------------------------------------------------------------------- | ------------- | ------ |
+| 18 | Collapse `CloneSeverity`/`ClonePriority` into one type                  | Type safety   | 2h     |
+| 19 | Add JSON validation to CloneCategory/Priority/Actionability             | Type safety   | 1h     |
+| 20 | Add `ParseClone*` constructors for enum types                           | Type safety   | 1h     |
+| 21 | Break SDK type aliases (`DetectionMethod`, `Logger`)                    | API isolation | 1h     |
+| 22 | Split `printer/` into sub-packages (stats, html, analyze)               | Modularity    | 4h     |
+| 23 | Hide `syntax/golang` behind `syntax` facade                             | Modularity    | 3h     |
+| 24 | Fix streaming path nil CloneGroup inconsistency                         | Correctness   | 30min  |
+| 25 | Add `ClonePriority.Rank()` method to domain (deduplicate ordinal logic) | DRY           | 30min  |
+| 26 | Extract `everySequenceMatch` helper in actionability.go                 | DRY           | 30min  |
+| 27 | Move test-only constants out of production code                         | Clean code    | 15min  |
+| 28 | Document detector thread-safety contract                                | Documentation | 15min  |
 
 ## Execution Graph (D2)
 
 ```
-           ┌─────────────────────────────┐
-           │  Tier 1 (1% → 51%)          │
-           │  Bugs & Quick Fixes          │
-           └──────────┬──────────────────┘
-                      │
-           ┌──────────▼──────────────────┐
-           │  Tier 2 (4% → 64%)          │
-           │  Architecture & Safety       │
-           └──────────┬──────────────────┘
-                      │
-           ┌──────────▼──────────────────┐
-           │  Tier 3 (20% → 80%)         │
-           │  Type Safety & Modularity    │
-           └─────────────────────────────┘
+┌─────────────────────────────┐
+│  Tier 1 (1% → 51%)          │
+│  Bugs & Quick Fixes          │
+└──────────┬──────────────────┘
+           │
+┌──────────▼──────────────────┐
+│  Tier 2 (4% → 64%)          │
+│  Architecture & Safety       │
+└──────────┬──────────────────┘
+           │
+┌──────────▼──────────────────┐
+│  Tier 3 (20% → 80%)         │
+│  Type Safety & Modularity    │
+└─────────────────────────────┘
 ```
 
 ## Files Changed This Session

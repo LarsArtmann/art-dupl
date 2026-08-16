@@ -177,33 +177,33 @@ Nothing is broken. Nothing regressed. All 26 test packages pass. BuildFlow is gr
 
 Ranked by impact × effort × urgency:
 
-| #   | Task                                                                         | Impact    | Effort | Notes                                                       |
-| --- | ---------------------------------------------------------------------------- | --------- | ------ | ----------------------------------------------------------- |
-| 1   | **T22: ProcessedClone DTO** — decouple printer from syntax.Node              | 🔴 HIGH   | 2-3h   | Highest architectural value. Enables future printer/ split. |
-| 2   | **T36: Performance regression CI** — wire benchmarks into CI with thresholds | 🔴 HIGH   | 1h     | Prevents silent perf regressions                            |
-| 3   | **T6.3: Concurrent data-race test** — `go test -race` for cache access       | 🟡 MED    | 30min  | Regression protection for T6 fix                            |
-| 4   | **T24: Branded NodeType** — type-safe node types                             | 🔴 HIGH   | 3-4h   | HIGH RISK — do behind feature flag                          |
-| 5   | **T23: CloneRef unification** — embed across 7 Clone types                   | 🟡 MED    | 2-3h   | Reduces type drift                                          |
-| 6   | **T32: Watch mode** — `--watch` for continuous monitoring                    | 🟡 MED    | 1d     | High user value                                             |
-| 7   | **JSON config migration shim** — read old `"semantic"` field                 | 🟡 MED    | 30min  | UX improvement                                              |
-| 8   | **T25: Split printer/** into `stats/`, `html/`, `analyze/`                   | 🟡 MED    | 3h     | 62 files → manageable sub-packages                          |
-| 9   | **T28: Unify sort comparators** into generic factory                         | 🟢 LOW    | 1-2h   | Code quality                                                |
-| 10  | **T26: Fang v2 migration**                                                   | 🟢 LOW    | 1h     | Blocked on v2 stability                                     |
-| 11  | **T12: json v2**                                                             | 🟢 LOW    | 1h     | Blocked on Go 1.27                                          |
-| 12  | **T29: Singleflight** for concurrent cache access                            | 🟢 LOW    | 1h     | Needs parallel parser first                                 |
-| 13  | **T31: Hybrid slice/map** transition storage                                 | 🟢 LOW    | 2h     | Needs benchmarking proof first                              |
-| 14  | **T38: TypeScript/JS support**                                               | 🔵 FUTURE | 1w+    | Multi-week feature                                          |
-| 15  | **T39: Python support**                                                      | 🔵 FUTURE | 1w+    | Multi-week feature                                          |
-| 16  | **T41: Context through file feeders**                                        | 🟢 LOW    | 2h     | Latent gap                                                  |
-| 17  | **T40: syntax/golang facade**                                                | 🟢 LOW    | 2h     | Blocked by import cycle                                     |
-| 18  | **Cache migration warning** — log when version mismatch                      | 🟡 MED    | 15min  | UX                                                          |
-| 19  | **T18: Hash pipeline consolidation**                                         | 🟢 LOW    | 1h     | Code quality                                                |
-| 20  | **T16: Split html_template.go**                                              | 🟢 LOW    | 30min  | File length only                                            |
-| 21  | **T17: Split transform.go**                                                  | 🟢 LOW    | 30min  | File length only                                            |
-| 22  | **T34: Pre-commit hook integration** — test the template                     | 🟡 MED    | 30min  | Verify it works                                             |
-| 23  | **Apply sendCtx to remaining sites**                                         | 🟢 LOW    | 30min  | Consistency                                                 |
-| 24  | **Fix remaining lint warnings** (6)                                          | 🟢 LOW    | 15min  | Polish                                                      |
-| 25  | **T33: Test GitHub Actions template** — verify in CI                         | 🟡 MED    | 30min  | Verify it works                                             |
+| #  | Task                                                                         | Impact    | Effort | Notes                                                       |
+| -- | ---------------------------------------------------------------------------- | --------- | ------ | ----------------------------------------------------------- |
+| 1  | **T22: ProcessedClone DTO** — decouple printer from syntax.Node              | 🔴 HIGH   | 2-3h   | Highest architectural value. Enables future printer/ split. |
+| 2  | **T36: Performance regression CI** — wire benchmarks into CI with thresholds | 🔴 HIGH   | 1h     | Prevents silent perf regressions                            |
+| 3  | **T6.3: Concurrent data-race test** — `go test -race` for cache access       | 🟡 MED    | 30min  | Regression protection for T6 fix                            |
+| 4  | **T24: Branded NodeType** — type-safe node types                             | 🔴 HIGH   | 3-4h   | HIGH RISK — do behind feature flag                          |
+| 5  | **T23: CloneRef unification** — embed across 7 Clone types                   | 🟡 MED    | 2-3h   | Reduces type drift                                          |
+| 6  | **T32: Watch mode** — `--watch` for continuous monitoring                    | 🟡 MED    | 1d     | High user value                                             |
+| 7  | **JSON config migration shim** — read old `"semantic"` field                 | 🟡 MED    | 30min  | UX improvement                                              |
+| 8  | **T25: Split printer/** into `stats/`, `html/`, `analyze/`                   | 🟡 MED    | 3h     | 62 files → manageable sub-packages                          |
+| 9  | **T28: Unify sort comparators** into generic factory                         | 🟢 LOW    | 1-2h   | Code quality                                                |
+| 10 | **T26: Fang v2 migration**                                                   | 🟢 LOW    | 1h     | Blocked on v2 stability                                     |
+| 11 | **T12: json v2**                                                             | 🟢 LOW    | 1h     | Blocked on Go 1.27                                          |
+| 12 | **T29: Singleflight** for concurrent cache access                            | 🟢 LOW    | 1h     | Needs parallel parser first                                 |
+| 13 | **T31: Hybrid slice/map** transition storage                                 | 🟢 LOW    | 2h     | Needs benchmarking proof first                              |
+| 14 | **T38: TypeScript/JS support**                                               | 🔵 FUTURE | 1w+    | Multi-week feature                                          |
+| 15 | **T39: Python support**                                                      | 🔵 FUTURE | 1w+    | Multi-week feature                                          |
+| 16 | **T41: Context through file feeders**                                        | 🟢 LOW    | 2h     | Latent gap                                                  |
+| 17 | **T40: syntax/golang facade**                                                | 🟢 LOW    | 2h     | Blocked by import cycle                                     |
+| 18 | **Cache migration warning** — log when version mismatch                      | 🟡 MED    | 15min  | UX                                                          |
+| 19 | **T18: Hash pipeline consolidation**                                         | 🟢 LOW    | 1h     | Code quality                                                |
+| 20 | **T16: Split html_template.go**                                              | 🟢 LOW    | 30min  | File length only                                            |
+| 21 | **T17: Split transform.go**                                                  | 🟢 LOW    | 30min  | File length only                                            |
+| 22 | **T34: Pre-commit hook integration** — test the template                     | 🟡 MED    | 30min  | Verify it works                                             |
+| 23 | **Apply sendCtx to remaining sites**                                         | 🟢 LOW    | 30min  | Consistency                                                 |
+| 24 | **Fix remaining lint warnings** (6)                                          | 🟢 LOW    | 15min  | Polish                                                      |
+| 25 | **T33: Test GitHub Actions template** — verify in CI                         | 🟡 MED    | 30min  | Verify it works                                             |
 
 ---
 

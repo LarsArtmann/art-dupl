@@ -1,7 +1,7 @@
 # COMPREHENSIVE STATUS UPDATE
 
-**Date:** 2026-03-25 20:18 CET  
-**Project:** art-dupl  
+**Date:** 2026-03-25 20:18 CET\
+**Project:** art-dupl\
 **Branch:** fork
 
 ---
@@ -10,7 +10,7 @@
 
 | Metric                | Value                                        |
 | --------------------- | -------------------------------------------- |
-| **Project Status**    | ⚠️ PARTIALLY BLOCKED                         |
+| **Project Status**    | ⚠️ PARTIALLY BLOCKED                          |
 | **Build**             | ✅ WORKING (binary exists from cached build) |
 | **CLI Functionality** | ✅ FULLY OPERATIONAL                         |
 | **Go Cache**          | ❌ CORRUPTED (toolchain cache corrupted)     |
@@ -90,14 +90,14 @@ Found total 1 clone groups.
 
 ### Suggested Improvements (from analysis)
 
-| #   | Improvement                 | Priority |
-| --- | --------------------------- | -------- |
-| 1   | Show hash prefix header     | HIGH     |
-| 2   | File count badge            | MEDIUM   |
-| 3   | Size information (KB)       | MEDIUM   |
-| 4   | "Entire file duplicate" tag | HIGH     |
-| 5   | Bytes wasted metric         | LOW      |
-| 6   | Quick diff hint             | LOW      |
+| # | Improvement                 | Priority |
+| - | --------------------------- | -------- |
+| 1 | Show hash prefix header     | HIGH     |
+| 2 | File count badge            | MEDIUM   |
+| 3 | Size information (KB)       | MEDIUM   |
+| 4 | "Entire file duplicate" tag | HIGH     |
+| 5 | Bytes wasted metric         | LOW      |
+| 6 | Quick diff hint             | LOW      |
 
 ### Implementation Locations
 
@@ -234,5 +234,5 @@ Co-authored-by: Crush AI Assistant"
 
 ---
 
-**Generated:** 2026-03-25 20:18 CET  
+**Generated:** 2026-03-25 20:18 CET\
 **Next Update:** After Go cache fix and testing completion

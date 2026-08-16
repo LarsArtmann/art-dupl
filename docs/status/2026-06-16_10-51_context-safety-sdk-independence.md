@@ -16,18 +16,18 @@ Executed the **next tier of the TODO sprint** from the planning document (`docs/
 
 ### This Session
 
-| #   | Change                                                                                                          | Files                                                                                                                                             | Impact                                                                                                                                                           |
-| --- | --------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1   | **Fixed empty Frags guard bug**: `[][]*Node{{}}` was passing `len(Frags) > 0` check                             | `detection/multidetector.go`, `detection/issue_helpers.go`                                                                                        | Issue matches (TODO, legacy) with empty inner slices no longer leak into the clone pipeline. New `hasNonEmptyFrag()` helper checks inner depth.                  |
-| 2   | **Removed `Frags: [][]*Node{{}}` from `createIssueMatch`** — now nil                                            | `detection/issue_helpers.go`, `detection/detection_test.go`                                                                                       | Issues no longer pretend to have fragments. The guard filters them correctly. Tests updated to assert nil Frags.                                                 |
-| 3   | **Set default `Actionability` in `ClassifyClone`** — `Actionable` for normal clones, `NonActionable` for idioms | `printer/clone_classify.go`                                                                                                                       | Eliminates zero-value `""` invalid state. `CloneClassification` can no longer be constructed with an invalid `Actionability` through the normal path.            |
-| 4   | **Moved `processOrderMethodName` test constant** from production to test file                                   | `printer/actionability.go` → `printer/actionability_test.go`                                                                                      | Test-only constant no longer pollutes production code.                                                                                                           |
-| 5   | **Added `context.Context` to all detection goroutines** (M6 complete)                                           | `detection/multidetector.go`, `detection/issue_helpers.go`, `detection/todo_detector.go`, `detection/legacy_detector.go`, `detection/detector.go` | Every `FindDuplOver`, `FindTodos`, `FindLegacy`, `findIssuesInFile`, `findIssuesGeneric` now accepts and checks `ctx`. Prevents goroutine leaks on cancellation. |
-| 6   | **Updated all callers** of context-aware detection methods                                                      | `cmd/run_analysis.go`, `pkg/artdupl/detector_pipeline.go`, `pkg/artdupl/detector_uncovered_test.go`                                               | All consumers pass context through. SDK pipeline uses `select` on `ctx.Done()`.                                                                                  |
-| 7   | **Broke SDK `DetectionMethod` type alias** — now independent `type DetectionMethod string`                      | `pkg/artdupl/types.go`, `pkg/artdupl/detector_utils.go`                                                                                           | SDK no longer re-exports `config.DetectionMethod`. Has own `String()`, `IsValid()`, and boundary conversion functions.                                           |
-| 8   | **Broke SDK `Logger` type alias** — now independent interface with `noOpLogger` default                         | `pkg/artdupl/types.go`                                                                                                                            | SDK defines its own 4-method Logger interface. Structurally compatible with `pkg/logger.Logger` — no adapter needed.                                             |
-| 9   | **Refactored `FindDuplOver` complexity** — extracted `runMultiMethodDetection` + `streamMatches` helpers        | `detection/multidetector.go`                                                                                                                      | Reduced cognitive complexity from 57 to under 35 (gocognit lint pass). Each detection method's streaming loop is now DRY via `streamMatches`.                    |
-| 10  | **Fixed all test assertions** for type-alias break                                                              | `pkg/artdupl/detector_validation_test.go`                                                                                                         | Tests now compare `string()` values instead of cross-type equality.                                                                                              |
+| #  | Change                                                                                                          | Files                                                                                                                                             | Impact                                                                                                                                                           |
+| -- | --------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1  | **Fixed empty Frags guard bug**: `[][]*Node{{}}` was passing `len(Frags) > 0` check                             | `detection/multidetector.go`, `detection/issue_helpers.go`                                                                                        | Issue matches (TODO, legacy) with empty inner slices no longer leak into the clone pipeline. New `hasNonEmptyFrag()` helper checks inner depth.                  |
+| 2  | **Removed `Frags: [][]*Node{{}}` from `createIssueMatch`** — now nil                                            | `detection/issue_helpers.go`, `detection/detection_test.go`                                                                                       | Issues no longer pretend to have fragments. The guard filters them correctly. Tests updated to assert nil Frags.                                                 |
+| 3  | **Set default `Actionability` in `ClassifyClone`** — `Actionable` for normal clones, `NonActionable` for idioms | `printer/clone_classify.go`                                                                                                                       | Eliminates zero-value `""` invalid state. `CloneClassification` can no longer be constructed with an invalid `Actionability` through the normal path.            |
+| 4  | **Moved `processOrderMethodName` test constant** from production to test file                                   | `printer/actionability.go` → `printer/actionability_test.go`                                                                                      | Test-only constant no longer pollutes production code.                                                                                                           |
+| 5  | **Added `context.Context` to all detection goroutines** (M6 complete)                                           | `detection/multidetector.go`, `detection/issue_helpers.go`, `detection/todo_detector.go`, `detection/legacy_detector.go`, `detection/detector.go` | Every `FindDuplOver`, `FindTodos`, `FindLegacy`, `findIssuesInFile`, `findIssuesGeneric` now accepts and checks `ctx`. Prevents goroutine leaks on cancellation. |
+| 6  | **Updated all callers** of context-aware detection methods                                                      | `cmd/run_analysis.go`, `pkg/artdupl/detector_pipeline.go`, `pkg/artdupl/detector_uncovered_test.go`                                               | All consumers pass context through. SDK pipeline uses `select` on `ctx.Done()`.                                                                                  |
+| 7  | **Broke SDK `DetectionMethod` type alias** — now independent `type DetectionMethod string`                      | `pkg/artdupl/types.go`, `pkg/artdupl/detector_utils.go`                                                                                           | SDK no longer re-exports `config.DetectionMethod`. Has own `String()`, `IsValid()`, and boundary conversion functions.                                           |
+| 8  | **Broke SDK `Logger` type alias** — now independent interface with `noOpLogger` default                         | `pkg/artdupl/types.go`                                                                                                                            | SDK defines its own 4-method Logger interface. Structurally compatible with `pkg/logger.Logger` — no adapter needed.                                             |
+| 9  | **Refactored `FindDuplOver` complexity** — extracted `runMultiMethodDetection` + `streamMatches` helpers        | `detection/multidetector.go`                                                                                                                      | Reduced cognitive complexity from 57 to under 35 (gocognit lint pass). Each detection method's streaming loop is now DRY via `streamMatches`.                    |
+| 10 | **Fixed all test assertions** for type-alias break                                                              | `pkg/artdupl/detector_validation_test.go`                                                                                                         | Tests now compare `string()` values instead of cross-type equality.                                                                                              |
 
 ### Previously Completed (Prior Commits, Still on This Branch)
 
@@ -90,18 +90,18 @@ Executed the **next tier of the TODO sprint** from the planning document (`docs/
 
 ### Critical Bugs Found (Not Yet Fixed)
 
-| #   | Bug                                          | Severity | Location                     | Impact                                                                                                                                                                                                                                                                                                                                                   |
-| --- | -------------------------------------------- | -------- | ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1   | **`suffixtree.FindDuplOver` ignores ctx**    | Low      | `suffixtree/suffixtree.go`   | The core suffix tree algorithm doesn't accept context. If a user cancels mid-scan, the goroutine continues until the algorithm completes. Workaround: the caller's `select` on `ctx.Done()` prevents the result from being consumed, but the goroutine still runs. Fixing requires threading ctx through the suffix tree traversal — significant rework. |
-| 2   | **TODO/Legacy detection produces no output** | Medium   | `detection/multidetector.go` | Issue-type detectors (TODO, legacy) produce matches with nil Frags. The `hasNonEmptyFrag` guard correctly filters them from the clone pipeline, but this means **TODO and legacy detection currently produce zero results in practice**. The MethodDetector pipeline (M10) is needed to route issue matches to a separate output path.                   |
+| # | Bug                                          | Severity | Location                     | Impact                                                                                                                                                                                                                                                                                                                                                   |
+| - | -------------------------------------------- | -------- | ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1 | **`suffixtree.FindDuplOver` ignores ctx**    | Low      | `suffixtree/suffixtree.go`   | The core suffix tree algorithm doesn't accept context. If a user cancels mid-scan, the goroutine continues until the algorithm completes. Workaround: the caller's `select` on `ctx.Done()` prevents the result from being consumed, but the goroutine still runs. Fixing requires threading ctx through the suffix tree traversal — significant rework. |
+| 2 | **TODO/Legacy detection produces no output** | Medium   | `detection/multidetector.go` | Issue-type detectors (TODO, legacy) produce matches with nil Frags. The `hasNonEmptyFrag` guard correctly filters them from the clone pipeline, but this means **TODO and legacy detection currently produce zero results in practice**. The MethodDetector pipeline (M10) is needed to route issue matches to a separate output path.                   |
 
 ### Architecture Smells (Unchanged)
 
-| #   | Smell                                                 | Impact                                                                                                                                                             |
-| --- | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| 1   | **`printer/` is a 50-file mega-package**              | No module boundaries; everything is friends with everything; untestable in isolation                                                                               |
-| 2   | **Three parallel Clone types**                        | `domain.ProcessedClone`, `printer.CloneGroup` (JSON DTO), `pkg/artdupl.Clone` (SDK DTO) — same data, three shapes, manual conversion at every boundary             |
-| 3   | **`actionability.go` imports `syntax.Node` directly** | Breaks the decoupling contract — `domain.ProcessedCloneGroup` was supposed to free printers from AST knowledge, but actionability evaluation still walks raw nodes |
+| # | Smell                                                 | Impact                                                                                                                                                             |
+| - | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 1 | **`printer/` is a 50-file mega-package**              | No module boundaries; everything is friends with everything; untestable in isolation                                                                               |
+| 2 | **Three parallel Clone types**                        | `domain.ProcessedClone`, `printer.CloneGroup` (JSON DTO), `pkg/artdupl.Clone` (SDK DTO) — same data, three shapes, manual conversion at every boundary             |
+| 3 | **`actionability.go` imports `syntax.Node` directly** | Breaks the decoupling contract — `domain.ProcessedCloneGroup` was supposed to free printers from AST knowledge, but actionability evaluation still walks raw nodes |
 
 ---
 
@@ -133,48 +133,48 @@ Executed the **next tier of the TODO sprint** from the planning document (`docs/
 
 ### 🔴 Critical (Do First)
 
-| #   | Task                                                                                | Impact                              | Effort |
-| --- | ----------------------------------------------------------------------------------- | ----------------------------------- | ------ |
-| 1   | **Route issue detections separately** — TODO/legacy need their own output path      | Correctness — currently zero output | M      |
-| 2   | **Activate `MethodDetector` interface** (M10) — replace if-chain with loop dispatch | Extensibility, enables #1           | M      |
-| 3   | **Type-strengthen `ProcessedClone`**: `Filepath` + `LineNumber` fields              | Compile-time safety                 | M      |
-| 4   | **Add `TokenCount` typed integer** to prevent unit mixing                           | Prevents mutation bug class         | S      |
-| 5   | **Add `ProcessedCloneGroup.Validate()`** — validate group invariants                | Data integrity                      | S      |
+| # | Task                                                                                | Impact                              | Effort |
+| - | ----------------------------------------------------------------------------------- | ----------------------------------- | ------ |
+| 1 | **Route issue detections separately** — TODO/legacy need their own output path      | Correctness — currently zero output | M      |
+| 2 | **Activate `MethodDetector` interface** (M10) — replace if-chain with loop dispatch | Extensibility, enables #1           | M      |
+| 3 | **Type-strengthen `ProcessedClone`**: `Filepath` + `LineNumber` fields              | Compile-time safety                 | M      |
+| 4 | **Add `TokenCount` typed integer** to prevent unit mixing                           | Prevents mutation bug class         | S      |
+| 5 | **Add `ProcessedCloneGroup.Validate()`** — validate group invariants                | Data integrity                      | S      |
 
 ### 🟠 High Impact
 
-| #   | Task                                                                    | Impact                         | Effort |
-| --- | ----------------------------------------------------------------------- | ------------------------------ | ------ |
-| 6   | **Extract `everySequenceMatch` helper** in actionability.go (M9)        | Code quality — DRY             | S      |
-| 7   | **Move actionability behind interface** (no `syntax.Node` in printer)   | Decoupling                     | M      |
-| 8   | **Split `printer/` into sub-packages**                                  | Module boundaries, testability | L      |
-| 9   | **Consolidate Clone DTOs** — single canonical type or generated mappers | Eliminates manual conversion   | L      |
-| 10  | **Hide `syntax/golang` + `syntax/templ` behind `syntax` facade** (M12)  | Clean module boundary          | M      |
-| 11  | **Add `--suppress-test-low` flag** (M11)                                | UX for noisy test clones       | S      |
-| 12  | **Separate test/production threshold** (M11)                            | UX precision                   | S      |
-| 13  | **Unify enum patterns** across domain and config (M13)                  | Consistency                    | M      |
+| #  | Task                                                                    | Impact                         | Effort |
+| -- | ----------------------------------------------------------------------- | ------------------------------ | ------ |
+| 6  | **Extract `everySequenceMatch` helper** in actionability.go (M9)        | Code quality — DRY             | S      |
+| 7  | **Move actionability behind interface** (no `syntax.Node` in printer)   | Decoupling                     | M      |
+| 8  | **Split `printer/` into sub-packages**                                  | Module boundaries, testability | L      |
+| 9  | **Consolidate Clone DTOs** — single canonical type or generated mappers | Eliminates manual conversion   | L      |
+| 10 | **Hide `syntax/golang` + `syntax/templ` behind `syntax` facade** (M12)  | Clean module boundary          | M      |
+| 11 | **Add `--suppress-test-low` flag** (M11)                                | UX for noisy test clones       | S      |
+| 12 | **Separate test/production threshold** (M11)                            | UX precision                   | S      |
+| 13 | **Unify enum patterns** across domain and config (M13)                  | Consistency                    | M      |
 
 ### 🟡 Medium Impact
 
-| #   | Task                                                                | Impact                    | Effort |
-| --- | ------------------------------------------------------------------- | ------------------------- | ------ |
-| 14  | **Add `context.Context` to `suffixtree.FindDuplOver`**              | Goroutine leak prevention | M      |
-| 15  | **Create ADR for actionability pattern detection** (M9)             | Knowledge preservation    | S      |
-| 16  | **Extract `validateLocation` helper** in todo/legacy detectors (M9) | Code quality — DRY        | S      |
-| 17  | **Break SDK error sentinels** from internal `errors` package        | SDK independence          | S      |
-| 18  | **Add fuzz tests** for templ parser + suffix tree invariants        | Robustness                | M      |
-| 19  | **Refactor `syntax/golang/transform.go`** (369L, 300L switch)       | Maintainability           | M      |
-| 20  | **Refactor `printer/actionability.go`** (558L)                      | Maintainability           | M      |
+| #  | Task                                                                | Impact                    | Effort |
+| -- | ------------------------------------------------------------------- | ------------------------- | ------ |
+| 14 | **Add `context.Context` to `suffixtree.FindDuplOver`**              | Goroutine leak prevention | M      |
+| 15 | **Create ADR for actionability pattern detection** (M9)             | Knowledge preservation    | S      |
+| 16 | **Extract `validateLocation` helper** in todo/legacy detectors (M9) | Code quality — DRY        | S      |
+| 17 | **Break SDK error sentinels** from internal `errors` package        | SDK independence          | S      |
+| 18 | **Add fuzz tests** for templ parser + suffix tree invariants        | Robustness                | M      |
+| 19 | **Refactor `syntax/golang/transform.go`** (369L, 300L switch)       | Maintainability           | M      |
+| 20 | **Refactor `printer/actionability.go`** (558L)                      | Maintainability           | M      |
 
 ### 🟢 Polish
 
-| #   | Task                                                                          | Impact                         | Effort |
-| --- | ----------------------------------------------------------------------------- | ------------------------------ | ------ |
-| 21  | **Add `DescribeTable` detection pattern**                                     | Feature enhancement            | M      |
-| 22  | **Add builder/callback detection pattern**                                    | Feature enhancement            | M      |
-| 23  | **Implement hybrid slice/map transition storage** for small transition counts | Performance micro-optimization | M      |
-| 24  | **Implement string interning** for node filenames                             | Performance                    | M      |
-| 25  | **Add property-based tests for suffix tree**                                  | Testing robustness             | M      |
+| #  | Task                                                                          | Impact                         | Effort |
+| -- | ----------------------------------------------------------------------------- | ------------------------------ | ------ |
+| 21 | **Add `DescribeTable` detection pattern**                                     | Feature enhancement            | M      |
+| 22 | **Add builder/callback detection pattern**                                    | Feature enhancement            | M      |
+| 23 | **Implement hybrid slice/map transition storage** for small transition counts | Performance micro-optimization | M      |
+| 24 | **Implement string interning** for node filenames                             | Performance                    | M      |
+| 25 | **Add property-based tests for suffix tree**                                  | Testing robustness             | M      |
 
 ---
 

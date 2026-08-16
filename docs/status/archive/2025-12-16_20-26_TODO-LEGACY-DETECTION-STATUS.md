@@ -1,7 +1,7 @@
 # TODO/Legacy Detection Feature Implementation Status
 
-**Date**: 2025-12-16_20-26  
-**Feature**: Add TODO and Legacy code reporting to art-dupl  
+**Date**: 2025-12-16_20-26\
+**Feature**: Add TODO and Legacy code reporting to art-dupl\
 **Status**: In Progress - Architecture Redesign Needed
 
 ## Executive Summary
@@ -200,6 +200,6 @@ type LegacyResult struct { ... } // New structure
 
 ---
 
-**Status**: BLOCKED on architecture decision  
-**Next Action**: Stakeholder review and approach selection  
+**Status**: BLOCKED on architecture decision\
+**Next Action**: Stakeholder review and approach selection\
 **ETA**: Dependent on decision timeline

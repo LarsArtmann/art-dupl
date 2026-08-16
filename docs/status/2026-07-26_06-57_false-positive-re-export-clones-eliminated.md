@@ -231,7 +231,7 @@ I should have used `|| true` or `; echo done` to make the pipeline robust.
     detected. Decide if that's correct.
 14. **Add a `--validate-directives` flag** that warns when a directive's hash
     matches no current group (catches stale directives). Long-requested.
-15. **Trailing-whitespace hash:** `//art-dupl:accept abc123 ` (trailing
+15. **Trailing-whitespace hash:** `//art-dupl:accept abc123` (trailing
     space) — verify behavior is sane (should be hash `abc123`).
 
 ### Docs / memory

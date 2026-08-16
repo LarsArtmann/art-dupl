@@ -1,8 +1,8 @@
 # Status Report: SQLC Auto-Detection Implementation Complete
 
-**Date:** 2026-01-26 19:37 CET  
-**Commit:** 771189e  
-**Branch:** fork  
+**Date:** 2026-01-26 19:37 CET\
+**Commit:** 771189e\
+**Branch:** fork\
 **Status:** ✅ COMPLETE AND VERIFIED
 
 ---
@@ -480,7 +480,7 @@ The SQLC auto-detection fix has been **successfully implemented, tested, and ver
 
 ### For the User
 
-**Before:** 21 clone groups (many from SQLC generated files)  
+**Before:** 21 clone groups (many from SQLC generated files)\
 **After:** Only real code clones in your actual source files
 
 Your specific issue is now **resolved**. When you run `art-dupl -t 50` in your project with `sqlc.yaml`, you will see:
@@ -528,5 +528,5 @@ Your specific issue is now **resolved**. When you run `art-dupl -t 50` in your p
 
 ---
 
-_Report Generated:_ Mon Jan 26 19:37:44 CET 2026  
+_Report Generated:_ Mon Jan 26 19:37:44 CET 2026\
 _Report File:_ docs/status/2026-01-26_19-37_SQLC-Auto-Detection-Complete.md

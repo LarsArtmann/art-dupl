@@ -1,8 +1,8 @@
 # 🚨 COMPREHENSIVE DE-DUPLICATION STATUS REPORT
 
-**Date:** Fri Dec 19 15:53:12 CET 2025  
-**Command:** `art-dupl -t 50 --html`  
-**Clones Found:** 10 major clone groups  
+**Date:** Fri Dec 19 15:53:12 CET 2025\
+**Command:** `art-dupl -t 50 --html`\
+**Clones Found:** 10 major clone groups\
 **Status:** IN PROGRESS
 
 ## 📊 EXECUTION SUMMARY

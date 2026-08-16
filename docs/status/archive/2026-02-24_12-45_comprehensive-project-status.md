@@ -1,7 +1,7 @@
 # Comprehensive Project Status Report
 
-**Date:** February 24, 2026, 12:45 CET  
-**Branch:** fork  
+**Date:** February 24, 2026, 12:45 CET\
+**Branch:** fork\
 **Commit:** c6383f4 (refactor(config): remove SemanticExplicitlyDisabled field and simplify merge logic)
 
 ---
@@ -139,9 +139,9 @@ type Config struct {
 
 ### Validation Status
 
-✅ All configuration validation tests passing  
-✅ JSON config file loading/saving functional  
-✅ CLI flag precedence working correctly  
+✅ All configuration validation tests passing\
+✅ JSON config file loading/saving functional\
+✅ CLI flag precedence working correctly\
 ✅ Merge logic simplified and tested
 
 ---
@@ -228,15 +228,15 @@ just bench          # Benchmarks
 
 ### Justfile (Primary)
 
-✅ `just build` - Builds to dist/art-dupl  
-✅ `just test` - Runs all tests  
-✅ `just check` - Runs linter  
-✅ `just ci` - Full CI pipeline  
+✅ `just build` - Builds to dist/art-dupl\
+✅ `just test` - Runs all tests\
+✅ `just check` - Runs linter\
+✅ `just ci` - Full CI pipeline\
 ✅ `just install-local` - Local installation
 
 ### Makefile (Alternative)
 
-✅ Uses `GOEXPERIMENT=jsonv2` for JSON v2 support  
+✅ Uses `GOEXPERIMENT=jsonv2` for JSON v2 support\
 ✅ All targets functional
 
 ### Build Output
@@ -393,6 +393,6 @@ The project is well-positioned for continued development with a solid foundation
 
 ---
 
-**Report Generated:** 2026-02-24 12:45 CET  
-**Reporter:** AI Agent via Crush  
+**Report Generated:** 2026-02-24 12:45 CET\
+**Reporter:** AI Agent via Crush\
 **Next Review:** Recommended in 2 weeks or after major feature completion

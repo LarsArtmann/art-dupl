@@ -1,22 +1,22 @@
 # Comprehensive Status Report - art-dupl
 
-**Date:** 2026-02-27 18:26  
-**Branch:** fork  
-**Commit:** c58dc06  
+**Date:** 2026-02-27 18:26\
+**Branch:** fork\
+**Commit:** c58dc06\
 **Status:** 🟡 STABLE WITH UNCOMMITTED CHANGES
 
 ---
 
 ## Executive Summary
 
-| Metric                  | Value                         |
-| ----------------------- | ----------------------------- |
-| **Build Status**        | ✅ PASSING                    |
+| Metric                  | Value                        |
+| ----------------------- | ---------------------------- |
+| **Build Status**        | ✅ PASSING                   |
 | **Test Status**         | ⚠️ 1 FAILING (TestCyclicDupl) |
 | **Lint Status**         | ⚠️ 387 pre-existing issues    |
-| **TODO Comments**       | 55 in 11 Go files             |
-| **Uncommitted Changes** | 15 files (mostly lint fixes)  |
-| **Cache UX Fix**        | ✅ COMMITTED & PUSHED         |
+| **TODO Comments**       | 55 in 11 Go files            |
+| **Uncommitted Changes** | 15 files (mostly lint fixes) |
+| **Cache UX Fix**        | ✅ COMMITTED & PUSHED        |
 
 ---
 
@@ -121,16 +121,16 @@ ERROR: --cache-dir and --clear-cache require --incremental mode
 
 ### 1. Failing Test: TestCyclicDupl
 
-**Location:** `syntax/syntax_test.go:116`  
-**Error:** `for seq 'a2 b0 a2 b0 a2 b0 a2 b0 a2 b0', indexes [0 3 6 9 12], got false, want true`  
-**Impact:** Low - edge case in cyclic duplicate detection  
+**Location:** `syntax/syntax_test.go:116`\
+**Error:** `for seq 'a2 b0 a2 b0 a2 b0 a2 b0 a2 b0', indexes [0 3 6 9 12], got false, want true`\
+**Impact:** Low - edge case in cyclic duplicate detection\
 **Status:** NOT INVESTIGATED
 
 ### 2. Domain Type Inference Errors (gopls)
 
-**Location:** `domain/domain_types_test.go` lines 427, 498, 582  
-**Error:** `CannotInferTypeArgs` - type mismatch between `jsonUnmarshalTest[T]` and anonymous struct  
-**Impact:** IDE diagnostics only, tests pass  
+**Location:** `domain/domain_types_test.go` lines 427, 498, 582\
+**Error:** `CannotInferTypeArgs` - type mismatch between `jsonUnmarshalTest[T]` and anonymous struct\
+**Impact:** IDE diagnostics only, tests pass\
 **Status:** NEEDS INVESTIGATION
 
 ### 3. Performance Optimizations
@@ -152,19 +152,19 @@ ERROR: --cache-dir and --clear-cache require --incremental mode
 
 ### 1. Previous HEAD Commit Was Broken
 
-**Commit:** `0423c1f` - refactor: fix all err113 dynamic error issues  
+**Commit:** `0423c1f` - refactor: fix all err113 dynamic error issues\
 **Problem:** Introduced build errors:
 
 - `domain/analysis.go` had duplicate error declarations (also in `domain/analysis_errors.go`)
 - `cmd/run_all_modes.go` and `cmd/run_flags.go` had wrong function signatures
 
-**Resolution:** Reset to `a2d9033` and re-applied my cache validation fix  
+**Resolution:** Reset to `a2d9033` and re-applied my cache validation fix\
 **Lesson:** Pre-commit hooks should catch build errors
 
 ### 2. Pre-commit Hook Lint Blocking
 
-**Problem:** 387 lint issues block commits via pre-commit hook  
-**Workaround:** Using `--no-verify` for commits  
+**Problem:** 387 lint issues block commits via pre-commit hook\
+**Workaround:** Using `--no-verify` for commits\
 **Impact:** Lint issues accumulate, no enforcement
 
 ---
@@ -200,33 +200,33 @@ ERROR: --cache-dir and --clear-cache require --incremental mode
 
 ## f) Top #25 Things to Get Done Next
 
-| #   | Task                                      | Priority | Effort | Impact |
-| --- | ----------------------------------------- | -------- | ------ | ------ |
-| 1   | Fix TestCyclicDupl failing test           | P0       | Low    | High   |
-| 2   | Commit 15 uncommitted lint fix files      | P0       | Low    | Medium |
-| 3   | Fix domain type inference errors          | P1       | Medium | Medium |
-| 4   | Add build verification to pre-commit      | P1       | Low    | High   |
-| 5   | Fix 16 err113 dynamic error issues        | P1       | Medium | Medium |
-| 6   | Configure lint to allow incremental fixes | P1       | Low    | High   |
-| 7   | Fix wrapcheck issues (13)                 | P2       | Low    | Medium |
-| 8   | Add missing exhaustruct fields (50)       | P2       | Medium | Low    |
-| 9   | Fix godoclint issues (20)                 | P2       | Low    | Low    |
-| 10  | Document TestCyclicDupl expected behavior | P2       | Low    | Medium |
-| 11  | Fix revive exported const comments (50)   | P2       | Low    | Low    |
-| 12  | Reduce godox TODO markers (6)             | P3       | Low    | Low    |
-| 13  | Fix prealloc issues (11)                  | P3       | Low    | Low    |
-| 14  | Fix unparam issues (9)                    | P3       | Low    | Low    |
-| 15  | Fix nonamedreturns issues (7)             | P3       | Low    | Low    |
-| 16  | Add SIMD benchmarks                       | P3       | Medium | Medium |
-| 17  | Memory profiling for large codebases      | P3       | Medium | Medium |
-| 18  | Fix varnamelen issues (50)                | P3       | Medium | Low    |
-| 19  | Fix mnd magic number issues (50)          | P3       | Medium | Low    |
-| 20  | Fix tagliatelle naming issues (50)        | P3       | Medium | Low    |
-| 21  | Add IDE/LSP integration docs              | P3       | Low    | Medium |
-| 22  | Watch mode for continuous monitoring      | P4       | High   | Medium |
-| 23  | Baseline file support                     | P4       | Medium | Medium |
-| 24  | Diff output between versions              | P4       | Medium | Low    |
-| 25  | Performance regression testing            | P4       | High   | High   |
+| #  | Task                                      | Priority | Effort | Impact |
+| -- | ----------------------------------------- | -------- | ------ | ------ |
+| 1  | Fix TestCyclicDupl failing test           | P0       | Low    | High   |
+| 2  | Commit 15 uncommitted lint fix files      | P0       | Low    | Medium |
+| 3  | Fix domain type inference errors          | P1       | Medium | Medium |
+| 4  | Add build verification to pre-commit      | P1       | Low    | High   |
+| 5  | Fix 16 err113 dynamic error issues        | P1       | Medium | Medium |
+| 6  | Configure lint to allow incremental fixes | P1       | Low    | High   |
+| 7  | Fix wrapcheck issues (13)                 | P2       | Low    | Medium |
+| 8  | Add missing exhaustruct fields (50)       | P2       | Medium | Low    |
+| 9  | Fix godoclint issues (20)                 | P2       | Low    | Low    |
+| 10 | Document TestCyclicDupl expected behavior | P2       | Low    | Medium |
+| 11 | Fix revive exported const comments (50)   | P2       | Low    | Low    |
+| 12 | Reduce godox TODO markers (6)             | P3       | Low    | Low    |
+| 13 | Fix prealloc issues (11)                  | P3       | Low    | Low    |
+| 14 | Fix unparam issues (9)                    | P3       | Low    | Low    |
+| 15 | Fix nonamedreturns issues (7)             | P3       | Low    | Low    |
+| 16 | Add SIMD benchmarks                       | P3       | Medium | Medium |
+| 17 | Memory profiling for large codebases      | P3       | Medium | Medium |
+| 18 | Fix varnamelen issues (50)                | P3       | Medium | Low    |
+| 19 | Fix mnd magic number issues (50)          | P3       | Medium | Low    |
+| 20 | Fix tagliatelle naming issues (50)        | P3       | Medium | Low    |
+| 21 | Add IDE/LSP integration docs              | P3       | Low    | Medium |
+| 22 | Watch mode for continuous monitoring      | P4       | High   | Medium |
+| 23 | Baseline file support                     | P4       | Medium | Medium |
+| 24 | Diff output between versions              | P4       | Medium | Low    |
+| 25 | Performance regression testing            | P4       | High   | High   |
 
 ---
 

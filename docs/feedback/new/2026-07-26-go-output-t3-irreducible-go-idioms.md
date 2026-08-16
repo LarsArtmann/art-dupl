@@ -1,8 +1,8 @@
 # Feedback: Threshold 3 reports irreducible Go idioms as actionable clones
 
-**Date:** 2026-07-26  
-**Project:** `go-output`, a 19-module Go workspace for CLI output formatting and progress visualization  
-**Command:** `art-dupl --semantic --sort total-tokens -t 3 --html`  
+**Date:** 2026-07-26\
+**Project:** `go-output`, a 19-module Go workspace for CLI output formatting and progress visualization\
+**Command:** `art-dupl --semantic --sort total-tokens -t 3 --html`\
 **Goal:** Review every finding and drive harmful duplication to zero without introducing detector-driven abstractions.
 
 > Verdict: The report found **3 groups / 6 occurrences / 18 tokens**, but none represented harmful duplication. All three were minimum Go idioms or intentionally module-local API structure. The codebase has zero findings at `-t 4`; at `-t 3`, literal zero would require hiding lock scope, wrapping `strings.Builder`, coupling independent modules, or gaming source shape. The report should classify and suppress or down-rank these patterns instead of recommending “Review and extract common logic.”

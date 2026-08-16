@@ -183,53 +183,53 @@ cb3c4e9 fix(tests): add missing testing import and cleanup nolint directives
 
 ### Priority 1-5: Immediate
 
-| #   | Task                      | Effort | Impact | Why                   |
-| --- | ------------------------- | ------ | ------ | --------------------- |
-| 1   | Tag release v0.2.0        | 5min   | High   | Version current state |
-| 2   | Create GitHub release     | 5min   | High   | Distribution          |
-| 3   | Update CHANGELOG.md       | 10min  | Medium | Documentation         |
-| 4   | Add SARIF output format   | 4h     | High   | Security integration  |
-| 5   | Implement TokenValue type | 4h     | High   | Type safety           |
+| # | Task                      | Effort | Impact | Why                   |
+| - | ------------------------- | ------ | ------ | --------------------- |
+| 1 | Tag release v0.2.0        | 5min   | High   | Version current state |
+| 2 | Create GitHub release     | 5min   | High   | Distribution          |
+| 3 | Update CHANGELOG.md       | 10min  | Medium | Documentation         |
+| 4 | Add SARIF output format   | 4h     | High   | Security integration  |
+| 5 | Implement TokenValue type | 4h     | High   | Type safety           |
 
 ### Priority 6-10: This Week
 
-| #   | Task                                 | Effort | Impact | Why           |
-| --- | ------------------------------------ | ------ | ------ | ------------- |
-| 6   | Fix phantom type violations (top 10) | 2h     | Medium | Error context |
-| 7   | Add performance regression tests     | 3h     | High   | Quality       |
-| 8   | Create GitHub Actions workflow       | 2h     | High   | CI/CD         |
-| 9   | Add pre-commit hooks                 | 1h     | Medium | Developer UX  |
-| 10  | Update SDK examples                  | 2h     | Medium | Documentation |
+| #  | Task                                 | Effort | Impact | Why           |
+| -- | ------------------------------------ | ------ | ------ | ------------- |
+| 6  | Fix phantom type violations (top 10) | 2h     | Medium | Error context |
+| 7  | Add performance regression tests     | 3h     | High   | Quality       |
+| 8  | Create GitHub Actions workflow       | 2h     | High   | CI/CD         |
+| 9  | Add pre-commit hooks                 | 1h     | Medium | Developer UX  |
+| 10 | Update SDK examples                  | 2h     | Medium | Documentation |
 
 ### Priority 11-15: This Month
 
-| #   | Task                          | Effort | Impact | Why             |
-| --- | ----------------------------- | ------ | ------ | --------------- |
-| 11  | Split domain/coverage_test.go | 4h     | Medium | Maintainability |
-| 12  | Split pkg/artdupl/detector.go | 4h     | Medium | Maintainability |
-| 13  | Increase test coverage to 80% | 8h     | High   | Quality         |
-| 14  | Create ADRs                   | 4h     | Medium | Documentation   |
-| 15  | Add fuzzing tests             | 4h     | Medium | Robustness      |
+| #  | Task                          | Effort | Impact | Why             |
+| -- | ----------------------------- | ------ | ------ | --------------- |
+| 11 | Split domain/coverage_test.go | 4h     | Medium | Maintainability |
+| 12 | Split pkg/artdupl/detector.go | 4h     | Medium | Maintainability |
+| 13 | Increase test coverage to 80% | 8h     | High   | Quality         |
+| 14 | Create ADRs                   | 4h     | Medium | Documentation   |
+| 15 | Add fuzzing tests             | 4h     | Medium | Robustness      |
 
 ### Priority 16-20: Next Quarter
 
-| #   | Task                          | Effort | Impact | Why           |
-| --- | ----------------------------- | ------ | ------ | ------------- |
-| 16  | Watch mode MVP                | 8h     | Medium | Feature       |
-| 17  | Web dashboard MVP             | 20h    | Medium | Visualization |
-| 18  | ARM64 SIMD optimization       | 8h     | Medium | Performance   |
-| 19  | Hybrid slice/map optimization | 8h     | Low    | Memory        |
-| 20  | VSCode extension              | 20h    | High   | Developer UX  |
+| #  | Task                          | Effort | Impact | Why           |
+| -- | ----------------------------- | ------ | ------ | ------------- |
+| 16 | Watch mode MVP                | 8h     | Medium | Feature       |
+| 17 | Web dashboard MVP             | 20h    | Medium | Visualization |
+| 18 | ARM64 SIMD optimization       | 8h     | Medium | Performance   |
+| 19 | Hybrid slice/map optimization | 8h     | Low    | Memory        |
+| 20 | VSCode extension              | 20h    | High   | Developer UX  |
 
 ### Priority 21-25: Future
 
-| #   | Task                           | Effort | Impact | Why           |
-| --- | ------------------------------ | ------ | ------ | ------------- |
-| 21  | Python language support        | 40h    | High   | Expansion     |
-| 22  | TypeScript language support    | 40h    | High   | Expansion     |
-| 23  | Cloud/CI integration templates | 20h    | Medium | Adoption      |
-| 24  | Enterprise features            | 40h    | High   | Market        |
-| 25  | Plugin architecture            | 60h    | High   | Extensibility |
+| #  | Task                           | Effort | Impact | Why           |
+| -- | ------------------------------ | ------ | ------ | ------------- |
+| 21 | Python language support        | 40h    | High   | Expansion     |
+| 22 | TypeScript language support    | 40h    | High   | Expansion     |
+| 23 | Cloud/CI integration templates | 20h    | Medium | Adoption      |
+| 24 | Enterprise features            | 40h    | High   | Market        |
+| 25 | Plugin architecture            | 60h    | High   | Extensibility |
 
 ---
 

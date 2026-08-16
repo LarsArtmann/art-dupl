@@ -1,7 +1,7 @@
 # Pareto-Optimal Execution Plan for art-dupl
 
-**Created:** 2025-01-05  
-**Version:** 1.0  
+**Created:** 2025-01-05\
+**Version:** 1.0\
 **Purpose:** Strategic roadmap for delivering maximum value with minimum effort using Pareto Principle
 
 ---
@@ -20,7 +20,7 @@ These 5 critical fixes will unblock the majority of high-value improvements:
 | Complete execution timeout implementation (flag exists)          | Medium   | 2h     | 10x         | P0       |
 | Expose total-tokens sorting in config (function exists)          | Low      | 30m    | 20x         | P0       |
 
-**Total Effort:** ~11.5 hours  
+**Total Effort:** ~11.5 hours\
 **Value Delivered:** 51% of total project value
 
 **Why These 5 Tasks (The 1%):**
@@ -43,8 +43,8 @@ In addition to the 1% tasks, these items add significant value:
 | Complete ignore file support (patterns, dirs)    | Medium | 3h     | 13.3x       | P1       |
 | Fix BDD integration test flag conflicts          | Low    | 1h     | 10x         | P1       |
 
-**Additional Effort:** ~19 hours  
-**Cumulative Effort:** ~30.5 hours  
+**Additional Effort:** ~19 hours\
+**Cumulative Effort:** ~30.5 hours\
 **Cumulative Value Delivered:** 64% of total project value
 
 ### The 20% That Delivers 80% of Results
@@ -62,8 +62,8 @@ In addition to the 4% tasks, these create a mature production system:
 | Create web UI for report visualization                            | Medium | 8h     | 7.5x        | P2       |
 | Create IDE plugin (VS Code extension)                             | Medium | 8h     | 7.5x        | P2       |
 
-**Additional Effort:** ~66 hours  
-**Cumulative Effort:** ~96.5 hours  
+**Additional Effort:** ~66 hours\
+**Cumulative Effort:** ~96.5 hours\
 **Cumulative Value Delivered:** 80% of total project value
 
 ---
@@ -586,7 +586,7 @@ graph TD
 
 ---
 
-_Last Updated: 2025-01-05_  
-_Document Version: 1.0_  
-_Status: Ready for Execution_  
+_Last Updated: 2025-01-05_\
+_Document Version: 1.0_\
+_Status: Ready for Execution_\
 _Methodology: Pareto Principle (80/20 Rule)_

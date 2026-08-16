@@ -44,30 +44,30 @@ them into actionable, verifiable tasks and executes them.
 These 4 changes take ~25 minutes total and eliminate a dead user-facing flag, an
 architecture violation, a lying filename, and dead code:
 
-| #   | Task                                                            | Time  | Impact                  |
-| --- | --------------------------------------------------------------- | ----- | ----------------------- |
-| 1   | Remove `--since` dead flag (flag never read by any code)        | 15min | User-facing correctness |
-| 2   | Remove `domain/` → `errors/` dependency (6 call sites → stdlib) | 5min  | Architecture purity     |
-| 3   | Rename `syntax/hash_simd.go` → `hash_seq.go` (no SIMD inside)   | 2min  | Naming honesty          |
-| 4   | Remove empty `syntax/golang/golang.go` anchor file              | 3min  | Dead code removal       |
+| # | Task                                                            | Time  | Impact                  |
+| - | --------------------------------------------------------------- | ----- | ----------------------- |
+| 1 | Remove `--since` dead flag (flag never read by any code)        | 15min | User-facing correctness |
+| 2 | Remove `domain/` → `errors/` dependency (6 call sites → stdlib) | 5min  | Architecture purity     |
+| 3 | Rename `syntax/hash_simd.go` → `hash_seq.go` (no SIMD inside)   | 2min  | Naming honesty          |
+| 4 | Remove empty `syntax/golang/golang.go` anchor file              | 3min  | Dead code removal       |
 
 ### 4% effort → 64% result (Quick improvements)
 
-| #   | Task                                                          | Time  | Impact           |
-| --- | ------------------------------------------------------------- | ----- | ---------------- |
-| 5   | Split `printer/actionability.go` by category (624L → 4 files) | 30min | Maintainability  |
-| 6   | SDK: define own error sentinels (decouple from `config.Err*`) | 15min | SDK independence |
+| # | Task                                                          | Time  | Impact           |
+| - | ------------------------------------------------------------- | ----- | ---------------- |
+| 5 | Split `printer/actionability.go` by category (624L → 4 files) | 30min | Maintainability  |
+| 6 | SDK: define own error sentinels (decouple from `config.Err*`) | 15min | SDK independence |
 
 ### 20% effort → 80% result (Architecture refactors)
 
-| #   | Task                                                                    | Time  | Impact           |
-| --- | ----------------------------------------------------------------------- | ----- | ---------------- |
-| 7   | `detection`: own `Config` type (decouple from `config.DetectionConfig`) | 45min | Clean boundaries |
-| 8   | SDK: own internal config struct (decouple `detector.go`)                | 45min | SDK independence |
-| 9   | SDK: decouple `detector_utils.go` + `types.go` from `config`            | 30min | SDK independence |
-| 10  | SDK: decouple `detector_pipeline.go` (last config import)               | 30min | SDK independence |
-| 11  | Align Clone field names: `StartLine`→`LineStart` (canonical)            | 30min | Consistency      |
-| 12  | Update `go-arch-lint`: remove `sdk→config` dependency rule              | 10min | Enforcement      |
+| #  | Task                                                                    | Time  | Impact           |
+| -- | ----------------------------------------------------------------------- | ----- | ---------------- |
+| 7  | `detection`: own `Config` type (decouple from `config.DetectionConfig`) | 45min | Clean boundaries |
+| 8  | SDK: own internal config struct (decouple `detector.go`)                | 45min | SDK independence |
+| 9  | SDK: decouple `detector_utils.go` + `types.go` from `config`            | 30min | SDK independence |
+| 10 | SDK: decouple `detector_pipeline.go` (last config import)               | 30min | SDK independence |
+| 11 | Align Clone field names: `StartLine`→`LineStart` (canonical)            | 30min | Consistency      |
+| 12 | Update `go-arch-lint`: remove `sdk→config` dependency rule              | 10min | Enforcement      |
 
 ### Remaining 80% effort → 20% result (Deferred — see table above)
 

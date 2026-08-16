@@ -1,7 +1,7 @@
 # BoolBlind Analysis Report: art-dupl
 
-**Analysis Date:** March 25, 2026  
-**Tool:** branching-flow v1.0  
+**Analysis Date:** March 25, 2026\
+**Tool:** branching-flow v1.0\
 **Command:** `branching-flow boolblind .`
 
 ---
@@ -11,7 +11,7 @@
 | Severity    | Count | Struct        | Location            | Bool Fields |
 | ----------- | ----- | ------------- | ------------------- | ----------- |
 | 🚨 Critical | 1     | Config        | config/config.go:60 | 11 bools    |
-| ⚠️ High     | 1     | RuntimeConfig | cli/runtime.go:17   | 7 bools     |
+| ⚠️ High      | 1     | RuntimeConfig | cli/runtime.go:17   | 7 bools     |
 
 ---
 

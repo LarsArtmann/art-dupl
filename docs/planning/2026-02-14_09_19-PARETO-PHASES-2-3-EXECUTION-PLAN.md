@@ -1,8 +1,8 @@
 # Pareto-Optimal Execution Plan: Phases 2 & 3
 
-**Date**: 2026-02-14 09:19 CET  
-**Project**: art-dupl - Code Duplication Detection Tool  
-**Previous Completion**: Phase 1 (1% → 51%) ✅  
+**Date**: 2026-02-14 09:19 CET\
+**Project**: art-dupl - Code Duplication Detection Tool\
+**Previous Completion**: Phase 1 (1% → 51%) ✅\
 **Objective**: Execute Phases 2 & 3 to reach 80% cumulative value
 
 ---
@@ -13,14 +13,14 @@ Building on Phase 1 success (cmd: 28.7%, detection: 43.3%, duplication: 2.1%), t
 
 ### Current Metrics
 
-| Metric                 | Value                              | Target |
-| ---------------------- | ---------------------------------- | ------ |
-| **Build**              | ✅ SUCCESS                         | -      |
+| Metric                 | Value                             | Target |
+| ---------------------- | --------------------------------- | ------ |
+| **Build**              | ✅ SUCCESS                        | -      |
 | **Tests**              | ⚠️ 2 git tests failing (env issue) | -      |
-| **Linter**             | ✅ 0 issues                        | -      |
-| **Self-Duplication**   | 2.1% (Health Score: D)             | <2%    |
-| **cmd Coverage**       | 28.7%                              | 50%    |
-| **detection Coverage** | 43.3%                              | 50%    |
+| **Linter**             | ✅ 0 issues                       | -      |
+| **Self-Duplication**   | 2.1% (Health Score: D)            | <2%    |
+| **cmd Coverage**       | 28.7%                             | 50%    |
+| **detection Coverage** | 43.3%                             | 50%    |
 
 ---
 
@@ -30,12 +30,12 @@ Building on Phase 1 success (cmd: 28.7%, detection: 43.3%, duplication: 2.1%), t
 
 **The next 3% of tasks delivering +13% value**
 
-| #   | Task                                           | Impact     | Effort | Value                            |
-| --- | ---------------------------------------------- | ---------- | ------ | -------------------------------- |
-| 1   | Add benchmark suite for core algorithms        | **HIGH**   | Medium | Performance regression detection |
-| 2   | Split files >300 lines (cli.go modularization) | **HIGH**   | High   | Maintainability                  |
-| 3   | Complete ignore file support                   | **MEDIUM** | Low    | User experience                  |
-| 4   | Improve error handling edge cases              | **MEDIUM** | Low    | Robustness                       |
+| # | Task                                           | Impact     | Effort | Value                            |
+| - | ---------------------------------------------- | ---------- | ------ | -------------------------------- |
+| 1 | Add benchmark suite for core algorithms        | **HIGH**   | Medium | Performance regression detection |
+| 2 | Split files >300 lines (cli.go modularization) | **HIGH**   | High   | Maintainability                  |
+| 3 | Complete ignore file support                   | **MEDIUM** | Low    | User experience                  |
+| 4 | Improve error handling edge cases              | **MEDIUM** | Low    | Robustness                       |
 
 **Deliverable**: 64% cumulative value (4 tasks, ~80 minutes)
 
@@ -45,27 +45,27 @@ Building on Phase 1 success (cmd: 28.7%, detection: 43.3%, duplication: 2.1%), t
 
 **Remaining 19 tasks delivering final +16% value**
 
-| #   | Task                                            | Impact     | Effort | Category        |
-| --- | ----------------------------------------------- | ---------- | ------ | --------------- |
-| 5   | Fix errors package coverage (50.6% → 80%)       | **MEDIUM** | Low    | Test Coverage   |
-| 6   | Fix internal/enum coverage (75% → 80%)          | **LOW**    | Low    | Test Coverage   |
-| 7   | Add memory profiling for large codebases        | **MEDIUM** | Medium | Performance     |
-| 8   | Create CI/CD integration templates              | **MEDIUM** | Medium | DevOps          |
-| 9   | Improve error messages with suggestions         | **LOW**    | Low    | UX              |
-| 10  | Add progress reporting for long operations      | **LOW**    | Low    | UX              |
-| 11  | Complete CLI module splitting (post-Task 2)     | **MEDIUM** | Medium | Architecture    |
-| 12  | Add troubleshooting documentation               | **LOW**    | Low    | Documentation   |
-| 13  | Verify all partial TODO items from TODO_LIST.md | **MEDIUM** | Medium | Completeness    |
-| 14  | Clean up remaining duplication <100 lines       | **LOW**    | Low    | Code Quality    |
-| 15  | Create GitHub issues for tracking               | **LOW**    | Low    | Project Mgmt    |
-| 16  | Update README install commands                  | **LOW**    | Low    | Documentation   |
-| 17  | Add package examples                            | **LOW**    | Low    | Documentation   |
-| 18  | Final integration test verification             | **MEDIUM** | Low    | Quality         |
-| 19  | Performance regression test suite               | **MEDIUM** | Medium | Performance     |
-| 20  | Documentation completeness review               | **LOW**    | Low    | Documentation   |
-| 21  | Code review for architectural consistency       | **MEDIUM** | Low    | Architecture    |
-| 22  | Final build verification                        | **LOW**    | Low    | Release         |
-| 23  | Commit and push all changes                     | **LOW**    | Low    | Version Control |
+| #  | Task                                            | Impact     | Effort | Category        |
+| -- | ----------------------------------------------- | ---------- | ------ | --------------- |
+| 5  | Fix errors package coverage (50.6% → 80%)       | **MEDIUM** | Low    | Test Coverage   |
+| 6  | Fix internal/enum coverage (75% → 80%)          | **LOW**    | Low    | Test Coverage   |
+| 7  | Add memory profiling for large codebases        | **MEDIUM** | Medium | Performance     |
+| 8  | Create CI/CD integration templates              | **MEDIUM** | Medium | DevOps          |
+| 9  | Improve error messages with suggestions         | **LOW**    | Low    | UX              |
+| 10 | Add progress reporting for long operations      | **LOW**    | Low    | UX              |
+| 11 | Complete CLI module splitting (post-Task 2)     | **MEDIUM** | Medium | Architecture    |
+| 12 | Add troubleshooting documentation               | **LOW**    | Low    | Documentation   |
+| 13 | Verify all partial TODO items from TODO_LIST.md | **MEDIUM** | Medium | Completeness    |
+| 14 | Clean up remaining duplication <100 lines       | **LOW**    | Low    | Code Quality    |
+| 15 | Create GitHub issues for tracking               | **LOW**    | Low    | Project Mgmt    |
+| 16 | Update README install commands                  | **LOW**    | Low    | Documentation   |
+| 17 | Add package examples                            | **LOW**    | Low    | Documentation   |
+| 18 | Final integration test verification             | **MEDIUM** | Low    | Quality         |
+| 19 | Performance regression test suite               | **MEDIUM** | Medium | Performance     |
+| 20 | Documentation completeness review               | **LOW**    | Low    | Documentation   |
+| 21 | Code review for architectural consistency       | **MEDIUM** | Low    | Architecture    |
+| 22 | Final build verification                        | **LOW**    | Low    | Release         |
+| 23 | Commit and push all changes                     | **LOW**    | Low    | Version Control |
 
 **Deliverable**: 80% cumulative value (19 tasks, ~260 minutes)
 
@@ -347,5 +347,5 @@ Phase 3B (Parallel execution):
 
 ---
 
-**Plan Created**: 2026-02-14 09:19 CET  
+**Plan Created**: 2026-02-14 09:19 CET\
 **Next Action**: Execute Phase 2, Task 1 (Benchmark Suite)

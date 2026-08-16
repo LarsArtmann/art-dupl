@@ -1,6 +1,6 @@
 # art-dupl Project Status Report
 
-**Generated:** 2025-12-15_08-33  
+**Generated:** 2025-12-15_08-33\
 **Status:** 🟢 STABLE & READY FOR QUICK WINS
 
 ---

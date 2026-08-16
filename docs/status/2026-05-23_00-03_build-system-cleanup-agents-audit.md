@@ -158,48 +158,48 @@ All commits use `--no-verify` to bypass. These are pre-existing issues not addre
 
 ### High Impact, Low Effort (Do First)
 
-| #   | Task                                                                         | Impact        | Effort  |
-| --- | ---------------------------------------------------------------------------- | ------------- | ------- |
-| 1   | Fix `os.Exit(1)` in CLI tests — replace with error returns                   | CI reliable   | Medium  |
-| 2   | Fix pre-commit hook: resolve or suppress 22 TODOs + gitleaks false positives | DX            | Low     |
-| 3   | Add `.gitattributes` linguist override for generated HTML test data          | DX            | Trivial |
-| 4   | Fix BDD test flakiness (likely same os.Exit root cause)                      | CI reliable   | Medium  |
-| 5   | Verify CI passes on fork branch post-consolidation                           | CI confidence | Trivial |
+| # | Task                                                                         | Impact        | Effort  |
+| - | ---------------------------------------------------------------------------- | ------------- | ------- |
+| 1 | Fix `os.Exit(1)` in CLI tests — replace with error returns                   | CI reliable   | Medium  |
+| 2 | Fix pre-commit hook: resolve or suppress 22 TODOs + gitleaks false positives | DX            | Low     |
+| 3 | Add `.gitattributes` linguist override for generated HTML test data          | DX            | Trivial |
+| 4 | Fix BDD test flakiness (likely same os.Exit root cause)                      | CI reliable   | Medium  |
+| 5 | Verify CI passes on fork branch post-consolidation                           | CI confidence | Trivial |
 
 ### High Impact, Medium Effort
 
-| #   | Task                                                               | Impact          | Effort |
-| --- | ------------------------------------------------------------------ | --------------- | ------ |
-| 6   | Printer DTO refactor: `[][]*syntax.Node` → `[]ProcessedCloneGroup` | Architecture    | High   |
-| 7   | Consolidate 3 Clone types after Printer DTO                        | Type safety     | High   |
-| 8   | Add Nix-based CI workflow (alternative to setup-go + just)         | Reproducibility | Medium |
-| 9   | Write `.goreleaser.yaml` test: dry-run release locally             | Release safety  | Low    |
-| 10  | Add `just release` test: dry-run version bump without push         | Release safety  | Low    |
+| #  | Task                                                               | Impact          | Effort |
+| -- | ------------------------------------------------------------------ | --------------- | ------ |
+| 6  | Printer DTO refactor: `[][]*syntax.Node` → `[]ProcessedCloneGroup` | Architecture    | High   |
+| 7  | Consolidate 3 Clone types after Printer DTO                        | Type safety     | High   |
+| 8  | Add Nix-based CI workflow (alternative to setup-go + just)         | Reproducibility | Medium |
+| 9  | Write `.goreleaser.yaml` test: dry-run release locally             | Release safety  | Low    |
+| 10 | Add `just release` test: dry-run version bump without push         | Release safety  | Low    |
 
 ### Medium Impact
 
-| #   | Task                                                              | Impact              | Effort |
-| --- | ----------------------------------------------------------------- | ------------------- | ------ |
-| 11  | Self-duplication scan at t=15 and eliminate remaining clones      | Code quality        | Medium |
-| 12  | Remove `printer/clone_classify.go` coupling to `syntax/golang`    | Multi-language prep | Medium |
-| 13  | Add `domain.ProcessedClone` domain types instead of primitives    | Type safety         | Low    |
-| 14  | Increment domain/ test coverage (67.2% → 80%+)                    | Quality             | Low    |
-| 15  | Increment detection/ test coverage (78.3% → 85%+)                 | Quality             | Low    |
-| 16  | Add integration test for full release pipeline                    | Release safety      | Medium |
-| 17  | Fix ConstantCSSProperty Pos=0,End=0 (upstream templ)              | Accuracy            | Low    |
-| 18  | Add SARIF output to CI (upload as artifact or CodeQL integration) | DX                  | Low    |
+| #  | Task                                                              | Impact              | Effort |
+| -- | ----------------------------------------------------------------- | ------------------- | ------ |
+| 11 | Self-duplication scan at t=15 and eliminate remaining clones      | Code quality        | Medium |
+| 12 | Remove `printer/clone_classify.go` coupling to `syntax/golang`    | Multi-language prep | Medium |
+| 13 | Add `domain.ProcessedClone` domain types instead of primitives    | Type safety         | Low    |
+| 14 | Increment domain/ test coverage (67.2% → 80%+)                    | Quality             | Low    |
+| 15 | Increment detection/ test coverage (78.3% → 85%+)                 | Quality             | Low    |
+| 16 | Add integration test for full release pipeline                    | Release safety      | Medium |
+| 17 | Fix ConstantCSSProperty Pos=0,End=0 (upstream templ)              | Accuracy            | Low    |
+| 18 | Add SARIF output to CI (upload as artifact or CodeQL integration) | DX                  | Low    |
 
 ### Lower Priority
 
-| #   | Task                                                        | Impact          | Effort  |
-| --- | ----------------------------------------------------------- | --------------- | ------- |
-| 19  | Add cache invalidation strategy docs                        | Docs            | Trivial |
-| 20  | Migrate remaining justfile recipes to nix apps/checks       | Build system    | Medium  |
-| 21  | Add nix flake schema for config validation                  | DX              | Medium  |
-| 22  | Add `nix develop` CI workflow (pure nix, no just)           | Reproducibility | Medium  |
-| 23  | Write SDK examples with real file system tests              | Docs            | Low     |
-| 24  | Add `--include-generic` filter docs to HOW_TO_USE.md        | Docs            | Trivial |
-| 25  | Clean up docs/status/ historical reports (archive old ones) | Housekeeping    | Trivial |
+| #  | Task                                                        | Impact          | Effort  |
+| -- | ----------------------------------------------------------- | --------------- | ------- |
+| 19 | Add cache invalidation strategy docs                        | Docs            | Trivial |
+| 20 | Migrate remaining justfile recipes to nix apps/checks       | Build system    | Medium  |
+| 21 | Add nix flake schema for config validation                  | DX              | Medium  |
+| 22 | Add `nix develop` CI workflow (pure nix, no just)           | Reproducibility | Medium  |
+| 23 | Write SDK examples with real file system tests              | Docs            | Low     |
+| 24 | Add `--include-generic` filter docs to HOW_TO_USE.md        | Docs            | Trivial |
+| 25 | Clean up docs/status/ historical reports (archive old ones) | Housekeeping    | Trivial |
 
 ---
 

@@ -47,9 +47,9 @@ Vet:       ✅ go vet ./... — clean
 | syntax/templ   | 84.6%    | ✅                                                     |
 | pkg/logger     | 87.5%    | ✅                                                     |
 | pkg/enum       | 94.1%    | ✅                                                     |
-| printer        | 75.6%    | ⚠️                                                     |
-| cmd            | 75.0%    | ⚠️                                                     |
-| job            | 72.1%    | ⚠️                                                     |
+| printer        | 75.6%    | ⚠️                                                      |
+| cmd            | 75.0%    | ⚠️                                                      |
+| job            | 72.1%    | ⚠️                                                      |
 | detection      | 61.8%    | 🔴                                                     |
 | domain         | 58.6%    | 🔴 (dropped from 66.2% — new CloneType enum uncovered) |
 
@@ -158,33 +158,33 @@ Nothing. No regressions, no broken builds, no reverted changes.
 
 ## f) Top #25 Things to Get Done Next
 
-| #   | Task                                                                                       | Impact   | Effort | Risk   |
-| --- | ------------------------------------------------------------------------------------------ | -------- | ------ | ------ |
-| 1   | **T6 logic**: Implement clone type classification — compare `Name` fields across fragments | High     | 30min  | Low    |
-| 2   | **T6 output**: Add `clone_type` to JSON output                                             | Medium   | 15min  | Low    |
-| 3   | **T19**: Domain coverage tests (CloneType, ClonePriority, ProcessedClone)                  | Medium   | 50min  | Low    |
-| 4   | **T18**: Detection coverage tests (MultiDetector dispatch, adapter)                        | Medium   | 70min  | Low    |
-| 5   | **T17**: Property-based tests for suffix tree                                              | High     | 60min  | Low    |
-| 6   | **T10**: Baseline file format + `baseline` subcommand                                      | Critical | 90min  | Medium |
-| 7   | **T10**: `check` subcommand with clone diff + exit code 1                                  | Critical | 45min  | Medium |
-| 8   | **T12**: Thread `context.Context` through `run_crawl.go`                                   | Medium   | 45min  | Low    |
-| 9   | **Dogfood T9**: Run on `.auto-deduplicate/false-positives.json` patterns                   | High     | 20min  | Low    |
-| 10  | **T11**: Extractability score design + implementation                                      | High     | 70min  | Medium |
-| 11  | **Update AGENTS.md**: Document T3/T4/T7/T8/T9 changes                                      | Medium   | 15min  | Low    |
-| 12  | **Update HOW_TO_USE.md**: Document `--ignore-tests`, `--include-tests`                     | Medium   | 15min  | Low    |
-| 13  | **Update FEATURES.md**: Add overlap elimination, BasicLit hashing, new flags               | Medium   | 15min  | Low    |
-| 14  | **T1 prototype**: Spike statement-level tokenization in a branch                           | Critical | 120min | HIGH   |
-| 15  | **T2 prototype**: Spike alpha-normalization walker                                         | Critical | 80min  | HIGH   |
-| 16  | **T5**: Three-mode system (`--exact`/`--semantic`/`--structural`)                          | Critical | 80min  | High   |
-| 17  | **T20**: Performance benchmarks — establish baseline before T1                             | Low      | 45min  | Low    |
-| 18  | **T13**: Design `ReadOnlyNode` interface for printer decoupling                            | Medium   | 80min  | Medium |
-| 19  | **T21**: GitHub Actions workflow template                                                  | Medium   | 40min  | Low    |
-| 20  | **T22**: Pre-commit hook YAML                                                              | Medium   | 35min  | Low    |
-| 21  | **Fix domain coverage**: Write CloneType tests specifically                                | High     | 20min  | Low    |
-| 22  | **Review false-positives.json**: Check which entries T9 patterns now catch                 | High     | 30min  | Low    |
-| 23  | **T14**: Consolidate CloneLocation in ProcessedClone/CloneGroup/SDK Clone                  | Medium   | 90min  | Medium |
-| 24  | **T23**: Audit and migrate to encoding/json/v2                                             | Low      | 40min  | Low    |
-| 25  | **T24**: Rename `*Data` → `*View` in printer                                               | Low      | 35min  | Low    |
+| #  | Task                                                                                       | Impact   | Effort | Risk   |
+| -- | ------------------------------------------------------------------------------------------ | -------- | ------ | ------ |
+| 1  | **T6 logic**: Implement clone type classification — compare `Name` fields across fragments | High     | 30min  | Low    |
+| 2  | **T6 output**: Add `clone_type` to JSON output                                             | Medium   | 15min  | Low    |
+| 3  | **T19**: Domain coverage tests (CloneType, ClonePriority, ProcessedClone)                  | Medium   | 50min  | Low    |
+| 4  | **T18**: Detection coverage tests (MultiDetector dispatch, adapter)                        | Medium   | 70min  | Low    |
+| 5  | **T17**: Property-based tests for suffix tree                                              | High     | 60min  | Low    |
+| 6  | **T10**: Baseline file format + `baseline` subcommand                                      | Critical | 90min  | Medium |
+| 7  | **T10**: `check` subcommand with clone diff + exit code 1                                  | Critical | 45min  | Medium |
+| 8  | **T12**: Thread `context.Context` through `run_crawl.go`                                   | Medium   | 45min  | Low    |
+| 9  | **Dogfood T9**: Run on `.auto-deduplicate/false-positives.json` patterns                   | High     | 20min  | Low    |
+| 10 | **T11**: Extractability score design + implementation                                      | High     | 70min  | Medium |
+| 11 | **Update AGENTS.md**: Document T3/T4/T7/T8/T9 changes                                      | Medium   | 15min  | Low    |
+| 12 | **Update HOW_TO_USE.md**: Document `--ignore-tests`, `--include-tests`                     | Medium   | 15min  | Low    |
+| 13 | **Update FEATURES.md**: Add overlap elimination, BasicLit hashing, new flags               | Medium   | 15min  | Low    |
+| 14 | **T1 prototype**: Spike statement-level tokenization in a branch                           | Critical | 120min | HIGH   |
+| 15 | **T2 prototype**: Spike alpha-normalization walker                                         | Critical | 80min  | HIGH   |
+| 16 | **T5**: Three-mode system (`--exact`/`--semantic`/`--structural`)                          | Critical | 80min  | High   |
+| 17 | **T20**: Performance benchmarks — establish baseline before T1                             | Low      | 45min  | Low    |
+| 18 | **T13**: Design `ReadOnlyNode` interface for printer decoupling                            | Medium   | 80min  | Medium |
+| 19 | **T21**: GitHub Actions workflow template                                                  | Medium   | 40min  | Low    |
+| 20 | **T22**: Pre-commit hook YAML                                                              | Medium   | 35min  | Low    |
+| 21 | **Fix domain coverage**: Write CloneType tests specifically                                | High     | 20min  | Low    |
+| 22 | **Review false-positives.json**: Check which entries T9 patterns now catch                 | High     | 30min  | Low    |
+| 23 | **T14**: Consolidate CloneLocation in ProcessedClone/CloneGroup/SDK Clone                  | Medium   | 90min  | Medium |
+| 24 | **T23**: Audit and migrate to encoding/json/v2                                             | Low      | 40min  | Low    |
+| 25 | **T24**: Rename `*Data` → `*View` in printer                                               | Low      | 35min  | Low    |
 
 ---
 

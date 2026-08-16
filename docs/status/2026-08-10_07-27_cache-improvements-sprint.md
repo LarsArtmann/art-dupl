@@ -10,6 +10,7 @@
 ## a) FULLY DONE
 
 ### 1. CacheVersion bumped from 2 → 3
+
 - **File:** `cache/file_cache.go:49`
 - **What:** `CacheVersion` constant changed from 2 to 3 with explanatory comment.
 - **Why:** The `KeyWithParams` change (which added `mode:maxChildren:typeAwareTag` to the cache key) orphaned all v2 on-disk entries. Bumping the version makes this explicit — old entries are rejected by the version-mismatch check in `deserialize()` and auto-removed.
@@ -17,6 +18,7 @@
 - **Status:** ✅ Complete, tested, committed.
 
 ### 2. In-memory LRU layer
+
 - **New file:** `cache/lru.go` (133 lines)
 - **Modified:** `cache/file_cache.go` — `FileCache` struct gained `mem *lru` field; `Get`, `Set`, `Remove`, `Clear`, `Prune` all wired to keep both layers in sync.
 - **What:** 512-entry `container/list`-based LRU with `sync.Mutex`. `Get` checks LRU first (O(1), no gob deserialization), falls back to disk, promotes disk hits into LRU. `Get` always returns deep clones via `cloneNodes()` so callers can't corrupt the canonical copy. `Set` writes to both layers. `Remove`/`Clear`/`Prune` evict from both.
@@ -24,17 +26,20 @@
 - **Status:** ✅ Complete, tested, committed.
 
 ### 3. Hysteresis pruning
+
 - **File:** `cache/file_cache.go::Prune` (rewritten)
 - **What:** Pruning triggers at 110% of `maxEntries` (high water mark) and evicts down to 90% (low water mark). Evicted entries removed from both disk and LRU. This amortizes the O(n log n) sort across many cache misses instead of paying it on every miss.
 - **Tests added:** `TestFileCache_HysteresisPruning` with 3 subtests: `no_prune_below_high_water` (11 entries, max=10 → no eviction), `prune_above_high_water_to_low_water` (15 entries, max=10 → evict 6 down to 9), `prune_evicts_from_lru` (verifies LRU eviction alongside disk).
 - **Status:** ✅ Complete, tested, committed.
 
 ### 4. `cacheKey()` unit test
+
 - **File:** `job/incremental_test.go::TestIncrementalParserCacheKeyFormat`
 - **What:** 5 subtests: `params_format_is_mode:maxChildren:typeAwareTag` (exact format verification via `cache.KeyWithParams` comparison), `different_modes_produce_different_keys`, `different_maxChildren_produce_different_keys`, `different_typeAwareTags_produce_different_keys`, `same_params_produce_same_key`.
 - **Status:** ✅ Complete, tested, committed.
 
 ### 5. AGENTS.md documentation updated
+
 - Updated `Cache eviction` entry to document hysteresis (110%/90%).
 - Added new `In-memory LRU layer` entry documenting the LRU architecture, lock ordering, and clone semantics.
 - Updated `Cache key isolation` entry with explicit params format `"mode:maxChildren:typeAwareTag"` and CacheVersion=3.
@@ -43,6 +48,7 @@
 - **Status:** ✅ Complete, committed.
 
 ### 6. Refactoring: `cloneWithFilename` → `stampFilename`
+
 - **File:** `job/incremental.go`
 - **What:** The fast path (cache hit) previously called `cloneWithFilename` which deep-cloned + stamped filename. Since `Get` now returns deep clones, the fast path uses `stampFilename` (stamps in-place, no re-clone). The slow path (singleflight miss) still uses `deepCloneNodes` + `stampFilename` because the singleflight result is shared across callers.
 - **Status:** ✅ Complete, tested, committed.
@@ -108,6 +114,7 @@ No regressions, no broken tests, no data loss. All 29 test packages pass clean.
 ## f) Up to 50 Things We Should Get Done Next
 
 ### Cache (direct follow-ups)
+
 1. Expose `memHits` in `Stats()` struct and CLI `--cache-stats` output
 2. Make LRU capacity configurable via `Config.MemoryCacheEntries` + `--memory-cache-entries` CLI flag
 3. Add lock-ordering comments on `FileCache` and `lru` types
@@ -124,6 +131,7 @@ No regressions, no broken tests, no data loss. All 29 test packages pass clean.
 14. Consider 2Q or ARC eviction policy instead of LRU (better scan resistance)
 
 ### Cache (broader improvements)
+
 15. Add cache warming: pre-populate LRU from disk on `NewFileCache` for most-recently-used entries
 16. Add `FileCache.Close()` method that flushes metadata and LRU stats to disk
 17. Consider `mmap` for large gob files instead of `os.ReadFile` (avoid copy)
@@ -137,6 +145,7 @@ No regressions, no broken tests, no data loss. All 29 test packages pass clean.
 25. Consider `gob` replacement: `encoding/json/v2` or `msgpack` for smaller/faster serialization
 
 ### job/incremental.go
+
 26. Rename `td` parameter in `SetTypeAwareData` to fix pre-existing `varnamelen` lint warning
 27. Add benchmark for `parseFile` cache-hit vs cache-miss path
 28. Consider `singleflight` key prefixing to avoid hash collisions across different cache directories
@@ -144,6 +153,7 @@ No regressions, no broken tests, no data loss. All 29 test packages pass clean.
 30. Document the clone invariant: "every `[]*syntax.Node` returned from `parseFile` must be independently owned by the caller"
 
 ### Testing
+
 31. Add `-race` CI job (currently can't run locally due to `CGO_ENABLED=0` in Nix devShell)
 32. Add fuzz test for `cacheKey()` with random params combinations
 33. Add fuzz test for `KeyWithParams` length-prefix collision resistance
@@ -156,6 +166,7 @@ No regressions, no broken tests, no data loss. All 29 test packages pass clean.
 40. Add test: `Set` same key twice replaces (not duplicates) in LRU
 
 ### Documentation
+
 41. Add ADR for LRU layer architecture (lock ordering, clone semantics, eviction policy)
 42. Update `HOW_TO_USE.md` with `--memory-cache-entries` flag (once implemented)
 43. Update `TESTING.md` with cache test conventions (LRU testing patterns)
@@ -163,6 +174,7 @@ No regressions, no broken tests, no data loss. All 29 test packages pass clean.
 45. Update `FEATURES.md` with "In-memory LRU cache layer" feature entry
 
 ### Code Quality
+
 46. Consider extracting `cloneNodes` to `syntax` package (duplicated in `cache/lru.go` and `job/incremental.go::deepCloneNodes`)
 47. Consider `lru` interface for testability (mock LRU in FileCache tests)
 48. Add `//nolint:forcetypeassert` with justification on the `elem.Value.(*lruEntry)` assertions (they are safe because only `lru` code pushes to the list)
@@ -174,10 +186,13 @@ No regressions, no broken tests, no data loss. All 29 test packages pass clean.
 ## g) Questions
 
 ### 1. Should the LRU capacity be configurable, and if so, what should the default be?
+
 The current hardcoded 512 is reasonable for most projects, but large monorepos (1000+ files) would benefit from a higher default. Should I add `--memory-cache-entries` (default 512) or make it a percentage of `--max-cache-entries`? I could also auto-size it to `maxCacheEntries` if set, or `runtime.GOMAXPROCS * 64` as a heuristic.
 
 ### 2. Should `Set` defensively clone the nodes slice, or trust the caller?
+
 Currently `Set` stores the caller's slice directly in the LRU. This is safe because `parseFile` passes a `deepCloneNodes` result. But a future caller could accidentally pass a mutable slice. Defensive cloning adds 1 clone per `Set` call (small cost). The alternative is an explicit ownership-transfer contract ("caller must not use `nodes` after `Set`"). Which approach do you prefer?
 
 ### 3. Should I add a `GetShared` method for the singleflight double-check path?
+
 The singleflight callback does `if cachedNodes, hit := ip.cache.Get(contentHash); hit { return cachedNodes, nil }` — but `Get` returns a deep clone, and then the singleflight caller does `deepCloneNodes(parsedNodes)` again (double clone). A `GetShared` that returns the canonical pointer (no clone) would eliminate 1 clone per singleflight coalescing event. The tradeoff is a less safe API. Worth doing?

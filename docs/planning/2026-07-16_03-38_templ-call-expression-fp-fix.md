@@ -62,37 +62,37 @@ func (t *transformer) transformCallTemplateExpression(cte *templparser.CallTempl
 
 ## Comprehensive Plan (30-100min tasks)
 
-| #   | Task                                                                                  | Impact                         | Effort | Priority |
-| --- | ------------------------------------------------------------------------------------- | ------------------------------ | ------ | -------- |
-| 1   | Fix `transformCallTemplateExpression`: add callee name extraction + semantic encoding | Critical — eliminates both FPs | 10min  | P0       |
-| 2   | Write unit test: verify `@demoSection(...)` ≠ `@display.DataTable(...)` tokens        | High — regression guard        | 10min  | P0       |
-| 3   | Run `go test ./syntax/templ/... -count=1`                                             | High — verify templ tests pass | 5min   | P0       |
-| 4   | Run full test suite `go test ./... -count=1`                                          | High — verify no regressions   | 10min  | P1       |
-| 5   | Build binary and re-run 15-project validation                                         | High — confirm 0 FPs           | 15min  | P1       |
-| 6   | Run lint on changed files                                                             | Medium — hygiene               | 5min   | P1       |
-| 7   | Update validation doc with post-fix results                                           | Medium — documentation         | 5min   | P2       |
-| 8   | Commit and push                                                                       | Required — persist work        | 5min   | P2       |
+| # | Task                                                                                  | Impact                         | Effort | Priority |
+| - | ------------------------------------------------------------------------------------- | ------------------------------ | ------ | -------- |
+| 1 | Fix `transformCallTemplateExpression`: add callee name extraction + semantic encoding | Critical — eliminates both FPs | 10min  | P0       |
+| 2 | Write unit test: verify `@demoSection(...)` ≠ `@display.DataTable(...)` tokens        | High — regression guard        | 10min  | P0       |
+| 3 | Run `go test ./syntax/templ/... -count=1`                                             | High — verify templ tests pass | 5min   | P0       |
+| 4 | Run full test suite `go test ./... -count=1`                                          | High — verify no regressions   | 10min  | P1       |
+| 5 | Build binary and re-run 15-project validation                                         | High — confirm 0 FPs           | 15min  | P1       |
+| 6 | Run lint on changed files                                                             | Medium — hygiene               | 5min   | P1       |
+| 7 | Update validation doc with post-fix results                                           | Medium — documentation         | 5min   | P2       |
+| 8 | Commit and push                                                                       | Required — persist work        | 5min   | P2       |
 
 ---
 
 ## Detailed Breakdown (max 12min tasks)
 
-| #   | Task                                                               | File(s)                                     | Est   |
-| --- | ------------------------------------------------------------------ | ------------------------------------------- | ----- |
-| 1a  | Add `"strings"` import to `transform_components.go`                | `syntax/templ/transform_components.go`      | 2min  |
-| 1b  | Add `extractCalleeName(expr string) string` helper                 | `syntax/templ/transform_components.go`      | 3min  |
-| 1c  | Update `transformCallTemplateExpression` to encode callee name     | `syntax/templ/transform_components.go`      | 3min  |
-| 2a  | Write `TestExtractCalleeName` table-driven test                    | `syntax/templ/transform_components_test.go` | 5min  |
-| 2b  | Write `TestCallTemplateSemanticEncoding` test                      | `syntax/templ/transform_components_test.go` | 5min  |
-| 3a  | Run `go test ./syntax/templ/... -count=1 -v`                       | —                                           | 3min  |
-| 4a  | Run `go test ./... -count=1 -timeout 180s`                         | —                                           | 10min |
-| 5a  | Build binary: `go build -o /tmp/art-dupl ./cmd/art-dupl/`          | —                                           | 2min  |
-| 5b  | Run validation on templ-components (the FP source)                 | —                                           | 2min  |
-| 5c  | Run validation on all 15 projects                                  | —                                           | 10min |
-| 6a  | Run `golangci-lint run --timeout 5m ./syntax/templ/...`            | —                                           | 5min  |
-| 7a  | Update `docs/status/2026-07-16_semantic-validation-15-projects.md` | docs                                        | 3min  |
-| 8a  | `git add` + `git commit` with detailed message                     | —                                           | 5min  |
-| 8b  | `git push`                                                         | —                                           | 2min  |
+| #  | Task                                                               | File(s)                                     | Est   |
+| -- | ------------------------------------------------------------------ | ------------------------------------------- | ----- |
+| 1a | Add `"strings"` import to `transform_components.go`                | `syntax/templ/transform_components.go`      | 2min  |
+| 1b | Add `extractCalleeName(expr string) string` helper                 | `syntax/templ/transform_components.go`      | 3min  |
+| 1c | Update `transformCallTemplateExpression` to encode callee name     | `syntax/templ/transform_components.go`      | 3min  |
+| 2a | Write `TestExtractCalleeName` table-driven test                    | `syntax/templ/transform_components_test.go` | 5min  |
+| 2b | Write `TestCallTemplateSemanticEncoding` test                      | `syntax/templ/transform_components_test.go` | 5min  |
+| 3a | Run `go test ./syntax/templ/... -count=1 -v`                       | —                                           | 3min  |
+| 4a | Run `go test ./... -count=1 -timeout 180s`                         | —                                           | 10min |
+| 5a | Build binary: `go build -o /tmp/art-dupl ./cmd/art-dupl/`          | —                                           | 2min  |
+| 5b | Run validation on templ-components (the FP source)                 | —                                           | 2min  |
+| 5c | Run validation on all 15 projects                                  | —                                           | 10min |
+| 6a | Run `golangci-lint run --timeout 5m ./syntax/templ/...`            | —                                           | 5min  |
+| 7a | Update `docs/status/2026-07-16_semantic-validation-15-projects.md` | docs                                        | 3min  |
+| 8a | `git add` + `git commit` with detailed message                     | —                                           | 5min  |
+| 8b | `git push`                                                         | —                                           | 2min  |
 
 ---
 

@@ -63,17 +63,24 @@ The prior feedback notes (`2026-07-19_cyberdom_t25_templ_exclusion_and_accept_tr
 
 ```json
 {
-	"version": "1.0",
-	"threshold": 50,
-	"files_analyzed": 125,
-	"detection_method": "art-dupl",
-	"clone_groups": [
-		{
-			"hash": "066c9c29b47f04ac",
-			"size": 3,
-			"files": [{ "filename": "...", "line_start": 23, "line_end": 46, "fragment": "..." }]
-		}
-	]
+  "version": "1.0",
+  "threshold": 50,
+  "files_analyzed": 125,
+  "detection_method": "art-dupl",
+  "clone_groups": [
+    {
+      "hash": "066c9c29b47f04ac",
+      "size": 3,
+      "files": [
+        {
+          "filename": "...",
+          "line_start": 23,
+          "line_end": 46,
+          "fragment": "..."
+        }
+      ]
+    }
+  ]
 }
 ```
 

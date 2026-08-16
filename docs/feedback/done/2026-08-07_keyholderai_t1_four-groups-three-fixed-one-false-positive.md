@@ -9,19 +9,20 @@
 
 ## Results
 
-| Group | Locations | Initial decision | Actual category | Final decision |
-| ----- | --------- | ---------------- | --------------- | -------------- |
-| `buf := &threadSafeBuffer{}` + JSON logger + cookie jar + SSE Get + 50ms sleep + `wireFrames` channel | `handlers/chat_stream_test.go:1152-1185`, `:1502-1535` | Extract test helper | **Harmful: ~30 useful lines duplicated across two end-to-end tests** | **Extracted `playFlowHarness` + `startPlayFlowHarness`** |
-| `if X == "" { X = "default" }` (env var key vs output path) | `cmd/test-images/main.go:16-18`, `services/image_generator.go:104-106` | Extract helper | **Harmful: identical conditional idiom in two unrelated domains** | **Replaced with `cmp.Or(x, fallback)` (Go 1.22+ stdlib)** |
-| `type RequestID string` (split brain across `models` and `types`) | `models/ids.go:43`, `types/image_uri.go:11` | Pick one | **Split-brain: same identifier, different purposes, different supporting code; `types.RequestID` was only used by one test** | **Eliminated `types.RequestID`; relocated the test to `t.Skip`** |
-| `defer unsubscribe()` vs `defer unsubscribeHistory()` | `handlers/chat_sse.go:119`, `:222` | Accept (idiom) | **False positive: defer is a fundamental Go idiom; called functions are different (`h.hub.Unsubscribe` vs `chatHistory.Unsubscribe` cleanup); resources are unrelated** | **Accepted with `//art-dupl:accept` directives** |
+| Group                                                                                                 | Locations                                                              | Initial decision    | Actual category                                                                                                                                                         | Final decision                                                   |
+| ----------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- | ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| `buf := &threadSafeBuffer{}` + JSON logger + cookie jar + SSE Get + 50ms sleep + `wireFrames` channel | `handlers/chat_stream_test.go:1152-1185`, `:1502-1535`                 | Extract test helper | **Harmful: ~30 useful lines duplicated across two end-to-end tests**                                                                                                    | **Extracted `playFlowHarness` + `startPlayFlowHarness`**         |
+| `if X == "" { X = "default" }` (env var key vs output path)                                           | `cmd/test-images/main.go:16-18`, `services/image_generator.go:104-106` | Extract helper      | **Harmful: identical conditional idiom in two unrelated domains**                                                                                                       | **Replaced with `cmp.Or(x, fallback)` (Go 1.22+ stdlib)**        |
+| `type RequestID string` (split brain across `models` and `types`)                                     | `models/ids.go:43`, `types/image_uri.go:11`                            | Pick one            | **Split-brain: same identifier, different purposes, different supporting code; `types.RequestID` was only used by one test**                                            | **Eliminated `types.RequestID`; relocated the test to `t.Skip`** |
+| `defer unsubscribe()` vs `defer unsubscribeHistory()`                                                 | `handlers/chat_sse.go:119`, `:222`                                     | Accept (idiom)      | **False positive: defer is a fundamental Go idiom; called functions are different (`h.hub.Unsubscribe` vs `chatHistory.Unsubscribe` cleanup); resources are unrelated** | **Accepted with `//art-dupl:accept` directives**                 |
 
 **Files modified:**
+
 - `handlers/chat_stream_test.go` — extracted `playFlowHarness` struct + `startPlayFlowHarness(t, ai, timeout, framesBuf)` helper; both `TestPlayFlow_SSEAndPOSTEndToEnd` and `TestPlayFlow_MultiTurnEndToEnd` now call it.
 - `cmd/test-images/main.go` — `falKey` env var now uses `cmp.Or(os.Getenv("FAL_KEY"), "<hardcoded fallback>")`. Added `cmp` import.
 - `services/image_generator.go` — `ensureOutputDir` now uses `cmp.Or(outputDir, "static/images")`. Added `cmp` import.
 - `types/image_uri.go` — removed `RequestID` type, `String()`, `IsEmpty()` (dead code — only used by one test).
-- `types/image_test.go` — `TestRequestID` body replaced with `t.Skip("RequestID moved to models.RequestID")` so coverage is preserved at the call site that *is* production code.
+- `types/image_test.go` — `TestRequestID` body replaced with `t.Skip("RequestID moved to models.RequestID")` so coverage is preserved at the call site that _is_ production code.
 - `handlers/chat_sse.go` — added `//art-dupl:accept` directives with line references on both defer lines.
 
 ---
@@ -221,6 +222,7 @@ Both call sites went from 3 lines to 1, the intent is clearer ("X, or this fallb
 ### Why a project helper would have been wrong
 
 A `pkg/strutil.DefaultIfEmpty(s, fallback string) string` would have:
+
 1. Added a non-stdlib dependency for a 1-line stdlib function.
 2. Hidden the semantics (a reader has to look up the helper to know what it does).
 3. Not reduced the call-site line count (still 1 line: `strutil.DefaultIfEmpty(x, y)`).
@@ -254,15 +256,15 @@ Two single-line type declarations with the same name, same underlying type, but 
 
 Investment in the two types was wildly asymmetric:
 
-| Surface | `models.RequestID` | `types.RequestID` |
-| ------- | ------------------ | ----------------- |
-| Type declaration | `type RequestID string` | `type RequestID string` |
-| Generator | `GenerateRequestID()` returns `req_<uuid>` | — |
-| Validator | `ParseRequestID`, `MustRequestID`, `IsValid` | — |
-| Regex | `requestIDPattern = "^req_[a-zA-Z0-9_-]{1,50}$"` | — |
-| Companion methods | `String()`, `IsEmpty()` | `String()`, `IsEmpty()` |
-| Production usage | Everywhere (chat handlers, middleware, errors, dispatch) | None |
-| Test usage | Indirect (via constants) | One test (`TestRequestID`) |
+| Surface           | `models.RequestID`                                       | `types.RequestID`          |
+| ----------------- | -------------------------------------------------------- | -------------------------- |
+| Type declaration  | `type RequestID string`                                  | `type RequestID string`    |
+| Generator         | `GenerateRequestID()` returns `req_<uuid>`               | —                          |
+| Validator         | `ParseRequestID`, `MustRequestID`, `IsValid`             | —                          |
+| Regex             | `requestIDPattern = "^req_[a-zA-Z0-9_-]{1,50}$"`         | —                          |
+| Companion methods | `String()`, `IsEmpty()`                                  | `String()`, `IsEmpty()`    |
+| Production usage  | Everywhere (chat handlers, middleware, errors, dispatch) | None                       |
+| Test usage        | Indirect (via constants)                                 | One test (`TestRequestID`) |
 
 `types.RequestID` had no producer, no consumer, no validator, no use case beyond the test that verified `String()` and `IsEmpty()` work. The test was verifying the implementation of dead code.
 
@@ -353,10 +355,10 @@ Two single-line `defer X()` calls. `--explain` classified as `type-2 | actionabl
 
 The two calls are in **different functions** of the same file:
 
-| Line | Function | Resource | Source of `unsubscribe` |
-| ---- | -------- | -------- | ----------------------- |
-| 119 | `(*ChatHandler).Stream` | `ssehub.Hub` subscription (channel `chat:<chatID>`) | `h.hub.Unsubscribe(hubCh)` |
-| 222 | `(*ChatHandler).chatStreamIdle` | `ChatHistoryManager` subscription | `h.chatHistory.Unsubscribe(...)` |
+| Line | Function                        | Resource                                            | Source of `unsubscribe`          |
+| ---- | ------------------------------- | --------------------------------------------------- | -------------------------------- |
+| 119  | `(*ChatHandler).Stream`         | `ssehub.Hub` subscription (channel `chat:<chatID>`) | `h.hub.Unsubscribe(hubCh)`       |
+| 222  | `(*ChatHandler).chatStreamIdle` | `ChatHistoryManager` subscription                   | `h.chatHistory.Unsubscribe(...)` |
 
 The `defer` keyword is the same; the `unsubscribe` identifier is different; the underlying resources are unrelated (one is the pub/sub hub, the other is the chat history). Extracting a helper would be impossible without making the code worse:
 

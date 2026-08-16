@@ -20,13 +20,13 @@ echo "Current:  $TOTAL issues"
 echo ""
 
 if [ "$TOTAL" -lt "$BASELINE" ]; then
-    CHANGE=$((BASELINE - TOTAL))
-    echo "✅ IMPROVED: -$CHANGE issues"
+	CHANGE=$((BASELINE - TOTAL))
+	echo "✅ IMPROVED: -$CHANGE issues"
 elif [ "$TOTAL" -gt "$BASELINE" ]; then
-    CHANGE=$((TOTAL - BASELINE))
-    echo "❌ REGRESSED: +$CHANGE issues"
+	CHANGE=$((TOTAL - BASELINE))
+	echo "❌ REGRESSED: +$CHANGE issues"
 else
-    echo "➡️  NO CHANGE: $TOTAL issues"
+	echo "➡️  NO CHANGE: $TOTAL issues"
 fi
 
 echo ""

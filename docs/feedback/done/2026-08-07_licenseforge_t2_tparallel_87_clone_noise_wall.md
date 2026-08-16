@@ -4,7 +4,7 @@
 **Project:** `licenseforge`, an enterprise-grade license management CLI tool (Go 1.26.4, Clean Architecture with `samber/do/v2` DI, 96 Go files discovered, 71 production / 28 test files, ~10 packages across domain/application/infrastructure/interface layers)
 **art-dupl version:** `0.6.1-c170f4d`
 **Command:** `art-dupl --type-aware --sort total-tokens -t 2`
-**Goal:** Drive harmful duplication to zero with the user's mandate: *"GET IT DOWN TO ZERO! ... DO NOT STOP UNTIL THE ENTIRE LIST IS FINISHED and VERIFIED!"*
+**Goal:** Drive harmful duplication to zero with the user's mandate: _"GET IT DOWN TO ZERO! ... DO NOT STOP UNTIL THE ENTIRE LIST IS FINISHED and VERIFIED!"_
 
 > **Verdict:** The codebase is genuinely clean. At `-t 3` and above: **0 clone groups**. At `-t 2`: **1 clone group with 87 occurrences**, every single one the identical one-line `t.Parallel()` call in test files. This is the most basic Go testing idiom — not harmful duplication by any definition. No source files were modified; no refactoring was needed. The session confirms that art-dupl's higher thresholds (≥3) produce excellent signal-to-noise on Go code, but `-t 2` generates a wall of single-statement test-idiom noise that buries the "zero clones" result in false positives. The `--ignore-tests` flag eliminates the noise entirely (0 clone groups at `-t 2`), proving that test files are the sole source of `-t 2` noise on this codebase.
 
@@ -14,33 +14,33 @@
 
 ## Results
 
-| Threshold | Clone groups | Total occurrences | Content | Actual category | Decision |
-| --------- | ------------ | ----------------- | ------- | --------------- | -------- |
-| `-t 10`   | 0            | 0                 | —       | —               | —        |
-| `-t 5`    | 0            | 0                 | —       | —               | —        |
-| `-t 3`    | 0            | 0                 | —       | —               | —        |
-| `-t 2`    | 1            | 87                | `t.Parallel()` | Go test idiom — single-statement concurrency marker | **Accept** |
-| `-t 1`    | 2            | 89                | 87× `t.Parallel()` + 2× `GenerateRequest = requests.GenerateRequest` | Test idiom + Go type alias re-export | **Accept both** |
+| Threshold | Clone groups | Total occurrences | Content                                                              | Actual category                                     | Decision        |
+| --------- | ------------ | ----------------- | -------------------------------------------------------------------- | --------------------------------------------------- | --------------- |
+| `-t 10`   | 0            | 0                 | —                                                                    | —                                                   | —               |
+| `-t 5`    | 0            | 0                 | —                                                                    | —                                                   | —               |
+| `-t 3`    | 0            | 0                 | —                                                                    | —                                                   | —               |
+| `-t 2`    | 1            | 87                | `t.Parallel()`                                                       | Go test idiom — single-statement concurrency marker | **Accept**      |
+| `-t 1`    | 2            | 89                | 87× `t.Parallel()` + 2× `GenerateRequest = requests.GenerateRequest` | Test idiom + Go type alias re-export                | **Accept both** |
 
 **No source files were modified.** The codebase required zero refactoring.
 
 ### Per-file breakdown of the `t.Parallel()` group at `-t 2`
 
-| File | Occurrences |
-| ---- | ----------- |
-| `pkg/domain/license_type_test.go` | 15 |
-| `pkg/validation/finding_adapter_test.go` | 13 |
-| `pkg/domain/confidence_test.go` | 13 |
-| `pkg/domain/filepath_test.go` | 8 |
-| `pkg/domain/email_test.go` | 7 |
-| `pkg/domain/author_test.go` | 7 |
-| `pkg/domain/year_test.go` | 6 |
-| `pkg/autodetect/detector_test.go` | 6 |
-| `pkg/workflow/workflow_test.go` | 5 |
-| `pkg/generator/generator_test.go` | 3 |
-| `pkg/validation/application/package_registry_test.go` | 2 |
-| `pkg/autodetect/validation_test.go` | 2 |
-| **Total** | **87** |
+| File                                                  | Occurrences |
+| ----------------------------------------------------- | ----------- |
+| `pkg/domain/license_type_test.go`                     | 15          |
+| `pkg/validation/finding_adapter_test.go`              | 13          |
+| `pkg/domain/confidence_test.go`                       | 13          |
+| `pkg/domain/filepath_test.go`                         | 8           |
+| `pkg/domain/email_test.go`                            | 7           |
+| `pkg/domain/author_test.go`                           | 7           |
+| `pkg/domain/year_test.go`                             | 6           |
+| `pkg/autodetect/detector_test.go`                     | 6           |
+| `pkg/workflow/workflow_test.go`                       | 5           |
+| `pkg/generator/generator_test.go`                     | 3           |
+| `pkg/validation/application/package_registry_test.go` | 2           |
+| `pkg/autodetect/validation_test.go`                   | 2           |
+| **Total**                                             | **87**      |
 
 All 87 occurrences are in `*_test.go` files. Zero occurrences in production code (`t.Parallel()` does not exist outside test files).
 
@@ -95,7 +95,7 @@ type GenerateRequest = requests.GenerateRequest
 type GenerateRequest = requests.GenerateRequest
 ```
 
-Both are Go type alias declarations that re-export `requests.GenerateRequest` under a local name. The comments in both files explain the identical reason: *"Moved to requests package to avoid import cycle."*
+Both are Go type alias declarations that re-export `requests.GenerateRequest` under a local name. The comments in both files explain the identical reason: _"Moved to requests package to avoid import cycle."_
 
 ### Why this is not actionable
 
@@ -134,12 +134,12 @@ There is **nothing between** "87 clones" and "0 clones." The entire `-t 2` repor
 
 For Go projects, the useful threshold range is narrow:
 
-| Threshold | Value on Go codebases |
-| --------- | --------------------- |
-| `-t 5+`   | Clean signal. Only real multi-statement clones. Recommended default. |
+| Threshold | Value on Go codebases                                                                                         |
+| --------- | ------------------------------------------------------------------------------------------------------------- |
+| `-t 5+`   | Clean signal. Only real multi-statement clones. Recommended default.                                          |
 | `-t 3-4`  | High signal. Catches 3-4 statement duplication. Occasionally surfaces idioms (lock scopes, builder patterns). |
-| `-t 2`    | **Noise wall.** Single-statement test idioms dominate. Near-zero actionable signal on Go. |
-| `-t 1`    | Every repeated statement. Useful only for deep forensic dedup with heavy manual filtering. |
+| `-t 2`    | **Noise wall.** Single-statement test idioms dominate. Near-zero actionable signal on Go.                     |
+| `-t 1`    | Every repeated statement. Useful only for deep forensic dedup with heavy manual filtering.                    |
 
 The skill documentation (`-t 5` default) is well-calibrated. The user's request for `-t 2` is an aggressive edge case where the tool's output should ideally warn or annotate that the vast majority of findings are single-statement test idioms.
 
@@ -186,6 +186,7 @@ This is a minor UX issue: a user reaching for `--exclude-pattern` to filter test
 Single-statement `t.Parallel()` in `*_test.go` files should never be reported as a clone at any threshold. This is the single highest-impact improvement for Go projects. It would eliminate the entire 87-clone noise wall on this codebase and similar noise on every Go project that follows parallel-test conventions.
 
 Detection criteria:
+
 - File matches `*_test.go`
 - Statement is exactly `t.Parallel()` (or `tb.Parallel()` with `testing.TB`)
 - Enclosing function is a Go test function (signature `func(t *testing.T)`)
@@ -249,12 +250,12 @@ This is a codebase that has already been through dedup passes and follows patter
 
 ## Summary
 
-| Question | Answer |
-| -------- | ------ |
-| Were any clones actionable? | **No.** All 87 at `-t 2` are `t.Parallel()`. Zero at `-t 3+`. |
-| Were any files modified? | **No.** No refactoring was needed. |
-| Do tests pass? | **Yes.** All packages OK. |
-| Is the codebase genuinely clean? | **Yes.** Validated by `-t 3` (0 groups), `--ignore-tests -t 2` (0 groups), and git history showing active dedup work. |
+| Question                                      | Answer                                                                                                                                                      |
+| --------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Were any clones actionable?                   | **No.** All 87 at `-t 2` are `t.Parallel()`. Zero at `-t 3+`.                                                                                               |
+| Were any files modified?                      | **No.** No refactoring was needed.                                                                                                                          |
+| Do tests pass?                                | **Yes.** All packages OK.                                                                                                                                   |
+| Is the codebase genuinely clean?              | **Yes.** Validated by `-t 3` (0 groups), `--ignore-tests -t 2` (0 groups), and git history showing active dedup work.                                       |
 | Biggest improvement opportunity for art-dupl? | **Auto-suppress `t.Parallel()`** and other single-statement Go test idioms. This would eliminate 100% of the `-t 2` noise on this and similar Go codebases. |
 
 ---

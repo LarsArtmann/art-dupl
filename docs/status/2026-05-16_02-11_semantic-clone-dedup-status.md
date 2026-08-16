@@ -1,9 +1,9 @@
 # Semantic Clone Deduplication — Session Status Report
 
-**Date:** 2026-05-16 02:11  
-**Branch:** `fork`  
-**Base commit:** `fdf68d8` (rebased on `8f9f179`, pre-DTO)  
-**Author:** Crush (assisted)  
+**Date:** 2026-05-16 02:11\
+**Branch:** `fork`\
+**Base commit:** `fdf68d8` (rebased on `8f9f179`, pre-DTO)\
+**Author:** Crush (assisted)\
 **Status:** 125 → 107 clone groups (18 eliminated). All 23 test packages pass.
 
 ---

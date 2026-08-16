@@ -1,9 +1,9 @@
 # Code Deduplication Progress Report
 
-**Project:** art-dupl  
-**Task:** Eliminate Code Duplication  
-**Report Date:** 2026-01-15 19:10  
-**Status:** PARTIAL SUCCESS (8% reduction achieved)  
+**Project:** art-dupl\
+**Task:** Eliminate Code Duplication\
+**Report Date:** 2026-01-15 19:10\
+**Status:** PARTIAL SUCCESS (8% reduction achieved)\
 **Threshold Used:** 70 tokens
 
 ---
@@ -125,11 +125,11 @@ func testPatternSlices(t *testing.T, patternType string, patterns []string, want
 
 Successfully refactored using `runConstructorTests`:
 
-| Test                                 | Status            |
-| ------------------------------------ | ----------------- |
-| TestCloneID_NewCloneID               | ✅ Refactored     |
-| TestLineNumber_NewLineNumber         | ✅ Refactored     |
-| TestConfidence_NewConfidence         | ✅ Refactored     |
+| Test                                 | Status           |
+| ------------------------------------ | ---------------- |
+| TestCloneID_NewCloneID               | ✅ Refactored    |
+| TestLineNumber_NewLineNumber         | ✅ Refactored    |
+| TestConfidence_NewConfidence         | ✅ Refactored    |
 | TestProcessingTime_NewProcessingTime | ⚠️ Not refactored |
 | TestCloneGroupID_NewCloneGroupID     | ⚠️ Not refactored |
 | TestAnalysisID_NewAnalysisID         | ⚠️ Not refactored |

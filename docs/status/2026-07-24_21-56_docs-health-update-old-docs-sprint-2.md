@@ -227,38 +227,38 @@ The docs-health skill says "Verify each claim. Many documented TODOs are already
 
 ## f) Up to 50 Things to Get Done Next
 
-| #   | Priority     | Task                                                                                                       |
-| --- | ------------ | ---------------------------------------------------------------------------------------------------------- |
-| 1   | **CRITICAL** | Fix AGENTS.md line 48: "6 typed error types" to "7 error categories" (drift introduced this session)       |
-| 2   | **CRITICAL** | Run `nix flake check` — the full quality gate (not just go build + go test + golangci-lint)                |
-| 3   | HIGH         | Clean em-dashes from TODO_LIST.md (35) and ROADMAP.md (19) — use semicolons/parentheses instead            |
-| 4   | HIGH         | Add `--type-aware` documentation to HOW_TO_USE.md (currently 0 mentions)                                   |
-| 5   | HIGH         | Decide SDK_DESIGN.md fate: rewrite stale type names or delete (TODO_LIST item, stale `StartLine` verified) |
-| 6   | HIGH         | Verify all internal markdown links resolve: `grep -roE '\]\([^)]+\)' *.md docs/`                           |
-| 7   | HIGH         | Update AGENTS.md: remove "stack traces" claim (DuplError no longer captures debug.Stack)                   |
-| 8   | HIGH         | Create GitHub Release for v0.4.0: `gh release create v0.4.0 --notes-from-tag` (only v0.1.0 has releases)   |
-| 9   | HIGH         | Write RELEASE.md checklist (race test, nix flake check, CHANGELOG footer, compare links, tag verification) |
-| 10  | HIGH         | Run `go test -race ./...` to verify v0.4.0 (flagged as never-run in release postmortem)                    |
-| 11  | MEDIUM       | Clean orphaned `.golangci.yml` config blocks for exhaustruct (lines 152, 340)                              |
-| 12  | MEDIUM       | Verify FEATURES.md "7 output formats" claim (CSV is stats-only — is it a full format?)                     |
-| 13  | MEDIUM       | Verify FEATURES.md "100% precision across 15 projects" claim has a backing test                            |
-| 14  | MEDIUM       | Recount CLI flags (`"45+ flags"`) against current `cmd/flags.go`                                           |
-| 15  | MEDIUM       | Recount refactoring suggestions (`"24"`) against current `printer/clone_classify.go`                       |
-| 16  | MEDIUM       | Add CI check that diffs `.golangci.yml` enable list against AGENTS.md documented intent                    |
-| 17  | MEDIUM       | Update `docs/DOMAIN_LANGUAGE.md` with type-aware detection terms                                           |
-| 18  | MEDIUM       | Annotate or archive stale planning HTML files (`docs/planning/2026-07-01_*`)                               |
-| 19  | MEDIUM       | Add ADR-0015 for type-aware detection design (no ADR exists for this feature)                              |
-| 20  | MEDIUM       | Wire `TypeAware bool` into `pkg/artdupl.Options` so SDK users can use type-aware mode                      |
-| 21  | MEDIUM       | Add validation: `--type-aware` + `--structural` should error or warn                                       |
-| 22  | MEDIUM       | Add validation: `--type-aware` + `--incremental` should warn about fallback                                |
-| 23  | MEDIUM       | Add BDD test for type-aware mode in `bdd/`                                                                 |
-| 24  | LOW          | Investigate the Unknown Author auto-committer process (has committed 3+ regressions)                       |
-| 25  | LOW          | Consider splitting CHANGELOG `[Unreleased]` into sub-sections by sprint date                               |
-| 26  | LOW          | Add `--type-aware` to FEATURES.md Quick Reference bash examples                                            |
-| 27  | LOW          | Consider committing `*_templ.go` generated files to reduce CI fragility                                    |
-| 28  | LOW          | Check if `docs/status/archive/` directory should be created for reports older than 30 days                 |
-| 29  | LOW          | Verify FEATURES.md Architecture Components descriptions match actual package structure                     |
-| 30  | LOW          | Add `GOPRIVATE=github.com/LarsArtmann/*` to Go jobs in CI                                                  |
+| #  | Priority     | Task                                                                                                       |
+| -- | ------------ | ---------------------------------------------------------------------------------------------------------- |
+| 1  | **CRITICAL** | Fix AGENTS.md line 48: "6 typed error types" to "7 error categories" (drift introduced this session)       |
+| 2  | **CRITICAL** | Run `nix flake check` — the full quality gate (not just go build + go test + golangci-lint)                |
+| 3  | HIGH         | Clean em-dashes from TODO_LIST.md (35) and ROADMAP.md (19) — use semicolons/parentheses instead            |
+| 4  | HIGH         | Add `--type-aware` documentation to HOW_TO_USE.md (currently 0 mentions)                                   |
+| 5  | HIGH         | Decide SDK_DESIGN.md fate: rewrite stale type names or delete (TODO_LIST item, stale `StartLine` verified) |
+| 6  | HIGH         | Verify all internal markdown links resolve: `grep -roE '\]\([^)]+\)' *.md docs/`                           |
+| 7  | HIGH         | Update AGENTS.md: remove "stack traces" claim (DuplError no longer captures debug.Stack)                   |
+| 8  | HIGH         | Create GitHub Release for v0.4.0: `gh release create v0.4.0 --notes-from-tag` (only v0.1.0 has releases)   |
+| 9  | HIGH         | Write RELEASE.md checklist (race test, nix flake check, CHANGELOG footer, compare links, tag verification) |
+| 10 | HIGH         | Run `go test -race ./...` to verify v0.4.0 (flagged as never-run in release postmortem)                    |
+| 11 | MEDIUM       | Clean orphaned `.golangci.yml` config blocks for exhaustruct (lines 152, 340)                              |
+| 12 | MEDIUM       | Verify FEATURES.md "7 output formats" claim (CSV is stats-only — is it a full format?)                     |
+| 13 | MEDIUM       | Verify FEATURES.md "100% precision across 15 projects" claim has a backing test                            |
+| 14 | MEDIUM       | Recount CLI flags (`"45+ flags"`) against current `cmd/flags.go`                                           |
+| 15 | MEDIUM       | Recount refactoring suggestions (`"24"`) against current `printer/clone_classify.go`                       |
+| 16 | MEDIUM       | Add CI check that diffs `.golangci.yml` enable list against AGENTS.md documented intent                    |
+| 17 | MEDIUM       | Update `docs/DOMAIN_LANGUAGE.md` with type-aware detection terms                                           |
+| 18 | MEDIUM       | Annotate or archive stale planning HTML files (`docs/planning/2026-07-01_*`)                               |
+| 19 | MEDIUM       | Add ADR-0015 for type-aware detection design (no ADR exists for this feature)                              |
+| 20 | MEDIUM       | Wire `TypeAware bool` into `pkg/artdupl.Options` so SDK users can use type-aware mode                      |
+| 21 | MEDIUM       | Add validation: `--type-aware` + `--structural` should error or warn                                       |
+| 22 | MEDIUM       | Add validation: `--type-aware` + `--incremental` should warn about fallback                                |
+| 23 | MEDIUM       | Add BDD test for type-aware mode in `bdd/`                                                                 |
+| 24 | LOW          | Investigate the Unknown Author auto-committer process (has committed 3+ regressions)                       |
+| 25 | LOW          | Consider splitting CHANGELOG `[Unreleased]` into sub-sections by sprint date                               |
+| 26 | LOW          | Add `--type-aware` to FEATURES.md Quick Reference bash examples                                            |
+| 27 | LOW          | Consider committing `*_templ.go` generated files to reduce CI fragility                                    |
+| 28 | LOW          | Check if `docs/status/archive/` directory should be created for reports older than 30 days                 |
+| 29 | LOW          | Verify FEATURES.md Architecture Components descriptions match actual package structure                     |
+| 30 | LOW          | Add `GOPRIVATE=github.com/LarsArtmann/*` to Go jobs in CI                                                  |
 
 ---
 

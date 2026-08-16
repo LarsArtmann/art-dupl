@@ -1,8 +1,8 @@
 # Cache Line Optimization Sprint — Status Report
 
-**Date**: 2026-08-16 01:32  
-**Session**: Cache line optimizations for hot-path data structures  
-**Branch**: fork  
+**Date**: 2026-08-16 01:32\
+**Session**: Cache line optimizations for hot-path data structures\
+**Branch**: fork
 
 ---
 
@@ -148,7 +148,7 @@ Nothing catastrophic, but see **e)** for serious concerns.
 38. Consider `ragel` or table-driven state machine for the suffix tree construction (potential for better branch prediction)
 39. Explore whether the `STree.data []TokenValue` could be `[]int32` directly (alias type may add overhead)
 40. Consider SIMD-accelerated `slices.Sort` for `TokenValue` (int32 sorting can use SIMD on modern CPUs)
-41. Explore ` synced.Pool` for `[]TokenValue` buffers used in `parallelWalkRoot`
+41. Explore `synced.Pool` for `[]TokenValue` buffers used in `parallelWalkRoot`
 42. Consider lock-free `contextList.append` using atomic CAS instead of mutex (for the parallel search path)
 43. Investigate `runtime.GOMAXPROCS` pinning for benchmark runs to reduce scheduling noise
 44. Consider a `BenchmarkWalkTransAllocs` that directly measures allocations per `walkTrans` call

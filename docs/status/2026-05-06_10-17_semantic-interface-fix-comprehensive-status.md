@@ -184,33 +184,33 @@
 
 ## f) Top #25 Things We Should Get Done Next
 
-| #   | Priority | Item                                                                      | Est. Effort | Impact              |
-| --- | -------- | ------------------------------------------------------------------------- | ----------- | ------------------- |
-| 1   | 🔴 HIGH  | Add BDD test for interface semantic false-positive fix                    | 30min       | Correctness         |
-| 2   | 🔴 HIGH  | Delete dead `assertGeneratedFilesFilteredWithFlag` test helper            | 5min        | Clean code          |
-| 3   | 🔴 HIGH  | Fix gci formatting in `config/config.go:163`                              | 2min        | Clean code          |
-| 4   | 🔴 HIGH  | Fix 6 unused writes in test files                                         | 15min       | Clean code          |
-| 5   | 🔴 HIGH  | Archive `docs/status/` — keep last 30 days, compress rest                 | 30min       | Repo hygiene        |
-| 6   | 🟡 MED   | Wire TODO/Legacy detectors to CLI flags (`-m todos`, `-m legacy`)         | 1hr         | Feature complete    |
-| 7   | 🟡 MED   | Implement `encoding/csv` for clone CSV output                             | 2hr         | Correctness         |
-| 8   | 🟡 MED   | Implement TokenValue type with validation                                 | 3hr         | Type safety         |
-| 9   | 🟡 MED   | Extract AST node handlers from `transform.go` to reduce gocognit          | 4hr         | Maintainability     |
-| 10  | 🟡 MED   | Introduce ProcessedClone DTO to decouple Printer from syntax.Node         | 8hr         | Architecture        |
-| 11  | 🟡 MED   | Consolidate three Clone types into unified domain model                   | 6hr         | Architecture        |
-| 12  | 🟡 MED   | Move `printer/clone_classify.go` language-specific logic behind interface | 3hr         | Multi-language prep |
-| 13  | 🟡 MED   | Add coverage for `internal/filtertest` (50% → 80%)                        | 2hr         | Quality             |
-| 14  | 🟡 MED   | Update FEATURES.md to reflect semantic interface tracking                 | 15min       | Documentation       |
-| 15  | 🟡 MED   | Update TODO_LIST.md to mark completed items                               | 15min       | Documentation       |
-| 16  | 🟡 MED   | Update AGENTS.md with interface context tracking decision                 | 10min       | Memory              |
-| 17  | 🟢 LOW   | Unify domain enums to use config's generic helpers                        | 2hr         | Consistency         |
-| 18  | 🟢 LOW   | Implement string interning for repeated identifiers                       | 3hr         | Performance         |
-| 19  | 🟢 LOW   | Enable ARM64 SIMD detection in `internal/simd/`                           | 4hr         | Performance         |
-| 20  | 🟢 LOW   | Add fuzz tests for semantic encoding (FNV collision detection)            | 2hr         | Robustness          |
-| 21  | 🟢 LOW   | Benchmark: semantic vs structural mode performance comparison             | 1hr         | Documentation       |
-| 22  | 🟢 LOW   | Add `--dry-run` flag that shows what would be analyzed without running    | 2hr         | UX                  |
-| 23  | 🟢 LOW   | Migrate justfile recipes to nix flake                                     | 4hr         | Build system        |
-| 24  | 🟢 LOW   | Add `.git-blame-ignore-revs` for mass-refactor commits                    | 10min       | DX                  |
-| 25  | 🟢 LOW   | Investigate supporting Rust/TypeScript via tree-sitter                    | Research    | Multi-language      |
+| #  | Priority | Item                                                                      | Est. Effort | Impact              |
+| -- | -------- | ------------------------------------------------------------------------- | ----------- | ------------------- |
+| 1  | 🔴 HIGH  | Add BDD test for interface semantic false-positive fix                    | 30min       | Correctness         |
+| 2  | 🔴 HIGH  | Delete dead `assertGeneratedFilesFilteredWithFlag` test helper            | 5min        | Clean code          |
+| 3  | 🔴 HIGH  | Fix gci formatting in `config/config.go:163`                              | 2min        | Clean code          |
+| 4  | 🔴 HIGH  | Fix 6 unused writes in test files                                         | 15min       | Clean code          |
+| 5  | 🔴 HIGH  | Archive `docs/status/` — keep last 30 days, compress rest                 | 30min       | Repo hygiene        |
+| 6  | 🟡 MED   | Wire TODO/Legacy detectors to CLI flags (`-m todos`, `-m legacy`)         | 1hr         | Feature complete    |
+| 7  | 🟡 MED   | Implement `encoding/csv` for clone CSV output                             | 2hr         | Correctness         |
+| 8  | 🟡 MED   | Implement TokenValue type with validation                                 | 3hr         | Type safety         |
+| 9  | 🟡 MED   | Extract AST node handlers from `transform.go` to reduce gocognit          | 4hr         | Maintainability     |
+| 10 | 🟡 MED   | Introduce ProcessedClone DTO to decouple Printer from syntax.Node         | 8hr         | Architecture        |
+| 11 | 🟡 MED   | Consolidate three Clone types into unified domain model                   | 6hr         | Architecture        |
+| 12 | 🟡 MED   | Move `printer/clone_classify.go` language-specific logic behind interface | 3hr         | Multi-language prep |
+| 13 | 🟡 MED   | Add coverage for `internal/filtertest` (50% → 80%)                        | 2hr         | Quality             |
+| 14 | 🟡 MED   | Update FEATURES.md to reflect semantic interface tracking                 | 15min       | Documentation       |
+| 15 | 🟡 MED   | Update TODO_LIST.md to mark completed items                               | 15min       | Documentation       |
+| 16 | 🟡 MED   | Update AGENTS.md with interface context tracking decision                 | 10min       | Memory              |
+| 17 | 🟢 LOW   | Unify domain enums to use config's generic helpers                        | 2hr         | Consistency         |
+| 18 | 🟢 LOW   | Implement string interning for repeated identifiers                       | 3hr         | Performance         |
+| 19 | 🟢 LOW   | Enable ARM64 SIMD detection in `internal/simd/`                           | 4hr         | Performance         |
+| 20 | 🟢 LOW   | Add fuzz tests for semantic encoding (FNV collision detection)            | 2hr         | Robustness          |
+| 21 | 🟢 LOW   | Benchmark: semantic vs structural mode performance comparison             | 1hr         | Documentation       |
+| 22 | 🟢 LOW   | Add `--dry-run` flag that shows what would be analyzed without running    | 2hr         | UX                  |
+| 23 | 🟢 LOW   | Migrate justfile recipes to nix flake                                     | 4hr         | Build system        |
+| 24 | 🟢 LOW   | Add `.git-blame-ignore-revs` for mass-refactor commits                    | 10min       | DX                  |
+| 25 | 🟢 LOW   | Investigate supporting Rust/TypeScript via tree-sitter                    | Research    | Multi-language      |
 
 ---
 
@@ -236,8 +236,8 @@ The new interface context tracking makes semantic mode strictly better for reduc
 ## Current Working Tree Changes
 
 ```
- modified:   syntax/golang/transform.go    (interface context tracking for Field nodes + whitespace fix)
- deleted:    testdata/interface_semantic/   (cleaned up test data)
+modified:   syntax/golang/transform.go    (interface context tracking for Field nodes + whitespace fix)
+deleted:    testdata/interface_semantic/   (cleaned up test data)
 ```
 
 ## Test Results

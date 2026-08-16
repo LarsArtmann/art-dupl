@@ -1,8 +1,8 @@
 # art-dupl Comprehensive Status Report
 
-**Report Date:** 2026-03-28 17:10 CET  
-**Branch:** fork  
-**Commits Ahead of Origin:** 2  
+**Report Date:** 2026-03-28 17:10 CET\
+**Branch:** fork\
+**Commits Ahead of Origin:** 2\
 **Status:** STABLE | PRODUCTION-READY | ACTIVE DEVELOPMENT
 
 ---
@@ -84,16 +84,16 @@ art-dupl is a **mature, production-ready code duplication detection tool** with 
 
 ### Code Organization
 
-| Item                | Status     | Issue                            | Action Needed                |
-| ------------------- | ---------- | -------------------------------- | ---------------------------- |
+| Item                | Status    | Issue                            | Action Needed                |
+| ------------------- | --------- | -------------------------------- | ---------------------------- |
 | File Size Limits    | ⚠️ PARTIAL | 5 files >500 lines               | Split large files            |
 | Function Complexity | ⚠️ PARTIAL | Some functions >60 lines         | Extract helpers              |
 | Code Duplication    | ⚠️ PARTIAL | crawlPaths vs crawlPathsWithOnly | Refactor to unified approach |
 
 ### Testing Gaps
 
-| Area                        | Status     | Coverage | Needed                   |
-| --------------------------- | ---------- | -------- | ------------------------ |
+| Area                        | Status    | Coverage | Needed                   |
+| --------------------------- | --------- | -------- | ------------------------ |
 | BDD Tests for --only flag   | ⚠️ MISSING | 0%       | Add filter feature tests |
 | Integration Tests for SARIF | ⚠️ PARTIAL | 50%      | Add E2E SARIF tests      |
 | Performance Benchmarks      | ⚠️ PARTIAL | Basic    | Comprehensive suite      |
@@ -101,8 +101,8 @@ art-dupl is a **mature, production-ready code duplication detection tool** with 
 
 ### Documentation Gaps
 
-| Area                          | Status     | Issue                       |
-| ----------------------------- | ---------- | --------------------------- |
+| Area                          | Status    | Issue                       |
+| ----------------------------- | --------- | --------------------------- |
 | API Documentation             | ⚠️ LIMITED | No generated godoc site     |
 | Architecture Decision Records | ⚠️ MISSING | No ADRs for major decisions |
 | Package Examples              | ⚠️ MINIMAL | Few godoc examples          |
@@ -110,8 +110,8 @@ art-dupl is a **mature, production-ready code duplication detection tool** with 
 
 ### Configuration System
 
-| Feature                     | Status     | Issue                            |
-| --------------------------- | ---------- | -------------------------------- |
+| Feature                     | Status    | Issue                            |
+| --------------------------- | --------- | -------------------------------- |
 | Config File Validation      | ⚠️ BASIC   | No JSON schema validation        |
 | Shell Completion for --only | ⚠️ MISSING | No completion for values         |
 | Flag Interaction Docs       | ⚠️ MISSING | --only + --include-templ unclear |
@@ -248,53 +248,53 @@ Issues:
 
 ### Critical Path (Next 2 Weeks)
 
-| #   | Task                                                    | Priority | Effort | Impact          |
-| --- | ------------------------------------------------------- | -------- | ------ | --------------- |
-| 1   | **Refactor file crawling** - Unify crawlPaths variants  | CRITICAL | 2d     | Maintainability |
-| 2   | **Add --only flag tests** - Unit + BDD coverage         | CRITICAL | 1d     | Quality         |
-| 3   | **Update README.md** - Document --only flag             | CRITICAL | 0.5d   | UX              |
-| 4   | **Implement TokenValue type** - Type safety refactor    | HIGH     | 3d     | Robustness      |
-| 5   | **Document flag interactions** - --only vs --include-\* | HIGH     | 0.5d   | UX              |
+| # | Task                                                    | Priority | Effort | Impact          |
+| - | ------------------------------------------------------- | -------- | ------ | --------------- |
+| 1 | **Refactor file crawling** - Unify crawlPaths variants  | CRITICAL | 2d     | Maintainability |
+| 2 | **Add --only flag tests** - Unit + BDD coverage         | CRITICAL | 1d     | Quality         |
+| 3 | **Update README.md** - Document --only flag             | CRITICAL | 0.5d   | UX              |
+| 4 | **Implement TokenValue type** - Type safety refactor    | HIGH     | 3d     | Robustness      |
+| 5 | **Document flag interactions** - --only vs --include-\* | HIGH     | 0.5d   | UX              |
 
 ### Quality & Polish (Next Month)
 
-| #   | Task                                         | Priority | Effort | Impact          |
-| --- | -------------------------------------------- | -------- | ------ | --------------- |
-| 6   | **Add shell completion** - For --only values | MEDIUM   | 0.5d   | UX              |
-| 7   | **Create ADRs** - Document major decisions   | MEDIUM   | 1d     | Documentation   |
-| 8   | **Split large files** - 5 files >500 lines   | MEDIUM   | 2d     | Maintainability |
-| 9   | **Improve error messages** - More context    | MEDIUM   | 1d     | UX              |
-| 10  | **Add integration tests** - SARIF E2E        | MEDIUM   | 1d     | Quality         |
+| #  | Task                                         | Priority | Effort | Impact          |
+| -- | -------------------------------------------- | -------- | ------ | --------------- |
+| 6  | **Add shell completion** - For --only values | MEDIUM   | 0.5d   | UX              |
+| 7  | **Create ADRs** - Document major decisions   | MEDIUM   | 1d     | Documentation   |
+| 8  | **Split large files** - 5 files >500 lines   | MEDIUM   | 2d     | Maintainability |
+| 9  | **Improve error messages** - More context    | MEDIUM   | 1d     | UX              |
+| 10 | **Add integration tests** - SARIF E2E        | MEDIUM   | 1d     | Quality         |
 
 ### Performance & Architecture (Next Quarter)
 
-| #   | Task                                         | Priority | Effort | Impact        |
-| --- | -------------------------------------------- | -------- | ------ | ------------- |
-| 11  | **String interning** - Reduce memory         | MEDIUM   | 2d     | Performance   |
-| 12  | **Memory layout optimization** - SIMD prep   | MEDIUM   | 3d     | Performance   |
-| 13  | **Implement profiling** - Complete --profile | LOW      | 2d     | Observability |
-| 14  | **Implement timeouts** - Complete --timeout  | LOW      | 1d     | Reliability   |
-| 15  | **Benchmark suite** - Performance baseline   | LOW      | 2d     | Quality       |
+| #  | Task                                         | Priority | Effort | Impact        |
+| -- | -------------------------------------------- | -------- | ------ | ------------- |
+| 11 | **String interning** - Reduce memory         | MEDIUM   | 2d     | Performance   |
+| 12 | **Memory layout optimization** - SIMD prep   | MEDIUM   | 3d     | Performance   |
+| 13 | **Implement profiling** - Complete --profile | LOW      | 2d     | Observability |
+| 14 | **Implement timeouts** - Complete --timeout  | LOW      | 1d     | Reliability   |
+| 15 | **Benchmark suite** - Performance baseline   | LOW      | 2d     | Quality       |
 
 ### Language Support (Future)
 
-| #   | Task                                        | Priority | Effort | Impact    |
-| --- | ------------------------------------------- | -------- | ------ | --------- |
-| 16  | **TypeScript support** - Parser integration | LOW      | 10d    | Expansion |
-| 17  | **JavaScript support** - Shared with TS     | LOW      | 5d     | Expansion |
-| 18  | **Python support** - New parser             | LOW      | 10d    | Expansion |
-| 19  | **Proto support** - Protocol buffers        | LOW      | 3d     | Expansion |
+| #  | Task                                        | Priority | Effort | Impact    |
+| -- | ------------------------------------------- | -------- | ------ | --------- |
+| 16 | **TypeScript support** - Parser integration | LOW      | 10d    | Expansion |
+| 17 | **JavaScript support** - Shared with TS     | LOW      | 5d     | Expansion |
+| 18 | **Python support** - New parser             | LOW      | 10d    | Expansion |
+| 19 | **Proto support** - Protocol buffers        | LOW      | 3d     | Expansion |
 
 ### Developer Experience (Ongoing)
 
-| #   | Task                                    | Priority | Effort | Impact        |
-| --- | --------------------------------------- | -------- | ------ | ------------- |
-| 20  | **API documentation** - Generated godoc | MEDIUM   | 2d     | Documentation |
-| 21  | **Package examples** - Godoc examples   | MEDIUM   | 3d     | Documentation |
-| 22  | **Web UI** - Report visualization       | LOW      | 5d     | UX            |
-| 23  | **IDE plugins** - VSCode/GoLand         | LOW      | 5d     | Workflow      |
-| 24  | **Pre-commit hooks** - Git integration  | LOW      | 1d     | Workflow      |
-| 25  | **GitHub Actions** - Workflow templates | LOW      | 1d     | CI/CD         |
+| #  | Task                                    | Priority | Effort | Impact        |
+| -- | --------------------------------------- | -------- | ------ | ------------- |
+| 20 | **API documentation** - Generated godoc | MEDIUM   | 2d     | Documentation |
+| 21 | **Package examples** - Godoc examples   | MEDIUM   | 3d     | Documentation |
+| 22 | **Web UI** - Report visualization       | LOW      | 5d     | UX            |
+| 23 | **IDE plugins** - VSCode/GoLand         | LOW      | 5d     | Workflow      |
+| 24 | **Pre-commit hooks** - Git integration  | LOW      | 1d     | Workflow      |
+| 25 | **GitHub Actions** - Workflow templates | LOW      | 1d     | CI/CD         |
 
 ---
 
@@ -361,7 +361,7 @@ art-dupl --only go --include-templ ./src
 | Check          | Status  | Details                    |
 | -------------- | ------- | -------------------------- |
 | Compilation    | ✅ PASS | go build ./...             |
-| Lint           | ⚠️ BUSY | golangci-lint running      |
+| Lint           | ⚠️ BUSY  | golangci-lint running      |
 | Tests          | ✅ PASS | All unit tests pass        |
 | Race Detection | ✅ PASS | No races detected          |
 | Security Audit | ✅ PASS | gosec annotations in place |
@@ -412,5 +412,5 @@ The main focus areas moving forward are:
 
 ---
 
-_Report generated by Crush AI Assistant_  
+_Report generated by Crush AI Assistant_\
 _Timestamp: 2026-03-28 17:10 CET_

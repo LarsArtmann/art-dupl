@@ -12,20 +12,20 @@
 
 These items are complete, tested, and verified:
 
-| #   | Item                                            | Key Files                                                                                  |
-| --- | ----------------------------------------------- | ------------------------------------------------------------------------------------------ |
-| 1   | Remove stale defense-in-depth comments          | `bdd/filter_features_test.go`, `printer/stats_data.go`, `printer/stats/stats_collector.go` |
-| 2   | Remove tagliatelle + auto-fix guard script      | `.golangci.yml`, `scripts/check-disabled-linters.sh`                                       |
-| 3   | Remove go.mod local replace (→ v3.4.0)          | `go.mod`, `go.sum`                                                                         |
-| 4   | Document `--search-workers`                     | `HOW_TO_USE.md`                                                                            |
-| 5   | Lazy-read nil-content regression test           | `cmd/filter_includes_test.go`                                                              |
-| 6   | FuzzFindDuplOverParallel + ctx-cancel fuzz      | `suffixtree/fuzz_test.go`                                                                  |
-| 7   | Parameterize property tests for parallel search | `suffixtree/dupl_property_test.go`                                                         |
-| 8   | BDD test for `--search-workers`                 | `bdd/search_workers_test.go`                                                               |
-| 9   | FuncLit flag-reset test                         | `syntax/golang/interface_method_test.go`                                                   |
-| 10  | SDK InterfaceMethod pipeline test               | `pkg/artdupl/detector_type_aware_test.go`                                                  |
-| 11  | Extractability engine integration test          | `printer/actionability/extractability_integration_test.go`                                 |
-| 12  | Property engine labels in `--list-patterns`     | `printer/actionability/actionability.go`                                                   |
+| #  | Item                                            | Key Files                                                                                  |
+| -- | ----------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| 1  | Remove stale defense-in-depth comments          | `bdd/filter_features_test.go`, `printer/stats_data.go`, `printer/stats/stats_collector.go` |
+| 2  | Remove tagliatelle + auto-fix guard script      | `.golangci.yml`, `scripts/check-disabled-linters.sh`                                       |
+| 3  | Remove go.mod local replace (→ v3.4.0)          | `go.mod`, `go.sum`                                                                         |
+| 4  | Document `--search-workers`                     | `HOW_TO_USE.md`                                                                            |
+| 5  | Lazy-read nil-content regression test           | `cmd/filter_includes_test.go`                                                              |
+| 6  | FuzzFindDuplOverParallel + ctx-cancel fuzz      | `suffixtree/fuzz_test.go`                                                                  |
+| 7  | Parameterize property tests for parallel search | `suffixtree/dupl_property_test.go`                                                         |
+| 8  | BDD test for `--search-workers`                 | `bdd/search_workers_test.go`                                                               |
+| 9  | FuncLit flag-reset test                         | `syntax/golang/interface_method_test.go`                                                   |
+| 10 | SDK InterfaceMethod pipeline test               | `pkg/artdupl/detector_type_aware_test.go`                                                  |
+| 11 | Extractability engine integration test          | `printer/actionability/extractability_integration_test.go`                                 |
+| 12 | Property engine labels in `--list-patterns`     | `printer/actionability/actionability.go`                                                   |
 
 All 26 packages pass `go test ./... -count=1` (zero failures).
 

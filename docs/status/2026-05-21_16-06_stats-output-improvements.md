@@ -1,10 +1,10 @@
 # Status Report: Stats Output Improvements — 2026-05-21 16:06 CEST
 
-**Branch:** `fork` (tracking `origin/fork`)  
-**Session:** Stats output enhancement sprint  
-**Commits since last status:** 7  
-**Files changed:** 7 files, +313 / -16 lines  
-**Test status:** ALL GREEN (27/27 packages passing)  
+**Branch:** `fork` (tracking `origin/fork`)\
+**Session:** Stats output enhancement sprint\
+**Commits since last status:** 7\
+**Files changed:** 7 files, +313 / -16 lines\
+**Test status:** ALL GREEN (27/27 packages passing)\
 **Build status:** PASS
 
 ---
@@ -96,18 +96,18 @@
 
 The following were identified as lower-impact compared to leveraging the existing classification system:
 
-| #   | Feature                                        | Reason Deferred                                                           |
-| --- | ---------------------------------------------- | ------------------------------------------------------------------------- |
-| 1   | Compact/terse output mode (`--format compact`) | Would add new format type; current `--format text/json/csv` is sufficient |
-| 2   | Markdown output format                         | No user request; JSON covers machine-readable needs                       |
-| 3   | `--output-file` flag                           | Shell redirection (`> file`) handles this; Unix philosophy                |
-| 4   | SARIF for stats subcommand                     | SARIF is already supported on root command; stats has different semantics |
-| 5   | Quiet/silent mode (`--quiet`)                  | Can use `> /dev/null` or parse JSON; marginal value                       |
-| 6   | Visual health gauge (`[██████░░]`)             | Lipgloss already used; would be cosmetic-only                             |
-| 7   | Trend comparison / baseline                    | Requires persistent state storage; architectural decision needed          |
-| 8   | Watch mode (`--watch`)                         | Large feature, unclear demand                                             |
-| 9   | "Lines saved" metric                           | Hard to calculate accurately without false precision                      |
-| 10  | Refactoring effort estimation                  | Subjective; easy to be wrong                                              |
+| #  | Feature                                        | Reason Deferred                                                           |
+| -- | ---------------------------------------------- | ------------------------------------------------------------------------- |
+| 1  | Compact/terse output mode (`--format compact`) | Would add new format type; current `--format text/json/csv` is sufficient |
+| 2  | Markdown output format                         | No user request; JSON covers machine-readable needs                       |
+| 3  | `--output-file` flag                           | Shell redirection (`> file`) handles this; Unix philosophy                |
+| 4  | SARIF for stats subcommand                     | SARIF is already supported on root command; stats has different semantics |
+| 5  | Quiet/silent mode (`--quiet`)                  | Can use `> /dev/null` or parse JSON; marginal value                       |
+| 6  | Visual health gauge (`[██████░░]`)             | Lipgloss already used; would be cosmetic-only                             |
+| 7  | Trend comparison / baseline                    | Requires persistent state storage; architectural decision needed          |
+| 8  | Watch mode (`--watch`)                         | Large feature, unclear demand                                             |
+| 9  | "Lines saved" metric                           | Hard to calculate accurately without false precision                      |
+| 10 | Refactoring effort estimation                  | Subjective; easy to be wrong                                              |
 
 ---
 

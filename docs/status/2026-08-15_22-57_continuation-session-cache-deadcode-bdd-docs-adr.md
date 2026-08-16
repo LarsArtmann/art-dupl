@@ -60,30 +60,30 @@
 
 ## a) FULLY DONE (verified this session)
 
-| # | Item | Evidence |
-|---|------|----------|
-| 1 | **Cache benchmark**: `BenchmarkFileCacheGet` proves LRU-hit is 5.3x faster than disk-hit (76,785 vs 408,406 ns/op; 767 vs 2,805 allocs) on a 255-node tree | `cache/file_cache_test.go`, commit `f9320174` |
-| 2 | **GetShared design rejected with rationale**: a no-clone shared cache API is UNSAFE because `stampFilename` mutates in place — documented in `job/incremental.go::parseFile` comment so no future session re-proposes it | commit `f9320174` |
-| 3 | **Dead code deleted**: `printer.Issuer`/`MakeIssues`/`Issue` — zero production callers, only self-tests | `printer/issuer.go` + `issuer_test.go` removed, commit `80be8dc6` |
-| 4 | **Ghost system wired instead of deleted**: `printer.NodesToGroup` was test-only while `cmd/run_output.go` and `cmd/diff_report.go` inlined the identical sequence — now the canonical constructor everywhere, takes `ProcessOption`s, returns typed `AnalysisError` | commit `80be8dc6` |
-| 5 | **4 BDD scenarios for `--suggest-generics`** (hint shown / absent without flag / min-lines gate / identical-types no-hint), each behavior verified e2e against the real CLI in /tmp BEFORE encoding | `bdd/suggest_generics_test.go`, commit `3afc4ae6` |
-| 6 | **DiscordSync re-validation** (was "blocked" — repo WAS available at `/home/lars/projects/DiscordSync`; handoff's case-sensitive check was wrong): **296 detected → 2 shown, 0 FPs**, both survivors manually inspected as genuine (one is itself a textbook generics candidate) | real runs this session |
-| 7 | **Docs pass**: `error-guard-fallthrough` added to ACTIONABILITY_PATTERNS (table + priority #17, count 29→30); pattern-count drift fixed in 5 locations (FEATURES ×3, ROADMAP ×2); AGENTS.md updated (LRU/benchmark/CloneNodes/GetShared-unsafe, 30 patterns, precision gates, SARIF); HOW_TO_USE.md (`--suggest-generics-min-lines`); FEATURES.md (generics enhancer → FULLY_FUNCTIONAL, cache flags) | commit `9cae480d` |
-| 8 | **ADR-0021** written: EraseHash dual-of-type-aware design, the 3 precision gates (≥2 divergent positions, min-lines 4, no pattern match), cache isolation, consequences incl. DiscordSync numbers | `docs/adr/0021-suggest-generics-erasehash-precision-gates.md` |
-| 9 | **TODO_LIST.md refreshed**: 30+ stale/done items removed, only open work remains (HTML remainder, 3 feedback patterns, cache-stats-in-subcommand, infra, deferred) | commit `9cae480d` |
-| 10 | **Doc sprawl triaged**: 8 point-in-time root docs `git mv`'d to `docs/archive/` (USAGE.md — pre-fork "dupl" docs split brain, PARTS.md, BDD_TESTS_REVIEW.md, BENCHMARK_COMPARISON.md, branching-flow ×2, MIGRATION ×2); empty `PERFORMANCE_OPTIMIZATION.md` trashed; zero dangling references verified in living docs | commit `9cae480d` |
-| 11 | **Brutal self-review delivered**: styled HTML at `docs/reviews/2026-08-15_22-44_brutal-self-review.html` (gitignored by `*.html` policy) + tracked Markdown companion answering all 11 questions | commit `03bf2c52` |
-| 12 | **BuildFlow auto-fixes committed separately** (39 workflow SHA pins, gofmt realignment, dprint.json) so tool churn doesn't pollute feature commits | commit `20e1b719` |
-| 13 | **Final gates green**: `go build ./...` clean; 27 test packages pass (317 BDD specs incl. 4 new); `golangci-lint` **0 issues**; dogfood self-invariant holds (51 detected / 0 shown at `--min-lines 6`) | verified end of session |
+| #  | Item                                                                                                                                                                                                                                                                                                                                                                                                  | Evidence                                                          |
+| -- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| 1  | **Cache benchmark**: `BenchmarkFileCacheGet` proves LRU-hit is 5.3x faster than disk-hit (76,785 vs 408,406 ns/op; 767 vs 2,805 allocs) on a 255-node tree                                                                                                                                                                                                                                            | `cache/file_cache_test.go`, commit `f9320174`                     |
+| 2  | **GetShared design rejected with rationale**: a no-clone shared cache API is UNSAFE because `stampFilename` mutates in place — documented in `job/incremental.go::parseFile` comment so no future session re-proposes it                                                                                                                                                                              | commit `f9320174`                                                 |
+| 3  | **Dead code deleted**: `printer.Issuer`/`MakeIssues`/`Issue` — zero production callers, only self-tests                                                                                                                                                                                                                                                                                               | `printer/issuer.go` + `issuer_test.go` removed, commit `80be8dc6` |
+| 4  | **Ghost system wired instead of deleted**: `printer.NodesToGroup` was test-only while `cmd/run_output.go` and `cmd/diff_report.go` inlined the identical sequence — now the canonical constructor everywhere, takes `ProcessOption`s, returns typed `AnalysisError`                                                                                                                                   | commit `80be8dc6`                                                 |
+| 5  | **4 BDD scenarios for `--suggest-generics`** (hint shown / absent without flag / min-lines gate / identical-types no-hint), each behavior verified e2e against the real CLI in /tmp BEFORE encoding                                                                                                                                                                                                   | `bdd/suggest_generics_test.go`, commit `3afc4ae6`                 |
+| 6  | **DiscordSync re-validation** (was "blocked" — repo WAS available at `/home/lars/projects/DiscordSync`; handoff's case-sensitive check was wrong): **296 detected → 2 shown, 0 FPs**, both survivors manually inspected as genuine (one is itself a textbook generics candidate)                                                                                                                      | real runs this session                                            |
+| 7  | **Docs pass**: `error-guard-fallthrough` added to ACTIONABILITY_PATTERNS (table + priority #17, count 29→30); pattern-count drift fixed in 5 locations (FEATURES ×3, ROADMAP ×2); AGENTS.md updated (LRU/benchmark/CloneNodes/GetShared-unsafe, 30 patterns, precision gates, SARIF); HOW_TO_USE.md (`--suggest-generics-min-lines`); FEATURES.md (generics enhancer → FULLY_FUNCTIONAL, cache flags) | commit `9cae480d`                                                 |
+| 8  | **ADR-0021** written: EraseHash dual-of-type-aware design, the 3 precision gates (≥2 divergent positions, min-lines 4, no pattern match), cache isolation, consequences incl. DiscordSync numbers                                                                                                                                                                                                     | `docs/adr/0021-suggest-generics-erasehash-precision-gates.md`     |
+| 9  | **TODO_LIST.md refreshed**: 30+ stale/done items removed, only open work remains (HTML remainder, 3 feedback patterns, cache-stats-in-subcommand, infra, deferred)                                                                                                                                                                                                                                    | commit `9cae480d`                                                 |
+| 10 | **Doc sprawl triaged**: 8 point-in-time root docs `git mv`'d to `docs/archive/` (USAGE.md — pre-fork "dupl" docs split brain, PARTS.md, BDD_TESTS_REVIEW.md, BENCHMARK_COMPARISON.md, branching-flow ×2, MIGRATION ×2); empty `PERFORMANCE_OPTIMIZATION.md` trashed; zero dangling references verified in living docs                                                                                 | commit `9cae480d`                                                 |
+| 11 | **Brutal self-review delivered**: styled HTML at `docs/reviews/2026-08-15_22-44_brutal-self-review.html` (gitignored by `*.html` policy) + tracked Markdown companion answering all 11 questions                                                                                                                                                                                                      | commit `03bf2c52`                                                 |
+| 12 | **BuildFlow auto-fixes committed separately** (39 workflow SHA pins, gofmt realignment, dprint.json) so tool churn doesn't pollute feature commits                                                                                                                                                                                                                                                    | commit `20e1b719`                                                 |
+| 13 | **Final gates green**: `go build ./...` clean; 27 test packages pass (317 BDD specs incl. 4 new); `golangci-lint` **0 issues**; dogfood self-invariant holds (51 detected / 0 shown at `--min-lines 6`)                                                                                                                                                                                               | verified end of session                                           |
 
 ## b) PARTIALLY DONE
 
-| Item | Done | Remaining |
-|------|------|-----------|
-| Cache stats ghost integration | `MemHits` in `Stats`, printed in verbose mode (`printCacheStats`) | Not in `stats` subcommand; non-verbose users see nothing |
-| Suggest-generics output polish | Hint dedup (`divergenceKey`), path stripping (`shortenTypeString`) | Still prints `command-line-arguments.` prefix (go/packages artifact) |
-| Sprint commit hygiene | This session's 5 work commits are logical + detailed | Prior session's 8 areas remain one daemon blob `9b4a4e5d` — unsplittable now |
-| Self-review HTML | Written per skill spec (34KB, Bauhaus template) | Untracked by git (policy) — only the .md companion is versioned |
+| Item                           | Done                                                               | Remaining                                                                    |
+| ------------------------------ | ------------------------------------------------------------------ | ---------------------------------------------------------------------------- |
+| Cache stats ghost integration  | `MemHits` in `Stats`, printed in verbose mode (`printCacheStats`)  | Not in `stats` subcommand; non-verbose users see nothing                     |
+| Suggest-generics output polish | Hint dedup (`divergenceKey`), path stripping (`shortenTypeString`) | Still prints `command-line-arguments.` prefix (go/packages artifact)         |
+| Sprint commit hygiene          | This session's 5 work commits are logical + detailed               | Prior session's 8 areas remain one daemon blob `9b4a4e5d` — unsplittable now |
+| Self-review HTML               | Written per skill spec (34KB, Bauhaus template)                    | Untracked by git (policy) — only the .md companion is versioned              |
 
 ## c) NOT STARTED (known, deliberately deferred — from prior sprint scope)
 
@@ -100,7 +100,7 @@
 2. **Multiedit rejected for unread file** (ACTIONABILITY_PATTERNS.md) — violated the read-before-edit rule, recovered with View + retry.
 3. **Initial BDD "pass" was unproven**: `go test ./bdd/` filters don't match Ginkgo `It` blocks, so "ok" didn't prove my specs ran. Caught it by re-running with `-ginkgo.focus`; all 4 passed. The failure mode (false green) is worth remembering.
 4. **HTML report git-add rejection**: ignored `*.html` rule discovered only at commit time. Check `git check-ignore` before writing large deliverables.
-5. *(Inherited, not this session)* BuildFlow pre-commit hook bypassed on EVERY commit (6 missing devShell binaries). I added 6 more `--no-verify` commits to the pile.
+5. _(Inherited, not this session)_ BuildFlow pre-commit hook bypassed on EVERY commit (6 missing devShell binaries). I added 6 more `--no-verify` commits to the pile.
 
 ## e) WHAT WE SHOULD IMPROVE (this session's observations)
 
@@ -114,6 +114,7 @@
 ## f) NEXT — up to 50 things, priority-ordered
 
 **P0 — infrastructure honesty (quick, high value)**
+
 1. Add tsc/pytest/tailwindcss/go-licenses/vulnix/govulncheck to devShell (or exclude from pre-commit mode) so the hook can enforce again
 2. Address the 49 go-structure-linter findings (workflow pins partially auto-fixed this session — verify remaining)
 3. `dist/` directory not ignored in go.mod (gomod-check info finding)
@@ -161,7 +162,7 @@
 33. Add `docs/archive/` README explaining what the archived docs are and why
 34. Verify USAGE.md removal didn't break website links to it (built site may reference it)
 
-*(34 items — every remaining idea I could justify; the rest would be padding.)*
+_(34 items — every remaining idea I could justify; the rest would be padding.)_
 
 ## g) Questions I cannot answer myself
 

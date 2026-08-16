@@ -202,7 +202,7 @@ wasted analysis effort on the wrong primary cause.
    asserts this, but the test name ("should suppress accepted groups entirely")
    reflects a semantic that wasn't documented before.
 6. **The hash detection heuristic (`!strings.ContainsAny(rest, " \t")`) is
-   fragile.** A hash with a trailing space (`//art-dupl:accept abc123 `) would
+   fragile.** A hash with a trailing space (`//art-dupl:accept abc123`) would
    be treated as a description. `strings.TrimSpace` handles this, but a
    multi-line hash or tab-separated hash would behave unexpectedly.
 7. **Pattern priority ordering is undocumented in code.** The slice in
@@ -239,7 +239,7 @@ wasted analysis effort on the wrong primary cause.
 
 10. **Add integration test in temp dir** for above-range directive placement
     (plan F05 — never done, only unit-tested)
-11. **Add test for hash with trailing whitespace** (`//art-dupl:accept abc123 `)
+11. **Add test for hash with trailing whitespace** (`//art-dupl:accept abc123`)
 12. **Add test for directive on LineStart boundary with above-range scan** (edge case)
 13. **Add BDD test for `test-helper-delegate` pattern** end-to-end (currently only
     unit-tested at the pattern-checker level)

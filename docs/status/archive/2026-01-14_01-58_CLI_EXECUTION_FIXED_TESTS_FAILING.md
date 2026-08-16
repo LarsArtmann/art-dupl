@@ -678,8 +678,8 @@ Sorted by impact vs work required (Pareto principle: 1% → 51% impact)
 | **Build**           | ✅ **PASSING**      | Compiles without errors                       | -          |
 | **Core Tests**      | ✅ **PASSING**      | suffixtree, printer, config                   | -          |
 | **Full Test Suite** | ❌ **FAILING**      | Build errors in cli, domain, migration        | **HIGH**   |
-| **Code Quality**    | ⚠️ **DUPES**        | 472 lines duplicated                          | **MEDIUM** |
-| **Architecture**    | ⚠️ **UNCLEAR**      | Two CLI systems coexist                       | **MEDIUM** |
+| **Code Quality**    | ⚠️ **DUPES**         | 472 lines duplicated                          | **MEDIUM** |
+| **Architecture**    | ⚠️ **UNCLEAR**       | Two CLI systems coexist                       | **MEDIUM** |
 
 ---
 

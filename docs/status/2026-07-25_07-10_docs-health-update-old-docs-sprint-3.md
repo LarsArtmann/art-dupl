@@ -158,98 +158,98 @@ The `DefaultThreshold == config.DefaultThreshold` drift-detection idea (from the
 
 ### Immediate Fixes (from this session's gaps)
 
-| #   | Task                                                                         | Priority | Effort |
-| --- | ---------------------------------------------------------------------------- | -------- | ------ |
-| 1   | Verify AGENTS.md actionability pattern count (18) against `actionability.go` | Critical | 2min   |
-| 2   | Verify or remove "6,000+ Go files, 320+ templ files" claim in FEATURES.md    | High     | 10min  |
-| 3   | Run internal markdown link check (`grep -roE '\]\([^)]+\)' *.md docs/`)      | High     | 5min   |
-| 4   | Update HOW_TO_USE.md accept-directive section with UX fix details            | Medium   | 15min  |
+| # | Task                                                                         | Priority | Effort |
+| - | ---------------------------------------------------------------------------- | -------- | ------ |
+| 1 | Verify AGENTS.md actionability pattern count (18) against `actionability.go` | Critical | 2min   |
+| 2 | Verify or remove "6,000+ Go files, 320+ templ files" claim in FEATURES.md    | High     | 10min  |
+| 3 | Run internal markdown link check (`grep -roE '\]\([^)]+\)' *.md docs/`)      | High     | 5min   |
+| 4 | Update HOW_TO_USE.md accept-directive section with UX fix details            | Medium   | 15min  |
 
 ### Documentation Quality
 
-| #   | Task                                                                      | Priority | Effort |
-| --- | ------------------------------------------------------------------------- | -------- | ------ |
-| 5   | Verify TESTING.md claims against actual test infrastructure               | Medium   | 15min  |
-| 6   | Verify CONTRIBUTING.md commands run without error                         | Medium   | 10min  |
-| 7   | Verify DOMAIN_LANGUAGE.md glossary terms against code                     | Medium   | 15min  |
-| 8   | Verify SDK_DESIGN.md against `pkg/artdupl/types.go`                       | Medium   | 15min  |
-| 9   | Add drift-detection test: assert doc counts match code constants          | Medium   | 30min  |
-| 10  | Replace all hardcoded counts in FEATURES.md with descriptions or commands | Low      | 20min  |
-| 11  | Decide: split CHANGELOG `[Unreleased]` into a versioned release?          | Low      | 5min   |
+| #  | Task                                                                      | Priority | Effort |
+| -- | ------------------------------------------------------------------------- | -------- | ------ |
+| 5  | Verify TESTING.md claims against actual test infrastructure               | Medium   | 15min  |
+| 6  | Verify CONTRIBUTING.md commands run without error                         | Medium   | 10min  |
+| 7  | Verify DOMAIN_LANGUAGE.md glossary terms against code                     | Medium   | 15min  |
+| 8  | Verify SDK_DESIGN.md against `pkg/artdupl/types.go`                       | Medium   | 15min  |
+| 9  | Add drift-detection test: assert doc counts match code constants          | Medium   | 30min  |
+| 10 | Replace all hardcoded counts in FEATURES.md with descriptions or commands | Low      | 20min  |
+| 11 | Decide: split CHANGELOG `[Unreleased]` into a versioned release?          | Low      | 5min   |
 
 ### Actionability System
 
-| #   | Task                                                                           | Priority | Effort |
-| --- | ------------------------------------------------------------------------------ | -------- | ------ |
-| 12  | `--no-actionability` flag: principled fix for test-fixture false positives     | High     | 45min  |
-| 13  | `SetFilterSourceStats` unit test: regression protection for source tracking    | High     | 20min  |
-| 14  | BDD integration test for `guard-clause` and `single-simple-statement` patterns | Medium   | 30min  |
-| 15  | `--debug-actionability` flag: show which pattern matched each clone group      | Medium   | 45min  |
-| 16  | Pattern audit: verify all 18 patterns have test coverage                       | Medium   | 30min  |
-| 17  | Templ support verification: do actionability patterns work on templ ASTs?      | Medium   | 30min  |
+| #  | Task                                                                           | Priority | Effort |
+| -- | ------------------------------------------------------------------------------ | -------- | ------ |
+| 12 | `--no-actionability` flag: principled fix for test-fixture false positives     | High     | 45min  |
+| 13 | `SetFilterSourceStats` unit test: regression protection for source tracking    | High     | 20min  |
+| 14 | BDD integration test for `guard-clause` and `single-simple-statement` patterns | Medium   | 30min  |
+| 15 | `--debug-actionability` flag: show which pattern matched each clone group      | Medium   | 45min  |
+| 16 | Pattern audit: verify all 18 patterns have test coverage                       | Medium   | 30min  |
+| 17 | Templ support verification: do actionability patterns work on templ ASTs?      | Medium   | 30min  |
 
 ### Filtering and Generated Code
 
-| #   | Task                                                               | Priority | Effort |
-| --- | ------------------------------------------------------------------ | -------- | ------ |
-| 18  | Push defense-in-depth into gogenfilter upstream                    | Medium   | 60min  |
-| 19  | Refactor `generatorIncludes` struct: 6 booleans to map or bitfield | Low      | 30min  |
-| 20  | Unify `allowsContent` and `filterExcludedGenerated`                | Low      | 20min  |
-| 21  | Lazy content reading: skip when filename check suffices            | Low      | 20min  |
-| 22  | `bytes.Contains` instead of `string(content)` in filter checks     | Low      | 10min  |
+| #  | Task                                                               | Priority | Effort |
+| -- | ------------------------------------------------------------------ | -------- | ------ |
+| 18 | Push defense-in-depth into gogenfilter upstream                    | Medium   | 60min  |
+| 19 | Refactor `generatorIncludes` struct: 6 booleans to map or bitfield | Low      | 30min  |
+| 20 | Unify `allowsContent` and `filterExcludedGenerated`                | Low      | 20min  |
+| 21 | Lazy content reading: skip when filename check suffices            | Low      | 20min  |
+| 22 | `bytes.Contains` instead of `string(content)` in filter checks     | Low      | 10min  |
 
 ### CI and Infrastructure
 
-| #   | Task                                                                     | Priority | Effort |
-| --- | ------------------------------------------------------------------------ | -------- | ------ |
-| 23  | Investigate auto-committer: can it be configured or disabled?            | Critical | 30min  |
-| 24  | Pre-commit hook for `check-disabled-linters.sh` (catch before push)      | High     | 15min  |
-| 25  | CI step to verify `.golangci.yml` has no disabled linters in enable list | High     | 15min  |
-| 26  | GitHub Release for v0.2.0 and v0.3.0 (tags exist, no release assets)     | Low      | 10min  |
-| 27  | SARIF output validation against GitHub schema validator in CI            | Low      | 30min  |
+| #  | Task                                                                     | Priority | Effort |
+| -- | ------------------------------------------------------------------------ | -------- | ------ |
+| 23 | Investigate auto-committer: can it be configured or disabled?            | Critical | 30min  |
+| 24 | Pre-commit hook for `check-disabled-linters.sh` (catch before push)      | High     | 15min  |
+| 25 | CI step to verify `.golangci.yml` has no disabled linters in enable list | High     | 15min  |
+| 26 | GitHub Release for v0.2.0 and v0.3.0 (tags exist, no release assets)     | Low      | 10min  |
+| 27 | SARIF output validation against GitHub schema validator in CI            | Low      | 30min  |
 
 ### CLI and UX
 
-| #   | Task                                                                      | Priority | Effort |
-| --- | ------------------------------------------------------------------------- | -------- | ------ |
-| 28  | YAML config file support (`.artdupl.yml`)                                 | Medium   | 60min  |
-| 29  | `--diff-report <baseline>` mode                                           | Medium   | 90min  |
-| 30  | `--explain` flag (why was this clone reported?)                           | Medium   | 60min  |
-| 31  | HTML report: file output flag, TTY auto-detection, stable `id` attributes | Low      | 45min  |
-| 32  | `--recommend-threshold`: auto-suggest based on codebase size              | Low      | 45min  |
+| #  | Task                                                                      | Priority | Effort |
+| -- | ------------------------------------------------------------------------- | -------- | ------ |
+| 28 | YAML config file support (`.artdupl.yml`)                                 | Medium   | 60min  |
+| 29 | `--diff-report <baseline>` mode                                           | Medium   | 90min  |
+| 30 | `--explain` flag (why was this clone reported?)                           | Medium   | 60min  |
+| 31 | HTML report: file output flag, TTY auto-detection, stable `id` attributes | Low      | 45min  |
+| 32 | `--recommend-threshold`: auto-suggest based on codebase size              | Low      | 45min  |
 
 ### Detection and Architecture
 
-| #   | Task                                                         | Priority | Effort |
-| --- | ------------------------------------------------------------ | -------- | ------ |
-| 33  | Split `printer/` into sub-packages (~29 files, ~3500+ lines) | Medium   | 120min |
-| 34  | Templ Phase 3: expression normalization                      | Low      | 60min  |
-| 35  | Interface-method-aware suppression at all thresholds         | Low      | 60min  |
-| 36  | Incremental type checking for `--type-aware` mode            | Low      | 90min  |
-| 37  | Caching for type-checking results (`go/types` cache)         | Low      | 60min  |
+| #  | Task                                                         | Priority | Effort |
+| -- | ------------------------------------------------------------ | -------- | ------ |
+| 33 | Split `printer/` into sub-packages (~29 files, ~3500+ lines) | Medium   | 120min |
+| 34 | Templ Phase 3: expression normalization                      | Low      | 60min  |
+| 35 | Interface-method-aware suppression at all thresholds         | Low      | 60min  |
+| 36 | Incremental type checking for `--type-aware` mode            | Low      | 90min  |
+| 37 | Caching for type-checking results (`go/types` cache)         | Low      | 60min  |
 
 ### Code Quality
 
-| #   | Task                                                             | Priority | Effort |
-| --- | ---------------------------------------------------------------- | -------- | ------ |
-| 38  | SDK/CLI drift-detection test (`DefaultThreshold` consistency)    | Medium   | 20min  |
-| 39  | Profile `filterExcludedGenerated` content-read path              | Low      | 20min  |
-| 40  | Consolidate marker constants (`templMarker`, `sqlcMarker`, etc.) | Low      | 15min  |
-| 41  | Property-based test for filter logic                             | Low      | 45min  |
-| 42  | `--filter-stats` flag: show per-category filter counts           | Low      | 30min  |
+| #  | Task                                                             | Priority | Effort |
+| -- | ---------------------------------------------------------------- | -------- | ------ |
+| 38 | SDK/CLI drift-detection test (`DefaultThreshold` consistency)    | Medium   | 20min  |
+| 39 | Profile `filterExcludedGenerated` content-read path              | Low      | 20min  |
+| 40 | Consolidate marker constants (`templMarker`, `sqlcMarker`, etc.) | Low      | 15min  |
+| 41 | Property-based test for filter logic                             | Low      | 45min  |
+| 42 | `--filter-stats` flag: show per-category filter counts           | Low      | 30min  |
 
 ### Process
 
-| #   | Task                                                                      | Priority | Effort |
-| --- | ------------------------------------------------------------------------- | -------- | ------ |
-| 43  | Status report budget: max 5 unresolved reports before mandatory cleanup   | Low      | 5min   |
-| 44  | RELEASE.md: add "verify doc counts" step to release checklist             | Low      | 10min  |
-| 45  | ADR for FilterSource tracking design                                      | Low      | 20min  |
-| 46  | Document accept-directive limitations in FILTERING.md (if it exists)      | Low      | 15min  |
-| 47  | Audit godoc examples (`pkg/artdupl/doc.go`) for stale thresholds          | Medium   | 10min  |
-| 48  | LSP diagnostics: 27 `gopls stdversion` warnings (json/v2 requires go1.27) | Low      | 10min  |
-| 49  | `examples/examples_sdk_demo.go`: verify threshold uses `DefaultThreshold` | Medium   | 5min   |
-| 50  | Performance benchmark for `--type-aware` mode (10-100x slower claim)      | Low      | 30min  |
+| #  | Task                                                                      | Priority | Effort |
+| -- | ------------------------------------------------------------------------- | -------- | ------ |
+| 43 | Status report budget: max 5 unresolved reports before mandatory cleanup   | Low      | 5min   |
+| 44 | RELEASE.md: add "verify doc counts" step to release checklist             | Low      | 10min  |
+| 45 | ADR for FilterSource tracking design                                      | Low      | 20min  |
+| 46 | Document accept-directive limitations in FILTERING.md (if it exists)      | Low      | 15min  |
+| 47 | Audit godoc examples (`pkg/artdupl/doc.go`) for stale thresholds          | Medium   | 10min  |
+| 48 | LSP diagnostics: 27 `gopls stdversion` warnings (json/v2 requires go1.27) | Low      | 10min  |
+| 49 | `examples/examples_sdk_demo.go`: verify threshold uses `DefaultThreshold` | Medium   | 5min   |
+| 50 | Performance benchmark for `--type-aware` mode (10-100x slower claim)      | Low      | 30min  |
 
 ---
 

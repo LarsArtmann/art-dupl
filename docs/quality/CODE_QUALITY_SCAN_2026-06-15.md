@@ -13,10 +13,10 @@
 
 ## Fixed This Session
 
-| #   | File             | Line | Issue                                  | Fix                 |
-| --- | ---------------- | ---- | -------------------------------------- | ------------------- |
-| 1   | printer/stats.go | 159  | Missing `domain.PriorityLow` in switch | Added explicit case |
-| 2   | go.sum           | —    | Missing transitive dependency hashes   | Ran `go mod tidy`   |
+| # | File             | Line | Issue                                  | Fix                 |
+| - | ---------------- | ---- | -------------------------------------- | ------------------- |
+| 1 | printer/stats.go | 159  | Missing `domain.PriorityLow` in switch | Added explicit case |
+| 2 | go.sum           | —    | Missing transitive dependency hashes   | Ran `go mod tidy`   |
 
 ## Issues Found (Sorted by Impact)
 
@@ -24,18 +24,18 @@
 
 These files exceed the 350-line guideline. Splitting improves testability and locality.
 
-| #   | File                             | Lines | Recommendation                            |
-| --- | -------------------------------- | ----- | ----------------------------------------- |
-| 1   | printer/actionability.go         | 558   | Extract pattern matching logic            |
-| 2   | printer/html_template.go         | 523   | Split HTML generation from templating     |
-| 3   | printer/stats_formatter.go       | 484   | Split formatting by output type           |
-| 4   | printer/diff.go                  | 389   | Extract diff rendering from diff logic    |
-| 5   | syntax/golang/transform.go       | 369   | Split AST transform by node category      |
-| 6   | cache/file_cache.go              | 364   | Split cache operations from serialization |
-| 7   | syntax/syntax.go                 | 359   | Split node processing from tree building  |
-| 8   | printer/html.go                  | 354   | Split HTML rendering phases               |
-| 9   | internal/testutil/bdd_helpers.go | 352   | Split BDD helpers by concern              |
-| 10  | cmd/run_analysis.go              | 351   | Split analysis orchestration steps        |
+| #  | File                             | Lines | Recommendation                            |
+| -- | -------------------------------- | ----- | ----------------------------------------- |
+| 1  | printer/actionability.go         | 558   | Extract pattern matching logic            |
+| 2  | printer/html_template.go         | 523   | Split HTML generation from templating     |
+| 3  | printer/stats_formatter.go       | 484   | Split formatting by output type           |
+| 4  | printer/diff.go                  | 389   | Extract diff rendering from diff logic    |
+| 5  | syntax/golang/transform.go       | 369   | Split AST transform by node category      |
+| 6  | cache/file_cache.go              | 364   | Split cache operations from serialization |
+| 7  | syntax/syntax.go                 | 359   | Split node processing from tree building  |
+| 8  | printer/html.go                  | 354   | Split HTML rendering phases               |
+| 9  | internal/testutil/bdd_helpers.go | 352   | Split BDD helpers by concern              |
+| 10 | cmd/run_analysis.go              | 351   | Split analysis orchestration steps        |
 
 ### 🟡 Medium — Test Code Duplication
 

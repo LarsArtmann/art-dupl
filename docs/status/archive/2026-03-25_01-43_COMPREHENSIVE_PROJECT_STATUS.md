@@ -57,29 +57,29 @@ The art-dupl project is in excellent health:
 
 ### Test Coverage
 
-| Package        | Coverage | Status               |
-| -------------- | -------- | -------------------- |
-| adapter        | 97.6%    | ✅ Excellent         |
-| domain         | 97.0%    | ✅ Excellent         |
-| pkg/format     | 100.0%   | ✅ Perfect           |
-| pkg/position   | 100.0%   | ✅ Perfect           |
-| internal/simd  | 95.8%    | ✅ Excellent         |
-| syntax/golang  | 94.3%    | ✅ Excellent         |
-| internal/utils | 93.4%    | ✅ Excellent         |
-| suffixtree     | 91.0%    | ✅ Excellent         |
-| errors         | 89.4%    | ✅ Good              |
-| pkg/logger     | 87.5%    | ✅ Good              |
-| cache          | 87.0%    | ✅ Good              |
-| pkg/artdupl    | 86.8%    | ✅ Good              |
-| detection      | 83.0%    | ✅ Good              |
-| git            | 83.0%    | ✅ Good              |
-| pkg/filter     | 82.5%    | ✅ Good              |
-| syntax/templ   | 80.6%    | ✅ Good              |
-| internal/enum  | 77.9%    | ✅ Acceptable        |
-| job            | 76.9%    | ✅ Acceptable        |
-| config         | 75.3%    | ✅ Acceptable        |
-| cmd            | 73.9%    | ✅ Acceptable        |
-| hash           | 73.8%    | ✅ Acceptable        |
+| Package        | Coverage | Status              |
+| -------------- | -------- | ------------------- |
+| adapter        | 97.6%    | ✅ Excellent        |
+| domain         | 97.0%    | ✅ Excellent        |
+| pkg/format     | 100.0%   | ✅ Perfect          |
+| pkg/position   | 100.0%   | ✅ Perfect          |
+| internal/simd  | 95.8%    | ✅ Excellent        |
+| syntax/golang  | 94.3%    | ✅ Excellent        |
+| internal/utils | 93.4%    | ✅ Excellent        |
+| suffixtree     | 91.0%    | ✅ Excellent        |
+| errors         | 89.4%    | ✅ Good             |
+| pkg/logger     | 87.5%    | ✅ Good             |
+| cache          | 87.0%    | ✅ Good             |
+| pkg/artdupl    | 86.8%    | ✅ Good             |
+| detection      | 83.0%    | ✅ Good             |
+| git            | 83.0%    | ✅ Good             |
+| pkg/filter     | 82.5%    | ✅ Good             |
+| syntax/templ   | 80.6%    | ✅ Good             |
+| internal/enum  | 77.9%    | ✅ Acceptable       |
+| job            | 76.9%    | ✅ Acceptable       |
+| config         | 75.3%    | ✅ Acceptable       |
+| cmd            | 73.9%    | ✅ Acceptable       |
+| hash           | 73.8%    | ✅ Acceptable       |
 | cli            | 62.5%    | ⚠️ Needs improvement |
 | printer        | 64.1%    | ⚠️ Needs improvement |
 | syntax         | 67.6%    | ⚠️ Needs improvement |
@@ -189,48 +189,48 @@ All major issues have been resolved. The codebase is in good shape.
 
 ### Priority 1: Critical (Do This Week)
 
-| #   | Task                                        | Impact | Effort | Score  |
-| --- | ------------------------------------------- | ------ | ------ | ------ |
-| 1   | Add tests for migration/ package (0% → 80%) | High   | Low    | 🔥🔥🔥 |
-| 2   | Improve cli/ test coverage (62.5% → 80%)    | Medium | Low    | 🔥🔥🔥 |
-| 3   | Clean up stale TODO_LIST.md                 | Low    | Low    | 🔥🔥   |
-| 4   | Update README with current defaults         | Medium | Low    | 🔥🔥   |
+| # | Task                                        | Impact | Effort | Score  |
+| - | ------------------------------------------- | ------ | ------ | ------ |
+| 1 | Add tests for migration/ package (0% → 80%) | High   | Low    | 🔥🔥🔥 |
+| 2 | Improve cli/ test coverage (62.5% → 80%)    | Medium | Low    | 🔥🔥🔥 |
+| 3 | Clean up stale TODO_LIST.md                 | Low    | Low    | 🔥🔥   |
+| 4 | Update README with current defaults         | Medium | Low    | 🔥🔥   |
 
 ### Priority 2: Important (Do This Month)
 
-| #   | Task                                        | Impact | Effort | Score |
-| --- | ------------------------------------------- | ------ | ------ | ----- |
-| 5   | Split printer/html.go (1385 lines)          | High   | Medium | 🔥🔥  |
-| 6   | Split pkg/filter/filter_test.go (932 lines) | Medium | Medium | 🔥🔥  |
-| 7   | Implement SARIF output format               | High   | Medium | 🔥🔥  |
-| 8   | Add incremental caching improvements        | High   | Medium | 🔥🔥  |
+| # | Task                                        | Impact | Effort | Score |
+| - | ------------------------------------------- | ------ | ------ | ----- |
+| 5 | Split printer/html.go (1385 lines)          | High   | Medium | 🔥🔥  |
+| 6 | Split pkg/filter/filter_test.go (932 lines) | Medium | Medium | 🔥🔥  |
+| 7 | Implement SARIF output format               | High   | Medium | 🔥🔥  |
+| 8 | Add incremental caching improvements        | High   | Medium | 🔥🔥  |
 
 ### Priority 3: Nice to Have (Do This Quarter)
 
-| #   | Task                              | Impact | Effort | Score |
-| --- | --------------------------------- | ------ | ------ | ----- |
-| 9   | Implement TokenValue type         | Medium | Medium | 🔥    |
-| 10  | Generic SortStrategy[T] interface | Medium | Medium | 🔥    |
-| 11  | Memory layout optimization        | Medium | High   | 🔥    |
-| 12  | Remove CloneID from Clone struct  | Low    | Low    | 🔥    |
+| #  | Task                              | Impact | Effort | Score |
+| -- | --------------------------------- | ------ | ------ | ----- |
+| 9  | Implement TokenValue type         | Medium | Medium | 🔥    |
+| 10 | Generic SortStrategy[T] interface | Medium | Medium | 🔥    |
+| 11 | Memory layout optimization        | Medium | High   | 🔥    |
+| 12 | Remove CloneID from Clone struct  | Low    | Low    | 🔥    |
 
 ### Priority 4: Future Consideration
 
-| #   | Task                                          | Impact | Effort    |
-| --- | --------------------------------------------- | ------ | --------- |
-| 13  | Split printer/stats_test.go (955 lines)       | Medium | Medium    |
-| 14  | Split detection/detection_test.go (830 lines) | Medium | Medium    |
-| 15  | Improve printer/ coverage (64.1% → 80%)       | Medium | Medium    |
-| 16  | Improve syntax/ coverage (67.6% → 80%)        | Medium | Medium    |
-| 17  | Create API documentation                      | Medium | Medium    |
-| 18  | Add performance benchmarks                    | Medium | Medium    |
-| 19  | Implement concurrent file processing          | High   | High      |
-| 20  | Add Git integration for change detection      | Medium | High      |
-| 21  | Create VS Code extension                      | Low    | High      |
-| 22  | Add GitHub Action                             | Medium | Low       |
-| 23  | Create Homebrew formula                       | Low    | Low       |
-| 24  | Add more language support (JS, TS, Python)    | High   | Very High |
-| 25  | Create web UI for reports                     | Medium | Very High |
+| #  | Task                                          | Impact | Effort    |
+| -- | --------------------------------------------- | ------ | --------- |
+| 13 | Split printer/stats_test.go (955 lines)       | Medium | Medium    |
+| 14 | Split detection/detection_test.go (830 lines) | Medium | Medium    |
+| 15 | Improve printer/ coverage (64.1% → 80%)       | Medium | Medium    |
+| 16 | Improve syntax/ coverage (67.6% → 80%)        | Medium | Medium    |
+| 17 | Create API documentation                      | Medium | Medium    |
+| 18 | Add performance benchmarks                    | Medium | Medium    |
+| 19 | Implement concurrent file processing          | High   | High      |
+| 20 | Add Git integration for change detection      | Medium | High      |
+| 21 | Create VS Code extension                      | Low    | High      |
+| 22 | Add GitHub Action                             | Medium | Low       |
+| 23 | Create Homebrew formula                       | Low    | Low       |
+| 24 | Add more language support (JS, TS, Python)    | High   | Very High |
+| 25 | Create web UI for reports                     | Medium | Very High |
 
 ---
 

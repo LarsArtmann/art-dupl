@@ -102,48 +102,48 @@ Sorted by **Impact × Feasibility**:
 
 ### Quick Wins (≤30 min each)
 
-| #   | Task                                                                   | Impact | Effort |
-| --- | ---------------------------------------------------------------------- | ------ | ------ |
-| 1   | Fix `goconst` warnings — extract repeated test strings to constants    | Medium | Low    |
-| 2   | Fix `unused` warning — remove `assertStringEqual` from `html_test.go`  | Low    | Low    |
-| 3   | Fix `nolintlint` — remove stale nolint directives                      | Low    | Low    |
-| 4   | Fix `errchkjson` — check `json.Marshal` error in `config_enum_test.go` | Low    | Low    |
-| 5   | Fix `prealloc` — preallocate `baseLines` in `html_test.go`             | Low    | Low    |
-| 6   | Run `gofmt` / `golines` on flagged files                               | Low    | Low    |
-| 7   | Add `//nolint:exhaustruct` where needed or fix struct init             | Low    | Low    |
+| # | Task                                                                   | Impact | Effort |
+| - | ---------------------------------------------------------------------- | ------ | ------ |
+| 1 | Fix `goconst` warnings — extract repeated test strings to constants    | Medium | Low    |
+| 2 | Fix `unused` warning — remove `assertStringEqual` from `html_test.go`  | Low    | Low    |
+| 3 | Fix `nolintlint` — remove stale nolint directives                      | Low    | Low    |
+| 4 | Fix `errchkjson` — check `json.Marshal` error in `config_enum_test.go` | Low    | Low    |
+| 5 | Fix `prealloc` — preallocate `baseLines` in `html_test.go`             | Low    | Low    |
+| 6 | Run `gofmt` / `golines` on flagged files                               | Low    | Low    |
+| 7 | Add `//nolint:exhaustruct` where needed or fix struct init             | Low    | Low    |
 
 ### Medium Effort (1-2 hours each)
 
-| #   | Task                                                              | Impact | Effort |
-| --- | ----------------------------------------------------------------- | ------ | ------ |
-| 8   | Extract `FilterOptions` struct from `FlagValues` (group 15 bools) | High   | Medium |
-| 9   | Extract `FilterOptions` struct from `Config` (reuse same type)    | High   | Medium |
-| 10  | Wire `FilterOptions` through `BuildConfigFromFlags`               | High   | Medium |
-| 11  | Decompose `StatsData` (23 fields) into focused sub-structs        | Medium | Medium |
-| 12  | Add `tparallel` fixes — call `t.Parallel()` in subtests           | Low    | Medium |
-| 13  | Fix `wsl_v5` lint warnings across test files                      | Low    | Medium |
-| 14  | Fix `nlreturn` lint warnings                                      | Low    | Medium |
+| #  | Task                                                              | Impact | Effort |
+| -- | ----------------------------------------------------------------- | ------ | ------ |
+| 8  | Extract `FilterOptions` struct from `FlagValues` (group 15 bools) | High   | Medium |
+| 9  | Extract `FilterOptions` struct from `Config` (reuse same type)    | High   | Medium |
+| 10 | Wire `FilterOptions` through `BuildConfigFromFlags`               | High   | Medium |
+| 11 | Decompose `StatsData` (23 fields) into focused sub-structs        | Medium | Medium |
+| 12 | Add `tparallel` fixes — call `t.Parallel()` in subtests           | Low    | Medium |
+| 13 | Fix `wsl_v5` lint warnings across test files                      | Low    | Medium |
+| 14 | Fix `nlreturn` lint warnings                                      | Low    | Medium |
 
 ### Larger Effort (multi-session)
 
-| #   | Task                                                             | Impact    | Effort |
-| --- | ---------------------------------------------------------------- | --------- | ------ |
-| 15  | Create `CommonFlags` shared between `FlagValues` and `Config`    | Very High | High   |
-| 16  | Refactor `BuildConfigFromFlags` to use `CommonFlags`             | Very High | High   |
-| 17  | Update all `FlagValues` callers to use shared types              | High      | High   |
-| 18  | Extend phantom types for cache/file params (top 20 by frequency) | Medium    | High   |
-| 19  | Review and fix panic conditions (top 50 by severity)             | High      | High   |
-| 20  | Decompose `RuntimeConfig` into focused sub-structs               | Medium    | Medium |
+| #  | Task                                                             | Impact    | Effort |
+| -- | ---------------------------------------------------------------- | --------- | ------ |
+| 15 | Create `CommonFlags` shared between `FlagValues` and `Config`    | Very High | High   |
+| 16 | Refactor `BuildConfigFromFlags` to use `CommonFlags`             | Very High | High   |
+| 17 | Update all `FlagValues` callers to use shared types              | High      | High   |
+| 18 | Extend phantom types for cache/file params (top 20 by frequency) | Medium    | High   |
+| 19 | Review and fix panic conditions (top 50 by severity)             | High      | High   |
+| 20 | Decompose `RuntimeConfig` into focused sub-structs               | Medium    | Medium |
 
 ### Strategic / Architectural
 
-| #   | Task                                                                            | Impact | Effort    |
-| --- | ------------------------------------------------------------------------------- | ------ | --------- |
-| 21  | Unify printer clone types around a common `CloneInfo` interface                 | High   | Very High |
-| 22  | Create `domain.CloneLocation` type to replace ad-hoc Filename/LineStart/LineEnd | High   | Very High |
-| 23  | Evaluate `go-composable-business-types` for branded ID pattern                  | Medium | Medium    |
-| 24  | Add `check-pg` (pergola) for structural pattern enforcement                     | Medium | Medium    |
-| 25  | Create architecture decision records (ADRs) for major type choices              | Medium | Medium    |
+| #  | Task                                                                            | Impact | Effort    |
+| -- | ------------------------------------------------------------------------------- | ------ | --------- |
+| 21 | Unify printer clone types around a common `CloneInfo` interface                 | High   | Very High |
+| 22 | Create `domain.CloneLocation` type to replace ad-hoc Filename/LineStart/LineEnd | High   | Very High |
+| 23 | Evaluate `go-composable-business-types` for branded ID pattern                  | Medium | Medium    |
+| 24 | Add `check-pg` (pergola) for structural pattern enforcement                     | Medium | Medium    |
+| 25 | Create architecture decision records (ADRs) for major type choices              | Medium | Medium    |
 
 ---
 
@@ -163,16 +163,16 @@ Sorted by **Impact × Feasibility**:
 
 ## Current Project Health
 
-| Metric                               | Value            | Status                    |
-| ------------------------------------ | ---------------- | ------------------------- |
-| Test packages                        | 24/24 passing    | ✅                        |
-| `art-dupl` source duplicates         | 60 (8% of total) | ✅ All legitimate         |
-| `art-dupl` test duplicates           | 624 (91%)        | ✅ Expected in BDD        |
-| `branching-flow` dupe actionable     | **0** (was 2)    | ✅ Fixed                  |
-| `branching-flow` mixin opportunities | 4 (was 6)        | ✅ Improved               |
+| Metric                               | Value            | Status                   |
+| ------------------------------------ | ---------------- | ------------------------ |
+| Test packages                        | 24/24 passing    | ✅                       |
+| `art-dupl` source duplicates         | 60 (8% of total) | ✅ All legitimate        |
+| `art-dupl` test duplicates           | 624 (91%)        | ✅ Expected in BDD       |
+| `branching-flow` dupe actionable     | **0** (was 2)    | ✅ Fixed                 |
+| `branching-flow` mixin opportunities | 4 (was 6)        | ✅ Improved              |
 | `branching-flow` anti-patterns       | 3 warnings       | ⚠️ Large structs          |
 | `branching-flow` context score       | 82.9/100         | ⚠️ Mostly false positives |
-| `branching-flow` phantom types       | 545              | ⬜ Deferred               |
-| `branching-flow` panic conditions    | 532              | ⬜ Deferred               |
+| `branching-flow` phantom types       | 545              | ⬜ Deferred              |
+| `branching-flow` panic conditions    | 532              | ⬜ Deferred              |
 | Lint warnings                        | 36               | ⚠️ Pre-existing           |
-| Build                                | Clean            | ✅                        |
+| Build                                | Clean            | ✅                       |

@@ -166,48 +166,48 @@ The `fingerprintSubtree` function has 2 gosec G115 warnings (int32→uint32 over
 
 ### 🔴 Critical (Do First)
 
-| #   | Task                                                                       | Impact                   | Effort |
-| --- | -------------------------------------------------------------------------- | ------------------------ | ------ |
-| 1   | **Push commit to origin**                                                  | Unblocks CI              | 1 min  |
-| 2   | **Annotate gosec G115 in `fingerprintSubtree`**                            | Clean lint               | 5 min  |
-| 3   | **Fix exhaustruct in `internal/testutil/node.go`** (add `Statement` field) | Clean lint               | 10 min |
-| 4   | **Write ADR-0005: Statement-Level Tokenization**                           | Document critical design | 30 min |
-| 5   | **Update HOW_TO_USE.md with new threshold semantics**                      | User-facing docs         | 20 min |
+| # | Task                                                                       | Impact                   | Effort |
+| - | -------------------------------------------------------------------------- | ------------------------ | ------ |
+| 1 | **Push commit to origin**                                                  | Unblocks CI              | 1 min  |
+| 2 | **Annotate gosec G115 in `fingerprintSubtree`**                            | Clean lint               | 5 min  |
+| 3 | **Fix exhaustruct in `internal/testutil/node.go`** (add `Statement` field) | Clean lint               | 10 min |
+| 4 | **Write ADR-0005: Statement-Level Tokenization**                           | Document critical design | 30 min |
+| 5 | **Update HOW_TO_USE.md with new threshold semantics**                      | User-facing docs         | 20 min |
 
 ### 🟡 High Value
 
-| #   | Task                                                        | Impact                     | Effort   |
-| --- | ----------------------------------------------------------- | -------------------------- | -------- |
-| 6   | **Consolidate Clone types** (5 → 2: internal DTO + SDK DTO) | Eliminates conversion bugs | 2-3 days |
-| 7   | **Split `printer/` into sub-packages**                      | Maintainability            | 1 day    |
-| 8   | **Add templ statement-level tokenization**                  | Semantic mode for templ    | 1 day    |
-| 9   | **Thread context through `cmd/run_crawl.go`**               | Last cancellation gap      | 4 hours  |
-| 10  | **Increase job package coverage** (71.6% → 85%+)            | Test confidence            | 4 hours  |
-| 11  | **Add performance regression CI job**                       | Catch perf degradation     | 3 hours  |
-| 12  | **Rename/deprecate `Owns` field**                           | Clarity                    | 2 hours  |
+| #  | Task                                                        | Impact                     | Effort   |
+| -- | ----------------------------------------------------------- | -------------------------- | -------- |
+| 6  | **Consolidate Clone types** (5 → 2: internal DTO + SDK DTO) | Eliminates conversion bugs | 2-3 days |
+| 7  | **Split `printer/` into sub-packages**                      | Maintainability            | 1 day    |
+| 8  | **Add templ statement-level tokenization**                  | Semantic mode for templ    | 1 day    |
+| 9  | **Thread context through `cmd/run_crawl.go`**               | Last cancellation gap      | 4 hours  |
+| 10 | **Increase job package coverage** (71.6% → 85%+)            | Test confidence            | 4 hours  |
+| 11 | **Add performance regression CI job**                       | Catch perf degradation     | 3 hours  |
+| 12 | **Rename/deprecate `Owns` field**                           | Clarity                    | 2 hours  |
 
 ### 🟢 Medium Value
 
-| #   | Task                                                                  | Impact                | Effort  |
-| --- | --------------------------------------------------------------------- | --------------------- | ------- |
-| 13  | **Add `--min-statements` alias for `--threshold`**                    | UX clarity            | 1 hour  |
-| 14  | **Create performance baseline JSON**                                  | Regression tracking   | 2 hours |
-| 15  | **Add TypeScript AST transformer (research spike)**                   | Language expansion    | 1 week  |
-| 16  | **Implement watch mode**                                              | Continuous monitoring | 3 days  |
-| 17  | **Add `--diff` support for all output formats** (currently HTML only) | Feature completeness  | 1 day   |
-| 18  | **Cache invalidation strategy for incremental mode**                  | Performance           | 1 day   |
-| 19  | **Add `--exclude-pattern` glob support**                              | Filtering flexibility | 3 hours |
-| 20  | **Document SDK usage patterns with examples**                         | Adoption              | 4 hours |
+| #  | Task                                                                  | Impact                | Effort  |
+| -- | --------------------------------------------------------------------- | --------------------- | ------- |
+| 13 | **Add `--min-statements` alias for `--threshold`**                    | UX clarity            | 1 hour  |
+| 14 | **Create performance baseline JSON**                                  | Regression tracking   | 2 hours |
+| 15 | **Add TypeScript AST transformer (research spike)**                   | Language expansion    | 1 week  |
+| 16 | **Implement watch mode**                                              | Continuous monitoring | 3 days  |
+| 17 | **Add `--diff` support for all output formats** (currently HTML only) | Feature completeness  | 1 day   |
+| 18 | **Cache invalidation strategy for incremental mode**                  | Performance           | 1 day   |
+| 19 | **Add `--exclude-pattern` glob support**                              | Filtering flexibility | 3 hours |
+| 20 | **Document SDK usage patterns with examples**                         | Adoption              | 4 hours |
 
 ### 🔵 Polish
 
-| #   | Task                                                 | Impact        | Effort  |
-| --- | ---------------------------------------------------- | ------------- | ------- |
-| 21  | **Add shell completion generation** (Cobra built-in) | CLI UX        | 1 hour  |
-| 22  | **Add `art-dupl init` for config file scaffolding**  | Onboarding    | 2 hours |
-| 23  | **Add `--format table` interactive output**          | Terminal UX   | 4 hours |
-| 24  | **Internationalize error messages**                  | Accessibility | 1 day   |
-| 25  | **Add Homebrew formula**                             | Distribution  | 2 hours |
+| #  | Task                                                 | Impact        | Effort  |
+| -- | ---------------------------------------------------- | ------------- | ------- |
+| 21 | **Add shell completion generation** (Cobra built-in) | CLI UX        | 1 hour  |
+| 22 | **Add `art-dupl init` for config file scaffolding**  | Onboarding    | 2 hours |
+| 23 | **Add `--format table` interactive output**          | Terminal UX   | 4 hours |
+| 24 | **Internationalize error messages**                  | Accessibility | 1 day   |
+| 25 | **Add Homebrew formula**                             | Distribution  | 2 hours |
 
 ---
 

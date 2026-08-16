@@ -178,53 +178,53 @@ No critical issues, no broken builds, no failing tests, no security vulnerabilit
 
 ### Priority 1-5: Immediate Action
 
-| #   | Task                                  | Effort | Impact | Why           |
-| --- | ------------------------------------- | ------ | ------ | ------------- |
-| 1   | Push commit to origin                 | 30s    | High   | Deployment    |
-| 2   | Fix magic number (mnd warning)        | 2min   | Low    | Clean linter  |
-| 3   | Update CHANGELOG with recent features | 10min  | Medium | Documentation |
-| 4   | Tag release v0.2.0                    | 5min   | High   | Versioning    |
-| 5   | Create GitHub release                 | 5min   | High   | Distribution  |
+| # | Task                                  | Effort | Impact | Why           |
+| - | ------------------------------------- | ------ | ------ | ------------- |
+| 1 | Push commit to origin                 | 30s    | High   | Deployment    |
+| 2 | Fix magic number (mnd warning)        | 2min   | Low    | Clean linter  |
+| 3 | Update CHANGELOG with recent features | 10min  | Medium | Documentation |
+| 4 | Tag release v0.2.0                    | 5min   | High   | Versioning    |
+| 5 | Create GitHub release                 | 5min   | High   | Distribution  |
 
 ### Priority 6-10: This Week
 
-| #   | Task                               | Effort | Impact | Why                  |
-| --- | ---------------------------------- | ------ | ------ | -------------------- |
-| 6   | Add SARIF output format            | 4h     | High   | Security integration |
-| 7   | Implement TokenValue domain type   | 4h     | High   | Type safety          |
-| 8   | Fix top 10 phantom type violations | 2h     | Medium | Error context        |
-| 9   | Add performance regression tests   | 3h     | High   | Quality              |
-| 10  | Update SDK examples                | 2h     | Medium | Documentation        |
+| #  | Task                               | Effort | Impact | Why                  |
+| -- | ---------------------------------- | ------ | ------ | -------------------- |
+| 6  | Add SARIF output format            | 4h     | High   | Security integration |
+| 7  | Implement TokenValue domain type   | 4h     | High   | Type safety          |
+| 8  | Fix top 10 phantom type violations | 2h     | Medium | Error context        |
+| 9  | Add performance regression tests   | 3h     | High   | Quality              |
+| 10 | Update SDK examples                | 2h     | Medium | Documentation        |
 
 ### Priority 11-15: This Month
 
-| #   | Task                          | Effort | Impact | Why             |
-| --- | ----------------------------- | ------ | ------ | --------------- |
-| 11  | Split domain/coverage_test.go | 4h     | Medium | Maintainability |
-| 12  | Extract bdd utilities         | 3h     | Low    | Reusability     |
-| 13  | Add watch mode prototype      | 6h     | Medium | Feature         |
-| 14  | Improve stats metrics         | 3h     | Medium | Accuracy        |
-| 15  | Add more templ test cases     | 2h     | Low    | Coverage        |
+| #  | Task                          | Effort | Impact | Why             |
+| -- | ----------------------------- | ------ | ------ | --------------- |
+| 11 | Split domain/coverage_test.go | 4h     | Medium | Maintainability |
+| 12 | Extract bdd utilities         | 3h     | Low    | Reusability     |
+| 13 | Add watch mode prototype      | 6h     | Medium | Feature         |
+| 14 | Improve stats metrics         | 3h     | Medium | Accuracy        |
+| 15 | Add more templ test cases     | 2h     | Low    | Coverage        |
 
 ### Priority 16-20: Next Quarter
 
-| #   | Task                          | Effort | Impact | Why           |
-| --- | ----------------------------- | ------ | ------ | ------------- |
-| 16  | Web dashboard MVP             | 20h    | Medium | Visualization |
-| 17  | ML false positive reduction   | 40h    | Medium | Accuracy      |
-| 18  | ARM64 SIMD when available     | 8h     | Medium | Performance   |
-| 19  | Hybrid slice/map optimization | 8h     | Low    | Memory        |
-| 20  | VSCode extension              | 20h    | High   | Developer UX  |
+| #  | Task                          | Effort | Impact | Why           |
+| -- | ----------------------------- | ------ | ------ | ------------- |
+| 16 | Web dashboard MVP             | 20h    | Medium | Visualization |
+| 17 | ML false positive reduction   | 40h    | Medium | Accuracy      |
+| 18 | ARM64 SIMD when available     | 8h     | Medium | Performance   |
+| 19 | Hybrid slice/map optimization | 8h     | Low    | Memory        |
+| 20 | VSCode extension              | 20h    | High   | Developer UX  |
 
 ### Priority 21-25: Future
 
-| #   | Task                                | Effort | Impact | Why           |
-| --- | ----------------------------------- | ------ | ------ | ------------- |
-| 21  | Multi-language support (Python)     | 40h    | High   | Expansion     |
-| 22  | Multi-language support (TypeScript) | 40h    | High   | Expansion     |
-| 23  | Cloud integration                   | 20h    | Medium | CI/CD         |
-| 24  | Enterprise features                 | 40h    | High   | Market        |
-| 25  | Plugin architecture                 | 60h    | High   | Extensibility |
+| #  | Task                                | Effort | Impact | Why           |
+| -- | ----------------------------------- | ------ | ------ | ------------- |
+| 21 | Multi-language support (Python)     | 40h    | High   | Expansion     |
+| 22 | Multi-language support (TypeScript) | 40h    | High   | Expansion     |
+| 23 | Cloud integration                   | 20h    | Medium | CI/CD         |
+| 24 | Enterprise features                 | 40h    | High   | Market        |
+| 25 | Plugin architecture                 | 60h    | High   | Extensibility |
 
 ---
 

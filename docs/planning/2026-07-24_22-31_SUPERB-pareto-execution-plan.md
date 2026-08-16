@@ -17,36 +17,36 @@
 
 ### The 1% That Delivers 51% of the Result (2 tasks)
 
-| #   | Task                                               | Why                                                                                                                                                   | Impact                                                    | Effort |
-| --- | -------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------- | ------ |
-| 1   | `//art-dupl:accept` inline directive               | Top feature request from 3 feedback sessions (httputil, cyberdom, go-auto-upgrade). Transforms CI from "manage JSON file" to "add a comment in code." | Transforms the core CI workflow. Every CI user benefits.  | 150min |
-| 2   | `.gitignore` honoring + `_templ.go` auto-exclusion | 67% of DiscordSync's clone groups were in gitignored generated files. The #1 noise complaint.                                                         | Eliminates the most common reason users abandon the tool. | 90min  |
+| # | Task                                               | Why                                                                                                                                                   | Impact                                                    | Effort |
+| - | -------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------- | ------ |
+| 1 | `//art-dupl:accept` inline directive               | Top feature request from 3 feedback sessions (httputil, cyberdom, go-auto-upgrade). Transforms CI from "manage JSON file" to "add a comment in code." | Transforms the core CI workflow. Every CI user benefits.  | 150min |
+| 2 | `.gitignore` honoring + `_templ.go` auto-exclusion | 67% of DiscordSync's clone groups were in gitignored generated files. The #1 noise complaint.                                                         | Eliminates the most common reason users abandon the tool. | 90min  |
 
 If you do NOTHING else from this plan, do these two.
 
 ### The 4% That Deliver 64% of the Result (4 additional tasks)
 
-| #   | Task                                                          | Why                                                                                                           | Impact                                                  | Effort |
-| --- | ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- | ------ |
-| 3   | `--type-aware` validation warnings (structural + incremental) | Two silent failure modes for the v0.4.0 flagship feature. Users think it works when it silently does nothing. | Trust. Silent failures destroy credibility.             | 30min  |
-| 4   | GitHub Release for v0.4.0                                     | Tag pushed and signed but invisible. Users cannot discover or install it.                                     | Visibility. Zero effort, instant payoff.                | 5min   |
-| 5   | RELEASE.md checklist                                          | v0.4.0 postmortem showed quality gates were skipped. Permanent fix for all future releases.                   | Process quality. One-time investment, permanent payoff. | 30min  |
-| 6   | CI guard against auto-committer re-adding disabled linters    | 5 regressions so far. Each breaks the build and wastes debugging time.                                        | Eliminates a recurring time sink permanently.           | 45min  |
+| # | Task                                                          | Why                                                                                                           | Impact                                                  | Effort |
+| - | ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- | ------ |
+| 3 | `--type-aware` validation warnings (structural + incremental) | Two silent failure modes for the v0.4.0 flagship feature. Users think it works when it silently does nothing. | Trust. Silent failures destroy credibility.             | 30min  |
+| 4 | GitHub Release for v0.4.0                                     | Tag pushed and signed but invisible. Users cannot discover or install it.                                     | Visibility. Zero effort, instant payoff.                | 5min   |
+| 5 | RELEASE.md checklist                                          | v0.4.0 postmortem showed quality gates were skipped. Permanent fix for all future releases.                   | Process quality. One-time investment, permanent payoff. | 30min  |
+| 6 | CI guard against auto-committer re-adding disabled linters    | 5 regressions so far. Each breaks the build and wastes debugging time.                                        | Eliminates a recurring time sink permanently.           | 45min  |
 
 ### The 20% That Deliver 80% of the Result (10 additional tasks)
 
-| #   | Task                                                    | Impact                                   | Effort |
-| --- | ------------------------------------------------------- | ---------------------------------------- | ------ |
-| 7   | Remove orphaned exhaustruct exclusion rules             | Dead config cleanup                      | 10min  |
-| 8   | Clean em-dashes in AGENTS.md (24 instances)             | Style consistency in the most-read file  | 30min  |
-| 9   | Clean em-dashes in ADR docs (0002-0008)                 | Style consistency in architecture docs   | 20min  |
-| 10  | Verify HOW_TO_USE.md flag examples (21 broken commands) | Every broken command is a lost user      | 30min  |
-| 11  | Verify TESTING.md mentions GOEXPERIMENT=jsonv2          | Required env var, may be undocumented    | 10min  |
-| 12  | Check CONTRIBUTING.md for stale `just` references       | justfile removed, docs may lie           | 10min  |
-| 13  | Run `go test -race ./...` on full suite                 | Verify core algorithm thread safety      | 15min  |
-| 14  | BDD test for type-aware mode                            | E2E coverage for flagship feature        | 60min  |
-| 15  | SDK_DESIGN.md disposition (rewrite or delete)           | Stale design doc misleads contributors   | 45min  |
-| 16  | ADR-0015: Type-aware detection design                   | Flagship feature has no architecture doc | 45min  |
+| #  | Task                                                    | Impact                                   | Effort |
+| -- | ------------------------------------------------------- | ---------------------------------------- | ------ |
+| 7  | Remove orphaned exhaustruct exclusion rules             | Dead config cleanup                      | 10min  |
+| 8  | Clean em-dashes in AGENTS.md (24 instances)             | Style consistency in the most-read file  | 30min  |
+| 9  | Clean em-dashes in ADR docs (0002-0008)                 | Style consistency in architecture docs   | 20min  |
+| 10 | Verify HOW_TO_USE.md flag examples (21 broken commands) | Every broken command is a lost user      | 30min  |
+| 11 | Verify TESTING.md mentions GOEXPERIMENT=jsonv2          | Required env var, may be undocumented    | 10min  |
+| 12 | Check CONTRIBUTING.md for stale `just` references       | justfile removed, docs may lie           | 10min  |
+| 13 | Run `go test -race ./...` on full suite                 | Verify core algorithm thread safety      | 15min  |
+| 14 | BDD test for type-aware mode                            | E2E coverage for flagship feature        | 60min  |
+| 15 | SDK_DESIGN.md disposition (rewrite or delete)           | Stale design doc misleads contributors   | 45min  |
+| 16 | ADR-0015: Type-aware detection design                   | Flagship feature has no architecture doc | 45min  |
 
 ### The Remaining 80% of Tasks (21 tasks)
 

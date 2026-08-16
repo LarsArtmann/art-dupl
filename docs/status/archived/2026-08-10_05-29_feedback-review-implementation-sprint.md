@@ -9,34 +9,39 @@
 ## a) FULLY DONE
 
 ### 1. "Detected vs Actionable" Summary Output (CRITICAL)
+
 **Commit:** `dbed8cbe`
 **Files:** `printer/printer.go`, `printer/text.go`, `cmd/run_output.go`
 **Feedback source:** go-etag (CRITICAL — behavior change from drive-to-zero pressure), go-sse, samber-do-auditlog, go-output
 
 The text footer now separates detected from shown clone groups:
+
 ```
 Detected 56 clone groups, 0 shown (16 non-actionable, 40 filtered suppressed).
 ```
+
 - New `SuppressionStats` struct + `SuppressionStatsSetter` interface in `printer/printer.go`
 - `printCloneGroups` tracks `DetectedTotal`, `SuppressedActionable`, `SuppressedOther`, `SuppressedGenerics`, `Shown`
 - Falls back to old "Found total N clone groups." when no suppression occurs
 - BDD tests updated to match new format
 
 ### 2. Four New Actionability Patterns
+
 **Commit:** `3b202e8c`, `1b6f7441`
 **File:** `printer/actionability/actionability_idioms.go` (new), `actionability_idioms_test.go` (new)
 **Feedback source:** keyholderai, licenseforge, go-cqrs-lite, discordsync, go-etag
 
-| Pattern | Catches | From feedback |
-|---------|---------|---------------|
-| `defer-call` | `defer bareFunc()` cleanup (bare Ident callee only, NOT method calls) | keyholderai (`defer unsubscribe()`) |
-| `test-framework-call` | `t.Parallel()`, `b.Helper()`, `t.Cleanup()` etc. | licenseforge (87-clone t.Parallel wall), go-cqrs-lite |
-| `state-flag-mutation` | `x.flag = true` single field assignment in methods | go-etag (`w.flushed = true`) |
-| `empty-default` | `if x == "" { x = default }` idiom | keyholderai (cmp.Or candidate) |
+| Pattern               | Catches                                                               | From feedback                                         |
+| --------------------- | --------------------------------------------------------------------- | ----------------------------------------------------- |
+| `defer-call`          | `defer bareFunc()` cleanup (bare Ident callee only, NOT method calls) | keyholderai (`defer unsubscribe()`)                   |
+| `test-framework-call` | `t.Parallel()`, `b.Helper()`, `t.Cleanup()` etc.                      | licenseforge (87-clone t.Parallel wall), go-cqrs-lite |
+| `state-flag-mutation` | `x.flag = true` single field assignment in methods                    | go-etag (`w.flushed = true`)                          |
+| `empty-default`       | `if x == "" { x = default }` idiom                                    | keyholderai (cmp.Or candidate)                        |
 
 All 4 patterns have unit tests in `actionability_idioms_test.go`. The `defer-call` pattern was initially too broad (caught `defer svc.processOrder()` which is business logic) and was narrowed to only bare-Ident callees.
 
 ### 3. Baseline/Directive Split-Brain Fix
+
 **Commit:** `7b28ac0d`, `3ca3d643`
 **File:** `cmd/baseline_cmd.go`
 **Feedback source:** go-cqrs-lite (Finding 1, HIGH priority)
@@ -44,6 +49,7 @@ All 4 patterns have unit tests in `actionability_idioms_test.go`. The `defer-cal
 `runBaseline` now sets `recordingSuppression.AcceptDirectives = nil` before recording, so the baseline captures ALL detected groups regardless of `//art-dupl:accept` directives. Previously, directive-suppressed groups were absent from the baseline, then appeared as "new" clones when directives were removed — with no audit trail. Test renamed and updated: `TestBaselineRecordBypassesAcceptDirectives`.
 
 ### 4. Category Fallback Expansion
+
 **Commit:** `3ca3d643`
 **File:** `printer/actionability/clone_classify.go`
 **Feedback source:** go-auto-upgrade, cyberdom, go-output (all reported "unknown" category as uninformative)
@@ -51,6 +57,7 @@ All 4 patterns have unit tests in `actionability_idioms_test.go`. The `defer-cal
 Added 14 more AST node types to `nodeTypeToCategory`: `IncDecStmt`, `LabeledStmt`, `ExprStmt`, `BranchStmt`, `UnaryExpr`, `CompositeLit`, `KeyValueExpr`, `IndexExpr`, `SliceExpr`, `TypeAssertExpr`, `StarExpr`, `ParenExpr`, `SendStmt`, `Ident`, `BasicLit`, `MapType`, `ChanType`, `ArrayType`. Vastly reduces `unknown` categorization.
 
 ### 5. `--min-tokens` Flag
+
 **Status:** UNCOMMITTED (8 files modified)
 **Files:** `config/config.go`, `config/config_validate.go`, `cmd/flags.go`, `cmd/config_builder.go`, `cmd/run_output.go`
 **Feedback source:** art-dupl-threshold-cliff, samber-do-auditlog, discordsync-t1
@@ -58,6 +65,7 @@ Added 14 more AST node types to `nodeTypeToCategory`: `IncDecStmt`, `LabeledStmt
 New token-based threshold complement to `--threshold` (statement-based) and `--min-lines` (line-based). Suppresses clone groups where ANY clone has fewer than N tokens. Fully wired: config field, validation (non-negative), flag, config builder, suppression logic (`minCloneTokenCount`), help text updated for `--show-suppressed`.
 
 ### 6. `--suggest-generics` Help Text Fix
+
 **Commit:** `caa14ae9`
 **File:** `cmd/flags.go`, `AGENTS.md`
 **Feedback source:** 2026-08-10 discordsync suggest-generics precision report (suggestion #5)
@@ -69,7 +77,9 @@ Changed from "incompatible with --type-aware" to "takes precedence over --type-a
 ## b) PARTIALLY DONE
 
 ### Suggest-generics noise reduction (PARTIAL)
+
 The 2026-08-10 discordsync suggest-generics report asked for 5 improvements:
+
 1. **Suppress error-handling named-method boilerplate** — NOT implemented directly. The existing `error-propagation` and `error-wrapping` patterns catch some, but the 4+ statement `Scan` + error check pattern escapes them. Mitigated by `--min-tokens` which lets users filter noise.
 2. **Merge fragmented groups** — NOT started. Would need post-aggregation merge of groups sharing >50% clone sites.
 3. **Suppress 2-line coincidental idioms** — PARTIALLY addressed by `--min-tokens` (users can set `--min-tokens 10` to filter trivial clones).
@@ -77,7 +87,9 @@ The 2026-08-10 discordsync suggest-generics report asked for 5 improvements:
 5. **Fix help text** — DONE (item 6 above).
 
 ### HTML output improvements (NOT STARTED)
+
 Multiple feedback files requested:
+
 - TTY-aware `--html` (auto-write to file when TTY detected)
 - Stable `id` attributes on HTML clone group divs for deep-linking
 

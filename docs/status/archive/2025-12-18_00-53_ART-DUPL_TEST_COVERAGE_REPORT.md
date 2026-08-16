@@ -1,7 +1,7 @@
 # Art-Dupl Test Coverage Status Report
 
-**Date**: 2025-12-18 00:53 CET  
-**Project**: Art-Dupl - Code Duplication Detection Tool  
+**Date**: 2025-12-18 00:53 CET\
+**Project**: Art-Dupl - Code Duplication Detection Tool\
 **Focus**: Comprehensive Test Coverage Implementation
 
 ---
@@ -28,7 +28,7 @@ Successfully added comprehensive test coverage to the **art-dupl** project, tran
 | --------------- | ------ | --------- | ------ | ------------------------------ |
 | `config`        | 94.4%  | 94.4%     | ✅     | Already well-covered           |
 | `detection`     | 0.0%   | **12.2%** | ✅     | **NEW COVERAGE**               |
-| `examples`      | 0.0%   | 0.0%      | ⚠️     | Build issues with hash package |
+| `examples`      | 0.0%   | 0.0%      | ⚠️      | Build issues with hash package |
 | `pkg/artdupl`   | 0.0%   | **7.2%**  | ✅     | **NEW COVERAGE**               |
 | `printer`       | 60.9%  | 60.9%     | ✅     | Already partially covered      |
 | `suffixtree`    | 90.6%  | 90.6%     | ✅     | Already well-covered           |

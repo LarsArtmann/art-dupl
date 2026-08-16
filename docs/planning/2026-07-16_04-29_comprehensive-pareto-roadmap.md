@@ -46,60 +46,60 @@ graph TD
 
 These are deferred-maintenance items that take minutes each but immediately improve trust, unblock contributors, and clear confusion about what's already done. Zero Verschlimmbesserung risk — they're documentation and lint hygiene only.
 
-| #   | Task                                                                                     | Why 1% → 51%                                                                                                                                                                                | Effort | Risk |
-| --- | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ | ---- |
-| 1   | Mark feedback docs (2026-07-09, 2026-07-06, 2026-06-04) as IMPLEMENTED/RESOLVED          | These ARE implemented — default threshold raised to 5, ValueSpec statement-tokenized, single-call-expression pattern added. Marking them prevents future agents from re-doing the analysis. | 10min  | ZERO |
-| 2   | Fix CONTRIBUTING.md — 5 stale `just` command references                                  | Contributors hit broken commands immediately. No justfile exists.                                                                                                                           | 5min   | ZERO |
-| 3   | Fix MIGRATION_QUICK_START.md — stale `just build`                                        | New users hit broken commands.                                                                                                                                                              | 2min   | ZERO |
-| 4   | Fix HOW_TO_USE.md — GitHub Actions example Go version 1.21 → 1.26+ + GOEXPERIMENT=jsonv2 | Incorrect instructions break CI setup.                                                                                                                                                      | 5min   | ZERO |
-| 5   | Fix `assertionMethodNames` global var → switch function                                  | Pre-existing `gochecknoglobals` violation. Same pattern as `acquireMethodNames` fix.                                                                                                        | 10min  | LOW  |
-| 6   | Fix `isErrorWrappingBody` per-call map allocation → package-level var                    | Perf: map created on every call. Trivial fix.                                                                                                                                               | 10min  | LOW  |
-| 7   | Add trailing newline to `cmd/filter_stats.go`                                            | Code hygiene.                                                                                                                                                                               | 1min   | ZERO |
-| 8   | Add `meta.description` to nix apps                                                       | Silences nix warnings.                                                                                                                                                                      | 10min  | ZERO |
-| 9   | Add GOEXPERIMENT=jsonv2 to TESTING.md build commands                                     | Non-Nix users can't build without it.                                                                                                                                                       | 5min   | ZERO |
-| 10  | Document vendorHash update procedure in AGENTS.md                                        | Recurring manual step; already partially documented but needs prominence.                                                                                                                   | 15min  | ZERO |
+| #  | Task                                                                                     | Why 1% → 51%                                                                                                                                                                                | Effort | Risk |
+| -- | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ | ---- |
+| 1  | Mark feedback docs (2026-07-09, 2026-07-06, 2026-06-04) as IMPLEMENTED/RESOLVED          | These ARE implemented — default threshold raised to 5, ValueSpec statement-tokenized, single-call-expression pattern added. Marking them prevents future agents from re-doing the analysis. | 10min  | ZERO |
+| 2  | Fix CONTRIBUTING.md — 5 stale `just` command references                                  | Contributors hit broken commands immediately. No justfile exists.                                                                                                                           | 5min   | ZERO |
+| 3  | Fix MIGRATION_QUICK_START.md — stale `just build`                                        | New users hit broken commands.                                                                                                                                                              | 2min   | ZERO |
+| 4  | Fix HOW_TO_USE.md — GitHub Actions example Go version 1.21 → 1.26+ + GOEXPERIMENT=jsonv2 | Incorrect instructions break CI setup.                                                                                                                                                      | 5min   | ZERO |
+| 5  | Fix `assertionMethodNames` global var → switch function                                  | Pre-existing `gochecknoglobals` violation. Same pattern as `acquireMethodNames` fix.                                                                                                        | 10min  | LOW  |
+| 6  | Fix `isErrorWrappingBody` per-call map allocation → package-level var                    | Perf: map created on every call. Trivial fix.                                                                                                                                               | 10min  | LOW  |
+| 7  | Add trailing newline to `cmd/filter_stats.go`                                            | Code hygiene.                                                                                                                                                                               | 1min   | ZERO |
+| 8  | Add `meta.description` to nix apps                                                       | Silences nix warnings.                                                                                                                                                                      | 10min  | ZERO |
+| 9  | Add GOEXPERIMENT=jsonv2 to TESTING.md build commands                                     | Non-Nix users can't build without it.                                                                                                                                                       | 5min   | ZERO |
+| 10 | Document vendorHash update procedure in AGENTS.md                                        | Recurring manual step; already partially documented but needs prominence.                                                                                                                   | 15min  | ZERO |
 
 ### The 4% That Delivers 64% of the Result
 
 Small features and fixes that users are actively requesting. The `--test-threshold` flag alone addresses the #1 feedback request across ALL reports (24% of clones are test code).
 
-| #   | Task                                                                  | Why 4% → 64%                                                                                                                           | Effort | Risk                          |
-| --- | --------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- | ------ | ----------------------------- |
-| 11  | **`--test-threshold` flag**                                           | #1 feedback request. Separate threshold for `_test.go` files. 24% of detected clones are test code. Users want to focus on production. | 1h     | LOW (additive)                |
-| 12  | **Encode struct field names in KeyValueExpr**                         | Known FP source: `Point{X:1}` matches `Size{W:1}`. Alpha-normalize field names like identifiers.                                       | 30min  | MEDIUM (changes tokenization) |
-| 13  | **`--dump-tokens` debug flag**                                        | Would have saved 15+ minutes in the templ FP debugging session. Essential for future development. Outputs serialized token stream.     | 30min  | ZERO (additive, debug-only)   |
-| 14  | Improve `containsTRunCall` to match `t.Run` specifically              | Currently matches any `.Run` method. 15min fix.                                                                                        | 15min  | LOW                           |
-| 15  | Verify cobra detection checks parent Ident                            | Currently matches any `Command` selector. Should verify it's cobra/fang.                                                               | 15min  | LOW                           |
-| 16  | Lower builder callback threshold from 3 to 2 calls                    | More FP suppression for builder/callback patterns.                                                                                     | 15min  | LOW                           |
-| 17  | Verify race safety with `-race` flag on all tests                     | 15 new tests added this week; none verified with -race yet.                                                                            | 10min  | ZERO (verification only)      |
-| 18  | Update AGENTS.md with callee encoding + templ parser hierarchy gotcha | Prevents repeating the "wrong function" debugging mistake.                                                                             | 20min  | ZERO                          |
+| #  | Task                                                                  | Why 4% → 64%                                                                                                                           | Effort | Risk                          |
+| -- | --------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- | ------ | ----------------------------- |
+| 11 | **`--test-threshold` flag**                                           | #1 feedback request. Separate threshold for `_test.go` files. 24% of detected clones are test code. Users want to focus on production. | 1h     | LOW (additive)                |
+| 12 | **Encode struct field names in KeyValueExpr**                         | Known FP source: `Point{X:1}` matches `Size{W:1}`. Alpha-normalize field names like identifiers.                                       | 30min  | MEDIUM (changes tokenization) |
+| 13 | **`--dump-tokens` debug flag**                                        | Would have saved 15+ minutes in the templ FP debugging session. Essential for future development. Outputs serialized token stream.     | 30min  | ZERO (additive, debug-only)   |
+| 14 | Improve `containsTRunCall` to match `t.Run` specifically              | Currently matches any `.Run` method. 15min fix.                                                                                        | 15min  | LOW                           |
+| 15 | Verify cobra detection checks parent Ident                            | Currently matches any `Command` selector. Should verify it's cobra/fang.                                                               | 15min  | LOW                           |
+| 16 | Lower builder callback threshold from 3 to 2 calls                    | More FP suppression for builder/callback patterns.                                                                                     | 15min  | LOW                           |
+| 17 | Verify race safety with `-race` flag on all tests                     | 15 new tests added this week; none verified with -race yet.                                                                            | 10min  | ZERO (verification only)      |
+| 18 | Update AGENTS.md with callee encoding + templ parser hierarchy gotcha | Prevents repeating the "wrong function" debugging mistake.                                                                             | 20min  | ZERO                          |
 
 ### The 20% That Delivers 80% of the Result
 
 Medium-effort items that complete the feature set and address known limitations. These bring the tool from "production-ready" to "polished."
 
-| #   | Task                                                                             | Impact                                                         | Effort | Risk           |
-| --- | -------------------------------------------------------------------------------- | -------------------------------------------------------------- | ------ | -------------- |
-| 19  | Improve error wrapping detection (2-stmt bodies)                                 | More FP suppression: `log.Print(err); return err`              | 30min  | LOW            |
-| 20  | Improve data dominance ratio for small clones                                    | FP reduction: tune 0.6 threshold                               | 30min  | MEDIUM         |
-| 21  | `--min-lines` flag                                                               | Complementary filter to threshold                              | 1h     | LOW (additive) |
-| 22  | BDD tests for templ semantic mode                                                | Multi-element, callee encoding, edge cases                     | 1h     | ZERO           |
-| 23  | Property-based/fuzz test for normalization pipeline                              | Edge case discovery across the normalizer                      | 1h     | ZERO           |
-| 24  | Integration test: synthetic templ project with known clones                      | E2E coverage for templ pipeline                                | 1h     | ZERO           |
-| 25  | Website visual QA (landing + 3 doc pages)                                        | Never visually verified. Could have broken layouts.            | 1h     | ZERO           |
-| 26  | Generate OG image + add meta tags                                                | Professional social sharing appearance                         | 45min  | ZERO           |
-| 27  | Run `pnpm dlx astro check` + fix TS errors                                            | TypeScript correctness                                         | 30min  | LOW            |
-| 28  | Unify Type/Fingerprint model (remove DecodeBaseType)                             | Code clarity: every consumer needs `DecodeBaseType(node.Type)` | 2h     | MEDIUM         |
-| 29  | Update DOMAIN_LANGUAGE.md (sendCtx, CloneNode, --include-generated semantics)    | Completeness for domain vocabulary                             | 30min  | ZERO           |
-| 30  | Verify + fix website docs accuracy (flag defaults, JSON structure, SARIF schema) | Docs written from AGENTS.md, not verified against source       | 1h     | ZERO           |
-| 31  | Compile-test SDK code examples in docs                                           | Currently untested — may not compile                           | 30min  | ZERO           |
-| 32  | Website docs for templ semantic mode + literal normalization                     | User communication                                             | 30min  | ZERO           |
-| 33  | Cache versioning + store Fingerprint in incremental cache                        | Cache safety for serialization format changes                  | 1h     | MEDIUM         |
-| 34  | Add benchmark: semantic vs exact vs structural                                   | Performance visibility across modes                            | 30min  | ZERO           |
-| 35  | Run Lighthouse audit + fix issues                                                | Performance/SEO/accessibility                                  | 1h     | ZERO           |
-| 36  | Test mobile responsive layout                                                    | Mobile UX verification                                         | 30min  | ZERO           |
-| 37  | Add "Edit this page" links + verify sidebar links                                | Website navigation                                             | 30min  | ZERO           |
-| 38  | Add ADR for threshold change (1→5) + json/v2 migration                           | Document major decisions                                       | 40min  | ZERO           |
+| #  | Task                                                                             | Impact                                                         | Effort | Risk           |
+| -- | -------------------------------------------------------------------------------- | -------------------------------------------------------------- | ------ | -------------- |
+| 19 | Improve error wrapping detection (2-stmt bodies)                                 | More FP suppression: `log.Print(err); return err`              | 30min  | LOW            |
+| 20 | Improve data dominance ratio for small clones                                    | FP reduction: tune 0.6 threshold                               | 30min  | MEDIUM         |
+| 21 | `--min-lines` flag                                                               | Complementary filter to threshold                              | 1h     | LOW (additive) |
+| 22 | BDD tests for templ semantic mode                                                | Multi-element, callee encoding, edge cases                     | 1h     | ZERO           |
+| 23 | Property-based/fuzz test for normalization pipeline                              | Edge case discovery across the normalizer                      | 1h     | ZERO           |
+| 24 | Integration test: synthetic templ project with known clones                      | E2E coverage for templ pipeline                                | 1h     | ZERO           |
+| 25 | Website visual QA (landing + 3 doc pages)                                        | Never visually verified. Could have broken layouts.            | 1h     | ZERO           |
+| 26 | Generate OG image + add meta tags                                                | Professional social sharing appearance                         | 45min  | ZERO           |
+| 27 | Run `pnpm dlx astro check` + fix TS errors                                       | TypeScript correctness                                         | 30min  | LOW            |
+| 28 | Unify Type/Fingerprint model (remove DecodeBaseType)                             | Code clarity: every consumer needs `DecodeBaseType(node.Type)` | 2h     | MEDIUM         |
+| 29 | Update DOMAIN_LANGUAGE.md (sendCtx, CloneNode, --include-generated semantics)    | Completeness for domain vocabulary                             | 30min  | ZERO           |
+| 30 | Verify + fix website docs accuracy (flag defaults, JSON structure, SARIF schema) | Docs written from AGENTS.md, not verified against source       | 1h     | ZERO           |
+| 31 | Compile-test SDK code examples in docs                                           | Currently untested — may not compile                           | 30min  | ZERO           |
+| 32 | Website docs for templ semantic mode + literal normalization                     | User communication                                             | 30min  | ZERO           |
+| 33 | Cache versioning + store Fingerprint in incremental cache                        | Cache safety for serialization format changes                  | 1h     | MEDIUM         |
+| 34 | Add benchmark: semantic vs exact vs structural                                   | Performance visibility across modes                            | 30min  | ZERO           |
+| 35 | Run Lighthouse audit + fix issues                                                | Performance/SEO/accessibility                                  | 1h     | ZERO           |
+| 36 | Test mobile responsive layout                                                    | Mobile UX verification                                         | 30min  | ZERO           |
+| 37 | Add "Edit this page" links + verify sidebar links                                | Website navigation                                             | 30min  | ZERO           |
+| 38 | Add ADR for threshold change (1→5) + json/v2 migration                           | Document major decisions                                       | 40min  | ZERO           |
 
 ### The Remaining 20% to Get to 100%
 
@@ -167,10 +167,10 @@ Sorted by Impact × (1/Effort) × Customer Value. All 120 tasks included.
 | **P2**   | T4   | Testing   | BDD tests for templ semantic mode (multi-element, callee encoding)                      | Coverage                    | 1h       | MEDIUM         | ZERO   |
 | **P2**   | T5   | Testing   | Property-based/fuzz test for normalization pipeline                                     | Edge case discovery         | 1h       | MEDIUM         | ZERO   |
 | **P2**   | T6   | Testing   | Integration test: synthetic templ project with known clones                             | E2E coverage                | 1h       | MEDIUM         | ZERO   |
-| **P2**   | W1   | Website   | Visual QA (landing + 3 doc pages via `pnpm run preview`)                                 | UX correctness              | 1h       | HIGH           | ZERO   |
+| **P2**   | W1   | Website   | Visual QA (landing + 3 doc pages via `pnpm run preview`)                                | UX correctness              | 1h       | HIGH           | ZERO   |
 | **P2**   | W2   | Website   | Generate OG image for social sharing                                                    | Professional appearance     | 30min    | MEDIUM         | ZERO   |
 | **P2**   | W3   | Website   | Add OG image meta tags to LandingLayout                                                 | Social sharing              | 15min    | MEDIUM         | ZERO   |
-| **P2**   | W4   | Website   | Run `pnpm dlx astro check` + fix TS errors                                                   | Code quality                | 30min    | MEDIUM         | LOW    |
+| **P2**   | W4   | Website   | Run `pnpm dlx astro check` + fix TS errors                                              | Code quality                | 30min    | MEDIUM         | LOW    |
 | **P2**   | CQ9  | Code      | Unify Type/Fingerprint model (remove DecodeBaseType)                                    | Code clarity                | 2h       | LOW            | MEDIUM |
 | **P2**   | DH19 | Docs      | Update DOMAIN_LANGUAGE.md (sendCtx, CloneNode, --include-generated semantics)           | Completeness                | 30min    | MEDIUM         | ZERO   |
 | **P2**   | DH22 | Docs      | Verify website docs accuracy (flag defaults, JSON output, SARIF schema)                 | Accuracy                    | 1h       | MEDIUM         | ZERO   |
@@ -232,7 +232,7 @@ Sorted by Impact × (1/Effort) × Customer Value. All 120 tasks included.
 | **P3**   | I7   | Infra     | Add website apps to root flake.nix                                                      | DX                          | 1h       | LOW            | LOW    |
 | **P3**   | I8   | Infra     | Run statix on flake.nix                                                                 | Nix quality                 | 30min    | LOW            | LOW    |
 | **P3**   | I9   | Infra     | Review .go-arch-lint.yml for enforcement gaps                                           | Safety                      | 30min    | LOW            | LOW    |
-| **P3**   | I12  | Infra     | Add Dependabot config for website pnpm                                                   | Maintenance                 | 15min    | LOW            | LOW    |
+| **P3**   | I12  | Infra     | Add Dependabot config for website pnpm                                                  | Maintenance                 | 15min    | LOW            | LOW    |
 | **P3**   | I13  | Infra     | Set up Firebase preview channels for PRs                                                | DX                          | 1h       | LOW            | LOW    |
 | **P3**   | I14  | Infra     | Add lighthouse CI                                                                       | Perf regression             | 1h       | LOW            | LOW    |
 | **P3**   | F10  | Future    | Stats FP rate estimate based on actionability distribution                              | Insight                     | 30min    | LOW            | ZERO   |
@@ -350,65 +350,65 @@ Every task above is broken into max-12min subtasks. Sorted by priority (P0 first
 
 ### P0: 1% → 51% (10 tasks → 24 subtasks)
 
-| #   | Subtask                                                                                     | Parent | Est  | Verification                   |
-| --- | ------------------------------------------------------------------------------------------- | ------ | ---- | ------------------------------ |
-| 1   | Read `docs/feedback/2026-07-09-semantic-noise-declaration-files.md`                         | DH1    | 3min | —                              |
-| 2   | Add "✅ IMPLEMENTED" banner to 2026-07-09 feedback doc                                      | DH1    | 3min | Read shows banner              |
-| 3   | Add "✅ ADDRESSED" banner to 2026-07-06 and 2026-06-04 feedback docs                        | DH1    | 4min | Read shows banner              |
-| 4   | Read CONTRIBUTING.md, grep for `just`                                                       | DH2    | 2min | All `just` refs found          |
-| 5   | Replace all `just` commands in CONTRIBUTING.md with `go`/`nix` equivalents                  | DH2    | 3min | grep shows 0 `just `           |
-| 6   | Read MIGRATION_QUICK_START.md, find `just build`                                            | DH3    | 1min | Located                        |
-| 7   | Replace `just build` with `go build ./cmd/art-dupl` in MIGRATION_QUICK_START.md             | DH3    | 1min | grep shows 0 `just`            |
-| 8   | Read HOW_TO_USE.md GitHub Actions section                                                   | DH4    | 2min | Located `1.21`                 |
-| 9   | Fix Go version + add GOEXPERIMENT=jsonv2 in HOW_TO_USE.md                                   | DH4    | 3min | Version is 1.26+               |
-| 10  | Add trailing newline to `cmd/filter_stats.go`                                               | CQ3    | 1min | `tail -c1` shows `\n`          |
-| 11  | Read TESTING.md build commands section                                                      | I2     | 2min | Located                        |
-| 12  | Add `export GOEXPERIMENT=jsonv2` to TESTING.md build commands                               | I2     | 3min | Command present                |
-| 13  | Read `printer/actionability_patterns_expanded.go` line ~12                                  | CQ1    | 2min | Located `assertionMethodNames` |
-| 14  | Convert `assertionMethodNames` global var → `isAssertionMethod()` switch function           | CQ1    | 5min | Builds, no global var          |
-| 15  | Run `golangci-lint run ./printer/...` to verify fix                                         | CQ1    | 2min | 0 issues                       |
-| 16  | Read `isErrorWrappingBody` in actionability_patterns_expanded.go                            | CQ2    | 2min | Located map allocation         |
-| 17  | Move map to package-level var or convert to `isErrorWrappingMethod()` switch                | CQ2    | 5min | Builds                         |
-| 18  | Run lint to verify fix                                                                      | CQ2    | 2min | 0 issues                       |
-| 19  | Read `flake.nix` apps section                                                               | I1     | 2min | Located apps                   |
-| 20  | Add `meta.description` to both nix apps                                                     | I1     | 5min | `nix flake check` no warnings  |
-| 21  | Run `nix flake check` to verify                                                             | I1     | 5min | 0 warnings                     |
-| 22  | Read AGENTS.md Nix section                                                                  | I4     | 2min | Located vendorHash mention     |
-| 23  | Expand vendorHash update procedure in AGENTS.md (rev=, vendorHash="", nix build, copy hash) | I4     | 7min | Procedure documented           |
-| 24  | Verify AGENTS.md reads correctly                                                            | I4     | 3min | Read shows complete procedure  |
+| #  | Subtask                                                                                     | Parent | Est  | Verification                   |
+| -- | ------------------------------------------------------------------------------------------- | ------ | ---- | ------------------------------ |
+| 1  | Read `docs/feedback/2026-07-09-semantic-noise-declaration-files.md`                         | DH1    | 3min | —                              |
+| 2  | Add "✅ IMPLEMENTED" banner to 2026-07-09 feedback doc                                      | DH1    | 3min | Read shows banner              |
+| 3  | Add "✅ ADDRESSED" banner to 2026-07-06 and 2026-06-04 feedback docs                        | DH1    | 4min | Read shows banner              |
+| 4  | Read CONTRIBUTING.md, grep for `just`                                                       | DH2    | 2min | All `just` refs found          |
+| 5  | Replace all `just` commands in CONTRIBUTING.md with `go`/`nix` equivalents                  | DH2    | 3min | grep shows 0 `just`            |
+| 6  | Read MIGRATION_QUICK_START.md, find `just build`                                            | DH3    | 1min | Located                        |
+| 7  | Replace `just build` with `go build ./cmd/art-dupl` in MIGRATION_QUICK_START.md             | DH3    | 1min | grep shows 0 `just`            |
+| 8  | Read HOW_TO_USE.md GitHub Actions section                                                   | DH4    | 2min | Located `1.21`                 |
+| 9  | Fix Go version + add GOEXPERIMENT=jsonv2 in HOW_TO_USE.md                                   | DH4    | 3min | Version is 1.26+               |
+| 10 | Add trailing newline to `cmd/filter_stats.go`                                               | CQ3    | 1min | `tail -c1` shows `\n`          |
+| 11 | Read TESTING.md build commands section                                                      | I2     | 2min | Located                        |
+| 12 | Add `export GOEXPERIMENT=jsonv2` to TESTING.md build commands                               | I2     | 3min | Command present                |
+| 13 | Read `printer/actionability_patterns_expanded.go` line ~12                                  | CQ1    | 2min | Located `assertionMethodNames` |
+| 14 | Convert `assertionMethodNames` global var → `isAssertionMethod()` switch function           | CQ1    | 5min | Builds, no global var          |
+| 15 | Run `golangci-lint run ./printer/...` to verify fix                                         | CQ1    | 2min | 0 issues                       |
+| 16 | Read `isErrorWrappingBody` in actionability_patterns_expanded.go                            | CQ2    | 2min | Located map allocation         |
+| 17 | Move map to package-level var or convert to `isErrorWrappingMethod()` switch                | CQ2    | 5min | Builds                         |
+| 18 | Run lint to verify fix                                                                      | CQ2    | 2min | 0 issues                       |
+| 19 | Read `flake.nix` apps section                                                               | I1     | 2min | Located apps                   |
+| 20 | Add `meta.description` to both nix apps                                                     | I1     | 5min | `nix flake check` no warnings  |
+| 21 | Run `nix flake check` to verify                                                             | I1     | 5min | 0 warnings                     |
+| 22 | Read AGENTS.md Nix section                                                                  | I4     | 2min | Located vendorHash mention     |
+| 23 | Expand vendorHash update procedure in AGENTS.md (rev=, vendorHash="", nix build, copy hash) | I4     | 7min | Procedure documented           |
+| 24 | Verify AGENTS.md reads correctly                                                            | I4     | 3min | Read shows complete procedure  |
 
 ### P1: 4% → 64% (8 tasks → 31 subtasks)
 
-| #   | Subtask                                                                                       | Parent | Est   | Verification                |
-| --- | --------------------------------------------------------------------------------------------- | ------ | ----- | --------------------------- |
-| 25  | Read `config/config.go` threshold validation + `config_builder.go`                            | DQ1    | 5min  | Understand wiring           |
-| 26  | Add `TestThreshold int` to `Config` struct                                                    | DQ1    | 3min  | Builds                      |
-| 27  | Add `--test-threshold` flag in `cmd/flags.go`                                                 | DQ1    | 5min  | `--help` shows flag         |
-| 28  | Wire `TestThreshold` into printer filtering logic (suppress test clones below threshold)      | DQ1    | 7min  | Test clones filtered        |
-| 29  | Add validation: `TestThreshold` must be ≥ 0 (0 = no filtering)                                | DQ1    | 3min  | Validation works            |
-| 30  | Write unit test for test-threshold filtering                                                  | DQ1    | 7min  | Test passes                 |
-| 31  | Write BDD test: `--test-threshold 10` suppresses test clones below 10                         | DQ1    | 7min  | BDD passes                  |
-| 32  | Update HOW_TO_USE.md with `--test-threshold` documentation                                    | DQ1    | 5min  | Docs show flag              |
-| 33  | Read `syntax/golang/transform.go` KeyValueExpr case                                           | DQ2    | 5min  | Understand current behavior |
-| 34  | Add field name encoding to KeyValueExpr via `encodeSemanticType`                              | DQ2    | 7min  | Builds                      |
-| 35  | Write unit test: `Point{X:1}` ≠ `Size{W:1}` in semantic mode                                  | DQ2    | 7min  | Test passes                 |
-| 36  | Run full test suite to check for regressions                                                  | DQ2    | 5min  | All tests pass              |
-| 37  | Add `--dump-tokens` flag to `cmd/flags.go`                                                    | DX1    | 3min  | `--help` shows flag         |
-| 38  | Implement token dump output (write serialized token stream to stdout/stderr)                  | DX1    | 7min  | Output shows tokens         |
-| 39  | Write unit test for `--dump-tokens` output format                                             | DX1    | 5min  | Test passes                 |
-| 40  | Read `containsTRunCall` in actionability_patterns_expanded.go                                 | DQ3    | 2min  | Located                     |
-| 41  | Fix `containsTRunCall` to check for `t.Run` Ident specifically (not any `.Run`)               | DQ3    | 7min  | Builds                      |
-| 42  | Write unit test for `containsTRunCall` specificity                                            | DQ3    | 5min  | Test passes                 |
-| 43  | Read cobra detection pattern in actionability files                                           | DQ4    | 3min  | Located                     |
-| 44  | Add parent Ident verification (check for cobra/fang package)                                  | DQ4    | 7min  | Builds                      |
-| 45  | Write unit test for cobra detection specificity                                               | DQ4    | 5min  | Test passes                 |
-| 46  | Read builder callback threshold in actionability files                                        | DQ5    | 2min  | Located threshold=3         |
-| 47  | Change builder callback threshold from 3 to 2                                                 | DQ5    | 3min  | Builds                      |
-| 48  | Run test suite to verify no regressions from threshold change                                 | DQ5    | 5min  | All pass                    |
-| 49  | Run `go test -race -count=1 ./syntax/... ./printer/... ./job/...`                             | CQ4    | 10min | No races detected           |
-| 50  | Read AGENTS.md Critical Conventions section                                                   | DH7    | 3min  | Located                     |
-| 51  | Add callee name encoding convention to AGENTS.md                                              | DH7    | 5min  | Section present             |
-| 52  | Add templ parser type hierarchy gotcha (`TemplElementExpression` vs `CallTemplateExpression`) | DH7    | 5min  | Gotcha documented           |
+| #  | Subtask                                                                                       | Parent | Est   | Verification                |
+| -- | --------------------------------------------------------------------------------------------- | ------ | ----- | --------------------------- |
+| 25 | Read `config/config.go` threshold validation + `config_builder.go`                            | DQ1    | 5min  | Understand wiring           |
+| 26 | Add `TestThreshold int` to `Config` struct                                                    | DQ1    | 3min  | Builds                      |
+| 27 | Add `--test-threshold` flag in `cmd/flags.go`                                                 | DQ1    | 5min  | `--help` shows flag         |
+| 28 | Wire `TestThreshold` into printer filtering logic (suppress test clones below threshold)      | DQ1    | 7min  | Test clones filtered        |
+| 29 | Add validation: `TestThreshold` must be ≥ 0 (0 = no filtering)                                | DQ1    | 3min  | Validation works            |
+| 30 | Write unit test for test-threshold filtering                                                  | DQ1    | 7min  | Test passes                 |
+| 31 | Write BDD test: `--test-threshold 10` suppresses test clones below 10                         | DQ1    | 7min  | BDD passes                  |
+| 32 | Update HOW_TO_USE.md with `--test-threshold` documentation                                    | DQ1    | 5min  | Docs show flag              |
+| 33 | Read `syntax/golang/transform.go` KeyValueExpr case                                           | DQ2    | 5min  | Understand current behavior |
+| 34 | Add field name encoding to KeyValueExpr via `encodeSemanticType`                              | DQ2    | 7min  | Builds                      |
+| 35 | Write unit test: `Point{X:1}` ≠ `Size{W:1}` in semantic mode                                  | DQ2    | 7min  | Test passes                 |
+| 36 | Run full test suite to check for regressions                                                  | DQ2    | 5min  | All tests pass              |
+| 37 | Add `--dump-tokens` flag to `cmd/flags.go`                                                    | DX1    | 3min  | `--help` shows flag         |
+| 38 | Implement token dump output (write serialized token stream to stdout/stderr)                  | DX1    | 7min  | Output shows tokens         |
+| 39 | Write unit test for `--dump-tokens` output format                                             | DX1    | 5min  | Test passes                 |
+| 40 | Read `containsTRunCall` in actionability_patterns_expanded.go                                 | DQ3    | 2min  | Located                     |
+| 41 | Fix `containsTRunCall` to check for `t.Run` Ident specifically (not any `.Run`)               | DQ3    | 7min  | Builds                      |
+| 42 | Write unit test for `containsTRunCall` specificity                                            | DQ3    | 5min  | Test passes                 |
+| 43 | Read cobra detection pattern in actionability files                                           | DQ4    | 3min  | Located                     |
+| 44 | Add parent Ident verification (check for cobra/fang package)                                  | DQ4    | 7min  | Builds                      |
+| 45 | Write unit test for cobra detection specificity                                               | DQ4    | 5min  | Test passes                 |
+| 46 | Read builder callback threshold in actionability files                                        | DQ5    | 2min  | Located threshold=3         |
+| 47 | Change builder callback threshold from 3 to 2                                                 | DQ5    | 3min  | Builds                      |
+| 48 | Run test suite to verify no regressions from threshold change                                 | DQ5    | 5min  | All pass                    |
+| 49 | Run `go test -race -count=1 ./syntax/... ./printer/... ./job/...`                             | CQ4    | 10min | No races detected           |
+| 50 | Read AGENTS.md Critical Conventions section                                                   | DH7    | 3min  | Located                     |
+| 51 | Add callee name encoding convention to AGENTS.md                                              | DH7    | 5min  | Section present             |
+| 52 | Add templ parser type hierarchy gotcha (`TemplElementExpression` vs `CallTemplateExpression`) | DH7    | 5min  | Gotcha documented           |
 
 ### P2: 20% → 80% (20 tasks → ~60 subtasks)
 
@@ -429,12 +429,12 @@ Every task above is broken into max-12min subtasks. Sorted by priority (P0 first
 | 65  | Write fuzz target: `FuzzNormalizeFunction`                                  | T5     | 10min | No panics                         |
 | 66  | Create synthetic templ project fixture with known clones                    | T6     | 10min | Fixture exists                    |
 | 67  | Write integration test running full pipeline on fixture                     | T6     | 10min | Test passes                       |
-| 68  | Run `cd website && pnpm run preview`                                         | W1     | 5min  | Server starts                     |
+| 68  | Run `cd website && pnpm run preview`                                        | W1     | 5min  | Server starts                     |
 | 69  | Visual QA landing page (hero, features, comparison, CTA)                    | W1     | 10min | No broken layouts                 |
 | 70  | Visual QA 3 doc pages (installation, detection-methods, output-formats)     | W1     | 10min | Pages render                      |
 | 71  | Create OG image SVG (`website/public/og-image.svg`)                         | W2     | 10min | File exists                       |
 | 72  | Add `<meta property="og:image">` tags to LandingLayout.astro                | W3     | 5min  | Tags present                      |
-| 73  | Run `cd website && pnpm dlx astro check`                                         | W4     | 5min  | Check output                      |
+| 73  | Run `cd website && pnpm dlx astro check`                                    | W4     | 5min  | Check output                      |
 | 74  | Fix any TypeScript errors found                                             | W4     | 10min | 0 errors                          |
 | 75  | Read `syntax/syntax.go` Val() and DecodeBaseType()                          | CQ9    | 5min  | Understand model                  |
 | 76  | Plan unification: make Fingerprint universal or remove DecodeBaseType       | CQ9    | 10min | Plan written                      |
@@ -451,7 +451,7 @@ Every task above is broken into max-12min subtasks. Sorted by priority (P0 first
 | 87  | Add `CacheVersion` bump mechanism for serialization format changes          | I10    | 10min | Mechanism exists                  |
 | 88  | Add Fingerprint field to incremental cache serialization                    | I11    | 10min | Cache stores Fingerprint          |
 | 89  | Write benchmark: `BenchmarkSemanticVsExactVsStructural`                     | T8     | 10min | Benchmark runs                    |
-| 90  | Run `cd website && pnpm dlx html-validate "dist/**/*.html"`                      | W5     | 5min  | Validation output                 |
+| 90  | Run `cd website && pnpm dlx html-validate "dist/**/*.html"`                 | W5     | 5min  | Validation output                 |
 | 91  | Fix any HTML validation errors                                              | W5     | 10min | 0 errors                          |
 | 92  | Remove `continue-on-error: true` from deploy-site.yml                       | W6     | 5min  | YAML updated                      |
 | 93  | Run Lighthouse on deployed site                                             | W7     | 10min | Score recorded                    |

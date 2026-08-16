@@ -972,7 +972,6 @@ man art-dupl
 ```
 
 ````
-
 **New File**: `docs/FANG_INTEGRATION.md`
 ```markdown
 # Fang Integration Guide

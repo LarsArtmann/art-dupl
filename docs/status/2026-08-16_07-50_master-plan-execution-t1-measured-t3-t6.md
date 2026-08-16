@@ -9,7 +9,7 @@
 
 ## Context
 
-The master plan's thesis: *measure reality, then lock in trust, then cut noise, then polish*. This session started Tier A (T1, the measurement that gates everything) and drove through the Tier B trust tasks (T3, T4) plus the start of T5/T6. 4 of 26 tasks fully done, 2 partially done, 20 not started. The headline: **the measurement exists now, and it vindicates and corrects the perf roadmap in specific ways** (see §d).
+The master plan's thesis: _measure reality, then lock in trust, then cut noise, then polish_. This session started Tier A (T1, the measurement that gates everything) and drove through the Tier B trust tasks (T3, T4) plus the start of T5/T6. 4 of 26 tasks fully done, 2 partially done, 20 not started. The headline: **the measurement exists now, and it vindicates and corrects the perf roadmap in specific ways** (see §d).
 
 ---
 
@@ -28,15 +28,16 @@ The master plan's thesis: *measure reality, then lock in trust, then cut noise, 
 
 **Results** (`docs/benchmarks/realworld-cli.md`, 3 runs/mode, pinned `0-7,16-23` + unpinned comparison):
 
-| component | time | share of total wall (~181ms) |
-|---|---|---|
-| suffix tree build (active) | 94–102ms | **52–56%** |
-| suffix tree search (wall) | 48–59ms | **26–33%** |
-| serialize (active) | 28–32ms | **15–18%** |
+| component                       | time         | share of total wall (~181ms)       |
+| ------------------------------- | ------------ | ---------------------------------- |
+| suffix tree build (active)      | 94–102ms     | **52–56%**                         |
+| suffix tree search (wall)       | 48–59ms      | **26–33%**                         |
+| serialize (active)              | 28–32ms      | **15–18%**                         |
 | parse (423–459ms summed active) | ~0% marginal | fully hidden by worker parallelism |
-| GC pause | 1.1–1.4ms | <1% |
+| GC pause                        | 1.1–1.4ms    | <1%                                |
 
 **Verdict memo** (in the results doc, §Verdict):
+
 - **T13/T14: GO** — gate (serialize ≥ 15%) met at the margin (15–18%); reframed as allocation-count wins (4.43M objects/run), not wall-time wins (GC is ~1.3ms).
 - **T23 perf stat: GO** — tree dominates; locality evidence worth collecting.
 - **ADR-0020 suffix-array gate: MET** (search ≥ 30%); stays parked, criterion now evidenced.
@@ -46,17 +47,17 @@ The master plan's thesis: *measure reality, then lock in trust, then cut noise, 
 
 Audited every `sync`/`atomic` usage in production code:
 
-| Site | Verdict |
-|---|---|
-| `cache` HitCount/MissCount | already all-atomic (prior session's fix) ✓ |
+| Site                               | Verdict                                                                                                                                                                                                                                                                                                         |
+| ---------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `cache` HitCount/MissCount         | already all-atomic (prior session's fix) ✓                                                                                                                                                                                                                                                                      |
 | **`printer/html.go::PrintClones`** | **REAL MIX, FIXED**: `dupls` was mutex-guarded while `iota++` and `stats.categoryCounts/priorityCounts/...` mutated unguarded beside it; `OutputHTML` reset `iota` outside the lock too. Fixed: single `mu` now guards all mutable per-run state; `groupIndex` snapshot taken under the lock for view rendering |
-| `cmd/filter_stats.go` | consistent single-mutex + documented immutable-after-construction field ✓ |
-| `cmd/accept_directive.go` | correct double-checked locking, `readFile` immutable ✓ |
-| `cache/lru.go` | consistent single-mutex, lock ordering documented ✓ |
-| `syntax/intern.go` | correct DCL pattern ✓ |
-| `job/buildtree.go` sentinelCounter | all-atomic ✓ |
-| `suffixtree` build→search handoff | happens-before via done channel + goroutine spawn; search is read-only ✓ |
-| `sync.Pool`s, singleflight | inherently safe ✓ |
+| `cmd/filter_stats.go`              | consistent single-mutex + documented immutable-after-construction field ✓                                                                                                                                                                                                                                       |
+| `cmd/accept_directive.go`          | correct double-checked locking, `readFile` immutable ✓                                                                                                                                                                                                                                                          |
+| `cache/lru.go`                     | consistent single-mutex, lock ordering documented ✓                                                                                                                                                                                                                                                             |
+| `syntax/intern.go`                 | correct DCL pattern ✓                                                                                                                                                                                                                                                                                           |
+| `job/buildtree.go` sentinelCounter | all-atomic ✓                                                                                                                                                                                                                                                                                                    |
+| `suffixtree` build→search handoff  | happens-before via done channel + goroutine spawn; search is read-only ✓                                                                                                                                                                                                                                        |
+| `sync.Pool`s, singleflight         | inherently safe ✓                                                                                                                                                                                                                                                                                               |
 
 - **T3.3**: `TESTING.md` gained a "Concurrency: Atomic/Mutex Mixing" section — the cache race story, the 5 rules that prevent the class (one word one discipline; never reset by struct replacement; guard everything a method mutates or nothing; document immutable-after-construction; hand off via channel/spawn), and pointers to the regression tests.
 - **T3.4**: full `go test -race ./...` **GREEN** (background job 027, all 25 packages ok) — includes the new tests below and the html fix.
@@ -64,6 +65,7 @@ Audited every `sync`/`atomic` usage in production code:
 ### 3. T4 — Cache `Clear()` concurrent-stats regression tests (4.1a–4.1b)
 
 `cache/clear_race_test.go`:
+
 - `TestClearConcurrentWithGets`: 4 writers + 8 readers + 1 clearer run until 10 Clears complete; readers mutate returned clones to prove LRU-copy independence; asserts non-negative counters. Under `-race` this fails on the old code (struct-replacement reset) and passes on the fix — verified green.
 - `TestConcurrentMixedAccess`: Set/Get/Has/Remove/Prune hammered concurrently in 5 goroutines × 200 ops.
 

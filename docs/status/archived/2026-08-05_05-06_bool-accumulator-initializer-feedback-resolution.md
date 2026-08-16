@@ -2,8 +2,8 @@
 
 > **Post-session annotation (2026-08-05):** This report was **superseded by `2026-08-05_05-47`**, which completed the remaining work: tagliatelle CI fix, vendorHash update, `var x bool` support, disabled-pattern test, and BDD scenario. The original `-t 1` false positive is fully resolved. Note: the tagliatelle issue is recurring — the auto-committer re-added it again after 05-47 fixed it. Open items harvested into TODO_LIST.md.
 
-**Date/Time:** 2026-08-05 05:06 (from `date` CLI)  
-**Session focus:** Resolve `go-humanize-linter` `-t 1` false positive where two independent boolean flag initializers were reported as a clone group.  
+**Date/Time:** 2026-08-05 05:06 (from `date` CLI)\
+**Session focus:** Resolve `go-humanize-linter` `-t 1` false positive where two independent boolean flag initializers were reported as a clone group.\
 **Branch:** `fork`
 
 ---

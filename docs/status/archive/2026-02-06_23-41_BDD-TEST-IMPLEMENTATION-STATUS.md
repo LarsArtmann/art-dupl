@@ -1,7 +1,7 @@
 # BDD Test Implementation Status Report
 
-**Date:** 2026-02-06 23:41 UTC  
-**Branch:** fork  
+**Date:** 2026-02-06 23:41 UTC\
+**Branch:** fork\
 **Commit:** 8858fbf fix(filter): enable templ and sqlc filtering by default
 
 ---

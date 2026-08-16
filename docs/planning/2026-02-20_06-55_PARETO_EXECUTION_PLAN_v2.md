@@ -1,7 +1,7 @@
 # Pareto Execution Plan v2 - art-dupl Project
 
-**Date:** February 20, 2026, 06:55 UTC  
-**Strategy:** 1% → 4% → 20% Impact Cascade  
+**Date:** February 20, 2026, 06:55 UTC\
+**Strategy:** 1% → 4% → 20% Impact Cascade\
 **Standards:** HOW_TO_GOLANG.md (250-line limit, zero duplication)
 
 ---
@@ -31,8 +31,8 @@ Create a proper **shared test utilities package** that exports common helpers wi
 
 ## Phase 1: The 1% (Infrastructure Foundation - 51% Impact)
 
-**Goal:** Fix test helper architecture to unblock file splitting  
-**Time:** 90 minutes (3 tasks × 30min)  
+**Goal:** Fix test helper architecture to unblock file splitting\
+**Time:** 90 minutes (3 tasks × 30min)\
 **Impact:** Unblocks splitting of all 52 oversized files
 
 | #   | Task                                                                 | Time  | Effort | Impact   | Customer Value             |
@@ -83,8 +83,8 @@ func MustNewLineNumber(n uint16) domain.LineNumber {
 
 ## Phase 2: The 4% (High-Value Tasks - 64% Cumulative Impact)
 
-**Goal:** Split top 3 largest files + address 68 TODOs + GitHub templates  
-**Time:** 360 minutes (6 tasks × 60min avg)  
+**Goal:** Split top 3 largest files + address 68 TODOs + GitHub templates\
+**Time:** 360 minutes (6 tasks × 60min avg)\
 **Impact:** Major compliance and maintainability improvements
 
 | #   | Task                                                             | Time  | Effort | Impact | Customer Value             |
@@ -100,8 +100,8 @@ func MustNewLineNumber(n uint16) domain.LineNumber {
 
 ## Phase 3: The 20% (Complete TODO List - 80% Cumulative Impact)
 
-**Goal:** Split remaining 49 files + add examples + benchmarks + docs  
-**Time:** 900 minutes (18 tasks × 50min avg)  
+**Goal:** Split remaining 49 files + add examples + benchmarks + docs\
+**Time:** 900 minutes (18 tasks × 50min avg)\
 **Impact:** Full HOW_TO_GOLANG compliance
 
 | #    | Task                                                                | Time   | Effort | Impact | Customer Value        |
@@ -313,6 +313,6 @@ flowchart TB
 
 ---
 
-**Plan Created:** 2026-02-20 06:55 UTC  
-**Estimated Total Time:** 22.5 hours (1,350 minutes)  
+**Plan Created:** 2026-02-20 06:55 UTC\
+**Estimated Total Time:** 22.5 hours (1,350 minutes)\
 **Execution Start:** Immediate

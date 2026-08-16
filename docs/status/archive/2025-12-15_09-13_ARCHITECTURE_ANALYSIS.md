@@ -1,6 +1,6 @@
 # Architecture Analysis Report
 
-**Date:** 2025-12-15 09:13 CET  
+**Date:** 2025-12-15 09:13 CET\
 **Project:** art-dupl - Code Clone Detection Tool
 
 ## Executive Summary
@@ -163,7 +163,7 @@ type ExecutionContext struct {
 
 #### 5. Replace Boolean Flags with Enums
 
-**Current:** `html`, `jsonFlag`, `plumbing` booleans  
+**Current:** `html`, `jsonFlag`, `plumbing` booleans\
 **Target:** Single `OutputFormat` enum with validation
 
 - **Effort:** 2 hours

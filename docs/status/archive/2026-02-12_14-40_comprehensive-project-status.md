@@ -123,10 +123,10 @@ art-dupl/
 | Test Files         | 57                   | ✅     |
 | Test Coverage      | High (>80%)          | ✅     |
 | Build Status       | All packages compile | ✅     |
-| Linter Diagnostics | ~10 hints/info       | ⚠️     |
-| Files > 350 lines  | 6 files              | ⚠️     |
+| Linter Diagnostics | ~10 hints/info       | ⚠️      |
+| Files > 350 lines  | 6 files              | ⚠️      |
 | Unit Tests Passing | 100%                 | ✅     |
-| BDD Tests Passing  | 155/192 (81%)        | ⚠️     |
+| BDD Tests Passing  | 155/192 (81%)        | ⚠️      |
 
 ### 2.2 Files Exceeding Size Limits
 

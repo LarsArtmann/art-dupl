@@ -424,12 +424,12 @@ f3cd492 fix(tests): fix compilation errors in test files
 
 | Package               | File                         | Changes                       | Lines |
 | --------------------- | ---------------------------- | ----------------------------- | ----- |
-| `internal/utils`      | `file.go`                    | +36 (FindProjectRoot utility) |
-| `internal/utils`      | `file_test.go`               | NEW (150 lines, 8 tests)      |
-| `pkg/filter`          | `sqlc_yaml.go`               | +26 (parent search + warning) |
-| `internal/filtertest` | `integration_filter_test.go` | +78 (subdirectory test)       |
-| `cmd`                 | `flags.go`                   | Updated help text (±3)        |
-| `docs`                | `SMART_FILTERING.md`         | Updated (+30, -6)             |
+| `internal/utils`      | `file.go`                    | +36 (FindProjectRoot utility) |       |
+| `internal/utils`      | `file_test.go`               | NEW (150 lines, 8 tests)      |       |
+| `pkg/filter`          | `sqlc_yaml.go`               | +26 (parent search + warning) |       |
+| `internal/filtertest` | `integration_filter_test.go` | +78 (subdirectory test)       |       |
+| `cmd`                 | `flags.go`                   | Updated help text (±3)        |       |
+| `docs`                | `SMART_FILTERING.md`         | Updated (+30, -6)             |       |
 
 **Total Lines Added:** ~320 lines of code, tests, and documentation
 

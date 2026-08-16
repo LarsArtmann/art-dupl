@@ -1,7 +1,7 @@
 # Comprehensive Project Status Report
 
-**Date:** 2026-05-04 21:06  
-**Branch:** fork  
+**Date:** 2026-05-04 21:06\
+**Branch:** fork\
 **Last Commit:** cbb120c fix: properly wire IncludeNodeModules config to file crawling
 
 ---
@@ -131,23 +131,23 @@ $ art-dupl -t 15 . --semantic 2>&1 | grep -i node_modules
 
 ## Test Coverage by Package
 
-| Package             | Coverage  | Status               |
-| ------------------- | --------- | -------------------- |
-| pkg/format          | 100.0%    | ✅ Excellent         |
-| pkg/position        | 100.0%    | ✅ Excellent         |
-| config              | 94.7%     | ✅ Excellent         |
-| syntax/golang       | 94.3%     | ✅ Excellent         |
-| internal/simd       | 95.8%     | ✅ Excellent         |
-| hash                | 96.6%     | ✅ Excellent         |
-| internal/utils      | 93.2%     | ✅ Excellent         |
-| pkg/artdupl         | 92.1%     | ✅ Excellent         |
-| suffixtree          | 91.0%     | ✅ Excellent         |
-| syntax              | 91.6%     | ✅ Excellent         |
-| errors              | 89.4%     | ✅ Excellent         |
-| cache               | 87.3%     | ✅ Good              |
-| pkg/logger          | 87.5%     | ✅ Good              |
-| printer             | 84.9%     | ✅ Good              |
-| syntax/templ        | 85.3%     | ✅ Good              |
+| Package             | Coverage  | Status              |
+| ------------------- | --------- | ------------------- |
+| pkg/format          | 100.0%    | ✅ Excellent        |
+| pkg/position        | 100.0%    | ✅ Excellent        |
+| config              | 94.7%     | ✅ Excellent        |
+| syntax/golang       | 94.3%     | ✅ Excellent        |
+| internal/simd       | 95.8%     | ✅ Excellent        |
+| hash                | 96.6%     | ✅ Excellent        |
+| internal/utils      | 93.2%     | ✅ Excellent        |
+| pkg/artdupl         | 92.1%     | ✅ Excellent        |
+| suffixtree          | 91.0%     | ✅ Excellent        |
+| syntax              | 91.6%     | ✅ Excellent        |
+| errors              | 89.4%     | ✅ Excellent        |
+| cache               | 87.3%     | ✅ Good             |
+| pkg/logger          | 87.5%     | ✅ Good             |
+| printer             | 84.9%     | ✅ Good             |
+| syntax/templ        | 85.3%     | ✅ Good             |
 | **cmd**             | **75.5%** | ⚠️ Needs improvement |
 | **detection**       | **78.3%** | ⚠️ Needs improvement |
 | **job**             | **76.7%** | ⚠️ Needs improvement |

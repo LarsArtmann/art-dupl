@@ -8,10 +8,10 @@ secondary evidence only.
 
 ## Construction (STreeUpdate)
 
-| Benchmark   | v2 (map)            | v3 (slice)          | Delta                  |
-| ----------- | ------------------- | ------------------- | ---------------------- |
-| tokens_100  | 304 allocs / 80 KB  | 101 allocs / 24 KB  | allocs −67%, bytes −70% |
-| tokens_500  | 1,678 allocs / 154 KB | 545 allocs / 162 KB | allocs −68%            |
+| Benchmark   | v2 (map)              | v3 (slice)            | Delta                   |
+| ----------- | --------------------- | --------------------- | ----------------------- |
+| tokens_100  | 304 allocs / 80 KB    | 101 allocs / 24 KB    | allocs −67%, bytes −70% |
+| tokens_500  | 1,678 allocs / 154 KB | 545 allocs / 162 KB   | allocs −68%             |
 | tokens_2000 | 6,214 allocs / 378 KB | 2,046 allocs / 232 KB | allocs −67%, bytes −39% |
 
 Where the wins come from:
@@ -29,9 +29,9 @@ the state count, costing one extra partially-filled block. Negligible.
 
 ## Memory usage (10k tokens per tree)
 
-| Benchmark      | v2                  | v3                | Delta           |
-| -------------- | ------------------- | ----------------- | --------------- |
-| FewTokens (50 unique)  | 126 allocs / 237 KB | 23 allocs / 187 KB | allocs −82%, bytes −21% |
+| Benchmark                | v2                     | v3                 | Delta                     |
+| ------------------------ | ---------------------- | ------------------ | ------------------------- |
+| FewTokens (50 unique)    | 126 allocs / 237 KB    | 23 allocs / 187 KB | allocs −82%, bytes −21%   |
 | ManyTokens (5000 unique) | 10,067 allocs / 914 KB | 44 allocs / 591 KB | allocs −99.6%, bytes −35% |
 
 ## Search (FindDuplOver / parallel)

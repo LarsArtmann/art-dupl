@@ -19,12 +19,12 @@ behavior-preserving, and low-risk — not an architecture rescue.
 
 ### The four natural clusters (prod LOC, excluding tests + generated)
 
-| #   | Cluster                                                          | Files | Prod LOC | Inbound coupling                                                                                                                               |
-| --- | ---------------------------------------------------------------- | ----- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| C1  | **actionability** (pattern suppression + classification)         | 8     | 1,469    | Depends ONLY on `domain`+`syntax`+`syntax/golang`. **Zero** calls into formats/core. Misclassified: it's detection/classification, not output. |
-| C2  | **stats** (statistics collection + formatting)                   | 8     | 1,396    | Self-contained; `stats` struct implements `StatsPrinter`. `StatsView` referenced only by the interface method in `printer.go`.                 |
-| C3  | **format printers** (text/json/html/sarif/plumbing)              | 8     | 2,271    | Depend on clone-core; implement `Printer`. Thin layers over core.                                                                              |
-| C4  | **core + diff** (clone_processor, sorting, groups, issuer, diff) | 11    | 1,456    | The shared backbone + the `Printer`/`StatsPrinter` interfaces.                                                                                 |
+| #  | Cluster                                                          | Files | Prod LOC | Inbound coupling                                                                                                                               |
+| -- | ---------------------------------------------------------------- | ----- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| C1 | **actionability** (pattern suppression + classification)         | 8     | 1,469    | Depends ONLY on `domain`+`syntax`+`syntax/golang`. **Zero** calls into formats/core. Misclassified: it's detection/classification, not output. |
+| C2 | **stats** (statistics collection + formatting)                   | 8     | 1,396    | Self-contained; `stats` struct implements `StatsPrinter`. `StatsView` referenced only by the interface method in `printer.go`.                 |
+| C3 | **format printers** (text/json/html/sarif/plumbing)              | 8     | 2,271    | Depend on clone-core; implement `Printer`. Thin layers over core.                                                                              |
+| C4 | **core + diff** (clone_processor, sorting, groups, issuer, diff) | 11    | 1,456    | The shared backbone + the `Printer`/`StatsPrinter` interfaces.                                                                                 |
 
 **Total: ~6,592 prod LOC + ~7,100 test/generated LOC = ~13.7k lines in one package.**
 

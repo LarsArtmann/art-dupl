@@ -1,8 +1,8 @@
 # Comprehensive Status Report — art-dupl Codebase
 
-**Date:** 2026-05-01 00:33  
-**Branch:** `fork` (only branch, 1188 total commits)  
-**Working tree:** Clean  
+**Date:** 2026-05-01 00:33\
+**Branch:** `fork` (only branch, 1188 total commits)\
+**Working tree:** Clean\
 **Reporter:** Crush (GLM-5.1)
 
 ---
@@ -97,7 +97,7 @@
 
 ### Printer Interface Decoupling
 
-**Status:** Analysis complete, implementation NOT started.  
+**Status:** Analysis complete, implementation NOT started.\
 **What exists:**
 
 - Full analysis of the `PrintClones(dups [][]*syntax.Node)` interface and its 6 implementations
@@ -115,7 +115,7 @@
 
 ### Architecture Lint Integration
 
-**Status:** Config written, NOT integrated into CI.  
+**Status:** Config written, NOT integrated into CI.\
 **What exists:**
 
 - `.go-arch-lint.yml` with project-specific rules
@@ -129,7 +129,7 @@
 
 ### Clone Type Consolidation
 
-**Status:** Analysis complete, implementation NOT started.  
+**Status:** Analysis complete, implementation NOT started.\
 **Parallel types identified:**
 
 | Type                            | Package              | Fields                                                                 | Used By            |
@@ -230,33 +230,33 @@ However, there are two areas of concern:
 
 ## f) TOP 25 THINGS TO DO NEXT (Ranked by Impact × Effort⁻¹)
 
-| #   | Task                                                                                                                                                         | Impact    | Effort           | Category       |
-| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------- | ---------------- | -------------- |
-| 1   | **Fix nix build** — investigate dependency error, update vendorHash                                                                                          | High      | Low              | Infrastructure |
-| 2   | **Delete dead error constructors** — `NewParseError`, `NewDetectionError`, `NewAnalysisError`, `NewCancelledError`, `NewTimeoutError`, `Wrapf` + their tests | Low-Med   | Very Low         | Cleanup        |
-| 3   | **Fix `exhaustruct` on DuplError** — make File/Line optional via builder or functional options, remove 10+ nolint                                            | Med       | Low              | Code Quality   |
-| 4   | **Extract `cmd/run_analysis.go`** — split into run_parser.go, run_tree.go, run_detection.go                                                                  | Med       | Low-Med          | Architecture   |
-| 5   | **Reduce `config/config_merge.go` complexity** — extract per-field merge helpers                                                                             | Low-Med   | Low              | Code Quality   |
-| 6   | **Split `printer/` package** — html/ stats/ diff/ subpackages                                                                                                | High      | Med-High         | Architecture   |
-| 7   | **Introduce `ProcessedClone` DTO** — define the type, implement converter from `[][]*syntax.Node`                                                            | High      | Med              | Architecture   |
-| 8   | **Migrate Printer interface** to `PrintClones([]ProcessedCloneGroup)`                                                                                        | Very High | High (111 tests) | Architecture   |
-| 9   | **Consolidate Clone types** — collapse 3 Clone/CloneGroup hierarchies                                                                                        | High      | Med              | Architecture   |
-| 10  | **Move `clone_classify.go`** out of printer/ — make classification language-agnostic                                                                         | Med       | Med              | Architecture   |
-| 11  | **Fix coverage to ≥80%** — identify uncovered paths, add tests                                                                                               | Med       | Med              | Testing        |
-| 12  | **Update FEATURES.md** — reflect current capabilities                                                                                                        | Low       | Very Low         | Documentation  |
-| 13  | **Update SDK_DESIGN.md** — reflect pipeline unification                                                                                                      | Low       | Very Low         | Documentation  |
-| 14  | **Reduce `html_diff.go` complexity** — extract case handlers                                                                                                 | Low-Med   | Low              | Code Quality   |
-| 15  | **Consolidate `LineRangeMixin` + `CloneWithContentMixin`** — both provide filename+lineStart+lineEnd                                                         | Low       | Low              | Cleanup        |
-| 16  | **Add `go-arch-lint` to CI** — enforce package boundaries automatically                                                                                      | Med       | Low              | Infrastructure |
-| 17  | **Remove or justify `domain/` package** — only 1 consumer, questionable value                                                                                | Low       | Low-Med          | Architecture   |
-| 18  | **Write architecture enforcement tests** — verify domain doesn't import syntax, etc.                                                                         | Med       | Low              | Testing        |
-| 19  | **Fix `funlen` in `cmd/run_flags.go`** — extract flag groups into separate functions                                                                         | Low       | Low              | Code Quality   |
-| 20  | **Fix `funlen` in `cmd/run_all_modes.go`** — extract format-specific output                                                                                  | Low       | Low              | Code Quality   |
-| 21  | **Delete `domain/analysis_errors.go` dead errors** — only 2 of 17 remain, move to consumers                                                                  | Low       | Very Low         | Cleanup        |
-| 22  | **Add `//go:build` tags** for SIMD files — separate portable vs platform-specific code                                                                       | Low       | Low              | Code Quality   |
-| 23  | **Integrate `nix develop` with CI** — reproducible builds in CI                                                                                              | Med       | Med              | Infrastructure |
-| 24  | **Add `nix flake check` to CI** — automated nix validation                                                                                                   | Med       | Low              | Infrastructure |
-| 25  | **Create CONTRIBUTING.md** — document the development workflow, commit conventions                                                                           | Low       | Low              | Documentation  |
+| #  | Task                                                                                                                                                         | Impact    | Effort           | Category       |
+| -- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------- | ---------------- | -------------- |
+| 1  | **Fix nix build** — investigate dependency error, update vendorHash                                                                                          | High      | Low              | Infrastructure |
+| 2  | **Delete dead error constructors** — `NewParseError`, `NewDetectionError`, `NewAnalysisError`, `NewCancelledError`, `NewTimeoutError`, `Wrapf` + their tests | Low-Med   | Very Low         | Cleanup        |
+| 3  | **Fix `exhaustruct` on DuplError** — make File/Line optional via builder or functional options, remove 10+ nolint                                            | Med       | Low              | Code Quality   |
+| 4  | **Extract `cmd/run_analysis.go`** — split into run_parser.go, run_tree.go, run_detection.go                                                                  | Med       | Low-Med          | Architecture   |
+| 5  | **Reduce `config/config_merge.go` complexity** — extract per-field merge helpers                                                                             | Low-Med   | Low              | Code Quality   |
+| 6  | **Split `printer/` package** — html/ stats/ diff/ subpackages                                                                                                | High      | Med-High         | Architecture   |
+| 7  | **Introduce `ProcessedClone` DTO** — define the type, implement converter from `[][]*syntax.Node`                                                            | High      | Med              | Architecture   |
+| 8  | **Migrate Printer interface** to `PrintClones([]ProcessedCloneGroup)`                                                                                        | Very High | High (111 tests) | Architecture   |
+| 9  | **Consolidate Clone types** — collapse 3 Clone/CloneGroup hierarchies                                                                                        | High      | Med              | Architecture   |
+| 10 | **Move `clone_classify.go`** out of printer/ — make classification language-agnostic                                                                         | Med       | Med              | Architecture   |
+| 11 | **Fix coverage to ≥80%** — identify uncovered paths, add tests                                                                                               | Med       | Med              | Testing        |
+| 12 | **Update FEATURES.md** — reflect current capabilities                                                                                                        | Low       | Very Low         | Documentation  |
+| 13 | **Update SDK_DESIGN.md** — reflect pipeline unification                                                                                                      | Low       | Very Low         | Documentation  |
+| 14 | **Reduce `html_diff.go` complexity** — extract case handlers                                                                                                 | Low-Med   | Low              | Code Quality   |
+| 15 | **Consolidate `LineRangeMixin` + `CloneWithContentMixin`** — both provide filename+lineStart+lineEnd                                                         | Low       | Low              | Cleanup        |
+| 16 | **Add `go-arch-lint` to CI** — enforce package boundaries automatically                                                                                      | Med       | Low              | Infrastructure |
+| 17 | **Remove or justify `domain/` package** — only 1 consumer, questionable value                                                                                | Low       | Low-Med          | Architecture   |
+| 18 | **Write architecture enforcement tests** — verify domain doesn't import syntax, etc.                                                                         | Med       | Low              | Testing        |
+| 19 | **Fix `funlen` in `cmd/run_flags.go`** — extract flag groups into separate functions                                                                         | Low       | Low              | Code Quality   |
+| 20 | **Fix `funlen` in `cmd/run_all_modes.go`** — extract format-specific output                                                                                  | Low       | Low              | Code Quality   |
+| 21 | **Delete `domain/analysis_errors.go` dead errors** — only 2 of 17 remain, move to consumers                                                                  | Low       | Very Low         | Cleanup        |
+| 22 | **Add `//go:build` tags** for SIMD files — separate portable vs platform-specific code                                                                       | Low       | Low              | Code Quality   |
+| 23 | **Integrate `nix develop` with CI** — reproducible builds in CI                                                                                              | Med       | Med              | Infrastructure |
+| 24 | **Add `nix flake check` to CI** — automated nix validation                                                                                                   | Med       | Low              | Infrastructure |
+| 25 | **Create CONTRIBUTING.md** — document the development workflow, commit conventions                                                                           | Low       | Low              | Documentation  |
 
 ---
 

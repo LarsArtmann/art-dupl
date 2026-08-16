@@ -327,7 +327,6 @@ $ art-dupl . --verbose
 - Compatible with existing --filter-generated flag behavior
 
 ````
-
 **b) `cmd/root.go` Help Text**
 Update examples to mention auto-detection:
 ```go

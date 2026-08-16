@@ -1,7 +1,7 @@
 # dupl Comprehensive Improvement Plan
 
-**Date:** 2025-11-28_11-49  
-**Status:** Planning Phase  
+**Date:** 2025-11-28_11-49\
+**Status:** Planning Phase\
 **Goal:** Modernize and improve the dupl codebase for better maintainability, security, and usability
 
 ## Executive Summary

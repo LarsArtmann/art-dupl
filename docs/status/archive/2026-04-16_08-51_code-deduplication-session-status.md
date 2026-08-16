@@ -1,7 +1,7 @@
 # Code Deduplication Session Status Report
 
-**Date:** 2026-04-16 08:51  
-**Branch:** fork  
+**Date:** 2026-04-16 08:51\
+**Branch:** fork\
 **Commits this session:** 6 (5 by AI + 1 from prior session continuation)
 
 ---
@@ -117,33 +117,33 @@ Verified: these fail identically without our 6 commits applied.
 
 ### HIGH IMPACT (real code, not tests)
 
-| #   | What                                                                                      | Files                                                      | Impact | Effort |
-| --- | ----------------------------------------------------------------------------------------- | ---------------------------------------------------------- | ------ | ------ |
-| 1   | Fix 6 failing BDD tests (pre-existing)                                                    | `bdd/filter_features_test.go`, `bdd/cli_commands_test.go`  | HIGH   | Medium |
-| 2   | Extract printer interface initialization pattern (7 clones)                               | `printer/{html,json,plumbing,printer,sarif,stats,text}.go` | HIGH   | Medium |
-| 3   | Deduplicate `printer/sorter.go` filename+pos comparison (4 clones at lines 90,94,157,161) | `printer/sorter.go`                                        | Medium | Low    |
-| 4   | Extract AST traversal pattern in `syntax/golang/transform.go` (4 clones)                  | `syntax/golang/transform.go`                               | Medium | Medium |
-| 5   | Deduplicate hash/detector.go and hash/file_detector.go channel send pattern (3 clones)    | `hash/detector.go`, `hash/file_detector.go`                | Medium | Low    |
-| 6   | Extract `cmd/stats.go` repeated stats validation (2 clones at 190-192, 209-211)           | `cmd/stats.go`                                             | Low    | Low    |
-| 7   | Extract `printer/diff.go` repeated clone comparison (3 clones at 132, 142, 181)           | `printer/diff.go`                                          | Medium | Low    |
+| # | What                                                                                      | Files                                                      | Impact | Effort |
+| - | ----------------------------------------------------------------------------------------- | ---------------------------------------------------------- | ------ | ------ |
+| 1 | Fix 6 failing BDD tests (pre-existing)                                                    | `bdd/filter_features_test.go`, `bdd/cli_commands_test.go`  | HIGH   | Medium |
+| 2 | Extract printer interface initialization pattern (7 clones)                               | `printer/{html,json,plumbing,printer,sarif,stats,text}.go` | HIGH   | Medium |
+| 3 | Deduplicate `printer/sorter.go` filename+pos comparison (4 clones at lines 90,94,157,161) | `printer/sorter.go`                                        | Medium | Low    |
+| 4 | Extract AST traversal pattern in `syntax/golang/transform.go` (4 clones)                  | `syntax/golang/transform.go`                               | Medium | Medium |
+| 5 | Deduplicate hash/detector.go and hash/file_detector.go channel send pattern (3 clones)    | `hash/detector.go`, `hash/file_detector.go`                | Medium | Low    |
+| 6 | Extract `cmd/stats.go` repeated stats validation (2 clones at 190-192, 209-211)           | `cmd/stats.go`                                             | Low    | Low    |
+| 7 | Extract `printer/diff.go` repeated clone comparison (3 clones at 132, 142, 181)           | `printer/diff.go`                                          | Medium | Low    |
 
 ### MEDIUM IMPACT (test code)
 
-| #   | What                                                                               | Files                                     | Impact | Effort |
-| --- | ---------------------------------------------------------------------------------- | ----------------------------------------- | ------ | ------ |
-| 8   | Extract `assertErrNoFiles` helper in detector_validation_test.go (5 clones)        | `pkg/artdupl/detector_validation_test.go` | Medium | Low    |
-| 9   | Deduplicate `pkg/position/lines_test.go` table test patterns (18 clones)           | `pkg/position/lines_test.go`              | Medium | Medium |
-| 10  | Extract `internal/utils/file_test.go` assertion pattern (6 clones)                 | `internal/utils/file_test.go`             | Medium | Low    |
-| 11  | Extract `internal/utils/utils_test.go` assertion pattern (6 clones)                | `internal/utils/utils_test.go`            | Medium | Low    |
-| 12  | Deduplicate `domain/domain_types_test.go` test struct patterns (8 clones)          | `domain/domain_types_test.go`             | Medium | Medium |
-| 13  | Extract `git/change_detector_test.go` temp dir setup pattern (3 clones)            | `git/change_detector_test.go`             | Low    | Low    |
-| 14  | Deduplicate `bdd/semantic_detection_test.go` assertion patterns (6 clones)         | `bdd/semantic_detection_test.go`          | Medium | Low    |
-| 15  | Extract `bdd/detection_methods_test.go` file creation pattern (8 clones)           | `bdd/detection_methods_test.go`           | Medium | Medium |
-| 16  | Deduplicate `pkg/artdupl/detector_types_test.go` assertion patterns (11 clones)    | `pkg/artdupl/detector_types_test.go`      | Medium | Low    |
-| 17  | Extract `bdd/plumbing_output_test.go` verification patterns (4+3 clones)           | `bdd/plumbing_output_test.go`             | Medium | Low    |
-| 18  | Deduplicate `internal/enum/marshal_test.go` test body patterns (5+3 clones)        | `internal/enum/marshal_test.go`           | Medium | Medium |
-| 19  | Extract `errors/types_test.go` + `errors/marshal_test.go` test patterns (6 clones) | `errors/`                                 | Low    | Low    |
-| 20  | Deduplicate `cache/file_cache_test.go` assertion patterns (4 clones)               | `cache/file_cache_test.go`                | Low    | Low    |
+| #  | What                                                                               | Files                                     | Impact | Effort |
+| -- | ---------------------------------------------------------------------------------- | ----------------------------------------- | ------ | ------ |
+| 8  | Extract `assertErrNoFiles` helper in detector_validation_test.go (5 clones)        | `pkg/artdupl/detector_validation_test.go` | Medium | Low    |
+| 9  | Deduplicate `pkg/position/lines_test.go` table test patterns (18 clones)           | `pkg/position/lines_test.go`              | Medium | Medium |
+| 10 | Extract `internal/utils/file_test.go` assertion pattern (6 clones)                 | `internal/utils/file_test.go`             | Medium | Low    |
+| 11 | Extract `internal/utils/utils_test.go` assertion pattern (6 clones)                | `internal/utils/utils_test.go`            | Medium | Low    |
+| 12 | Deduplicate `domain/domain_types_test.go` test struct patterns (8 clones)          | `domain/domain_types_test.go`             | Medium | Medium |
+| 13 | Extract `git/change_detector_test.go` temp dir setup pattern (3 clones)            | `git/change_detector_test.go`             | Low    | Low    |
+| 14 | Deduplicate `bdd/semantic_detection_test.go` assertion patterns (6 clones)         | `bdd/semantic_detection_test.go`          | Medium | Low    |
+| 15 | Extract `bdd/detection_methods_test.go` file creation pattern (8 clones)           | `bdd/detection_methods_test.go`           | Medium | Medium |
+| 16 | Deduplicate `pkg/artdupl/detector_types_test.go` assertion patterns (11 clones)    | `pkg/artdupl/detector_types_test.go`      | Medium | Low    |
+| 17 | Extract `bdd/plumbing_output_test.go` verification patterns (4+3 clones)           | `bdd/plumbing_output_test.go`             | Medium | Low    |
+| 18 | Deduplicate `internal/enum/marshal_test.go` test body patterns (5+3 clones)        | `internal/enum/marshal_test.go`           | Medium | Medium |
+| 19 | Extract `errors/types_test.go` + `errors/marshal_test.go` test patterns (6 clones) | `errors/`                                 | Low    | Low    |
+| 20 | Deduplicate `cache/file_cache_test.go` assertion patterns (4 clones)               | `cache/file_cache_test.go`                | Low    | Low    |
 
 ### INFRASTRUCTURE / PROCESS
 
@@ -173,9 +173,9 @@ These tests may be testing features that are **not yet implemented** (spec tests
 
 ## Scan Results Summary
 
-**Before this session:** 145 clone groups (threshold 15)  
-**After this session:** 139 clone groups (threshold 15)  
-**Net reduction:** 6 clone groups  
+**Before this session:** 145 clone groups (threshold 15)\
+**After this session:** 139 clone groups (threshold 15)\
+**Net reduction:** 6 clone groups\
 **Net lines:** +99 / -171 (net -72 lines deleted)
 
 ### Clone Distribution (remaining 139 groups)

@@ -177,33 +177,33 @@ BuildFlow flags 4 untracked binaries: `art-dupl`, `dist/art-dupl`, `result`, `bd
 
 ## F) Top 25 Things to Do Next
 
-| #   | Task                                                               | Impact   | Effort | Priority |
-| --- | ------------------------------------------------------------------ | -------- | ------ | -------- |
-| 1   | **Fix BDD test suite timeout** (profile goroutine leaks)           | Critical | Medium | P0       |
-| 2   | **HOW_TO_USE.md**: Add detection-methods + findings sections       | High     | Low    | P0       |
-| 3   | **README.md**: Add todos/legacy to detection methods table         | High     | Low    | P0       |
-| 4   | **Add BDD spec for findings** (verify todos output in all formats) | High     | Low    | P1       |
-| 5   | **Rich text findings** (group by file, priority badges)            | Medium   | Low    | P1       |
-| 6   | **Add goleak** to unit tests                                       | Medium   | Low    | P1       |
-| 7   | **printDupls struct refactor** (11 params → config struct)         | Medium   | Medium | P2       |
-| 8   | **Type-strengthen ProcessedClone** (Filepath, LineNumber)          | Medium   | Medium | P2       |
-| 9   | **Break syntax import cycle** (extract Node to shared types)       | High     | High   | P2       |
-| 10  | **Consolidate 3 Clone types** into 1 canonical                     | High     | High   | P2       |
-| 11  | **Decouple actionability.go from syntax.Node**                     | High     | High   | P2       |
-| 12  | **Split printer/ package** into sub-packages                       | Medium   | High   | P2       |
-| 13  | **Templ semantic mode** (identifier/operator hashing)              | Medium   | High   | P2       |
-| 14  | **Benchmark findings pipeline overhead**                           | Medium   | Low    | P2       |
-| 15  | **Add `--findings-only` flag** (skip clone detection)              | Medium   | Low    | P3       |
-| 16  | **Add severity filtering** (`--min-priority medium`)               | Medium   | Low    | P3       |
-| 17  | **Custom TODO patterns** (`--todo-patterns "BUG,PERF"`)            | Medium   | Medium | P3       |
-| 18  | **Custom legacy patterns** (`--legacy-patterns "pkg.OldFunc"`)     | Medium   | Medium | P3       |
-| 19  | **Cache findings** in incremental mode                             | Low      | Medium | P3       |
-| 20  | **Findings in stats output** (count by type/priority)              | Low      | Low    | P3       |
-| 21  | **Hybrid slice/map transition storage**                            | Low      | Medium | P3       |
-| 22  | **Refactor actionability.go** into sub-files                       | Low      | Medium | P3       |
-| 23  | **Add ADR-0005** for Findings pipeline architecture                | Low      | Low    | P3       |
-| 24  | **LegacyIssue Tags field** for consistency                         | Low      | Low    | P3       |
-| 25  | **Improve SARIF finding-level mapping** for legacy                 | Low      | Low    | P3       |
+| #  | Task                                                               | Impact   | Effort | Priority |
+| -- | ------------------------------------------------------------------ | -------- | ------ | -------- |
+| 1  | **Fix BDD test suite timeout** (profile goroutine leaks)           | Critical | Medium | P0       |
+| 2  | **HOW_TO_USE.md**: Add detection-methods + findings sections       | High     | Low    | P0       |
+| 3  | **README.md**: Add todos/legacy to detection methods table         | High     | Low    | P0       |
+| 4  | **Add BDD spec for findings** (verify todos output in all formats) | High     | Low    | P1       |
+| 5  | **Rich text findings** (group by file, priority badges)            | Medium   | Low    | P1       |
+| 6  | **Add goleak** to unit tests                                       | Medium   | Low    | P1       |
+| 7  | **printDupls struct refactor** (11 params → config struct)         | Medium   | Medium | P2       |
+| 8  | **Type-strengthen ProcessedClone** (Filepath, LineNumber)          | Medium   | Medium | P2       |
+| 9  | **Break syntax import cycle** (extract Node to shared types)       | High     | High   | P2       |
+| 10 | **Consolidate 3 Clone types** into 1 canonical                     | High     | High   | P2       |
+| 11 | **Decouple actionability.go from syntax.Node**                     | High     | High   | P2       |
+| 12 | **Split printer/ package** into sub-packages                       | Medium   | High   | P2       |
+| 13 | **Templ semantic mode** (identifier/operator hashing)              | Medium   | High   | P2       |
+| 14 | **Benchmark findings pipeline overhead**                           | Medium   | Low    | P2       |
+| 15 | **Add `--findings-only` flag** (skip clone detection)              | Medium   | Low    | P3       |
+| 16 | **Add severity filtering** (`--min-priority medium`)               | Medium   | Low    | P3       |
+| 17 | **Custom TODO patterns** (`--todo-patterns "BUG,PERF"`)            | Medium   | Medium | P3       |
+| 18 | **Custom legacy patterns** (`--legacy-patterns "pkg.OldFunc"`)     | Medium   | Medium | P3       |
+| 19 | **Cache findings** in incremental mode                             | Low      | Medium | P3       |
+| 20 | **Findings in stats output** (count by type/priority)              | Low      | Low    | P3       |
+| 21 | **Hybrid slice/map transition storage**                            | Low      | Medium | P3       |
+| 22 | **Refactor actionability.go** into sub-files                       | Low      | Medium | P3       |
+| 23 | **Add ADR-0005** for Findings pipeline architecture                | Low      | Low    | P3       |
+| 24 | **LegacyIssue Tags field** for consistency                         | Low      | Low    | P3       |
+| 25 | **Improve SARIF finding-level mapping** for legacy                 | Low      | Low    | P3       |
 
 ---
 

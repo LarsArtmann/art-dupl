@@ -11,7 +11,7 @@
 | Metric   | Status        | Value                |
 | -------- | ------------- | -------------------- |
 | Tests    | ✅ PASSING    | 29/29 packages       |
-| Coverage | ⚠️ MIXED      | 8 packages below 80% |
+| Coverage | ⚠️ MIXED       | 8 packages below 80% |
 | Lint     | 🔴 NEEDS WORK | 116 issues           |
 | Build    | ✅ WORKING    | Binary compiles      |
 | Git      | ✅ CLEAN      | Nothing to commit    |

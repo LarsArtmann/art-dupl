@@ -1,8 +1,8 @@
 # 🚀 Systematic Fang Migration Execution Plan
 
-**Date**: 2025-12-14 08:30 CET  
-**Project**: art-dupl - Go code duplication detection tool  
-**Migration**: Convert from standard Go flag package to charmbracelet/fang with Cobra  
+**Date**: 2025-12-14 08:30 CET\
+**Project**: art-dupl - Go code duplication detection tool\
+**Migration**: Convert from standard Go flag package to charmbracelet/fang with Cobra\
 **Strategy**: Systematic 1% → 4% → 20% → 100% migration approach
 
 ## 🎯 EXECUTION STRATEGY
@@ -295,7 +295,7 @@ gantt
 
 ---
 
-**Status**: ✅ Planning Complete  
-**Next Step**: Waiting for execution approval  
-**Prepared By**: AI Assistant  
+**Status**: ✅ Planning Complete\
+**Next Step**: Waiting for execution approval\
+**Prepared By**: AI Assistant\
 **Date**: 2025-12-14 08:30 CET

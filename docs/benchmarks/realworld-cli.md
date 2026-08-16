@@ -15,18 +15,18 @@ planned in `docs/planning/2026-08-16_04-27_measure-first-trust-and-signal-master
 
 ### Pinned to one L3 domain (`taskset -c 0-7,16-23`, 16 cores)
 
-| stage | run 1 | run 2 | run 3 |
-|---|---|---|---|
-| crawl (wall) | 112ms | 119ms | 112ms |
-| parse (active, summed) | 430ms | 424ms | 423ms |
-| serialize (active) | 30ms | 29ms | 28ms |
-| tree-build (active) | 95ms | 101ms | 94ms |
-| ingest (wall) | 121ms | 127ms | 121ms |
-| search (wall) | 50ms | 51ms | 59ms |
-| print (wall) | 51ms | 52ms | 60ms |
-| **total (wall)** | **172ms** | **179ms** | **181ms** |
-| allocations | 4.43M objs / 267.0 MB | 4.43M / 266.9 MB | 4.43M / 266.9 MB |
-| GC | 13 cycles / 1.07ms pause | 14 / 1.12ms | 14 / 1.35ms |
+| stage                  | run 1                    | run 2            | run 3            |
+| ---------------------- | ------------------------ | ---------------- | ---------------- |
+| crawl (wall)           | 112ms                    | 119ms            | 112ms            |
+| parse (active, summed) | 430ms                    | 424ms            | 423ms            |
+| serialize (active)     | 30ms                     | 29ms             | 28ms             |
+| tree-build (active)    | 95ms                     | 101ms            | 94ms             |
+| ingest (wall)          | 121ms                    | 127ms            | 121ms            |
+| search (wall)          | 50ms                     | 51ms             | 59ms             |
+| print (wall)           | 51ms                     | 52ms             | 60ms             |
+| **total (wall)**       | **172ms**                | **179ms**        | **181ms**        |
+| allocations            | 4.43M objs / 267.0 MB    | 4.43M / 266.9 MB | 4.43M / 266.9 MB |
+| GC                     | 13 cycles / 1.07ms pause | 14 / 1.12ms      | 14 / 1.35ms      |
 
 ### Unpinned (all 32 threads, machine default)
 
@@ -38,13 +38,13 @@ counts identical (±0.1%).
 
 Share of **total wall** (pinned medians, total ≈ 181ms):
 
-| component | time | share of total wall | note |
-|---|---|---|---|
-| suffix tree build | 94–102ms active | **52–56%** | sequential (Ukkonen); 78–80% of the 121–128ms ingest wall → it IS the ingest critical path |
-| suffix tree search | 48–59ms wall | **26–33%** | sequential by default (`--search-workers 0`) |
-| serialize | 28–32ms active | **15–18%** | single goroutine on the critical path |
-| parse | 423–459ms summed active | ~0% marginal | fully hidden by worker parallelism (16 cores) |
-| GC | 1.1–1.4ms pause | <1% | allocations are cheap at this scale |
+| component          | time                    | share of total wall | note                                                                                       |
+| ------------------ | ----------------------- | ------------------- | ------------------------------------------------------------------------------------------ |
+| suffix tree build  | 94–102ms active         | **52–56%**          | sequential (Ukkonen); 78–80% of the 121–128ms ingest wall → it IS the ingest critical path |
+| suffix tree search | 48–59ms wall            | **26–33%**          | sequential by default (`--search-workers 0`)                                               |
+| serialize          | 28–32ms active          | **15–18%**          | single goroutine on the critical path                                                      |
+| parse              | 423–459ms summed active | ~0% marginal        | fully hidden by worker parallelism (16 cores)                                              |
+| GC                 | 1.1–1.4ms pause         | <1%                 | allocations are cheap at this scale                                                        |
 
 **Suffix tree (build + search) ≈ 80% of a real run's wall clock.** Parse,
 despite consuming the most CPU (423ms summed), contributes almost nothing to
@@ -57,7 +57,7 @@ wall ~3% — consistent with `CPU_TOPOLOGY.md`.
 1. **T13 `serial()` bulk allocation + T14 `[]*Node` pool: GO.** The plan's
    gate was "serialize ≥ 15% of wall clock" — measured 15–18%, gate met at the
    margin. Framing correction: with GC pause at ~1.3ms these are
-   *allocation-count* wins (4.43M objects/run), not wall-time wins. Execute
+   _allocation-count_ wins (4.43M objects/run), not wall-time wins. Execute
    them for the deterministic metric; do not expect total wall to move.
 2. **T23 `perf stat` A/B: GO.** Tree build+search dominate; cache-miss
    evidence for ADR-0022's locality claims is worth collecting.

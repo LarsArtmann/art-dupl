@@ -1,8 +1,8 @@
 # Comprehensive Status Report — Line Number Bug Fix Session
 
-**Date:** 2026-04-15 20:52  
-**Branch:** fork  
-**Latest commit:** `94953c7 docs(status): add comprehensive status report after filter refactoring session`  
+**Date:** 2026-04-15 20:52\
+**Branch:** fork\
+**Latest commit:** `94953c7 docs(status): add comprehensive status report after filter refactoring session`\
 **Reporter:** Crush (GLM-5.1)
 
 ---
@@ -140,43 +140,43 @@ All changes are clean, tested, and backwards compatible. No regressions introduc
 
 ### Critical (Fix Now)
 
-| #   | Task                                                                             | Impact | Effort |
-| --- | -------------------------------------------------------------------------------- | ------ | ------ |
-| 1   | Fix 6 pre-existing BDD test failures (5 filter + 1 CLI docs)                     | High   | Medium |
-| 2   | Fix `internal/filtertest` integration test failures                              | High   | Low    |
-| 3   | End-to-end manual verification: build and run tool against real codebase         | High   | Low    |
-| 4   | Fix SDK fallback path in `detector_conversion.go` (byte offsets as line numbers) | Medium | Low    |
+| # | Task                                                                             | Impact | Effort |
+| - | -------------------------------------------------------------------------------- | ------ | ------ |
+| 1 | Fix 6 pre-existing BDD test failures (5 filter + 1 CLI docs)                     | High   | Medium |
+| 2 | Fix `internal/filtertest` integration test failures                              | High   | Low    |
+| 3 | End-to-end manual verification: build and run tool against real codebase         | High   | Low    |
+| 4 | Fix SDK fallback path in `detector_conversion.go` (byte offsets as line numbers) | Medium | Low    |
 
 ### Important (Next Sprint)
 
-| #   | Task                                                           | Impact | Effort |
-| --- | -------------------------------------------------------------- | ------ | ------ |
-| 5   | Use `LineIndex` in `ByteRangeToLines` for O(log n) performance | Medium | Low    |
-| 6   | Add CRLF line ending handling to `ByteRangeToLines`            | Medium | Medium |
-| 7   | Cache file content at parse time to close TOCTOU gap           | Medium | Medium |
-| 8   | Improve `printer` test coverage from 63.4% to 80%+             | Medium | Medium |
-| 9   | Improve `cli` package coverage from 62.5% to 80%+              | Medium | Low    |
-| 10  | Improve `hash` package coverage from 69.0% to 80%+             | Medium | Low    |
-| 11  | Improve `syntax` package coverage from 67.6% to 80%+           | Medium | Medium |
-| 12  | Add SARIF printer tests with multi-line clones                 | Medium | Low    |
-| 13  | Add HTML printer tests with multi-line clones                  | Medium | Low    |
+| #  | Task                                                           | Impact | Effort |
+| -- | -------------------------------------------------------------- | ------ | ------ |
+| 5  | Use `LineIndex` in `ByteRangeToLines` for O(log n) performance | Medium | Low    |
+| 6  | Add CRLF line ending handling to `ByteRangeToLines`            | Medium | Medium |
+| 7  | Cache file content at parse time to close TOCTOU gap           | Medium | Medium |
+| 8  | Improve `printer` test coverage from 63.4% to 80%+             | Medium | Medium |
+| 9  | Improve `cli` package coverage from 62.5% to 80%+              | Medium | Low    |
+| 10 | Improve `hash` package coverage from 69.0% to 80%+             | Medium | Low    |
+| 11 | Improve `syntax` package coverage from 67.6% to 80%+           | Medium | Medium |
+| 12 | Add SARIF printer tests with multi-line clones                 | Medium | Low    |
+| 13 | Add HTML printer tests with multi-line clones                  | Medium | Low    |
 
 ### Nice to Have (Backlog)
 
-| #   | Task                                                                        | Impact | Effort  |
-| --- | --------------------------------------------------------------------------- | ------ | ------- |
-| 14  | Add fuzz tests for `ByteRangeToLines` with property: `endLine >= startLine` | Low    | Low     |
-| 15  | Modernize `lines.go` with `max()` builtin (Go 1.21+)                        | Low    | Trivial |
-| 16  | Clean up 3 old git stashes                                                  | Low    | Trivial |
-| 17  | Add benchmark comparing `offsetToLine` vs `LineIndex` performance           | Low    | Low     |
-| 18  | Add `--strict` mode that errors on TOCTOU file mismatches                   | Low    | Medium  |
-| 19  | Document line number semantics in API docs (exclusive end convention)       | Low    | Low     |
-| 20  | Investigate `config` package coverage (70.4%) — close to threshold          | Low    | Low     |
-| 21  | Investigate `job` package coverage (76.7%) — close to threshold             | Low    | Low     |
-| 22  | Add integration test for `pipeline/pipeline.go` (original bug report file)  | Low    | Medium  |
-| 23  | Review and clean up `docs/status/` — 200+ status reports is excessive       | Low    | Low     |
-| 24  | Add `CHANGELOG.md` entry for line number bug fix                            | Low    | Trivial |
-| 25  | Consider version bump for bug fix release                                   | Low    | Trivial |
+| #  | Task                                                                        | Impact | Effort  |
+| -- | --------------------------------------------------------------------------- | ------ | ------- |
+| 14 | Add fuzz tests for `ByteRangeToLines` with property: `endLine >= startLine` | Low    | Low     |
+| 15 | Modernize `lines.go` with `max()` builtin (Go 1.21+)                        | Low    | Trivial |
+| 16 | Clean up 3 old git stashes                                                  | Low    | Trivial |
+| 17 | Add benchmark comparing `offsetToLine` vs `LineIndex` performance           | Low    | Low     |
+| 18 | Add `--strict` mode that errors on TOCTOU file mismatches                   | Low    | Medium  |
+| 19 | Document line number semantics in API docs (exclusive end convention)       | Low    | Low     |
+| 20 | Investigate `config` package coverage (70.4%) — close to threshold          | Low    | Low     |
+| 21 | Investigate `job` package coverage (76.7%) — close to threshold             | Low    | Low     |
+| 22 | Add integration test for `pipeline/pipeline.go` (original bug report file)  | Low    | Medium  |
+| 23 | Review and clean up `docs/status/` — 200+ status reports is excessive       | Low    | Low     |
+| 24 | Add `CHANGELOG.md` entry for line number bug fix                            | Low    | Trivial |
+| 25 | Consider version bump for bug fix release                                   | Low    | Trivial |
 
 ---
 

@@ -24,23 +24,23 @@ After the architecture hardening sprint, a brutal self-review surfaced **10 new 
 
 ### 1% effort → 51% result (Dead code removal + naming honesty)
 
-| #   | Task                                                                 | Est   | Impact         |
-| --- | -------------------------------------------------------------------- | ----- | -------------- |
-| 1   | Remove dead `config.DetectionConfig` (zero consumers)                | 3min  | Dead code      |
-| 2   | Remove 6 dead SDK sentinel errors (never returned by code)           | 5min  | API honesty    |
-| 3   | Unexport `SimpleJSONClone`/`SimpleCloneGroup`/`SimpleJSONOutput`     | 5min  | API surface    |
-| 4   | Rename `validateInputsOrError` → `validateInputsWithContext`         | 3min  | Naming clarity |
-| 5   | Fix `hashConfig` → rename to `configDebugString` (it's not a hash)   | 5min  | Naming honesty |
-| 6   | Align `LineRangeMixin`: `StartLine`→`LineStart`, `EndLine`→`LineEnd` | 10min | Consistency    |
+| # | Task                                                                 | Est   | Impact         |
+| - | -------------------------------------------------------------------- | ----- | -------------- |
+| 1 | Remove dead `config.DetectionConfig` (zero consumers)                | 3min  | Dead code      |
+| 2 | Remove 6 dead SDK sentinel errors (never returned by code)           | 5min  | API honesty    |
+| 3 | Unexport `SimpleJSONClone`/`SimpleCloneGroup`/`SimpleJSONOutput`     | 5min  | API surface    |
+| 4 | Rename `validateInputsOrError` → `validateInputsWithContext`         | 3min  | Naming clarity |
+| 5 | Fix `hashConfig` → rename to `configDebugString` (it's not a hash)   | 5min  | Naming honesty |
+| 6 | Align `LineRangeMixin`: `StartLine`→`LineStart`, `EndLine`→`LineEnd` | 10min | Consistency    |
 
 ### 4% effort → 64% result (Correctness fixes)
 
-| #   | Task                                                             | Est   | Impact             |
-| --- | ---------------------------------------------------------------- | ----- | ------------------ |
-| 7   | Fix `Summary.LinesAnalyzed = 0` — wire real data from ParseStats | 15min | Correctness        |
-| 8   | Fix sync `FindClones` missing 100% progress report               | 5min  | UX consistency     |
-| 9   | Fix `started time.Time` data race — pass as local variable       | 15min | Concurrency safety |
-| 10  | Decouple SDK `detector.go` from internal `errors` package        | 20min | SDK independence   |
+| #  | Task                                                             | Est   | Impact             |
+| -- | ---------------------------------------------------------------- | ----- | ------------------ |
+| 7  | Fix `Summary.LinesAnalyzed = 0` — wire real data from ParseStats | 15min | Correctness        |
+| 8  | Fix sync `FindClones` missing 100% progress report               | 5min  | UX consistency     |
+| 9  | Fix `started time.Time` data race — pass as local variable       | 15min | Concurrency safety |
+| 10 | Decouple SDK `detector.go` from internal `errors` package        | 20min | SDK independence   |
 
 ### 20% effort → 80% result (Deferred — requires design decisions)
 

@@ -10,14 +10,14 @@ warning, HTML summary, cache follow-ups) plus this continuation session
 
 ## Stats
 
-| Metric | Value |
-| --- | --- |
-| Lint issues | 52 → **0** |
-| DiscordSync false positives | ~80 → **2 shown, 0 FPs** (real run, `--min-lines 6`) |
-| Ghost systems found | **3** (Issuer deleted, NodesToGroup wired, cache stats half-integrated) |
-| Split brains fixed | **2** (USAGE.md archived; pattern-count drift in 5 doc locations) |
-| BDD specs passing | **317** (4 new suggest-generics scenarios) |
-| LRU vs disk | **5.3x** proven (`BenchmarkFileCacheGet`: 77µs vs 408µs) |
+| Metric                      | Value                                                                   |
+| --------------------------- | ----------------------------------------------------------------------- |
+| Lint issues                 | 52 → **0**                                                              |
+| DiscordSync false positives | ~80 → **2 shown, 0 FPs** (real run, `--min-lines 6`)                    |
+| Ghost systems found         | **3** (Issuer deleted, NodesToGroup wired, cache stats half-integrated) |
+| Split brains fixed          | **2** (USAGE.md archived; pattern-count drift in 5 doc locations)       |
+| BDD specs passing           | **317** (4 new suggest-generics scenarios)                              |
+| LRU vs disk                 | **5.3x** proven (`BenchmarkFileCacheGet`: 77µs vs 408µs)                |
 
 ## The 11 Questions
 

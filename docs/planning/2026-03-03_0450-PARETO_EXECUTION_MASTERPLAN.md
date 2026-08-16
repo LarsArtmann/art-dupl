@@ -1,7 +1,7 @@
 # Pareto Execution Masterplan: Art-Dupl Optimization
 
-**Date:** 2026-03-03 04:50 CET  
-**Status:** Phase 1 Complete, Planning Phases 2-5  
+**Date:** 2026-03-03 04:50 CET\
+**Status:** Phase 1 Complete, Planning Phases 2-5\
 **Objective:** Apply Pareto Principle to maximize impact of remaining work
 
 ---
@@ -30,12 +30,12 @@
 
 **Four High-Impact Tasks (1% + 3 additional):**
 
-| #   | Task                       | Impact | Cumulative | Effort | Value/Effort |
-| --- | -------------------------- | ------ | ---------- | ------ | ------------ |
-| 1   | TokenValue type alias      | 51%    | 51%        | 2h     | 25.5%/h      |
-| 2   | README performance section | 5%     | 56%        | 30min  | 10%/h        |
-| 3   | CHANGELOG for release      | 4%     | 60%        | 20min  | 12%/h        |
-| 4   | Real-world benchmark CI    | 4%     | 64%        | 1h     | 4%/h         |
+| # | Task                       | Impact | Cumulative | Effort | Value/Effort |
+| - | -------------------------- | ------ | ---------- | ------ | ------------ |
+| 1 | TokenValue type alias      | 51%    | 51%        | 2h     | 25.5%/h      |
+| 2 | README performance section | 5%     | 56%        | 30min  | 10%/h        |
+| 3 | CHANGELOG for release      | 4%     | 60%        | 20min  | 12%/h        |
+| 4 | Real-world benchmark CI    | 4%     | 64%        | 1h     | 4%/h         |
 
 **Why These Four:**
 
@@ -91,55 +91,55 @@
 
 ### Phase 1: Type Safety Foundation (Critical Path)
 
-| #   | Task                                     | Duration | Impact   | Dependencies |
-| --- | ---------------------------------------- | -------- | -------- | ------------ |
-| 1   | Design TokenValue type with validation   | 100min   | Critical | None         |
-| 2   | Create domain/tokenvalue.go with types   | 60min    | Critical | Task 1       |
-| 3   | Update Token interface to use TokenValue | 90min    | Critical | Task 2       |
-| 4   | Refactor suffixtree to use TokenValue    | 90min    | Critical | Task 3       |
-| 5   | Refactor syntax/ to use TokenValue       | 90min    | High     | Task 3       |
-| 6   | Add TokenValue marshaling for JSON       | 60min    | Medium   | Task 2       |
-| 7   | Update all tests for TokenValue          | 90min    | High     | Tasks 4-5    |
+| # | Task                                     | Duration | Impact   | Dependencies |
+| - | ---------------------------------------- | -------- | -------- | ------------ |
+| 1 | Design TokenValue type with validation   | 100min   | Critical | None         |
+| 2 | Create domain/tokenvalue.go with types   | 60min    | Critical | Task 1       |
+| 3 | Update Token interface to use TokenValue | 90min    | Critical | Task 2       |
+| 4 | Refactor suffixtree to use TokenValue    | 90min    | Critical | Task 3       |
+| 5 | Refactor syntax/ to use TokenValue       | 90min    | High     | Task 3       |
+| 6 | Add TokenValue marshaling for JSON       | 60min    | Medium   | Task 2       |
+| 7 | Update all tests for TokenValue          | 90min    | High     | Tasks 4-5    |
 
 ### Phase 2: Documentation & Communication
 
-| #   | Task                                 | Duration | Impact | Dependencies |
-| --- | ------------------------------------ | -------- | ------ | ------------ |
-| 8   | Write README performance section     | 60min    | High   | None         |
-| 9   | Create CHANGELOG for vNext release   | 40min    | High   | None         |
-| 10  | Create PERFORMANCE.md guide          | 100min   | Medium | None         |
-| 11  | Update AGENTS.md type safety section | 40min    | Medium | Task 1       |
-| 12  | Document TokenValue usage patterns   | 60min    | Medium | Task 2       |
-| 13  | Update API documentation             | 60min    | Medium | None         |
+| #  | Task                                 | Duration | Impact | Dependencies |
+| -- | ------------------------------------ | -------- | ------ | ------------ |
+| 8  | Write README performance section     | 60min    | High   | None         |
+| 9  | Create CHANGELOG for vNext release   | 40min    | High   | None         |
+| 10 | Create PERFORMANCE.md guide          | 100min   | Medium | None         |
+| 11 | Update AGENTS.md type safety section | 40min    | Medium | Task 1       |
+| 12 | Document TokenValue usage patterns   | 60min    | Medium | Task 2       |
+| 13 | Update API documentation             | 60min    | Medium | None         |
 
 ### Phase 3: Testing & Quality
 
-| #   | Task                                 | Duration | Impact | Dependencies |
-| --- | ------------------------------------ | -------- | ------ | ------------ |
-| 14  | Design property-based tests          | 90min    | High   | None         |
-| 15  | Implement suffix tree properties     | 100min   | High   | Task 14      |
-| 16  | Add fuzzing for tree construction    | 90min    | Medium | None         |
-| 17  | Create CI benchmark regression check | 90min    | High   | None         |
-| 18  | Add memory profiling tests           | 60min    | Medium | None         |
-| 19  | Create transition count benchmarks   | 50min    | Low    | None         |
+| #  | Task                                 | Duration | Impact | Dependencies |
+| -- | ------------------------------------ | -------- | ------ | ------------ |
+| 14 | Design property-based tests          | 90min    | High   | None         |
+| 15 | Implement suffix tree properties     | 100min   | High   | Task 14      |
+| 16 | Add fuzzing for tree construction    | 90min    | Medium | None         |
+| 17 | Create CI benchmark regression check | 90min    | High   | None         |
+| 18 | Add memory profiling tests           | 60min    | Medium | None         |
+| 19 | Create transition count benchmarks   | 50min    | Low    | None         |
 
 ### Phase 4: User Experience
 
-| #   | Task                         | Duration | Impact | Dependencies |
-| --- | ---------------------------- | -------- | ------ | ------------ |
-| 20  | Improve progress indicators  | 60min    | Low    | None         |
-| 21  | Enhance error messages       | 60min    | Medium | None         |
-| 22  | Add configuration validation | 60min    | Medium | None         |
-| 23  | Update quick-start guide     | 40min    | Low    | None         |
+| #  | Task                         | Duration | Impact | Dependencies |
+| -- | ---------------------------- | -------- | ------ | ------------ |
+| 20 | Improve progress indicators  | 60min    | Low    | None         |
+| 21 | Enhance error messages       | 60min    | Medium | None         |
+| 22 | Add configuration validation | 60min    | Medium | None         |
+| 23 | Update quick-start guide     | 40min    | Low    | None         |
 
 ### Phase 5: Memory Optimization (Evaluation)
 
-| #   | Task                                   | Duration | Impact | Dependencies |
-| --- | -------------------------------------- | -------- | ------ | ------------ |
-| 24  | Profile memory usage on large codebase | 60min    | High   | None         |
-| 25  | Design hybrid slice/map approach       | 100min   | Medium | Task 24      |
-| 26  | Implement hybrid approach prototype    | 100min   | Medium | Task 25      |
-| 27  | Benchmark hybrid vs current            | 60min    | Medium | Task 26      |
+| #  | Task                                   | Duration | Impact | Dependencies |
+| -- | -------------------------------------- | -------- | ------ | ------------ |
+| 24 | Profile memory usage on large codebase | 60min    | High   | None         |
+| 25 | Design hybrid slice/map approach       | 100min   | Medium | Task 24      |
+| 26 | Implement hybrid approach prototype    | 100min   | Medium | Task 25      |
+| 27 | Benchmark hybrid vs current            | 60min    | Medium | Task 26      |
 
 ---
 
@@ -478,7 +478,7 @@
 
 ---
 
-**Plan Created:** 2026-03-03 04:50 CET  
-**Total Tasks:** 150  
-**Estimated Duration:** 41 hours  
+**Plan Created:** 2026-03-03 04:50 CET\
+**Total Tasks:** 150\
+**Estimated Duration:** 41 hours\
 **Expected Impact:** 80% of remaining value

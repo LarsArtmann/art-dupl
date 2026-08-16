@@ -97,13 +97,13 @@ Should suppress:
 
 ### Architecture Improvements
 
-| #   | Improvement                                                        | Impact | Effort | Priority |
-| --- | ------------------------------------------------------------------ | ------ | ------ | -------- |
-| 1   | Create typed errors for cache operations (`cache/file_cache.go`)   | Medium | Low    | P2       |
-| 2   | Create typed errors for config operations (`config/config.go`)     | Medium | Low    | P2       |
-| 3   | Create typed errors for file operations (`internal/utils/file.go`) | Medium | Low    | P2       |
-| 4   | Add error wrapping in `cmd/` package functions                     | Medium | Medium | P3       |
-| 5   | Replace `fmt.Fprintf` with structured logging in printer package   | Low    | High   | P4       |
+| # | Improvement                                                        | Impact | Effort | Priority |
+| - | ------------------------------------------------------------------ | ------ | ------ | -------- |
+| 1 | Create typed errors for cache operations (`cache/file_cache.go`)   | Medium | Low    | P2       |
+| 2 | Create typed errors for config operations (`config/config.go`)     | Medium | Low    | P2       |
+| 3 | Create typed errors for file operations (`internal/utils/file.go`) | Medium | Low    | P2       |
+| 4 | Add error wrapping in `cmd/` package functions                     | Medium | Medium | P3       |
+| 5 | Replace `fmt.Fprintf` with structured logging in printer package   | Low    | High   | P4       |
 
 ### Type Model Improvements
 
@@ -121,33 +121,33 @@ Should suppress:
 
 ## F) TOP 25 THINGS TO DO NEXT
 
-| #   | Task                                            | Impact | Effort | Time  |
-| --- | ----------------------------------------------- | ------ | ------ | ----- |
-| 1   | Commit current changes with detailed message    | High   | Low    | 2min  |
-| 2   | Create `.hierarchical-errors.yml` config file   | Medium | Low    | 5min  |
-| 3   | Push changes to remote                          | High   | Low    | 1min  |
-| 4   | Update planning doc with completion status      | Low    | Low    | 5min  |
-| 5   | Run `just ci` to verify all checks pass         | High   | Low    | 5min  |
-| 6   | Create typed errors for cache package           | Medium | Medium | 15min |
-| 7   | Create typed errors for config package          | Medium | Medium | 15min |
-| 8   | Add nolint comments for idiomatic patterns      | Low    | Low    | 5min  |
-| 9   | Review examples/sdk_demo.go silent swallows     | Low    | Low    | 10min |
-| 10  | Document acceptable error patterns in AGENTS.md | Medium | Low    | 10min |
-| 11  | Create error handling style guide               | Medium | Medium | 20min |
-| 12  | Add integration test for error scenarios        | Medium | Medium | 15min |
-| 13  | Review printer package error handling           | Low    | Medium | 10min |
-| 14  | Add error metrics/telemetry                     | Low    | High   | 30min |
-| 15  | Create error recovery middleware                | Low    | High   | 30min |
-| 16  | Review detection package for edge cases         | Medium | Medium | 20min |
-| 17  | Add fuzz tests for error handling               | Medium | High   | 30min |
-| 18  | Create error documentation for users            | Medium | Low    | 15min |
-| 19  | Review hash package error propagation           | Medium | Low    | 10min |
-| 20  | Add context to all error returns                | Low    | High   | 45min |
-| 21  | Create error inspection tooling                 | Low    | High   | 60min |
-| 22  | Review job package error handling               | Medium | Low    | 10min |
-| 23  | Add error chain visualization                   | Low    | High   | 60min |
-| 24  | Create error recovery tests                     | Medium | Medium | 20min |
-| 25  | Document silent swallow patterns                | Low    | Low    | 10min |
+| #  | Task                                            | Impact | Effort | Time  |
+| -- | ----------------------------------------------- | ------ | ------ | ----- |
+| 1  | Commit current changes with detailed message    | High   | Low    | 2min  |
+| 2  | Create `.hierarchical-errors.yml` config file   | Medium | Low    | 5min  |
+| 3  | Push changes to remote                          | High   | Low    | 1min  |
+| 4  | Update planning doc with completion status      | Low    | Low    | 5min  |
+| 5  | Run `just ci` to verify all checks pass         | High   | Low    | 5min  |
+| 6  | Create typed errors for cache package           | Medium | Medium | 15min |
+| 7  | Create typed errors for config package          | Medium | Medium | 15min |
+| 8  | Add nolint comments for idiomatic patterns      | Low    | Low    | 5min  |
+| 9  | Review examples/sdk_demo.go silent swallows     | Low    | Low    | 10min |
+| 10 | Document acceptable error patterns in AGENTS.md | Medium | Low    | 10min |
+| 11 | Create error handling style guide               | Medium | Medium | 20min |
+| 12 | Add integration test for error scenarios        | Medium | Medium | 15min |
+| 13 | Review printer package error handling           | Low    | Medium | 10min |
+| 14 | Add error metrics/telemetry                     | Low    | High   | 30min |
+| 15 | Create error recovery middleware                | Low    | High   | 30min |
+| 16 | Review detection package for edge cases         | Medium | Medium | 20min |
+| 17 | Add fuzz tests for error handling               | Medium | High   | 30min |
+| 18 | Create error documentation for users            | Medium | Low    | 15min |
+| 19 | Review hash package error propagation           | Medium | Low    | 10min |
+| 20 | Add context to all error returns                | Low    | High   | 45min |
+| 21 | Create error inspection tooling                 | Low    | High   | 60min |
+| 22 | Review job package error handling               | Medium | Low    | 10min |
+| 23 | Add error chain visualization                   | Low    | High   | 60min |
+| 24 | Create error recovery tests                     | Medium | Medium | 20min |
+| 25 | Document silent swallow patterns                | Low    | Low    | 10min |
 
 ---
 
@@ -187,12 +187,12 @@ Should suppress:
 ## Files Modified
 
 ```
- bdd/configuration_file_test.go                     |  2 -
- docs/planning/2026-03-15_15-08_PANIC_PREVENTION_PLAN.md | 84 ++++++++++++----------
- pkg/artdupl/detector_pipeline.go                   |  7 +-
- pkg/artdupl/detector_uncovered_test.go             |  3 +-
- suffixtree/dupl.go                                 |  6 +-
- 5 files changed, 54 insertions(+), 48 deletions(-)
+bdd/configuration_file_test.go                     |  2 -
+docs/planning/2026-03-15_15-08_PANIC_PREVENTION_PLAN.md | 84 ++++++++++++----------
+pkg/artdupl/detector_pipeline.go                   |  7 +-
+pkg/artdupl/detector_uncovered_test.go             |  3 +-
+suffixtree/dupl.go                                 |  6 +-
+5 files changed, 54 insertions(+), 48 deletions(-)
 ```
 
 ---

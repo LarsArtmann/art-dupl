@@ -1,9 +1,9 @@
 # Buildflow Execution Status Report
 
-**Date:** January 21, 2026 at 03:58 CET  
-**Project:** art-dupl (Go code duplication detection tool)  
-**Command:** `buildflow -pv --max-file-size 1000`  
-**Duration:** ~51 seconds  
+**Date:** January 21, 2026 at 03:58 CET\
+**Project:** art-dupl (Go code duplication detection tool)\
+**Command:** `buildflow -pv --max-file-size 1000`\
+**Duration:** ~51 seconds\
 **Status:** ⚠️ PARTIAL - Buildflow runs but fails on test and validation steps
 
 ---
@@ -91,7 +91,7 @@ Buildflow execution shows **mixed results**:
 
 **File:** `cmd/run.go:146`
 
-**Before:** `// TODO: Pass ctx to executeAnalysis for proper timeout handling`  
+**Before:** `// TODO: Pass ctx to executeAnalysis for proper timeout handling`\
 **After:** `// Note: Timeout context is configured but not yet passed through analysis pipeline`
 
 **Result:** ✅ TODO removed, technical note added instead

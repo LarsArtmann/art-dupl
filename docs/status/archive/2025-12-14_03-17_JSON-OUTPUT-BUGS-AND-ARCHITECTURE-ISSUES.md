@@ -2,8 +2,8 @@
 
 ## 🚨 CRITICAL STATUS: BROKEN BUILD AND PARTIAL FIXES
 
-**STATUS**: **COMPILATION BROKEN** - Tool cannot be built  
-**HEALTH**: **REQUIRES IMMEDIATE ATTENTION** - Multiple critical issues  
+**STATUS**: **COMPILATION BROKEN** - Tool cannot be built\
+**HEALTH**: **REQUIRES IMMEDIATE ATTENTION** - Multiple critical issues\
 **TIMESTAMP**: **2025-12-14 03:17:40 CET**
 
 ---
@@ -333,9 +333,9 @@ type Printer interface {
 
 ---
 
-_Report Generated: 2025-12-14 03:17:40 CET  
-Status: CRITICAL - Compilation Broken  
-Priority: IMMEDIATE REPAIR REQUIRED  
+_Report Generated: 2025-12-14 03:17:40 CET\
+Status: CRITICAL - Compilation Broken\
+Priority: IMMEDIATE REPAIR REQUIRED\
 Next Action: Fix cli.go compilation errors_
 
 _"We've made good progress on understanding and partially fixing the JSON output issues, but the current broken build state must be addressed immediately before continuing with any further improvements. The architectural foundation is solid, we just need to execute the repair steps systematically."_

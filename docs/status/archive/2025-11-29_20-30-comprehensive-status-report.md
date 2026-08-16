@@ -1,7 +1,7 @@
 # dupl Project Status Report
 
-**Date:** 2025-11-29_20-30  
-**Phase:** Critical Security & Foundation Improvements  
+**Date:** 2025-11-29_20-30\
+**Phase:** Critical Security & Foundation Improvements\
 **Overall Progress:** 18% Complete (4/22 critical tasks done)
 
 ## Executive Summary

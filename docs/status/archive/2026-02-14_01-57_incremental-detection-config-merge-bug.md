@@ -104,13 +104,13 @@ All 8 failures stem from the same root cause: config not being merged properly.
 ### Uncommitted Changes
 
 ```
- M cache/file_cache.go        (minor)
- M cmd/run_analysis.go        (debug logging)
- M cmd/run_flags.go           (verbose fix)
- M config/detectionmethod.go  (minor)
- M errors/types.go            (minor)
- M job/incremental.go         (debug logging)
- M printer/stats_formatter.go (unrelated refactor)
+M cache/file_cache.go        (minor)
+M cmd/run_analysis.go        (debug logging)
+M cmd/run_flags.go           (verbose fix)
+M config/detectionmethod.go  (minor)
+M errors/types.go            (minor)
+M job/incremental.go         (debug logging)
+M printer/stats_formatter.go (unrelated refactor)
 ```
 
 ---

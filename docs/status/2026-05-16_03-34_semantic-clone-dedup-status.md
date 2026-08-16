@@ -1,10 +1,10 @@
 # Semantic Clone Dedup Status Report
 
-**Date:** 2026-05-16 03:34  
-**Branch:** `fork`  
-**Base commit:** `8f9f179` (pre-DTO)  
-**HEAD:** `246e318` (refactor: reduce semantic clone groups from 88 to 78)  
-**Clone count:** 125 → **78** (47 eliminated, 37.6% reduction)  
+**Date:** 2026-05-16 03:34\
+**Branch:** `fork`\
+**Base commit:** `8f9f179` (pre-DTO)\
+**HEAD:** `246e318` (refactor: reduce semantic clone groups from 88 to 78)\
+**Clone count:** 125 → **78** (47 eliminated, 37.6% reduction)\
 **Tests:** 23/23 packages passing
 
 ---
@@ -253,33 +253,33 @@ For packages that can't import `testutil`:
 
 Sorted by impact × effort:
 
-| #   | Task                                                                                      | Groups         | Effort | Category          |
-| --- | ----------------------------------------------------------------------------------------- | -------------- | ------ | ----------------- |
-| 1   | Extract `testNode()` helper in printer/text_test.go — replace 7 `&syntax.Node{}` literals | G2 (n=7)       | 10min  | Helper extraction |
-| 2   | Create `errors/testhelpers.go` with `mustErrorIs()` — replace 4 `errors.Is` checks        | G13 (n=4)      | 10min  | Import cycle      |
-| 3   | Extract `assertWantErr()` in config_enum_test.go — replace 8 wantErr blocks               | G5+G14 (n=8)   | 15min  | Helper extraction |
-| 4   | Extract `testCloneWithContent()` in html_test.go — replace 5+ literals                    | G4 (n=5)       | 12min  | Helper extraction |
-| 5   | Use `testutil.AssertErrorIsFatal` in detector_validation_test.go for 3 instances          | G22 (n=3)      | 5min   | Helper usage      |
-| 6   | Consolidate `buildNodeSlice`/`makeFrag`/`makeASTNodes` → `testutil.MakeTestNodes`         | G21 (n=3)      | 12min  | Cross-package     |
-| 7   | Extract `sortWithFlags()` in bdd/sorting_test.go for RunArtDuplWithFlags                  | G9 (n=5)       | 10min  | BDD runner        |
-| 8   | Rename `acceptValue`/`checkFn` closures differently per function in config_enum_test.go   | G5 (n=4)       | 8min   | Variable rename   |
-| 9   | Extract `writeVendorFile()` helper in bdd/ for os.WriteFile patterns                      | G10 (n=4)      | 10min  | Helper extraction |
-| 10  | Restructure `parsedLine` error returns in plumbing_output_test.go differently             | G11 (n=4)      | 10min  | AST restructure   |
-| 11  | Rename test case struct fields in cmd_test.go `input→nodes, expected→wantCount`           | G8 (n=4)       | 10min  | Variable rename   |
-| 12  | Rename `testSubdirectoryDuplicates` args to use different path strings                    | G9 (n=4)       | 8min   | Arg rename        |
-| 13  | Rename file-meta variables in html_test.go clone literals differently                     | G12 (n=4)      | 8min   | Variable rename   |
-| 14  | Rename `checkHelpOutput` → global rename in cli_commands_test.go                          | G32 (n=2)      | 5min   | Global rename     |
-| 15  | Rename `assertGenFileFiltered` → global rename in default_filtering_test.go               | G7 (n=2)       | 5min   | Global rename     |
-| 16  | Extract `newClone(StartLine, EndLine, StartPos, EndPos)` helper in basic_test.go          | G6 (n=4)       | 8min   | Helper extraction |
-| 17  | Rename `runPatternTest` → global rename in configuration_file_test.go                     | G42 (n=2)      | 5min   | Global rename     |
-| 18  | Extract `expectSARIFJSON()` helper in output_formats_and_filters_test.go                  | G77 (n=2)      | 8min   | Helper extraction |
-| 19  | Add unique comments to `config_builder.go` function signatures                            | G75 (n=2)      | 3min   | Comment injection |
-| 20  | Add unique comments to `diff.go` function signatures (diffDifferentLength vs diffLCS)     | G60-equivalent | 3min   | Comment injection |
-| 21  | Rename `goBuildCmd` → different name in second bench function                             | G68 (n=2)      | 5min   | Scoped rename     |
-| 22  | Rename `hasAllStrings`/`containsAnySubstring` calls in stats_integration_test.go          | G47 (n=2)      | 5min   | Global rename     |
-| 23  | Create `suffixtree/testhelpers_test.go` (external test package) for testutil access       | G50+G64 (n=4)  | 15min  | Import cycle      |
-| 24  | Rename `wasKept` differently in two user_scenario_test.go scopes                          | G69+G71 (n=4)  | 8min   | Scoped rename     |
-| 25  | Rename `checkFlag` → global rename in error_handling_test.go                              | G76 (n=2)      | 5min   | Global rename     |
+| #  | Task                                                                                      | Groups         | Effort | Category          |
+| -- | ----------------------------------------------------------------------------------------- | -------------- | ------ | ----------------- |
+| 1  | Extract `testNode()` helper in printer/text_test.go — replace 7 `&syntax.Node{}` literals | G2 (n=7)       | 10min  | Helper extraction |
+| 2  | Create `errors/testhelpers.go` with `mustErrorIs()` — replace 4 `errors.Is` checks        | G13 (n=4)      | 10min  | Import cycle      |
+| 3  | Extract `assertWantErr()` in config_enum_test.go — replace 8 wantErr blocks               | G5+G14 (n=8)   | 15min  | Helper extraction |
+| 4  | Extract `testCloneWithContent()` in html_test.go — replace 5+ literals                    | G4 (n=5)       | 12min  | Helper extraction |
+| 5  | Use `testutil.AssertErrorIsFatal` in detector_validation_test.go for 3 instances          | G22 (n=3)      | 5min   | Helper usage      |
+| 6  | Consolidate `buildNodeSlice`/`makeFrag`/`makeASTNodes` → `testutil.MakeTestNodes`         | G21 (n=3)      | 12min  | Cross-package     |
+| 7  | Extract `sortWithFlags()` in bdd/sorting_test.go for RunArtDuplWithFlags                  | G9 (n=5)       | 10min  | BDD runner        |
+| 8  | Rename `acceptValue`/`checkFn` closures differently per function in config_enum_test.go   | G5 (n=4)       | 8min   | Variable rename   |
+| 9  | Extract `writeVendorFile()` helper in bdd/ for os.WriteFile patterns                      | G10 (n=4)      | 10min  | Helper extraction |
+| 10 | Restructure `parsedLine` error returns in plumbing_output_test.go differently             | G11 (n=4)      | 10min  | AST restructure   |
+| 11 | Rename test case struct fields in cmd_test.go `input→nodes, expected→wantCount`           | G8 (n=4)       | 10min  | Variable rename   |
+| 12 | Rename `testSubdirectoryDuplicates` args to use different path strings                    | G9 (n=4)       | 8min   | Arg rename        |
+| 13 | Rename file-meta variables in html_test.go clone literals differently                     | G12 (n=4)      | 8min   | Variable rename   |
+| 14 | Rename `checkHelpOutput` → global rename in cli_commands_test.go                          | G32 (n=2)      | 5min   | Global rename     |
+| 15 | Rename `assertGenFileFiltered` → global rename in default_filtering_test.go               | G7 (n=2)       | 5min   | Global rename     |
+| 16 | Extract `newClone(StartLine, EndLine, StartPos, EndPos)` helper in basic_test.go          | G6 (n=4)       | 8min   | Helper extraction |
+| 17 | Rename `runPatternTest` → global rename in configuration_file_test.go                     | G42 (n=2)      | 5min   | Global rename     |
+| 18 | Extract `expectSARIFJSON()` helper in output_formats_and_filters_test.go                  | G77 (n=2)      | 8min   | Helper extraction |
+| 19 | Add unique comments to `config_builder.go` function signatures                            | G75 (n=2)      | 3min   | Comment injection |
+| 20 | Add unique comments to `diff.go` function signatures (diffDifferentLength vs diffLCS)     | G60-equivalent | 3min   | Comment injection |
+| 21 | Rename `goBuildCmd` → different name in second bench function                             | G68 (n=2)      | 5min   | Scoped rename     |
+| 22 | Rename `hasAllStrings`/`containsAnySubstring` calls in stats_integration_test.go          | G47 (n=2)      | 5min   | Global rename     |
+| 23 | Create `suffixtree/testhelpers_test.go` (external test package) for testutil access       | G50+G64 (n=4)  | 15min  | Import cycle      |
+| 24 | Rename `wasKept` differently in two user_scenario_test.go scopes                          | G69+G71 (n=4)  | 8min   | Scoped rename     |
+| 25 | Rename `checkFlag` → global rename in error_handling_test.go                              | G76 (n=2)      | 5min   | Global rename     |
 
 ---
 

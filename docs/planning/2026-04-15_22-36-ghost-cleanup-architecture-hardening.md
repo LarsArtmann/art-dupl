@@ -1,8 +1,8 @@
 # Comprehensive Execution Plan — Ghost System Cleanup & Architecture Hardening
 
-**Date:** 2026-04-15 22:36  
-**Branch:** `fork`  
-**Base Commit:** `8b3a386`  
+**Date:** 2026-04-15 22:36\
+**Branch:** `fork`\
+**Base Commit:** `8b3a386`\
 **Author Context:** Post-filter-refactoring session. Codebase is clean, build passes, 234/240 BDD tests pass. Now addressing architectural debt before it compounds.
 
 ---
@@ -114,52 +114,52 @@ Sorted by: Impact × Customer-Value / Effort (highest first)
 
 ### Phase 1: Ghost Cleanup (Quick Wins, ~2h total)
 
-| #   | Task                                                               | Impact | Effort | Time  | Customer Value         |
-| --- | ------------------------------------------------------------------ | ------ | ------ | ----- | ---------------------- |
-| 1   | Delete `pkg/errors/` (24 lines, zero imports)                      | HIGH   | LOW    | 5min  | Codebase clarity       |
-| 2   | Delete `testutils/` (173 lines, zero imports)                      | HIGH   | LOW    | 5min  | Codebase clarity       |
-| 3   | Delete `internal/enum/` (684 lines, zero imports)                  | HIGH   | LOW    | 5min  | Codebase clarity       |
-| 4   | Delete `migration/` + `adapter/` (1,239 lines, only each other)    | HIGH   | LOW    | 10min | Codebase clarity       |
-| 5   | Delete `git/` (1,064 lines, zero production imports)               | HIGH   | LOW    | 10min | Codebase clarity       |
-| 6   | Remove ghost package references from AGENTS.md and go.mod comments | MEDIUM | LOW    | 10min | Documentation accuracy |
-| 7   | Verify build + tests still pass after ghost cleanup                | HIGH   | LOW    | 15min | Confidence             |
+| # | Task                                                               | Impact | Effort | Time  | Customer Value         |
+| - | ------------------------------------------------------------------ | ------ | ------ | ----- | ---------------------- |
+| 1 | Delete `pkg/errors/` (24 lines, zero imports)                      | HIGH   | LOW    | 5min  | Codebase clarity       |
+| 2 | Delete `testutils/` (173 lines, zero imports)                      | HIGH   | LOW    | 5min  | Codebase clarity       |
+| 3 | Delete `internal/enum/` (684 lines, zero imports)                  | HIGH   | LOW    | 5min  | Codebase clarity       |
+| 4 | Delete `migration/` + `adapter/` (1,239 lines, only each other)    | HIGH   | LOW    | 10min | Codebase clarity       |
+| 5 | Delete `git/` (1,064 lines, zero production imports)               | HIGH   | LOW    | 10min | Codebase clarity       |
+| 6 | Remove ghost package references from AGENTS.md and go.mod comments | MEDIUM | LOW    | 10min | Documentation accuracy |
+| 7 | Verify build + tests still pass after ghost cleanup                | HIGH   | LOW    | 15min | Confidence             |
 
 ### Phase 2: Build System & Linting (~1.5h total)
 
-| #   | Task                                                                         | Impact | Effort | Time  | Customer Value          |
-| --- | ---------------------------------------------------------------------------- | ------ | ------ | ----- | ----------------------- |
-| 8   | Fix `justfile build-all` (add `./cmd/art-dupl` source path)                  | HIGH   | LOW    | 5min  | Cross-compilation works |
-| 9   | Fix `justfile test` double-run (run verbose once, capture output)            | MEDIUM | LOW    | 10min | Developer time          |
-| 10  | Create `.golangci.yml` with rules matching IDE diagnostics                   | HIGH   | MEDIUM | 30min | CI catches lint issues  |
-| 11  | Fix linter warnings in `cmd/config_builder.go` (gocyclo, nlreturn, wsl, gci) | MEDIUM | MEDIUM | 30min | Code quality            |
-| 12  | Fix remaining linter warnings across codebase                                | LOW    | MEDIUM | 30min | Code quality            |
+| #  | Task                                                                         | Impact | Effort | Time  | Customer Value          |
+| -- | ---------------------------------------------------------------------------- | ------ | ------ | ----- | ----------------------- |
+| 8  | Fix `justfile build-all` (add `./cmd/art-dupl` source path)                  | HIGH   | LOW    | 5min  | Cross-compilation works |
+| 9  | Fix `justfile test` double-run (run verbose once, capture output)            | MEDIUM | LOW    | 10min | Developer time          |
+| 10 | Create `.golangci.yml` with rules matching IDE diagnostics                   | HIGH   | MEDIUM | 30min | CI catches lint issues  |
+| 11 | Fix linter warnings in `cmd/config_builder.go` (gocyclo, nlreturn, wsl, gci) | MEDIUM | MEDIUM | 30min | Code quality            |
+| 12 | Fix remaining linter warnings across codebase                                | LOW    | MEDIUM | 30min | Code quality            |
 
 ### Phase 3: Flag Deduplication (~1.5h total)
 
-| #   | Task                                                                     | Impact | Effort | Time  | Customer Value  |
-| --- | ------------------------------------------------------------------------ | ------ | ------ | ----- | --------------- |
-| 13  | Extract `addCommonFlags(cmd *cobra.Command)` from `cmd/flags.go`         | HIGH   | MEDIUM | 30min | Maintainability |
-| 14  | Refactor `cmd/stats.go` to use `addCommonFlags()`                        | HIGH   | LOW    | 15min | Maintainability |
-| 15  | Verify all flags work identically after deduplication                    | HIGH   | MEDIUM | 30min | Confidence      |
-| 16  | Delete dead `SimpleDetector` interface in `detection/simple_detector.go` | LOW    | LOW    | 5min  | Code clarity    |
+| #  | Task                                                                     | Impact | Effort | Time  | Customer Value  |
+| -- | ------------------------------------------------------------------------ | ------ | ------ | ----- | --------------- |
+| 13 | Extract `addCommonFlags(cmd *cobra.Command)` from `cmd/flags.go`         | HIGH   | MEDIUM | 30min | Maintainability |
+| 14 | Refactor `cmd/stats.go` to use `addCommonFlags()`                        | HIGH   | LOW    | 15min | Maintainability |
+| 15 | Verify all flags work identically after deduplication                    | HIGH   | MEDIUM | 30min | Confidence      |
+| 16 | Delete dead `SimpleDetector` interface in `detection/simple_detector.go` | LOW    | LOW    | 5min  | Code clarity    |
 
 ### Phase 4: Documentation Updates (~1h total)
 
-| #   | Task                                                                              | Impact | Effort | Time  | Customer Value          |
-| --- | --------------------------------------------------------------------------------- | ------ | ------ | ----- | ----------------------- |
-| 17  | Update `FEATURES.md` with protobuf/mockgen/stringer filters + all recent features | HIGH   | LOW    | 20min | Users discover features |
-| 18  | Update `HOW_TO_USE.md` with new flags and examples                                | HIGH   | LOW    | 20min | Users use features      |
-| 19  | Update `README.md` with semantic default behavior                                 | MEDIUM | LOW    | 10min | First impression        |
-| 20  | Update `TODO_LIST.md` — mark completed items, add new ones                        | MEDIUM | LOW    | 10min | Planning accuracy       |
+| #  | Task                                                                              | Impact | Effort | Time  | Customer Value          |
+| -- | --------------------------------------------------------------------------------- | ------ | ------ | ----- | ----------------------- |
+| 17 | Update `FEATURES.md` with protobuf/mockgen/stringer filters + all recent features | HIGH   | LOW    | 20min | Users discover features |
+| 18 | Update `HOW_TO_USE.md` with new flags and examples                                | HIGH   | LOW    | 20min | Users use features      |
+| 19 | Update `README.md` with semantic default behavior                                 | MEDIUM | LOW    | 10min | First impression        |
+| 20 | Update `TODO_LIST.md` — mark completed items, add new ones                        | MEDIUM | LOW    | 10min | Planning accuracy       |
 
 ### Phase 5: Test Quality (~2h total)
 
-| #   | Task                                                                              | Impact | Effort | Time  | Customer Value       |
-| --- | --------------------------------------------------------------------------------- | ------ | ------ | ----- | -------------------- |
-| 21  | Investigate and fix 6 pre-existing BDD test failures                              | HIGH   | HIGH   | 60min | Test reliability     |
-| 22  | Add BDD tests for `--include-protobuf`, `--include-mockgen`, `--include-stringer` | HIGH   | MEDIUM | 40min | Feature coverage     |
-| 23  | Add tests for `printer/` package (target 80%+, currently 63.4%)                   | MEDIUM | HIGH   | 60min | Reliability          |
-| 24  | Create `go.work` file for multi-module development                                | LOW    | LOW    | 5min  | Developer experience |
+| #  | Task                                                                              | Impact | Effort | Time  | Customer Value       |
+| -- | --------------------------------------------------------------------------------- | ------ | ------ | ----- | -------------------- |
+| 21 | Investigate and fix 6 pre-existing BDD test failures                              | HIGH   | HIGH   | 60min | Test reliability     |
+| 22 | Add BDD tests for `--include-protobuf`, `--include-mockgen`, `--include-stringer` | HIGH   | MEDIUM | 40min | Feature coverage     |
+| 23 | Add tests for `printer/` package (target 80%+, currently 63.4%)                   | MEDIUM | HIGH   | 60min | Reliability          |
+| 24 | Create `go.work` file for multi-module development                                | LOW    | LOW    | 5min  | Developer experience |
 
 ---
 
@@ -169,93 +169,93 @@ Sorted by: Impact × Customer-Value / Effort (highest first)
 
 ### Phase 1: Ghost Cleanup (Tasks 1-10)
 
-| #   | Task                                                                                     | Time | File(s)                |
-| --- | ---------------------------------------------------------------------------------------- | ---- | ---------------------- |
-| 1   | `git rm pkg/errors/errors.go`                                                            | 2min | `pkg/errors/errors.go` |
-| 2   | `git rm testutils/unique.go testutils/unique_test_clean.go`                              | 2min | `testutils/`           |
-| 3   | `git rm internal/enum/marshal.go internal/enum/marshal_test.go`                          | 2min | `internal/enum/`       |
-| 4   | `git rm migration/migration.go migration/migration_test.go migration/package.go`         | 3min | `migration/`           |
-| 5   | `git rm adapter/adapter.go adapter/printer_adapter.go adapter/printer_adapter_test.go`   | 3min | `adapter/`             |
-| 6   | `git rm git/change_detector.go git/change_detector_test.go git/errors.go git/helpers.go` | 3min | `git/`                 |
-| 7   | Verify `go build ./...` passes                                                           | 2min | —                      |
-| 8   | Verify `go test ./...` passes (expect 6 pre-existing BDD failures)                       | 5min | —                      |
-| 9   | Update AGENTS.md: remove ghost packages from directory tree and descriptions             | 5min | `AGENTS.md`            |
-| 10  | Update go.mod comment: remove reference to nonexistent `domain/domain_types.go`          | 2min | `go.mod`               |
+| #  | Task                                                                                     | Time | File(s)                |
+| -- | ---------------------------------------------------------------------------------------- | ---- | ---------------------- |
+| 1  | `git rm pkg/errors/errors.go`                                                            | 2min | `pkg/errors/errors.go` |
+| 2  | `git rm testutils/unique.go testutils/unique_test_clean.go`                              | 2min | `testutils/`           |
+| 3  | `git rm internal/enum/marshal.go internal/enum/marshal_test.go`                          | 2min | `internal/enum/`       |
+| 4  | `git rm migration/migration.go migration/migration_test.go migration/package.go`         | 3min | `migration/`           |
+| 5  | `git rm adapter/adapter.go adapter/printer_adapter.go adapter/printer_adapter_test.go`   | 3min | `adapter/`             |
+| 6  | `git rm git/change_detector.go git/change_detector_test.go git/errors.go git/helpers.go` | 3min | `git/`                 |
+| 7  | Verify `go build ./...` passes                                                           | 2min | —                      |
+| 8  | Verify `go test ./...` passes (expect 6 pre-existing BDD failures)                       | 5min | —                      |
+| 9  | Update AGENTS.md: remove ghost packages from directory tree and descriptions             | 5min | `AGENTS.md`            |
+| 10 | Update go.mod comment: remove reference to nonexistent `domain/domain_types.go`          | 2min | `go.mod`               |
 
 ### Phase 2: Build System & Linting (Tasks 11-20)
 
-| #   | Task                                                                                    | Time  | File(s)                 |
-| --- | --------------------------------------------------------------------------------------- | ----- | ----------------------- |
-| 11  | Fix justfile `build-all`: add `./cmd/art-dupl` to each cross-compile line               | 3min  | `justfile`              |
-| 12  | Fix justfile `test`: use `go test -v -cover ./...` directly, remove double-run          | 5min  | `justfile`              |
-| 13  | Add `go.work` file: `use .` + `use ../gogenfilter`                                      | 2min  | `go.work`               |
-| 14  | Create `.golangci.yml` with gocyclo, wsl, nlreturn, gci, copyloopvar, noinlineerr rules | 10min | `.golangci.yml`         |
-| 15  | Fix `cmd/config_builder.go` gci formatting issue                                        | 2min  | `cmd/config_builder.go` |
-| 16  | Fix `cmd/config_builder.go` nlreturn warnings (blank lines before returns)              | 5min  | `cmd/config_builder.go` |
-| 17  | Fix `cmd/config_builder.go` wsl_v5 warnings (whitespace above assigns)                  | 5min  | `cmd/config_builder.go` |
-| 18  | Fix `cmd/config_builder.go` noinlineerr warnings                                        | 5min  | `cmd/config_builder.go` |
-| 19  | Fix `cmd/cmd_test.go` copyloopvar warning                                               | 2min  | `cmd/cmd_test.go`       |
-| 20  | Run `golangci-lint run` and verify warnings reduced                                     | 5min  | —                       |
+| #  | Task                                                                                    | Time  | File(s)                 |
+| -- | --------------------------------------------------------------------------------------- | ----- | ----------------------- |
+| 11 | Fix justfile `build-all`: add `./cmd/art-dupl` to each cross-compile line               | 3min  | `justfile`              |
+| 12 | Fix justfile `test`: use `go test -v -cover ./...` directly, remove double-run          | 5min  | `justfile`              |
+| 13 | Add `go.work` file: `use .` + `use ../gogenfilter`                                      | 2min  | `go.work`               |
+| 14 | Create `.golangci.yml` with gocyclo, wsl, nlreturn, gci, copyloopvar, noinlineerr rules | 10min | `.golangci.yml`         |
+| 15 | Fix `cmd/config_builder.go` gci formatting issue                                        | 2min  | `cmd/config_builder.go` |
+| 16 | Fix `cmd/config_builder.go` nlreturn warnings (blank lines before returns)              | 5min  | `cmd/config_builder.go` |
+| 17 | Fix `cmd/config_builder.go` wsl_v5 warnings (whitespace above assigns)                  | 5min  | `cmd/config_builder.go` |
+| 18 | Fix `cmd/config_builder.go` noinlineerr warnings                                        | 5min  | `cmd/config_builder.go` |
+| 19 | Fix `cmd/cmd_test.go` copyloopvar warning                                               | 2min  | `cmd/cmd_test.go`       |
+| 20 | Run `golangci-lint run` and verify warnings reduced                                     | 5min  | —                       |
 
 ### Phase 3: Flag Deduplication (Tasks 21-30)
 
-| #   | Task                                                                                    | Time | File(s)                               |
-| --- | --------------------------------------------------------------------------------------- | ---- | ------------------------------------- |
-| 21  | Create `cmd/common_flags.go` with `addCommonFlags(cmd *cobra.Command)` function         | 8min | `cmd/common_flags.go`                 |
-| 22  | Move common flag registrations from `cmd/flags.go` to `addCommonFlags()`                | 8min | `cmd/flags.go`, `cmd/common_flags.go` |
-| 23  | Update `cmd/flags.go` AddFlags to call `addCommonFlags()` + add root-only flags         | 5min | `cmd/flags.go`                        |
-| 24  | Update `cmd/stats.go` NewStatsCommand to call `addCommonFlags()` + add stats-only flags | 5min | `cmd/stats.go`                        |
-| 25  | Verify `go build ./...` passes                                                          | 2min | —                                     |
-| 26  | Verify all flags still work: `art-dupl --help`, `art-dupl stats --help`                 | 5min | —                                     |
-| 27  | Run `cmd/` tests to verify flag extraction still works                                  | 5min | —                                     |
-| 28  | Delete `detection/simple_detector.go` (dead interface)                                  | 2min | `detection/simple_detector.go`        |
-| 29  | Verify `go test ./detection/` passes                                                    | 3min | —                                     |
-| 30  | Run full test suite to verify no regressions                                            | 5min | —                                     |
+| #  | Task                                                                                    | Time | File(s)                               |
+| -- | --------------------------------------------------------------------------------------- | ---- | ------------------------------------- |
+| 21 | Create `cmd/common_flags.go` with `addCommonFlags(cmd *cobra.Command)` function         | 8min | `cmd/common_flags.go`                 |
+| 22 | Move common flag registrations from `cmd/flags.go` to `addCommonFlags()`                | 8min | `cmd/flags.go`, `cmd/common_flags.go` |
+| 23 | Update `cmd/flags.go` AddFlags to call `addCommonFlags()` + add root-only flags         | 5min | `cmd/flags.go`                        |
+| 24 | Update `cmd/stats.go` NewStatsCommand to call `addCommonFlags()` + add stats-only flags | 5min | `cmd/stats.go`                        |
+| 25 | Verify `go build ./...` passes                                                          | 2min | —                                     |
+| 26 | Verify all flags still work: `art-dupl --help`, `art-dupl stats --help`                 | 5min | —                                     |
+| 27 | Run `cmd/` tests to verify flag extraction still works                                  | 5min | —                                     |
+| 28 | Delete `detection/simple_detector.go` (dead interface)                                  | 2min | `detection/simple_detector.go`        |
+| 29 | Verify `go test ./detection/` passes                                                    | 3min | —                                     |
+| 30 | Run full test suite to verify no regressions                                            | 5min | —                                     |
 
 ### Phase 4: Documentation (Tasks 31-40)
 
-| #   | Task                                                                                          | Time | File(s)         |
-| --- | --------------------------------------------------------------------------------------------- | ---- | --------------- |
-| 31  | Add protobuf/mockgen/stringer to FEATURES.md Smart Filtering table                            | 5min | `FEATURES.md`   |
-| 32  | Add protobuf/mockgen/stringer to FEATURES.md CLI Features section                             | 5min | `FEATURES.md`   |
-| 33  | Update FEATURES.md "Last Updated" date                                                        | 1min | `FEATURES.md`   |
-| 34  | Add `--include-protobuf`, `--include-mockgen`, `--include-stringer` examples to HOW_TO_USE.md | 8min | `HOW_TO_USE.md` |
-| 35  | Add note about default protobuf/mockgen/stringer filtering to HOW_TO_USE.md                   | 5min | `HOW_TO_USE.md` |
-| 36  | Update README.md: semantic detection is ON by default                                         | 5min | `README.md`     |
-| 37  | Update README.md: add new filter flags to usage examples                                      | 5min | `README.md`     |
-| 38  | Update TODO_LIST.md: mark completed items, remove ghost cleanup (done)                        | 5min | `TODO_LIST.md`  |
-| 39  | Update AGENTS.md: add new filter flags to CLI Usage Patterns section                          | 5min | `AGENTS.md`     |
-| 40  | Update AGENTS.md: remove ghost packages from directory tree and import paths                  | 5min | `AGENTS.md`     |
+| #  | Task                                                                                          | Time | File(s)         |
+| -- | --------------------------------------------------------------------------------------------- | ---- | --------------- |
+| 31 | Add protobuf/mockgen/stringer to FEATURES.md Smart Filtering table                            | 5min | `FEATURES.md`   |
+| 32 | Add protobuf/mockgen/stringer to FEATURES.md CLI Features section                             | 5min | `FEATURES.md`   |
+| 33 | Update FEATURES.md "Last Updated" date                                                        | 1min | `FEATURES.md`   |
+| 34 | Add `--include-protobuf`, `--include-mockgen`, `--include-stringer` examples to HOW_TO_USE.md | 8min | `HOW_TO_USE.md` |
+| 35 | Add note about default protobuf/mockgen/stringer filtering to HOW_TO_USE.md                   | 5min | `HOW_TO_USE.md` |
+| 36 | Update README.md: semantic detection is ON by default                                         | 5min | `README.md`     |
+| 37 | Update README.md: add new filter flags to usage examples                                      | 5min | `README.md`     |
+| 38 | Update TODO_LIST.md: mark completed items, remove ghost cleanup (done)                        | 5min | `TODO_LIST.md`  |
+| 39 | Update AGENTS.md: add new filter flags to CLI Usage Patterns section                          | 5min | `AGENTS.md`     |
+| 40 | Update AGENTS.md: remove ghost packages from directory tree and import paths                  | 5min | `AGENTS.md`     |
 
 ### Phase 5: Test Quality (Tasks 41-50)
 
-| #   | Task                                                                           | Time  | File(s) |
-| --- | ------------------------------------------------------------------------------ | ----- | ------- |
-| 41  | Read failing BDD tests in `bdd/filter_test.go` to understand expected behavior | 10min | `bdd/`  |
-| 42  | Read failing BDD test `bdd/cli_commands_test.go` (examples in help)            | 5min  | `bdd/`  |
-| 43  | Fix BDD: include pattern test (understand `--filter-generated` interaction)    | 10min | `bdd/`  |
-| 44  | Fix BDD: exclude pattern test                                                  | 10min | `bdd/`  |
-| 45  | Fix BDD: combined include/exclude pattern test                                 | 10min | `bdd/`  |
-| 46  | Fix BDD: sqlc filtering test                                                   | 10min | `bdd/`  |
-| 47  | Fix BDD: CLI documentation examples test                                       | 10min | `bdd/`  |
-| 48  | Add BDD test for `--include-protobuf` filtering                                | 10min | `bdd/`  |
-| 49  | Add BDD test for `--include-mockgen` filtering                                 | 10min | `bdd/`  |
-| 50  | Add BDD test for `--include-stringer` filtering                                | 10min | `bdd/`  |
+| #  | Task                                                                           | Time  | File(s) |
+| -- | ------------------------------------------------------------------------------ | ----- | ------- |
+| 41 | Read failing BDD tests in `bdd/filter_test.go` to understand expected behavior | 10min | `bdd/`  |
+| 42 | Read failing BDD test `bdd/cli_commands_test.go` (examples in help)            | 5min  | `bdd/`  |
+| 43 | Fix BDD: include pattern test (understand `--filter-generated` interaction)    | 10min | `bdd/`  |
+| 44 | Fix BDD: exclude pattern test                                                  | 10min | `bdd/`  |
+| 45 | Fix BDD: combined include/exclude pattern test                                 | 10min | `bdd/`  |
+| 46 | Fix BDD: sqlc filtering test                                                   | 10min | `bdd/`  |
+| 47 | Fix BDD: CLI documentation examples test                                       | 10min | `bdd/`  |
+| 48 | Add BDD test for `--include-protobuf` filtering                                | 10min | `bdd/`  |
+| 49 | Add BDD test for `--include-mockgen` filtering                                 | 10min | `bdd/`  |
+| 50 | Add BDD test for `--include-stringer` filtering                                | 10min | `bdd/`  |
 
 ### Phase 6: Printer Coverage & Final Verification (Tasks 51-60)
 
-| #   | Task                                                                  | Time  | File(s)        |
-| --- | --------------------------------------------------------------------- | ----- | -------------- |
-| 51  | Add tests for `printer/text.go` uncovered paths                       | 10min | `printer/`     |
-| 52  | Add tests for `printer/json.go` uncovered paths (especially LineEnd)  | 10min | `printer/`     |
-| 53  | Add tests for `printer/html.go` uncovered paths                       | 10min | `printer/`     |
-| 54  | Run coverage report and verify printer >= 80%                         | 5min  | —              |
-| 55  | Run full test suite including BDD                                     | 5min  | —              |
-| 56  | Run `golangci-lint run` — verify zero warnings                        | 3min  | —              |
-| 57  | Run `just build` and verify binary works: `./dist/art-dupl --version` | 2min  | —              |
-| 58  | Run `just build-all` and verify cross-compilation works               | 5min  | —              |
-| 59  | Final `git status` review — ensure nothing missed                     | 2min  | —              |
-| 60  | Update TODO_LIST.md with remaining items and priorities               | 5min  | `TODO_LIST.md` |
+| #  | Task                                                                  | Time  | File(s)        |
+| -- | --------------------------------------------------------------------- | ----- | -------------- |
+| 51 | Add tests for `printer/text.go` uncovered paths                       | 10min | `printer/`     |
+| 52 | Add tests for `printer/json.go` uncovered paths (especially LineEnd)  | 10min | `printer/`     |
+| 53 | Add tests for `printer/html.go` uncovered paths                       | 10min | `printer/`     |
+| 54 | Run coverage report and verify printer >= 80%                         | 5min  | —              |
+| 55 | Run full test suite including BDD                                     | 5min  | —              |
+| 56 | Run `golangci-lint run` — verify zero warnings                        | 3min  | —              |
+| 57 | Run `just build` and verify binary works: `./dist/art-dupl --version` | 2min  | —              |
+| 58 | Run `just build-all` and verify cross-compilation works               | 5min  | —              |
+| 59 | Final `git status` review — ensure nothing missed                     | 2min  | —              |
+| 60 | Update TODO_LIST.md with remaining items and priorities               | 5min  | `TODO_LIST.md` |
 
 ---
 

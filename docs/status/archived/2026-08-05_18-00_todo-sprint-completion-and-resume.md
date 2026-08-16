@@ -10,23 +10,23 @@
 
 ## a) FULLY DONE (15 items)
 
-| #   | Item                                                                               | Key Files                                                                             | Verified                 |
-| --- | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- | ------------------------ |
-| 1   | Fix `run_hash.go:62` stderr bypass bug                                             | `cmd/run_hash.go`                                                                     | Build + test             |
-| 2   | Remove stale `gomoddirectives` config                                              | `.golangci.yml`                                                                       | Lint passes              |
-| 3   | Remove `# property-engine labels` comment from `--list-patterns`                   | `printer/actionability/actionability.go`, test updated                                | Actionability tests pass |
-| 4   | Thread stderr through `config_builder.go` (2 sites → `cmd.ErrOrStderr()`)          | `cmd/config_builder.go`                                                               | Build                    |
-| 5   | Thread stderr through `dump_tokens.go` (2 sites)                                   | `cmd/dump_tokens.go`, `cmd/run_flags.go`, `cmd/dump_tokens_test.go`                   | Build + test             |
-| 6   | Thread stderr through `gitignore.go` (1 site)                                      | `cmd/gitignore.go`, `cmd/run_analysis.go`, `cmd/run_hash.go`, `cmd/gitignore_test.go` | Build + test             |
-| 7   | Thread stderr through `run_all_modes.go` writeFormatFile (1 site)                  | `cmd/run_all_modes.go`, `cmd/cmd_utils_test.go`                                       | Build + test             |
-| 8   | Thread stderr through `run_crawl.go` (3 sites + CrawlOptions.Stderr field)         | `cmd/run_crawl.go`, `cmd/run_analysis.go`, `cmd/run_hash.go`, tests                   | Build + test             |
-| 9   | Thread stderr through `stats.go` createOutputWriter (1 site)                       | `cmd/stats.go`, `cmd/stats_integration_test.go`                                       | Build + test             |
-| 10  | Update CHANGELOG.md `[Unreleased]` (all completed work)                            | `CHANGELOG.md`                                                                        | Reviewed                 |
-| 11  | Update TODO_LIST.md (removed 12 completed, kept 3 open)                            | `TODO_LIST.md`                                                                        | Reviewed                 |
-| 12  | Update AGENTS.md (writer injection, auto-fix guard, gomoddirectives, CrawlOptions) | `AGENTS.md`                                                                           | Reviewed                 |
-| 13  | Update FEATURES.md (`--list-patterns` count)                                       | `FEATURES.md`                                                                         | Reviewed                 |
-| 14  | Full golangci-lint (0 issues) + go-arch-lint (0 violations) + gofmt (clean)        | All                                                                                   | Verified                 |
-| 15  | nix flake check passes (after removing arch-lint derivation)                       | `flake.nix`                                                                           | All 9 checks pass        |
+| #  | Item                                                                               | Key Files                                                                             | Verified                 |
+| -- | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- | ------------------------ |
+| 1  | Fix `run_hash.go:62` stderr bypass bug                                             | `cmd/run_hash.go`                                                                     | Build + test             |
+| 2  | Remove stale `gomoddirectives` config                                              | `.golangci.yml`                                                                       | Lint passes              |
+| 3  | Remove `# property-engine labels` comment from `--list-patterns`                   | `printer/actionability/actionability.go`, test updated                                | Actionability tests pass |
+| 4  | Thread stderr through `config_builder.go` (2 sites → `cmd.ErrOrStderr()`)          | `cmd/config_builder.go`                                                               | Build                    |
+| 5  | Thread stderr through `dump_tokens.go` (2 sites)                                   | `cmd/dump_tokens.go`, `cmd/run_flags.go`, `cmd/dump_tokens_test.go`                   | Build + test             |
+| 6  | Thread stderr through `gitignore.go` (1 site)                                      | `cmd/gitignore.go`, `cmd/run_analysis.go`, `cmd/run_hash.go`, `cmd/gitignore_test.go` | Build + test             |
+| 7  | Thread stderr through `run_all_modes.go` writeFormatFile (1 site)                  | `cmd/run_all_modes.go`, `cmd/cmd_utils_test.go`                                       | Build + test             |
+| 8  | Thread stderr through `run_crawl.go` (3 sites + CrawlOptions.Stderr field)         | `cmd/run_crawl.go`, `cmd/run_analysis.go`, `cmd/run_hash.go`, tests                   | Build + test             |
+| 9  | Thread stderr through `stats.go` createOutputWriter (1 site)                       | `cmd/stats.go`, `cmd/stats_integration_test.go`                                       | Build + test             |
+| 10 | Update CHANGELOG.md `[Unreleased]` (all completed work)                            | `CHANGELOG.md`                                                                        | Reviewed                 |
+| 11 | Update TODO_LIST.md (removed 12 completed, kept 3 open)                            | `TODO_LIST.md`                                                                        | Reviewed                 |
+| 12 | Update AGENTS.md (writer injection, auto-fix guard, gomoddirectives, CrawlOptions) | `AGENTS.md`                                                                           | Reviewed                 |
+| 13 | Update FEATURES.md (`--list-patterns` count)                                       | `FEATURES.md`                                                                         | Reviewed                 |
+| 14 | Full golangci-lint (0 issues) + go-arch-lint (0 violations) + gofmt (clean)        | All                                                                                   | Verified                 |
+| 15 | nix flake check passes (after removing arch-lint derivation)                       | `flake.nix`                                                                           | All 9 checks pass        |
 
 ### Verification Summary
 

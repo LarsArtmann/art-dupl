@@ -1,7 +1,7 @@
 # Comprehensive Task Breakdown - art-dupl Project
 
-**Created:** December 15, 2025  
-**Total Tasks:** 27 tasks (30-100 minutes each)  
+**Created:** December 15, 2025\
+**Total Tasks:** 27 tasks (30-100 minutes each)\
 **Total Estimated Time:** 27-45 hours
 
 ## Task Breakdown by Pareto Principle

@@ -1,7 +1,7 @@
 # 🏗️ ARCHITECTURAL ASSESSMENT & IMPROVEMENT REPORT
 
-**Date**: January 17, 2026 at 14:58 UTC  
-**Session Focus**: Unicode Support, Type Safety, Test Quality  
+**Date**: January 17, 2026 at 14:58 UTC\
+**Session Focus**: Unicode Support, Type Safety, Test Quality\
 **Status**: Critical Bug Fixed, Test Quality Improved, Architecture Analyzed
 
 ---
@@ -1660,17 +1660,17 @@ Use more specific uint types when:
 
 **Test Coverage by Scenario**:
 
-| Scenario                    | Status     | Issue                  |
-| --------------------------- | ---------- | ---------------------- |
-| Find structural duplicates  | ❌ FAIL    | Binary path resolution |
-| Respect threshold           | ❌ FAIL    | Binary path resolution |
+| Scenario                    | Status    | Issue                  |
+| --------------------------- | --------- | ---------------------- |
+| Find structural duplicates  | ❌ FAIL   | Binary path resolution |
+| Respect threshold           | ❌ FAIL   | Binary path resolution |
 | Sort by occurrence          | ⏭️ PENDING | Test disabled          |
-| JSON output                 | ❌ FAIL    | Binary path resolution |
-| HTML output                 | ❌ FAIL    | Binary path resolution |
-| Limit to paths              | ❌ FAIL    | Binary path resolution |
-| Read from stdin             | ❌ FAIL    | Binary path resolution |
-| CI/CD JSON                  | ❌ FAIL    | Binary path resolution |
-| Performance with large code | ❌ FAIL    | Binary path resolution |
+| JSON output                 | ❌ FAIL   | Binary path resolution |
+| HTML output                 | ❌ FAIL   | Binary path resolution |
+| Limit to paths              | ❌ FAIL   | Binary path resolution |
+| Read from stdin             | ❌ FAIL   | Binary path resolution |
+| CI/CD JSON                  | ❌ FAIL   | Binary path resolution |
+| Performance with large code | ❌ FAIL   | Binary path resolution |
 
 **Architectural Concerns**:
 
@@ -1747,7 +1747,7 @@ Adopt TDD workflow:
 | `pkg/artdupl/detector.go` | 528   | HIGH       | ❌ Needs split |
 | `domain/clone.go`         | 440   | HIGH       | ❌ Needs split |
 | `config/config.go`        | 306   | HIGH       | ❌ Needs split |
-| `syntax/golang/golang.go` | 361   | MEDIUM     | ⚠️ Monitor     |
+| `syntax/golang/golang.go` | 361   | MEDIUM     | ⚠️ Monitor      |
 
 **Recommendation**:
 Split large files into smaller, focused files (<350 lines):
@@ -2544,8 +2544,8 @@ This session focused on **critical bug fixes** and **architectural analysis** wi
 
 ---
 
-**Report Generated**: January 17, 2026 at 14:58 UTC  
-**Session Duration**: Comprehensive analysis and improvements  
+**Report Generated**: January 17, 2026 at 14:58 UTC\
+**Session Duration**: Comprehensive analysis and improvements\
 **Status**: Progress made, clear path forward defined
 
 ---

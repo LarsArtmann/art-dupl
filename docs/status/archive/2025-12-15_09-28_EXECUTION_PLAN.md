@@ -1,6 +1,6 @@
 # Critical Architecture Fix Execution Plan
 
-**Date:** 2025-12-15 09:28 CET  
+**Date:** 2025-12-15 09:28 CET\
 **Priority:** CRITICAL - Customer value at risk due to architectural debt
 
 ## EXECUTION STRATEGY
@@ -11,26 +11,26 @@
 
 | Task                               | Time  | Impact       | Dependencies | Risk |
 | ---------------------------------- | ----- | ------------ | ------------ | ---- |
-| Fix BDD test flag arguments        | 30min | None         | Low          |
-| Choose single CLI approach (Cobra) | 2hrs  | None         | Medium       |
-| Remove duplicate Run() function    | 1hr   | CLI decision | Low          |
+| Fix BDD test flag arguments        | 30min | None         | Low          |      |
+| Choose single CLI approach (Cobra) | 2hrs  | None         | Medium       |      |
+| Remove duplicate Run() function    | 1hr   | CLI decision | Low          |      |
 
 #### 4% EFFORT → 64% IMPACT (HIGH - TODAY)
 
 | Task                                         | Time | Impact     | Dependencies | Risk |
 | -------------------------------------------- | ---- | ---------- | ------------ | ---- |
-| Split cli.go into 3 files                    | 3hrs | None       | Low          |
-| Replace boolean flags with OutputFormat enum | 2hrs | CLI split  | Low          |
-| Eliminate global variable mutations          | 4hrs | File split | Medium       |
+| Split cli.go into 3 files                    | 3hrs | None       | Low          |      |
+| Replace boolean flags with OutputFormat enum | 2hrs | CLI split  | Low          |      |
+| Eliminate global variable mutations          | 4hrs | File split | Medium       |      |
 
 #### 20% EFFORT → 80% IMPACT (MEDIUM - THIS WEEK)
 
 | Task                                   | Time | Impact             | Dependencies | Risk |
 | -------------------------------------- | ---- | ------------------ | ------------ | ---- |
-| Create ExecutionContext struct         | 2hrs | Global elimination | Low          |
-| Implement plugin interface for outputs | 4hrs | File split         | Medium       |
-| Add configuration validation layer     | 3hrs | ExecutionContext   | Low          |
-| Split remaining large files            | 2hrs | None               | Low          |
+| Create ExecutionContext struct         | 2hrs | Global elimination | Low          |      |
+| Implement plugin interface for outputs | 4hrs | File split         | Medium       |      |
+| Add configuration validation layer     | 3hrs | ExecutionContext   | Low          |      |
+| Split remaining large files            | 2hrs | None               | Low          |      |
 
 ## DETAILED EXECUTION PLAN
 

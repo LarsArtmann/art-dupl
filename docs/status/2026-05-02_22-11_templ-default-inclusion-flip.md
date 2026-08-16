@@ -1,8 +1,8 @@
 # Status Report — Templ Default Inclusion Flip
 
-**Date:** 2026-05-02 22:11  
-**Author:** Crush (AI Assistant)  
-**Branch:** `fork`  
+**Date:** 2026-05-02 22:11\
+**Author:** Crush (AI Assistant)\
+**Branch:** `fork`\
 **Scope:** Change `.templ` files from excluded-by-default to included-by-default
 
 ---

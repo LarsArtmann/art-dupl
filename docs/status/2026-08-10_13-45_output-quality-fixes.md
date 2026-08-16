@@ -1,8 +1,8 @@
 # Status Report: Output Quality Fixes
 
-**Date:** 2026-08-10 13:45  
-**Session Scope:** Fix broken UX in `--suggest-generics` / `--explain` text output  
-**Branch:** fork  
+**Date:** 2026-08-10 13:45\
+**Session Scope:** Fix broken UX in `--suggest-generics` / `--explain` text output\
+**Branch:** fork
 
 ---
 
@@ -21,30 +21,35 @@ The core complaint: removing `--suggest-generics` revealed 10 clone groups that 
 ## a) FULLY DONE
 
 ### 1. `--suggest-generics` now respects `--show-suppressed`
-**File:** `cmd/run_output.go:178-182`  
-**Problem:** The generics filter unconditionally skipped non-generics clones with `continue` — no `ShowSuppressed` check, unlike the actionability filter (line 152) and `shouldSuppressGroup` (line 173) which both guard with `if !suppression.ShowSuppressed`.  
-**Fix:** Added `if !suppression.ShowSuppressed { continue }` guard, matching the pattern used by the other two suppression branches.  
+
+**File:** `cmd/run_output.go:178-182`\
+**Problem:** The generics filter unconditionally skipped non-generics clones with `continue` — no `ShowSuppressed` check, unlike the actionability filter (line 152) and `shouldSuppressGroup` (line 173) which both guard with `if !suppression.ShowSuppressed`.\
+**Fix:** Added `if !suppression.ShowSuppressed { continue }` guard, matching the pattern used by the other two suppression branches.\
 **Tests:** All existing `cmd/` tests pass. No new test added (should add one — see NOT STARTED).
 
 ### 2. "1 tokens" → "1 token" pluralization
-**File:** `printer/text.go:258-268` (new helpers), `printer/text.go:334` (explain), `printer/text.go:279` (rich header)  
-**Problem:** Both `writeExplanation` and `writeRichGroupHeader` used `fmt.Sprintf("%d tokens, %d lines", ...)`, producing "1 tokens, 3 lines".  
-**Fix:** Added `tokenLineSummary(tokens, lines int)` and `plural(word string, n int)` helpers. Both call sites now use `tokenLineSummary`.  
+
+**File:** `printer/text.go:258-268` (new helpers), `printer/text.go:334` (explain), `printer/text.go:279` (rich header)\
+**Problem:** Both `writeExplanation` and `writeRichGroupHeader` used `fmt.Sprintf("%d tokens, %d lines", ...)`, producing "1 tokens, 3 lines".\
+**Fix:** Added `tokenLineSummary(tokens, lines int)` and `plural(word string, n int)` helpers. Both call sites now use `tokenLineSummary`.\
 **Tests:** All existing text printer tests pass.
 
 ### 3. Generics hint shortens fully-qualified type paths
-**File:** `printer/generics_candidate.go:67-87` (new `shortenTypeString`), `printer/generics_candidate.go:103` (call site)  
-**Problem:** Hint output was unreadable: `github.com/larsartmann/erraudit/internal/analyzer.MainAnalyzerOption vs github.com/larsartmann/erraudit/internal/ast.FileCacheOption`  
-**Fix:** `shortenTypeString` strips Go import path segments (everything matching `[\w.-]+/`) down to the last package segment: `analyzer.MainAnalyzerOption vs ast.FileCacheOption`. Handles prefixes like `[]`, `*`, `map[string]`.  
+
+**File:** `printer/generics_candidate.go:67-87` (new `shortenTypeString`), `printer/generics_candidate.go:103` (call site)\
+**Problem:** Hint output was unreadable: `github.com/larsartmann/erraudit/internal/analyzer.MainAnalyzerOption vs github.com/larsartmann/erraudit/internal/ast.FileCacheOption`\
+**Fix:** `shortenTypeString` strips Go import path segments (everything matching `[\w.-]+/`) down to the last package segment: `analyzer.MainAnalyzerOption vs ast.FileCacheOption`. Handles prefixes like `[]`, `*`, `map[string]`.\
 **Tests:** Added `TestShortenTypeString` (10 cases) and `TestClassifyGenericsCandidate_HintShortensPackagePaths` (integration test with real fully-qualified paths). Both pass.
 
 ### 4. Generics candidates show generics-specific fix suggestion
-**File:** `printer/clone_processor.go:145-147`  
-**Problem:** A generics candidate clone showed "Extract loop body to helper function" (the category-based suggestion from `getSuggestion`), not mentioning generics at all.  
-**Fix:** After setting `GenericsCandidate`/`GenericsHint`, if the clone is both a generics candidate AND actionable, override `Suggestion` to "Extract to generic function". Non-actionable clones keep their "why" pattern explanation.  
+
+**File:** `printer/clone_processor.go:145-147`\
+**Problem:** A generics candidate clone showed "Extract loop body to helper function" (the category-based suggestion from `getSuggestion`), not mentioning generics at all.\
+**Fix:** After setting `GenericsCandidate`/`GenericsHint`, if the clone is both a generics candidate AND actionable, override `Suggestion` to "Extract to generic function". Non-actionable clones keep their "why" pattern explanation.\
 **Tests:** All existing `clone_processor` and `actionability` tests pass.
 
 ### 5. All tests pass
+
 - `go build ./...` — clean
 - `go test ./...` — all 30 packages pass
 - `golangci-lint run --timeout 5m ./printer/... ./cmd/...` — only pre-existing `nestif` warning on `PrintFooter` (not touched)
@@ -101,7 +106,7 @@ Nothing. All changes are clean, tested, and build successfully.
 
 ### Output Quality Issues Noticed (Not Fixed)
 
-7. **Progress output indentation is inconsistent** — `    📖 Parsing...` (4 spaces), `    264 files discovered` (4 spaces), `🔍 Type-aware mode...` (0 spaces), ` ✅` (1 space). These come from different files (`run_analysis.go`, `progress.go`, `type_aware.go`) and have no shared indentation convention.
+7. **Progress output indentation is inconsistent** — `📖 Parsing...` (4 spaces), `264 files discovered` (4 spaces), `🔍 Type-aware mode...` (0 spaces), `✅` (1 space). These come from different files (`run_analysis.go`, `progress.go`, `type_aware.go`) and have no shared indentation convention.
 
 8. **The `generics:` hint line can be extremely long** — Even with shortened type names, 3 type pairs + the "(N type differences total)" suffix can produce a very long line. No truncation or wrapping is applied.
 
@@ -145,10 +150,10 @@ Nothing. All changes are clean, tested, and build successfully.
 24. Consider showing type differences count without the full type names when there are many (e.g., "4 type differences" instead of listing all)
 25. Add `--max-generics-hint-types` flag to control how many type pairs are shown
 26. Progress output: consider `\r` carriage return for inline progress instead of multiple lines
-27. The ` ✅` status message on line 72 of `run_analysis.go` has a leading space — inconsistent with 4-space indentation of other messages
+27. The `✅` status message on line 72 of `run_analysis.go` has a leading space — inconsistent with 4-space indentation of other messages
 28. `printBuildingStatus` and `printSearchStatus` should share an indentation constant
 29. Consider a `--compact` flag that shows just `file:line` without previews/hints/explanations
-30. The `writeExplanation` function builds parts as `[]string` then joins with ` | ` — consider structured formatting
+30. The `writeExplanation` function builds parts as `[]string` then joins with `|` — consider structured formatting
 31. `cls.Suggestion` is shown as `fix:` for actionable and `why:` for non-actionable — consider `hint:` for generics candidates
 32. Add `--output-width` flag to control preview truncation and hint wrapping
 33. Golden file tests should cover singular and plural token/line counts

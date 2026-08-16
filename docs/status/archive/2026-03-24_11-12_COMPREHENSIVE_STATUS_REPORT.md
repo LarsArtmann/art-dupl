@@ -12,7 +12,7 @@
 | Metric         | Status        | Details                                                      |
 | -------------- | ------------- | ------------------------------------------------------------ |
 | **Tests**      | ✅ PASSING    | 29 packages, all tests passing                               |
-| **Coverage**   | ⚠️ MIXED      | 64-100% across packages (avg ~80%)                           |
+| **Coverage**   | ⚠️ MIXED       | 64-100% across packages (avg ~80%)                           |
 | **Lint**       | 🔴 NEEDS WORK | 116 issues (50 revive, 19 recvcheck, 9 nonamedreturns, etc.) |
 | **Build**      | ✅ WORKING    | Binary builds successfully                                   |
 | **Git Status** | ✅ CLEAN      | Nothing to commit                                            |
@@ -42,11 +42,11 @@
 | Feature                   | Status         | Details                           |
 | ------------------------- | -------------- | --------------------------------- |
 | Golden File Test Coverage | 🔄 IN PROGRESS | 5 golden files added, more needed |
-| Test Coverage (printer)   | ⚠️ 64.1%       | Below 80% threshold               |
-| Test Coverage (syntax)    | ⚠️ 67.6%       | Below 80% threshold               |
-| CLI Test Coverage         | ⚠️ 62.5%       | Below 80% threshold               |
-| Job Package Coverage      | ⚠️ 76.6%       | Near 80% threshold                |
-| Hash Package Coverage     | ⚠️ 73.8%       | Below 80% threshold               |
+| Test Coverage (printer)   | ⚠️ 64.1%        | Below 80% threshold               |
+| Test Coverage (syntax)    | ⚠️ 67.6%        | Below 80% threshold               |
+| CLI Test Coverage         | ⚠️ 62.5%        | Below 80% threshold               |
+| Job Package Coverage      | ⚠️ 76.6%        | Near 80% threshold                |
+| Hash Package Coverage     | ⚠️ 73.8%        | Below 80% threshold               |
 | Lint Issues               | 🔄 IN PROGRESS | 116 issues remain                 |
 
 ### C) NOT STARTED
@@ -91,15 +91,15 @@
 | git            | 83.0%    | 80%    | ✅ EXCEEDS |
 | pkg/filter     | 82.5%    | 80%    | ✅ EXCEEDS |
 | syntax/templ   | 80.6%    | 80%    | ✅ MEETS   |
-| internal/enum  | 77.9%    | 80%    | ⚠️ BELOW   |
-| job            | 76.6%    | 80%    | ⚠️ BELOW   |
-| config         | 75.3%    | 80%    | ⚠️ BELOW   |
-| hash           | 73.8%    | 80%    | ⚠️ BELOW   |
-| cmd            | 73.9%    | 80%    | ⚠️ BELOW   |
-| bdd            | 70.0%    | 80%    | ⚠️ BELOW   |
-| syntax         | 67.6%    | 80%    | ⚠️ BELOW   |
-| cli            | 62.5%    | 80%    | ⚠️ BELOW   |
-| printer        | 64.1%    | 80%    | ⚠️ BELOW   |
+| internal/enum  | 77.9%    | 80%    | ⚠️ BELOW    |
+| job            | 76.6%    | 80%    | ⚠️ BELOW    |
+| config         | 75.3%    | 80%    | ⚠️ BELOW    |
+| hash           | 73.8%    | 80%    | ⚠️ BELOW    |
+| cmd            | 73.9%    | 80%    | ⚠️ BELOW    |
+| bdd            | 70.0%    | 80%    | ⚠️ BELOW    |
+| syntax         | 67.6%    | 80%    | ⚠️ BELOW    |
+| cli            | 62.5%    | 80%    | ⚠️ BELOW    |
+| printer        | 64.1%    | 80%    | ⚠️ BELOW    |
 
 ---
 

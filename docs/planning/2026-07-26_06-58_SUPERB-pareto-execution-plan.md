@@ -334,13 +334,13 @@ Every schedulable task decomposed into atomic, verifiable steps. Sorted within e
 
 ### T14 — SARIF schema validation (45min → 5 atomic tasks)
 
-| ID   | Atomic step                                                                                         | Effort |
-| ---- | --------------------------------------------------------------------------------------------------- | ------ |
+| ID   | Atomic step                                                                                              | Effort |
+| ---- | -------------------------------------------------------------------------------------------------------- | ------ |
 | F083 | Add GitHub SARIF schema validator (go module or `pnpm dlx @microsoft/sarif-cli validate`) to a Nix check | 12min  |
-| F084 | Generate a SARIF report from a fixture in the check                                                 | 8min   |
-| F085 | Assert validator exits 0; if failures, fix `printer/sarif.go` output                                | 12min  |
-| F086 | `✓ gate`: `nix build .#checks.x86_64-linux.sarif-validate`                                          | 8min   |
-| F087 | Document in `FEATURES.md` SARIF row                                                                 | 5min   |
+| F084 | Generate a SARIF report from a fixture in the check                                                      | 8min   |
+| F085 | Assert validator exits 0; if failures, fix `printer/sarif.go` output                                     | 12min  |
+| F086 | `✓ gate`: `nix build .#checks.x86_64-linux.sarif-validate`                                               | 8min   |
+| F087 | Document in `FEATURES.md` SARIF row                                                                      | 5min   |
 
 ### T15 — Performance optimization guide (60min → 6 atomic tasks)
 

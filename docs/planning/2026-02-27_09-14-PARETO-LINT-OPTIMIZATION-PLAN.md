@@ -1,8 +1,8 @@
 # Pareto-Optimal Lint Fix Execution Plan
 
-**Date:** 2026-02-27 09:14  
-**Total Issues:** 390  
-**Estimated Time:** 8-10 hours  
+**Date:** 2026-02-27 09:14\
+**Total Issues:** 390\
+**Estimated Time:** 8-10 hours\
 **Target:** Zero lint errors with maximum value delivery
 
 ---
@@ -63,8 +63,8 @@ This plan applies the **Pareto Principle** (80/20 rule) to prioritize lint fixes
 
 ### 🔴 Layer 1: 1% → 51% (CRITICAL - Security & Stability)
 
-**Issues:** 7 (1.8% of total)  
-**Value:** Prevents 51% of production issues  
+**Issues:** 7 (1.8% of total)\
+**Value:** Prevents 51% of production issues\
 **Time:** ~30 minutes
 
 | Linter              | Count | Impact      | Why Critical                                                         |
@@ -84,9 +84,9 @@ This plan applies the **Pareto Principle** (80/20 rule) to prioritize lint fixes
 
 ### 🟠 Layer 2: 4% → 64% (HIGH - Error Handling & Debugging)
 
-**Issues:** 16 (4.1% of total)  
-**Value:** Proper error handling for 64% of debugging scenarios  
-**Time:** ~45 minutes  
+**Issues:** 16 (4.1% of total)\
+**Value:** Proper error handling for 64% of debugging scenarios\
+**Time:** ~45 minutes\
 **Cumulative:** 23 issues (5.9%) for 64% value
 
 | Linter        | Count | Impact  | Why Important                                              |
@@ -107,9 +107,9 @@ This plan applies the **Pareto Principle** (80/20 rule) to prioritize lint fixes
 
 ### 🟡 Layer 3: 20% → 80% (MEDIUM - Quality & Maintainability)
 
-**Issues:** 55 (14.1% additional, 20% cumulative)  
-**Value:** Code quality for 80% of maintainability  
-**Time:** ~3 hours  
+**Issues:** 55 (14.1% additional, 20% cumulative)\
+**Value:** Code quality for 80% of maintainability\
+**Time:** ~3 hours\
 **Cumulative:** 78 issues (20%) for 80% value
 
 | Linter          | Count | Impact    | Why It Matters                               |
@@ -140,8 +140,8 @@ This plan applies the **Pareto Principle** (80/20 rule) to prioritize lint fixes
 
 ### 🟢 Layer 4: Remaining 80% → 100% (LOW - Style & Consistency)
 
-**Issues:** 289 (74% of total)  
-**Value:** Final 20% of polish  
+**Issues:** 289 (74% of total)\
+**Value:** Final 20% of polish\
 **Time:** 6+ hours
 
 | Category          | Linters                               | Count | Priority |
@@ -453,5 +453,5 @@ Each task is independent and can be reverted. Commits should be:
 
 ---
 
-**Generated:** 2026-02-27 09:14  
+**Generated:** 2026-02-27 09:14\
 **Assisted-by:** Claude via Crush <crush@charm.land>

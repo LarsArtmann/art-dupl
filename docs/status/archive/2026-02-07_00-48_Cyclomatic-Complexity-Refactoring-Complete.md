@@ -1,8 +1,8 @@
 # Comprehensive Status Report: Cyclomatic Complexity Refactoring Complete
 
-**Date**: 2026-02-07  
-**Time**: 00:48 CET  
-**Branch**: fork  
+**Date**: 2026-02-07\
+**Time**: 00:48 CET\
+**Branch**: fork\
 **Commit Range**: 0f51e2d..HEAD (uncommitted changes)
 
 ---
@@ -279,33 +279,33 @@ log.Warn().
 
 ## 7. TOP #25 NEXT ACTIONS (Prioritized)
 
-| #   | Priority | Task                                | Effort | Impact   | Notes             |
-| --- | -------- | ----------------------------------- | ------ | -------- | ----------------- |
-| 1   | 🔴       | Commit current filter refactoring   | 5m     | Critical | Prevent data loss |
-| 2   | 🔴       | Clean binary artifacts              | 2m     | Low      | Repo hygiene      |
-| 3   | 🔴       | Implement filter reporting in stats | 2h     | Critical | User visibility   |
-| 4   | 🔴       | Remove unused isGeneratedByFilename | 5m     | Low      | Clean code        |
-| 5   | 🔴       | Fix error wrapping in sqlc_yaml     | 15m    | Medium   | Consistency       |
-| 6   | 🟠       | Extract pattern constants           | 10m    | Medium   | DRY               |
-| 7   | 🟠       | Add BenchmarkShouldFilter           | 15m    | Medium   | Performance       |
-| 8   | 🟠       | Add concurrent metrics tests        | 30m    | High     | Reliability       |
-| 9   | 🟠       | Evaluate doublestar                 | 30m    | Medium   | Better globs      |
-| 10  | 🟠       | Config file support                 | 3h     | High     | User request      |
-| 11  | 🟠       | Pattern strategy pattern            | 30m    | High     | Architecture      |
-| 12  | 🟠       | Reorganize filter.go methods        | 15m    | Low      | Style             |
-| 13  | 🟡       | Progress bar                        | 1.5h   | Medium   | UX                |
-| 14  | 🟡       | Filter interface design             | 20m    | Medium   | Architecture      |
-| 15  | 🟡       | Property-based tests                | 45m    | Medium   | Coverage          |
-| 16  | 🟡       | Evaluate errgroup                   | 30m    | Medium   | Concurrency       |
-| 17  | 🟡       | Metrics interface                   | 30m    | Medium   | Architecture      |
-| 18  | 🟡       | Fuzz testing                        | 30m    | Low      | Edge cases        |
-| 19  | 🟢       | CompositeFilter                     | 30m    | Low      | Advanced feature  |
-| 20  | 🟢       | FilterReason String()               | 15m    | Low      | Debugging         |
-| 21  | 🟢       | testify evaluation                  | 20m    | Low      | Test style        |
-| 22  | 🟢       | zerolog evaluation                  | 45m    | Low      | Logging           |
-| 23  | 🟢       | Historical tracking                 | 4h     | Low      | Feature           |
-| 24  | 🟢       | IDE extensions                      | 20h    | Low      | Ecosystem         |
-| 25  | 🟢       | Visual dashboards                   | 16h    | Low      | Reporting         |
+| #  | Priority | Task                                | Effort | Impact   | Notes             |
+| -- | -------- | ----------------------------------- | ------ | -------- | ----------------- |
+| 1  | 🔴       | Commit current filter refactoring   | 5m     | Critical | Prevent data loss |
+| 2  | 🔴       | Clean binary artifacts              | 2m     | Low      | Repo hygiene      |
+| 3  | 🔴       | Implement filter reporting in stats | 2h     | Critical | User visibility   |
+| 4  | 🔴       | Remove unused isGeneratedByFilename | 5m     | Low      | Clean code        |
+| 5  | 🔴       | Fix error wrapping in sqlc_yaml     | 15m    | Medium   | Consistency       |
+| 6  | 🟠       | Extract pattern constants           | 10m    | Medium   | DRY               |
+| 7  | 🟠       | Add BenchmarkShouldFilter           | 15m    | Medium   | Performance       |
+| 8  | 🟠       | Add concurrent metrics tests        | 30m    | High     | Reliability       |
+| 9  | 🟠       | Evaluate doublestar                 | 30m    | Medium   | Better globs      |
+| 10 | 🟠       | Config file support                 | 3h     | High     | User request      |
+| 11 | 🟠       | Pattern strategy pattern            | 30m    | High     | Architecture      |
+| 12 | 🟠       | Reorganize filter.go methods        | 15m    | Low      | Style             |
+| 13 | 🟡       | Progress bar                        | 1.5h   | Medium   | UX                |
+| 14 | 🟡       | Filter interface design             | 20m    | Medium   | Architecture      |
+| 15 | 🟡       | Property-based tests                | 45m    | Medium   | Coverage          |
+| 16 | 🟡       | Evaluate errgroup                   | 30m    | Medium   | Concurrency       |
+| 17 | 🟡       | Metrics interface                   | 30m    | Medium   | Architecture      |
+| 18 | 🟡       | Fuzz testing                        | 30m    | Low      | Edge cases        |
+| 19 | 🟢       | CompositeFilter                     | 30m    | Low      | Advanced feature  |
+| 20 | 🟢       | FilterReason String()               | 15m    | Low      | Debugging         |
+| 21 | 🟢       | testify evaluation                  | 20m    | Low      | Test style        |
+| 22 | 🟢       | zerolog evaluation                  | 45m    | Low      | Logging           |
+| 23 | 🟢       | Historical tracking                 | 4h     | Low      | Feature           |
+| 24 | 🟢       | IDE extensions                      | 20h    | Low      | Ecosystem         |
+| 25 | 🟢       | Visual dashboards                   | 16h    | Low      | Reporting         |
 
 ---
 
@@ -369,6 +369,6 @@ TotalFilesFiltered int `json:"total_files_filtered"`
 
 ---
 
-**Report Generated**: 2026-02-07 00:48 CET  
-**Reporter**: Crush AI Assistant  
+**Report Generated**: 2026-02-07 00:48 CET\
+**Reporter**: Crush AI Assistant\
 **Next Action**: Commit current changes, then implement filter reporting

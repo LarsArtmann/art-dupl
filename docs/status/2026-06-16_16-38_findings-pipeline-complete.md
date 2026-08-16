@@ -178,33 +178,33 @@ BuildFlow flags 4 binaries that are NOT in git but exist in the working director
 
 ## F) Top 25 Things to Do Next
 
-| #   | Task                                                                                         | Impact   | Effort  | Priority |
-| --- | -------------------------------------------------------------------------------------------- | -------- | ------- | -------- |
-| 1   | **Fix BDD test suite timeout** (profile goroutine leaks)                                     | Critical | Medium  | P0       |
-| 2   | **Delete CloneSeverity type aliases** (fixes exhaustive lint false positive)                 | High     | Low     | P0       |
-| 3   | **Add BDD spec for findings output** (verify --detection-methods todos works in all formats) | High     | Low     | P0       |
-| 4   | **Add findings to SimpleJSON output**                                                        | Medium   | Low     | P1       |
-| 5   | **Add SARIF rule definitions for findings** (tool.driver.rules)                              | Medium   | Low     | P1       |
-| 6   | **Improve text findings output** (group by file, priority badges)                            | Medium   | Low     | P1       |
-| 7   | **Update HOW_TO_USE.md** with findings examples                                              | Medium   | Low     | P1       |
-| 8   | **Add `.gitignore` entries** for build artifacts                                             | Low      | Trivial | P1       |
-| 9   | **Add ADR-0005** for Findings pipeline architecture                                          | Medium   | Low     | P1       |
-| 10  | **Type-strengthen ProcessedClone** (Filename→Filepath, Lines→LineNumber)                     | Medium   | Medium  | P2       |
-| 11  | **Decouple actionability.go from syntax.Node** (ProcessedClone DTO)                          | High     | High    | P2       |
-| 12  | **Consolidate 3 Clone types** into 1 canonical                                               | High     | High    | P2       |
-| 13  | **Split printer/ package** into sub-packages                                                 | Medium   | High    | P2       |
-| 14  | **Break syntax/syntax-golang import cycle** (extract Node to shared package)                 | High     | High    | P2       |
-| 15  | **Add templ semantic mode** (identifier/operator hashing)                                    | Medium   | High    | P2       |
-| 16  | **Benchmark findings pipeline overhead**                                                     | Medium   | Low     | P2       |
-| 17  | **Add goleak** to unit tests (goroutine leak detection)                                      | Medium   | Low     | P2       |
-| 18  | **Refactor actionability.go** into sub-files by pattern category                             | Low      | Medium  | P3       |
-| 19  | **Implement hybrid slice/map transition storage**                                            | Low      | Medium  | P3       |
-| 20  | **Add `--findings-only` flag** (skip clone detection, just findings)                         | Medium   | Low     | P3       |
-| 21  | **Add severity filtering** (`--min-priority medium` to filter findings)                      | Medium   | Low     | P3       |
-| 22  | **Add findings to stats output** (count by type, priority distribution)                      | Low      | Low     | P3       |
-| 23  | **Add custom TODO patterns** (`--todo-patterns "BUG,PERF,SECURITY"`)                         | Medium   | Medium  | P3       |
-| 24  | **Add legacy pattern customization** (`--legacy-patterns "pkg.OldFunc"`)                     | Medium   | Medium  | P3       |
-| 25  | **Cache findings results** in incremental mode                                               | Low      | Medium  | P3       |
+| #  | Task                                                                                         | Impact   | Effort  | Priority |
+| -- | -------------------------------------------------------------------------------------------- | -------- | ------- | -------- |
+| 1  | **Fix BDD test suite timeout** (profile goroutine leaks)                                     | Critical | Medium  | P0       |
+| 2  | **Delete CloneSeverity type aliases** (fixes exhaustive lint false positive)                 | High     | Low     | P0       |
+| 3  | **Add BDD spec for findings output** (verify --detection-methods todos works in all formats) | High     | Low     | P0       |
+| 4  | **Add findings to SimpleJSON output**                                                        | Medium   | Low     | P1       |
+| 5  | **Add SARIF rule definitions for findings** (tool.driver.rules)                              | Medium   | Low     | P1       |
+| 6  | **Improve text findings output** (group by file, priority badges)                            | Medium   | Low     | P1       |
+| 7  | **Update HOW_TO_USE.md** with findings examples                                              | Medium   | Low     | P1       |
+| 8  | **Add `.gitignore` entries** for build artifacts                                             | Low      | Trivial | P1       |
+| 9  | **Add ADR-0005** for Findings pipeline architecture                                          | Medium   | Low     | P1       |
+| 10 | **Type-strengthen ProcessedClone** (Filename→Filepath, Lines→LineNumber)                     | Medium   | Medium  | P2       |
+| 11 | **Decouple actionability.go from syntax.Node** (ProcessedClone DTO)                          | High     | High    | P2       |
+| 12 | **Consolidate 3 Clone types** into 1 canonical                                               | High     | High    | P2       |
+| 13 | **Split printer/ package** into sub-packages                                                 | Medium   | High    | P2       |
+| 14 | **Break syntax/syntax-golang import cycle** (extract Node to shared package)                 | High     | High    | P2       |
+| 15 | **Add templ semantic mode** (identifier/operator hashing)                                    | Medium   | High    | P2       |
+| 16 | **Benchmark findings pipeline overhead**                                                     | Medium   | Low     | P2       |
+| 17 | **Add goleak** to unit tests (goroutine leak detection)                                      | Medium   | Low     | P2       |
+| 18 | **Refactor actionability.go** into sub-files by pattern category                             | Low      | Medium  | P3       |
+| 19 | **Implement hybrid slice/map transition storage**                                            | Low      | Medium  | P3       |
+| 20 | **Add `--findings-only` flag** (skip clone detection, just findings)                         | Medium   | Low     | P3       |
+| 21 | **Add severity filtering** (`--min-priority medium` to filter findings)                      | Medium   | Low     | P3       |
+| 22 | **Add findings to stats output** (count by type, priority distribution)                      | Low      | Low     | P3       |
+| 23 | **Add custom TODO patterns** (`--todo-patterns "BUG,PERF,SECURITY"`)                         | Medium   | Medium  | P3       |
+| 24 | **Add legacy pattern customization** (`--legacy-patterns "pkg.OldFunc"`)                     | Medium   | Medium  | P3       |
+| 25 | **Cache findings results** in incremental mode                                               | Low      | Medium  | P3       |
 
 ---
 

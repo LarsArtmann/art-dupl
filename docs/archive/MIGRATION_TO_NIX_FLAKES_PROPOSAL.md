@@ -1,7 +1,7 @@
 # Migration to Nix Flakes — Proposal
 
-**Date:** 2026-04-21  
-**Status:** Draft  
+**Date:** 2026-04-21\
+**Status:** Draft\
 **Scope:** Replace ad-hoc toolchain management with reproducible Nix Flakes + direnv
 
 ---

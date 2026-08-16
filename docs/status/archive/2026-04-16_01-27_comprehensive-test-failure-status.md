@@ -67,48 +67,48 @@ The project is in **good shape overall** with 6 BDD test failures and 1 flaky un
 
 ### Priority 1: Fix Test Failures (6 BDD + 1 flaky)
 
-| #   | Task                                                      | File                              | Root Cause                          |
-| --- | --------------------------------------------------------- | --------------------------------- | ----------------------------------- |
-| 1   | Fix `should_exclude_sqlc_generated_code`                  | `bdd/filter_features_test.go:111` | sqlc files not being filtered       |
-| 2   | Fix `should_analyze_only_files_matching_include_patterns` | `bdd/filter_features_test.go:345` | `pkg1` not in output / `pkg2` found |
-| 3   | Fix `should_support_multiple_include_patterns`            | `bdd/filter_features_test.go:406` | `pkg1` or `pkg2` not in output      |
-| 4   | Fix `should_exclude_files_matching_exclude_patterns`      | `bdd/filter_features_test.go:471` | `pkg2` found in output              |
-| 5   | Fix `should_give_include_patterns_precedence`             | `bdd/filter_features_test.go:523` | `specific` not in output            |
-| 6   | Fix `should_provide_examples_in_help`                     | `bdd/cli_commands_test.go:434`    | "Example" not in help output        |
-| 7   | Fix flaky `TestContextTimeoutExpired`                     | `job/profiler_test.go:87`         | Timing-sensitive; increase margins  |
+| # | Task                                                      | File                              | Root Cause                          |
+| - | --------------------------------------------------------- | --------------------------------- | ----------------------------------- |
+| 1 | Fix `should_exclude_sqlc_generated_code`                  | `bdd/filter_features_test.go:111` | sqlc files not being filtered       |
+| 2 | Fix `should_analyze_only_files_matching_include_patterns` | `bdd/filter_features_test.go:345` | `pkg1` not in output / `pkg2` found |
+| 3 | Fix `should_support_multiple_include_patterns`            | `bdd/filter_features_test.go:406` | `pkg1` or `pkg2` not in output      |
+| 4 | Fix `should_exclude_files_matching_exclude_patterns`      | `bdd/filter_features_test.go:471` | `pkg2` found in output              |
+| 5 | Fix `should_give_include_patterns_precedence`             | `bdd/filter_features_test.go:523` | `specific` not in output            |
+| 6 | Fix `should_provide_examples_in_help`                     | `bdd/cli_commands_test.go:434`    | "Example" not in help output        |
+| 7 | Fix flaky `TestContextTimeoutExpired`                     | `job/profiler_test.go:87`         | Timing-sensitive; increase margins  |
 
 ### Priority 2: Code Quality
 
-| #   | Task                            | Details                             |
-| --- | ------------------------------- | ----------------------------------- |
-| 8   | Increase coverage to 80%+       | Focus on `cli`, `printer`, `syntax` |
-| 9   | Eliminate `lib/` legacy package | Phase out per AGENTS.md             |
-| 10  | Refactor large functions        | Any >30 lines per project standards |
-| 11  | Address TODOs older than 1 week | Per project standards               |
+| #  | Task                            | Details                             |
+| -- | ------------------------------- | ----------------------------------- |
+| 8  | Increase coverage to 80%+       | Focus on `cli`, `printer`, `syntax` |
+| 9  | Eliminate `lib/` legacy package | Phase out per AGENTS.md             |
+| 10 | Refactor large functions        | Any >30 lines per project standards |
+| 11 | Address TODOs older than 1 week | Per project standards               |
 
 ### Priority 3: Reliability & DevEx
 
-| #   | Task                             | Details                                       |
-| --- | -------------------------------- | --------------------------------------------- |
-| 12  | Fix Go build cache corruption    | Document workaround or CI step                |
-| 13  | Improve BDD test binary building | Use installed binary instead of rebuilding    |
-| 14  | Add test timeout margins         | Replace 5ms/10ms pattern with robust approach |
-| 15  | Stabilize CI pipeline            | Ensure consistent test results                |
-| 16  | Add retry logic for flaky tests  | Or mark as `Skip()` with TODO                 |
+| #  | Task                             | Details                                       |
+| -- | -------------------------------- | --------------------------------------------- |
+| 12 | Fix Go build cache corruption    | Document workaround or CI step                |
+| 13 | Improve BDD test binary building | Use installed binary instead of rebuilding    |
+| 14 | Add test timeout margins         | Replace 5ms/10ms pattern with robust approach |
+| 15 | Stabilize CI pipeline            | Ensure consistent test results                |
+| 16 | Add retry logic for flaky tests  | Or mark as `Skip()` with TODO                 |
 
 ### Priority 4: Features & Architecture
 
-| #   | Task                               | Details                            |
-| --- | ---------------------------------- | ---------------------------------- |
-| 17  | SARIF output integration testing   | Verify with actual SARIF consumers |
-| 18  | Streaming hash detection hardening | Edge cases with large files        |
-| 19  | Incremental analysis robustness    | Cache invalidation scenarios       |
-| 20  | Git integration edge cases         | Shallow clones, submodules         |
-| 21  | Error message quality              | User-facing error clarity          |
-| 22  | Documentation updates              | Sync docs with current behavior    |
-| 23  | Performance benchmarking           | Baseline for regression detection  |
-| 24  | Dependency audit                   | Check for outdated/vulnerable deps |
-| 25  | Clean up `docs/status/`            | 200+ status files, most outdated   |
+| #  | Task                               | Details                            |
+| -- | ---------------------------------- | ---------------------------------- |
+| 17 | SARIF output integration testing   | Verify with actual SARIF consumers |
+| 18 | Streaming hash detection hardening | Edge cases with large files        |
+| 19 | Incremental analysis robustness    | Cache invalidation scenarios       |
+| 20 | Git integration edge cases         | Shallow clones, submodules         |
+| 21 | Error message quality              | User-facing error clarity          |
+| 22 | Documentation updates              | Sync docs with current behavior    |
+| 23 | Performance benchmarking           | Baseline for regression detection  |
+| 24 | Dependency audit                   | Check for outdated/vulnerable deps |
+| 25 | Clean up `docs/status/`            | 200+ status files, most outdated   |
 
 ---
 

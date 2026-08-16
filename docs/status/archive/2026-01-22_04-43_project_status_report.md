@@ -48,9 +48,9 @@
 | `hash`                | ✅ Refactored | 4     | Using testutil, clean                |
 | `printer`             | ✅ Refactored | 54    | Using testutil, clean                |
 | `internal/filtertest` | ✅ Refactored | 3     | Using testutil, clean                |
-| `bdd`                 | ⚠️ Pending    | 54    | Next refactoring target              |
-| `cli`                 | ⚠️ Pending    | 12    | Next refactoring target              |
-| `detection`           | ⚠️ Pending    | ~10   | Next refactoring target              |
+| `bdd`                 | ⚠️ Pending     | 54    | Next refactoring target              |
+| `cli`                 | ⚠️ Pending     | 12    | Next refactoring target              |
+| `detection`           | ⚠️ Pending     | ~10   | Next refactoring target              |
 
 ---
 

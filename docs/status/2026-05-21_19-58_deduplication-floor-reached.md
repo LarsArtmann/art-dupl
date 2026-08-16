@@ -158,33 +158,33 @@ Categories of "clones" found at t=15 that are **not actionable**:
 
 ## f) Top #25 Things We Should Get Done Next
 
-| #   | Task                                                           | Priority |
-| --- | -------------------------------------------------------------- | -------- |
-| 1   | Fix os.Exit test flakiness (bdd + cmd)                         | CRITICAL |
-| 2   | Fix 10 errcheck issues in test code                            | HIGH     |
-| 3   | Extract buildJSONData into smaller functions (gocyclo 16→<10)  | HIGH     |
-| 4   | Extract `--threshold` / `art-dupl` string constants in tests   | LOW      |
-| 5   | Wire TodoDetector and LegacyDetector to CLI `-m` flag          | HIGH     |
-| 6   | Fix 2 exhaustruct issues in testutil                           | LOW      |
-| 7   | Fix 2 err113 issues in testutil                                | LOW      |
-| 8   | Introduce ProcessedClone DTO                                   | HIGH     |
-| 9   | Consolidate 3 parallel Clone types                             | MEDIUM   |
-| 10  | Implement proper CSV output using encoding/csv                 | MEDIUM   |
-| 11  | Implement TokenValue type with validation                      | HIGH     |
-| 12  | Unify enum patterns                                            | MEDIUM   |
-| 13  | Refactor transform.go (369L, 300L switch)                      | MEDIUM   |
-| 14  | Optimize memory layouts for SIMD-friendly structures           | MEDIUM   |
-| 15  | Implement string interning                                     | LOW      |
-| 16  | Wire remaining SIMD TODOs (6 items)                            | LOW      |
-| 17  | Fix ConstantCSSProperty position (upstream)                    | LOW      |
-| 18  | Archive old docs/status/ files                                 | LOW      |
-| 19  | Fix remaining LSP hints                                        | LOW      |
-| 20  | Implement SDK from SDK_DESIGN.md                               | LOW      |
-| 21  | Add more fuzz tests                                            | LOW      |
-| 22  | Coverage improvement: domain (67%), job (77%), detection (78%) | MEDIUM   |
-| 23  | Add benchmark regression CI                                    | MEDIUM   |
-| 24  | Consider modularization                                        | LOW      |
-| 25  | Migrate justfile → nix flake                                   | LOW      |
+| #  | Task                                                           | Priority |
+| -- | -------------------------------------------------------------- | -------- |
+| 1  | Fix os.Exit test flakiness (bdd + cmd)                         | CRITICAL |
+| 2  | Fix 10 errcheck issues in test code                            | HIGH     |
+| 3  | Extract buildJSONData into smaller functions (gocyclo 16→<10)  | HIGH     |
+| 4  | Extract `--threshold` / `art-dupl` string constants in tests   | LOW      |
+| 5  | Wire TodoDetector and LegacyDetector to CLI `-m` flag          | HIGH     |
+| 6  | Fix 2 exhaustruct issues in testutil                           | LOW      |
+| 7  | Fix 2 err113 issues in testutil                                | LOW      |
+| 8  | Introduce ProcessedClone DTO                                   | HIGH     |
+| 9  | Consolidate 3 parallel Clone types                             | MEDIUM   |
+| 10 | Implement proper CSV output using encoding/csv                 | MEDIUM   |
+| 11 | Implement TokenValue type with validation                      | HIGH     |
+| 12 | Unify enum patterns                                            | MEDIUM   |
+| 13 | Refactor transform.go (369L, 300L switch)                      | MEDIUM   |
+| 14 | Optimize memory layouts for SIMD-friendly structures           | MEDIUM   |
+| 15 | Implement string interning                                     | LOW      |
+| 16 | Wire remaining SIMD TODOs (6 items)                            | LOW      |
+| 17 | Fix ConstantCSSProperty position (upstream)                    | LOW      |
+| 18 | Archive old docs/status/ files                                 | LOW      |
+| 19 | Fix remaining LSP hints                                        | LOW      |
+| 20 | Implement SDK from SDK_DESIGN.md                               | LOW      |
+| 21 | Add more fuzz tests                                            | LOW      |
+| 22 | Coverage improvement: domain (67%), job (77%), detection (78%) | MEDIUM   |
+| 23 | Add benchmark regression CI                                    | MEDIUM   |
+| 24 | Consider modularization                                        | LOW      |
+| 25 | Migrate justfile → nix flake                                   | LOW      |
 
 ---
 

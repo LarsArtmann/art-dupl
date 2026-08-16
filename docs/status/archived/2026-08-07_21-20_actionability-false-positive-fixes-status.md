@@ -37,6 +37,7 @@
 2. **Parameterizability veto too aggressive** (`extractability_engine.go:checkParameterizability`): Even after fixing (1), the veto would fire for ANY literal difference — including clones with control flow (if/for/switch) where the structural pattern is genuinely worth extracting. Example: `processUser`/`processProduct` have identical `if name == "" { return fmt.Errorf(...) }` structure with different error messages — these are actionable clones, not "already parameterized".
 
 **Fixes:**
+
 - `transform.go:43`: Added `o.Name = n.Value` for BasicLit nodes.
 - `extractability_engine.go:checkParameterizability`: Added `anySeqHasControlFlow()` guard — skip the parameterizability veto when any clone instance contains control-flow statements (IfStmt, SwitchStmt, TypeSwitchStmt, ForStmt, RangeStmt, SelectStmt).
 
@@ -53,6 +54,7 @@
 **Problem:** Output was a single threshold value with no guidance on audit vs CI usage.
 
 **Fix:** `cmd/recommend_threshold.go:runRecommendThreshold` now outputs two thresholds:
+
 ```
 Codebase: 225 Go files
 
@@ -72,6 +74,7 @@ Deep audit:    art-dupl -t 1 --explain .
 **Problem:** All actionable clones in Assignment, Expression, Block, Call, Return, and Defer categories got "Review and extract common logic". Only Function, Struct, Interface, Loop, and Conditional had specific suggestions.
 
 **Fix:** `clone_classify.go:getSuggestion` now returns category-specific suggestions:
+
 - Assignment: "Extract shared assignment or initialization pattern"
 - Expression: "Extract repeated expression or builder chain"
 - Block: "Extract shared statement block to a helper function"
@@ -86,12 +89,14 @@ Deep audit:    art-dupl -t 1 --explain .
 ### Verification Against file-and-image-renamer
 
 **Before this session (from feedback doc):** 4 remaining clone groups at `-t 1`:
+
 - `ErrorType = domainerrors.ErrorType` x2 — FALSE POSITIVE
 - `printHeading("X", "=", 50)` with different headings — FALSE POSITIVE
 - `basename := filepath.Base(imagePath)` x2 — BORDERLINE
 - `d.processed[path] = time.Now(); d.mu.Unlock()` x2 — BORDERLINE
 
 **After this session:** 3 clone groups at `-t 1 --type-aware --explain`:
+
 1. Loop pattern in injector.go + mock.go — actionable, suggestion: "Extract loop body to helper function"
 2. Nil-guard conditional in hashdb + history — actionable, suggestion: "Consider strategy pattern or early returns"
 3. Config-nil-guard conditional across hashdb + history + logger — actionable, suggestion: "Consider strategy pattern or early returns"
@@ -106,13 +111,13 @@ Deep audit:    art-dupl -t 1 --explain .
 
 Ran `golangci-lint` on changed packages only (not full project). Found:
 
-| # | File | Linter | Issue |
-|---|------|--------|-------|
-| 1 | `clone_classify.go:166` | gocyclo | `getSuggestion` complexity 16 (>15) — needs refactor (likely extract to map lookup) |
-| 2 | `clone_classify_test.go:122` | gofumpt | File not properly formatted |
-| 3 | `extractability_engine.go:303` | modernize | Loop can use `slices.ContainsFunc` |
-| 4 | `extractability_engine.go:324` | modernize | Loop can use `slices.ContainsFunc` |
-| 5 | `recommend_threshold.go:80` | wsl_v5 | Missing whitespace above if-statement |
+| # | File                           | Linter    | Issue                                                                               |
+| - | ------------------------------ | --------- | ----------------------------------------------------------------------------------- |
+| 1 | `clone_classify.go:166`        | gocyclo   | `getSuggestion` complexity 16 (>15) — needs refactor (likely extract to map lookup) |
+| 2 | `clone_classify_test.go:122`   | gofumpt   | File not properly formatted                                                         |
+| 3 | `extractability_engine.go:303` | modernize | Loop can use `slices.ContainsFunc`                                                  |
+| 4 | `extractability_engine.go:324` | modernize | Loop can use `slices.ContainsFunc`                                                  |
+| 5 | `recommend_threshold.go:80`    | wsl_v5    | Missing whitespace above if-statement                                               |
 
 **Impact:** All 5 are in files I changed this session. Issues 3-4 predate my changes (the loops were already there). Issues 1-2 and 5 are directly caused by my edits.
 

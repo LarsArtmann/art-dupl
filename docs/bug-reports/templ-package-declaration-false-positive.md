@@ -1,10 +1,10 @@
 # Bug Report: Package Declaration False Positive in `.templ` Files
 
-**Reporter:** Lars Artmann  
-**Date:** 2026-05-20  
-**Severity:** Low (noise / false positive)  
-**Component:** `syntax/templ/` parser & transform pipeline  
-**Related:** `syntax/golang/transform.go` (import filtering pattern)  
+**Reporter:** Lars Artmann\
+**Date:** 2026-05-20\
+**Severity:** Low (noise / false positive)\
+**Component:** `syntax/templ/` parser & transform pipeline\
+**Related:** `syntax/golang/transform.go` (import filtering pattern)\
 **Status:** ✅ Fixed
 
 ---

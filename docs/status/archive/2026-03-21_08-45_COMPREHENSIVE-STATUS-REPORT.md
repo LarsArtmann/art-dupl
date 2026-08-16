@@ -258,48 +258,48 @@ go/types.isString({0x0?, 0x0?})
 
 ### Priority 1: Critical (This Week)
 
-| #   | Task                                        | Effort | Impact |
-| --- | ------------------------------------------- | ------ | ------ |
-| 1   | Fix golangci-lint crash or find alternative | 2h     | High   |
-| 2   | Fix pre-commit hook generics issue          | 1h     | High   |
-| 3   | Add remaining test coverage to hit 80%      | 3h     | Medium |
-| 4   | Document the `--no-verify` requirement      | 15m    | Medium |
+| # | Task                                        | Effort | Impact |
+| - | ------------------------------------------- | ------ | ------ |
+| 1 | Fix golangci-lint crash or find alternative | 2h     | High   |
+| 2 | Fix pre-commit hook generics issue          | 1h     | High   |
+| 3 | Add remaining test coverage to hit 80%      | 3h     | Medium |
+| 4 | Document the `--no-verify` requirement      | 15m    | Medium |
 
 ### Priority 2: High (Next 2 Weeks)
 
-| #   | Task                                      | Effort | Impact |
-| --- | ----------------------------------------- | ------ | ------ |
-| 5   | Migrate `config.Threshold` to domain type | 4h     | High   |
-| 6   | Add performance benchmarks                | 3h     | Medium |
-| 7   | Complete incremental analysis testing     | 2h     | Medium |
-| 8   | Add more usage examples to README         | 1h     | Medium |
-| 9   | Create API documentation                  | 4h     | Medium |
-| 10  | Fix flaky profiler test                   | 30m    | Low    |
+| #  | Task                                      | Effort | Impact |
+| -- | ----------------------------------------- | ------ | ------ |
+| 5  | Migrate `config.Threshold` to domain type | 4h     | High   |
+| 6  | Add performance benchmarks                | 3h     | Medium |
+| 7  | Complete incremental analysis testing     | 2h     | Medium |
+| 8  | Add more usage examples to README         | 1h     | Medium |
+| 9  | Create API documentation                  | 4h     | Medium |
+| 10 | Fix flaky profiler test                   | 30m    | Low    |
 
 ### Priority 3: Medium (Next Month)
 
-| #   | Task                                   | Effort | Impact |
-| --- | -------------------------------------- | ------ | ------ |
-| 11  | Implement remaining SIMD optimizations | 8h     | Medium |
-| 12  | Add web-based result viewer            | 16h    | Medium |
-| 13  | Create plugin architecture             | 16h    | Medium |
-| 14  | Add CI/CD pipeline improvements        | 4h     | Medium |
-| 15  | Improve error context messages         | 2h     | Low    |
+| #  | Task                                   | Effort | Impact |
+| -- | -------------------------------------- | ------ | ------ |
+| 11 | Implement remaining SIMD optimizations | 8h     | Medium |
+| 12 | Add web-based result viewer            | 16h    | Medium |
+| 13 | Create plugin architecture             | 16h    | Medium |
+| 14 | Add CI/CD pipeline improvements        | 4h     | Medium |
+| 15 | Improve error context messages         | 2h     | Low    |
 
 ### Priority 4: Nice to Have (Future)
 
-| #   | Task                           | Effort | Impact |
-| --- | ------------------------------ | ------ | ------ |
-| 16  | Add JavaScript parsing support | 24h    | Medium |
-| 17  | Add Python parsing support     | 24h    | Medium |
-| 18  | Implement ML-based detection   | 40h    | Low    |
-| 19  | Add cloud processing support   | 40h    | Low    |
-| 20  | Add enterprise SSO integration | 24h    | Low    |
-| 21  | Create real-time analysis mode | 16h    | Low    |
-| 22  | Add audit logging              | 8h     | Low    |
-| 23  | Implement role-based access    | 16h    | Low    |
-| 24  | Add distributed processing     | 40h    | Low    |
-| 25  | Create mobile dashboard        | 24h    | Low    |
+| #  | Task                           | Effort | Impact |
+| -- | ------------------------------ | ------ | ------ |
+| 16 | Add JavaScript parsing support | 24h    | Medium |
+| 17 | Add Python parsing support     | 24h    | Medium |
+| 18 | Implement ML-based detection   | 40h    | Low    |
+| 19 | Add cloud processing support   | 40h    | Low    |
+| 20 | Add enterprise SSO integration | 24h    | Low    |
+| 21 | Create real-time analysis mode | 16h    | Low    |
+| 22 | Add audit logging              | 8h     | Low    |
+| 23 | Implement role-based access    | 16h    | Low    |
+| 24 | Add distributed processing     | 40h    | Low    |
+| 25 | Create mobile dashboard        | 24h    | Low    |
 
 ---
 

@@ -120,33 +120,33 @@
 
 ## f) Top #25 Things to Get Done Next
 
-| #   | Task                                                                 | Priority | Effort | Impact   |
-| --- | -------------------------------------------------------------------- | -------- | ------ | -------- |
-| 1   | Introduce `ProcessedClone` DTO, decouple Printer from syntax.Node    | HIGH     | 2-3d   | CRITICAL |
-| 2   | Add unit tests for domain/ types (Clone, CloneGroup, StringPool)     | HIGH     | 4h     | HIGH     |
-| 3   | Archive 304 stale docs/status/ files                                 | LOW      | 1h     | LOW      |
-| 4   | Fix LSP unused-write diagnostics in detector_types_test.go           | LOW      | 2h     | LOW      |
-| 5   | Implement TokenValue type with validation                            | HIGH     | 1-2d   | HIGH     |
-| 6   | Implement CSV output via encoding/csv                                | MEDIUM   | 4h     | MEDIUM   |
-| 7   | Unify enum patterns across domain and config                         | MEDIUM   | 1d     | MEDIUM   |
-| 8   | Consolidate three parallel Clone types                               | MEDIUM   | 1-2d   | MEDIUM   |
-| 9   | Implement 6 SIMD TODOs in hash_simd.go + internal/simd               | LOW      | 1-2d   | LOW      |
-| 10  | Refactor syntax/golang/transform.go (355L main function)             | LOW      | 1-2d   | LOW      |
-| 11  | Unify semantic default: align config default with flag description   | LOW      | 30m    | LOW      |
-| 12  | Add performance benchmarks for large repo scanning                   | MEDIUM   | 1d     | MEDIUM   |
-| 13  | Wire TodoDetector + LegacyDetector to CLI (currently registry-only)  | LOW      | 4h     | LOW      |
-| 14  | Enhanced error context in job/ and detection/ packages               | MEDIUM   | 1d     | MEDIUM   |
-| 15  | Property-based tests for core algorithms (suffix tree, hash)         | LOW      | 2d     | LOW      |
-| 16  | Mutation testing integration                                         | LOW      | 2d     | LOW      |
-| 17  | Support additional languages (TypeScript, Python) via plugin         | LOW      | 1-2w   | HIGH     |
-| 18  | Memory layout optimization for SIMD-friendly structures              | MEDIUM   | 1-2d   | MEDIUM   |
-| 19  | String interning for repeated identifiers                            | LOW      | 1-2d   | MEDIUM   |
-| 20  | Add `art-dupl check` subcommand for self-analysis                    | LOW      | 1d     | MEDIUM   |
-| 21  | Improve nix flake gogenfilter dependency robustness                  | MEDIUM   | 4h     | MEDIUM   |
-| 22  | Unify BDD test setup patterns — shared contexts for common scenarios | LOW      | 1d     | LOW      |
-| 23  | Add integration tests for all output formats with golden files       | MEDIUM   | 1-2d   | MEDIUM   |
-| 24  | Profiling and memory leak detection for long-running scans           | MEDIUM   | 1d     | MEDIUM   |
-| 25  | Auto-update vendorHash in nix flake via CI                           | LOW      | 4h     | LOW      |
+| #  | Task                                                                 | Priority | Effort | Impact   |
+| -- | -------------------------------------------------------------------- | -------- | ------ | -------- |
+| 1  | Introduce `ProcessedClone` DTO, decouple Printer from syntax.Node    | HIGH     | 2-3d   | CRITICAL |
+| 2  | Add unit tests for domain/ types (Clone, CloneGroup, StringPool)     | HIGH     | 4h     | HIGH     |
+| 3  | Archive 304 stale docs/status/ files                                 | LOW      | 1h     | LOW      |
+| 4  | Fix LSP unused-write diagnostics in detector_types_test.go           | LOW      | 2h     | LOW      |
+| 5  | Implement TokenValue type with validation                            | HIGH     | 1-2d   | HIGH     |
+| 6  | Implement CSV output via encoding/csv                                | MEDIUM   | 4h     | MEDIUM   |
+| 7  | Unify enum patterns across domain and config                         | MEDIUM   | 1d     | MEDIUM   |
+| 8  | Consolidate three parallel Clone types                               | MEDIUM   | 1-2d   | MEDIUM   |
+| 9  | Implement 6 SIMD TODOs in hash_simd.go + internal/simd               | LOW      | 1-2d   | LOW      |
+| 10 | Refactor syntax/golang/transform.go (355L main function)             | LOW      | 1-2d   | LOW      |
+| 11 | Unify semantic default: align config default with flag description   | LOW      | 30m    | LOW      |
+| 12 | Add performance benchmarks for large repo scanning                   | MEDIUM   | 1d     | MEDIUM   |
+| 13 | Wire TodoDetector + LegacyDetector to CLI (currently registry-only)  | LOW      | 4h     | LOW      |
+| 14 | Enhanced error context in job/ and detection/ packages               | MEDIUM   | 1d     | MEDIUM   |
+| 15 | Property-based tests for core algorithms (suffix tree, hash)         | LOW      | 2d     | LOW      |
+| 16 | Mutation testing integration                                         | LOW      | 2d     | LOW      |
+| 17 | Support additional languages (TypeScript, Python) via plugin         | LOW      | 1-2w   | HIGH     |
+| 18 | Memory layout optimization for SIMD-friendly structures              | MEDIUM   | 1-2d   | MEDIUM   |
+| 19 | String interning for repeated identifiers                            | LOW      | 1-2d   | MEDIUM   |
+| 20 | Add `art-dupl check` subcommand for self-analysis                    | LOW      | 1d     | MEDIUM   |
+| 21 | Improve nix flake gogenfilter dependency robustness                  | MEDIUM   | 4h     | MEDIUM   |
+| 22 | Unify BDD test setup patterns — shared contexts for common scenarios | LOW      | 1d     | LOW      |
+| 23 | Add integration tests for all output formats with golden files       | MEDIUM   | 1-2d   | MEDIUM   |
+| 24 | Profiling and memory leak detection for long-running scans           | MEDIUM   | 1d     | MEDIUM   |
+| 25 | Auto-update vendorHash in nix flake via CI                           | LOW      | 4h     | LOW      |
 
 ---
 

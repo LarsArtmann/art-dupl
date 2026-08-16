@@ -196,53 +196,53 @@ The project is in excellent shape. No blocking issues, no broken builds, no fail
 
 ### Priority 1: Quick Wins (1-2 hours total)
 
-| #   | Task                                       | Effort | Impact |
-| --- | ------------------------------------------ | ------ | ------ |
-| 1   | Add `t.Helper()` to remaining test helpers | 5 min  | Medium |
-| 2   | Fix `usetesting` warnings (t.TempDir)      | 10 min | Low    |
-| 3   | Add `t.Parallel()` to subtests             | 5 min  | Low    |
-| 4   | Remove unused `assertMapFloat` function    | 2 min  | Low    |
-| 5   | Add codecov badge to README                | 15 min | Medium |
+| # | Task                                       | Effort | Impact |
+| - | ------------------------------------------ | ------ | ------ |
+| 1 | Add `t.Helper()` to remaining test helpers | 5 min  | Medium |
+| 2 | Fix `usetesting` warnings (t.TempDir)      | 10 min | Low    |
+| 3 | Add `t.Parallel()` to subtests             | 5 min  | Low    |
+| 4 | Remove unused `assertMapFloat` function    | 2 min  | Low    |
+| 5 | Add codecov badge to README                | 15 min | Medium |
 
 ### Priority 2: Test Improvements (2-4 hours)
 
-| #   | Task                                              | Effort | Impact |
-| --- | ------------------------------------------------- | ------ | ------ |
-| 6   | Split `domain/coverage_test.go` (1348 lines)      | 30 min | Medium |
-| 7   | Split `pkg/artdupl/detector_test.go` (1323 lines) | 30 min | Medium |
-| 8   | Split `cmd/cmd_test.go` (1158 lines)              | 30 min | Medium |
-| 9   | Add tests for `pkg/format` (0% coverage)          | 20 min | Medium |
-| 10  | Improve `pkg/position` coverage (46.9%→80%)       | 30 min | Medium |
-| 11  | Improve `pkg/artdupl` coverage (54.6%→80%)        | 45 min | Medium |
+| #  | Task                                              | Effort | Impact |
+| -- | ------------------------------------------------- | ------ | ------ |
+| 6  | Split `domain/coverage_test.go` (1348 lines)      | 30 min | Medium |
+| 7  | Split `pkg/artdupl/detector_test.go` (1323 lines) | 30 min | Medium |
+| 8  | Split `cmd/cmd_test.go` (1158 lines)              | 30 min | Medium |
+| 9  | Add tests for `pkg/format` (0% coverage)          | 20 min | Medium |
+| 10 | Improve `pkg/position` coverage (46.9%→80%)       | 30 min | Medium |
+| 11 | Improve `pkg/artdupl` coverage (54.6%→80%)        | 45 min | Medium |
 
 ### Priority 3: Code Quality (3-5 hours)
 
-| #   | Task                                    | Effort  | Impact |
-| --- | --------------------------------------- | ------- | ------ |
-| 12  | Create generic `StringID[T]` type       | 45 min  | High   |
-| 13  | Consolidate error types                 | 30 min  | Medium |
-| 14  | Remove testify, use gomega only         | 2 hours | Medium |
-| 15  | Extract shared test helpers to testutil | 30 min  | Medium |
-| 16  | Add filepath validation                 | 20 min  | Low    |
-| 17  | Remove deprecated `Uint()` methods      | 30 min  | Low    |
+| #  | Task                                    | Effort  | Impact |
+| -- | --------------------------------------- | ------- | ------ |
+| 12 | Create generic `StringID[T]` type       | 45 min  | High   |
+| 13 | Consolidate error types                 | 30 min  | Medium |
+| 14 | Remove testify, use gomega only         | 2 hours | Medium |
+| 15 | Extract shared test helpers to testutil | 30 min  | Medium |
+| 16 | Add filepath validation                 | 20 min  | Low    |
+| 17 | Remove deprecated `Uint()` methods      | 30 min  | Low    |
 
 ### Priority 4: Distribution (2-3 hours)
 
-| #   | Task                                      | Effort | Impact |
-| --- | ----------------------------------------- | ------ | ------ |
-| 18  | Set up GoReleaser for releases            | 1 hour | High   |
-| 19  | Create first GitHub release with binaries | 30 min | High   |
-| 20  | Update Homebrew formula with real SHA256  | 15 min | High   |
-| 21  | Add installation to README                | 15 min | Medium |
+| #  | Task                                      | Effort | Impact |
+| -- | ----------------------------------------- | ------ | ------ |
+| 18 | Set up GoReleaser for releases            | 1 hour | High   |
+| 19 | Create first GitHub release with binaries | 30 min | High   |
+| 20 | Update Homebrew formula with real SHA256  | 15 min | High   |
+| 21 | Add installation to README                | 15 min | Medium |
 
 ### Priority 5: Documentation (2-3 hours)
 
-| #   | Task                                 | Effort | Impact |
-| --- | ------------------------------------ | ------ | ------ |
-| 22  | Create CONTRIBUTING.md               | 1 hour | Medium |
-| 23  | Add architecture diagram             | 1 hour | Medium |
-| 24  | Generate API documentation           | 30 min | Low    |
-| 25  | Clean up old status reports in docs/ | 30 min | Low    |
+| #  | Task                                 | Effort | Impact |
+| -- | ------------------------------------ | ------ | ------ |
+| 22 | Create CONTRIBUTING.md               | 1 hour | Medium |
+| 23 | Add architecture diagram             | 1 hour | Medium |
+| 24 | Generate API documentation           | 30 min | Low    |
+| 25 | Clean up old status reports in docs/ | 30 min | Low    |
 
 ---
 

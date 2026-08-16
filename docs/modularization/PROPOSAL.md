@@ -195,13 +195,13 @@ This is the root module, keeping the existing module path for backward compatibi
 ### 3.3 Dependency DAG
 
 ```
-                    art-dupl-core (root)
-                   /         |          \
-                  v           v           v
-     art-dupl-detection  art-dupl-printer  art-dupl-sdk
-                  \           |           /
-                   v          v          v
-                      art-dupl-cli
+               art-dupl-core (root)
+              /         |          \
+             v           v           v
+art-dupl-detection  art-dupl-printer  art-dupl-sdk
+             \           |           /
+              v          v          v
+                 art-dupl-cli
 ```
 
 **Cycle verification:**

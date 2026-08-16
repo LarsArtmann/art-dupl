@@ -47,7 +47,7 @@ This answered `maxStackKeys = 32` (comfortably sized) and drove the design in it
 
 ### 5. pprof before/after — prior §f6, §e4
 
-- **Before** (map transitions): map machinery ≈ **32% of search CPU** — `maps.(*Iter).Next` 17.7%, `(*Iter).Init` 7.6%, `(*Map).Clear` 6.5%, `mapassign_fast32` 7.0%. The prior session's instinct (item 8 = "biggest remaining win") was correct, and the profile showed the *search* path benefits too, not just construction.
+- **Before** (map transitions): map machinery ≈ **32% of search CPU** — `maps.(*Iter).Next` 17.7%, `(*Iter).Init` 7.6%, `(*Map).Clear` 6.5%, `mapassign_fast32` 7.0%. The prior session's instinct (item 8 = "biggest remaining win") was correct, and the profile showed the _search_ path benefits too, not just construction.
 - **After** (slices): map machinery ≈ **14%**. The remainder is the `contextList` position maps — algorithm-inherent, only addressable by the rejected `[]Pos` pooling.
 
 ### 6. THE CORE CHANGE: sorted `[]tran` value slices replace `map[TokenValue]*tran` — prior §f8, done better than proposed
@@ -61,7 +61,7 @@ The report proposed a `[4]tran` inline array + map overflow hybrid. The distribu
 - `addTran`: binary-search insert position + `slices.Insert` (sorted maintained on insert).
 - `walkTrans` iterates the slice directly — the key-extraction → sort → map-re-lookup dance is deleted entirely.
 - `parallelWalkRoot` walks the root slice directly; the `rootKeys` heap allocation is gone (prior §f13 solved for free).
-- **Pointer-stability contract** (documented on `findTran`): a returned `*tran` is valid until the next `addTran` on the *same* state; verified every call site (`testAndSplit` mutates `tr` only across an `addTran` on a different state).
+- **Pointer-stability contract** (documented on `findTran`): a returned `*tran` is valid until the next `addTran` on the _same_ state; verified every call site (`testAndSplit` mutates `tr` only across an `addTran` on a different state).
 - `state` 16B → 32B (slice header), `tran` 24B → 16B as a value. Layout tests updated (`TestStateLayout` now pins 32B/offsets; `TestTranLayout` pins exactly 16B and fixes the prior session's wrong "24 bytes with padding" comment).
 
 ### 7. Arena block size: 4096 → 512 — prior §f3, §g1, answered with data
@@ -96,15 +96,15 @@ The report proposed a `[4]tran` inline array + map overflow hybrid. The distribu
 
 ### 12. Results (deterministic allocation data, v2 baseline → v3 baseline)
 
-| Benchmark                     | v2                  | v3                   | Delta                     |
-| ----------------------------- | ------------------- | -------------------- | ------------------------- |
-| STreeUpdate/tokens_100        | 304 allocs / 80 KB  | 101 allocs / 24 KB   | allocs −67%, bytes −70%   |
-| STreeUpdate/tokens_500        | 1,678 allocs / 154 KB | 545 allocs / 162 KB | allocs −68%               |
-| STreeUpdate/tokens_2000       | 6,214 allocs / 378 KB | 2,046 allocs / 232 KB | allocs −67%, bytes −39% |
-| MemoryUsageManyTokens (10k)   | 10,067 allocs / 914 KB | 44 allocs / 591 KB | allocs −99.6%, bytes −35% |
-| MemoryUsageFewTokens (10k)    | 126 allocs / 237 KB | 23 allocs / 187 KB   | allocs −82%, bytes −21%   |
-| FindDuplOver/threshold_10 (search) | 1,543 allocs   | 1,543 allocs         | unchanged (output, not overhead) |
-| Search CPU (map machinery)    | ~32%                | ~14%                 | −18pp                     |
+| Benchmark                          | v2                     | v3                    | Delta                            |
+| ---------------------------------- | ---------------------- | --------------------- | -------------------------------- |
+| STreeUpdate/tokens_100             | 304 allocs / 80 KB     | 101 allocs / 24 KB    | allocs −67%, bytes −70%          |
+| STreeUpdate/tokens_500             | 1,678 allocs / 154 KB  | 545 allocs / 162 KB   | allocs −68%                      |
+| STreeUpdate/tokens_2000            | 6,214 allocs / 378 KB  | 2,046 allocs / 232 KB | allocs −67%, bytes −39%          |
+| MemoryUsageManyTokens (10k)        | 10,067 allocs / 914 KB | 44 allocs / 591 KB    | allocs −99.6%, bytes −35%        |
+| MemoryUsageFewTokens (10k)         | 126 allocs / 237 KB    | 23 allocs / 187 KB    | allocs −82%, bytes −21%          |
+| FindDuplOver/threshold_10 (search) | 1,543 allocs           | 1,543 allocs          | unchanged (output, not overhead) |
+| Search CPU (map machinery)         | ~32%                   | ~14%                  | −18pp                            |
 
 Timing (thermally noisy, direction consistent): tokens_100 construction ~2× faster; par4/tokens_10000 search ~1.28ms → ~1.0–1.2ms; cumulative from pre-v2: ~2.5ms → ~1.0ms.
 

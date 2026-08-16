@@ -170,53 +170,53 @@ The codebase is in good shape with no show-stoppers. Issues are minor and addres
 
 ### Priority 1: Critical Fixes (5 items)
 
-| #   | Task                                            | Impact | Effort | Files                                     |
-| --- | ----------------------------------------------- | ------ | ------ | ----------------------------------------- |
-| 1   | Fix BenchmarkTestAndSplit panic                 | High   | Low    | `suffixtree/suffixtree_bench_test.go:220` |
-| 2   | Add adapter/ package tests                      | High   | Medium | `adapter/*.go`                            |
-| 3   | Implement adapter stub functions                | High   | Low    | `adapter/printer_adapter.go`              |
-| 4   | Fix errcheck warnings (3 instances)             | Medium | Low    | `pkg/artdupl/detector_test.go`            |
-| 5   | Add missing error handling for detector.Close() | Medium | Low    | Same                                      |
+| # | Task                                            | Impact | Effort | Files                                     |
+| - | ----------------------------------------------- | ------ | ------ | ----------------------------------------- |
+| 1 | Fix BenchmarkTestAndSplit panic                 | High   | Low    | `suffixtree/suffixtree_bench_test.go:220` |
+| 2 | Add adapter/ package tests                      | High   | Medium | `adapter/*.go`                            |
+| 3 | Implement adapter stub functions                | High   | Low    | `adapter/printer_adapter.go`              |
+| 4 | Fix errcheck warnings (3 instances)             | Medium | Low    | `pkg/artdupl/detector_test.go`            |
+| 5 | Add missing error handling for detector.Close() | Medium | Low    | Same                                      |
 
 ### Priority 2: Test Coverage (5 items)
 
-| #   | Task                              | Impact | Effort | Target Coverage |
-| --- | --------------------------------- | ------ | ------ | --------------- |
-| 6   | detection/ tests                  | High   | Medium | 24% → 80%       |
-| 7   | cmd/ tests                        | Medium | Medium | 11.8% → 70%     |
-| 8   | internal/utils/ tests             | Medium | Low    | 38.8% → 70%     |
-| 9   | pkg/filter/ tests                 | Medium | Low    | 56.4% → 80%     |
-| 10  | Add fuzz tests for hash functions | Medium | Low    | New tests       |
+| #  | Task                              | Impact | Effort | Target Coverage |
+| -- | --------------------------------- | ------ | ------ | --------------- |
+| 6  | detection/ tests                  | High   | Medium | 24% → 80%       |
+| 7  | cmd/ tests                        | Medium | Medium | 11.8% → 70%     |
+| 8  | internal/utils/ tests             | Medium | Low    | 38.8% → 70%     |
+| 9  | pkg/filter/ tests                 | Medium | Low    | 56.4% → 80%     |
+| 10 | Add fuzz tests for hash functions | Medium | Low    | New tests       |
 
 ### Priority 3: Code Quality (5 items)
 
-| #   | Task                                 | Impact | Effort |
-| --- | ------------------------------------ | ------ | ------ |
-| 11  | Reduce runCmd complexity (27 → <10)  | High   | Medium |
-| 12  | Split long test functions            | Medium | Medium |
-| 13  | Add samber/lo dependency             | Medium | Low    |
-| 14  | Evaluate samber/mo for Result/Option | Medium | Medium |
-| 15  | Generate enum marshaling code        | Medium | Medium |
+| #  | Task                                 | Impact | Effort |
+| -- | ------------------------------------ | ------ | ------ |
+| 11 | Reduce runCmd complexity (27 → <10)  | High   | Medium |
+| 12 | Split long test functions            | Medium | Medium |
+| 13 | Add samber/lo dependency             | Medium | Low    |
+| 14 | Evaluate samber/mo for Result/Option | Medium | Medium |
+| 15 | Generate enum marshaling code        | Medium | Medium |
 
 ### Priority 4: Features (5 items)
 
-| #   | Task                     | Impact | Effort |
-| --- | ------------------------ | ------ | ------ |
-| 16  | Implement --profile flag | Medium | Medium |
-| 17  | Implement --timeout flag | Medium | Low    |
-| 18  | Add ignore file support  | Medium | Low    |
-| 19  | Improve HTML template    | Low    | Medium |
-| 20  | Add package examples     | Low    | Low    |
+| #  | Task                     | Impact | Effort |
+| -- | ------------------------ | ------ | ------ |
+| 16 | Implement --profile flag | Medium | Medium |
+| 17 | Implement --timeout flag | Medium | Low    |
+| 18 | Add ignore file support  | Medium | Low    |
+| 19 | Improve HTML template    | Low    | Medium |
+| 20 | Add package examples     | Low    | Low    |
 
 ### Priority 5: Future/Polish (5 items)
 
-| #   | Task                         | Impact | Effort |
-| --- | ---------------------------- | ------ | ------ |
-| 21  | Add TypeScript support       | Medium | High   |
-| 22  | Add JavaScript support       | Medium | High   |
-| 23  | Generate API documentation   | Low    | Medium |
-| 24  | Add clone similarity scoring | Low    | Medium |
-| 25  | Add concurrent processing    | Medium | High   |
+| #  | Task                         | Impact | Effort |
+| -- | ---------------------------- | ------ | ------ |
+| 21 | Add TypeScript support       | Medium | High   |
+| 22 | Add JavaScript support       | Medium | High   |
+| 23 | Generate API documentation   | Low    | Medium |
+| 24 | Add clone similarity scoring | Low    | Medium |
+| 25 | Add concurrent processing    | Medium | High   |
 
 ---
 

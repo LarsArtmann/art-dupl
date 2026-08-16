@@ -1,9 +1,9 @@
 # Status Report: 2026-04-30 Quality Sprint — Dead Code Elimination & Type Architecture
 
-**Date:** 2026-04-30 23:01  
-**Branch:** fork  
-**State:** Clean working tree, pushed to origin/fork  
-**Commits this session:** 6 (b657700 → daca611)  
+**Date:** 2026-04-30 23:01\
+**Branch:** fork\
+**State:** Clean working tree, pushed to origin/fork\
+**Commits this session:** 6 (b657700 → daca611)\
 **Net delta over last 10 commits:** +1015 / -4569 lines
 
 ---
@@ -132,33 +132,33 @@
 
 **Sorted by impact × ease (highest first):**
 
-| #   | Task                                                                                    | Impact | Effort  | Why                                |
-| --- | --------------------------------------------------------------------------------------- | ------ | ------- | ---------------------------------- |
-| 1   | Write tests for remaining domain types (Threshold, LineNumber, Filepath, CloneSeverity) | High   | Low     | Zero test coverage is a regression |
-| 2   | Clean up `analysis_errors.go` — remove errors for deleted types                         | Low    | Trivial | Dead variables                     |
-| 3   | Remove dead SIMD code from `hashSeqSIMD()` — inline fallback                            | Low    | Low     | Dead branching                     |
-| 4   | Simplify `internal/simd/` — remove or document as intentionally empty                   | Medium | Low     | Dead package                       |
-| 5   | Update `examples/` to use SDK types instead of deleted domain types                     | Medium | Low     | Misleading docs                    |
-| 6   | Unexport `config.LoadConfig()` / `config.SaveConfig()` or move to testutil              | Low    | Low     | Test-only exports                  |
-| 7   | Consolidate `pkg/artdupl.Clone` with `printer.clone` via shared interface               | High   | Medium  | Two type systems                   |
-| 8   | Make `pkg/artdupl` call `detection.MultiDetector` instead of reimplementing             | High   | Medium  | Duplicate pipeline                 |
-| 9   | Rename `domain/` to reflect its value-object-only nature (e.g., `types/` or `values/`)  | Medium | Medium  | Misleading package name            |
-| 10  | Extract shared clone interface from printer/ for reuse in SDK                           | High   | Medium  | Three parallel types               |
-| 11  | Reduce clone groups in `config/config_enum_test.go` — extract shared helpers            | Low    | Medium  | 113 clone groups                   |
-| 12  | Split `cmd/run_analysis.go` (447L) into focused files                                   | Medium | Medium  | Large file                         |
-| 13  | Split `printer/html.go` (364L) properly this time                                       | Medium | Medium  | Was attempted, failed              |
-| 14  | Remove `printer.Format` type alias, use `config.OutputFormat` directly                  | Low    | Low     | Unnecessary indirection            |
-| 15  | Audit and justify remaining nolint directives                                           | Low    | Low     | 30+ directives                     |
-| 16  | Add integration test for SDK → printer pipeline                                         | High   | Medium  | No E2E SDK test                    |
-| 17  | Replace `samber/do` dependency if unused                                                | Low    | Low     | Check usage                        |
-| 18  | Add `//go:build` tags for SIMD if keeping for future                                    | Low    | Trivial | Clarity                            |
-| 19  | Remove `domain/helpers.go` `unmarshalWithValidation` — inline at 3 call sites           | Low    | Low     | Unnecessary abstraction            |
-| 20  | Add fuzz tests for remaining domain types                                               | Medium | Medium  | Robustness                         |
-| 21  | Consolidate `printer/stats.go` (244L) sort/filter logic with `printer/sorter.go`        | Medium | Medium  | Related code                       |
-| 22  | Move `detection/todos.go` (352L) patterns to config-driven approach                     | Medium | High    | Hardcoded regex                    |
-| 23  | Add OpenAPI/JSON schema for config file validation                                      | Medium | Medium  | External tooling                   |
-| 24  | Write architecture decision records (ADRs) for type system choices                      | Medium | Low     | Documentation                      |
-| 25  | Profile and benchmark the SDK pipeline vs CLI pipeline                                  | High   | High    | Performance                        |
+| #  | Task                                                                                    | Impact | Effort  | Why                                |
+| -- | --------------------------------------------------------------------------------------- | ------ | ------- | ---------------------------------- |
+| 1  | Write tests for remaining domain types (Threshold, LineNumber, Filepath, CloneSeverity) | High   | Low     | Zero test coverage is a regression |
+| 2  | Clean up `analysis_errors.go` — remove errors for deleted types                         | Low    | Trivial | Dead variables                     |
+| 3  | Remove dead SIMD code from `hashSeqSIMD()` — inline fallback                            | Low    | Low     | Dead branching                     |
+| 4  | Simplify `internal/simd/` — remove or document as intentionally empty                   | Medium | Low     | Dead package                       |
+| 5  | Update `examples/` to use SDK types instead of deleted domain types                     | Medium | Low     | Misleading docs                    |
+| 6  | Unexport `config.LoadConfig()` / `config.SaveConfig()` or move to testutil              | Low    | Low     | Test-only exports                  |
+| 7  | Consolidate `pkg/artdupl.Clone` with `printer.clone` via shared interface               | High   | Medium  | Two type systems                   |
+| 8  | Make `pkg/artdupl` call `detection.MultiDetector` instead of reimplementing             | High   | Medium  | Duplicate pipeline                 |
+| 9  | Rename `domain/` to reflect its value-object-only nature (e.g., `types/` or `values/`)  | Medium | Medium  | Misleading package name            |
+| 10 | Extract shared clone interface from printer/ for reuse in SDK                           | High   | Medium  | Three parallel types               |
+| 11 | Reduce clone groups in `config/config_enum_test.go` — extract shared helpers            | Low    | Medium  | 113 clone groups                   |
+| 12 | Split `cmd/run_analysis.go` (447L) into focused files                                   | Medium | Medium  | Large file                         |
+| 13 | Split `printer/html.go` (364L) properly this time                                       | Medium | Medium  | Was attempted, failed              |
+| 14 | Remove `printer.Format` type alias, use `config.OutputFormat` directly                  | Low    | Low     | Unnecessary indirection            |
+| 15 | Audit and justify remaining nolint directives                                           | Low    | Low     | 30+ directives                     |
+| 16 | Add integration test for SDK → printer pipeline                                         | High   | Medium  | No E2E SDK test                    |
+| 17 | Replace `samber/do` dependency if unused                                                | Low    | Low     | Check usage                        |
+| 18 | Add `//go:build` tags for SIMD if keeping for future                                    | Low    | Trivial | Clarity                            |
+| 19 | Remove `domain/helpers.go` `unmarshalWithValidation` — inline at 3 call sites           | Low    | Low     | Unnecessary abstraction            |
+| 20 | Add fuzz tests for remaining domain types                                               | Medium | Medium  | Robustness                         |
+| 21 | Consolidate `printer/stats.go` (244L) sort/filter logic with `printer/sorter.go`        | Medium | Medium  | Related code                       |
+| 22 | Move `detection/todos.go` (352L) patterns to config-driven approach                     | Medium | High    | Hardcoded regex                    |
+| 23 | Add OpenAPI/JSON schema for config file validation                                      | Medium | Medium  | External tooling                   |
+| 24 | Write architecture decision records (ADRs) for type system choices                      | Medium | Low     | Documentation                      |
+| 25 | Profile and benchmark the SDK pipeline vs CLI pipeline                                  | High   | High    | Performance                        |
 
 ---
 

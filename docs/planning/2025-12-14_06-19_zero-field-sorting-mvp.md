@@ -1,8 +1,8 @@
 # Zero-Field Sorting MVP - Implementation Plan
 
-**Date**: 2025-12-14 06:19 CET  
-**Mission**: Implement sorting functionality for JSON output using existing fields only  
-**Effort**: 30 minutes MVP (Maximum value, minimum complexity)  
+**Date**: 2025-12-14 06:19 CET\
+**Mission**: Implement sorting functionality for JSON output using existing fields only\
+**Effort**: 30 minutes MVP (Maximum value, minimum complexity)\
 **Status**: 🚀 READY TO EXECUTE
 
 ## 🎯 EXECUTIVE SUMMARY
@@ -143,40 +143,40 @@ func (p *JSONPrinter) OutputJSON(threshold int, sortBy string) error {
 
 ```json
 {
-	"version": "1.0",
-	"timestamp": "2025-12-14T06:19:34Z",
-	"threshold": 15,
-	"files_analyzed": 8,
-	"clone_groups": [
-		{
-			"hash": "04d542c8fc586219e50657b2c3970514dfcd7b631cb8907ab35ae50743f447da",
-			"size": 24, // 🔥 BIGGEST FIRST (size sort)
-			"files": [
-				{ "filename": "file1.go", "line_start": 10, "line_end": 45 },
-				{ "filename": "file2.go", "line_start": 20, "line_end": 55 }
-			]
-		},
-		{
-			"hash": "071f72b9f7de5009fb872b908e45726563f239de18570a35d383649b673a9428",
-			"size": 8, // Medium size
-			"files": [
-				{ "filename": "file3.go", "line_start": 30, "line_end": 40 },
-				{ "filename": "file4.go", "line_start": 50, "line_end": 60 },
-				{ "filename": "file5.go", "line_start": 70, "line_end": 80 },
-				{ "filename": "file6.go", "line_start": 90, "line_end": 100 }
-			] // 🎯 MOST OCCURRENCES (occurrence sort)
-		},
-		{
-			"hash": "1175bc303dfb4786da3ffe193eab5148595a1766a1fa7ca9508a7a0316ef1bbc",
-			"size": 4, // Small size
-			"files": [{ "filename": "file7.go", "line_start": 5, "line_end": 10 }] // 📊 SMALLEST LAST
-		}
-	],
-	"summary": {
-		"total_clone_groups": 3,
-		"total_clones": 10,
-		"complexity_score": 3.33
-	}
+  "version": "1.0",
+  "timestamp": "2025-12-14T06:19:34Z",
+  "threshold": 15,
+  "files_analyzed": 8,
+  "clone_groups": [
+    {
+      "hash": "04d542c8fc586219e50657b2c3970514dfcd7b631cb8907ab35ae50743f447da",
+      "size": 24, // 🔥 BIGGEST FIRST (size sort)
+      "files": [
+        { "filename": "file1.go", "line_start": 10, "line_end": 45 },
+        { "filename": "file2.go", "line_start": 20, "line_end": 55 }
+      ]
+    },
+    {
+      "hash": "071f72b9f7de5009fb872b908e45726563f239de18570a35d383649b673a9428",
+      "size": 8, // Medium size
+      "files": [
+        { "filename": "file3.go", "line_start": 30, "line_end": 40 },
+        { "filename": "file4.go", "line_start": 50, "line_end": 60 },
+        { "filename": "file5.go", "line_start": 70, "line_end": 80 },
+        { "filename": "file6.go", "line_start": 90, "line_end": 100 }
+      ] // 🎯 MOST OCCURRENCES (occurrence sort)
+    },
+    {
+      "hash": "1175bc303dfb4786da3ffe193eab5148595a1766a1fa7ca9508a7a0316ef1bbc",
+      "size": 4, // Small size
+      "files": [{ "filename": "file7.go", "line_start": 5, "line_end": 10 }] // 📊 SMALLEST LAST
+    }
+  ],
+  "summary": {
+    "total_clone_groups": 3,
+    "total_clones": 10,
+    "complexity_score": 3.33
+  }
 }
 ```
 
@@ -280,9 +280,9 @@ func (p *JSONPrinter) OutputJSON(threshold int, sortBy string) error {
 
 ## 🏁 IMPLEMENTATION: READY TO EXECUTE! 🚀
 
-**STATUS**: ✅ PLAN COMPLETE, READY TO START  
-**ESTIMATED TIME**: 30 minutes  
-**SUCCESS CRITERIA**: 100% defined  
+**STATUS**: ✅ PLAN COMPLETE, READY TO START\
+**ESTIMATED TIME**: 30 minutes\
+**SUCCESS CRITERIA**: 100% defined\
 **NEXT STEP**: ⏩ BEGIN IMPLEMENTATION NOW!
 
 **MISSION**: Implement zero-field sorting MVP with maximum user value and minimum complexity.
@@ -291,6 +291,6 @@ func (p *JSONPrinter) OutputJSON(threshold int, sortBy string) error {
 
 ---
 
-_Planning Complete: 2025-12-14 06:19 CET_  
-_Implementation Status: 🚀 READY TO START_  
+_Planning Complete: 2025-12-14 06:19 CET_\
+_Implementation Status: 🚀 READY TO START_\
 _Execution Mode: 💪 FULL SPEED AHEAD_

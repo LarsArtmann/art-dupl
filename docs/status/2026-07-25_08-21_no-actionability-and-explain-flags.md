@@ -125,21 +125,21 @@ The flag was added to `AddFlags` (root-only), not `addSharedFlags`. This means `
 
 ## C) NOT STARTED
 
-| #   | Task                                    | Effort    | Impact  |
-| --- | --------------------------------------- | --------- | ------- |
-| 1   | `--diff-report baseline` mode           | 2h        | HIGH    |
-| 2   | HTML report improvements                | 1h        | MED     |
-| 3   | YAML config (`.artdupl.yml`)            | 2h        | MED     |
-| 4   | `--recommend-threshold`                 | 2h        | LOW-MED |
-| 5   | Interface-method-aware suppression      | 3h        | MED     |
-| 6   | Templ Phase 3: expression normalization | 2h        | LOW     |
-| 7   | Split `printer/` into sub-packages      | LARGE     | HIGH    |
-| 8   | Push defense-in-depth to gogenfilter    | Upstream  | MED     |
-| 9   | Branded `NodeType int32`                | HIGH RISK | MED     |
-| 10  | Hide `syntax/golang` behind facade      | Blocked   | MED     |
-| 11  | Add `NonActionablePattern` to JSONClone | 15min     | MED     |
-| 12  | Unit test for `writeExplanation`        | 30min     | LOW-MED |
-| 13  | Update `FEATURES.md` with new flags     | 15min     | LOW     |
+| #  | Task                                    | Effort    | Impact  |
+| -- | --------------------------------------- | --------- | ------- |
+| 1  | `--diff-report baseline` mode           | 2h        | HIGH    |
+| 2  | HTML report improvements                | 1h        | MED     |
+| 3  | YAML config (`.artdupl.yml`)            | 2h        | MED     |
+| 4  | `--recommend-threshold`                 | 2h        | LOW-MED |
+| 5  | Interface-method-aware suppression      | 3h        | MED     |
+| 6  | Templ Phase 3: expression normalization | 2h        | LOW     |
+| 7  | Split `printer/` into sub-packages      | LARGE     | HIGH    |
+| 8  | Push defense-in-depth to gogenfilter    | Upstream  | MED     |
+| 9  | Branded `NodeType int32`                | HIGH RISK | MED     |
+| 10 | Hide `syntax/golang` behind facade      | Blocked   | MED     |
+| 11 | Add `NonActionablePattern` to JSONClone | 15min     | MED     |
+| 12 | Unit test for `writeExplanation`        | 30min     | LOW-MED |
+| 13 | Update `FEATURES.md` with new flags     | 15min     | LOW     |
 
 ---
 

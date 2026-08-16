@@ -1,8 +1,8 @@
 # Status Report: Actionability ExprStmt(CallExpr) Gap Fix
 
-**Date:** 2026-07-25 04:08  
-**Session Focus:** Fix false positive where `t.Parallel()` (and all statement-level single function calls) were reported as actionable clones  
-**Branch:** `fork`  
+**Date:** 2026-07-25 04:08\
+**Session Focus:** Fix false positive where `t.Parallel()` (and all statement-level single function calls) were reported as actionable clones\
+**Branch:** `fork`\
 **Commits this session:** `d29381c7`, `dc39f5e7`, `80e8a13a` (auto-committed by project hook)
 
 ---

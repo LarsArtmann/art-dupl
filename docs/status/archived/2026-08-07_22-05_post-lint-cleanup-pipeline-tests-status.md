@@ -12,12 +12,12 @@
 
 ### 1. Fixed all 5 golangci-lint issues (COMMITTED: `4bf21bd1`)
 
-| Linter | File | Fix |
-|--------|------|-----|
-| gocyclo (16→3) | `clone_classify.go:166` | Refactored `getSuggestion` 13-case switch to `productionSuggestions` map lookup |
-| gofumpt | `clone_classify_test.go:122` | Removed stray blank lines in struct literals introduced during previous session |
-| modernize (×2) | `extractability_engine.go:303,324` | Replaced manual `for-range` loops with `slices.ContainsFunc` in `anySeqHasControlFlow` and `subtreeHasControlFlow` |
-| wsl_v5 | `recommend_threshold.go:80` | Removed dead `if recommended <= 3 { auditThreshold = 1 }` conditional (always true), added explanatory comment + blank line |
+| Linter         | File                               | Fix                                                                                                                         |
+| -------------- | ---------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| gocyclo (16→3) | `clone_classify.go:166`            | Refactored `getSuggestion` 13-case switch to `productionSuggestions` map lookup                                             |
+| gofumpt        | `clone_classify_test.go:122`       | Removed stray blank lines in struct literals introduced during previous session                                             |
+| modernize (×2) | `extractability_engine.go:303,324` | Replaced manual `for-range` loops with `slices.ContainsFunc` in `anySeqHasControlFlow` and `subtreeHasControlFlow`          |
+| wsl_v5         | `recommend_threshold.go:80`        | Removed dead `if recommended <= 3 { auditThreshold = 1 }` conditional (always true), added explanatory comment + blank line |
 
 **Tests**: 27/27 packages pass, 919/919 individual tests pass. `go vet` clean.
 
@@ -32,23 +32,24 @@
 
 All 13 fields verified present in both functions:
 
-| Field | `serial()` | `Clone()` |
-|-------|-----------|-----------|
-| Type | ✅ | ✅ |
-| Pos | ✅ | ✅ |
-| End | ✅ | ✅ |
-| Owns | ✅ | ✅ |
-| Children | ✅ (slice header) | ✅ (deep copy) |
-| Filename | ✅ | ✅ |
-| Name | ✅ | ✅ |
-| VarType | ✅ | ✅ |
-| Statement | ✅ | ✅ |
-| Fingerprint | ✅ | ✅ |
-| EnclosingReturnArity | ✅ | ✅ |
-| InterfaceMethod | ✅ | ✅ |
-| IsAlias | ✅ (fixed in `13e3dcac`) | ✅ |
+| Field                | `serial()`               | `Clone()`      |
+| -------------------- | ------------------------ | -------------- |
+| Type                 | ✅                       | ✅             |
+| Pos                  | ✅                       | ✅             |
+| End                  | ✅                       | ✅             |
+| Owns                 | ✅                       | ✅             |
+| Children             | ✅ (slice header)        | ✅ (deep copy) |
+| Filename             | ✅                       | ✅             |
+| Name                 | ✅                       | ✅             |
+| VarType              | ✅                       | ✅             |
+| Statement            | ✅                       | ✅             |
+| Fingerprint          | ✅                       | ✅             |
+| EnclosingReturnArity | ✅                       | ✅             |
+| InterfaceMethod      | ✅                       | ✅             |
+| IsAlias              | ✅ (fixed in `13e3dcac`) | ✅             |
 
 Added `TestSerializePreservesAllFields` with two sub-tests:
+
 - **non-statement node**: All 13 fields preserved including `IsAlias`, `InterfaceMethod`, `EnclosingReturnArity`
 - **statement node**: All fields preserved; `Owns` set to 0 and `Fingerprint` computed (expected behavior for statement tokenization)
 
@@ -221,6 +222,7 @@ Nothing this session. All changes were verified: build, test (919 tests), vet, a
 ### Q1: Should we fix the tagliatelle contradiction?
 
 `.golangci.yml` has `tagliatelle` enabled (line in the enable list), producing 50 `json(camel)` violations. But `AGENTS.md` line 119 says: "tagliatelle: codebase has mixed snake_case/camelCase JSON conventions per ADR-0016" and claims it's NOT enabled. Should I:
+
 - **(a)** Disable tagliatelle in `.golangci.yml` (match the AGENTS.md claim), or
 - **(b)** Fix all 50 JSON tags to camelCase and update AGENTS.md?
 
@@ -233,6 +235,7 @@ It's 50 lines over the 250-line production file policy. The file contains three 
 ### Q3: Should I fix the `biome` missing-binary issue in the BuildFlow pre-commit hook?
 
 The pre-commit hook fails on every manual commit because `biome` isn't installed. This blocks all manual commits. Options:
+
 - **(a)** Add `biome` to `flake.nix` devShell (requires finding the nix package name), or
 - **(b)** Exclude `biome-format` from BuildFlow config (if there's a `.buildflow.yml` or similar), or
 - **(c)** Leave it — the auto-commit daemon works around it.
@@ -243,17 +246,17 @@ This is a pre-existing issue but it affects every commit attempt.
 
 ## Session metrics
 
-| Metric | Value |
-|--------|-------|
-| Commits this session | 5 (`4bf21bd1`, `766caa85`, `4e5111df`, `703af078`, `3e4ffff3`) |
-| Files changed | 11 (including status report) |
-| Lines added | ~713 |
-| Lines removed | ~55 |
-| Tests passing | 919/919 (27 packages) |
-| Lint issues on changed packages | 0 |
-| Lint issues project-wide | 50 (all pre-existing tagliatelle) |
-| Dogfooding (production code) | 0 clone groups at t=1 |
-| Full test suite runtime | ~5s |
+| Metric                          | Value                                                          |
+| ------------------------------- | -------------------------------------------------------------- |
+| Commits this session            | 5 (`4bf21bd1`, `766caa85`, `4e5111df`, `703af078`, `3e4ffff3`) |
+| Files changed                   | 11 (including status report)                                   |
+| Lines added                     | ~713                                                           |
+| Lines removed                   | ~55                                                            |
+| Tests passing                   | 919/919 (27 packages)                                          |
+| Lint issues on changed packages | 0                                                              |
+| Lint issues project-wide        | 50 (all pre-existing tagliatelle)                              |
+| Dogfooding (production code)    | 0 clone groups at t=1                                          |
+| Full test suite runtime         | ~5s                                                            |
 
 ---
 

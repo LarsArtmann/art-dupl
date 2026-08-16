@@ -1,8 +1,8 @@
 # art-dupl — Comprehensive Status Report
 
-**Date:** 2026-05-20 04:26  
-**Branch:** fork  
-**Head:** a8f166c `refactor: modernize config merge, test helpers, and actionability constants`  
+**Date:** 2026-05-20 04:26\
+**Branch:** fork\
+**Head:** a8f166c `refactor: modernize config merge, test helpers, and actionability constants`\
 **Uncommitted Changes:** `cmd/flags.go` — moved `--only` flag from root-only to shared flags (fixes `art-dupl stats --only templ`)
 
 ---
@@ -155,33 +155,33 @@ All tests pass, lint is clean, build is clean. But here's what's fragile or regr
 
 ## f) Top #25 Things We Should Get Done Next
 
-| #   | Item                                                                                          | Impact | Effort            | Priority       |
-| --- | --------------------------------------------------------------------------------------------- | ------ | ----------------- | -------------- |
-| 1   | Delete `internal/simd/` package (dead code)                                                   | Low    | Tiny              | Quick win      |
-| 2   | Delete `hashSeqSIMD()` dead indirection in syntax/hash_simd.go                                | Low    | Tiny              | Quick win      |
-| 3   | Archive `docs/status/` — keep last 10, move rest to `docs/status/archive/`                    | Medium | Small             | Cleanup        |
-| 4   | Add tests for `domain/` — target 80%+ coverage (currently 67.2%)                              | Medium | Medium            | Quality        |
-| 5   | Add BDD test for `art-dupl stats --only templ` and `--only go`                                | Medium | Small             | Coverage       |
-| 6   | Add BDD test for `art-dupl stats --format csv`                                                | Low    | Small             | Coverage       |
-| 7   | Implement CSV output using `encoding/csv` (general clone CSV)                                 | Medium | Small             | Correctness    |
-| 8   | Consolidate three parallel Clone types into unified hierarchy                                 | High   | Large             | Architecture   |
-| 9   | Introduce ProcessedClone DTO — decouple Printer from syntax.Node                              | High   | Large (111 sites) | Architecture   |
-| 10  | Split `config/detection_method.go` (426L) — separate FileType, OutputFormat, SortBy, DiffMode | Medium | Medium            | Code quality   |
-| 11  | Refactor `syntax/golang/transform.go` — table-driven 300L switch                              | Medium | Medium            | Code quality   |
-| 12  | Split printer/ into sub-packages (formatters vs processing)                                   | Medium | Large             | Architecture   |
-| 13  | Standardize error handling — structured errors everywhere or bare fmt.Errorf                  | Medium | Medium            | Consistency    |
-| 14  | Implement TokenValue type with validation                                                     | Medium | Medium            | Type safety    |
-| 15  | Unify enum patterns — domain enums → config's generic helpers                                 | Low    | Medium            | Consistency    |
-| 16  | Add ADR for semantic-as-default decision                                                      | Low    | Tiny              | Documentation  |
-| 17  | Add ADR for reflection-based config merge                                                     | Low    | Tiny              | Documentation  |
-| 18  | Write SDK documentation for `pkg/artdupl/`                                                    | Medium | Medium            | Documentation  |
-| 19  | Audit 71 `//nolint:` directives — remove stale ones                                           | Low    | Small             | Cleanup        |
-| 20  | Document TODO/Legacy detection methods as experimental or remove DEFINED_ONLY status          | Low    | Small             | Documentation  |
-| 21  | Fix LSP hints: unused params, unnecessary type args in tests                                  | Low    | Small             | Polish         |
-| 22  | Implement string interning for AST processing memory optimization                             | Medium | Large             | Performance    |
-| 23  | Optimize memory layouts for SIMD-friendly data structures                                     | Medium | Large             | Performance    |
-| 24  | Validate GoReleaser release config — had 5+ fixup commits                                     | Medium | Small             | Infrastructure |
-| 25  | Remove `lib/` legacy package (listed as "being phased out" in AGENTS.md)                      | Low    | Small             | Cleanup        |
+| #  | Item                                                                                          | Impact | Effort            | Priority       |
+| -- | --------------------------------------------------------------------------------------------- | ------ | ----------------- | -------------- |
+| 1  | Delete `internal/simd/` package (dead code)                                                   | Low    | Tiny              | Quick win      |
+| 2  | Delete `hashSeqSIMD()` dead indirection in syntax/hash_simd.go                                | Low    | Tiny              | Quick win      |
+| 3  | Archive `docs/status/` — keep last 10, move rest to `docs/status/archive/`                    | Medium | Small             | Cleanup        |
+| 4  | Add tests for `domain/` — target 80%+ coverage (currently 67.2%)                              | Medium | Medium            | Quality        |
+| 5  | Add BDD test for `art-dupl stats --only templ` and `--only go`                                | Medium | Small             | Coverage       |
+| 6  | Add BDD test for `art-dupl stats --format csv`                                                | Low    | Small             | Coverage       |
+| 7  | Implement CSV output using `encoding/csv` (general clone CSV)                                 | Medium | Small             | Correctness    |
+| 8  | Consolidate three parallel Clone types into unified hierarchy                                 | High   | Large             | Architecture   |
+| 9  | Introduce ProcessedClone DTO — decouple Printer from syntax.Node                              | High   | Large (111 sites) | Architecture   |
+| 10 | Split `config/detection_method.go` (426L) — separate FileType, OutputFormat, SortBy, DiffMode | Medium | Medium            | Code quality   |
+| 11 | Refactor `syntax/golang/transform.go` — table-driven 300L switch                              | Medium | Medium            | Code quality   |
+| 12 | Split printer/ into sub-packages (formatters vs processing)                                   | Medium | Large             | Architecture   |
+| 13 | Standardize error handling — structured errors everywhere or bare fmt.Errorf                  | Medium | Medium            | Consistency    |
+| 14 | Implement TokenValue type with validation                                                     | Medium | Medium            | Type safety    |
+| 15 | Unify enum patterns — domain enums → config's generic helpers                                 | Low    | Medium            | Consistency    |
+| 16 | Add ADR for semantic-as-default decision                                                      | Low    | Tiny              | Documentation  |
+| 17 | Add ADR for reflection-based config merge                                                     | Low    | Tiny              | Documentation  |
+| 18 | Write SDK documentation for `pkg/artdupl/`                                                    | Medium | Medium            | Documentation  |
+| 19 | Audit 71 `//nolint:` directives — remove stale ones                                           | Low    | Small             | Cleanup        |
+| 20 | Document TODO/Legacy detection methods as experimental or remove DEFINED_ONLY status          | Low    | Small             | Documentation  |
+| 21 | Fix LSP hints: unused params, unnecessary type args in tests                                  | Low    | Small             | Polish         |
+| 22 | Implement string interning for AST processing memory optimization                             | Medium | Large             | Performance    |
+| 23 | Optimize memory layouts for SIMD-friendly data structures                                     | Medium | Large             | Performance    |
+| 24 | Validate GoReleaser release config — had 5+ fixup commits                                     | Medium | Small             | Infrastructure |
+| 25 | Remove `lib/` legacy package (listed as "being phased out" in AGENTS.md)                      | Low    | Small             | Cleanup        |
 
 ---
 

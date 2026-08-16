@@ -119,12 +119,12 @@ You can also configure filtering in a JSON config file:
 
 ```json
 {
-	"threshold": 15,
-	"filterGenerated": true,
-	"includeSQLC": false,
-	"includeTempl": false,
-	"includePatterns": ["vendor/*"],
-	"excludePatterns": ["*_test.go"]
+  "threshold": 15,
+  "filterGenerated": true,
+  "includeSQLC": false,
+  "includeTempl": false,
+  "includePatterns": ["vendor/*"],
+  "excludePatterns": ["*_test.go"]
 }
 ```
 
@@ -187,9 +187,9 @@ Consistent filtering in automated analysis:
 ```json
 // .dupl.json
 {
-	"filterGenerated": true,
-	"includeSQLC": false,
-	"includeTempl": false
+  "filterGenerated": true,
+  "includeSQLC": false,
+  "includeTempl": false
 }
 ```
 

@@ -17,23 +17,23 @@ art-dupl is in **excellent shape**. This session eliminated **5 of 9 clone group
 
 ### Clone Groups Eliminated (5 of 9)
 
-| #   | Location                                                        | Fix                                                                                              |
-| --- | --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
-| 1   | `config/config_enum_test.go:184/216`                            | Extracted `mustWriteFile(t, path, content)` helper                                               |
-| 2   | `printer/html_diff.go:177-180/199-202`                          | Extracted `diffWriteErr(filename, line, phase, index, total, err)` function                      |
-| 3   | `bdd/execute.go:53-57` / `cmd/stats_integration_test.go:97-101` | Extracted `testutil.CopyToBuffer(dst, src, done)` — shared goroutine pipe-copy helper            |
-| 4   | `printer/actionability_test.go:49-54/55-60`                     | Extracted `mustFuncDeclWithBody()` helper                                                        |
-| 7   | `internal/testutil/bdd.go:101-107` / `bdd_runners.go:122-128`   | Extracted `appendFlagsToArgs(args, flags)` — shared flag-to-CLI conversion                       |
-| 8   | `printer/clone_classify_test.go:281-286/295-300`                | Merged `TestClonePriorityEmoji` + `TestClonePriorityColor` → single `TestClonePriorityAccessors` |
+| # | Location                                                        | Fix                                                                                              |
+| - | --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| 1 | `config/config_enum_test.go:184/216`                            | Extracted `mustWriteFile(t, path, content)` helper                                               |
+| 2 | `printer/html_diff.go:177-180/199-202`                          | Extracted `diffWriteErr(filename, line, phase, index, total, err)` function                      |
+| 3 | `bdd/execute.go:53-57` / `cmd/stats_integration_test.go:97-101` | Extracted `testutil.CopyToBuffer(dst, src, done)` — shared goroutine pipe-copy helper            |
+| 4 | `printer/actionability_test.go:49-54/55-60`                     | Extracted `mustFuncDeclWithBody()` helper                                                        |
+| 7 | `internal/testutil/bdd.go:101-107` / `bdd_runners.go:122-128`   | Extracted `appendFlagsToArgs(args, flags)` — shared flag-to-CLI conversion                       |
+| 8 | `printer/clone_classify_test.go:281-286/295-300`                | Merged `TestClonePriorityEmoji` + `TestClonePriorityColor` → single `TestClonePriorityAccessors` |
 
 ### Clone Groups Retained (4 — Inherent)
 
-| #   | Location                                         | Reason                                                                                                                       |
-| --- | ------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------- |
-| 5   | `cmd/config_builder.go:15/56`                    | Two public functions with identical parameter/return types — intentional API                                                 |
-| 6   | `internal/testutil/assert.go:13/20`              | `AssertLen` vs `AssertFatalLen` — same signature, different semantics (Error vs Fatal). Already shares logic via `assertLen` |
-| 8   | `printer/clone_classify_test.go:285-290/295-300` | Map literals with same keys (4 priorities), different values — testing different accessors                                   |
-| 9   | `syntax/templ/templ_test.go:761-789/904-926`     | Test case slices with same `parseTest` type — different test data                                                            |
+| # | Location                                         | Reason                                                                                                                       |
+| - | ------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------- |
+| 5 | `cmd/config_builder.go:15/56`                    | Two public functions with identical parameter/return types — intentional API                                                 |
+| 6 | `internal/testutil/assert.go:13/20`              | `AssertLen` vs `AssertFatalLen` — same signature, different semantics (Error vs Fatal). Already shares logic via `assertLen` |
+| 8 | `printer/clone_classify_test.go:285-290/295-300` | Map literals with same keys (4 priorities), different values — testing different accessors                                   |
+| 9 | `syntax/templ/templ_test.go:761-789/904-926`     | Test case slices with same `parseTest` type — different test data                                                            |
 
 ---
 
@@ -163,33 +163,33 @@ All assertions pass but test binary exits non-zero. Cobra calls `os.Exit()` duri
 
 ## f) Top #25 Things We Should Get Done Next
 
-| #   | Task                                                           | Priority | Effort |
-| --- | -------------------------------------------------------------- | -------- | ------ |
-| 1   | Fix os.Exit test flakiness (bdd + cmd)                         | CRITICAL | M      |
-| 2   | Fix 10 errcheck issues in test code                            | HIGH     | S      |
-| 3   | Extract buildJSONData into smaller functions (gocyclo 16→<10)  | HIGH     | S      |
-| 4   | Extract `--threshold` / `art-dupl` string constants in tests   | LOW      | S      |
-| 5   | Wire TodoDetector and LegacyDetector to CLI `-m` flag          | HIGH     | M      |
-| 6   | Fix 2 exhaustruct issues in testutil                           | LOW      | S      |
-| 7   | Fix 2 err113 issues in testutil                                | LOW      | S      |
-| 8   | Introduce ProcessedClone DTO                                   | HIGH     | L      |
-| 9   | Consolidate 3 parallel Clone types                             | MEDIUM   | L      |
-| 10  | Implement proper CSV output using encoding/csv                 | MEDIUM   | S      |
-| 11  | Implement TokenValue type with validation                      | HIGH     | M      |
-| 12  | Unify enum patterns                                            | MEDIUM   | M      |
-| 13  | Refactor transform.go (369L, 300L switch)                      | MEDIUM   | M      |
-| 14  | Optimize memory layouts for SIMD-friendly structures           | MEDIUM   | L      |
-| 15  | Implement string interning                                     | LOW      | M      |
-| 16  | Wire remaining SIMD TODOs (6 items)                            | LOW      | M      |
-| 17  | Fix ConstantCSSProperty position (upstream)                    | LOW      | S      |
-| 18  | Archive old docs/status/ files                                 | LOW      | S      |
-| 19  | Fix remaining LSP hints                                        | LOW      | S      |
-| 20  | Implement SDK from SDK_DESIGN.md                               | LOW      | XL     |
-| 21  | Add more fuzz tests                                            | LOW      | M      |
-| 22  | Coverage improvement: domain (67%), job (77%), detection (78%) | MEDIUM   | M      |
-| 23  | Add benchmark regression CI                                    | MEDIUM   | S      |
-| 24  | Consider modularization                                        | LOW      | XL     |
-| 25  | Migrate justfile → nix flake                                   | LOW      | M      |
+| #  | Task                                                           | Priority | Effort |
+| -- | -------------------------------------------------------------- | -------- | ------ |
+| 1  | Fix os.Exit test flakiness (bdd + cmd)                         | CRITICAL | M      |
+| 2  | Fix 10 errcheck issues in test code                            | HIGH     | S      |
+| 3  | Extract buildJSONData into smaller functions (gocyclo 16→<10)  | HIGH     | S      |
+| 4  | Extract `--threshold` / `art-dupl` string constants in tests   | LOW      | S      |
+| 5  | Wire TodoDetector and LegacyDetector to CLI `-m` flag          | HIGH     | M      |
+| 6  | Fix 2 exhaustruct issues in testutil                           | LOW      | S      |
+| 7  | Fix 2 err113 issues in testutil                                | LOW      | S      |
+| 8  | Introduce ProcessedClone DTO                                   | HIGH     | L      |
+| 9  | Consolidate 3 parallel Clone types                             | MEDIUM   | L      |
+| 10 | Implement proper CSV output using encoding/csv                 | MEDIUM   | S      |
+| 11 | Implement TokenValue type with validation                      | HIGH     | M      |
+| 12 | Unify enum patterns                                            | MEDIUM   | M      |
+| 13 | Refactor transform.go (369L, 300L switch)                      | MEDIUM   | M      |
+| 14 | Optimize memory layouts for SIMD-friendly structures           | MEDIUM   | L      |
+| 15 | Implement string interning                                     | LOW      | M      |
+| 16 | Wire remaining SIMD TODOs (6 items)                            | LOW      | M      |
+| 17 | Fix ConstantCSSProperty position (upstream)                    | LOW      | S      |
+| 18 | Archive old docs/status/ files                                 | LOW      | S      |
+| 19 | Fix remaining LSP hints                                        | LOW      | S      |
+| 20 | Implement SDK from SDK_DESIGN.md                               | LOW      | XL     |
+| 21 | Add more fuzz tests                                            | LOW      | M      |
+| 22 | Coverage improvement: domain (67%), job (77%), detection (78%) | MEDIUM   | M      |
+| 23 | Add benchmark regression CI                                    | MEDIUM   | S      |
+| 24 | Consider modularization                                        | LOW      | XL     |
+| 25 | Migrate justfile → nix flake                                   | LOW      | M      |
 
 ---
 

@@ -31,17 +31,17 @@ art-dupl --type-aware --sort total-tokens -t 1
 → 9 clone groups, 21 clones total
 ```
 
-| #   | Clone Group                                                | Locations                                    | Verdict            | Resolution                                                      |
-| --- | ---------------------------------------------------------- | -------------------------------------------- | ------------------ | --------------------------------------------------------------- |
-| 1   | `fmt.Println(title); fmt.Println(strings.Repeat(...))` × 5 | deadletter, health, query_display, explain, quality_only | **REAL CATCH**     | Extracted to existing `printHeading` helper                     |
-| 2   | `DefaultDebounceDelay = 2 * time.Second` etc. × 2         | filechange/config.go, pkg/constants/timeouts.go | **REAL CATCH**     | Removed dead constants from pkg/constants (filechange is now a separate module) |
-| 3   | `for _, inv := range invokers { ... }` × 2                | injector/eager_invoke.go (two functions)     | **REAL CATCH**     | Extracted `runInvokers` helper                                  |
-| 4   | `filters := views.ParseEventFilters(...); data := s.buildEventsData(...)` × 2 | healthd/events_api.go (two handlers)        | **REAL CATCH**     | Extracted `loadEventsData` helper                               |
-| 5   | `name := do.NameOf[T](); if c.isOverridden(name) { return }` × 2 | injector/providers.go (provide + provideValue) | **REAL CATCH**     | Extracted `skipIfOverridden[T]` helper                          |
-| 6   | `printHeading("X", "=", 50)` × 2                           | query_display.go (two different headings)    | **FALSE POSITIVE** | Helper already used; different args = different domain content  |
-| 7   | `basename := filepath.Base(imagePath)` × 2                 | rename_explain.go, rename_process.go         | **BORDERLINE**     | 1-line idiomatic Go; structural pipeline around it is the real dup |
-| 8   | `d.processed[path] = time.Now(); d.mu.Unlock()` × 2        | filechange/cleanup.go, filechange/processing.go | **BORDERLINE**    | Critical-section tail vs test helper; different lock contexts   |
-| 9   | `ErrorType = domainerrors.ErrorType` × 2                   | deadletter/deadletter.go, provider/provider.go | **FALSE POSITIVE** | Canonical type-alias re-export per domain-driven design pattern |
+| # | Clone Group                                                                   | Locations                                                | Verdict            | Resolution                                                                      |
+| - | ----------------------------------------------------------------------------- | -------------------------------------------------------- | ------------------ | ------------------------------------------------------------------------------- |
+| 1 | `fmt.Println(title); fmt.Println(strings.Repeat(...))` × 5                    | deadletter, health, query_display, explain, quality_only | **REAL CATCH**     | Extracted to existing `printHeading` helper                                     |
+| 2 | `DefaultDebounceDelay = 2 * time.Second` etc. × 2                             | filechange/config.go, pkg/constants/timeouts.go          | **REAL CATCH**     | Removed dead constants from pkg/constants (filechange is now a separate module) |
+| 3 | `for _, inv := range invokers { ... }` × 2                                    | injector/eager_invoke.go (two functions)                 | **REAL CATCH**     | Extracted `runInvokers` helper                                                  |
+| 4 | `filters := views.ParseEventFilters(...); data := s.buildEventsData(...)` × 2 | healthd/events_api.go (two handlers)                     | **REAL CATCH**     | Extracted `loadEventsData` helper                                               |
+| 5 | `name := do.NameOf[T](); if c.isOverridden(name) { return }` × 2              | injector/providers.go (provide + provideValue)           | **REAL CATCH**     | Extracted `skipIfOverridden[T]` helper                                          |
+| 6 | `printHeading("X", "=", 50)` × 2                                              | query_display.go (two different headings)                | **FALSE POSITIVE** | Helper already used; different args = different domain content                  |
+| 7 | `basename := filepath.Base(imagePath)` × 2                                    | rename_explain.go, rename_process.go                     | **BORDERLINE**     | 1-line idiomatic Go; structural pipeline around it is the real dup              |
+| 8 | `d.processed[path] = time.Now(); d.mu.Unlock()` × 2                           | filechange/cleanup.go, filechange/processing.go          | **BORDERLINE**     | Critical-section tail vs test helper; different lock contexts                   |
+| 9 | `ErrorType = domainerrors.ErrorType` × 2                                      | deadletter/deadletter.go, provider/provider.go           | **FALSE POSITIVE** | Canonical type-alias re-export per domain-driven design pattern                 |
 
 **Scorecard:** 5 real catches (eliminated), 2 false positives, 2 borderline, 0 missed at this threshold.
 
@@ -54,8 +54,8 @@ art-dupl --type-aware --sort total-tokens -t 1
 
 ### Phase 3: Threshold sweep
 
-| Threshold | Clone Groups | Notes                                             |
-| --------- | ------------ | ------------------------------------------------- |
+| Threshold | Clone Groups | Notes                                              |
+| --------- | ------------ | -------------------------------------------------- |
 | `-t 1`    | 9 → 4        | Default actionability filtering; groups 6–9 remain |
 | `-t 2`    | 3            | Groups 6–8 only; group 9 (type alias) drops out    |
 | `-t 3`    | **0**        | Complete silence                                   |
@@ -98,6 +98,7 @@ This is a **canonical type-alias re-export** — a deliberate Go pattern where a
 > **`domain.FilenameGenerator` is the canonical interface** — implemented by `provider.VisionAdapter`
 
 Both `deadletter` and `provider` re-export `ErrorType` and its constants from `domain/errors` because:
+
 - `deadletter.Entry` serializes error types in its JSON schema
 - `provider.Error` wraps `domainerrors.TypedError` for consumer-facing error handling
 
@@ -116,6 +117,7 @@ But the pattern apparently only fires for multi-line alias blocks (multiple `con
 ### Suggested fix
 
 Extend the `type-alias-block` pattern (or add a `type-alias-reexport` pattern) to match:
+
 - `type X = pkg.Y` (single-line type alias)
 - Especially when the RHS is a qualified identifier (`pkg.Type`), which indicates a cross-package re-export rather than a same-package alias
 
@@ -153,6 +155,7 @@ This is the "helper call with different arguments" pattern: two call sites of th
 ### Suggested fix
 
 Either:
+
 1. Extend `single-call-expression` to cover "N call sites of the same function with all-different string-literal arguments"
 2. Add a `helper-call-different-args` pattern that suppresses when the only shared tokens are the function name and constant arguments (like `"="` and `50`), while all variable content (the heading text) differs
 
@@ -179,6 +182,7 @@ There is a **binary cliff** between t=2 and t=3. The tool goes from "3 clone gro
 ### Why this happens
 
 The `-t` flag counts duplicated **statements**. Most of the real duplication in this codebase was 2–4 statements long:
+
 - `fmt.Println(title); fmt.Println(strings.Repeat(...))` — 2 statements
 - `name := do.NameOf[T](); if c.isOverridden(name) { return }` — 3 statements
 - `for _, inv := range invokers { ... return ... }` — 4 statements (loop + body)
@@ -218,12 +222,14 @@ At t=5, all of these are below the threshold and invisible. At t=1, single-state
 ```
 
 This is a **15-step pipeline** duplicated across two files. Steps 1–14 are semantically identical — the only differences are:
+
 - Print formatting (`fmt.Printf("→ Quality gate: WOULD SKIP")` vs `fmt.Println("✓ Filename is already well-named")`)
 - The branching after step 14 (explain mode prints the decision trace; process mode prompts for y/n and executes the rename)
 
 ### What art-dupl catches
 
 Only step 1:
+
 ```
 basename := filepath.Base(imagePath)
 ```
@@ -250,31 +256,31 @@ This is the **single largest maintenance burden** in the codebase. When `renamer
 
 ### The numbers
 
-| Mode                     | Clone Groups |
-| ------------------------ | ------------ |
-| t=1 (actionability on)   | 9            |
-| t=1 (actionability off)  | 102          |
-| Filtering ratio          | 91%          |
+| Mode                    | Clone Groups |
+| ----------------------- | ------------ |
+| t=1 (actionability on)  | 9            |
+| t=1 (actionability off) | 102          |
+| Filtering ratio         | 91%          |
 
 The actionability filter removes 93 of 102 groups. This is **effective**. However, examining the raw output reveals patterns that the filter catches but that could be useful signal in some contexts:
 
 ### Useful groups hidden by actionability filtering
 
-| Raw Clone                                                        | Count | Pattern             | Hidden because...                          |
-| ---------------------------------------------------------------- | ----- | ------------------- | ------------------------------------------ |
-| `t.Helper()`                                                     | 34    | test-scaffolding    | Correctly suppressed — test boilerplate    |
-| `t.Parallel()`                                                   | 51    | test-scaffolding    | Correctly suppressed — test boilerplate    |
-| `container := injector.NewContainer(injector.WithConfig(cfg))`   | 2     | single-call-expression | Correctly suppressed — DI wiring          |
-| `cfg := config.LoadOrDefault()`                                  | 2     | single-call-expression | Correctly suppressed — config loading     |
-| `if apiKey == "" { return ..., fmt.Errorf(...) }`                | 2     | guard-clause        | Correctly suppressed — guard pattern       |
-| `os.ReadFile(path)` / `os.UserHomeDir()` / `os.Getenv(...)`      | 6     | single-simple-statement | Correctly suppressed — stdlib calls     |
+| Raw Clone                                                      | Count | Pattern                 | Hidden because...                       |
+| -------------------------------------------------------------- | ----- | ----------------------- | --------------------------------------- |
+| `t.Helper()`                                                   | 34    | test-scaffolding        | Correctly suppressed — test boilerplate |
+| `t.Parallel()`                                                 | 51    | test-scaffolding        | Correctly suppressed — test boilerplate |
+| `container := injector.NewContainer(injector.WithConfig(cfg))` | 2     | single-call-expression  | Correctly suppressed — DI wiring        |
+| `cfg := config.LoadOrDefault()`                                | 2     | single-call-expression  | Correctly suppressed — config loading   |
+| `if apiKey == "" { return ..., fmt.Errorf(...) }`              | 2     | guard-clause            | Correctly suppressed — guard pattern    |
+| `os.ReadFile(path)` / `os.UserHomeDir()` / `os.Getenv(...)`    | 6     | single-simple-statement | Correctly suppressed — stdlib calls     |
 
 ### Gaps in the filtered set (false positives that survive filtering)
 
-| Surviving Clone                             | Should be filtered?            | Pattern that should fire         |
-| ------------------------------------------- | ------------------------------ | -------------------------------- |
-| `ErrorType = domainerrors.ErrorType`        | **Yes** — type alias re-export | `type-alias-block` (doesn't fire) |
-| `printHeading("X", "=", 50)` with diff X   | **Yes** — helper call, diff args | `single-call-expression` (doesn't fire) |
+| Surviving Clone                          | Should be filtered?              | Pattern that should fire                |
+| ---------------------------------------- | -------------------------------- | --------------------------------------- |
+| `ErrorType = domainerrors.ErrorType`     | **Yes** — type alias re-export   | `type-alias-block` (doesn't fire)       |
+| `printHeading("X", "=", 50)` with diff X | **Yes** — helper call, diff args | `single-call-expression` (doesn't fire) |
 
 ---
 
@@ -310,6 +316,7 @@ The tool correctly analyzed both the main module and the `filechange/` sub-modul
 ### 6. `--list-patterns` shows a thoughtful pattern set
 
 The 28 suppressible patterns cover the common Go idioms that produce false positives:
+
 - `table-driven-test`, `test-scaffolding`, `testdata-pair` — test boilerplate
 - `guard-clause`, `error-propagation`, `assign-error-check` — control flow
 - `raii-defer`, `interface-implementation` — language patterns
@@ -321,15 +328,15 @@ The gaps (type-alias-block not firing, single-call-expression not firing) are fi
 
 ## Summary of Suggested Tool Improvements
 
-| #    | Issue                                              | Severity | Effort  |
-| ---- | -------------------------------------------------- | -------- | ------- |
-| 1    | `type-alias-block` pattern doesn't fire for single-line aliases | Medium   | Low     |
-| 2    | `single-call-expression` doesn't suppress helper calls with different args | Medium   | Medium  |
-| 3    | Threshold cliff between t=2 and t=3 (binary on/off) | High     | High    |
-| 4    | No structural/type-3 clone detection (call-sequence matching) | High     | High    |
-| 5    | `--recommend-threshold` gives single value, not range | Low      | Low     |
-| 6    | No `--explain-threshold` to show what's suppressed at each level | Low      | Medium  |
-| 7    | Fix suggestion is generic ("Review and extract")   | Low      | Low     |
+| # | Issue                                                                      | Severity | Effort |
+| - | -------------------------------------------------------------------------- | -------- | ------ |
+| 1 | `type-alias-block` pattern doesn't fire for single-line aliases            | Medium   | Low    |
+| 2 | `single-call-expression` doesn't suppress helper calls with different args | Medium   | Medium |
+| 3 | Threshold cliff between t=2 and t=3 (binary on/off)                        | High     | High   |
+| 4 | No structural/type-3 clone detection (call-sequence matching)              | High     | High   |
+| 5 | `--recommend-threshold` gives single value, not range                      | Low      | Low    |
+| 6 | No `--explain-threshold` to show what's suppressed at each level           | Low      | Medium |
+| 7 | Fix suggestion is generic ("Review and extract")                           | Low      | Low    |
 
 ### Priority recommendation
 

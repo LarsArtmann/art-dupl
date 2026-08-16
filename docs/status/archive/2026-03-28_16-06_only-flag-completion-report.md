@@ -1,8 +1,8 @@
 # Status Report: --only Flag Implementation - COMPLETED
 
-**Date:** 2026-03-28 16:06:15  
-**Branch:** fork  
-**Commit Status:** 1 commit ahead of origin/fork, working tree clean  
+**Date:** 2026-03-28 16:06:15\
+**Branch:** fork\
+**Commit Status:** 1 commit ahead of origin/fork, working tree clean\
 **Latest Commit:** `65dc11d` - feat(cli): add --only flag for file type filtering
 
 ---
@@ -369,5 +369,5 @@ The `--only` flag feature is **COMPLETE, TESTED, AND PRODUCTION-READY**. All cri
 
 ---
 
-_Report generated automatically by Crush AI Assistant_  
+_Report generated automatically by Crush AI Assistant_\
 _Status: COMPLETE_

@@ -204,51 +204,51 @@ Currently at ~80%. Goal: 85%+ for critical packages.
 
 ### Priority 1-5: Immediate (Today)
 
-| #   | Task                      | Effort | Impact | Status          |
-| --- | ------------------------- | ------ | ------ | --------------- |
-| 1   | Commit this status report | 2min   | Low    | In Progress     |
-| 2   | Push to origin            | 1min   | Medium | Pending         |
-| 3   | Clarify release workflow  | 5min   | High   | Blocked on user |
+| # | Task                      | Effort | Impact | Status          |
+| - | ------------------------- | ------ | ------ | --------------- |
+| 1 | Commit this status report | 2min   | Low    | In Progress     |
+| 2 | Push to origin            | 1min   | Medium | Pending         |
+| 3 | Clarify release workflow  | 5min   | High   | Blocked on user |
 
 ### Priority 6-10: This Week
 
-| #   | Task                                     | Effort | Impact |
-| --- | ---------------------------------------- | ------ | ------ |
-| 6   | Migrate int threshold → domain.Threshold | 3h     | High   |
-| 7   | Add SARIF output format                  | 4h     | High   |
-| 8   | Create GitHub Actions workflow           | 2h     | High   |
-| 9   | Fix top 20 linter warnings               | 2h     | Medium |
-| 10  | Add missing exported comments            | 1h     | Low    |
+| #  | Task                                     | Effort | Impact |
+| -- | ---------------------------------------- | ------ | ------ |
+| 6  | Migrate int threshold → domain.Threshold | 3h     | High   |
+| 7  | Add SARIF output format                  | 4h     | High   |
+| 8  | Create GitHub Actions workflow           | 2h     | High   |
+| 9  | Fix top 20 linter warnings               | 2h     | Medium |
+| 10 | Add missing exported comments            | 1h     | Low    |
 
 ### Priority 11-15: This Month
 
-| #   | Task                              | Effort | Impact |
-| --- | --------------------------------- | ------ | ------ |
-| 11  | Split large files (>500 lines)    | 4h     | Medium |
-| 12  | Increase test coverage to 85%     | 8h     | High   |
-| 13  | Create ADRs for key decisions     | 4h     | Medium |
-| 14  | Add more fuzzing tests            | 4h     | Medium |
-| 15  | Fix remaining phantom type issues | 8h     | Medium |
+| #  | Task                              | Effort | Impact |
+| -- | --------------------------------- | ------ | ------ |
+| 11 | Split large files (>500 lines)    | 4h     | Medium |
+| 12 | Increase test coverage to 85%     | 8h     | High   |
+| 13 | Create ADRs for key decisions     | 4h     | Medium |
+| 14 | Add more fuzzing tests            | 4h     | Medium |
+| 15 | Fix remaining phantom type issues | 8h     | Medium |
 
 ### Priority 16-20: Next Quarter
 
-| #   | Task                    | Effort | Impact |
-| --- | ----------------------- | ------ | ------ |
-| 16  | Watch mode MVP          | 8h     | Medium |
-| 17  | Web dashboard MVP       | 20h    | Medium |
-| 18  | ARM64 SIMD optimization | 8h     | Medium |
-| 19  | VSCode extension        | 20h    | High   |
-| 20  | Cloud/CI templates      | 20h    | Medium |
+| #  | Task                    | Effort | Impact |
+| -- | ----------------------- | ------ | ------ |
+| 16 | Watch mode MVP          | 8h     | Medium |
+| 17 | Web dashboard MVP       | 20h    | Medium |
+| 18 | ARM64 SIMD optimization | 8h     | Medium |
+| 19 | VSCode extension        | 20h    | High   |
+| 20 | Cloud/CI templates      | 20h    | Medium |
 
 ### Priority 21-25: Future
 
-| #   | Task                              | Effort | Impact |
-| --- | --------------------------------- | ------ | ------ |
-| 21  | Python language support           | 40h    | High   |
-| 22  | TypeScript language support       | 40h    | High   |
-| 23  | Enterprise features               | 40h    | High   |
-| 24  | Plugin architecture               | 60h    | High   |
-| 25  | ML-based false positive reduction | 40h    | Medium |
+| #  | Task                              | Effort | Impact |
+| -- | --------------------------------- | ------ | ------ |
+| 21 | Python language support           | 40h    | High   |
+| 22 | TypeScript language support       | 40h    | High   |
+| 23 | Enterprise features               | 40h    | High   |
+| 24 | Plugin architecture               | 60h    | High   |
+| 25 | ML-based false positive reduction | 40h    | Medium |
 
 ---
 

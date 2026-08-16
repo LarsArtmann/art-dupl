@@ -13,8 +13,8 @@ This directory contains comprehensive status reports for the art-dupl project.
 
 ## 📊 Overall Project Status
 
-**Last Updated:** 2026-01-22 02:08 CET  
-**Branch:** fork  
+**Last Updated:** 2026-01-22 02:08 CET\
+**Branch:** fork\
 **Reporter:** AI Assistant
 
 | Metric             | Value        | Status         |
@@ -182,6 +182,6 @@ Reduction Needed: ~94%
 
 ---
 
-**For detailed information, see individual status reports above.**  
-**Last Updated:** 2026-01-22 02:08 CET  
+**For detailed information, see individual status reports above.**\
+**Last Updated:** 2026-01-22 02:08 CET\
 **Maintained By:** AI Assistant

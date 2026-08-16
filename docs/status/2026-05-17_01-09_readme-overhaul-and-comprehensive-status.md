@@ -169,48 +169,48 @@ The README was just overhauled — removing 10+ fabricated types, correcting 5+ 
 
 ### P0 — Fix Now (blocking clean CI)
 
-| #   | Task                                                                                                 | Effort | Impact              |
-| --- | ---------------------------------------------------------------------------------------------------- | ------ | ------------------- |
-| 1   | Fix `nestif` in `printer/text.go:56` — extract nested blocks into helper functions                   | S      | `just check` passes |
-| 2   | Fix `wsl_v5` in `bdd/actionability_test.go:123,131` — add whitespace                                 | XS     | `just check` passes |
-| 3   | Address `godox` TODO in `printer/actionability.go:87` — either implement or convert to tracked issue | S      | `just check` passes |
+| # | Task                                                                                                 | Effort | Impact              |
+| - | ---------------------------------------------------------------------------------------------------- | ------ | ------------------- |
+| 1 | Fix `nestif` in `printer/text.go:56` — extract nested blocks into helper functions                   | S      | `just check` passes |
+| 2 | Fix `wsl_v5` in `bdd/actionability_test.go:123,131` — add whitespace                                 | XS     | `just check` passes |
+| 3 | Address `godox` TODO in `printer/actionability.go:87` — either implement or convert to tracked issue | S      | `just check` passes |
 
 ### P1 — High Impact (architecture)
 
-| #   | Task                                                                                                   | Effort | Impact                                                |
-| --- | ------------------------------------------------------------------------------------------------------ | ------ | ----------------------------------------------------- |
-| 4   | Migrate Printer interface from `[][]*syntax.Node` to `[]ProcessedCloneGroup`                           | L      | Decouples printers from AST, enables non-Go languages |
-| 5   | Consolidate clone types: `printer.clone` + `pkg/artdupl.Clone` + `domain.ProcessedClone` → single type | L      | Eliminates split brain, reduces confusion             |
-| 6   | Wire `TodoDetector` and `LegacyDetector` to CLI via `-m todos` / `-m legacy`                           | M      | Users can access implemented features                 |
-| 7   | Extract `printer/clone_classify.go` language coupling → interface-based classifier                     | M      | Enables multi-language support                        |
+| # | Task                                                                                                   | Effort | Impact                                                |
+| - | ------------------------------------------------------------------------------------------------------ | ------ | ----------------------------------------------------- |
+| 4 | Migrate Printer interface from `[][]*syntax.Node` to `[]ProcessedCloneGroup`                           | L      | Decouples printers from AST, enables non-Go languages |
+| 5 | Consolidate clone types: `printer.clone` + `pkg/artdupl.Clone` + `domain.ProcessedClone` → single type | L      | Eliminates split brain, reduces confusion             |
+| 6 | Wire `TodoDetector` and `LegacyDetector` to CLI via `-m todos` / `-m legacy`                           | M      | Users can access implemented features                 |
+| 7 | Extract `printer/clone_classify.go` language coupling → interface-based classifier                     | M      | Enables multi-language support                        |
 
 ### P2 — Medium Impact (quality)
 
-| #   | Task                                                                                                              | Effort | Impact                     |
-| --- | ----------------------------------------------------------------------------------------------------------------- | ------ | -------------------------- |
-| 8   | Add `TokenValue` validation (bounds checking, construction)                                                       | S      | Type safety                |
-| 9   | Archive old docs/status/ files (keep last 30 days)                                                                | S      | Repo cleanliness           |
-| 10  | Update `HOW_TO_USE.md` to match new README (remove `--exclude-templ`, fix `--filter-generated`)                   | S      | Consistency                |
-| 11  | Update `FEATURES.md` to match new README flag names                                                               | S      | Consistency                |
-| 12  | Update `AGENTS.md` to reflect corrected flag names (`--include-templ`, not `--exclude-templ`)                     | S      | AI agent accuracy          |
-| 13  | Fix `domain/domain_test.go` unused writes (LSP hints)                                                             | XS     | Clean diagnostics          |
-| 14  | Use `encoding/csv` for clone CSV output                                                                           | S      | Consistency with stats CSV |
-| 15  | Add integration test for `--include-templ`, `--include-protobuf`, `--include-mockgen`, `--include-stringer` flags | M      | Coverage for new flags     |
+| #  | Task                                                                                                              | Effort | Impact                     |
+| -- | ----------------------------------------------------------------------------------------------------------------- | ------ | -------------------------- |
+| 8  | Add `TokenValue` validation (bounds checking, construction)                                                       | S      | Type safety                |
+| 9  | Archive old docs/status/ files (keep last 30 days)                                                                | S      | Repo cleanliness           |
+| 10 | Update `HOW_TO_USE.md` to match new README (remove `--exclude-templ`, fix `--filter-generated`)                   | S      | Consistency                |
+| 11 | Update `FEATURES.md` to match new README flag names                                                               | S      | Consistency                |
+| 12 | Update `AGENTS.md` to reflect corrected flag names (`--include-templ`, not `--exclude-templ`)                     | S      | AI agent accuracy          |
+| 13 | Fix `domain/domain_test.go` unused writes (LSP hints)                                                             | XS     | Clean diagnostics          |
+| 14 | Use `encoding/csv` for clone CSV output                                                                           | S      | Consistency with stats CSV |
+| 15 | Add integration test for `--include-templ`, `--include-protobuf`, `--include-mockgen`, `--include-stringer` flags | M      | Coverage for new flags     |
 
 ### P3 — Lower Impact (polish)
 
-| #   | Task                                                                       | Effort | Impact                         |
-| --- | -------------------------------------------------------------------------- | ------ | ------------------------------ |
-| 16  | Implement remaining 6 SIMD TODOs in `hash_simd.go`                         | M      | Performance on large codebases |
-| 17  | Implement `art-dupl man` subcommand (BDD test exists)                      | M      | Completeness                   |
-| 18  | Add `--format` short flag (`-o`) to root command for consistency           | XS     | UX consistency                 |
-| 19  | Investigate `state` struct memory layout optimization (currently 24 bytes) | S      | Performance                    |
-| 20  | Add SDK examples to `pkg/artdupl/` documentation                           | S      | Developer experience           |
-| 21  | Review and clean up `//nolint:` directives (45+ across codebase)           | M      | Code cleanliness               |
-| 22  | Add changelog (CHANGELOG.md) tracking major versions                       | S      | Release management             |
-| 23  | Set up GitHub Actions for automated README link checking                   | S      | CI quality                     |
-| 24  | Benchmark art-dupl vs original dupl for performance regression tracking    | M      | Performance visibility         |
-| 25  | Consider extracting `internal/testutil/` into a shared test library        | L      | Reusability                    |
+| #  | Task                                                                       | Effort | Impact                         |
+| -- | -------------------------------------------------------------------------- | ------ | ------------------------------ |
+| 16 | Implement remaining 6 SIMD TODOs in `hash_simd.go`                         | M      | Performance on large codebases |
+| 17 | Implement `art-dupl man` subcommand (BDD test exists)                      | M      | Completeness                   |
+| 18 | Add `--format` short flag (`-o`) to root command for consistency           | XS     | UX consistency                 |
+| 19 | Investigate `state` struct memory layout optimization (currently 24 bytes) | S      | Performance                    |
+| 20 | Add SDK examples to `pkg/artdupl/` documentation                           | S      | Developer experience           |
+| 21 | Review and clean up `//nolint:` directives (45+ across codebase)           | M      | Code cleanliness               |
+| 22 | Add changelog (CHANGELOG.md) tracking major versions                       | S      | Release management             |
+| 23 | Set up GitHub Actions for automated README link checking                   | S      | CI quality                     |
+| 24 | Benchmark art-dupl vs original dupl for performance regression tracking    | M      | Performance visibility         |
+| 25 | Consider extracting `internal/testutil/` into a shared test library        | L      | Reusability                    |
 
 ---
 
@@ -267,8 +267,8 @@ This is the single highest-impact architectural change, but it touches 111 test 
 | `cmd/`                 | 75.0%    | ✅               |
 | `detection/`           | 78.3%    | ✅               |
 | `bdd/`                 | 70.0%    | ✅               |
-| `domain/`              | 67.2%    | ⚠️ Below 80%     |
-| `internal/filtertest/` | 50.0%    | ⚠️               |
+| `domain/`              | 67.2%    | ⚠️ Below 80%      |
+| `internal/filtertest/` | 50.0%    | ⚠️                |
 | `examples/`            | 0.0%     | — (example only) |
 
 ---

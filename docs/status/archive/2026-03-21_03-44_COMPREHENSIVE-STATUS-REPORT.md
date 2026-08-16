@@ -1,8 +1,8 @@
 # Comprehensive Status Report: art-dupl Project
 
-**Date:** 2026-03-21 03:44 CET  
-**Session:** Post-Linting Cleanup & Configuration Optimization  
-**Branch:** fork  
+**Date:** 2026-03-21 03:44 CET\
+**Session:** Post-Linting Cleanup & Configuration Optimization\
+**Branch:** fork\
 **Overall Health Score: A- (93/100)** ⬆️ UP FROM A- (92/100)
 
 ---
@@ -120,8 +120,8 @@ linters:
 
 ### 1. Threshold Type Migration (int → domain.Threshold)
 
-**Impact:** HIGH  
-**Effort:** 2-3 hours  
+**Impact:** HIGH\
+**Effort:** 2-3 hours\
 **Risk:** Breaking change to public API
 
 **Scope:**
@@ -133,7 +133,7 @@ linters:
 
 ### 2. Remove Unused Domain Types
 
-**Impact:** LOW  
+**Impact:** LOW\
 **Effort:** 30 minutes
 
 **Types to Check:**
@@ -144,13 +144,13 @@ linters:
 
 ### 3. Magic Number Extraction
 
-**Impact:** LOW  
-**Effort:** 1 hour  
+**Impact:** LOW\
+**Effort:** 1 hour\
 **Count:** ~50 instances (mostly threshold=15)
 
 ### 4. Linter Panic Investigation
 
-**Impact:** MEDIUM  
+**Impact:** MEDIUM\
 **Status:** Not yet investigated
 
 **Problem:** golangci-lint LSP occasionally panics on certain files
@@ -370,7 +370,7 @@ This session successfully completed linting fixes and codebase cleanup:
 
 ---
 
-**Report Generated:** 2026-03-21 03:44 CET  
-**Author:** Crush AI Assistant  
-**Branch:** fork  
+**Report Generated:** 2026-03-21 03:44 CET\
+**Author:** Crush AI Assistant\
+**Branch:** fork\
 **Commit:** 7be48eb

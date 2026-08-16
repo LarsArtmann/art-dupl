@@ -66,7 +66,7 @@ Documented in `AGENTS.md:111` and appended **Section H (Resolutions)** to this r
 | Race                   | `CGO_ENABLED=1 go test -race ./printer/... ./domain/... ./cmd/...` | PASS                   |
 | Lint                   | `nix build .#checks.x86_64-linux.lint`                             | PASS (0 issues)        |
 | Disabled-linters guard | `nix build .#checks.x86_64-linux.disabled-linters`                 | PASS                   |
-| BDD flags              | `go test ./bdd/... --ginkgo.focus="no-actionability                | explain flag"`         | PASS |
+| BDD flags              | `go test ./bdd/... --ginkgo.focus="no-actionability                | explain flag"`         |
 
 ---
 

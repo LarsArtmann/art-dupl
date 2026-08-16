@@ -89,13 +89,13 @@
 
 ```json
 {
-	"threshold": 20,
-	"includeVendor": false,
-	"outputFormat": "json",
-	"verbose": true,
-	"paths": ["./src", "./lib"],
-	"ignoreFiles": ["*_test.go"],
-	"maxChildrenSerial": 15000
+  "threshold": 20,
+  "includeVendor": false,
+  "outputFormat": "json",
+  "verbose": true,
+  "paths": ["./src", "./lib"],
+  "ignoreFiles": ["*_test.go"],
+  "maxChildrenSerial": 15000
 }
 ```
 
@@ -187,10 +187,10 @@
 
 **WE HAVE SUCCESSFULLY TRANSFORMED dupl** from a basic CLI tool into an **enterprise-ready code analysis platform** with:
 
-🚀 **JSON Output** - Perfect for automation and CI/CD  
-⚙️ **Configuration System** - Team consistency and productivity  
-🛡️ **Type Safety** - Modern Go patterns and reliability  
-🧪 **Comprehensive Testing** - Production-grade quality  
+🚀 **JSON Output** - Perfect for automation and CI/CD\
+⚙️ **Configuration System** - Team consistency and productivity\
+🛡️ **Type Safety** - Modern Go patterns and reliability\
+🧪 **Comprehensive Testing** - Production-grade quality\
 🔧 **Enhanced CLI** - Better developer experience
 
 **Our fork now provides SIGNIFICANTLY MORE VALUE than upstream dupl while maintaining full backward compatibility!** 🎯
@@ -199,10 +199,10 @@
 
 ## 🎯 **IMMEDIATE DEPLOYMENT READY**
 
-✅ **Compilation**: Clean build with zero errors  
-✅ **Testing**: All 37 tests passing across 8 packages  
-✅ **Functionality**: JSON + Config + CLI integration working  
-✅ **Quality**: Type-safe errors + comprehensive validation  
+✅ **Compilation**: Clean build with zero errors\
+✅ **Testing**: All 37 tests passing across 8 packages\
+✅ **Functionality**: JSON + Config + CLI integration working\
+✅ **Quality**: Type-safe errors + comprehensive validation\
 ✅ **Documentation**: Usage examples and help updated
 
 **🚀 dupl is PRODUCTION READY and SIGNIFICANTLY ENHANCED!**

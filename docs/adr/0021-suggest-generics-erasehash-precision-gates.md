@@ -16,10 +16,10 @@ hashing appends each local's static type to its identifier hash, so two
 structurally-identical functions on different types produce different hashes
 and never match. The two flags are duals:
 
-| Flag          | Hash includes types? | Purpose                          |
-| ------------- | -------------------- | -------------------------------- |
-| `--type-aware` | Yes                 | Suppress same-shape-different-type FPs |
-| `--suggest-generics` | No (erased)  | Surface same-shape-different-type as candidates |
+| Flag                 | Hash includes types? | Purpose                                         |
+| -------------------- | -------------------- | ----------------------------------------------- |
+| `--type-aware`       | Yes                  | Suppress same-shape-different-type FPs          |
+| `--suggest-generics` | No (erased)          | Surface same-shape-different-type as candidates |
 
 An early design ran suggest-generics as a **filter** (only candidates shown).
 The 2026-08-10 redesign made it an **enhancer**: all groups are shown and

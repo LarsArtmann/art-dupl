@@ -130,48 +130,48 @@ The LSP warnings showing `nestif`, `godox`, `errcheck` in `golangci_lint_ls` are
 
 ### P0 — Immediate (5 minutes each)
 
-| #   | Task                                                                     | Impact              |
-| --- | ------------------------------------------------------------------------ | ------------------- |
-| 1   | Fix `--exclude-templ` → `--include-templ` in FEATURES.md (2 occurrences) | Accurate docs       |
-| 2   | Remove `--filter-generated` references from FEATURES.md (2 occurrences)  | Accurate docs       |
-| 3   | Fix `--exclude-templ` → `--include-templ` in AGENTS.md (2 occurrences)   | Accurate AI context |
-| 4   | Remove `--filter-generated` references from AGENTS.md (4 occurrences)    | Accurate AI context |
-| 5   | Upgrade `gomodguard` → `gomodguard_v2` in `.golangci.yml`                | Clean lint output   |
+| # | Task                                                                     | Impact              |
+| - | ------------------------------------------------------------------------ | ------------------- |
+| 1 | Fix `--exclude-templ` → `--include-templ` in FEATURES.md (2 occurrences) | Accurate docs       |
+| 2 | Remove `--filter-generated` references from FEATURES.md (2 occurrences)  | Accurate docs       |
+| 3 | Fix `--exclude-templ` → `--include-templ` in AGENTS.md (2 occurrences)   | Accurate AI context |
+| 4 | Remove `--filter-generated` references from AGENTS.md (4 occurrences)    | Accurate AI context |
+| 5 | Upgrade `gomodguard` → `gomodguard_v2` in `.golangci.yml`                | Clean lint output   |
 
 ### P1 — High Impact (1-2 hours each)
 
-| #   | Task                                                                                                         | Impact                     |
-| --- | ------------------------------------------------------------------------------------------------------------ | -------------------------- |
-| 6   | Wire `TodoDetector` to CLI via `-m todos` flag                                                               | Unlock implemented feature |
-| 7   | Wire `LegacyDetector` to CLI via `-m legacy` flag                                                            | Unlock implemented feature |
-| 8   | Fix `-o` short flag collision (stats `--format` vs root `--output-dir`)                                      | UX consistency             |
-| 9   | Add integration tests for `--include-templ`, `--include-protobuf`, `--include-mockgen`, `--include-stringer` | Coverage for new flags     |
-| 10  | Increase `domain/` test coverage from 67.2% to 80%+                                                          | Type safety                |
+| #  | Task                                                                                                         | Impact                     |
+| -- | ------------------------------------------------------------------------------------------------------------ | -------------------------- |
+| 6  | Wire `TodoDetector` to CLI via `-m todos` flag                                                               | Unlock implemented feature |
+| 7  | Wire `LegacyDetector` to CLI via `-m legacy` flag                                                            | Unlock implemented feature |
+| 8  | Fix `-o` short flag collision (stats `--format` vs root `--output-dir`)                                      | UX consistency             |
+| 9  | Add integration tests for `--include-templ`, `--include-protobuf`, `--include-mockgen`, `--include-stringer` | Coverage for new flags     |
+| 10 | Increase `domain/` test coverage from 67.2% to 80%+                                                          | Type safety                |
 
 ### P2 — Medium Impact (2-4 hours each)
 
-| #   | Task                                                                               | Impact              |
-| --- | ---------------------------------------------------------------------------------- | ------------------- |
-| 11  | Extract `printer/clone_classify.go` language coupling → interface-based classifier | Multi-language prep |
-| 12  | Use `encoding/csv` for clone CSV output (not just stats CSV)                       | Consistency         |
-| 13  | Add BDD tests for TODO/Legacy detector workflows                                   | Feature coverage    |
-| 14  | Implement `art-dupl man` subcommand (BDD test already exists)                      | CLI completeness    |
-| 15  | Add `TokenValue` type validation (bounds checking)                                 | Type safety         |
+| #  | Task                                                                               | Impact              |
+| -- | ---------------------------------------------------------------------------------- | ------------------- |
+| 11 | Extract `printer/clone_classify.go` language coupling → interface-based classifier | Multi-language prep |
+| 12 | Use `encoding/csv` for clone CSV output (not just stats CSV)                       | Consistency         |
+| 13 | Add BDD tests for TODO/Legacy detector workflows                                   | Feature coverage    |
+| 14 | Implement `art-dupl man` subcommand (BDD test already exists)                      | CLI completeness    |
+| 15 | Add `TokenValue` type validation (bounds checking)                                 | Type safety         |
 
 ### P3 — Lower Impact (varies)
 
-| #   | Task                                                              | Impact                 |
-| --- | ----------------------------------------------------------------- | ---------------------- |
-| 16  | Archive old docs/status/ files (keep last 30 days)                | Repo cleanliness       |
-| 17  | Implement remaining 6 SIMD TODOs in `hash_simd.go`                | Performance            |
-| 18  | Review and reduce `//nolint:` directives (45+ across codebase)    | Code cleanliness       |
-| 19  | Add changelog (CHANGELOG.md)                                      | Release management     |
-| 20  | SDK examples in `pkg/artdupl/` documentation                      | Developer experience   |
-| 21  | Benchmark art-dupl vs original dupl                               | Performance visibility |
-| 22  | Consider extracting `internal/testutil/` into shared test library | Reusability            |
-| 23  | Investigate `state` struct memory layout optimization             | Performance            |
-| 24  | Add GitHub Actions for automated README link checking             | CI quality             |
-| 25  | Set up automated docs freshness check (skills-based)              | Doc accuracy           |
+| #  | Task                                                              | Impact                 |
+| -- | ----------------------------------------------------------------- | ---------------------- |
+| 16 | Archive old docs/status/ files (keep last 30 days)                | Repo cleanliness       |
+| 17 | Implement remaining 6 SIMD TODOs in `hash_simd.go`                | Performance            |
+| 18 | Review and reduce `//nolint:` directives (45+ across codebase)    | Code cleanliness       |
+| 19 | Add changelog (CHANGELOG.md)                                      | Release management     |
+| 20 | SDK examples in `pkg/artdupl/` documentation                      | Developer experience   |
+| 21 | Benchmark art-dupl vs original dupl                               | Performance visibility |
+| 22 | Consider extracting `internal/testutil/` into shared test library | Reusability            |
+| 23 | Investigate `state` struct memory layout optimization             | Performance            |
+| 24 | Add GitHub Actions for automated README link checking             | CI quality             |
+| 25 | Set up automated docs freshness check (skills-based)              | Doc accuracy           |
 
 ---
 

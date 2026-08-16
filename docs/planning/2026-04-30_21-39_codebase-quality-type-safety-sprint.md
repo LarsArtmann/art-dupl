@@ -33,12 +33,12 @@
 
 ## Phase 1: Quick Wins (1% → 51%) — ~10 min each
 
-| #   | Task                                              | File(s)                                 | Impact | Effort |
-| --- | ------------------------------------------------- | --------------------------------------- | ------ | ------ |
-| T1  | Modernize `errors.As` → `errors.AsType`           | errors/types.go                         | Medium | 5min   |
-| T2  | Replace `//nolint:err113` with typed errors       | printer/format.go, printer/sort_type.go | Medium | 10min  |
-| T3  | Remove dead `migration/` rules from .golangci.yml | .golangci.yml                           | Low    | 5min   |
-| T4  | Run tests + verify                                | All                                     | —      | 5min   |
+| #  | Task                                              | File(s)                                 | Impact | Effort |
+| -- | ------------------------------------------------- | --------------------------------------- | ------ | ------ |
+| T1 | Modernize `errors.As` → `errors.AsType`           | errors/types.go                         | Medium | 5min   |
+| T2 | Replace `//nolint:err113` with typed errors       | printer/format.go, printer/sort_type.go | Medium | 10min  |
+| T3 | Remove dead `migration/` rules from .golangci.yml | .golangci.yml                           | Low    | 5min   |
+| T4 | Run tests + verify                                | All                                     | —      | 5min   |
 
 ## Phase 2: Type Safety Sweep (4% → 64%) — ~15 min each
 
@@ -77,16 +77,16 @@
 
 ### Phase 1 Subtasks
 
-| ID  | Subtask                                                                                                  | Parent | Est  |
-| --- | -------------------------------------------------------------------------------------------------------- | ------ | ---- |
-| S1  | Replace 3x `errors.As(err, &duplErr)` with `errors.AsType[*DuplError](err) != nil` in errors/types.go    | T1     | 3min |
-| S2  | Run tests                                                                                                | T1     | 2min |
-| S3  | In printer/format.go: import errors pkg, replace fmt.Errorf+nolint with errors.NewEnumValidationError    | T2     | 5min |
-| S4  | In printer/sort_type.go: import errors pkg, replace fmt.Errorf+nolint with errors.NewEnumValidationError | T2     | 5min |
-| S5  | Run tests                                                                                                | T2     | 2min |
-| S6  | Remove all 6 `migration/` path exclusion blocks from .golangci.yml                                       | T3     | 3min |
-| S7  | Run tests                                                                                                | T3     | 2min |
-| S8  | Git commit Phase 1                                                                                       | T4     | 2min |
+| ID | Subtask                                                                                                  | Parent | Est  |
+| -- | -------------------------------------------------------------------------------------------------------- | ------ | ---- |
+| S1 | Replace 3x `errors.As(err, &duplErr)` with `errors.AsType[*DuplError](err) != nil` in errors/types.go    | T1     | 3min |
+| S2 | Run tests                                                                                                | T1     | 2min |
+| S3 | In printer/format.go: import errors pkg, replace fmt.Errorf+nolint with errors.NewEnumValidationError    | T2     | 5min |
+| S4 | In printer/sort_type.go: import errors pkg, replace fmt.Errorf+nolint with errors.NewEnumValidationError | T2     | 5min |
+| S5 | Run tests                                                                                                | T2     | 2min |
+| S6 | Remove all 6 `migration/` path exclusion blocks from .golangci.yml                                       | T3     | 3min |
+| S7 | Run tests                                                                                                | T3     | 2min |
+| S8 | Git commit Phase 1                                                                                       | T4     | 2min |
 
 ### Phase 2 Subtasks
 

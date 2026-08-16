@@ -1,8 +1,8 @@
 # DE-DUPLICATION COMPREHENSIVE STATUS REPORT
 
-**Date:** 2025-12-16 07:55  
-**Task:** Code De-duplication in cli.go  
-**Status:** 🚨 **CRITICAL COMPILATION ERRORS** 🚨  
+**Date:** 2025-12-16 07:55\
+**Task:** Code De-duplication in cli.go\
+**Status:** 🚨 **CRITICAL COMPILATION ERRORS** 🚨\
 **Priority:** HIGH
 
 ---
@@ -210,7 +210,7 @@ printer/text.go:188:3: undefined: sortCloneGroupsBySize
 
 **Options:**
 A) **Dereference in buildSuffixTree()** - `return t, *data, filesCount, nil`
-B) **Update downstream functions** - change `createDuplChannel()` to accept `*[]*syntax.Node`  
+B) **Update downstream functions** - change `createDuplChannel()` to accept `*[]*syntax.Node`\
 C) **Fix job.BuildTree()** - modify to return `[]*syntax.Node` directly
 
 **Recommendation:** Option A (dereference) - minimal impact, maintains existing contracts
@@ -255,7 +255,7 @@ C) **Fix job.BuildTree()** - modify to return `[]*syntax.Node` directly
 
 ---
 
-**Report Generated:** 2025-12-16 07:55 CET  
-**Next Review:** After critical fixes are implemented  
-**Owner:** AI Assistant (Crush)  
+**Report Generated:** 2025-12-16 07:55 CET\
+**Next Review:** After critical fixes are implemented\
+**Owner:** AI Assistant (Crush)\
 **Priority:** HIGH - Fix compilation errors immediately

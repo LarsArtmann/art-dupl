@@ -54,21 +54,21 @@
 
 ## C) NOT STARTED (from TODO_LIST.md)
 
-| #   | Task                                    | Effort    | Impact  |
-| --- | --------------------------------------- | --------- | ------- |
-| 1   | `--no-actionability` flag               | 30min     | HIGH    |
-| 2   | `--explain` flag                        | 2h        | HIGH    |
-| 3   | `--diff-report baseline` mode           | 2h        | HIGH    |
-| 4   | HTML report improvements                | 1h        | MED     |
-| 5   | YAML config (`.artdupl.yml`)            | 2h        | MED     |
-| 6   | Refactor `generatorIncludes` struct     | 1h        | LOW     |
-| 7   | Interface-method-aware suppression      | 3h        | MED     |
-| 8   | `--recommend-threshold`                 | 2h        | LOW-MED |
-| 9   | Templ Phase 3: expression normalization | 2h        | LOW     |
-| 10  | Split `printer/` into sub-packages      | LARGE     | HIGH    |
-| 11  | Push defense-in-depth to gogenfilter    | Upstream  | MED     |
-| 12  | Branded `NodeType int32`                | HIGH RISK | MED     |
-| 13  | Hide `syntax/golang` behind facade      | Blocked   | MED     |
+| #  | Task                                    | Effort    | Impact  |
+| -- | --------------------------------------- | --------- | ------- |
+| 1  | `--no-actionability` flag               | 30min     | HIGH    |
+| 2  | `--explain` flag                        | 2h        | HIGH    |
+| 3  | `--diff-report baseline` mode           | 2h        | HIGH    |
+| 4  | HTML report improvements                | 1h        | MED     |
+| 5  | YAML config (`.artdupl.yml`)            | 2h        | MED     |
+| 6  | Refactor `generatorIncludes` struct     | 1h        | LOW     |
+| 7  | Interface-method-aware suppression      | 3h        | MED     |
+| 8  | `--recommend-threshold`                 | 2h        | LOW-MED |
+| 9  | Templ Phase 3: expression normalization | 2h        | LOW     |
+| 10 | Split `printer/` into sub-packages      | LARGE     | HIGH    |
+| 11 | Push defense-in-depth to gogenfilter    | Upstream  | MED     |
+| 12 | Branded `NodeType int32`                | HIGH RISK | MED     |
+| 13 | Hide `syntax/golang` behind facade      | Blocked   | MED     |
 
 ---
 

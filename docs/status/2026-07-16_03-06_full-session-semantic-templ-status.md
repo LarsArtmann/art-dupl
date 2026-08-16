@@ -161,78 +161,78 @@ Threshold 5 is confirmed correct across all 7 tested projects. Threshold 3 adds 
 
 ### Tier 1: High Impact, Low Effort (do first)
 
-| #   | Task                                                        | Impact                                    | Effort | Status       |
-| --- | ----------------------------------------------------------- | ----------------------------------------- | ------ | ------------ |
-| 1   | ~~Delete all archived status docs (283 files)~~             | ~~-283 files of dead weight~~             | 5 min  | **REJECTED** |
-| 2   | Run against 10+ external projects and document FP/FN rates  | Validate real quality                     | 30 min | **DONE**     |
-| 3   | Add `--test-threshold` flag                                 | Feedback #1 request                       | 1h     | Pending      |
-| 4   | Fix pre-existing `assertionMethodNames` global lint         | Lint hygiene                              | 5 min  | Pending      |
-| 5   | Fix `isErrorWrappingBody` per-call map allocation           | Perf                                      | 10 min | Pending      |
-| 6   | Encode struct field names in KeyValueExpr                   | Prevent `Point{X:1}` matching `Size{W:1}` | 30 min | Pending      |
-| 7   | Verify race safety with `-race` flag on all tests           | Safety                                    | 10 min | Pending      |
-| 8   | Document templ semantic mode in website docs                | User communication                        | 30 min | Pending      |
-| 9   | Update AGENTS.md with templ semantic mode details           | Dev context                               | 15 min | Pending      |
-| 10  | Add `--dump-tokens` debug flag for inspecting token streams | Debugging                                 | 30 min | Pending      |
+| #  | Task                                                        | Impact                                    | Effort | Status       |
+| -- | ----------------------------------------------------------- | ----------------------------------------- | ------ | ------------ |
+| 1  | ~~Delete all archived status docs (283 files)~~             | ~~-283 files of dead weight~~             | 5 min  | **REJECTED** |
+| 2  | Run against 10+ external projects and document FP/FN rates  | Validate real quality                     | 30 min | **DONE**     |
+| 3  | Add `--test-threshold` flag                                 | Feedback #1 request                       | 1h     | Pending      |
+| 4  | Fix pre-existing `assertionMethodNames` global lint         | Lint hygiene                              | 5 min  | Pending      |
+| 5  | Fix `isErrorWrappingBody` per-call map allocation           | Perf                                      | 10 min | Pending      |
+| 6  | Encode struct field names in KeyValueExpr                   | Prevent `Point{X:1}` matching `Size{W:1}` | 30 min | Pending      |
+| 7  | Verify race safety with `-race` flag on all tests           | Safety                                    | 10 min | Pending      |
+| 8  | Document templ semantic mode in website docs                | User communication                        | 30 min | Pending      |
+| 9  | Update AGENTS.md with templ semantic mode details           | Dev context                               | 15 min | Pending      |
+| 10 | Add `--dump-tokens` debug flag for inspecting token streams | Debugging                                 | 30 min | Pending      |
 
 ### Tier 2: High Impact, Medium Effort
 
-| #   | Task                                                     | Impact                           | Effort |
-| --- | -------------------------------------------------------- | -------------------------------- | ------ |
-| 11  | Prototype `go/types` opt-in mode                         | Eliminate biggest FP source      | 4h+    |
-| 12  | Add `--type-aware` CLI flag                              | User control                     | 1h     |
-| 13  | Implement templ Phase 3 (expression normalization)       | More true positives              | 2h     |
-| 14  | Add BDD tests for templ semantic mode (multi-element)    | Test coverage                    | 1h     |
-| 15  | Consolidate clone types (7 → 2-3)                        | Architecture debt                | 4h+    |
-| 16  | Add `--min-lines` flag                                   | Complementary filter             | 1h     |
-| 17  | Improve `containsTRunCall` to match `t.Run` specifically | Fix false test pattern detection | 15 min |
-| 18  | Verify cobra detection checks parent Ident               | Fix imprecise pattern            | 15 min |
+| #  | Task                                                     | Impact                           | Effort |
+| -- | -------------------------------------------------------- | -------------------------------- | ------ |
+| 11 | Prototype `go/types` opt-in mode                         | Eliminate biggest FP source      | 4h+    |
+| 12 | Add `--type-aware` CLI flag                              | User control                     | 1h     |
+| 13 | Implement templ Phase 3 (expression normalization)       | More true positives              | 2h     |
+| 14 | Add BDD tests for templ semantic mode (multi-element)    | Test coverage                    | 1h     |
+| 15 | Consolidate clone types (7 → 2-3)                        | Architecture debt                | 4h+    |
+| 16 | Add `--min-lines` flag                                   | Complementary filter             | 1h     |
+| 17 | Improve `containsTRunCall` to match `t.Run` specifically | Fix false test pattern detection | 15 min |
+| 18 | Verify cobra detection checks parent Ident               | Fix imprecise pattern            | 15 min |
 
 ### Tier 3: Medium Impact, Low Effort
 
-| #   | Task                                                               | Impact                | Effort |
-| --- | ------------------------------------------------------------------ | --------------------- | ------ |
-| 19  | Add benchmark comparing semantic vs exact vs structural            | Perf visibility       | 30 min |
-| 20  | Unify Type/Fingerprint model (remove `DecodeBaseType`)             | Code clarity          | 2h     |
-| 21  | Remove import cycle workaround in `fingerprint_test.go`            | Test hygiene          | 15 min |
-| 22  | Add property-based/fuzz test for normalization pipeline            | Edge case discovery   | 1h     |
-| 23  | Add benchmark for literal Kind.String() call                       | Perf regression guard | 15 min |
-| 24  | Add `.art-duplignore` config file support                          | User flexibility      | 2h     |
-| 25  | Add pattern-aware weighting (not binary actionable/non-actionable) | Nuance                | 4h+    |
+| #  | Task                                                               | Impact                | Effort |
+| -- | ------------------------------------------------------------------ | --------------------- | ------ |
+| 19 | Add benchmark comparing semantic vs exact vs structural            | Perf visibility       | 30 min |
+| 20 | Unify Type/Fingerprint model (remove `DecodeBaseType`)             | Code clarity          | 2h     |
+| 21 | Remove import cycle workaround in `fingerprint_test.go`            | Test hygiene          | 15 min |
+| 22 | Add property-based/fuzz test for normalization pipeline            | Edge case discovery   | 1h     |
+| 23 | Add benchmark for literal Kind.String() call                       | Perf regression guard | 15 min |
+| 24 | Add `.art-duplignore` config file support                          | User flexibility      | 2h     |
+| 25 | Add pattern-aware weighting (not binary actionable/non-actionable) | Nuance                | 4h+    |
 
 ### Tier 4: Medium Impact, Medium Effort
 
-| #   | Task                                                | Impact              | Effort |
-| --- | --------------------------------------------------- | ------------------- | ------ |
-| 26  | Improve error wrapping detection (2-stmt bodies)    | More FP suppression | 30 min |
-| 27  | Lower builder callback threshold from 3 to 2 calls  | More FP suppression | 15 min |
-| 28  | Add clone refactoring suggestions in output         | User value          | 1h     |
-| 29  | Add SARIF rule metadata for actionability           | CI integration      | 30 min |
-| 30  | Improve data dominance ratio for small clones       | FP reduction        | 30 min |
-| 31  | Add HTML report grouping by actionability status    | UX                  | 1h     |
-| 32  | Cache versioning for serialization format changes   | Cache safety        | 1h     |
-| 33  | Add `--since` flag for git-ref-based file filtering | CI speed            | 2h     |
+| #  | Task                                                | Impact              | Effort |
+| -- | --------------------------------------------------- | ------------------- | ------ |
+| 26 | Improve error wrapping detection (2-stmt bodies)    | More FP suppression | 30 min |
+| 27 | Lower builder callback threshold from 3 to 2 calls  | More FP suppression | 15 min |
+| 28 | Add clone refactoring suggestions in output         | User value          | 1h     |
+| 29 | Add SARIF rule metadata for actionability           | CI integration      | 30 min |
+| 30 | Improve data dominance ratio for small clones       | FP reduction        | 30 min |
+| 31 | Add HTML report grouping by actionability status    | UX                  | 1h     |
+| 32 | Cache versioning for serialization format changes   | Cache safety        | 1h     |
+| 33 | Add `--since` flag for git-ref-based file filtering | CI speed            | 2h     |
 
 ### Tier 5: Lower Priority / Future
 
-| #   | Task                                                                |
-| --- | ------------------------------------------------------------------- |
-| 34  | Implement nested-scope shadowing in normalizer                      |
-| 35  | Add generics constraint normalization (`T any` vs `T comparable`)   |
-| 36  | Add multi-language actionability for templ                          |
-| 37  | Add LSP integration for real-time detection                         |
-| 38  | Add WASM target for browser-based detection                         |
-| 39  | Parallel suffix tree construction                                   |
-| 40  | Machine-learning-based actionability classification                 |
-| 41  | Add diff mode (compare two codebases)                               |
-| 42  | Add `--json-schema` flag                                            |
-| 43  | Improve suffix tree memory for large codebases                      |
-| 44  | Add pre-commit hook improvement (exit non-zero only for actionable) |
-| 45  | Add stats FP rate estimate                                          |
-| 46  | Add website detection-methods guide with Type-2 examples            |
-| 47  | Add performance optimization guide                                  |
-| 48  | Add CI/CD integration guide for templ projects                      |
-| 49  | Add templ-specific actionability patterns (htmx boilerplate)        |
-| 50  | Add composite literal array detection for test fixtures             |
+| #  | Task                                                                |
+| -- | ------------------------------------------------------------------- |
+| 34 | Implement nested-scope shadowing in normalizer                      |
+| 35 | Add generics constraint normalization (`T any` vs `T comparable`)   |
+| 36 | Add multi-language actionability for templ                          |
+| 37 | Add LSP integration for real-time detection                         |
+| 38 | Add WASM target for browser-based detection                         |
+| 39 | Parallel suffix tree construction                                   |
+| 40 | Machine-learning-based actionability classification                 |
+| 41 | Add diff mode (compare two codebases)                               |
+| 42 | Add `--json-schema` flag                                            |
+| 43 | Improve suffix tree memory for large codebases                      |
+| 44 | Add pre-commit hook improvement (exit non-zero only for actionable) |
+| 45 | Add stats FP rate estimate                                          |
+| 46 | Add website detection-methods guide with Type-2 examples            |
+| 47 | Add performance optimization guide                                  |
+| 48 | Add CI/CD integration guide for templ projects                      |
+| 49 | Add templ-specific actionability patterns (htmx boilerplate)        |
+| 50 | Add composite literal array detection for test fixtures             |
 
 ---
 

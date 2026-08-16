@@ -2012,7 +2012,6 @@ startLine, endLine := position.ByteRangeToLines(content, 7, 13)
 - Position out of bounds: Returns default (1, 1)
 
 ````
-
 **Godoc Examples:**
 ```go
 // ByteRangeToLines example
@@ -2783,7 +2782,7 @@ func runCobraCommand() int {
 | ----------------- | ----- | ------------- |
 | Fully Done        | 4     | ✅ Complete   |
 | Partially Done    | 1     | 🔄 Incomplete |
-| Not Started       | 7     | ⏸️ Pending    |
+| Not Started       | 7     | ⏸️ Pending     |
 | Totally Fucked Up | 1     | 💥 Failed     |
 
 ---
