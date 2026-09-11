@@ -1,23 +1,25 @@
-tags:
-  - tool
-  - cli
-  - production
-  - ai
-  - code-analysis
-  - code-quality
-  - static-analysis
-  - clone-detection
-  - golang
-  - go-tools
-  - developer-tools
-  - clean-architecture
-  - domain-driven-design
-  - ast
-  - suffix-tree
-  - bdd
-  - ginkgo
-  - testing
-  - ci-cd
-importance: 68
 created_at: 2026-02-15T14:10:57.105584Z
-updated_at: 2026-03-25T17:58:28.046796Z
+updated_at: 2026-09-10T03:44:55.321664951Z
+tags:
+    - tool
+    - cli
+    - production
+    - ai
+    - code-analysis
+    - code-quality
+    - static-analysis
+    - clone-detection
+    - golang
+    - go-tools
+    - developer-tools
+    - clean-architecture
+    - domain-driven-design
+    - ast
+    - suffix-tree
+    - bdd
+    - ginkgo
+    - testing
+    - ci-cd
+    - linter
+    - lib
+importance: 68
