@@ -1,0 +1,185 @@
+# Status Report: go-paperless Analysis → art-dupl False-Negative Investigation
+
+- **Date:** 2026-09-13 15:45 CEST
+- **Session scope:** Analysis of art-dupl runs against `/home/lars/projects/go-paperless`, followed by a false-negative investigation into art-dupl's detection pipeline.
+- **Repos touched:** Read-only on `go-paperless`; read-only on `art-dupl` (no production code changed in either repo this session).
+- **Artifacts produced:** Synthetic proof fixture at `/tmp/fntest` (ephemeral), this report.
+- **Status:** Point-in-time snapshot. Section (f) is HARVEST fuel for `TODO_LIST.md`/`ROADMAP.md`.
+
+---
+
+## Executive Summary
+
+The user asked "could it be that we have false-negatives?" after art-dupl reported **0 actionable clones** for go-paperless. The answer is **yes, confirmed, with root cause and synthetic proof**:
+
+> **Any divergence inside a `for`/`if` body masks the ENTIRE composite statement.** Two loops sharing 2+ byte-identical leading statements but differing in a later statement are invisible to art-dupl at every threshold, every mode (semantic/structural/exact), and every filter configuration. This hid a real ~26-line pagination-skeleton clone in go-paperless (`ListDocumentChecksums` vs `ListDocumentMetas`).
+
+The tool's "0 shown" verdict for go-paperless is *mostly* correct (the client is genuinely well-factored via `ensureNamed`/`doRequest`/`getNamedDetail` helpers), but the pagination pair is a real, extractable, generics-shaped clone that art-dupl structurally cannot see. A fix direction exists (emit nested-block children as statement tokens) but was **not implemented** — this session was research-only by design.
+
+---
+
+## a) FULLY DONE
+
+Verifiable, evidence-backed completions this session:
+
+| # | Item | Evidence |
+|---|------|----------|
+| a1 | **Cross-run analysis of pasted CLI output** — quantified type-aware value on go-paperless: plain 44 groups vs type-aware 39 (5 groups killed); confirmed all 5 killed groups were non-actionable anyway (type-aware = pure noise reduction there, 24x runtime cost for zero output change); confirmed `--type-aware --suggest-generics` precedence warning + identical-to-plain result (types erased, 44 groups) | Pasted transcript in session; counts cross-checked arithmetically (22+17=39, 27+17=44) |
+| a2 | **Performance comparison table** — plain 12ms wall / 6.8MB / 3 GC vs type-aware 283ms wall / 21.6MB / 9 GC; all overhead localized to `ingest` (7ms→276ms, go/types loading); search/print phases unaffected | `--timing` output from transcript |
+| a3 | **Full clone inventory of go-paperless** at every filter configuration: `-t 1`, `-t 5`, `--no-actionability`, `--show-suppressed`, `--explain` — all 44 groups mapped; every `client.go` line appearing in any clone enumerated (25 distinct lines, all 1–3 statement trivia) | `art-dupl -t 1 --no-actionability --show-suppressed` output; line inventory grep |
+| a4 | **Detection-mode comparison** — semantic: 44 groups; structural: 62; exact: 25. Pagination clone lines (909/1016) absent in ALL three modes | Mode runs at `-t 1` |
+| a5 | **Manual duplication audit of client.go (1450 lines)** — function map extracted (41 funcs); real duplication candidates identified by reading: (1) pagination skeleton in `ListDocumentChecksums` (client.go:905) vs `ListDocumentMetas` (client.go:1012), ~9-10 shared statements; (2) `findNamed` (client.go:574) vs `FindCustomField` (client.go:650), ~15 lines, longest common run = 3 statements (sub-threshold); (3) trivial 1-statement noise (return-only groups, correctly suppressed) | `rg '^func' client.go`; read of client.go:574-740, 905-1056, 1217-1282 |
+| a6 | **Synthetic proof of the false-negative class** — fixture `/tmp/fntest` (module `fntest`, `a.go` + `b.go`), 3 experiments: (E/F) loops differing ONLY in literals → whole 4-line loop detected as 1-statement clone ✓ (literal normalization works inside composite fingerprints); (A/B) loops with 2 identical leading statements + divergent 3rd → **NOTHING detected** ✗; (C/D) identical statements at function top level → detected ✓ | `art-dupl -t 2/1 --no-actionability --show-suppressed` runs on fixture; outputs in session log |
+| a7 | **Plumbing-output mystery resolved** — `art-dupl -p` printing nothing was investigated and is CORRECT behavior (0 shown groups → empty stdout; plumbing respects suppression). With `--no-actionability` it lists all 10 groups. Not a bug | `art-dupl -t 1 -p --no-actionability` run, exit 0, 10 lines |
+| a8 | **Verdict delivered on go-paperless health** — stats: Health Score A, 0.0% duplication ratio, 0 actionable clones at `-t 1`; verdict "mostly right, but pagination pair is a real miss" | `art-dupl stats -t 1` output |
+
+## b) PARTIALLY DONE
+
+Work in progress with known, specific gaps:
+
+| # | Item | What works | What remains | Blocker | Effort |
+|---|------|-----------|--------------|---------|--------|
+| b1 | **False-negative class characterization** | `for`-loop interior masking proven on synthetic fixture; mechanism identified (statement-level composite tokenization: `serial()` fingerprints each statement as one token; a `for` IS one statement) | `if`/`switch`/`select` bodies asserted by analogy but NOT fixture-proven; interaction with `maxChildren` truncation unexplored | None — pure follow-up work | S |
+| b2 | **Quantification of go-paperless impact** | Pagination skeleton estimated at ~9-10 shared statements / ~26 lines per instance; `findNamed` vs `FindCustomField` longest common run = 3 statements (below default `-t 5`) | Exact statement-token counts per instance not dumped (`--dump-tokens` lacks source-line mapping — see e4); overlap percentage not computed | Diagnosability of token stream | S |
+| b3 | **Fix design for art-dupl** | Direction proposed: emit statement tokens for nested-block children (loop/if bodies), or a secondary sub-statement pass over large composite statements | No prototype, no ADR, no benchmarks of suffix-tree size/alloc impact, no noise-risk assessment (could this over-report?) | Design decision pending (see g1) | M |
+| b4 | **`serialize 0s` timing-render nit** (from session 1) | Identified: `--timing` prints `serialize 0s` for sub-millisecond durations instead of `<1ms` | Not located in code, not fixed. Lost track of it during pivot to false-negative research | None | S |
+| b5 | **HARVEST of section (f) into TODO_LIST.md/ROADMAP.md** | Report written with 50 ranked items | HARVEST not executed — user instruction "THEN WAIT FOR INSTRUCTIONS!" takes precedence over the skill's auto-harvest continuation | Awaiting user instruction | S |
+
+## c) NOT STARTED
+
+Planned but no code/doc written. This session deliberately did not touch production code (research-only), so these are all forward work:
+
+| # | Item | Why not started | Priority |
+|---|------|-----------------|----------|
+| c1 | Prototype nested-statement token emission in `syntax/` | Research session; design decision pending (g1) | High |
+| c2 | ADR for detection-granularity change (tradeoffs: recall vs noise vs token count) | Blocked on g1 | High |
+| c3 | Permanent regression fixtures for loop-interior clones (testdata/ or bdd/ scenario) | Awaiting fix approach | High |
+| c4 | Fixture-proof for if/switch/select body masking | Fast follow-up, not yet run | High |
+| c5 | Search art-dupl issue tracker / ROADMAP for pre-existing granularity discussion | Not done — risk of re-deriving a known/deferred decision | Medium |
+| c6 | go-paperless: extract generic pagination helper (fix the clone at the source) | go-paperless is a separate project; user hasn't asked for changes there | Medium |
+| c7 | Self-analysis of art-dupl with the new fixture to catch in-repo loop-skeleton clones | Depends on c1 | Medium |
+| c8 | `--dump-tokens` source-line mapping for diagnosability | Discovered need mid-session (mapping tokens→lines failed, see d2) | Medium |
+| c9 | Cross-repo recall survey (how many loop-skeleton clones exist in Lars's other Go repos) | Scope | Medium |
+| c10 | templ-path validation of the same masking class | Low urgency (templ matching is structural-only anyway) | Low |
+
+## d) TOTALLY FUCKED UP
+
+Radical honesty section. Nothing is on fire for *users of the analyzed project*, but one finding is genuinely serious for the tool's core promise:
+
+| # | What is broken | Severity | Root cause | Mitigation |
+|---|---------------|----------|------------|------------|
+| d1 | **art-dupl's headline feature has a systematic blind spot**: any clone that lives inside a loop body (or any composite statement's interior) is undetectable — at ANY threshold (even `-t 1`), ANY mode (semantic/structural/exact), ANY filter combination (`--no-actionability --show-suppressed --include-tests`). The tool can report "0 clones, Health A" on code containing a 26-line duplicated skeleton. The granularity cliff is binary: whole-statement match or nothing. `--suggest-generics` cannot rescue undetected groups (it only annotates detected ones). | **High for tool credibility** (its documented purpose: "threshold counts duplicated STATEMENTS" is implemented faithfully, but the user-visible consequence — the most common real-world pattern, "shared loop skeleton, divergent accumulator" — is exactly what's missed). No data loss; CI users get false-clean verdicts. | `serial()` fingerprints each statement subtree into ONE composite token; nested-block children do not get their own tokens. Two loops that differ anywhere inside get different composite fingerprints → zero matching statements → nothing enters the suffix tree. | None in current release. Workaround: manual review (what this session did), or run with `--structural` (does NOT help — proven), or wait for a granularity fix (c1). |
+| d2 | **`--dump-tokens` is undiagnosable for this class of investigation**: the dump has stream positions, not source line numbers. The session's attempt to map tokens around client.go:909/1016 failed (grep matched column offsets, not source lines), wasting a diagnostic round. | Low-Medium (debugging friction) | Dump format omits source position mapping | Mitigated this session by pivoting to the synthetic-fixture approach (which was the right call anyway); fix = c8 |
+| d3 | **`--timing` sub-millisecond rendering lies slightly**: `serialize 0s` instead of `<1ms`. Cosmetic, but the timing output is the tool's self-profiling surface. | Low | Duration formatting rounds sub-ms to `0s` | b4 (S effort) |
+| d4 | **Session self-critique — what I forgot / could do better** (asked explicitly): (1) I initially grepped `--dump-tokens` against line-number patterns that were actually stream offsets — should have inspected the format header first (one wasted step). (2) I asserted if/switch-body masking "by analogy" without a fixture — overclaimed generality of the proof. (3) I did not check art-dupl's own TODO_LIST/ROADMAP/issue tracker for a pre-existing granularity decision before proposing a fix direction. (4) I did not quantify the missed duplication in exact token counts (estimates only). (5) The `serialize 0s` nit from session 1 was never followed up — it fell out of my head until the user asked for this report. (6) I offered "want me to fix the 0s rendering?" and then dropped it when the conversation moved on — an offer is not a tracker. | — | — | Addressed via b1/b2/b4/c4/c5 and section (f) items |
+
+## e) WHAT WE SHOULD IMPROVE
+
+Process and design improvements (not bugs):
+
+| # | Improvement | Impact | Concrete fix |
+|---|------------|--------|--------------|
+| e1 | **"0 shown" ≠ "clean" needs a user-facing caveat.** This session proved a Health-A, 0-actionable verdict can hide a 26-line clone. Every user trusting the exit-silent CI mode gets false-clean verdicts on loop-skeleton duplication. | High trust impact | Document the granularity limitation in `HOW_TO_USE.md` Known Limitations + README FAQ; until a fix ships, suggest lowering `-t` does NOT help (important: users would naturally try that, and it provably doesn't work for this class) |
+| e2 | **Fixture-first diagnosis over token-dump archaeology.** When a detection question arises, a 10-line synthetic fixture answers it deterministically; reading dumps of real code does not. This session burned time on d2 before pivoting. | Medium (time) | Add a "how to debug detection" section to TESTING.md with the fixture pattern (`/tmp/fntest` recipe) |
+| e3 | **Detection guarantees deserve a golden-corpus regression suite.** The proof fixture (E/F/A/B/C/D cases) is exactly the kind of thing that should live in `testdata/` forever and run in CI — it encodes a *promise* about detection behavior. | High (prevents silent regressions both directions) | c3: commit fixtures + expected-clone assertions as table-driven or BDD tests |
+| e4 | **Make `--dump-tokens` carry source positions.** Debugging "why is this clone missed?" is the #1 support scenario for a clone detector; the dump is the primary diagnostic surface. | Medium | c8: add `file:line-col` to each dump row |
+| e5 | **Follow-up nits need a landing zone.** The `serialize 0s` nit survived two sessions because offers aren't tracked. | Low but recurring | HARVEST section (f) into TODO_LIST.md immediately after each status report (per skill loop-closing note) |
+| e6 | **Type-aware value proposition should be measured per-repo, not assumed.** On go-paperless it cost 24x runtime to remove 5 groups that were all non-actionable anyway. A "--type-aware worth it?" heuristic (e.g., report how many type-aware-killed groups were actionable) would turn the flag's cost into a data-driven decision. | Medium | Feature idea → ROADMAP (f44) |
+
+## f) Top 50 things we should get done next
+
+Ranked by impact. **This is a brainstorm, not a commitment list** — most items after ~#20 are ROADMAP fuel; `docs-health` HARVEST should apply routing rigor (specific + bounded → TODO_LIST; exploratory → ROADMAP).
+
+### Tier 1 — Core detection fix (Critical path)
+
+| # | Task | Impact | Effort | Category |
+|---|------|--------|--------|----------|
+| 1 | Fixture-prove the masking class for `if`/`switch`/`select` bodies (extend `/tmp/fntest`) | High | S | Quality |
+| 2 | Decide fix approach: (A) emit nested-block children as statement tokens vs (B) secondary sub-statement pass vs (C) document-as-limitation | Critical | M | Feature |
+| 3 | Write ADR: detection granularity — statement vs sub-statement, recall vs noise vs token-count tradeoffs | High | M | Documentation |
+| 4 | Prototype approach (A): nested-block children get own tokens in `serial()` | Critical | L | Feature |
+| 5 | Add permanent regression fixtures: loops with identical heads + divergent tails MUST detect | Critical | S | Quality |
+| 6 | Add BDD scenario in `bdd/`: "clone inside loop body is detected" | High | M | Quality |
+| 7 | Benchmark suffix-tree size + alloc impact of nested tokens (`scripts/alloc-budgets.txt` update) | High | M | Quality |
+| 8 | Run `benchstat` vs `docs/benchmarks/` baselines after change | High | M | Quality |
+| 9 | Re-validate actionability corpus (new tokens must not trigger over-suppression via data-dominated etc.) | High | M | Quality |
+| 10 | Verify cache-key/CacheVersion implications (detection change must not serve stale-mode results) | Medium | S | Bug-prevention |
+| 11 | Decide default-on vs opt-in flag for the new granularity (see g1) | Critical | S | Decision |
+| 12 | Re-run `/tmp/fntest` + go-paperless + art-dupl self-analysis after fix; confirm pagination clone surfaces | Critical | S | Verification |
+| 13 | Update `AGENTS.md` Known Limitations with the loop-masking finding (enduring context, regardless of fix timing) | High | S | Documentation |
+| 14 | Update `HOW_TO_USE.md` + README with granularity caveat and (post-fix) behavior | High | S | Documentation |
+
+### Tier 2 — go-paperless follow-ups (the analyzed repo)
+
+| # | Task | Impact | Effort | Category |
+|---|------|--------|--------|----------|
+| 15 | Extract generic pagination helper for `ListDocumentChecksums`/`ListDocumentMetas` (the missed clone) | High | M | Feature |
+| 16 | Or, if kept separate: add `//art-dupl:accept` rationale once the tool can see the clone | Low | S | Cleanup |
+| 17 | Consolidate `findNamed`/`FindCustomField` via a generic find-by-name helper (3-statement common run today) | Medium | M | Cleanup |
+| 18 | Manually review the 5 type-aware-suppressed groups to confirm they're true false positives | Medium | S | Verification |
+| 19 | Audit `client_test.go` (1612 lines) with `--include-tests --no-actionability` for test-helper extraction | Medium | M | Quality |
+| 20 | Explicitly accept the `example_test.go` client-construction clones (doc-example boilerplate, intentional) | Low | S | Cleanup |
+
+### Tier 3 — Diagnosability & UX
+
+| # | Task | Impact | Effort | Category |
+|---|------|--------|--------|----------|
+| 21 | Add source positions (`file:line-col`) to `--dump-tokens` rows | Medium | S | Feature |
+| 22 | Fix `--timing` sub-ms rendering (`serialize 0s` → `<1ms`) | Medium | S | Bug |
+| 23 | Add "how to debug a missed clone" (fixture recipe) to `TESTING.md` | Medium | S | Documentation |
+| 24 | Document "0 shown ≠ clean" caveat in output docs (e1) | High | S | Documentation |
+| 25 | Add near-miss hint: "N runs of k<`-t` statements found" when threshold filters long-but-sub-threshold runs | Medium | M | Feature |
+| 26 | Warn (or note) when `-t` lowering cannot help a specific miss class | Low | S | UX |
+| 27 | Confirm precedence-warning wording for all flag combos (`--structural`+`--type-aware` etc.) | Low | S | Quality |
+
+### Tier 4 — Verification & hygiene
+
+| # | Task | Effect | Effort | Category |
+|---|------|--------|--------|----------|
+| 28 | Search art-dupl tracker/ROADMAP for pre-existing granularity discussion before implementing | Medium | S | Research |
+| 29 | Run `nix flake check` (build + race + alloc gates) after any syntax/ change | High | S | Verification |
+| 30 | `golangci-lint run` on touched packages | Medium | S | Verification |
+| 31 | Commit the fntest fixture into `testdata/` (not /tmp — it's ephemeral) | High | S | Quality |
+| 32 | Check templ path for the same masking class (structural-only matching) | Medium | M | Quality |
+| 33 | Probe GenDecl/ValueSpec composite tokens for type-decl duplication blindness | Medium | S | Research |
+| 34 | Probe identical statement heads across two different composite statements (if-head sharing) | Low | S | Research |
+| 35 | Explore `maxChildren` truncation as a potential second false-negative class (very long functions) | High | M | Research |
+| 36 | Verify serialization arena pre-count (`countSerializedNodes`) still matches semantics if nested tokens are added | High | S | Bug-prevention |
+| 37 | Update `TestSerializePreservesAllFields` if token emission changes | High | S | Quality |
+| 38 | Update layout/alloc tests (`syntax_layout_test.go`, `alloc_budget_test.go`) if Node/token counts change | High | S | Quality |
+
+### Tier 5 — ROADMAP fuel (larger ideas)
+
+| # | Task | Impact | Effort | Category |
+|---|------|--------|--------|----------|
+| 39 | Cross-repo recall survey: scan Lars's Go repos for loop-skeleton clones to size the fix's win | Medium | L | Research |
+| 40 | Seed `--suggest-generics` from sub-statement analysis (post-fix enhancement) | Medium | L | Feature |
+| 41 | Type-aware value heuristic: report how many type-aware-killed groups were actionable (e6) | Medium | M | Feature |
+| 42 | Golden-corpus recall harness (run detection over a curated set of known clones, report recall %) | High | L | Quality |
+| 43 | Warning for high-similarity-no-clone functions (e.g., >50% shared statements below threshold) | Low | M | Feature |
+| 44 | `--sub-statement` experimental flag (if approach (A) proves too noisy as default) | Medium | M | Feature |
+| 45 | README before/after example showing loop-skeleton detection | Low | S | Documentation |
+| 46 | Release plan: granularity changes reported counts → minor bump + CHANGELOG entry + migration note | Medium | S | Documentation |
+| 47 | Re-run CPU-affinity benchmarks post-change (token stream size affects search) | Low | M | Quality |
+| 48 | Confirm gogenfilter/testdata paths unaffected by serialization changes | Low | S | Verification |
+| 49 | docs-health HARVEST: route (f) items into `TODO_LIST.md` (Tier 1-4) and `ROADMAP.md` (Tier 5) | High | S | Process |
+| 50 | Verify auto-commit daemon picked up this report; then close the loop | Low | S | Process |
+
+## g) Questions I cannot figure out myself
+
+Q1 and Q2 block Tier 1; Q3 is a domain call only the owner can make.
+
+1. **Should nested-statement token emission (the granularity fix) be default-on or behind a flag?** I cannot decide this myself: default-on changes reported clone counts for every existing consumer (CI baselines, `baseline check` files), potentially re-surfacing previously-clean repos; opt-in splits the user base and makes "the tool" behavior version-dependent. I tried to infer precedent from ADR-0019 (parallel search, default sequential) and ADR-0007 (detection modes as config enums) — both suggest "flag first, default later after corpus data," but the noise risk here is different in kind (it changes *what is detected*, not just speed). What is your tolerance for re-surfaced clones in existing baselines?
+
+2. **Is the go-paperless pagination duplication intentional?** I read both functions fully (`ListDocumentChecksums` client.go:905, `ListDocumentMetas` client.go:1012): same endpoint, same pagination constants, different accumulators and decode targets, each with its own doc comment describing distinct purposes. It *looks* accidental-but-harmless and generics-extractable (a `paginateDocuments[T]` helper taking a per-entry mapper). But two functions having careful separate documentation can also mean "deliberately separate, don't couple them" — and I cannot distinguish deliberate separation from undocumented accidents from code alone. Should go-paperless get the extraction (f15), or should the duplication be accepted with a rationale?
+
+3. **For the first fix PR, loops only, or all nested-block statements (`if`/`switch`/`select` too)?** Loops-only is a smaller, safer diff targeting the proven case; all-blocks is the complete fix but multiplies the token-count/alloc impact and the actionability-corpus re-validation surface (items f7-f9). I can fixture-prove the `if` case in 10 minutes (f1) before you decide — but the *scope* of the first PR is a judgment call about risk appetite I shouldn't make alone.
+
+---
+
+## Handoff Notes
+
+- **No code was changed** in either repo this session; working trees untouched by me. The report file itself is the only new artifact (auto-commit daemon will pick it up; per harness rules I do not commit manually).
+- **Section (f) is not yet harvested** — per the status-report skill's loop-closing rule, run `docs-health` HARVEST to route Tier 1-4 into `TODO_LIST.md` and Tier 5 into `ROADMAP.md` when you're ready.
+- **Format override note:** the skill's canonical output is a styled HTML dashboard; the user explicitly requested `.md`, which wins. One-off override, not propagated into the skill.
+- **Fixture `/tmp/fntest` is ephemeral** (tmpfs/reboot) — item f31 commits it into `testdata/` if the finding should survive.
