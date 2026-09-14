@@ -50,7 +50,7 @@
 
           src = lib.cleanSource ./.;
 
-          vendorHash = "sha256-ejRPEDAL6bHvYsqAfn0tsLVuQtiVkfZRTbFblkPzBpE=";
+          vendorHash = "sha256-osoyt9/xyozLDAV9xiFSqknHcZOvf9i2AgltEKfLW6U=";
           proxyVendor = true;
 
           overrideModAttrs = _old: {
