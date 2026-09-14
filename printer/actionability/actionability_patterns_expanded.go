@@ -14,7 +14,7 @@ const calleeErrorf = "Errorf"
 // framework (Ginkgo/testify/testify). These indicate non-actionable test
 // assertionMethodNames are test assertion method names (Ginkgo/Gomega, testify, etc.).
 var assertionMethodNames = []string{ //nolint:gochecknoglobals // static name set
-	"Expect", "Assert", "Require", "Should", "Must", "So", //nolint:goconst
+	"Expect", "Assert", "Require", "Should", "Must", "So",
 }
 
 // isAssertionChain reports whether every clone is dominated by test assertion

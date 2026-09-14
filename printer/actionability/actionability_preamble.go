@@ -63,10 +63,10 @@ var preambleDisallowedCalls = []string{ //nolint:gochecknoglobals // static name
 	// Subtest launching is structure, not setup.
 	"Run",
 	// testing.T failure/logging methods.
-	"Error", "Errorf", "Fatal", "Fatalf", "Fail", "FailNow", "Log", "Logf", //nolint:goconst
+	"Error", "Errorf", "Fatal", "Fatalf", "Fail", "FailNow", "Log", "Logf",
 	"Skip", "Skipf",
 	// Assertion families (testify, gomega, ginkgo, stdlib checks).
-	"Expect", "Require", "Assert", "Check", "So", "Should", //nolint:goconst
+	"Expect", "Require", "Assert", "Check", "So", "Should",
 	"NoError", "ErrorIs", "ErrorAs", "Equal", "NotEqual", "True", "False",
 	"Nil", "NotNil", "Zero", "Len", "Empty", "Contains", "ElementsMatch",
 	"HaveLen", "BeEmpty", "BeNil", "BeTrue", "BeFalse", "BeZero", "HaveOccurred",

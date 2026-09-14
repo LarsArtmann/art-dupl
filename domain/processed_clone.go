@@ -8,7 +8,7 @@ import (
 
 // CloneCategory represents the category of code that was duplicated.
 //
-//nolint:recvcheck // standard Go JSON convention: MarshalJSON value receiver, UnmarshalJSON pointer receiver
+// standard Go JSON convention: MarshalJSON value receiver, UnmarshalJSON pointer receiver
 type CloneCategory string
 
 const (
@@ -33,7 +33,7 @@ const (
 
 // ClonePriority represents how important it is to address this clone.
 //
-//nolint:recvcheck // standard Go JSON convention: MarshalJSON value receiver, UnmarshalJSON pointer receiver
+// standard Go JSON convention: MarshalJSON value receiver, UnmarshalJSON pointer receiver
 type ClonePriority string
 
 const (
@@ -45,7 +45,7 @@ const (
 
 // CloneActionability indicates whether a clone can realistically be deduplicated.
 //
-//nolint:recvcheck // standard Go JSON convention: MarshalJSON value receiver, UnmarshalJSON pointer receiver
+// standard Go JSON convention: MarshalJSON value receiver, UnmarshalJSON pointer receiver
 type CloneActionability string
 
 const (
@@ -63,7 +63,7 @@ const (
 
 // CloneType represents the standard code clone taxonomy (Bellon et al.).
 //
-//nolint:recvcheck // standard Go JSON convention: MarshalJSON value receiver, UnmarshalJSON pointer receiver
+// standard Go JSON convention: MarshalJSON value receiver, UnmarshalJSON pointer receiver
 type CloneType string
 
 const (

@@ -17,7 +17,7 @@ var commonInterfaceMethodNames = []string{ //nolint:gochecknoglobals // static n
 	// fmt.Formatter
 	"Format",
 	// error interface
-	"Error", //nolint:goconst
+	"Error",
 	// io.Reader/Writer/Closer/Seeker
 	"Read", "Write", "Close", "Seek",
 	// sort.Interface

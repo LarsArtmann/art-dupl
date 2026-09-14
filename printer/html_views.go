@@ -79,10 +79,12 @@ func toCloneOccurrenceView(cl domain.ProcessedClone) CloneOccurrenceView {
 // unique within one report, the best possible when there is no content to
 // derive from.
 func groupAnchorID(hash string, groupNum int) string {
-	var b strings.Builder
-	b.Grow(len(hash) + 6)
+	const anchorPrefix = "group-"
 
-	b.WriteString("group-")
+	var b strings.Builder
+	b.Grow(len(hash) + len(anchorPrefix))
+
+	b.WriteString(anchorPrefix)
 
 	for _, r := range hash {
 		switch {
