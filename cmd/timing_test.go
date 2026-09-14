@@ -146,3 +146,29 @@ func TestPrintStageTimingReportRowOrder(t *testing.T) {
 		}
 	}
 }
+
+func TestFormatStageDuration(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name string
+		in   time.Duration
+		want string
+	}{
+		{"zero stays 0s", 0, "0s"},
+		{"sub-millisecond is real work", 350 * time.Microsecond, "<1ms"},
+		{"exactly 1ms", time.Millisecond, "1ms"},
+		{"milliseconds", 42 * time.Millisecond, "42ms"},
+		{"seconds", 2 * time.Second, "2s"},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+
+			if got := formatStageDuration(tc.in); got != tc.want {
+				t.Errorf("formatStageDuration(%v) = %q, want %q", tc.in, got, tc.want)
+			}
+		})
+	}
+}

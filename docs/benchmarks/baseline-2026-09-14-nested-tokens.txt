@@ -149,4 +149,14 @@ BenchmarkSerialize_Statements-32    	10645316	       111.3 ns/op
 BenchmarkSerialize_Statements-32    	11005558	       112.1 ns/op
 BenchmarkSerialize_Statements-32    	10160370	       112.6 ns/op
 BenchmarkSerialize_Idempotent-32    	  580653	      2018 ns/op
-BenchmarkSerialize_Idempotent-32    	
+BenchmarkSerialize_Idempotent-32    	  593655	      2074 ns/op
+BenchmarkSerialize_Idempotent-32    	  596104	      2100 ns/op
+BenchmarkSerialize_Idempotent-32    	  594762	      2023 ns/op
+BenchmarkSerialize_Idempotent-32    	  576800	      2056 ns/op
+BenchmarkSerialize_Idempotent-32    	  593251	      2089 ns/op
+BenchmarkSerialize_Idempotent-32    	  575936	      2237 ns/op
+BenchmarkSerialize_Idempotent-32    	  447210	      2423 ns/op
+BenchmarkSerialize_Idempotent-32    	  434872	      2597 ns/op
+BenchmarkSerialize_Idempotent-32    	  476211	      2537 ns/op
+PASS
+ok  	github.com/LarsArtmann/art-dupl/syntax	99.135s
