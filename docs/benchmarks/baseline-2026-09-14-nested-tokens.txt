@@ -1,0 +1,225 @@
+goos: linux
+goarch: amd64
+pkg: github.com/LarsArtmann/art-dupl/suffixtree
+cpu: AMD RYZEN AI MAX+ 395 w/ Radeon 8060S          
+BenchmarkSTreeUpdate/tokens_100-32   	  165502	      7934 ns/op	   24040 B/op	     101 allocs/op
+BenchmarkSTreeUpdate/tokens_100-32   	  163593	      6579 ns/op	   24040 B/op	     101 allocs/op
+BenchmarkSTreeUpdate/tokens_100-32   	  186274	      6690 ns/op	   24040 B/op	     101 allocs/op
+BenchmarkSTreeUpdate/tokens_100-32   	  172437	      6604 ns/op	   24040 B/op	     101 allocs/op
+BenchmarkSTreeUpdate/tokens_100-32   	  167820	      6657 ns/op	   24040 B/op	     101 allocs/op
+BenchmarkSTreeUpdate/tokens_100-32   	  164664	      8334 ns/op	   24040 B/op	     101 allocs/op
+BenchmarkSTreeUpdate/tokens_100-32   	  182731	      6195 ns/op	   24040 B/op	     101 allocs/op
+BenchmarkSTreeUpdate/tokens_100-32   	  192025	      6126 ns/op	   24040 B/op	     101 allocs/op
+BenchmarkSTreeUpdate/tokens_100-32   	  196345	      6013 ns/op	   24040 B/op	     101 allocs/op
+BenchmarkSTreeUpdate/tokens_100-32   	  199986	      6010 ns/op	   24040 B/op	     101 allocs/op
+BenchmarkSTreeUpdate/tokens_500-32   	   35812	     34523 ns/op	   67880 B/op	     547 allocs/op
+BenchmarkSTreeUpdate/tokens_500-32   	   36060	     33394 ns/op	   67880 B/op	     547 allocs/op
+BenchmarkSTreeUpdate/tokens_500-32   	   36308	     35148 ns/op	   67880 B/op	     547 allocs/op
+BenchmarkSTreeUpdate/tokens_500-32   	   35242	     36918 ns/op	   67880 B/op	     547 allocs/op
+BenchmarkSTreeUpdate/tokens_500-32   	   34188	     34233 ns/op	   67880 B/op	     547 allocs/op
+BenchmarkSTreeUpdate/tokens_500-32   	   35788	     39797 ns/op	   67880 B/op	     547 allocs/op
+BenchmarkSTreeUpdate/tokens_500-32   	   33144	     34068 ns/op	   67880 B/op	     547 allocs/op
+BenchmarkSTreeUpdate/tokens_500-32   	   35596	     34568 ns/op	   67880 B/op	     547 allocs/op
+BenchmarkSTreeUpdate/tokens_500-32   	   35671	     33564 ns/op	   67880 B/op	     547 allocs/op
+BenchmarkSTreeUpdate/tokens_500-32   	   33607	     33844 ns/op	   67880 B/op	     547 allocs/op
+BenchmarkSTreeUpdate/tokens_2000-32  	    7848	    152733 ns/op	  231576 B/op	    2046 allocs/op
+BenchmarkSTreeUpdate/tokens_2000-32  	    7806	    157196 ns/op	  231577 B/op	    2046 allocs/op
+BenchmarkSTreeUpdate/tokens_2000-32  	    7998	    151110 ns/op	  231577 B/op	    2046 allocs/op
+BenchmarkSTreeUpdate/tokens_2000-32  	    7021	    152161 ns/op	  231576 B/op	    2046 allocs/op
+BenchmarkSTreeUpdate/tokens_2000-32  	    7923	    153345 ns/op	  231576 B/op	    2046 allocs/op
+BenchmarkSTreeUpdate/tokens_2000-32  	    8007	    150696 ns/op	  231576 B/op	    2046 allocs/op
+BenchmarkSTreeUpdate/tokens_2000-32  	    7753	    151943 ns/op	  231576 B/op	    2046 allocs/op
+BenchmarkSTreeUpdate/tokens_2000-32  	    8112	    152195 ns/op	  231577 B/op	    2046 allocs/op
+BenchmarkSTreeUpdate/tokens_2000-32  	    7689	    153168 ns/op	  231576 B/op	    2046 allocs/op
+BenchmarkSTreeUpdate/tokens_2000-32  	    8144	    151869 ns/op	  231576 B/op	    2046 allocs/op
+BenchmarkFindDuplOver/threshold_10-32         	   10000	    114202 ns/op	    8896 B/op	    1543 allocs/op
+BenchmarkFindDuplOver/threshold_10-32         	   10000	    114827 ns/op	    8896 B/op	    1543 allocs/op
+BenchmarkFindDuplOver/threshold_10-32         	   10000	    113072 ns/op	    8895 B/op	    1543 allocs/op
+BenchmarkFindDuplOver/threshold_10-32         	   10000	    115464 ns/op	    8896 B/op	    1543 allocs/op
+BenchmarkFindDuplOver/threshold_10-32         	   10000	    120041 ns/op	    8895 B/op	    1543 allocs/op
+BenchmarkFindDuplOver/threshold_10-32         	    9067	    116159 ns/op	    8896 B/op	    1543 allocs/op
+BenchmarkFindDuplOver/threshold_10-32         	    9153	    116950 ns/op	    8896 B/op	    1543 allocs/op
+BenchmarkFindDuplOver/threshold_10-32         	   10000	    114587 ns/op	    8895 B/op	    1543 allocs/op
+BenchmarkFindDuplOver/threshold_10-32         	   10000	    113030 ns/op	    8896 B/op	    1543 allocs/op
+BenchmarkFindDuplOver/threshold_10-32         	   10000	    114329 ns/op	    8895 B/op	    1543 allocs/op
+BenchmarkFindDuplOver/threshold_50-32         	    9537	    113160 ns/op	    8831 B/op	    1539 allocs/op
+BenchmarkFindDuplOver/threshold_50-32         	   10000	    115963 ns/op	    8831 B/op	    1539 allocs/op
+BenchmarkFindDuplOver/threshold_50-32         	    9420	    111459 ns/op	    8832 B/op	    1539 allocs/op
+BenchmarkFindDuplOver/threshold_50-32         	   10000	    112643 ns/op	    8831 B/op	    1539 allocs/op
+BenchmarkFindDuplOver/threshold_50-32         	   10000	    113378 ns/op	    8832 B/op	    1539 allocs/op
+BenchmarkFindDuplOver/threshold_50-32         	   10000	    112033 ns/op	    8832 B/op	    1539 allocs/op
+BenchmarkFindDuplOver/threshold_50-32         	   10000	    112687 ns/op	    8831 B/op	    1539 allocs/op
+BenchmarkFindDuplOver/threshold_50-32         	   10000	    112712 ns/op	    8831 B/op	    1539 allocs/op
+BenchmarkFindDuplOver/threshold_50-32         	   10000	    111054 ns/op	    8831 B/op	    1539 allocs/op
+BenchmarkFindDuplOver/threshold_50-32         	    9840	    112121 ns/op	    8832 B/op	    1539 allocs/op
+BenchmarkFindDuplOver/threshold_200-32        	   10000	    105476 ns/op	    8463 B/op	    1518 allocs/op
+BenchmarkFindDuplOver/threshold_200-32        	   10000	    105229 ns/op	    8463 B/op	    1518 allocs/op
+BenchmarkFindDuplOver/threshold_200-32        	   10000	    107306 ns/op	    8463 B/op	    1518 allocs/op
+BenchmarkFindDuplOver/threshold_200-32        	   11011	    130947 ns/op	    8463 B/op	    1518 allocs/op
+BenchmarkFindDuplOver/threshold_200-32        	   10000	    116821 ns/op	    8463 B/op	    1518 allocs/op
+BenchmarkFindDuplOver/threshold_200-32        	   10753	    107687 ns/op	    8463 B/op	    1518 allocs/op
+BenchmarkFindDuplOver/threshold_200-32        	   10000	    109584 ns/op	    8463 B/op	    1518 allocs/op
+BenchmarkFindDuplOver/threshold_200-32        	   10000	    114015 ns/op	    8463 B/op	    1518 allocs/op
+BenchmarkFindDuplOver/threshold_200-32        	   10000	    112947 ns/op	    8463 B/op	    1518 allocs/op
+BenchmarkFindDuplOver/threshold_200-32        	   10000	    109367 ns/op	    8463 B/op	    1518 allocs/op
+BenchmarkMemoryUsageFewTokens-32              	    6202	    177662 ns/op	  186840 B/op	      23 allocs/op
+BenchmarkMemoryUsageFewTokens-32              	    7246	    166185 ns/op	  186840 B/op	      23 allocs/op
+BenchmarkMemoryUsageFewTokens-32              	    7388	    165444 ns/op	  186840 B/op	      23 allocs/op
+BenchmarkMemoryUsageFewTokens-32              	    7476	    170260 ns/op	  186840 B/op	      23 allocs/op
+BenchmarkMemoryUsageFewTokens-32              	    7596	    170932 ns/op	  186840 B/op	      23 allocs/op
+BenchmarkMemoryUsageFewTokens-32              	    7174	    168649 ns/op	  186840 B/op	      23 allocs/op
+BenchmarkMemoryUsageFewTokens-32              	    7272	    167264 ns/op	  186840 B/op	      23 allocs/op
+BenchmarkMemoryUsageFewTokens-32              	    7557	    166238 ns/op	  186840 B/op	      23 allocs/op
+BenchmarkMemoryUsageFewTokens-32              	    7280	    166564 ns/op	  186840 B/op	      23 allocs/op
+BenchmarkMemoryUsageFewTokens-32              	    7528	    167168 ns/op	  186840 B/op	      23 allocs/op
+BenchmarkMemoryUsageManyTokens-32             	    3435	    353022 ns/op	  591274 B/op	      44 allocs/op
+BenchmarkMemoryUsageManyTokens-32             	    3414	    354204 ns/op	  591275 B/op	      44 allocs/op
+BenchmarkMemoryUsageManyTokens-32             	    3310	    355314 ns/op	  591275 B/op	      44 allocs/op
+BenchmarkMemoryUsageManyTokens-32             	    3471	    350233 ns/op	  591275 B/op	      44 allocs/op
+BenchmarkMemoryUsageManyTokens-32             	    3420	    353755 ns/op	  591274 B/op	      44 allocs/op
+BenchmarkMemoryUsageManyTokens-32             	    3553	    356134 ns/op	  591275 B/op	      44 allocs/op
+BenchmarkMemoryUsageManyTokens-32             	    3390	    351315 ns/op	  591274 B/op	      44 allocs/op
+BenchmarkMemoryUsageManyTokens-32             	    3394	    347954 ns/op	  591274 B/op	      44 allocs/op
+BenchmarkMemoryUsageManyTokens-32             	    3560	    358484 ns/op	  591274 B/op	      44 allocs/op
+BenchmarkMemoryUsageManyTokens-32             	    3458	    372909 ns/op	  591275 B/op	      44 allocs/op
+BenchmarkFindDuplOverParallel/seq/tokens_1000-32         	    5253	    224486 ns/op
+BenchmarkFindDuplOverParallel/seq/tokens_1000-32         	    5456	    224853 ns/op
+BenchmarkFindDuplOverParallel/seq/tokens_1000-32         	    5508	    225064 ns/op
+BenchmarkFindDuplOverParallel/seq/tokens_1000-32         	    5276	    230701 ns/op
+BenchmarkFindDuplOverParallel/seq/tokens_1000-32         	    4693	    229656 ns/op
+BenchmarkFindDuplOverParallel/seq/tokens_1000-32         	    5247	    226804 ns/op
+BenchmarkFindDuplOverParallel/seq/tokens_1000-32         	    5311	    223808 ns/op
+BenchmarkFindDuplOverParallel/seq/tokens_1000-32         	    5278	    222549 ns/op
+BenchmarkFindDuplOverParallel/seq/tokens_1000-32         	    4987	    226936 ns/op
+BenchmarkFindDuplOverParallel/seq/tokens_1000-32         	    5155	    236417 ns/op
+BenchmarkFindDuplOverParallel/par2/tokens_1000-32        	    5961	    198234 ns/op
+BenchmarkFindDuplOverParallel/par2/tokens_1000-32        	    7028	    176325 ns/op
+BenchmarkFindDuplOverParallel/par2/tokens_1000-32        	    7180	    176523 ns/op
+BenchmarkFindDuplOverParallel/par2/tokens_1000-32        	    6730	    177630 ns/op
+BenchmarkFindDuplOverParallel/par2/tokens_1000-32        	    7278	    173464 ns/op
+BenchmarkFindDuplOverParallel/par2/tokens_1000-32        	    6308	    175846 ns/op
+BenchmarkFindDuplOverParallel/par2/tokens_1000-32        	    7095	    174678 ns/op
+BenchmarkFindDuplOverParallel/par2/tokens_1000-32        	    7063	    175087 ns/op
+BenchmarkFindDuplOverParallel/par2/tokens_1000-32        	    6942	    177407 ns/op
+BenchmarkFindDuplOverParallel/par2/tokens_1000-32        	    7249	    177908 ns/op
+BenchmarkFindDuplOverParallel/par4/tokens_1000-32        	    9364	    124891 ns/op
+BenchmarkFindDuplOverParallel/par4/tokens_1000-32        	   10000	    123121 ns/op
+BenchmarkFindDuplOverParallel/par4/tokens_1000-32        	    9854	    124527 ns/op
+BenchmarkFindDuplOverParallel/par4/tokens_1000-32        	   10000	    127022 ns/op
+BenchmarkFindDuplOverParallel/par4/tokens_1000-32        	    9111	    125782 ns/op
+BenchmarkFindDuplOverParallel/par4/tokens_1000-32        	    9600	    124513 ns/op
+BenchmarkFindDuplOverParallel/par4/tokens_1000-32        	    9885	    123408 ns/op
+BenchmarkFindDuplOverParallel/par4/tokens_1000-32        	   10000	    124333 ns/op
+BenchmarkFindDuplOverParallel/par4/tokens_1000-32        	   10000	    124693 ns/op
+BenchmarkFindDuplOverParallel/par4/tokens_1000-32        	    9866	    125210 ns/op
+BenchmarkFindDuplOverParallel/par32/tokens_1000-32       	   12939	     92471 ns/op
+BenchmarkFindDuplOverParallel/par32/tokens_1000-32       	   12480	     95657 ns/op
+BenchmarkFindDuplOverParallel/par32/tokens_1000-32       	   12667	     95125 ns/op
+BenchmarkFindDuplOverParallel/par32/tokens_1000-32       	   12727	     93966 ns/op
+BenchmarkFindDuplOverParallel/par32/tokens_1000-32       	   12806	     94244 ns/op
+BenchmarkFindDuplOverParallel/par32/tokens_1000-32       	   13020	     91941 ns/op
+BenchmarkFindDuplOverParallel/par32/tokens_1000-32       	   12846	     93328 ns/op
+BenchmarkFindDuplOverParallel/par32/tokens_1000-32       	   12850	     93375 ns/op
+BenchmarkFindDuplOverParallel/par32/tokens_1000-32       	   12782	     94910 ns/op
+BenchmarkFindDuplOverParallel/par32/tokens_1000-32       	   12470	     95947 ns/op
+BenchmarkFindDuplOverParallel/seq/tokens_5000-32         	     986	   1217697 ns/op
+BenchmarkFindDuplOverParallel/seq/tokens_5000-32         	    1008	   1205242 ns/op
+BenchmarkFindDuplOverParallel/seq/tokens_5000-32         	     988	   1235750 ns/op
+BenchmarkFindDuplOverParallel/seq/tokens_5000-32         	    1012	   1213655 ns/op
+BenchmarkFindDuplOverParallel/seq/tokens_5000-32         	    1018	   1188098 ns/op
+BenchmarkFindDuplOverParallel/seq/tokens_5000-32         	    1033	   1191842 ns/op
+BenchmarkFindDuplOverParallel/seq/tokens_5000-32         	    1012	   1196818 ns/op
+BenchmarkFindDuplOverParallel/seq/tokens_5000-32         	    1012	   1201052 ns/op
+BenchmarkFindDuplOverParallel/seq/tokens_5000-32         	     958	   1278752 ns/op
+BenchmarkFindDuplOverParallel/seq/tokens_5000-32         	     927	   1249478 ns/op
+BenchmarkFindDuplOverParallel/par2/tokens_5000-32        	    1567	    779146 ns/op
+BenchmarkFindDuplOverParallel/par2/tokens_5000-32        	    1614	    742428 ns/op
+BenchmarkFindDuplOverParallel/par2/tokens_5000-32        	    1537	    764780 ns/op
+BenchmarkFindDuplOverParallel/par2/tokens_5000-32        	    1417	    795006 ns/op
+BenchmarkFindDuplOverParallel/par2/tokens_5000-32        	    1644	    785091 ns/op
+BenchmarkFindDuplOverParallel/par2/tokens_5000-32        	    1526	    782349 ns/op
+BenchmarkFindDuplOverParallel/par2/tokens_5000-32        	    1485	    791296 ns/op
+BenchmarkFindDuplOverParallel/par2/tokens_5000-32        	    1598	    791020 ns/op
+BenchmarkFindDuplOverParallel/par2/tokens_5000-32        	    1477	    776130 ns/op
+BenchmarkFindDuplOverParallel/par2/tokens_5000-32        	    1468	    792634 ns/op
+BenchmarkFindDuplOverParallel/par4/tokens_5000-32        	    2504	    495907 ns/op
+BenchmarkFindDuplOverParallel/par4/tokens_5000-32        	    2602	    496788 ns/op
+BenchmarkFindDuplOverParallel/par4/tokens_5000-32        	    2464	    507362 ns/op
+BenchmarkFindDuplOverParallel/par4/tokens_5000-32        	    2151	    524118 ns/op
+BenchmarkFindDuplOverParallel/par4/tokens_5000-32        	    2599	    511858 ns/op
+BenchmarkFindDuplOverParallel/par4/tokens_5000-32        	    2580	    520377 ns/op
+BenchmarkFindDuplOverParallel/par4/tokens_5000-32        	    2588	    526356 ns/op
+BenchmarkFindDuplOverParallel/par4/tokens_5000-32        	    2284	    507785 ns/op
+BenchmarkFindDuplOverParallel/par4/tokens_5000-32        	    2100	    516797 ns/op
+BenchmarkFindDuplOverParallel/par4/tokens_5000-32        	    2158	    504431 ns/op
+BenchmarkFindDuplOverParallel/par32/tokens_5000-32       	    4006	    279225 ns/op
+BenchmarkFindDuplOverParallel/par32/tokens_5000-32       	    3922	    293933 ns/op
+BenchmarkFindDuplOverParallel/par32/tokens_5000-32       	    4321	    296274 ns/op
+BenchmarkFindDuplOverParallel/par32/tokens_5000-32       	    4446	    280541 ns/op
+BenchmarkFindDuplOverParallel/par32/tokens_5000-32       	    4467	    285399 ns/op
+BenchmarkFindDuplOverParallel/par32/tokens_5000-32       	    4681	    278239 ns/op
+BenchmarkFindDuplOverParallel/par32/tokens_5000-32       	    4214	    279742 ns/op
+BenchmarkFindDuplOverParallel/par32/tokens_5000-32       	    4168	    302134 ns/op
+BenchmarkFindDuplOverParallel/par32/tokens_5000-32       	    4034	    302499 ns/op
+BenchmarkFindDuplOverParallel/par32/tokens_5000-32       	    4329	    277942 ns/op
+BenchmarkFindDuplOverParallel/seq/tokens_10000-32        	     458	   2625451 ns/op
+BenchmarkFindDuplOverParallel/seq/tokens_10000-32        	     456	   2559489 ns/op
+BenchmarkFindDuplOverParallel/seq/tokens_10000-32        	     466	   2516826 ns/op
+BenchmarkFindDuplOverParallel/seq/tokens_10000-32        	     468	   2711307 ns/op
+BenchmarkFindDuplOverParallel/seq/tokens_10000-32        	     440	   2759160 ns/op
+BenchmarkFindDuplOverParallel/seq/tokens_10000-32        	     478	   2533478 ns/op
+BenchmarkFindDuplOverParallel/seq/tokens_10000-32        	     462	   2496597 ns/op
+BenchmarkFindDuplOverParallel/seq/tokens_10000-32        	     450	   2638138 ns/op
+BenchmarkFindDuplOverParallel/seq/tokens_10000-32        	     450	   2576342 ns/op
+BenchmarkFindDuplOverParallel/seq/tokens_10000-32        	     466	   2603102 ns/op
+BenchmarkFindDuplOverParallel/par2/tokens_10000-32       	     738	   1537504 ns/op
+BenchmarkFindDuplOverParallel/par2/tokens_10000-32       	     814	   1592799 ns/op
+BenchmarkFindDuplOverParallel/par2/tokens_10000-32       	     808	   1510150 ns/op
+BenchmarkFindDuplOverParallel/par2/tokens_10000-32       	     746	   1603633 ns/op
+BenchmarkFindDuplOverParallel/par2/tokens_10000-32       	     710	   1629786 ns/op
+BenchmarkFindDuplOverParallel/par2/tokens_10000-32       	     697	   1567156 ns/op
+BenchmarkFindDuplOverParallel/par2/tokens_10000-32       	     760	   1585698 ns/op
+BenchmarkFindDuplOverParallel/par2/tokens_10000-32       	     770	   1641237 ns/op
+BenchmarkFindDuplOverParallel/par2/tokens_10000-32       	     747	   1714427 ns/op
+BenchmarkFindDuplOverParallel/par2/tokens_10000-32       	     764	   1506195 ns/op
+BenchmarkFindDuplOverParallel/par4/tokens_10000-32       	    1165	    968889 ns/op
+BenchmarkFindDuplOverParallel/par4/tokens_10000-32       	    1280	   1016228 ns/op
+BenchmarkFindDuplOverParallel/par4/tokens_10000-32       	    1140	   1024694 ns/op
+BenchmarkFindDuplOverParallel/par4/tokens_10000-32       	    1276	    983453 ns/op
+BenchmarkFindDuplOverParallel/par4/tokens_10000-32       	    1120	    969449 ns/op
+BenchmarkFindDuplOverParallel/par4/tokens_10000-32       	    1171	    990498 ns/op
+BenchmarkFindDuplOverParallel/par4/tokens_10000-32       	    1225	    966798 ns/op
+BenchmarkFindDuplOverParallel/par4/tokens_10000-32       	    1238	    935034 ns/op
+BenchmarkFindDuplOverParallel/par4/tokens_10000-32       	    1316	    933226 ns/op
+BenchmarkFindDuplOverParallel/par4/tokens_10000-32       	    1303	    945442 ns/op
+BenchmarkFindDuplOverParallel/par32/tokens_10000-32      	    2419	    475748 ns/op
+BenchmarkFindDuplOverParallel/par32/tokens_10000-32      	    2574	    486805 ns/op
+BenchmarkFindDuplOverParallel/par32/tokens_10000-32      	    2571	    472762 ns/op
+BenchmarkFindDuplOverParallel/par32/tokens_10000-32      	    2565	    469222 ns/op
+BenchmarkFindDuplOverParallel/par32/tokens_10000-32      	    2450	    476423 ns/op
+BenchmarkFindDuplOverParallel/par32/tokens_10000-32      	    2534	    477075 ns/op
+BenchmarkFindDuplOverParallel/par32/tokens_10000-32      	    2535	    515376 ns/op
+BenchmarkFindDuplOverParallel/par32/tokens_10000-32      	    2250	    595654 ns/op
+BenchmarkFindDuplOverParallel/par32/tokens_10000-32      	    2451	    491868 ns/op
+BenchmarkFindDuplOverParallel/par32/tokens_10000-32      	    2515	    487773 ns/op
+BenchmarkMemoryUsage-32                                  	     633	   2036235 ns/op	 1028041 B/op	    4823 allocs/op
+BenchmarkMemoryUsage-32                                  	     666	   1826473 ns/op	 1028040 B/op	    4823 allocs/op
+BenchmarkMemoryUsage-32                                  	     632	   1858461 ns/op	 1028040 B/op	    4823 allocs/op
+BenchmarkMemoryUsage-32                                  	     627	   1959590 ns/op	 1028042 B/op	    4823 allocs/op
+BenchmarkMemoryUsage-32                                  	     673	   1850865 ns/op	 1028043 B/op	    4823 allocs/op
+BenchmarkMemoryUsage-32                                  	     646	   1860841 ns/op	 1028042 B/op	    4823 allocs/op
+BenchmarkMemoryUsage-32                                  	     638	   1846837 ns/op	 1028041 B/op	    4823 allocs/op
+BenchmarkMemoryUsage-32                                  	     664	   1822580 ns/op	 1028043 B/op	    4823 allocs/op
+BenchmarkMemoryUsage-32                                  	     620	   1862175 ns/op	 1028043 B/op	    4823 allocs/op
+BenchmarkMemoryUsage-32                                  	     648	   1841262 ns/op	 1028044 B/op	    4823 allocs/op
+PASS
+ok  	github.com/LarsArtmann/art-dupl/suffixtree	260.235s
+# github.com/LarsArtmann/art-dupl/syntax [github.com/LarsArtmann/art-dupl/syntax.test]
+syntax/nested_statement_serial_test.go:316:38: cannot use &tree (value of type **suffixtree.STree) as *suffixtree.STree value in argument to serializeFileWithSentinel
+syntax/nested_statement_serial_test.go:317:38: cannot use &tree (value of type **suffixtree.STree) as *suffixtree.STree value in argument to serializeFileWithSentinel
+syntax/nested_statement_serial_test.go:364:38: cannot use &tree (value of type **suffixtree.STree) as *suffixtree.STree value in argument to serializeFileWithSentinel
+syntax/nested_statement_serial_test.go:365:38: cannot use &tree (value of type **suffixtree.STree) as *suffixtree.STree value in argument to serializeFileWithSentinel
+syntax/nested_statement_serial_test.go:405:38: cannot use &tree (value of type **suffixtree.STree) as *suffixtree.STree value in argument to serializeFileWithSentinel
+syntax/nested_statement_serial_test.go:406:38: cannot use &tree (value of type **suffixtree.STree) as *suffixtree.STree value in argument to serializeFileWithSentinel
+FAIL	github.com/LarsArtmann/art-dupl/syntax [build failed]
+FAIL

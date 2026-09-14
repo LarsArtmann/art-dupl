@@ -4,6 +4,13 @@
 # (commit 081e347f). When you deliberately change allocations, update this file
 # in the same commit and note why.
 #
+# 2026-09-14: nested-statement token emission (ADR-0023) left every budget
+# within tolerance except BenchmarkMemoryUsage: its input was time-seeded
+# (generateRandomTokens), so the 4802 baseline was one random draw of a ~±25
+# allocs/op variance band (4780-4827 measured on unchanged code). The seed is
+# now fixed (benchRandSeed), making allocs/op deterministic; budget re-captured
+# at the new deterministic value.
+#
 # syntax/ budgets captured 2026-08-16 after T13 bulk-arena serialization:
 # one pre-counted []Node arena + one exactly-sized []*Node stream = 2 allocs
 # regardless of tree size (Idempotent serializes twice = 4). Budgets are exact;
@@ -24,7 +31,7 @@ BenchmarkFindDuplOver/threshold_50	1539
 BenchmarkFindDuplOver/threshold_200	1518
 BenchmarkMemoryUsageFewTokens	23
 BenchmarkMemoryUsageManyTokens	44
-BenchmarkMemoryUsage	4802
+BenchmarkMemoryUsage	4824
 BenchmarkFindDuplOverParallel/seq/tokens_1000	3071
 BenchmarkFindDuplOverParallel/par2/tokens_1000	3126
 BenchmarkFindDuplOverParallel/par4/tokens_1000	3126
