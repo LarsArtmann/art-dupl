@@ -261,9 +261,11 @@ func (s *nodeSerializer) serial(n *Node, maxChildren int) int {
 		// one composite value so the suffix tree matches at statement granularity.
 		// Children remain in memory for classification/actionability, and the
 		// statement children of nested blocks (loop/if/switch bodies, case
-		// clauses, GenDecl specs) are ADDITIONALLY emitted as their own
+		// clauses, else-if chain links) are ADDITIONALLY emitted as their own
 		// statement tokens so clones that diverge inside nested blocks stay
-		// detectable (see IsStatementContainer / serialNestedStatements).
+		// detectable (see serialNestedStatements). GenDecl specs stay
+		// composite-only: a single-spec declaration would otherwise emit two
+		// tokens for one source statement.
 		//
 		// The fingerprint is stored in the Fingerprint field, NOT in Type, so
 		// that DecodeBaseType(Type) still returns the correct base AST type for
@@ -292,14 +294,22 @@ func (s *nodeSerializer) serial(n *Node, maxChildren int) int {
 }
 
 // serialNestedStatements emits the statement tokens hidden inside a composite
-// statement: direct statement-atom children (e.g. GenDecl specs) plus the
-// statement children of nested block containers (for/if/switch bodies via
-// their BlockStmt, whose own children recurse through serial). Without this
-// descent, two composite statements sharing leading statements but diverging
-// deeper inside produce different composite fingerprints and zero matching
-// tokens — the loop-skeleton false-negative class. With it, the shared
-// interior statements enter the suffix tree and match at statement
-// granularity. Mirrors countSerializedNodes exactly (arena pre-count).
+// statement: direct statement-atom children (e.g. `else if` chain links,
+// which the Go transformer flags as statements) plus the statement children
+// of nested block containers (for/if/switch bodies via their BlockStmt,
+// whose own children recurse through serial). Without this descent, two
+// composite statements sharing leading statements but diverging deeper
+// inside produce different composite fingerprints and zero matching tokens —
+// the loop-skeleton false-negative class. With it, the shared interior
+// statements enter the suffix tree and match at statement granularity.
+//
+// GenDecl children (ValueSpec/TypeSpec) are deliberately NOT emitted: a
+// single-spec `var x T = v` declaration would contribute two tokens for one
+// source statement (the spec span equals the GenDecl span), inflating
+// threshold counts without adding recall. Declaration specs remain covered
+// by the GenDecl composite fingerprint alone.
+//
+// Mirrors countSerializedNodes exactly (arena pre-count).
 func (s *nodeSerializer) serialNestedStatements(n *Node, maxChildren int) int {
 	count := 0
 
@@ -309,22 +319,24 @@ func (s *nodeSerializer) serialNestedStatements(n *Node, maxChildren int) int {
 		}
 
 		if child.Statement {
+			if DecodeBaseType(n.Type) == genDeclNodeType {
+				continue
+			}
+
 			count += s.serial(child, maxChildren)
 
 			continue
 		}
 
-		if !IsStatementContainer(child.Type) {
-			continue
-		}
+		if IsStatementContainer(child.Type) {
+			for j, grandChild := range child.Children {
+				if j > maxChildren {
+					break
+				}
 
-		for j, grandChild := range child.Children {
-			if j > maxChildren {
-				break
-			}
-
-			if grandChild.Statement {
-				count += s.serial(grandChild, maxChildren)
+				if grandChild.Statement {
+					count += s.serial(grandChild, maxChildren)
+				}
 			}
 		}
 	}
@@ -336,35 +348,14 @@ func (s *nodeSerializer) serialNestedStatements(n *Node, maxChildren int) int {
 // for the subtree, so the arena and stream can be allocated once at the
 // final size. It must traverse with identical semantics: a statement node
 // emits itself plus its nested statement tokens (serialNestedStatements),
-// children beyond index maxChildren are skipped.
+// GenDecl spec children are skipped, children beyond index maxChildren are
+// skipped.
 func countSerializedNodes(n *Node, maxChildren int) int {
 	if n.Statement {
 		count := 1
 
-		for i, child := range n.Children {
-			if i > maxChildren {
-				break
-			}
-
-			if child.Statement {
-				count += countSerializedNodes(child, maxChildren)
-
-				continue
-			}
-
-			if !IsStatementContainer(child.Type) {
-				continue
-			}
-
-			for j, grandChild := range child.Children {
-				if j > maxChildren {
-					break
-				}
-
-				if grandChild.Statement {
-					count += countSerializedNodes(grandChild, maxChildren)
-				}
-			}
+		if DecodeBaseType(n.Type) != genDeclNodeType {
+			count += countNestedStatementTokens(n, maxChildren)
 		}
 
 		return count
@@ -383,24 +374,61 @@ func countSerializedNodes(n *Node, maxChildren int) int {
 	return count
 }
 
+// countNestedStatementTokens mirrors the traversal of serialNestedStatements
+// (excluding the GenDecl guard, which its only caller applies). Kept as a
+// separate helper so the statement branch of countSerializedNodes stays
+// readable; the traversal MUST stay in lockstep with serialNestedStatements.
+func countNestedStatementTokens(n *Node, maxChildren int) int {
+	count := 0
+
+	for i, child := range n.Children {
+		if i > maxChildren {
+			break
+		}
+
+		if child.Statement {
+			count += countSerializedNodes(child, maxChildren)
+
+			continue
+		}
+
+		if IsStatementContainer(child.Type) {
+			for j, grandChild := range child.Children {
+				if j > maxChildren {
+					break
+				}
+
+				if grandChild.Statement {
+					count += countSerializedNodes(grandChild, maxChildren)
+				}
+			}
+		}
+	}
+
+	return count
+}
+
+// Node type constants pinned from syntax/golang/nodetypes.go (the packages
+// cannot share the iota block because golang imports syntax). The pinned
+// values are guarded by TestPinnedNodeTypeConstants in syntax/golang, and the
+// values must stay unused by syntax/templ's parallel raw enum.
+const (
+	genDeclNodeType   int32 = 24 // golang.GenDecl
+	blockStmtNodeType int32 = 6  // golang.BlockStmt
+)
+
 // IsStatementContainer reports whether a non-statement child node is a block
 // whose statement children the serializer emits as individual statement
 // tokens after the parent composite statement token.
 //
 // Only BlockStmt qualifies: every statement in the unified tree hangs either
-// directly off a statement atom (GenDecl specs, CaseClause/CommClause bodies)
-// or off a BlockStmt (function/for/if/switch/select bodies, else blocks).
-// CaseClause and CommClause nodes are themselves marked as statement atoms by
-// the Go transformer, so their bodies are reached through the direct
+// directly off a statement atom (else-if chain links, GenDecl specs) or off a
+// BlockStmt (function/for/if/switch/select bodies, else blocks). CaseClause
+// and CommClause nodes are themselves marked as statement atoms by the Go
+// transformer, so their bodies are reached through the direct
 // statement-child branch, not through this container check.
-//
-// The int32 value must stay in sync with syntax/golang/nodetypes.go (the
-// packages cannot share the constant because golang imports syntax);
-// TestStatementContainerTypesPinned in syntax/golang guards the sync. The
-// value must also stay unused by syntax/templ's parallel enum (its raw node
-// types overlap golang's by design; templ assigns no node the value 6).
 func IsStatementContainer(nodeType int32) bool {
-	return nodeType == 6 // golang.BlockStmt
+	return nodeType == blockStmtNodeType
 }
 
 // fingerprintSubtree hashes the pre-order Type sequence of a node and all its
