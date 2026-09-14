@@ -6,7 +6,7 @@ import (
 
 // HealthScore represents an A-F grade for code health based on duplication metrics.
 //
-// standard Go JSON convention: MarshalJSON value receiver, UnmarshalJSON pointer receiver
+// standard Go JSON convention: MarshalJSON value receiver, UnmarshalJSON pointer receiver.
 type HealthScore string
 
 const (

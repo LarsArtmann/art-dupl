@@ -13,7 +13,7 @@ var ErrInvalidDetectionMethod = errors.New("invalid detection method")
 // This is the canonical definition — config, sdk, and detection packages
 // reference this type via aliases to prevent drift.
 //
-// standard Go JSON convention: MarshalJSON value receiver, UnmarshalJSON pointer receiver
+// standard Go JSON convention: MarshalJSON value receiver, UnmarshalJSON pointer receiver.
 type DetectionMethod string
 
 const (

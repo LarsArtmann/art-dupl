@@ -26,7 +26,7 @@ var ErrInvalidDetectionMode = errors.New("invalid detection mode")
 //   - Structural: identifier names are ignored entirely. Two clones match on
 //     AST shape alone. Loosest matching; produces the most candidates.
 //
-// standard Go JSON convention: MarshalJSON value receiver, UnmarshalJSON pointer receiver
+// standard Go JSON convention: MarshalJSON value receiver, UnmarshalJSON pointer receiver.
 type DetectionMode string
 
 const (

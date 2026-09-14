@@ -11,7 +11,7 @@ var ErrInvalidDiffMode = errors.New("invalid diff mode")
 
 // DiffMode controls diff visualization in HTML output.
 //
-// standard Go JSON convention: MarshalJSON value receiver, UnmarshalJSON pointer receiver
+// standard Go JSON convention: MarshalJSON value receiver, UnmarshalJSON pointer receiver.
 type DiffMode string
 
 const (
