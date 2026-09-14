@@ -249,7 +249,20 @@ func (t *transformer) trans(
 		t.addWithNilCheck(o, n.Init)
 		t.addWithNilCheck(o, n.Cond)
 		t.addWithNilCheck(o, n.Body)
-		t.addWithNilCheck(o, n.Else)
+		// An else-if chain link is itself an if statement: mark it as a
+		// statement atom so the serializer emits it as its own token (plus
+		// its nested blocks). Without the flag, `else if` bodies were only
+		// reachable through the outer composite fingerprint and divergent
+		// else-if interiors masked the whole chain (loop-skeleton
+		// false-negative class). Plain else blocks stay unflagged; they are
+		// reached through the BlockStmt container descent instead.
+		if elseIf, ok := n.Else.(*ast.IfStmt); ok {
+			elseNode := t.trans(elseIf)
+			elseNode.Statement = true
+			o.AddChildren(elseNode)
+		} else {
+			t.addWithNilCheck(o, n.Else)
+		}
 
 	case *ast.IncDecStmt:
 		o.Type = encodeSemanticType(IncDecStmt, n.Tok.String(), t.config.Mode.HashesIdentifiers())

@@ -49,7 +49,11 @@ const (
 	// CacheVersion is incremented when cache format changes.
 	// v2 → v3: KeyWithParams changed the cache key format (now includes
 	// detection mode, maxChildren, and typeAwareTag), orphaning all v2 entries.
-	CacheVersion = 3
+	// v3 → v4: nested-statement token emission changed the serialized node
+	// stream (composite statements now additionally emit nested block
+	// statements as individual tokens), so v3 entries would reproduce the old
+	// masked token stream and stale detection results.
+	CacheVersion = 4
 
 	// Directory permissions.
 	cacheDirPerms = 0o750
