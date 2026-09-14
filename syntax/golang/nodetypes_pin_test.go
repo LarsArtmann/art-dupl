@@ -34,13 +34,13 @@ func TestPinnedNodeTypeConstants(t *testing.T) {
 	}
 
 	notContainers := map[string]int32{
-		"GenDecl":     GenDecl,
-		"FuncDecl":    FuncDecl,
-		"File":        File,
-		"CaseClause":  CaseClause,
-		"CommClause":  CommClause,
-		"IfStmt":      IfStmt,
-		"Ident":       Ident,
+		"GenDecl":      GenDecl,
+		"FuncDecl":     FuncDecl,
+		"File":         File,
+		"CaseClause":   CaseClause,
+		"CommClause":   CommClause,
+		"IfStmt":       IfStmt,
+		"Ident":        Ident,
 		"CompositeLit": CompositeLit,
 	}
 
