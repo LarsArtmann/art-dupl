@@ -35,8 +35,10 @@ func processA(items []int) int {
 	for _, it := range items {
 		total += it
 		if it > 10 {
-			total--
+			total++
 		}
+		total *= 2
+		total -= 7
 	}
 	return total
 }`
@@ -48,8 +50,10 @@ func processB(items []int) int {
 	for _, it := range items {
 		sum += it
 		if it > 10 {
-			sum += 2
+			sum++
 		}
+		sum *= 2
+		sum += 9
 	}
 	return sum
 }`
@@ -149,6 +153,7 @@ func sumGridA(grid [][]int) int {
 			if cell%2 == 0 {
 				total++
 			}
+			total *= 3
 		}
 	}
 	return total
@@ -160,8 +165,9 @@ func sumGridB(grid [][]int) int {
 		for _, cell := range row {
 			sum += cell
 			if cell%2 == 0 {
-				sum += 5
+				sum++
 			}
+			sum *= 3
 		}
 	}
 	return sum
@@ -195,26 +201,31 @@ func sumGridB(grid [][]int) int {
 	)
 
 	It("detects the shared loop-body statements at the default threshold when the shared run is long enough", func() {
-		// Five identical statements inside two loop bodies survive -t 5.
-		loop := func(assign string) string {
+		// Five consecutive semantically distinct statements inside two loop
+		// bodies survive -t 5; the divergence comes after the shared run.
+		// The statements must differ in shape (operator encoding): literal
+		// normalization would make `n += 1`..`n += 5` token-identical and
+		// isCyclic would rightly reject the self-repeating run.
+		loop := func(tail string) string {
 			return fmt.Sprintf(`package main
 
 func stretch(s []int) int {
 	n := 0
 	for range s {
 		n += 1
-		n += 2
+		n -= 2
+		n *= 3
+		n /= 4
+		n <<= 5
 		%s
-		n += 4
-		n += 5
 	}
 	return n
-}`, assign)
+}`, tail)
 		}
 
 		err := setup.CreateTestFiles(map[string]string{
-			"a.go": loop("n += 3"),
-			"b.go": loop("n *= 3"),
+			"a.go": loop("n += 6"),
+			"b.go": loop("n *= 9"),
 		})
 		Expect(err).NotTo(HaveOccurred())
 

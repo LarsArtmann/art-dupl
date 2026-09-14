@@ -240,6 +240,7 @@ func TestNestedEmissionArenaCountMatchesStream(t *testing.T) {
 			Type: 20, Pos: 70, End: 220, Statement: true,
 			Children: []*Node{blockNode(6, 85, ifStmt, sw, decl)},
 		}
+
 		return plainNode(21, 0, 240, blockNode(4, 60, loop))
 	}
 
