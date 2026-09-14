@@ -4,12 +4,18 @@ import (
 	"fmt"
 	"math/rand"
 	"testing"
-	"time"
 )
 
-// generateRandomTokens creates a slice of random token values.
+// benchRandSeed is a fixed seed so every run of the guarded alloc-budget
+// benchmarks (scripts/alloc-budgets.txt) sees the identical token sequence.
+// A time-based seed made tree shape — and therefore allocs/op — vary by ~1%
+// between runs, which let the ±1 alloc gate fail spuriously
+// (BenchmarkMemoryUsage measured 4780-4827 across runs on unchanged code).
+const benchRandSeed int64 = 42
+
+// generateRandomTokens creates a deterministic sequence of token values.
 func generateRandomTokens(count int) []Token {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	r := rand.New(rand.NewSource(benchRandSeed))
 
 	tokens := make([]Token, 0, count)
 	for range count {
