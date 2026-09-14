@@ -812,6 +812,29 @@ GitHub Actions and pre-commit hook templates are included in `templates/github-a
 ./art-dupl --config dupl.json  # with ignoreFiles patterns
 ```
 
+#### Why Isn't My Clone Inside a Loop/If Body Detected?
+
+art-dupl matches at STATEMENT granularity: each statement is one token, and
+statements inside loop/if/switch bodies are additionally emitted as their own
+tokens (since ADR-0023, September 2026), so "shared loop skeleton, divergent
+accumulator" clones ARE detected — two functions whose loops share the first
+two body statements match at `-t 2`.
+
+Two deliberate scope cuts remain (see `docs/adr/0023-nested-statement-token-emission.md`):
+
+- **Closure bodies** (`func() { ... }` under `t.Run`, `defer`, `go`, callbacks)
+  are still fingerprinted as part of the enclosing statement.
+- **Declaration specs** (`var (...)` blocks sharing SOME specs) are only
+  matched as whole declarations.
+
+If you suspect a missed clone, lower `-t` AND add `--no-actionability` —
+but note the tool's behavior contract: threshold = number of duplicated
+statements. For debugging, compare token streams:
+
+```bash
+./art-dupl --dump-tokens ./file.go   # shows the emitted token stream
+```
+
 #### Performance Issues
 
 ```bash

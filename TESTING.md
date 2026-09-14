@@ -157,6 +157,57 @@ go tool cover -html=coverage.out           # HTML coverage report → browser
 go tool cover -func=coverage.out           # Summary in terminal
 ```
 
+## Debugging a Missed Clone: The 10-Line Fixture Pattern
+
+When a detection question arises ("why is this clone missed?"), a synthetic
+fixture answers it deterministically in seconds — reading token dumps of real
+code does not (this cost a full diagnostic round before ADR-0023). Recipe:
+
+```bash
+mkdir -p /tmp/detq && cd /tmp/detq
+printf 'module detq\n\ngo 1.26\n' > go.mod
+
+# Two functions sharing a skeleton with one divergent statement
+cat > a.go <<'GO'
+package detq
+
+func fa(items []int) int {
+	total := 0
+	for _, it := range items {
+		total += it
+		total *= 2
+	}
+	return total
+}
+GO
+cat > b.go <<'GO'
+package detq
+
+func fb(items []int) int {
+	sum := 0
+	for _, it := range items {
+		sum += it
+		sum *= 3
+	}
+	return sum
+}
+GO
+
+go build -o /tmp/art-dupl ./cmd/art-dupl   # from the art-dupl repo
+/tmp/art-dupl -t 1 --no-actionability --show-suppressed .
+/tmp/art-dupl --dump-tokens a.go           # inspect the emitted token stream
+```
+
+`--dump-tokens` shows what actually enters the suffix tree: each `true`
+statement row is one token; statements you expected but do not see are the
+masking suspect. Encode the finding permanently as a spec in
+`bdd/nested_block_clone_test.go` (or a unit test in
+`syntax/nested_statement_serial_test.go`) so the behavior can never silently
+regress. A/B pairs whose statements differ ONLY in literal values
+(`n += 1` vs `n += 2`) are token-identical in semantic mode and get rejected
+by the cyclic-pattern check — make fixture statements differ in shape
+(operator), not just in literal.
+
 ## Running Tests
 
 ```bash

@@ -35,6 +35,7 @@ Full documentation: **[art-dupl.lars.software](https://art-dupl.lars.software)**
 | ------------------------ | ---------------- | -------------------------------------------------------------------------------------------------------------------- |
 | Detection algorithm      | Suffix tree only | Suffix tree + hash-based + multi-method                                                                              |
 | Semantic matching        | No               | Yes — alpha-normalization finds renamed clones (Type 2)                                                              |
+| Statement-level matching | Whole statements only | Nested statements emitted too — clones sharing loop/if bodies with divergent tails are detected                 |
 | Matching modes           | 1                | 3 — semantic (default), exact, structural                                                                            |
 | Output formats           | Text, HTML       | Text, Rich-text, HTML, JSON, Simple-JSON, SARIF, plumbing                                                            |
 | Stats subcommand         | No               | Yes — health grades (A–F), CSV, JSON, recommendations                                                                |
