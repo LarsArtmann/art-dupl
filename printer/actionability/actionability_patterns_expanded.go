@@ -17,12 +17,6 @@ var assertionMethodNames = []string{ //nolint:gochecknoglobals // static name se
 	"Expect", "Assert", "Require", "Should", "Must", "So", //nolint:goconst
 }
 
-// isAssertionMethod reports whether a method name belongs to a test assertion
-// boilerplate when they appear in chains of 3+.
-func isAssertionMethod(name string) bool {
-	return slices.Contains(assertionMethodNames, name)
-}
-
 // isAssertionChain reports whether every clone is dominated by test assertion
 // calls (Expect/Assert/Require/Should/Must/So). These chains are Ginkgo/testify
 // boilerplate that cannot be deduplicated without breaking test readability.
@@ -54,13 +48,13 @@ func isAssertionDominatedSeq(seq []*domain.CloneNode) bool {
 func hasAssertionTarget(callExpr *domain.CloneNode) bool {
 	for _, child := range callExpr.Children {
 		if child.BaseType == golang.SelectorExpr {
-			if isAssertionMethod(child.Name) {
+			if slices.Contains(assertionMethodNames, child.Name) {
 				return true
 			}
 		}
 
 		if child.BaseType == golang.Ident {
-			if isAssertionMethod(child.Name) {
+			if slices.Contains(assertionMethodNames, child.Name) {
 				return true
 			}
 		}
