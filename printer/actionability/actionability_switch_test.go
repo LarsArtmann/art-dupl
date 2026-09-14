@@ -70,9 +70,9 @@ func TestIsAssertionMethod(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 
-			result := isAssertionMethod(tc.input)
+			result := slices.Contains(assertionMethodNames, tc.input)
 			if result != tc.expected {
-				t.Errorf("isAssertionMethod(%q) = %v, want %v", tc.input, result, tc.expected)
+				t.Errorf("slices.Contains(assertionMethodNames, %q) = %v, want %v", tc.input, result, tc.expected)
 			}
 		})
 	}
