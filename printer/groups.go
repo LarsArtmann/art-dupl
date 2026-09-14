@@ -18,13 +18,71 @@ func GetCloneSize(group [][]*syntax.Node) int {
 }
 
 // BuildCloneGroups builds a map of hash to clone groups from matches.
+// Each fragment is trimmed of units subsumed by another unit's source range
+// (see trimSubsumedUnits).
 func BuildCloneGroups(duplChan <-chan syntax.Match) map[string][][]*syntax.Node {
 	groups := make(map[string][][]*syntax.Node)
 	for dupl := range duplChan {
-		groups[dupl.Hash] = append(groups[dupl.Hash], dupl.Frags...)
+		for _, frag := range dupl.Frags {
+			trimmed := trimSubsumedUnits(frag)
+			if len(trimmed) == 0 {
+				continue
+			}
+
+			groups[dupl.Hash] = append(groups[dupl.Hash], trimmed)
+		}
 	}
 
 	return groups
+}
+
+// trimSubsumedUnits drops fragment units whose byte range is strictly
+// contained within another unit's range in the same fragment.
+//
+// Nested-statement token emission (serialNestedStatements) can produce a
+// maximal match that contains both a composite statement token and statement
+// tokens from inside its subtree — e.g. an if statement and the return inside
+// its body when both files contain the identical guard. The nested tokens
+// exist so that divergent interiors can match at statement granularity; they
+// add no source range of their own. Size metrics, line ranges, and
+// actionability classification want the effective source statements, so the
+// redundant inner units are removed here at the single funnel point all
+// output paths share.
+func trimSubsumedUnits(frag []*syntax.Node) []*syntax.Node {
+	if len(frag) < 2 {
+		return frag
+	}
+
+	kept := make([]*syntax.Node, 0, len(frag))
+
+	for i, unit := range frag {
+		if isSubsumed(unit, frag, i) {
+			continue
+		}
+
+		kept = append(kept, unit)
+	}
+
+	return kept
+}
+
+// isSubsumed reports whether frag[i]'s [Pos, End) range lies strictly inside
+// another unit's range. Equal ranges are kept (they do not occur in Go
+// trees, but a degenerate zero-length templ range must not be used to drop a
+// real unit either).
+func isSubsumed(unit *syntax.Node, frag []*syntax.Node, self int) bool {
+	for j, other := range frag {
+		if j == self {
+			continue
+		}
+
+		if other.Pos <= unit.Pos && unit.End <= other.End &&
+			(other.Pos < unit.Pos || unit.End < other.End) {
+			return true
+		}
+	}
+
+	return false
 }
 
 // cloneRange represents the byte range of a single clone fragment in a file.
