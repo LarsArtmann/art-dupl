@@ -8,4 +8,145 @@ BenchmarkSTreeUpdate/tokens_100-32         	  123958	      9178 ns/op	   24040 B
 BenchmarkSTreeUpdate/tokens_100-32         	  143973	      8223 ns/op	   24040 B/op	     101 allocs/op
 BenchmarkSTreeUpdate/tokens_100-32         	  144888	      8073 ns/op	   24040 B/op	     101 allocs/op
 BenchmarkSTreeUpdate/tokens_100-32         	  165898	      6924 ns/op	   24040 B/op	     101 allocs/op
-BenchmarkSTreeUpdate/tokens_100-32         	
+BenchmarkSTreeUpdate/tokens_100-32         	  192160	      6129 ns/op	   24040 B/op	     101 allocs/op
+BenchmarkSTreeUpdate/tokens_100-32         	  201097	      6029 ns/op	   24040 B/op	     101 allocs/op
+BenchmarkSTreeUpdate/tokens_100-32         	  200916	      6139 ns/op	   24040 B/op	     101 allocs/op
+BenchmarkSTreeUpdate/tokens_100-32         	  199174	      6045 ns/op	   24040 B/op	     101 allocs/op
+BenchmarkSTreeUpdate/tokens_500-32         	   35755	     33239 ns/op	   67880 B/op	     547 allocs/op
+BenchmarkSTreeUpdate/tokens_500-32         	   36127	     33368 ns/op	   67880 B/op	     547 allocs/op
+BenchmarkSTreeUpdate/tokens_500-32         	   35728	     33517 ns/op	   67880 B/op	     547 allocs/op
+BenchmarkSTreeUpdate/tokens_500-32         	   35611	     33496 ns/op	   67880 B/op	     547 allocs/op
+BenchmarkSTreeUpdate/tokens_500-32         	   35635	     33373 ns/op	   67880 B/op	     547 allocs/op
+BenchmarkSTreeUpdate/tokens_500-32         	   36205	     34092 ns/op	   67880 B/op	     547 allocs/op
+BenchmarkSTreeUpdate/tokens_500-32         	   35695	     35196 ns/op	   67880 B/op	     547 allocs/op
+BenchmarkSTreeUpdate/tokens_500-32         	   32565	     35433 ns/op	   67880 B/op	     547 allocs/op
+BenchmarkSTreeUpdate/tokens_500-32         	   35954	     35643 ns/op	   67880 B/op	     547 allocs/op
+BenchmarkSTreeUpdate/tokens_500-32         	   32888	     35120 ns/op	   67880 B/op	     547 allocs/op
+BenchmarkSTreeUpdate/tokens_2000-32        	    6999	    165586 ns/op	  231577 B/op	    2046 allocs/op
+BenchmarkSTreeUpdate/tokens_2000-32        	    6720	    167891 ns/op	  231577 B/op	    2046 allocs/op
+BenchmarkSTreeUpdate/tokens_2000-32        	    6960	    160072 ns/op	  231577 B/op	    2046 allocs/op
+BenchmarkSTreeUpdate/tokens_2000-32        	    7142	    167316 ns/op	  231577 B/op	    2046 allocs/op
+BenchmarkSTreeUpdate/tokens_2000-32        	    7035	    167227 ns/op	  231577 B/op	    2046 allocs/op
+BenchmarkSTreeUpdate/tokens_2000-32        	    7789	    158672 ns/op	  231577 B/op	    2046 allocs/op
+BenchmarkSTreeUpdate/tokens_2000-32        	    7881	    164361 ns/op	  231577 B/op	    2046 allocs/op
+BenchmarkSTreeUpdate/tokens_2000-32        	    7386	    157909 ns/op	  231577 B/op	    2046 allocs/op
+BenchmarkSTreeUpdate/tokens_2000-32        	    6987	    164791 ns/op	  231577 B/op	    2046 allocs/op
+BenchmarkSTreeUpdate/tokens_2000-32        	    6759	    169851 ns/op	  231577 B/op	    2046 allocs/op
+BenchmarkFindDuplOver/threshold_10-32      	   10000	    115645 ns/op	    8896 B/op	    1543 allocs/op
+BenchmarkFindDuplOver/threshold_10-32      	   10000	    121437 ns/op	    8895 B/op	    1543 allocs/op
+BenchmarkFindDuplOver/threshold_10-32      	    9798	    122431 ns/op	    8896 B/op	    1543 allocs/op
+BenchmarkFindDuplOver/threshold_10-32      	   10000	    119936 ns/op	    8895 B/op	    1543 allocs/op
+BenchmarkFindDuplOver/threshold_10-32      	   10000	    115888 ns/op	    8895 B/op	    1543 allocs/op
+BenchmarkFindDuplOver/threshold_10-32      	   10000	    114947 ns/op	    8895 B/op	    1543 allocs/op
+BenchmarkFindDuplOver/threshold_10-32      	   10000	    115954 ns/op	    8895 B/op	    1543 allocs/op
+BenchmarkFindDuplOver/threshold_10-32      	   10000	    119761 ns/op	    8895 B/op	    1543 allocs/op
+BenchmarkFindDuplOver/threshold_10-32      	   10000	    114406 ns/op	    8895 B/op	    1543 allocs/op
+BenchmarkFindDuplOver/threshold_10-32      	   10332	    115894 ns/op	    8895 B/op	    1543 allocs/op
+BenchmarkFindDuplOver/threshold_50-32      	   10000	    114815 ns/op	    8831 B/op	    1539 allocs/op
+BenchmarkFindDuplOver/threshold_50-32      	   10000	    115964 ns/op	    8831 B/op	    1539 allocs/op
+BenchmarkFindDuplOver/threshold_50-32      	   10000	    113308 ns/op	    8831 B/op	    1539 allocs/op
+BenchmarkFindDuplOver/threshold_50-32      	   10000	    113047 ns/op	    8832 B/op	    1539 allocs/op
+BenchmarkFindDuplOver/threshold_50-32      	   10000	    115100 ns/op	    8831 B/op	    1539 allocs/op
+BenchmarkFindDuplOver/threshold_50-32      	    9279	    120896 ns/op	    8832 B/op	    1539 allocs/op
+BenchmarkFindDuplOver/threshold_50-32      	    9876	    114748 ns/op	    8831 B/op	    1539 allocs/op
+BenchmarkFindDuplOver/threshold_50-32      	   10000	    113178 ns/op	    8831 B/op	    1539 allocs/op
+BenchmarkFindDuplOver/threshold_50-32      	   10000	    114510 ns/op	    8831 B/op	    1539 allocs/op
+BenchmarkFindDuplOver/threshold_50-32      	    9778	    114446 ns/op	    8832 B/op	    1539 allocs/op
+BenchmarkFindDuplOver/threshold_200-32     	   10000	    107323 ns/op	    8463 B/op	    1518 allocs/op
+BenchmarkFindDuplOver/threshold_200-32     	   10000	    107374 ns/op	    8463 B/op	    1518 allocs/op
+BenchmarkFindDuplOver/threshold_200-32     	   10000	    107149 ns/op	    8463 B/op	    1518 allocs/op
+BenchmarkFindDuplOver/threshold_200-32     	   10000	    109041 ns/op	    8463 B/op	    1518 allocs/op
+BenchmarkFindDuplOver/threshold_200-32     	   10000	    108244 ns/op	    8463 B/op	    1518 allocs/op
+BenchmarkFindDuplOver/threshold_200-32     	   10000	    107964 ns/op	    8463 B/op	    1518 allocs/op
+BenchmarkFindDuplOver/threshold_200-32     	   10000	    108907 ns/op	    8463 B/op	    1518 allocs/op
+BenchmarkFindDuplOver/threshold_200-32     	   10000	    110145 ns/op	    8463 B/op	    1518 allocs/op
+BenchmarkFindDuplOver/threshold_200-32     	   10000	    108367 ns/op	    8463 B/op	    1518 allocs/op
+BenchmarkFindDuplOver/threshold_200-32     	   10000	    107557 ns/op	    8463 B/op	    1518 allocs/op
+BenchmarkMemoryUsage-32                    	     684	   1703644 ns/op	 1028044 B/op	    4823 allocs/op
+BenchmarkMemoryUsage-32                    	     717	   1647332 ns/op	 1028046 B/op	    4823 allocs/op
+BenchmarkMemoryUsage-32                    	     696	   1671951 ns/op	 1028046 B/op	    4823 allocs/op
+BenchmarkMemoryUsage-32                    	     720	   1666145 ns/op	 1028044 B/op	    4823 allocs/op
+BenchmarkMemoryUsage-32                    	     711	   1662103 ns/op	 1028047 B/op	    4823 allocs/op
+BenchmarkMemoryUsage-32                    	     757	   1671783 ns/op	 1028046 B/op	    4823 allocs/op
+BenchmarkMemoryUsage-32                    	     684	   1699092 ns/op	 1028047 B/op	    4823 allocs/op
+BenchmarkMemoryUsage-32                    	     708	   1649213 ns/op	 1028047 B/op	    4823 allocs/op
+BenchmarkMemoryUsage-32                    	     714	   1687423 ns/op	 1028049 B/op	    4823 allocs/op
+BenchmarkMemoryUsage-32                    	     718	   1645056 ns/op	 1028044 B/op	    4823 allocs/op
+PASS
+ok  	github.com/LarsArtmann/art-dupl/suffixtree	87.765s
+goos: linux
+goarch: amd64
+pkg: github.com/LarsArtmann/art-dupl/syntax
+cpu: AMD RYZEN AI MAX+ 395 w/ Radeon 8060S          
+BenchmarkSerialize/Size10-32        	 5489996	       211.3 ns/op
+BenchmarkSerialize/Size10-32        	 5560144	       211.5 ns/op
+BenchmarkSerialize/Size10-32        	 5398159	       217.9 ns/op
+BenchmarkSerialize/Size10-32        	 5567094	       219.0 ns/op
+BenchmarkSerialize/Size10-32        	 5701636	       214.9 ns/op
+BenchmarkSerialize/Size10-32        	 5550986	       214.2 ns/op
+BenchmarkSerialize/Size10-32        	 5438744	       212.9 ns/op
+BenchmarkSerialize/Size10-32        	 5724658	       211.3 ns/op
+BenchmarkSerialize/Size10-32        	 5626870	       214.0 ns/op
+BenchmarkSerialize/Size10-32        	 5348554	       215.1 ns/op
+BenchmarkSerialize/Size100-32       	  694069	      1683 ns/op
+BenchmarkSerialize/Size100-32       	  720054	      1690 ns/op
+BenchmarkSerialize/Size100-32       	  711849	      1705 ns/op
+BenchmarkSerialize/Size100-32       	  679647	      1840 ns/op
+BenchmarkSerialize/Size100-32       	  718000	      1745 ns/op
+BenchmarkSerialize/Size100-32       	  704528	      1726 ns/op
+BenchmarkSerialize/Size100-32       	  727375	      1715 ns/op
+BenchmarkSerialize/Size100-32       	  688059	      1732 ns/op
+BenchmarkSerialize/Size100-32       	  681944	      1764 ns/op
+BenchmarkSerialize/Size100-32       	  700004	      1746 ns/op
+BenchmarkSerialize/Size1000-32      	   74764	     16190 ns/op
+BenchmarkSerialize/Size1000-32      	   74526	     16484 ns/op
+BenchmarkSerialize/Size1000-32      	   74223	     16126 ns/op
+BenchmarkSerialize/Size1000-32      	   75169	     16397 ns/op
+BenchmarkSerialize/Size1000-32      	   72351	     16730 ns/op
+BenchmarkSerialize/Size1000-32      	   73966	     16292 ns/op
+BenchmarkSerialize/Size1000-32      	   73454	     16287 ns/op
+BenchmarkSerialize/Size1000-32      	   75102	     16165 ns/op
+BenchmarkSerialize/Size1000-32      	   72375	     16717 ns/op
+BenchmarkSerialize/Size1000-32      	   75430	     16566 ns/op
+BenchmarkSerialize/Size10000-32     	    5822	    197608 ns/op
+BenchmarkSerialize/Size10000-32     	    6286	    195599 ns/op
+BenchmarkSerialize/Size10000-32     	    6164	    208894 ns/op
+BenchmarkSerialize/Size10000-32     	    6014	    200998 ns/op
+BenchmarkSerialize/Size10000-32     	    5905	    210148 ns/op
+BenchmarkSerialize/Size10000-32     	    5887	    199939 ns/op
+BenchmarkSerialize/Size10000-32     	    5618	    206259 ns/op
+BenchmarkSerialize/Size10000-32     	    5668	    200797 ns/op
+BenchmarkSerialize/Size10000-32     	    5578	    221807 ns/op
+BenchmarkSerialize/Size10000-32     	    5781	    203383 ns/op
+BenchmarkSerialize_Small-32         	12216367	        99.81 ns/op
+BenchmarkSerialize_Small-32         	11892512	        98.27 ns/op
+BenchmarkSerialize_Small-32         	12277839	       100.1 ns/op
+BenchmarkSerialize_Small-32         	11856883	       101.7 ns/op
+BenchmarkSerialize_Small-32         	12268096	       100.7 ns/op
+BenchmarkSerialize_Small-32         	12289606	       100.9 ns/op
+BenchmarkSerialize_Small-32         	12294782	        98.32 ns/op
+BenchmarkSerialize_Small-32         	12303270	       112.3 ns/op
+BenchmarkSerialize_Small-32         	10459662	       116.4 ns/op
+BenchmarkSerialize_Small-32         	10658616	       112.6 ns/op
+BenchmarkSerialize_Large-32         	  563394	      2200 ns/op
+BenchmarkSerialize_Large-32         	  593538	      2098 ns/op
+BenchmarkSerialize_Large-32         	  618039	      1962 ns/op
+BenchmarkSerialize_Large-32         	  606798	      1977 ns/op
+BenchmarkSerialize_Large-32         	  638214	      1986 ns/op
+BenchmarkSerialize_Large-32         	  614506	      1980 ns/op
+BenchmarkSerialize_Large-32         	  596440	      1993 ns/op
+BenchmarkSerialize_Large-32         	  558205	      1964 ns/op
+BenchmarkSerialize_Large-32         	  622344	      1959 ns/op
+BenchmarkSerialize_Large-32         	  589087	      1994 ns/op
+BenchmarkSerialize_Statements-32    	10683673	       112.2 ns/op
+BenchmarkSerialize_Statements-32    	10511913	       112.4 ns/op
+BenchmarkSerialize_Statements-32    	10804876	       121.4 ns/op
+BenchmarkSerialize_Statements-32    	 9598771	       114.5 ns/op
+BenchmarkSerialize_Statements-32    	10708476	       111.3 ns/op
+BenchmarkSerialize_Statements-32    	10264231	       111.5 ns/op
+BenchmarkSerialize_Statements-32    	10701606	       110.4 ns/op
+BenchmarkSerialize_Statements-32    	10645316	       111.3 ns/op
+BenchmarkSerialize_Statements-32    	11005558	       112.1 ns/op
+BenchmarkSerialize_Statements-32    	10160370	       112.6 ns/op
+BenchmarkSerialize_Idempotent-32    	  580653	      2018 ns/op
+BenchmarkSerialize_Idempotent-32    	

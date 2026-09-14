@@ -256,7 +256,12 @@ func TestNestedEmissionArenaCountMatchesStream(t *testing.T) {
 		// length (also re-verifies non-mutation, which would skew counts).
 		again := SerializeWithMaxChildren(tree, maxChildren)
 		if len(again) != len(stream) {
-			t.Errorf("maxChildren=%d: stream length changed between runs: %d vs %d", maxChildren, len(stream), len(again))
+			t.Errorf(
+				"maxChildren=%d: stream length changed between runs: %d vs %d",
+				maxChildren,
+				len(stream),
+				len(again),
+			)
 		}
 	}
 }
@@ -312,6 +317,7 @@ func TestLoopSkeletonWithDivergentTailIsDetected(t *testing.T) {
 	}
 
 	var data []*Node
+
 	tree := suffixtree.New()
 
 	serializeFileWithSentinel(t, &data, tree, buildFile(20, tS3a, 100), -100)
@@ -360,6 +366,7 @@ func TestIdenticalGuardCloneUnitsAreTrimmed(t *testing.T) {
 	}
 
 	var data []*Node
+
 	tree := suffixtree.New()
 
 	serializeFileWithSentinel(t, &data, tree, buildFile(100), -100)

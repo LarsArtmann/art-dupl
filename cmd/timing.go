@@ -76,6 +76,18 @@ var timingStageNotes = map[string]string{ //nolint:gochecknoglobals // static pr
 	job.PhaseTotal:     "wall",
 }
 
+// formatStageDuration renders a stage duration for the --timing report.
+// Sub-millisecond stages would render as "0s" via Round(time.Millisecond),
+// which reads as missing instrumentation; they are real work, so they render
+// as "<1ms" instead.
+func formatStageDuration(d time.Duration) string {
+	if d > 0 && d < time.Millisecond {
+		return "<1ms"
+	}
+
+	return d.Round(time.Millisecond).String()
+}
+
 // printStageTimingReport writes the per-stage table and allocation deltas.
 // Active stages sum goroutine-local time and can exceed the total when
 // workers run in parallel; phase rows are wall-clock and can overlap where
@@ -90,7 +102,7 @@ func printStageTimingReport(w io.Writer, stages map[string]time.Duration, before
 			continue
 		}
 
-		_, _ = fmt.Fprintf(w, "  %-12s %10s   %s\n", stage, d.Round(time.Millisecond), timingStageNotes[stage])
+		_, _ = fmt.Fprintf(w, "  %-12s %10s   %s\n", stage, formatStageDuration(d), timingStageNotes[stage])
 	}
 
 	objects := after.Mallocs - before.Mallocs

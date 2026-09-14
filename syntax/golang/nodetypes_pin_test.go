@@ -25,7 +25,12 @@ func TestPinnedNodeTypeConstants(t *testing.T) {
 
 	for name, pin := range pins {
 		if pin.got != pin.want {
-			t.Errorf("%s = %d, want %d (update syntax.genDeclNodeType/blockStmtNodeType in syntax.go when changing the iota block)", name, pin.got, pin.want)
+			t.Errorf(
+				"%s = %d, want %d (update syntax.genDeclNodeType/blockStmtNodeType in syntax.go when changing the iota block)",
+				name,
+				pin.got,
+				pin.want,
+			)
 		}
 	}
 
