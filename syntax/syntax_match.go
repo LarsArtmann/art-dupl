@@ -126,6 +126,51 @@ func getUnitsIndexes(nodeSeq []*Node, threshold int) []int {
 	return indexes
 }
 
+// trimSubsumedIndexes drops unit indexes whose node's [Pos, End) source range
+// lies strictly inside another selected unit's range.
+//
+// Nested-statement token emission (serialNestedStatements in syntax.go) can
+// produce a maximal match that contains both a composite statement token and
+// statement tokens from inside its subtree — e.g. an if statement and the
+// return inside its body when both occurrences contain the identical guard.
+// The nested tokens exist so that divergent interiors can match at statement
+// granularity; they add no source range of their own. Every downstream
+// consumer (threshold gating, group size, hash, actionability classification)
+// wants the effective source statements, so redundant inner units are
+// removed here — the single point all fragment consumers share.
+func trimSubsumedIndexes(indexes []int, nodes []*Node) []int {
+	if len(indexes) < 2 {
+		return indexes
+	}
+
+	kept := indexes[:0]
+
+	for i, idx := range indexes {
+		subsumed := false
+
+		for j, other := range indexes {
+			if j == i {
+				continue
+			}
+
+			o := nodes[other]
+			n := nodes[idx]
+
+			if o.Pos <= n.Pos && n.End <= o.End && (o.Pos < n.Pos || n.End < o.End) {
+				subsumed = true
+
+				break
+			}
+		}
+
+		if !subsumed {
+			kept = append(kept, idx)
+		}
+	}
+
+	return kept
+}
+
 // isCyclic finds out whether there is a repetive pattern in the found clone.
 func isCyclic(indexes []int, nodes []*Node) bool {
 	count := len(indexes)

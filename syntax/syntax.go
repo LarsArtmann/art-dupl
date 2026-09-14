@@ -466,7 +466,7 @@ func FindSyntaxUnits(data []*Node, m suffixtree.Match, threshold int) Match {
 	}
 
 	firstSeq := data[m.Ps[0] : m.Ps[0]+m.Len]
-	indexes := getUnitsIndexes(firstSeq, threshold)
+	indexes := trimSubsumedIndexes(getUnitsIndexes(firstSeq, threshold), firstSeq)
 
 	// Statement-level threshold: when the match contains statement tokens,
 	// require at least `threshold` statements. In legacy mode (no statement
