@@ -1,6 +1,6 @@
 # TODO List
 
-**Last Updated:** 2026-08-16
+**Last Updated:** 2026-09-14
 
 Actionable items for the next 2-4 weeks. Completed work lives in `CHANGELOG.md`.
 This file is OPEN work only — no completed, rejected, or resolved items.
@@ -24,6 +24,20 @@ Never compare pinned and unpinned runs taken hours apart (machine state dominate
 
 ## MEDIUM Priority
 
+### Detection granularity follow-ups (ADR-0023, 2026-09-14)
+
+**Source:** `docs/status/2026-09-13_15-45_gopaperless-false-negative-investigation.md` §f; fix shipped 2026-09-14 (`docs/adr/0023-nested-statement-token-emission.md`).
+
+- [ ] **go-paperless: consolidate the find-by-name family** — `FindCustomField` / `FindStoragePath` / `findNamed` share the query+doRequest+decode skeleton; ADR-0023 now surfaces the shared runs (client.go:939-941 and 956-968 pairs as of 2026-09-14). (report #17)
+- [ ] **go-paperless: `//art-dupl:accept` rationale** for any clones now visible post-ADR-0023 that are kept deliberately. (report #16)
+- [ ] **go-paperless: manually review the 5 type-aware-suppressed groups** to confirm they are true false positives. (report #18)
+- [ ] **go-paperless: audit `client_test.go`** (1612 lines) with `--include-tests --no-actionability` for test-helper extraction. (report #19)
+- [ ] **go-paperless: explicitly accept `example_test.go` client-construction clones** (doc-example boilerplate). (report #20)
+- [ ] **`--dump-tokens`: add source positions (`file:line-col`)** — the dump shows stream offsets only, which made the FN investigation waste a diagnostic round. (report #21 / d2)
+- [ ] **templ nested-emission validation** — templ got nested emission as a side effect of ADR-0023; validate recall/noise on templ-heavy repos and decide whether an html-sibling-boilerplate actionability pattern is warranted at `-t 1` (go-sse examples show 11 templ sibling groups at `-t 1`). (report #32 + corpus re-validation)
+- [ ] **Confirm precedence-warning wording for all flag combos** (`--structural`+`--type-aware` etc.). (report #27)
+- [ ] **Release ADR-0023**: minor version bump, tag, `go get` + pkg.go.dev verification. CHANGELOG migration note already written. (report #46)
+
 ### Wave-3 quality follow-ups
 
 **Source:** `docs/status/2026-08-16_13-13_master-plan-wave3-signal-hardening.md` §f.
@@ -40,7 +54,6 @@ Never compare pinned and unpinned runs taken hours apart (machine state dominate
 ### Carry-over questions
 
 - [ ] **Corpus drift 2665 → 2670**: which feedback-corpus clone count grew by 5 between validations?
-- [ ] **Budget ratchet**: `MemoryUsage` measures 4783 < 4802 budget — tighten the budget or leave headroom for map-iteration-order variance?
 
 ## PARKED: Explicit Entry Criteria (not amnesia)
 

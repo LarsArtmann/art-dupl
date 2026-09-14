@@ -7,7 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **Nested-statement token emission (ADR-0023)**: Clones that share statements inside loop/if/switch/select bodies or `else if` chains — previously invisible at EVERY threshold, mode, and filter combination — are now detected. Fully-identical composite matches keep their previous group shapes, sizes, and hashes via subsumed-unit trimming. Corpus results: go-cqrs-lite `-t 2` 206→380 shown groups (genuine cross-engine clones); default `-t 5` counts unchanged on go-sse, go-paperless, and art-dupl itself. **Migration note:** reported clone counts may increase at low thresholds; baseline files record group hashes, which are unchanged for previously-detected clones — no baseline migration needed.
+- **`CacheVersion` bumped to 4**: Nested emission changed the serialized token stream; v3 cache entries would reproduce stale detection results and are rejected by the version check.
+- **`--timing` sub-millisecond stages render as `<1ms`** instead of the misleading `0s`.
+
 ### Added
+
+- **Deterministic benchmark input** (`suffixtree`): `generateRandomTokens` uses a fixed RNG seed; the time-seeded input made allocs/op vary ±25 and could fail the ±1 alloc gate spuriously. `BenchmarkMemoryUsage` budget re-captured at the deterministic value.
+- **Regression guards for detection granularity**: `syntax/nested_statement_serial_test.go` (emission structure, arena-count mirror, divergent-tail detection, guard-clone trimming), `bdd/nested_block_clone_test.go` (end-to-end DescribeTable over the five masking classes), `syntax/golang/nodetypes_pin_test.go` (pins node-type literals the syntax package relies on).
+- **Pinned node-type constants** (`syntax`): `IsStatementContainer`, `genDeclNodeType`, `blockStmtNodeType` with a cross-package consistency test.
 
 - **In-memory LRU cache layer** (`cache/lru.go`): 512-entry `container/list`-based LRU on top of `FileCache`. `Get` checks LRU first (O(1), no gob deserialization), falls back to disk, promotes disk hits into LRU. All `Get` returns are deep clones so callers can't corrupt the canonical copy. `Set`/`Remove`/`Clear`/`Prune` keep both layers in sync.
 - **Hysteresis pruning** (`cache/file_cache.go::Prune`): Pruning triggers at 110% of `maxEntries` (high water) and evicts to 90% (low water), evicting from both disk and LRU. Eliminates the O(n log n) sort on every cache miss.

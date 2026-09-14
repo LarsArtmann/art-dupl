@@ -24,6 +24,17 @@
 - **Winnowing pre-filter for extreme scale**: For 100K+ file codebases, add a two-phase pipeline: Phase 1 uses Winnowing (Schleicher et al. 2003, O(n) with sparse O(n/(w+1)) memory) to identify clone candidate regions. Phase 2 indexes only candidates with the suffix tree/array. Detection guarantee for clones >= t = w + k - 1 tokens. Industry standard (MOSS uses this). Would extend scalability to SourcererCC-class workloads.
 - **Type-3 structural clone detection via CFG matching**: Detect near-miss clones where statements are reordered, interleaved with non-duplicated code, or have small structural differences. Current suffix-tree matching requires exact token sequences. Would use control-flow graph fingerprinting or call-sequence matching. Highest effort, highest value improvement. Identified by art-dupl-threshold-cliff and licenseforge feedback.
 
+## Detection Granularity (ADR-0023 follow-ups)
+
+Shipped 2026-09-14: nested-block statements (loop/if/switch/select bodies, else-if links) are emitted as individual tokens; subsumed units are trimmed at `FindSyntaxUnits`. Remaining granularity work, deliberately deferred:
+
+- **FuncLit/closure-body emission**: statements inside closures (`t.Run(..., func(t){...})`, `defer func(){...}()`, `go func(){...}()`) are still fingerprinted as part of the enclosing statement — the same masking class ADR-0023 fixed for control-flow blocks. Deferred because test-heavy repos would see a large noise-profile change; needs its own corpus validation and possibly new actionability patterns. (source report #40/#44 context)
+- **GenDecl spec-level sharing**: `var (...)` blocks with partially-shared specs match only as whole declarations; specs stay composite-only because a single-spec decl would double-count one source statement. (report #33)
+- **LabeledStmt.Stmt interiors**: labeled statements are composite-only; interiors are masked (rare shape).
+- **Cross-composite statement-head sharing**: identical statement heads appearing at the START of different composite statement types (e.g. same first statement in an if vs a for) — probe whether header tokens should participate. (report #34)
+- **maxChildren truncation as a second false-negative class**: children beyond index `maxChildren` are dropped from the stream; very long functions/blocks could silently lose detectable clones. (report #35)
+- **Seed `--suggest-generics` from sub-statement analysis**: with nested emission, generics candidates can now be found at statement level inside composite bodies; annotate those specifically. (report #40)
+
 ## Quality and Intelligence
 
 - **Interface-aware suppression (cross-package)**: Same-package interface detection via `go/types` is implemented (the `interface-method` pattern). Cross-package and stdlib interfaces still rely on the static name list (`commonInterfaceMethodNames`). Full call-graph analysis remains future work.
@@ -34,6 +45,12 @@
 - **Type narrowing for interface-typed variables**: If a local has an interface type, two variables with the same interface type match even if their concrete types differ. Could add concrete-type awareness via flow analysis.
 - **Irreducibility class per group**: Classify each group by WHY it can't be reduced: semantic (real duplication), idiomatic (language convention), structurally-bound (framework constraint), or threshold-noise. Would give users actionable context instead of a binary verdict. (samber-do-auditlog feedback)
 - **Helper-call-site detection via call-graph**: Detect when duplication is already an invocation of a shared helper (the extraction IS the helper call, not more duplication). Requires call-graph resolution. (upd, discordsync feedback)
+- **Golden-corpus recall harness**: run detection over a curated set of known clones (including loop-skeleton shapes) and report recall %. Turns "did the granularity change help?" into a number. (report #42)
+- **Type-aware value heuristic**: report how many type-aware-killed groups were actionable, so the 24x runtime cost becomes a data-driven decision per repo. (report #41/e6)
+- **High-similarity-no-clone warning**: warn when functions share >50% of statements but sit below the threshold — "near-miss, lower -t to N to see it". (report #43)
+- **Cross-repo recall survey**: scan Lars's Go repos for loop-skeleton clones to size ADR-0023's win. (report #39)
+- **CPU-affinity benchmarks post-ADR-0023**: re-run `taskset` pinned comparisons; token streams grew ~10-15%, which shifts the L3-latency tradeoff. (report #47)
+- **README before/after example showing loop-skeleton detection**: marketing artifact for the ADR-0023 recall win. (report #45)
 
 ## Performance
 
