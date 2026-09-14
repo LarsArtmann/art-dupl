@@ -37,6 +37,7 @@ Never compare pinned and unpinned runs taken hours apart (machine state dominate
 - [ ] **templ nested-emission validation** — templ got nested emission as a side effect of ADR-0023; validate recall/noise on templ-heavy repos and decide whether an html-sibling-boilerplate actionability pattern is warranted at `-t 1` (go-sse examples show 11 templ sibling groups at `-t 1`). (report #32 + corpus re-validation)
 - [ ] **Confirm precedence-warning wording for all flag combos** (`--structural`+`--type-aware` etc.). (report #27)
 - [ ] **Release ADR-0023**: minor version bump, tag, `go get` + pkg.go.dev verification. CHANGELOG migration note already written. (report #46)
+- [ ] **Self-clean the ~46 small clone pairs art-dupl now sees in its own source at `-t 1`** (ADR-0023 recall: e.g. `syntax/templ/transform_node.go:101-108` vs `119-126`, `printer/text.go:323-335`, `cmd/type_aware.go:51-77`). Inventory: `art-dupl -t 1 --explain .`. The self-test gate now enforces the default threshold (-t 5, 0 groups); decide per pair: extract, `//art-dupl:accept`, or leave.
 
 ### Wave-3 quality follow-ups
 
