@@ -31,23 +31,23 @@ Full documentation: **[art-dupl.lars.software](https://art-dupl.lars.software)**
 
 ## Why art-dupl?
 
-| Capability               | Original dupl    | art-dupl                                                                                                             |
-| ------------------------ | ---------------- | -------------------------------------------------------------------------------------------------------------------- |
-| Detection algorithm      | Suffix tree only | Suffix tree + hash-based + multi-method                                                                              |
-| Semantic matching        | No               | Yes — alpha-normalization finds renamed clones (Type 2)                                                              |
-| Statement-level matching | Whole statements only | Nested statements emitted too — clones sharing loop/if bodies with divergent tails are detected                 |
-| Matching modes           | 1                | 3 — semantic (default), exact, structural                                                                            |
-| Output formats           | Text, HTML       | Text, Rich-text, HTML, JSON, Simple-JSON, SARIF, plumbing                                                            |
-| Stats subcommand         | No               | Yes — health grades (A–F), CSV, JSON, recommendations                                                                |
-| Templ support            | No               | Full `.templ` AST analysis                                                                                           |
-| Generated code filtering | No               | Auto-detects sqlc, protobuf, mockgen, stringer, templ, generic                                                       |
-| Incremental analysis     | No               | AST caching with SHA-256 content hashing                                                                             |
-| CI baseline gating       | No               | `baseline` + `check` subcommands                                                                                     |
-| Diff visualization       | No               | Side-by-side and inline diffs in HTML                                                                                |
-| Clone classification     | No               | Type 1 / 2 / 3 labels + extractability scores                                                                        |
-| Actionability filtering  | No               | Suppresses 15+ boilerplate patterns (test scaffolding, error wrapping, Lock+Defer, etc.) — only in `--semantic` mode |
-| Parallel parsing         | No               | Worker pool with auto-detect                                                                                         |
-| Programmatic SDK         | No               | `pkg/artdupl` — Detector interface with streaming                                                                    |
+| Capability               | Original dupl         | art-dupl                                                                                                             |
+| ------------------------ | --------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| Detection algorithm      | Suffix tree only      | Suffix tree + hash-based + multi-method                                                                              |
+| Semantic matching        | No                    | Yes — alpha-normalization finds renamed clones (Type 2)                                                              |
+| Statement-level matching | Whole statements only | Nested statements emitted too — clones sharing loop/if bodies with divergent tails are detected                      |
+| Matching modes           | 1                     | 3 — semantic (default), exact, structural                                                                            |
+| Output formats           | Text, HTML            | Text, Rich-text, HTML, JSON, Simple-JSON, SARIF, plumbing                                                            |
+| Stats subcommand         | No                    | Yes — health grades (A–F), CSV, JSON, recommendations                                                                |
+| Templ support            | No                    | Full `.templ` AST analysis                                                                                           |
+| Generated code filtering | No                    | Auto-detects sqlc, protobuf, mockgen, stringer, templ, generic                                                       |
+| Incremental analysis     | No                    | AST caching with SHA-256 content hashing                                                                             |
+| CI baseline gating       | No                    | `baseline` + `check` subcommands                                                                                     |
+| Diff visualization       | No                    | Side-by-side and inline diffs in HTML                                                                                |
+| Clone classification     | No                    | Type 1 / 2 / 3 labels + extractability scores                                                                        |
+| Actionability filtering  | No                    | Suppresses 15+ boilerplate patterns (test scaffolding, error wrapping, Lock+Defer, etc.) — only in `--semantic` mode |
+| Parallel parsing         | No                    | Worker pool with auto-detect                                                                                         |
+| Programmatic SDK         | No                    | `pkg/artdupl` — Detector interface with streaming                                                                    |
 
 ---
 
