@@ -5,6 +5,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"runtime"
 	"slices"
 	"testing"
 	"time"
@@ -238,7 +239,16 @@ func TestStdinFeed_FiltersGeneratedCode(t *testing.T) {
 
 // TestStdinFeed_StderrSuppressedOnCancel verifies that the ctx.Err()==nil guard
 // suppresses scanner error output when the context is cancelled (forced reader close).
+//
+// Skipped on Windows: the test depends on os.File.Close unblocking a
+// concurrent pipe Read, which Windows os.Pipe does not guarantee — the
+// 3s exit budget is not met under -race. The cancellation contract is
+// enforced on unix platforms where the mechanism works.
 func TestStdinFeed_StderrSuppressedOnCancel(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("windows os.Pipe does not unblock a pending Read on Close; see comment")
+	}
+
 	r, w, err := os.Pipe()
 	if err != nil {
 		t.Fatalf("os.Pipe() error: %v", err)
