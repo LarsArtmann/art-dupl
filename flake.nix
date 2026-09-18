@@ -32,7 +32,7 @@
 
       # Bump this for each release (see RELEASE.md step 3).
       # go build without ldflags still reports "dev"; nix build injects this.
-      version = "0.6.1";
+      version = "0.7.0";
 
       gogenfilterGoMod = builtins.readFile "${gogenfilter}/go.mod";
       gogenfilterGoSum = builtins.readFile "${gogenfilter}/go.sum";
@@ -40,7 +40,9 @@
       mkPackage =
         pkgs:
         let
-          inherit (pkgs) buildGoModule;
+          # buildGoModule must run the SAME go the module requires
+          # (go.mod says go 1.27.1); nixpkgs' default go lags behind.
+          buildGoModule = pkgs.buildGoModule.override { go = pkgs.go_1_27; };
         in
         buildGoModule {
           pname = "art-dupl";
