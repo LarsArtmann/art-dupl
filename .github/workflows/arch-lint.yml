@@ -49,7 +49,7 @@ jobs:
         run: go mod download
 
       - name: Install go-arch-lint
-        run: go install github.com/fe3dback/go-arch-lint@v1.16.0
+        run: go install github.com/fe3dback/go-arch-lint@v1.19.0
 
       - name: Warm build cache for stdlib export data
         # go/packages cannot resolve types for stdlib packages that have no
