@@ -9,7 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Nothing yet.
+- **gogenfilter v3.6.1**: `MatchPattern` now treats Windows drive paths (`C:/...`) as absolute, so `--exclude-pattern`/`--include-pattern` work on Windows. Root cause of the Windows BDD failures in release CI.
+
+### Fixed
+
+- **Release CI hardening**: register `internal/jsonutil` in the architecture config; pin the arch-lint toolchain and upgrade go-arch-lint to v1.19.0 (old go/packages cannot read Go 1.27 export data); skip the stdin-cancel stderr test and the exit-code process test on Windows (os.Pipe/AV runner limitations; logic covered on unix and in-process respectively); normalize the crawl paths to forward slashes so vendor/`.git`/examples skipping and pattern filtering work on Windows; portable sed in the linter auto-fixer; +2 alloc budget for cross-machine variance under Go 1.27.1.
 
 ### Fixed
 
