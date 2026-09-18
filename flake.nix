@@ -135,14 +135,32 @@
         }:
         let
           goPkg = pkgs.go_1_27;
+
+          # goimports and templ shell out to `go` for module/import
+          # resolution. The treefmt sandbox has no network, so a go that is
+          # older than go.mod's requirement cannot download the toolchain and
+          # every format run dies. Wrap them so they see the same go the
+          # module requires, with GOTOOLCHAIN=local (nothing to download).
+          withGo127 =
+            pkg: bin:
+            pkgs.symlinkJoin {
+              name = "${bin}-go127";
+              paths = [ pkg ];
+              nativeBuildInputs = [ pkgs.makeWrapper ];
+              postBuild = ''
+                wrapProgram "$out/bin/${bin}" \
+                  --prefix PATH : ${goPkg}/bin \
+                  --set GOTOOLCHAIN local
+              '';
+            };
         in
         {
           treefmt = {
             projectRootFile = "go.mod";
             programs = {
               gofumpt.enable = true;
-              goimports.enable = true;
-              templ.enable = true;
+              goimports.package = withGo127 pkgs.goimports "goimports";
+              templ.package = withGo127 pkgs.templ "templ";
               nixfmt.enable = true;
             };
           };
