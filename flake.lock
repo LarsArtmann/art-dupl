@@ -23,17 +23,17 @@
     "gogenfilter": {
       "flake": false,
       "locked": {
-        "lastModified": 1785912758,
-        "narHash": "sha256-dy5luEjjmyDcwTCXEj2Im3gUfgU2s5DCZjP1M/IEQcA=",
+        "lastModified": 1789772414,
+        "narHash": "sha256-mjR5qxcDAkvou6sAWsYM8iiYB27tFjr1Dkj8mKVf1Oc=",
         "owner": "LarsArtmann",
         "repo": "gogenfilter",
-        "rev": "300b93e0ba3a403f694e1eecabe6e131c8fd0d63",
+        "rev": "7183352045a350140ae848bb7e84cd8a64e9a23a",
         "type": "github"
       },
       "original": {
         "owner": "LarsArtmann",
         "repo": "gogenfilter",
-        "rev": "300b93e0ba3a403f694e1eecabe6e131c8fd0d63",
+        "rev": "7183352045a350140ae848bb7e84cd8a64e9a23a",
         "type": "github"
       }
     },
