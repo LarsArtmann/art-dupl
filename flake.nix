@@ -13,7 +13,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     gogenfilter = {
-      url = "github:LarsArtmann/gogenfilter?rev=300b93e0ba3a403f694e1eecabe6e131c8fd0d63";
+      url = "github:LarsArtmann/gogenfilter?rev=7183352045a350140ae848bb7e84cd8a64e9a23a";
       flake = false;
     };
   };
