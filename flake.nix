@@ -132,7 +132,7 @@
           ...
         }:
         let
-          goPkg = pkgs.go_1_26;
+          goPkg = pkgs.go_1_27;
         in
         {
           treefmt = {

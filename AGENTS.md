@@ -42,11 +42,14 @@ nix flake check    # reproducible CI (includes templ generate in preBuild)
 > The `flake.nix` devShell sets this automatically. For non-Nix workflows, export it
 > manually: `export GOEXPERIMENT=jsonv2`. Convention: use `omitzero` (not `omitempty`)
 > on custom `MarshalJSON` types, and `format:nano` for `time.Duration` fields.
-> **Known gopls false positives**: gopls's `stdversion` analyzer reports ~65
-> `json.Unmarshal requires go1.27 or later (file is go1.26)` warnings because gopls
-> doesn't understand `GOEXPERIMENT=jsonv2`. These are pure IDE noise — `go build`,
-> `go vet`, and `go test` all pass clean. Ignore them; do NOT bump the go.mod version
-> to `1.27` (Go 1.27 doesn't exist yet).
+> **Go 1.27.1 (upgraded 2026-09-18)**: go.mod, `flake.nix` (`pkgs.go_1_27`), and
+> `.golangci.yml` (`run.go`) are aligned on Go 1.27.1. The pre-2026-09-18 guidance
+> ("do NOT bump to 1.27") is obsolete — Go 1.27.1 is stable and the bump also
+> eliminates the old gopls `stdversion` false positives (`json.Unmarshal requires
+> go1.27 (file is go1.26)`), which were pure IDE noise from `GOEXPERIMENT=jsonv2`.
+> If gopls fails to load after a shell change, re-enter the devShell (`direnv reload`)
+> so the toolchain matches go.mod; `GOTOOLCHAIN=local` + an older local go fails
+> hard with `go.mod requires go >= 1.27.1`.
 
 ## Architecture
 
