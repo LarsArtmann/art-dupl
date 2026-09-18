@@ -95,6 +95,7 @@ func (t *transformer) buildElementNode(
 func (t *transformer) setAttributeKey(o *syntax.Node, key string) {
 	o.Type = Attribute
 	o.Name = key
+
 	if t.semantic {
 		o.Type = syntax.EncodeSemanticType(Attribute, key, true)
 	}
