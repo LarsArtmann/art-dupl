@@ -351,7 +351,6 @@ linters:
           - mnd
           - varnamelen
           - goconst
-          - exhaustruct
           - errcheck
           - ireturn
           - recvcheck

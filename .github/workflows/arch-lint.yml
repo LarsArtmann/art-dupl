@@ -25,6 +25,11 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CGO_ENABLED: 0
+      # go-arch-lint must be COMPILED with the same toolchain the module
+      # requires (go.mod says go 1.27.1); a binary built with an older Go
+      # cannot type-load the newer stdlib and dies with
+      # "package ... without types".
+      GOTOOLCHAIN: go1.27.1
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
