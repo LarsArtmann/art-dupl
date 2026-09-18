@@ -48,5 +48,11 @@ jobs:
       - name: Install go-arch-lint
         run: go install github.com/fe3dback/go-arch-lint@v1.16.0
 
+      - name: Warm build cache for stdlib export data
+        # go/packages cannot resolve types for stdlib packages that have no
+        # export data in the build cache yet, which fails the check with
+        # "package ... without types"; building the module first fills it.
+        run: go build ./...
+
       - name: Run go-arch-lint
         run: go-arch-lint check
