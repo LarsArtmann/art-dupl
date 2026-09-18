@@ -5,6 +5,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"testing"
+	"time"
 )
 
 // buildTestBinary builds the art-dupl binary to a temp directory and returns its path.
@@ -29,17 +30,29 @@ func buildTestBinary(t *testing.T) string {
 func runBinaryExitCode(t *testing.T, binaryPath string, args ...string) int {
 	t.Helper()
 
-	cmd := exec.CommandContext(t.Context(), binaryPath, args...)
+	// Windows runners intermittently fail to START a freshly written exe
+	// (antivirus scan lock); ProcessState stays nil in that case. Retry a
+	// few times with a short pause, and only treat a process that actually
+	// started as authoritative.
+	const attempts = 3
 
-	cmd.Env = append(os.Environ(), "GOEXPERIMENT=jsonv2")
+	for i := 0; i < attempts; i++ {
+		if i > 0 {
+			time.Sleep(250 * time.Millisecond)
+		}
 
-	_ = cmd.Run()
+		cmd := exec.CommandContext(t.Context(), binaryPath, args...)
+		cmd.Env = append(os.Environ(), "GOEXPERIMENT=jsonv2")
 
-	if cmd.ProcessState == nil {
-		t.Fatal("ProcessState is nil after Run")
+		_ = cmd.Run()
+
+		if cmd.ProcessState != nil {
+			return cmd.ProcessState.ExitCode()
+		}
 	}
 
-	return cmd.ProcessState.ExitCode()
+	t.Fatal("ProcessState is nil after Run")
+	return -1
 }
 
 // TestExitCodes_Process verifies that the actual process exit codes match

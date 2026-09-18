@@ -26,17 +26,17 @@ FAILED=0
 for linter in $DISABLED_LINTERS; do
 	# Check for the linter as an enabled entry ("- lintername") or as a settings key ("lintername:")
 	# Comments mentioning the name are allowed for documentation purposes.
-	if grep -qE "^[[:space:]]*-[[:space:]]+${linter}\b|^[[:space:]]*${linter}:" "$CONFIG"; then
+	# POSIX-portable detection: no \b (BSD grep/sed lack it); the
+	# ([[:space:]]|$) anchor keeps "- linter" matching without eating
+	# "- linter-variant" names.
+	if grep -qE "^[[:space:]]*-[[:space:]]+${linter}([[:space:]]|$)|^[[:space:]]*${linter}:" "$CONFIG"; then
 		# Attempt auto-fix: remove the offending line(s) if the file is writable.
 		if [ -w "$CONFIG" ]; then
-			# Remove lines that enable the linter ("- lintername").
-			# POSIX-portable: no \b (BSD sed lacks it); the [[:space:]]*$ anchor
-			# keeps "- linter" matching without eating "- linter-variant" names.
-			sed -i.bak "/^[[:space:]]*-[[:space:]]*${linter}[[:space:]]*$/d" "$CONFIG"
-			rm -f "$CONFIG.bak"
-			# Remove orphaned settings blocks ("lintername:").
-			sed -i.bak "/^[[:space:]]*${linter}:/d" "$CONFIG"
-			rm -f "$CONFIG.bak"
+			# Rewrite via grep -v instead of sed -i: BSD and GNU sed disagree
+			# on -i semantics, and in-place edits of freshly written files are
+			# unreliable on Windows runners.
+			grep -vE "^[[:space:]]*-[[:space:]]+${linter}([[:space:]]|$)|^[[:space:]]*${linter}:" "$CONFIG" > "$CONFIG.tmp" || true
+			mv -f "$CONFIG.tmp" "$CONFIG"
 			echo "WARN: auto-removed '${linter}' from $CONFIG" >&2
 			echo "  This linter is intentionally disabled (see CHANGELOG / AGENTS.md)." >&2
 		else
