@@ -35,7 +35,10 @@ jobs:
 
       - uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff # v5
         with:
-          go-version: stable
+          # Must match go.mod exactly: a wrapped toolchain switch makes
+          # go-arch-lint's go/packages load stdlib types from a different
+          # toolchain than the binary was built with.
+          go-version: "1.27.1"
 
       - name: Generate templ sources
         run: |

@@ -30,9 +30,11 @@ for linter in $DISABLED_LINTERS; do
 		# Attempt auto-fix: remove the offending line(s) if the file is writable.
 		if [ -w "$CONFIG" ]; then
 			# Remove lines that enable the linter ("- lintername").
-			sed -i "/^[[:space:]]*-[[:space:]]*${linter}\b/d" "$CONFIG"
+			sed -i.bak "/^[[:space:]]*-[[:space:]]*${linter}\b/d" "$CONFIG"
+			rm -f "$CONFIG.bak"
 			# Remove orphaned settings blocks ("lintername:").
-			sed -i "/^[[:space:]]*${linter}:/d" "$CONFIG"
+			sed -i.bak "/^[[:space:]]*${linter}:/d" "$CONFIG"
+			rm -f "$CONFIG.bak"
 			echo "WARN: auto-removed '${linter}' from $CONFIG" >&2
 			echo "  This linter is intentionally disabled (see CHANGELOG / AGENTS.md)." >&2
 		else

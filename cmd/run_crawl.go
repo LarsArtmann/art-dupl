@@ -354,6 +354,10 @@ func isSourceFile(name string) bool {
 
 // shouldSkipPath returns true if the path should be skipped due to being a vendor, git, or node_modules directory.
 func shouldSkipPath(path string, includeVendor, includeNodeModules, includeExamples bool) bool {
+	// Normalize separators so the slash-based prefix/contains checks below
+	// match on Windows, where filepath.Walk yields backslash paths.
+	path = filepath.ToSlash(path)
+
 	if !includeVendor && (strings.HasPrefix(path, VendorDirPrefix) ||
 		strings.Contains(path, VendorDirInPath)) {
 		return true
