@@ -78,10 +78,12 @@ var _ = Describe("Plumbing Output Format", func() {
 					continue
 				}
 				// Format: path/to/file.go:start-end
-				parts := strings.Split(line, ":")
-				Expect(parts).To(HaveLen(2))
-				Expect(parts[0]).To(MatchRegexp(`\.go$`))
-				Expect(parts[1]).To(MatchRegexp(`\d+-\d+$`))
+				// Split at the LAST colon only: Windows paths contain a drive
+				// colon (C:...) that must stay part of the filename.
+				idx := strings.LastIndex(line, ":")
+				Expect(idx).To(BeNumerically(">", 0))
+				Expect(line[:idx]).To(MatchRegexp(`\.go$`))
+				Expect(line[idx+1:]).To(MatchRegexp(`\d+-\d+$`))
 			}
 		})
 
