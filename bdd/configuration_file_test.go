@@ -439,10 +439,14 @@ func nestedConfig() {}`
 	Context("When configuration has special characters", func() {
 		It("should handle config with unicode content", func() {
 			// Create config with unicode
+			// json.Marshal escapes path separators: raw backslashes from
+			// Windows paths would form invalid JSON escape sequences.
+			pathJSON, jsonErr := json.Marshal(setup.TmpDir)
+			Expect(jsonErr).NotTo(HaveOccurred())
 			configContent := fmt.Sprintf(`{
 				"threshold": 1,
-				"paths": ["%s"]
-			}`, setup.TmpDir)
+				"paths": [%s]
+			}`, pathJSON)
 			configPath := filepath.Join(setup.TmpDir, "unicode.json")
 			err := os.WriteFile(configPath, []byte(configContent), 0o644)
 			Expect(err).NotTo(HaveOccurred())
