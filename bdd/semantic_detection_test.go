@@ -23,13 +23,13 @@ var _ = Describe("Semantic Detection", func() {
 	Context("When semantic detection is disabled (--structural flag)", func() {
 		It("should detect structural duplicates even with different method names", func() {
 			err := setup.FileProcessor.WriteFile(
-				filepath.Join(setup.TmpDir, "user_test.go"),
+				"user_test.go",
 				[]byte(structuralTestCode1),
 				0o644,
 			)
 			Expect(err).NotTo(HaveOccurred())
 			err = setup.FileProcessor.WriteFile(
-				filepath.Join(setup.TmpDir, "order_test.go"),
+				"order_test.go",
 				[]byte(structuralTestCode2),
 				0o644,
 			)
@@ -47,13 +47,13 @@ var _ = Describe("Semantic Detection", func() {
 	Context("When semantic detection is enabled", func() {
 		It("should NOT flag structurally identical code with different method names", func() {
 			err := setup.FileProcessor.WriteFile(
-				filepath.Join(setup.TmpDir, "user_test.go"),
+				"user_test.go",
 				[]byte(semanticDifferentCode1),
 				0o644,
 			)
 			Expect(err).NotTo(HaveOccurred())
 			err = setup.FileProcessor.WriteFile(
-				filepath.Join(setup.TmpDir, "order_test.go"),
+				"order_test.go",
 				[]byte(semanticDifferentCode2),
 				0o644,
 			)
