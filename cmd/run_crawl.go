@@ -19,19 +19,21 @@ import (
 // Directory exclusion constants.
 const (
 	// VendorDirPrefix is the vendor directory prefix for exclusion.
-	VendorDirPrefix = "vendor" + string(filepath.Separator)
+	// These constants are slash-based: shouldSkipPath normalizes Windows
+	// backslashes via filepath.ToSlash before matching.
+	VendorDirPrefix = "vendor/"
 	// VendorDirInPath is the vendor directory marker when it appears in a path.
-	VendorDirInPath = string(filepath.Separator) + VendorDirPrefix
+	VendorDirInPath = "/" + VendorDirPrefix
 	// DSStoreFile is the macOS Finder metadata file that should always be excluded.
 	DSStoreFile = ".DS_Store"
 	// GitDirPrefix is the Git directory prefix for exclusion.
-	GitDirPrefix = ".git" + string(filepath.Separator)
+	GitDirPrefix = ".git/"
 	// GitDirInPath is the Git directory marker when it appears in a path.
-	GitDirInPath = string(filepath.Separator) + GitDirPrefix
+	GitDirInPath = "/" + GitDirPrefix
 	// NodeModulesDirPrefix is the node_modules directory prefix for exclusion.
-	NodeModulesDirPrefix = "node_modules" + string(filepath.Separator)
+	NodeModulesDirPrefix = "node_modules/"
 	// NodeModulesDirInPath is the node_modules directory marker when it appears in a path.
-	NodeModulesDirInPath = string(filepath.Separator) + NodeModulesDirPrefix
+	NodeModulesDirInPath = "/" + NodeModulesDirPrefix
 )
 
 // exampleDirNames are directory names excluded by default because they contain
