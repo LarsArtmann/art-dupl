@@ -160,6 +160,10 @@ func TestFormatTokenPosition(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
+			// Each parallel subtest needs its own line-table cache: the
+			// shared map would race on the lazy per-file insert.
+			tables := make(map[string]*sourceLineTable)
+
 			node := &syntax.Node{Filename: path, Pos: tt.pos, End: tt.end}
 			if got := formatTokenPosition(tables, node); got != tt.want {
 				t.Errorf("formatTokenPosition() = %q, want %q", got, tt.want)
