@@ -1,7 +1,7 @@
 version: "2"
 run:
   timeout: 5m
-  go: 1.26.5
+  go: 1.26.7
   build-tags:
     - goexperiment.arenas
     - goexperiment.goroutineleakprofile
@@ -105,6 +105,7 @@ linters:
     - sqlclosecheck
     - staticcheck
     - tagalign
+    - tagliatelle
     - testableexamples
     - testifylint
     - testpackage
@@ -213,6 +214,8 @@ linters:
         - "0xFFFFFF"
         - "0x00FFFFFF"
         - "0o750"
+    nestif:
+      min-complexity: 6
     revive:
       rules:
         - disabled: true
@@ -223,6 +226,17 @@ linters:
           name: var-naming
         - disabled: true
           name: unused-parameter
+    tagalign:
+      align: false
+      order:
+        - binding
+        - json
+        - yaml
+        - xml
+        - toml
+        - validate
+        - mapstructure
+      sort: true
     testifylint:
       disable:
         - go-require
@@ -338,6 +352,12 @@ linters:
           - mnd
           - varnamelen
           - goconst
+          - exhaustruct
+          - errcheck
+          - ireturn
+          - recvcheck
+          - contextcheck
+          - exhaustive
       - path: bdd/
         linters:
           - funlen
