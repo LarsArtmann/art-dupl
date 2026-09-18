@@ -2,7 +2,7 @@ package printer
 
 import (
 	"bytes"
-	"encoding/json/v2"
+	"encoding/json"
 	"testing"
 
 	"github.com/LarsArtmann/art-dupl/domain"
@@ -82,12 +82,10 @@ func foo() {
 			Size: 100,
 			Clones: []JSONClone{
 				{
-					CloneRef: domain.CloneRef{
-						Filename:  testFilename,
-						LineStart: 1,
-						LineEnd:   5,
-						Fragment:  "test fragment",
-					},
+					Filename:  testFilename,
+					LineStart: 1,
+					LineEnd:   5,
+					Fragment:  "test fragment",
 				},
 			},
 		},
@@ -154,7 +152,7 @@ func TestToJSONClone_NonActionablePattern(t *testing.T) {
 	t.Parallel()
 
 	cl := domain.ProcessedClone{
-		CloneRef: domain.CloneRef{Filename: "a.go", LineStart: 1, LineEnd: 5},
+		Filename: "a.go", LineStart: 1, LineEnd: 5,
 		Classification: domain.CloneClassification{
 			NonActionablePattern: "guard-clause",
 			Actionability:        domain.NonActionable,
@@ -181,7 +179,7 @@ func TestJSONPrinter_NonActionablePatternSerialized(t *testing.T) {
 			Size: 10,
 			Clones: []JSONClone{
 				{
-					CloneRef:             domain.CloneRef{Filename: "a.go", LineStart: 1, LineEnd: 5},
+					Filename: "a.go", LineStart: 1, LineEnd: 5,
 					NonActionablePattern: "guard-clause",
 					Actionability:        domain.NonActionable,
 				},
@@ -304,8 +302,8 @@ func TestJSONPrinter_OutputSimpleJSON(t *testing.T) {
 			Hash: "abc",
 			Size: 10,
 			Clones: []JSONClone{
-				{CloneRef: domain.CloneRef{Filename: "a.go", LineStart: 1, LineEnd: 5, Fragment: "code"}},
-				{CloneRef: domain.CloneRef{Filename: "b.go", LineStart: 2, LineEnd: 6, Fragment: "code"}},
+				{Filename: "a.go", LineStart: 1, LineEnd: 5, Fragment: "code"},
+				{Filename: "b.go", LineStart: 2, LineEnd: 6, Fragment: "code"},
 			},
 		},
 	}
@@ -383,5 +381,54 @@ func TestJSONPrinter_PrintClones_MultipleGroups(t *testing.T) {
 func mockReadFile(content string) ReadFile {
 	return func(filename string) ([]byte, error) {
 		return []byte(content), nil
+	}
+}
+
+func TestJSONPrinter_AnchorIDSerialized(t *testing.T) {
+	t.Parallel()
+
+	var buf bytes.Buffer
+
+	jp := NewJSON(&buf, mockReadFile("")).(*JSONPrinter)
+	jp.cloneGroups = []CloneGroup{
+		{
+			Hash: "abcdef0123456789",
+			Size: 10,
+			Clones: []JSONClone{
+				{Filename: "a.go", LineStart: 1, LineEnd: 5},
+			},
+		},
+		{
+			Hash: "", // degenerate hash: falls back to the positional anchor
+			Size: 5,
+			Clones: []JSONClone{
+				{Filename: "b.go", LineStart: 7, LineEnd: 9},
+			},
+		},
+	}
+	jp.totalClones = 2
+	jp.filesCount = 2
+
+	if err := jp.OutputJSON(5, "size", ""); err != nil {
+		t.Fatalf("OutputJSON: %v", err)
+	}
+
+	var output JSONOutput
+
+	if err := json.Unmarshal(buf.Bytes(), &output); err != nil {
+		t.Fatalf("parse output: %v", err)
+	}
+
+	if len(output.CloneGroups) != 2 {
+		t.Fatalf("CloneGroups len = %d, want 2", len(output.CloneGroups))
+	}
+
+	want := groupAnchorID("abcdef0123456789", 1)
+	if got := output.CloneGroups[0].AnchorID; got != want {
+		t.Errorf("AnchorID = %q, want %q (must match the HTML view derivation)", got, want)
+	}
+
+	if want := groupAnchorID("", 2); output.CloneGroups[1].AnchorID != want {
+		t.Errorf("empty-hash AnchorID = %q, want positional fallback %q", output.CloneGroups[1].AnchorID, want)
 	}
 }

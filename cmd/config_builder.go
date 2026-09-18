@@ -276,6 +276,30 @@ func validateMutualExclusion(cmd *cobra.Command) error {
 		)
 	}
 
+	// --suggest-generics runs the same expensive go/types load as --type-aware,
+	// but its candidacy engine needs clones that group structurally while
+	// differing in local types. Structural mode ignores identifiers entirely
+	// and exact mode hashes them verbatim: in both, the VarType population
+	// that encodeTypeIfAware performs is unreachable, so the enhancer is a
+	// silent no-op while still paying the 10-100x slower parse.
+	suggestGenericsSet := cmd.Flags().Changed("suggest-generics")
+
+	if suggestGenericsSet && structuralSet {
+		return duplerrors.NewValidationError(
+			"--suggest-generics is only effective with --semantic (default); --structural ignores all "+
+				"identifiers, so clones with different types cannot group and no generics candidates can form",
+			nil,
+		)
+	}
+
+	if suggestGenericsSet && exactSet {
+		return duplerrors.NewValidationError(
+			"--suggest-generics is only effective with --semantic (default); --exact hashes identifiers "+
+				"verbatim, so clones that differ only in types never group and no generics candidates can form",
+			nil,
+		)
+	}
+
 	return nil
 }
 

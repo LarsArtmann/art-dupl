@@ -232,3 +232,86 @@ func TestWarnUnmatchedExcludePatternsOnlyWarnsUnmatched(t *testing.T) {
 		t.Errorf("warning count = %d, want %d:\n%s", warnings, want, got)
 	}
 }
+
+func TestNewTrackedFilterStatsTracksIncludePatterns(t *testing.T) {
+	filter, err := gogenfilter.NewFilter()
+	if err != nil {
+		t.Fatalf("gogenfilter.NewFilter() failed: %v", err)
+	}
+
+	s := newTrackedFilterStats(filter, &config.Config{IncludePatterns: []string{"nomatch*.go"}})
+	if s == nil {
+		t.Fatal("newTrackedFilterStats returned nil for a live filter")
+	}
+
+	var buf bytes.Buffer
+	s.WarnUnmatchedIncludePatterns(&buf)
+
+	got := buf.String()
+	if !strings.Contains(got, "nomatch*.go") {
+		t.Errorf("warning output %q should contain the unmatched include pattern", got)
+	}
+
+	if !strings.Contains(got, "--include-pattern") {
+		t.Errorf("warning output %q should name the --include-pattern flag", got)
+	}
+}
+
+func TestIncludePatternMethodsNilReceiverSafe(t *testing.T) {
+	var s *FilterStats
+
+	s.TrackIncludePatterns([]string{"*_gen.go"})
+	s.recordPatternCandidate("a_gen.go")
+
+	var buf bytes.Buffer
+	s.WarnUnmatchedIncludePatterns(&buf)
+
+	if got := buf.String(); got != "" {
+		t.Errorf("nil WarnUnmatchedIncludePatterns wrote %q, want no output", got)
+	}
+}
+
+func TestWarnUnmatchedIncludePatternsOnlyWarnsUnmatched(t *testing.T) {
+	s := NewFilterStats(nil)
+	s.TrackIncludePatterns([]string{"*_gen.go", "regex\\.go"})
+
+	s.recordPatternCandidate("pkg/mock/a_gen.go")
+	s.recordPatternCandidate("main.go")
+
+	var buf bytes.Buffer
+	s.WarnUnmatchedIncludePatterns(&buf)
+
+	got := buf.String()
+	if strings.Contains(got, "*_gen.go") {
+		t.Errorf("warning output should not contain the matched pattern:\n%s", got)
+	}
+
+	if !strings.Contains(got, `regex\\.go`) {
+		t.Errorf("warning output should contain the unmatched pattern:\n%s", got)
+	}
+
+	warnings := strings.Count(got, "warning:")
+	if want := 1; warnings != want {
+		t.Errorf("warning count = %d, want %d:\n%s", warnings, want, got)
+	}
+}
+
+func TestExcludeAndIncludeWarningsAreIndependent(t *testing.T) {
+	s := NewFilterStats(nil)
+	s.TrackExcludePatterns([]string{"never-excl*.go"})
+	s.TrackIncludePatterns([]string{"never-incl*.go"})
+
+	s.recordPatternCandidate("main.go")
+
+	var excl, incl bytes.Buffer
+	s.WarnUnmatchedExcludePatterns(&excl)
+	s.WarnUnmatchedIncludePatterns(&incl)
+
+	if !strings.Contains(excl.String(), "--exclude-pattern") {
+		t.Errorf("exclude warning output %q should name --exclude-pattern", excl.String())
+	}
+
+	if !strings.Contains(incl.String(), "--include-pattern") {
+		t.Errorf("include warning output %q should name --include-pattern", incl.String())
+	}
+}

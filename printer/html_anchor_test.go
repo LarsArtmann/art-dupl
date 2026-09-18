@@ -45,7 +45,7 @@ func TestGroupAnchorIDStableAcrossReorder(t *testing.T) {
 	t.Parallel()
 
 	clones := []domain.ProcessedClone{
-		{CloneRef: domain.CloneRef{Filename: "a.go", LineStart: 1, LineEnd: 2, Fragment: "x"}},
+		{Filename: "a.go", LineStart: 1, LineEnd: 2, Fragment: "x"},
 	}
 
 	first := toCloneGroupView(1, "e0f6093241ba9931", clones)

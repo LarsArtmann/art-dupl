@@ -2,7 +2,7 @@ package artdupl
 
 import (
 	"context"
-	"encoding/json/v2"
+	"encoding/json"
 	"fmt"
 	"os"
 	"time"
@@ -76,7 +76,7 @@ type CloneGroup struct {
 	//	(0.0-1.0, where >=0.8 is actionable, 0.5-0.8 is low-confidence, <0.5
 	//	is non-actionable).
 	Analysis   *ExtractabilityAnalysis `json:"analysis,omitempty"`
-	Confidence float64                 `json:"confidence,omitempty"`
+	Confidence float64                 `json:"confidence"`
 }
 
 // Clone represents a single occurrence of duplicated code.

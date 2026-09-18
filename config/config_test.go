@@ -1,7 +1,7 @@
 package config
 
 import (
-	"encoding/json/v2"
+	"encoding/json"
 	"os"
 	"path/filepath"
 	"testing"

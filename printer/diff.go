@@ -211,12 +211,12 @@ func diffLCS(srcRows, dstRows [][]byte, left, right []DiffLine) bool {
 			j--
 		case dp[i-1][j] >= dp[i][j-1]:
 			// Line removed from base
-			left[i-1].Type = DiffLineRemoved
+			left[i-1].Type = DiffLineRemoved //art-dupl:accept LCS removed/added mirror //art-dupl:accept LCS removed/added mirror
 			hasDiff = true
 			i--
 		default:
 			// Line added in compared
-			right[j-1].Type = DiffLineAdded
+			right[j-1].Type = DiffLineAdded //art-dupl:accept LCS removed/added mirror //art-dupl:accept LCS removed/added mirror
 			hasDiff = true
 			j--
 		}
@@ -224,13 +224,13 @@ func diffLCS(srcRows, dstRows [][]byte, left, right []DiffLine) bool {
 
 	// Mark remaining lines
 	for i > 0 {
-		left[i-1].Type = DiffLineRemoved
+		left[i-1].Type = DiffLineRemoved //art-dupl:accept LCS removed/added mirror
 		hasDiff = true
 		i--
 	}
 
 	for j > 0 {
-		right[j-1].Type = DiffLineAdded
+		right[j-1].Type = DiffLineAdded //art-dupl:accept LCS removed/added mirror
 		hasDiff = true
 		j--
 	}
@@ -274,13 +274,11 @@ func ComputeCloneGroupDiff(clones []domain.ProcessedClone) CloneGroupDiff {
 
 	result := CloneGroupDiff{
 		Base: &CloneWithContent{
-			CloneRef: domain.CloneRef{
-				Filename:  base.Filename,
-				LineStart: base.LineStart,
-				LineEnd:   base.LineEnd,
-				Fragment:  base.Fragment,
-			},
-			Content: []byte(base.Fragment),
+			Filename:  base.Filename,
+			LineStart: base.LineStart,
+			LineEnd:   base.LineEnd,
+			Fragment:  base.Fragment,
+			Content:   []byte(base.Fragment),
 		},
 		Others: make([]CloneDiff, 0, len(clones)-1),
 	}
@@ -297,16 +295,12 @@ func ComputeCloneGroupDiff(clones []domain.ProcessedClone) CloneGroupDiff {
 		result.TotalModified += modified
 
 		result.Others = append(result.Others, CloneDiff{
-			CloneWithContent: CloneWithContent{
-				CloneRef: domain.CloneRef{
-					Filename:  clones[idx].Filename,
-					LineStart: clones[idx].LineStart,
-					LineEnd:   clones[idx].LineEnd,
-					Fragment:  clones[idx].Fragment,
-				},
-				Content: []byte(clones[idx].Fragment),
-			},
-			Diff: diff,
+			Filename:  clones[idx].Filename,
+			LineStart: clones[idx].LineStart,
+			LineEnd:   clones[idx].LineEnd,
+			Fragment:  clones[idx].Fragment,
+			Content:   []byte(clones[idx].Fragment),
+			Diff:      diff,
 		})
 	}
 

@@ -2,7 +2,7 @@ package printer
 
 import (
 	"bytes"
-	"encoding/json/v2"
+	"encoding/json"
 	"strings"
 	"testing"
 
@@ -21,12 +21,10 @@ func TestSARIFOutput_NonActionablePattern(t *testing.T) {
 		Hash: "test-hash-abc",
 		Clones: []domain.ProcessedClone{
 			{
-				CloneRef: domain.CloneRef{
-					Filename:  "a.go",
-					LineStart: 10,
-					LineEnd:   20,
-					Fragment:  "test code",
-				},
+				Filename:  "a.go",
+				LineStart: 10,
+				LineEnd:   20,
+				Fragment:  "test code",
 				Classification: domain.CloneClassification{
 					CloneType:            domain.CloneType2,
 					Category:             domain.CategoryFunction,
@@ -86,12 +84,10 @@ func TestSARIFOutput_NoPatternWhenActionable(t *testing.T) {
 		Hash: "test-hash-xyz",
 		Clones: []domain.ProcessedClone{
 			{
-				CloneRef: domain.CloneRef{
-					Filename:  "b.go",
-					LineStart: 1,
-					LineEnd:   5,
-					Fragment:  "test code",
-				},
+				Filename:  "b.go",
+				LineStart: 1,
+				LineEnd:   5,
+				Fragment:  "test code",
 				Classification: domain.CloneClassification{
 					CloneType:            domain.CloneType1,
 					Category:             domain.CategoryFunction,
@@ -132,12 +128,10 @@ func TestSARIFOutput_GenericsCandidateProperties(t *testing.T) {
 		Hash: "test-hash-gen",
 		Clones: []domain.ProcessedClone{
 			{
-				CloneRef: domain.CloneRef{
-					Filename:  "gen.go",
-					LineStart: 1,
-					LineEnd:   9,
-					Fragment:  "test code",
-				},
+				Filename:  "gen.go",
+				LineStart: 1,
+				LineEnd:   9,
+				Fragment:  "test code",
 				Classification: domain.CloneClassification{
 					CloneType:         domain.CloneType2,
 					Category:          domain.CategoryFunction,
@@ -193,12 +187,10 @@ func TestSARIFOutput_NoGenericsPropertiesWhenNotCandidate(t *testing.T) {
 		Hash: "test-hash-nogen",
 		Clones: []domain.ProcessedClone{
 			{
-				CloneRef: domain.CloneRef{
-					Filename:  "plain.go",
-					LineStart: 1,
-					LineEnd:   5,
-					Fragment:  "test code",
-				},
+				Filename:  "plain.go",
+				LineStart: 1,
+				LineEnd:   5,
+				Fragment:  "test code",
 				Classification: domain.CloneClassification{
 					CloneType: domain.CloneType1,
 					Category:  domain.CategoryFunction,

@@ -1,35 +1,33 @@
 # art-dupl coverage baseline — regenerate with scripts/check-coverage.sh
-# date: 2026-08-16T10:40:15Z — go1.26.5
+# date: 2026-09-18T20:59:34Z — go1.27.1
+# test-only packages (cmd/art-dupl, examples, internal/testhelpers, internal/testutil) are excluded
 #
-ok  	github.com/LarsArtmann/art-dupl/baseline	0.031s	coverage: 74.1% of statements
-ok  	github.com/LarsArtmann/art-dupl/bdd	1.658s	coverage: 88.5% of statements
-ok  	github.com/LarsArtmann/art-dupl/cache	0.132s	coverage: 89.8% of statements
-ok  	github.com/LarsArtmann/art-dupl/cmd	1.579s	coverage: 73.9% of statements
-	github.com/LarsArtmann/art-dupl/cmd/art-dupl		coverage: 0.0% of statements
-ok  	github.com/LarsArtmann/art-dupl/config	0.007s	coverage: 89.7% of statements
-ok  	github.com/LarsArtmann/art-dupl/detection	0.083s	coverage: 91.1% of statements
-ok  	github.com/LarsArtmann/art-dupl/domain	0.122s	coverage: 62.2% of statements
-ok  	github.com/LarsArtmann/art-dupl/errors	0.009s	coverage: 91.4% of statements
-ok  	github.com/LarsArtmann/art-dupl/examples	0.034s	coverage: 0.0% of statements
-ok  	github.com/LarsArtmann/art-dupl/hash	0.040s	coverage: 92.7% of statements
-ok  	github.com/LarsArtmann/art-dupl/internal/configtest	0.007s	coverage: [no statements]
-ok  	github.com/LarsArtmann/art-dupl/internal/filtertest	0.014s	coverage: 52.2% of statements
-	github.com/LarsArtmann/art-dupl/internal/testhelpers		coverage: 0.0% of statements
-	github.com/LarsArtmann/art-dupl/internal/testutil		coverage: 0.0% of statements
-ok  	github.com/LarsArtmann/art-dupl/internal/utils	1.104s	coverage: 92.1% of statements
-ok  	github.com/LarsArtmann/art-dupl/job	0.384s	coverage: 73.2% of statements
-ok  	github.com/LarsArtmann/art-dupl/pkg/artdupl	0.424s	coverage: 83.1% of statements
-ok  	github.com/LarsArtmann/art-dupl/pkg/enum	0.003s	coverage: 72.7% of statements
-ok  	github.com/LarsArtmann/art-dupl/pkg/format	0.008s	coverage: 100.0% of statements
-ok  	github.com/LarsArtmann/art-dupl/pkg/logger	0.034s	coverage: 87.5% of statements
-ok  	github.com/LarsArtmann/art-dupl/pkg/position	0.010s	coverage: 100.0% of statements
-ok  	github.com/LarsArtmann/art-dupl/printer	0.087s	coverage: 76.9% of statements
-ok  	github.com/LarsArtmann/art-dupl/printer/actionability	0.029s	coverage: 92.1% of statements
-ok  	github.com/LarsArtmann/art-dupl/printer/stats	0.039s	coverage: 77.2% of statements
-ok  	github.com/LarsArtmann/art-dupl/scripts	0.080s	coverage: [no statements]
-ok  	github.com/LarsArtmann/art-dupl/suffixtree	0.029s	coverage: 95.8% of statements
-ok  	github.com/LarsArtmann/art-dupl/syntax	0.015s	coverage: 80.7% of statements
-ok  	github.com/LarsArtmann/art-dupl/syntax/golang	0.544s	coverage: 91.9% of statements
-ok  	github.com/LarsArtmann/art-dupl/syntax/templ	0.014s	coverage: 84.9% of statements
+ok  	github.com/LarsArtmann/art-dupl/baseline	0.007s	coverage: 69.0% of statements
+ok  	github.com/LarsArtmann/art-dupl/bdd	1.837s	coverage: 95.7% of statements
+ok  	github.com/LarsArtmann/art-dupl/cache	0.141s	coverage: 94.7% of statements
+ok  	github.com/LarsArtmann/art-dupl/cmd	1.800s	coverage: 82.2% of statements
+ok  	github.com/LarsArtmann/art-dupl/config	0.009s	coverage: 91.4% of statements
+ok  	github.com/LarsArtmann/art-dupl/detection	0.054s	coverage: 94.0% of statements
+ok  	github.com/LarsArtmann/art-dupl/domain	0.089s	coverage: 64.2% of statements
+ok  	github.com/LarsArtmann/art-dupl/errors	0.004s	coverage: 91.9% of statements
+ok  	github.com/LarsArtmann/art-dupl/hash	0.009s	coverage: 95.6% of statements
+ok  	github.com/LarsArtmann/art-dupl/internal/configtest	0.005s	coverage: [no statements]
+ok  	github.com/LarsArtmann/art-dupl/internal/filtertest	0.008s	coverage: 58.3% of statements
+	github.com/LarsArtmann/art-dupl/internal/jsonutil		coverage: 0.0% of statements
+ok  	github.com/LarsArtmann/art-dupl/internal/utils	1.111s	coverage: 94.2% of statements
+ok  	github.com/LarsArtmann/art-dupl/job	0.345s	coverage: 74.2% of statements
+ok  	github.com/LarsArtmann/art-dupl/pkg/artdupl	0.255s	coverage: 83.4% of statements
+ok  	github.com/LarsArtmann/art-dupl/pkg/enum	0.010s	coverage: 74.2% of statements
+ok  	github.com/LarsArtmann/art-dupl/pkg/format	0.020s	coverage: 100.0% of statements
+ok  	github.com/LarsArtmann/art-dupl/pkg/logger	0.005s	coverage: 91.2% of statements
+ok  	github.com/LarsArtmann/art-dupl/pkg/position	0.009s	coverage: 100.0% of statements
+ok  	github.com/LarsArtmann/art-dupl/printer	0.042s	coverage: 81.6% of statements
+ok  	github.com/LarsArtmann/art-dupl/printer/actionability	0.033s	coverage: 92.6% of statements
+ok  	github.com/LarsArtmann/art-dupl/printer/stats	0.011s	coverage: 85.0% of statements
+ok  	github.com/LarsArtmann/art-dupl/scripts	0.100s	coverage: [no statements]
+ok  	github.com/LarsArtmann/art-dupl/suffixtree	0.086s	coverage: 97.3% of statements
+ok  	github.com/LarsArtmann/art-dupl/syntax	0.017s	coverage: 90.5% of statements
+ok  	github.com/LarsArtmann/art-dupl/syntax/golang	0.581s	coverage: 91.4% of statements
+ok  	github.com/LarsArtmann/art-dupl/syntax/templ	0.010s	coverage: 88.8% of statements
 #
-# total: total:												(statements)				75.2%
+# total: total:												(statements)				84.6%

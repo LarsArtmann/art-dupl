@@ -156,7 +156,7 @@ func divergenceKey(d TypeDivergence) string {
 func flattenCloneNodes(nodes []*domain.CloneNode) []*domain.CloneNode {
 	result := make([]*domain.CloneNode, 0, len(nodes))
 
-	for _, n := range nodes {
+	for _, n := range nodes { //art-dupl:accept recursive twin of flattenChildren
 		result = append(result, n)
 		result = append(result, flattenChildren(n)...)
 	}
@@ -167,7 +167,7 @@ func flattenCloneNodes(nodes []*domain.CloneNode) []*domain.CloneNode {
 func flattenChildren(n *domain.CloneNode) []*domain.CloneNode {
 	result := make([]*domain.CloneNode, 0, len(n.Children))
 
-	for _, c := range n.Children {
+	for _, c := range n.Children { //art-dupl:accept recursive twin of flattenCloneNodes
 		result = append(result, c)
 		result = append(result, flattenChildren(c)...)
 	}

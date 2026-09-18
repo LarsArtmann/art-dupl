@@ -105,6 +105,7 @@ func feedFromStdin(
 		}
 
 		filterStats.WarnUnmatchedExcludePatterns(stderr)
+		filterStats.WarnUnmatchedIncludePatterns(stderr)
 	}()
 
 	return fchan
@@ -259,6 +260,7 @@ func crawlPathsWithFileCheck(
 		close(fchan)
 
 		filterStats.WarnUnmatchedExcludePatterns(stderr)
+		filterStats.WarnUnmatchedIncludePatterns(stderr)
 	}()
 
 	return fchan

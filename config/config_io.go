@@ -1,11 +1,11 @@
 package config
 
 import (
-	"encoding/json/v2"
 	"os"
 	"path/filepath"
 
 	"github.com/LarsArtmann/art-dupl/errors"
+	"github.com/LarsArtmann/art-dupl/internal/jsonutil"
 	yaml "github.com/go-faster/yaml"
 )
 
@@ -54,7 +54,7 @@ func loadYAMLIntoConfig(data []byte, config *Config, filename string) error {
 		return errors.NewConfigError("failed to parse YAML config file: "+filename, err)
 	}
 
-	jsonData, err := json.Marshal(raw)
+	jsonData, err := jsonutil.Marshal(raw)
 	if err != nil {
 		return errors.NewConfigError("failed to convert YAML to JSON: "+filename, err)
 	}

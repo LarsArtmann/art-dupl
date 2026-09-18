@@ -2,7 +2,7 @@ package printer
 
 import (
 	"bytes"
-	"encoding/json/v2"
+	"encoding/json"
 	"testing"
 
 	"github.com/LarsArtmann/art-dupl/internal/testutil"

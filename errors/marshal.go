@@ -6,10 +6,11 @@ package errors
 // consider using the typed functions in their respective packages.
 
 import (
-	"encoding/json/jsontext"
-	"encoding/json/v2"
+	"encoding/json"
 	"errors"
 	"fmt"
+
+	"github.com/LarsArtmann/art-dupl/internal/jsonutil"
 )
 
 // Pre-defined error formats for static error wrapping.
@@ -35,21 +36,26 @@ func (e *MarshalError) Unwrap() error {
 }
 
 // HandleMarshalingError provides unified JSON marshaling error handling.
-// It inspects the concrete encoding/json/v2 error types (not their message
+// It inspects the concrete encoding/json error types (not their message
 // strings, which are unstable) so callers can match the typed sentinels
 // via errors.Is.
 //
-// In json/v2, UnsupportedValueError and UnsupportedTypeError from v1 are
-// unified into SemanticError. We match on the action field to distinguish
-// marshal-time type incompatibilities from other semantic errors.
+// v1 reports marshal-time type incompatibilities as UnsupportedTypeError or
+// UnsupportedValueError, and decode-time value/type mismatches as
+// UnmarshalTypeError; all three map to ErrUnsupportedType.
 func HandleMarshalingError(operation, context string, err error) error {
 	if err == nil {
 		return nil
 	}
 
-	var se *json.SemanticError
+	var (
+		ute        *json.UnmarshalTypeError
+		uteMarshal *json.UnsupportedTypeError
+		uve        *json.UnsupportedValueError
+	)
+
 	switch {
-	case errors.As(err, &se):
+	case errors.As(err, &ute), errors.As(err, &uteMarshal), errors.As(err, &uve):
 		return newMarshalError(operation, context, err, ErrUnsupportedType)
 	default:
 		return &MarshalError{Operation: operation, Context: context, Cause: err}
@@ -67,7 +73,7 @@ func newMarshalError(operation, context string, err, staticErr error) *MarshalEr
 
 // marshalJSON marshals v and wraps any error via HandleMarshalingError.
 func marshalJSON(v any, context, operation string) ([]byte, error) {
-	data, err := json.Marshal(v)
+	data, err := jsonutil.Marshal(v)
 	if err != nil {
 		return nil, HandleMarshalingError(operation, context, err)
 	}
@@ -92,7 +98,7 @@ func SafeMarshalNilSafe(v any, nilErrorMessage string) ([]byte, error) {
 
 // SafeMarshalIndent provides safe indented marshaling with consistent error handling.
 func SafeMarshalIndent(v any, prefix, indent, context string) ([]byte, error) {
-	data, err := json.Marshal(v, jsontext.WithIndentPrefix(prefix), jsontext.WithIndent(indent))
+	data, err := jsonutil.MarshalIndent(v, prefix, indent)
 	if err != nil {
 		return nil, fmt.Errorf("marshal indent (prefix: %q, context: %s): %w",
 			prefix, context, HandleMarshalingError("marshal indent", context, err))
@@ -108,7 +114,7 @@ func SafeMarshalIndentNilSafe(v any, prefix, indent, nilErrorMessage string) ([]
 		return nil, NewValidationError(nilErrorMessage, nil)
 	}
 
-	data, err := json.Marshal(v, jsontext.WithIndentPrefix(prefix), jsontext.WithIndent(indent))
+	data, err := jsonutil.MarshalIndent(v, prefix, indent)
 	if err != nil {
 		return nil, HandleMarshalingError(
 			"marshal indent",

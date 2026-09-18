@@ -2,8 +2,6 @@ package cmd
 
 import (
 	"context"
-	"encoding/json/jsontext"
-	"encoding/json/v2"
 	"fmt"
 	"io"
 	"os"
@@ -12,6 +10,7 @@ import (
 	"github.com/LarsArtmann/art-dupl/config"
 	"github.com/LarsArtmann/art-dupl/domain"
 	duplerrors "github.com/LarsArtmann/art-dupl/errors"
+	"github.com/LarsArtmann/art-dupl/internal/jsonutil"
 	"github.com/LarsArtmann/art-dupl/printer"
 	"github.com/LarsArtmann/art-dupl/printer/actionability"
 	"github.com/LarsArtmann/art-dupl/syntax"
@@ -115,7 +114,7 @@ func collectCurrentGroups(
 }
 
 func outputDiffJSON(report printer.DiffReport) error {
-	data, err := json.Marshal(report, jsontext.WithIndentPrefix(""), jsontext.WithIndent("  "))
+	data, err := jsonutil.MarshalIndent(report, "", "  ")
 	if err != nil {
 		return fmt.Errorf("marshal diff report: %w", err)
 	}

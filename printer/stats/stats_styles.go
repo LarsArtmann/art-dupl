@@ -39,28 +39,24 @@ func initStyles() styleConfig {
 	// Disable all colors if NO_COLOR is set
 	if noColor {
 		return styleConfig{
-			StyleMixin: StyleMixin{
-				base:    lipgloss.NewStyle(),
-				header:  lipgloss.NewStyle(),
-				section: lipgloss.NewStyle(),
-				metric:  lipgloss.NewStyle(),
-				success: lipgloss.NewStyle(),
-				warning: lipgloss.NewStyle(),
-				error:   lipgloss.NewStyle(),
-			},
+			base:    lipgloss.NewStyle(),
+			header:  lipgloss.NewStyle(),
+			section: lipgloss.NewStyle(),
+			metric:  lipgloss.NewStyle(),
+			success: lipgloss.NewStyle(),
+			warning: lipgloss.NewStyle(),
+			error:   lipgloss.NewStyle(),
 		}
 	}
 
 	return styleConfig{
-		StyleMixin: StyleMixin{
-			base:    lipgloss.NewStyle().Bold(true),
-			header:  headerStyle,
-			section: sectionStyle,
-			metric:  metricStyle,
-			success: successStyle,
-			warning: warningStyle,
-			error:   errorStyle,
-		},
+		base:    lipgloss.NewStyle().Bold(true),
+		header:  headerStyle,
+		section: sectionStyle,
+		metric:  metricStyle,
+		success: successStyle,
+		warning: warningStyle,
+		error:   errorStyle,
 	}
 }
 

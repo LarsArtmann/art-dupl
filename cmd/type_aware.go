@@ -21,6 +21,20 @@ import (
 //
 // This is a blocking operation — the entire file set must be known before
 // go/packages can resolve imports and type-check.
+// replayFiles hands the already-collected file list back to the pipeline on a
+// fresh buffered channel after type-info loading drained the original stream.
+func replayFiles(files []string) chan string {
+	newChan := make(chan string, len(files))
+
+	for _, f := range files {
+		newChan <- f
+	}
+
+	close(newChan)
+
+	return newChan
+}
+
 func loadTypeAwareData(
 	ctx context.Context,
 	filesChan chan string,
@@ -48,15 +62,7 @@ func loadTypeAwareData(
 	}
 
 	if len(goFiles) == 0 {
-		newChan := make(chan string, len(allFiles))
-
-		for _, f := range allFiles {
-			newChan <- f
-		}
-
-		close(newChan)
-
-		return nil, newChan
+		return nil, replayFiles(allFiles)
 	}
 
 	fmt.Fprintf(stderr, "🔍 Type-aware mode: loading type information for %d Go files...\n", len(goFiles))
@@ -68,13 +74,5 @@ func loadTypeAwareData(
 		typeData = nil
 	}
 
-	newChan := make(chan string, len(allFiles))
-
-	for _, f := range allFiles {
-		newChan <- f
-	}
-
-	close(newChan)
-
-	return typeData, newChan
+	return typeData, replayFiles(allFiles)
 }

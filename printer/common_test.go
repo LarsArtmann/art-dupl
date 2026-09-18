@@ -20,12 +20,10 @@ func newTestProcessedClone(
 	fragment string,
 ) domain.ProcessedClone {
 	return domain.ProcessedClone{
-		CloneRef: domain.CloneRef{
-			Filename:  filename,
-			LineStart: lineStart,
-			LineEnd:   lineEnd,
-			Fragment:  fragment,
-		},
+		Filename:  filename,
+		LineStart: lineStart,
+		LineEnd:   lineEnd,
+		Fragment:  fragment,
 	}
 }
 

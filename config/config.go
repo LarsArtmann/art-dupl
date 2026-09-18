@@ -82,7 +82,7 @@ type Config struct {
 	Profile bool `json:"profile,omitempty"`
 
 	// Timeout specifies maximum execution time (0 = no timeout)
-	Timeout time.Duration `json:"timeout,omitempty,format:nano"`
+	Timeout time.Duration `json:"timeout,omitempty"`
 
 	// IncludeSQLC includes sqlc.dev generated files in analysis (default: false, filtered)
 	IncludeSQLC bool `json:"includeSQLC,omitempty"`

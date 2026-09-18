@@ -5,7 +5,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/LarsArtmann/art-dupl/domain"
 	"github.com/LarsArtmann/art-dupl/internal/testutil"
 )
 
@@ -50,8 +49,8 @@ func TestCloneGroup_Fields(t *testing.T) {
 	group := CloneGroup{
 		Hash: "abc123",
 		Clones: []*Clone{
-			{CloneRef: domain.CloneRef{Filename: "file1.go", LineStart: 10, LineEnd: 20}},
-			{CloneRef: domain.CloneRef{Filename: "file2.go", LineStart: 15, LineEnd: 25}},
+			{Filename: "file1.go", LineStart: 10, LineEnd: 20},
+			{Filename: "file2.go", LineStart: 15, LineEnd: 25},
 		},
 		Size:      100,
 		LineCount: 11,
@@ -68,7 +67,7 @@ func TestCloneGroup_Fields(t *testing.T) {
 // TestClone_Fields tests Clone field assignments.
 func TestClone_Fields(t *testing.T) {
 	clone := Clone{
-		CloneRef: domain.CloneRef{Filename: testFilename, LineStart: 10, LineEnd: 20, Fragment: "code here"},
+		Filename: testFilename, LineStart: 10, LineEnd: 20, Fragment: "code here",
 		StartPos: 100,
 		EndPos:   200,
 		Size:     50,
@@ -229,8 +228,8 @@ func TestClone_LargeFragment(t *testing.T) {
 	}
 
 	clone := Clone{
-		CloneRef: domain.CloneRef{Filename: "large.go", LineStart: 1, LineEnd: 1000, Fragment: string(largeFragment)},
-		Size:     len(largeFragment),
+		Filename: "large.go", LineStart: 1, LineEnd: 1000, Fragment: string(largeFragment),
+		Size: len(largeFragment),
 	}
 
 	testutil.AssertFieldValue(t, clone.Filename, "large.go", "Filename")
@@ -248,8 +247,8 @@ func TestCloneGroup_ManyClones(t *testing.T) {
 	clones := make([]*Clone, 0, 100)
 	for i := range 100 {
 		clones = append(clones, &Clone{
-			CloneRef: domain.CloneRef{Filename: fmt.Sprintf("file%d.go", i), LineStart: i * 10, LineEnd: i*10 + 5},
-			Size:     50,
+			Filename: fmt.Sprintf("file%d.go", i), LineStart: i * 10, LineEnd: i*10 + 5,
+			Size: 50,
 		})
 	}
 
@@ -307,8 +306,8 @@ func TestProgress_Full(t *testing.T) {
 // TestClone_EdgeCases tests edge cases for Clone struct.
 func TestClone_EdgeCases(t *testing.T) {
 	clone := Clone{
-		CloneRef: domain.CloneRef{Filename: "single.go", LineStart: 10, LineEnd: 10},
-		Size:     1,
+		Filename: "single.go", LineStart: 10, LineEnd: 10,
+		Size: 1,
 	}
 
 	testutil.AssertFieldValue(t, clone.Filename, "single.go", "Filename")

@@ -1,7 +1,7 @@
 package bdd_test
 
 import (
-	"encoding/json/v2"
+	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"

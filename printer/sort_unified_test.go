@@ -120,10 +120,10 @@ func TestSortGroupsByCriteria_ProcessedCloneSlice(t *testing.T) {
 
 	// Verify the factory works with []domain.ProcessedClone (the text printer's type)
 	groups := [][]domain.ProcessedClone{
-		{domain.ProcessedClone{CloneRef: domain.CloneRef{Filename: "b.go", Fragment: "short"}, TokenCount: 5}},
+		{domain.ProcessedClone{Filename: "b.go", Fragment: "short", TokenCount: 5}},
 		{
 			domain.ProcessedClone{
-				CloneRef:   domain.CloneRef{Filename: "a.go", Fragment: "much longer fragment"},
+				Filename: "a.go", Fragment: "much longer fragment",
 				TokenCount: 10,
 			},
 		},

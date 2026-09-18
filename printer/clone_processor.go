@@ -129,12 +129,10 @@ func ProcessClones(fread ReadFile, dups [][]*syntax.Node, opts ...ProcessOption)
 		lines := fileInfo.LineEnd - fileInfo.LineStart + 1
 
 		clones[i] = domain.ProcessedClone{
-			CloneRef: domain.CloneRef{
-				Filename:  fileInfo.Filename,
-				LineStart: fileInfo.LineStart,
-				LineEnd:   fileInfo.LineEnd,
-				Fragment:  string(fragment),
-			},
+			Filename:   fileInfo.Filename,
+			LineStart:  fileInfo.LineStart,
+			LineEnd:    fileInfo.LineEnd,
+			Fragment:   string(fragment),
 			StartPos:   nstart.Pos,
 			EndPos:     nend.End,
 			TokenCount: tokens,

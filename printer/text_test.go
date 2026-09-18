@@ -230,8 +230,8 @@ func TestTotalFragmentSize(t *testing.T) {
 	}{
 		{"nil", nil, 0},
 		{"two fragments", []domain.ProcessedClone{
-			{CloneRef: domain.CloneRef{Fragment: "hello"}},
-			{CloneRef: domain.CloneRef{Fragment: "world!"}},
+			{Fragment: "hello"},
+			{Fragment: "world!"},
 		}, 11},
 	}
 
@@ -325,8 +325,8 @@ func TestPrintCloneListIncludesPreview(t *testing.T) {
 	tp := &TextPrinter{w: &buf, ReadFile: nil}
 
 	clones := []domain.ProcessedClone{
-		{CloneRef: domain.CloneRef{Filename: "a.go", LineStart: 10, LineEnd: 20, Fragment: "func hello() {"}},
-		{CloneRef: domain.CloneRef{Filename: "b.go", LineStart: 5, LineEnd: 15, Fragment: ""}},
+		{Filename: "a.go", LineStart: 10, LineEnd: 20, Fragment: "func hello() {"},
+		{Filename: "b.go", LineStart: 5, LineEnd: 15, Fragment: ""},
 	}
 
 	if err := tp.printCloneList(clones); err != nil {
@@ -496,7 +496,7 @@ func TestTextPrinter_OutputText_SortByOccurrence(t *testing.T) {
 
 	clones := []domain.ProcessedClone{
 		newTestProcessedClone("a.go", 1, 3, "code"),
-		{CloneRef: domain.CloneRef{Filename: "b.go", LineStart: 1, LineEnd: 3, Fragment: "code"}},
+		{Filename: "b.go", LineStart: 1, LineEnd: 3, Fragment: "code"},
 	}
 	tp.cloneGroups = [][]domain.ProcessedClone{clones}
 
@@ -529,7 +529,7 @@ func TestTextPrinter_OutputText_SortVariants(t *testing.T) {
 			tp := p.(*TextPrinter)
 
 			clones := []domain.ProcessedClone{
-				{CloneRef: domain.CloneRef{Filename: tc.filename, LineStart: 1, LineEnd: 3, Fragment: "code"}},
+				{Filename: tc.filename, LineStart: 1, LineEnd: 3, Fragment: "code"},
 			}
 			tp.cloneGroups = [][]domain.ProcessedClone{clones}
 
@@ -637,7 +637,7 @@ func TestTextPrinter_OutputText_EmptyFragmentWrite(t *testing.T) {
 	tp := p.(*TextPrinter)
 
 	clones := []domain.ProcessedClone{
-		{CloneRef: domain.CloneRef{Filename: "a.go", LineStart: 1, LineEnd: 3, Fragment: ""}},
+		{Filename: "a.go", LineStart: 1, LineEnd: 3, Fragment: ""},
 	}
 	tp.cloneGroups = [][]domain.ProcessedClone{clones}
 

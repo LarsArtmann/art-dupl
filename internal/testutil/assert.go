@@ -1,7 +1,7 @@
 package testutil
 
 import (
-	"encoding/json/v2"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"strings"

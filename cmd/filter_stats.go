@@ -29,12 +29,19 @@ type FilterStats struct {
 	bySource map[string]int
 	reasons  []gogenfilter.FilterReason
 
-	// excludeMatched tracks which user-supplied --exclude-pattern values have
-	// matched at least one candidate file during the crawl. Patterns that
-	// never match are likely misconfigurations (e.g. a regex where a glob is
-	// expected) and are reported by WarnUnmatchedExcludePatterns.
+	// excludePatterns/excludeMatched track user-supplied --exclude-pattern
+	// values for zero-match detection. Patterns that never match are likely
+	// misconfigurations (e.g. a regex where a glob is expected) and are
+	// reported by WarnUnmatchedExcludePatterns.
 	excludePatterns []string
 	excludeMatched  map[string]bool
+
+	// includePatterns/includeMatched is the symmetric tracking for
+	// user-supplied --include-pattern values, reported by
+	// WarnUnmatchedIncludePatterns: an include that matches nothing silently
+	// leaves the targeted files filtered out.
+	includePatterns []string
+	includeMatched  map[string]bool
 }
 
 // NewFilterStats creates a new FilterStats with the given filter reasons.
@@ -56,6 +63,7 @@ func newTrackedFilterStats(filterParam *gogenfilter.Filter, cfg *config.Config) 
 
 	filterStats := NewFilterStats(filterParam.FilterReasons())
 	filterStats.TrackExcludePatterns(cfg.ExcludePatterns)
+	filterStats.TrackIncludePatterns(cfg.IncludePatterns)
 
 	return filterStats
 }
@@ -142,7 +150,7 @@ func (s *FilterStats) Reasons() []gogenfilter.FilterReason {
 // zero-match detection. Only explicit user patterns belong here; patterns
 // derived from other flags (--ignore-tests) are intentional and would only
 // add warning noise.
-func (s *FilterStats) TrackExcludePatterns(patterns []string) {
+func (s *FilterStats) TrackExcludePatterns(patterns []string) { //art-dupl:accept deliberate exclude/include symmetry — see TrackIncludePatterns
 	if s == nil || len(patterns) == 0 {
 		return
 	}
@@ -157,11 +165,29 @@ func (s *FilterStats) TrackExcludePatterns(patterns []string) {
 	}
 }
 
-// recordPatternCandidate counts which tracked exclude patterns match a
-// candidate path seen during the crawl. Uses gogenfilter.MatchPattern so the
-// counting semantics are identical to the actual filtering.
+// TrackIncludePatterns registers user-supplied --include-pattern values for
+// zero-match detection, mirroring TrackExcludePatterns.
+func (s *FilterStats) TrackIncludePatterns(patterns []string) { //art-dupl:accept deliberate exclude/include symmetry
+	if s == nil || len(patterns) == 0 {
+		return
+	}
+
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	s.includePatterns = append(s.includePatterns, patterns...)
+
+	if s.includeMatched == nil {
+		s.includeMatched = make(map[string]bool)
+	}
+}
+
+// recordPatternCandidate counts which tracked user-supplied exclude/include
+// patterns match a candidate path seen during the crawl. Uses
+// gogenfilter.MatchPattern so the counting semantics are identical to the
+// actual filtering (gogenfilter applies MatchPattern to both lists).
 func (s *FilterStats) recordPatternCandidate(path string) {
-	if s == nil || len(s.excludePatterns) == 0 {
+	if s == nil || (len(s.excludePatterns) == 0 && len(s.includePatterns) == 0) {
 		return
 	}
 
@@ -173,12 +199,18 @@ func (s *FilterStats) recordPatternCandidate(path string) {
 			s.excludeMatched[pattern] = true
 		}
 	}
+
+	for _, pattern := range s.includePatterns {
+		if !s.includeMatched[pattern] && gogenfilter.MatchPattern(path, pattern) {
+			s.includeMatched[pattern] = true
+		}
+	}
 }
 
 // WarnUnmatchedExcludePatterns prints a warning for every tracked
 // --exclude-pattern that matched no candidate file. Called once after the
 // crawl completes.
-func (s *FilterStats) WarnUnmatchedExcludePatterns(stderr io.Writer) {
+func (s *FilterStats) WarnUnmatchedExcludePatterns(stderr io.Writer) { //art-dupl:accept deliberate exclude/include symmetry
 	unmatched := withLock(s, nil, func() []string {
 		var result []string
 
@@ -195,6 +227,33 @@ func (s *FilterStats) WarnUnmatchedExcludePatterns(stderr io.Writer) {
 		fmt.Fprintf(
 			stderr,
 			"warning: --exclude-pattern %q matched no files — patterns are globs (e.g. \"**/gen/*.go\", \"*_mock.go\"), not regular expressions\n",
+			pattern,
+		)
+	}
+}
+
+// WarnUnmatchedIncludePatterns prints a warning for every tracked
+// --include-pattern that matched no candidate file. Called once after the
+// crawl completes. An include pattern that matches nothing silently leaves
+// the targeted files filtered out — the misconfiguration trap mirrored from
+// --exclude-pattern in the opposite direction.
+func (s *FilterStats) WarnUnmatchedIncludePatterns(stderr io.Writer) { //art-dupl:accept deliberate exclude/include symmetry
+	unmatched := withLock(s, nil, func() []string {
+		var result []string
+
+		for _, pattern := range s.includePatterns {
+			if !s.includeMatched[pattern] {
+				result = append(result, pattern)
+			}
+		}
+
+		return result
+	})
+
+	for _, pattern := range unmatched {
+		fmt.Fprintf(
+			stderr,
+			"warning: --include-pattern %q matched no files — patterns are globs (e.g. \"**/vendor/**\", \"internal/**/*.go\"), not regular expressions\n",
 			pattern,
 		)
 	}

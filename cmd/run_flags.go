@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/LarsArtmann/art-dupl/config"
@@ -300,6 +301,12 @@ func resolveHTMLOutput(
 
 	if target == "" {
 		return os.Stdout, nil, nil
+	}
+
+	if dir := filepath.Dir(target); dir != "" && dir != "." {
+		if err := os.MkdirAll(dir, 0o750); err != nil {
+			return nil, nil, duplerrors.Wrap(err, duplerrors.IOError, "creating HTML output directory "+dir)
+		}
 	}
 
 	f, err := os.Create(target)

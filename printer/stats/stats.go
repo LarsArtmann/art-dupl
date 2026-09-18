@@ -39,15 +39,13 @@ func NewStats(writer io.Writer, fileReader printer.ReadFile, minTokens int) prin
 			CategoryBreakdown: make(map[string]int),
 			PriorityBreakdown: make(map[string]int),
 		},
-		StyleMixin: StyleMixin{
-			base:    styles.base,
-			header:  styles.header,
-			section: styles.section,
-			metric:  styles.metric,
-			success: styles.success,
-			warning: styles.warning,
-			error:   styles.error,
-		},
+		base:    styles.base,
+		header:  styles.header,
+		section: styles.section,
+		metric:  styles.metric,
+		success: styles.success,
+		warning: styles.warning,
+		error:   styles.error,
 	}
 }
 

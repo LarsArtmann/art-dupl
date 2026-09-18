@@ -38,13 +38,11 @@ func ProcessFileContent(fread ReadFile, node *syntax.Node) (*FileInfo, error) {
 	lineStart, lineEnd := position.ByteRangeToLines(file, int(node.Pos), int(node.End))
 
 	return &FileInfo{
-		CloneRef: domain.CloneRef{
-			Filename:  node.Filename,
-			LineStart: lineStart,
-			LineEnd:   lineEnd,
-		},
-		Content: file,
-		Node:    node,
+		Filename:  node.Filename,
+		LineStart: lineStart,
+		LineEnd:   lineEnd,
+		Content:   file,
+		Node:      node,
 	}, nil
 }
 
@@ -76,12 +74,10 @@ func ProcessNodeRange(fread ReadFile, startNode, endNode *syntax.Node) (*FileInf
 	lineStart, lineEnd := position.ByteRangeToLines(file, int(startNode.Pos), int(endNode.End))
 
 	return &FileInfo{
-		CloneRef: domain.CloneRef{
-			Filename:  startNode.Filename,
-			LineStart: lineStart,
-			LineEnd:   lineEnd,
-		},
-		Content: file,
-		Node:    startNode,
+		Filename:  startNode.Filename,
+		LineStart: lineStart,
+		LineEnd:   lineEnd,
+		Content:   file,
+		Node:      startNode,
 	}, nil
 }

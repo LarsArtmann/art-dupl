@@ -15,11 +15,19 @@ cd "$(dirname "$0")/.."
 
 export GOEXPERIMENT=jsonv2
 
+# Coverage rows for these packages are noise, not signal:
+#   - cmd/art-dupl: main package, exercised end-to-end by the BDD exec tests
+#   - examples: doc-example code
+#   - internal/testhelpers, internal/testutil: test support code for other tests
+# Excluding them at the go test level also keeps the coverprofile clean.
 run_coverage() {
 	echo "# art-dupl coverage baseline — regenerate with scripts/check-coverage.sh"
 	echo "# date: $(date -u +%Y-%m-%dT%H:%M:%SZ) — $(go version | cut -d' ' -f3)"
+	echo "# test-only packages (cmd/art-dupl, examples, internal/testhelpers, internal/testutil) are excluded"
 	echo "#"
-	go test -cover ./... -coverprofile=/tmp/artdupl-cover.out
+	local pkgs
+	pkgs=$(go list ./... | grep -vE "/(cmd/art-dupl|examples|internal/testhelpers|internal/testutil)$")
+	go test -cover ${pkgs} -coverprofile=/tmp/artdupl-cover.out
 	echo "#"
 	echo -n "# total: "
 	go tool cover -func=/tmp/artdupl-cover.out | tail -1

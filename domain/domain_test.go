@@ -1,7 +1,7 @@
 package domain
 
 import (
-	"encoding/json/v2"
+	"encoding/json"
 	"errors"
 	"testing"
 )
@@ -75,8 +75,8 @@ func TestProcessedCloneGroup_WithClones(t *testing.T) {
 		Hash:       "abc123",
 		TokenCount: 50,
 		Clones: []ProcessedClone{
-			{CloneRef: CloneRef{Filename: "a.go", LineStart: 1, LineEnd: 10}, TokenCount: 25},
-			{CloneRef: CloneRef{Filename: "b.go", LineStart: 5, LineEnd: 14}, TokenCount: 25},
+			{Filename: "a.go", LineStart: 1, LineEnd: 10, TokenCount: 25},
+			{Filename: "b.go", LineStart: 5, LineEnd: 14, TokenCount: 25},
 		},
 	}
 
@@ -111,7 +111,7 @@ func TestProcessedClone_LineCount(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			c := ProcessedClone{CloneRef: CloneRef{LineStart: tc.lineStart, LineEnd: tc.lineEnd}}
+			c := ProcessedClone{LineStart: tc.lineStart, LineEnd: tc.lineEnd}
 			if got := c.LineCount(); got != tc.want {
 				t.Errorf("LineCount() = %d, want %d", got, tc.want)
 			}
@@ -177,7 +177,7 @@ func TestProcessedCloneGroup_TotalTokenCount(t *testing.T) {
 }
 
 func TestProcessedCloneGroup_Validate(t *testing.T) {
-	validClone := ProcessedClone{CloneRef: CloneRef{Filename: "test.go", LineStart: 1, LineEnd: 5}, TokenCount: 10}
+	validClone := ProcessedClone{Filename: "test.go", LineStart: 1, LineEnd: 5, TokenCount: 10}
 
 	t.Run("valid group", func(t *testing.T) {
 		g := ProcessedCloneGroup{
@@ -211,7 +211,7 @@ func TestProcessedCloneGroup_Validate(t *testing.T) {
 			TokenCount: 10,
 			Clones: []ProcessedClone{
 				validClone,
-				{CloneRef: CloneRef{Filename: "", LineStart: 1, LineEnd: 1}, TokenCount: 0}, // Empty filename
+				{Filename: "", LineStart: 1, LineEnd: 1, TokenCount: 0}, // Empty filename
 			},
 		}
 
@@ -229,9 +229,9 @@ func TestProcessedCloneGroup_Validate(t *testing.T) {
 func TestNewProcessedCloneGroup(t *testing.T) {
 	t.Run("computes TokenCount from clones", func(t *testing.T) {
 		clones := []ProcessedClone{
-			{CloneRef: CloneRef{Filename: "a.go", LineStart: 1, LineEnd: 10}, TokenCount: 15},
-			{CloneRef: CloneRef{Filename: "b.go", LineStart: 5, LineEnd: 20}, TokenCount: 25},
-			{CloneRef: CloneRef{Filename: "c.go", LineStart: 3, LineEnd: 8}, TokenCount: 10},
+			{Filename: "a.go", LineStart: 1, LineEnd: 10, TokenCount: 15},
+			{Filename: "b.go", LineStart: 5, LineEnd: 20, TokenCount: 25},
+			{Filename: "c.go", LineStart: 3, LineEnd: 8, TokenCount: 10},
 		}
 
 		g := NewProcessedCloneGroup("hash123", clones)
@@ -262,8 +262,8 @@ func TestNewProcessedCloneGroup(t *testing.T) {
 
 	t.Run("result passes Validate", func(t *testing.T) {
 		clones := []ProcessedClone{
-			{CloneRef: CloneRef{Filename: "a.go", LineStart: 1, LineEnd: 10}, TokenCount: 15},
-			{CloneRef: CloneRef{Filename: "b.go", LineStart: 5, LineEnd: 20}, TokenCount: 15},
+			{Filename: "a.go", LineStart: 1, LineEnd: 10, TokenCount: 15},
+			{Filename: "b.go", LineStart: 5, LineEnd: 20, TokenCount: 15},
 		}
 
 		g := NewProcessedCloneGroup("hash", clones)

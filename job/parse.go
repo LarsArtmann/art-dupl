@@ -45,7 +45,7 @@ func Parse(
 		for file := range fchan {
 			select {
 			case <-ctx.Done():
-				statsChan <- ParseStats{ParseStatsMixin: ParseStatsMixin{FilesCount: fileCount, LinesCount: lineCount}}
+				statsChan <- ParseStats{FilesCount: fileCount, LinesCount: lineCount}
 
 				close(achan)
 
@@ -76,7 +76,7 @@ func Parse(
 			select {
 			case achan <- ast:
 			case <-ctx.Done():
-				statsChan <- ParseStats{ParseStatsMixin: ParseStatsMixin{FilesCount: fileCount, LinesCount: lineCount}}
+				statsChan <- ParseStats{FilesCount: fileCount, LinesCount: lineCount}
 
 				close(achan)
 
@@ -84,7 +84,7 @@ func Parse(
 			}
 		}
 
-		statsChan <- ParseStats{ParseStatsMixin: ParseStatsMixin{FilesCount: fileCount, LinesCount: lineCount}}
+		statsChan <- ParseStats{FilesCount: fileCount, LinesCount: lineCount}
 
 		close(achan)
 	}()
@@ -237,7 +237,7 @@ func collectResults(
 		select {
 		case achan <- result.ast:
 		case <-ctx.Done():
-			statsChan <- ParseStats{ParseStatsMixin: ParseStatsMixin{FilesCount: fileCount, LinesCount: lineCount}}
+			statsChan <- ParseStats{FilesCount: fileCount, LinesCount: lineCount}
 
 			close(achan)
 
@@ -245,7 +245,7 @@ func collectResults(
 		}
 	}
 
-	statsChan <- ParseStats{ParseStatsMixin: ParseStatsMixin{FilesCount: fileCount, LinesCount: lineCount}}
+	statsChan <- ParseStats{FilesCount: fileCount, LinesCount: lineCount}
 
 	close(achan)
 }

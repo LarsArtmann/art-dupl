@@ -1,7 +1,7 @@
 package bdd
 
 import (
-	"encoding/json/v2"
+	"encoding/json"
 	"os"
 
 	"github.com/LarsArtmann/art-dupl/internal/testutil"

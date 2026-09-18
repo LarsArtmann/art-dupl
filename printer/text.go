@@ -315,24 +315,25 @@ func (p *TextPrinter) writeGenericsHint(cls domain.CloneClassification) error {
 	return nil
 }
 
+// classifyReason renders the explanation suffix for a classified clone: the
+// suppressing pattern label, or the fallback source ("boilerplate" patterns vs
+// the property engine) when the label was not carried through.
+func classifyReason(pattern, fallback, label string) string {
+	if pattern == "" {
+		pattern = fallback
+	}
+
+	return label + " (" + pattern + ")"
+}
+
 func (p *TextPrinter) writeExplanation(cls domain.CloneClassification, cloneCount int) error {
 	parts := []string{string(cls.CloneType)}
 
 	switch cls.Actionability {
 	case domain.NonActionable:
-		reason := cls.NonActionablePattern
-		if reason == "" {
-			reason = "boilerplate"
-		}
-
-		parts = append(parts, "non-actionable ("+reason+")")
+		parts = append(parts, classifyReason(cls.NonActionablePattern, "boilerplate", "non-actionable"))
 	case domain.LowConfidence:
-		reason := cls.NonActionablePattern
-		if reason == "" {
-			reason = "property engine"
-		}
-
-		parts = append(parts, "low-confidence ("+reason+")")
+		parts = append(parts, classifyReason(cls.NonActionablePattern, "property engine", "low-confidence"))
 	case domain.Actionable:
 		parts = append(parts, "actionable")
 	default:

@@ -1,10 +1,10 @@
 package cmd
 
 import (
-	"encoding/json/jsontext"
-	"encoding/json/v2"
 	"fmt"
 	"runtime"
+
+	"github.com/LarsArtmann/art-dupl/internal/jsonutil"
 
 	"github.com/spf13/cobra"
 )
@@ -46,7 +46,7 @@ func NewVersionCommand() *cobra.Command {
 					Arch:      runtime.GOARCH,
 				}
 
-				data, err := json.Marshal(info, jsontext.WithIndentPrefix(""), jsontext.WithIndent("  "))
+				data, err := jsonutil.MarshalIndent(info, "", "  ")
 				if err != nil {
 					return fmt.Errorf("marshal version info: %w", err)
 				}

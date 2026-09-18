@@ -19,8 +19,7 @@
 package baseline
 
 import (
-	"encoding/json/jsontext"
-	"encoding/json/v2"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"os"
@@ -28,6 +27,8 @@ import (
 	"slices"
 	"sort"
 	"time"
+
+	"github.com/LarsArtmann/art-dupl/internal/jsonutil"
 )
 
 // DefaultBaselinePath is the conventional location for the baseline file.
@@ -132,7 +133,7 @@ func (bf *File) Save(path string) error {
 		return bf.Entries[i].Hash < bf.Entries[j].Hash
 	})
 
-	data, err := json.Marshal(bf, jsontext.WithIndentPrefix(""), jsontext.WithIndent("  "))
+	data, err := jsonutil.MarshalIndent(bf, "", "  ")
 	if err != nil {
 		return fmt.Errorf("marshal baseline: %w", err)
 	}

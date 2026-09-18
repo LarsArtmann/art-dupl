@@ -1,8 +1,6 @@
 package printer
 
 import (
-	"encoding/json/jsontext"
-	"encoding/json/v2"
 	"fmt"
 	"io"
 	"sort"
@@ -11,6 +9,7 @@ import (
 	"github.com/LarsArtmann/art-dupl/config"
 	"github.com/LarsArtmann/art-dupl/domain"
 	errors "github.com/LarsArtmann/art-dupl/errors"
+	"github.com/LarsArtmann/art-dupl/internal/jsonutil"
 )
 
 type JSONOutput struct {
@@ -24,9 +23,10 @@ type JSONOutput struct {
 }
 
 type CloneGroup struct {
-	Hash   string      `json:"hash"`
-	Size   int         `json:"size"`
-	Clones []JSONClone `json:"files"`
+	Hash     string      `json:"hash"`
+	AnchorID string      `json:"anchor_id"`
+	Size     int         `json:"size"`
+	Clones   []JSONClone `json:"files"`
 }
 
 type JSONClone struct {
@@ -37,10 +37,10 @@ type JSONClone struct {
 	Actionability        domain.CloneActionability `json:"actionability,omitzero"`
 	NonActionablePattern string                    `json:"non_actionable_pattern,omitempty"`
 	CloneType            domain.CloneType          `json:"clone_type,omitzero"`
-	LinesSaved           int                       `json:"lines_saved,omitempty"`
-	Extractable          bool                      `json:"extractable,omitempty"`
-	Confidence           float64                   `json:"confidence,omitempty"`
-	GenericsCandidate    bool                      `json:"generics_candidate,omitempty"`
+	LinesSaved           int                       `json:"lines_saved"`
+	Extractable          bool                      `json:"extractable"`
+	Confidence           float64                   `json:"confidence"`
+	GenericsCandidate    bool                      `json:"generics_candidate"`
 	GenericsHint         string                    `json:"generics_hint,omitempty"`
 }
 
@@ -48,7 +48,7 @@ type Summary struct {
 	TotalCloneGroups int     `json:"total_clone_groups"`
 	TotalClones      int     `json:"total_clones"`
 	ComplexityScore  float64 `json:"complexity_score"`
-	ImpactScore      int     `json:"impact_score,omitempty"`
+	ImpactScore      int     `json:"impact_score"`
 }
 
 // toJSONClone converts a domain.ProcessedClone to a JSONClone DTO.
@@ -171,6 +171,13 @@ func (p *JSONPrinter) OutputJSON(
 ) error {
 	SortCloneGroups(p.cloneGroups, sortBy)
 
+	// Anchors are derived AFTER the final sort so a JSON record deep-links to
+	// the same group-<id> target as the HTML report (sanitized hash, with the
+	// 1-based display position as the empty-hash fallback).
+	for i := range p.cloneGroups {
+		p.cloneGroups[i].AnchorID = groupAnchorID(p.cloneGroups[i].Hash, i+1)
+	}
+
 	output := JSONOutput{
 		Version:       "1.0",
 		Timestamp:     time.Now().UTC(),
@@ -186,7 +193,7 @@ func (p *JSONPrinter) OutputJSON(
 
 	output.DetectionMethod = detectionMethod
 
-	data, err := json.Marshal(&output, jsontext.WithIndentPrefix(""), jsontext.WithIndent("  "))
+	data, err := jsonutil.MarshalIndent(&output, "", "  ")
 	if err != nil {
 		return fmt.Errorf(
 			"encode JSON output (threshold: %d, sortBy: %s, detection: %s): %w",
@@ -221,7 +228,7 @@ func (p *JSONPrinter) OutputSimpleJSON() error {
 		})
 	}
 
-	data, err := json.Marshal(simpleOutput, jsontext.WithIndentPrefix(""), jsontext.WithIndent("  "))
+	data, err := jsonutil.MarshalIndent(simpleOutput, "", "  ")
 	if err != nil {
 		return errors.HandleMarshalingError("encode", "simple JSON output", err)
 	}

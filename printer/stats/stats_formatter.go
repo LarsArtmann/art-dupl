@@ -2,13 +2,12 @@ package stats
 
 import (
 	"encoding/csv"
-	"encoding/json/jsontext"
-	"encoding/json/v2"
 	"fmt"
 	"math"
 	"strconv"
 
 	"github.com/LarsArtmann/art-dupl/config"
+	"github.com/LarsArtmann/art-dupl/internal/jsonutil"
 	"github.com/LarsArtmann/art-dupl/printer"
 )
 
@@ -30,7 +29,7 @@ type jsonStatsOutput struct {
 	} `json:"configuration"`
 	Overview struct {
 		FilesScanned          int            `json:"filesScanned"`
-		FilesFiltered         int            `json:"filesFiltered,omitempty"`
+		FilesFiltered         int            `json:"filesFiltered"`
 		FilterBreakdown       map[string]int `json:"filterBreakdown,omitempty"`
 		FilterSourceBreakdown map[string]int `json:"filterSourceBreakdown,omitempty"`
 		CloneGroups           int            `json:"cloneGroups"`
@@ -38,12 +37,12 @@ type jsonStatsOutput struct {
 	} `json:"overview"`
 	DuplicateCode struct {
 		TotalLines       int     `json:"totalDuplicateLines"`
-		EstimatedLines   int     `json:"estimatedTotalLines,omitempty"`
+		EstimatedLines   int     `json:"estimatedTotalLines"`
 		TotalTokens      int     `json:"totalDuplicateTokens"`
 		AverageCloneSize int     `json:"averageCloneSize"`
 		ComplexityScore  float64 `json:"complexityScore"`
 		ImpactScore      int     `json:"impactScore"`
-		DuplicationRatio float64 `json:"duplicationRatio,omitempty"`
+		DuplicationRatio float64 `json:"duplicationRatio"`
 	} `json:"duplicateCode"`
 	Metrics struct {
 		HealthScore           string `json:"healthScore,omitempty"`
@@ -58,12 +57,12 @@ type jsonStatsOutput struct {
 	CategoryBreakdown map[string]int `json:"categoryBreakdown,omitempty"`
 	PriorityBreakdown map[string]int `json:"priorityBreakdown,omitempty"`
 	Actionability     struct {
-		Actionable    int `json:"actionable,omitempty"`
-		NonActionable int `json:"nonActionable,omitempty"`
+		Actionable    int `json:"actionable"`
+		NonActionable int `json:"nonActionable"`
 	} `json:"actionability"`
 	TestVsProduction struct {
-		Production int `json:"production,omitempty"`
-		Test       int `json:"test,omitempty"`
+		Production int `json:"production"`
+		Test       int `json:"test"`
 	} `json:"testVsProduction"`
 	TopClones []printer.TopCloneGroup `json:"topClones,omitempty"`
 	TopFiles  []jsonTopFile           `json:"topFiles"`
@@ -399,7 +398,7 @@ func sortTopFiles(fileDuplication map[string]int, limit int) []topFileStat {
 func (p *stats) printJSON() {
 	jsonData := p.buildJSONData()
 
-	data, err := json.Marshal(jsonData, jsontext.WithIndentPrefix(""), jsontext.WithIndent("  "))
+	data, err := jsonutil.MarshalIndent(jsonData, "", "  ")
 	if err != nil {
 		_, _ = fmt.Fprintf(p.w, "Error encoding JSON: %v\n", err)
 	} else {

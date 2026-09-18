@@ -146,3 +146,65 @@ func TestWarnTypeAwareIncremental(t *testing.T) {
 		})
 	}
 }
+
+func TestValidateMutualExclusionSuggestGenerics(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name    string
+		args    []string
+		wantErr bool
+		errMsg  string
+	}{
+		{
+			name:    "suggest-generics plus structural errors",
+			args:    []string{"--suggest-generics", "--structural"},
+			wantErr: true,
+			errMsg:  "suggest-generics",
+		},
+		{
+			name:    "suggest-generics plus exact errors",
+			args:    []string{"--suggest-generics", "--exact"},
+			wantErr: true,
+			errMsg:  "suggest-generics",
+		},
+		{
+			name:    "suggest-generics alone is fine",
+			args:    []string{"--suggest-generics"},
+			wantErr: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			cmd := newValidationCmd(t)
+			// suggest-generics is a root-only flag, not part of addSharedFlags.
+			cmd.Flags().Bool("suggest-generics", false, "annotate generics-extraction candidates")
+			parseTestFlags(t, cmd, tt.args...)
+
+			err := validateMutualExclusion(cmd)
+
+			if tt.wantErr {
+				if err == nil {
+					t.Fatalf("expected validation error for %v, got nil", tt.args)
+				}
+
+				if !strings.Contains(err.Error(), tt.errMsg) {
+					t.Errorf("error %q should mention %q", err.Error(), tt.errMsg)
+				}
+
+				if !strings.Contains(err.Error(), "--semantic") {
+					t.Errorf("error %q should tell the user which mode is required", err.Error())
+				}
+
+				return
+			}
+
+			if err != nil {
+				t.Errorf("unexpected validation error for %v: %v", tt.args, err)
+			}
+		})
+	}
+}

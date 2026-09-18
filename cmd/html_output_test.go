@@ -139,10 +139,40 @@ func TestResolveHTMLOutputUnwritablePathFails(t *testing.T) {
 	t.Parallel()
 
 	dir := t.TempDir()
-	cmd := newHTMLTestCmd(filepath.Join(dir, "missing-dir", "out.html"))
+	blocker := filepath.Join(dir, "blocker.txt")
+	if err := os.WriteFile(blocker, []byte("not a directory"), 0o600); err != nil {
+		t.Fatalf("setup: %v", err)
+	}
+
+	// A path beneath a regular file fails on MkdirAll regardless of user id
+	// (ENOTDIR), unlike a merely missing directory which is now created.
+	cmd := newHTMLTestCmd(filepath.Join(blocker, "sub", "out.html"))
 
 	_, _, err := resolveHTMLOutput(cmd, config.OutputFormatHTML, "unused.html", func() bool { return true }, &bytes.Buffer{})
 	if err == nil {
-		t.Fatal("creating a file in a missing directory must fail")
+		t.Fatal("creating a file beneath a regular file must fail")
+	}
+}
+
+func TestResolveHTMLOutputCreatesParentDirs(t *testing.T) {
+	t.Parallel()
+
+	dir := t.TempDir()
+	target := filepath.Join(dir, "reports", "nested", "report.html")
+	cmd := newHTMLTestCmd(target)
+
+	var stderr bytes.Buffer
+	w, cleanup, err := resolveHTMLOutput(cmd, config.OutputFormatHTML, "auto.html", func() bool { return false }, &stderr)
+	if err != nil {
+		t.Fatalf("resolveHTMLOutput() failed: %v", err)
+	}
+	defer cleanup()
+
+	if _, statErr := os.Stat(target); statErr != nil {
+		t.Fatalf("expected HTML output file %q to be created (with parent dirs), stat error: %v", target, statErr)
+	}
+
+	if _, err := w.Write([]byte("<html></html>")); err != nil {
+		t.Errorf("writing to HTML output failed: %v", err)
 	}
 }

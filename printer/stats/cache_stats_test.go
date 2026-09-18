@@ -1,7 +1,7 @@
 package stats
 
 import (
-	"encoding/json/v2"
+	"encoding/json"
 	"strings"
 	"testing"
 

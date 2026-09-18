@@ -89,6 +89,17 @@ func (t *transformer) buildElementNode(
 }
 
 // transformAttribute converts an Attribute to a syntax.Node.
+// setAttributeKey names the attribute node and, in semantic mode, encodes the
+// key into the node type so differently-named attributes do not collapse
+// (attribute names are API surface, mirroring the Go KeyValueExpr policy).
+func (t *transformer) setAttributeKey(o *syntax.Node, key string) {
+	o.Type = Attribute
+	o.Name = key
+	if t.semantic {
+		o.Type = syntax.EncodeSemanticType(Attribute, key, true)
+	}
+}
+
 func (t *transformer) transformAttribute(attr templparser.Attribute) *syntax.Node {
 	if attr == nil {
 		return nil
@@ -98,40 +109,16 @@ func (t *transformer) transformAttribute(attr templparser.Attribute) *syntax.Nod
 
 	switch a := attr.(type) {
 	case *templparser.ConstantAttribute:
-		o.Type = Attribute
-
-		o.Name = a.Key.String()
-		if t.semantic {
-			o.Type = syntax.EncodeSemanticType(Attribute, a.Key.String(), true)
-		}
-
+		t.setAttributeKey(o, a.Key.String())
 		t.setNodePosFromRange(o, a.Range)
 	case *templparser.ExpressionAttribute:
-		o.Type = Attribute
-
-		o.Name = a.Key.String()
-		if t.semantic {
-			o.Type = syntax.EncodeSemanticType(Attribute, a.Key.String(), true)
-		}
-
+		t.setAttributeKey(o, a.Key.String())
 		t.setNodePosFromRange(o, a.Expression.Range)
 	case *templparser.BoolConstantAttribute:
-		o.Type = Attribute
-
-		o.Name = a.Key.String()
-		if t.semantic {
-			o.Type = syntax.EncodeSemanticType(Attribute, a.Key.String(), true)
-		}
-
+		t.setAttributeKey(o, a.Key.String())
 		t.setNodePosFromRange(o, a.Range)
 	case *templparser.BoolExpressionAttribute:
-		o.Type = Attribute
-
-		o.Name = a.Key.String()
-		if t.semantic {
-			o.Type = syntax.EncodeSemanticType(Attribute, a.Key.String(), true)
-		}
-
+		t.setAttributeKey(o, a.Key.String())
 		t.setNodePosFromRange(o, a.Expression.Range)
 	case *templparser.SpreadAttributes:
 		o.Type = SpreadAttributes

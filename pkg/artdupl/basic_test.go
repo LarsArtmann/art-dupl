@@ -170,7 +170,7 @@ func TestErrorWrapping_Basic(t *testing.T) {
 func TestCloneGroup_Validation_Basic(t *testing.T) {
 	group := CloneGroup{
 		Hash:   "test-hash",
-		Clones: []*Clone{{CloneRef: domain.CloneRef{Filename: testFilename}}},
+		Clones: []*Clone{{Filename: testFilename}},
 		Size:   10,
 		Method: MethodArtDupl,
 	}

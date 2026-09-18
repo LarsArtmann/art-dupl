@@ -3,7 +3,6 @@ package examples
 import (
 	"testing"
 
-	"github.com/LarsArtmann/art-dupl/domain"
 	"github.com/LarsArtmann/art-dupl/pkg/artdupl"
 	"github.com/LarsArtmann/art-dupl/pkg/logger"
 )
@@ -102,7 +101,7 @@ func TestExamplesTypes(t *testing.T) {
 	// Test clone group structure
 	cloneGroup := &artdupl.CloneGroup{
 		Hash:   "test-hash",
-		Clones: []*artdupl.Clone{{CloneRef: domain.CloneRef{Filename: testFile}}},
+		Clones: []*artdupl.Clone{{Filename: testFile}},
 		Size:   10,
 		Method: artdupl.MethodArtDupl,
 	}
@@ -125,15 +124,13 @@ func TestExamplesTypes(t *testing.T) {
 
 	// Test clone structure
 	clone := &artdupl.Clone{
-		CloneRef: domain.CloneRef{
-			Filename:  testFile,
-			LineStart: 1,
-			LineEnd:   10,
-			Fragment:  "test code",
-		},
-		StartPos: 0,
-		EndPos:   100,
-		Size:     100,
+		Filename:  testFile,
+		LineStart: 1,
+		LineEnd:   10,
+		Fragment:  "test code",
+		StartPos:  0,
+		EndPos:    100,
+		Size:      100,
 	}
 
 	if clone.Filename == "" {

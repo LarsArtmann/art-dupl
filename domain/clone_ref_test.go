@@ -1,7 +1,7 @@
 package domain
 
 import (
-	"encoding/json/v2"
+	"encoding/json"
 	"testing"
 )
 

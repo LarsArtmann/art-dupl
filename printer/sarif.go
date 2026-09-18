@@ -1,8 +1,6 @@
 package printer
 
 import (
-	"encoding/json/jsontext"
-	"encoding/json/v2"
 	"fmt"
 	"io"
 	"time"
@@ -10,6 +8,7 @@ import (
 	"github.com/LarsArtmann/art-dupl/config"
 	"github.com/LarsArtmann/art-dupl/domain"
 	errors "github.com/LarsArtmann/art-dupl/errors"
+	"github.com/LarsArtmann/art-dupl/internal/jsonutil"
 )
 
 // SARIF level constants.
@@ -113,7 +112,7 @@ type SARIFArtifactLocation struct {
 // they intentionally differ from CloneRef's line_start/line_end tags.
 type SARIFRegion struct {
 	StartLine int `json:"startLine"`
-	EndLine   int `json:"endLine,omitempty"`
+	EndLine   int `json:"endLine"`
 }
 
 // SARIFFingerprints represents fingerprints for deduplication.
@@ -318,7 +317,7 @@ func (p *sarifPrinter) outputSARIF() error {
 		},
 	}
 
-	data, err := json.Marshal(&output, jsontext.WithIndentPrefix(""), jsontext.WithIndent("  "))
+	data, err := jsonutil.MarshalIndent(&output, "", "  ")
 	if err != nil {
 		return errors.HandleMarshalingError(
 			"encode",

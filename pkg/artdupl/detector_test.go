@@ -5,7 +5,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/LarsArtmann/art-dupl/domain"
 	"github.com/LarsArtmann/art-dupl/internal/testutil"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
@@ -50,13 +49,11 @@ func createTestClone(t *testing.T, fragment string) Clone {
 	t.Helper()
 
 	return Clone{
-		CloneRef: domain.CloneRef{
-			Filename:  testFilename,
-			LineStart: 1,
-			LineEnd:   5,
-			Fragment:  fragment,
-		},
-		Size: 25,
+		Filename:  testFilename,
+		LineStart: 1,
+		LineEnd:   5,
+		Fragment:  fragment,
+		Size:      25,
 	}
 }
 

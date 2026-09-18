@@ -4,7 +4,6 @@ import (
 	"runtime/debug"
 	"time"
 
-	"github.com/LarsArtmann/art-dupl/domain"
 	"github.com/LarsArtmann/art-dupl/pkg/position"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
@@ -84,14 +83,12 @@ func (d *detector) convertFragmentToClone(frag []*syntax.Node) *Clone {
 	}
 
 	clone := &Clone{
-		CloneRef: domain.CloneRef{
-			Filename:  firstNode.Filename,
-			LineStart: startLine,
-			LineEnd:   endLine,
-		},
-		StartPos: startPos,
-		EndPos:   endPos,
-		Size:     len(frag),
+		Filename:  firstNode.Filename,
+		LineStart: startLine,
+		LineEnd:   endLine,
+		StartPos:  startPos,
+		EndPos:    endPos,
+		Size:      len(frag),
 	}
 
 	if d.opts.IncludeFragments {
