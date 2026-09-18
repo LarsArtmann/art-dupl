@@ -81,7 +81,7 @@ func feedFromStdin(
 		sc := bufio.NewScanner(rc)
 		for sc.Scan() {
 			f := sc.Text()
-			path := strings.TrimPrefix(f, "./")
+			path := filepath.ToSlash(strings.TrimPrefix(f, "./"))
 
 			filterStats.recordPatternCandidate(path)
 
@@ -270,6 +270,8 @@ func crawlPathsWithFileCheck(
 
 // crawlSinglePathWithOpts handles crawling of a single path using CrawlOptions.
 func crawlSinglePathWithOpts(opts CrawlOptions, path string) {
+	path = filepath.ToSlash(path)
+
 	info, err := os.Lstat(path)
 	if err != nil {
 		fmt.Fprintf(opts.Stderr, "error: cannot stat %s: %v\n", path, err)
@@ -316,6 +318,10 @@ func handleWalkEntry(opts CrawlOptions, path string, info os.FileInfo) error {
 	if opts.Ctx.Err() != nil {
 		return opts.Ctx.Err()
 	}
+
+	// Filter patterns, gitignore rules, and printed output are all
+	// slash-based; normalize once here so Windows backslash paths match.
+	path = filepath.ToSlash(path)
 
 	if info == nil {
 		return nil
