@@ -32,7 +32,11 @@ consolidated into `findByName[T]`, counting-server fixture extracted to
 type-aware-suppressed groups verified gone — type-aware ≡ semantic on the
 current tree. Default `-t 2` run now shows 0 groups. Details: CHANGELOG.)*
 
-- [ ] **Release ADR-0023**: minor version bump, tag, `go get` + pkg.go.dev verification. CHANGELOG migration note already written. (report #46)
+*(Release completed 2026-09-18: v0.7.0 tagged at 6dd99aec, module proxy
+propagated, `go get github.com/LarsArtmann/art-dupl@v0.7.0` verified with a
+compile-and-run consumer, GitHub Release published.)*
+
+
 
 ### Carry-over questions
 
