@@ -56,6 +56,10 @@ components:
   printer:
     in: printer/**
 
+  # Canonical JSON marshaling helpers (v1 API, v2-era output semantics)
+  jsonutil:
+    in: internal/jsonutil/**
+
   # Public SDK
   sdk:
     in: pkg/artdupl/**
@@ -118,6 +122,7 @@ deps:
       - cache
       - baseline
       - pkg-utils
+      - jsonutil
 
   detection:
     mayDependOn:
@@ -167,6 +172,7 @@ deps:
 
   stats:
     mayDependOn:
+      - jsonutil
       - domain
       - config
       - errors
@@ -175,6 +181,7 @@ deps:
 
   printer:
     mayDependOn:
+      - jsonutil
       - syntax
       - syntax-golang
       - config
@@ -200,6 +207,7 @@ deps:
     mayDependOn:
       - domain
       - errors
+      - jsonutil
 
   domain:
     mayDependOn:
@@ -210,6 +218,7 @@ deps:
       - domain
       - errors
       - pkg-utils
+      - jsonutil
 
   errors:
     anyProjectDeps: true
