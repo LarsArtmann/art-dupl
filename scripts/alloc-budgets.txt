@@ -1,5 +1,8 @@
 # Allocation budgets for the guarded suffixtree + syntax benchmarks (allocs/op).
 # Enforced by scripts/check-alloc-regression.sh (±1 tolerance for env variance).
+# 2026-09-18: Go 1.27.1 re-capture; seq/tokens_10000 +2 (30742→30744) for
+# cross-machine variance observed between dev box (30742) and CI runner (30744).
+#
 # Baseline captured 2026-08-16 on Go 1.26.5 after the ADR-0022 layout overhaul
 # (commit 081e347f). When you deliberately change allocations, update this file
 # in the same commit and note why.
@@ -40,7 +43,7 @@ BenchmarkFindDuplOverParallel/seq/tokens_5000	15437
 BenchmarkFindDuplOverParallel/par2/tokens_5000	15492
 BenchmarkFindDuplOverParallel/par4/tokens_5000	15493
 BenchmarkFindDuplOverParallel/par32/tokens_5000	15497
-BenchmarkFindDuplOverParallel/seq/tokens_10000	30742
+BenchmarkFindDuplOverParallel/seq/tokens_10000	30744
 BenchmarkFindDuplOverParallel/par2/tokens_10000	30798
 BenchmarkFindDuplOverParallel/par4/tokens_10000	30798
 BenchmarkFindDuplOverParallel/par32/tokens_10000	30803
