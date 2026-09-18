@@ -83,7 +83,7 @@ T16 (coverage baseline), T17 (TTY HTML auto-write), T18 (stable display IDs), T1
 
 ## g) Questions (max 3)
 
-1. **Corpus drift** (carried over): go-cqrs-lite counts drifted 2665→2670 across runs — investigate with hash-seed pinning, or accept the concurrent-editing explanation?
+1. **Corpus drift** (carried over): go-cqrs-lite counts drifted 2665→2670 across runs — **RESOLVED 2026-09-18: concurrent editing of go-cqrs-lite (engine release-wave commits landed during the measurement window); art-dupl itself verified deterministic (two back-to-back runs produce byte-identical group sets).**
 2. **Standing rule** (carried over): should "stage new files immediately" be my standing rule, or do you prefer the auto-commit daemon as sole index-writer?
 3. **Budget ratcheting**: the gate reports `MemoryUsage 4783 < budget 4802` (map-iteration-order variance, ±19 observed). Tighten to observed-min and accept occasional CI noise, or leave headroom as now?
 

@@ -214,11 +214,17 @@ art-dupl -t 10 --min-lines 10 ./src
 ### Debugging Token Output
 
 Use `--dump-tokens` to inspect the serialized token stream without running
-clone detection. Output is tab-separated: filename, position, type, name:
+clone detection. Output is tab-separated: filename, byte offset,
+`line:col` source position (multi-line statement tokens append
+`-endline:endcol`), type, name, statement flag:
 
 ```bash
 art-dupl --dump-tokens ./src/file.go
+# sample.go  14  3:1-3:25  62  add  false
 ```
+
+Positions make it easy to map a stream range back to source lines when
+debugging false negatives/positives.
 
 ### Quiet and Color Control
 
@@ -226,7 +232,14 @@ art-dupl --dump-tokens ./src/file.go
 # Suppress progress messages (for CI/piped output)
 art-dupl --quiet ./src
 art-dupl -q ./src
+```
 
+`--quiet` suppresses progress output only. Misconfiguration diagnostics —
+the "matched no files" warnings for `--exclude-pattern`/`--include-pattern`
+— always print to stderr, because in CI they are the only signal that a
+pattern is doing nothing.
+
+```bash
 # Disable colored output
 art-dupl --no-color ./src
 

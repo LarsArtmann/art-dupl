@@ -7,13 +7,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Nothing yet.
+
+### Fixed
+
+- Nothing yet.
+
+## [0.7.0] - 2026-09-18
+
 ### Changed
 
+- **Go toolchain aligned on 1.27.1**: go.mod (already 1.27.1), `flake.nix` (`pkgs.go_1_27`), and `.golangci.yml` (`run.go`) now agree; the previous mixed state failed every local build under `GOTOOLCHAIN=local`.
+- **JSON I/O moved to the stable v1 API (`encoding/json`) with v2-engine output semantics**: Go 1.27 removed the v2 struct-tag grammar (`format:` tags, go.dev/issue/71631), breaking `format:nano`. All `encoding/json/v2`/`jsontext` imports were migrated to the v1 API behind `internal/jsonutil` (no HTML escaping, no trailing newline) so every wire format — config files, baselines, JSON/SARIF/diff reports, stats — stays byte-compatible with v2-era output. Durations marshal as integer nanoseconds via v1 defaults; scalar output fields dropped `omitempty` (v1 would otherwise omit the zeros v2 always emitted); v2 error classification in `errors.HandleMarshalingError` now maps the v1 error types.
+- **`--suggest-generics` with `--exact`/`--structural` is now a validation error**: the enhancer's `VarType` population is unreachable outside semantic mode, so those combinations silently paid the 10-100x type-aware load while never finding candidates. Wording mirrors the `--type-aware` rejections.
+- **`--html-out` creates missing parent directories** on demand; failures require an unwritable path (e.g. beneath a regular file), covered by an updated test.
+- **Coverage baseline noise filtered**: `scripts/check-coverage.sh` excludes `cmd/art-dupl`, `examples`, `internal/testhelpers`, and `internal/testutil` from the run and the baseline file.
+- **Self-clean at `-t 1` (ADR-0023 follow-up)**: extracted three genuine duplication clusters (`syntax/templ/transform_node.go` attribute-case skeleton, `printer/text.go` classification-suffix logic, `cmd/type_aware.go` file-replay loop) and marked the deliberate mirrors (`FilterStats` exclude/include API, LCS removed/added branches, flatten twins) with `//art-dupl:accept`; remaining `-t 1` groups are idiomatic guard clauses and pattern-fixture pairs, deliberately left.
+- **templ `-t 1` sibling groups: no actionability pattern (NO-GO)**: reviewed on go-sse (29 templ occurrences at `-t 1`, all meta/anchor/script sibling idioms, collapsing to 4 by `-t 2`) and templ-components (same-shape cross-file templ clones that ARE genuine). An html-sibling-boilerplate pattern would add over-suppression risk for zero measured benefit — same verdict as the 2026-09-14 defer-pattern review.
 - **Nested-statement token emission (ADR-0023)**: Clones that share statements inside loop/if/switch/select bodies or `else if` chains — previously invisible at EVERY threshold, mode, and filter combination — are now detected. Fully-identical composite matches keep their previous group shapes, sizes, and hashes via subsumed-unit trimming. Corpus results: go-cqrs-lite `-t 2` 206→380 shown groups (genuine cross-engine clones); default `-t 5` counts unchanged on go-sse, go-paperless, and art-dupl itself. **Migration note:** reported clone counts may increase at low thresholds; baseline files record group hashes, which are unchanged for previously-detected clones — no baseline migration needed.
 - **`CacheVersion` bumped to 4**: Nested emission changed the serialized token stream; v3 cache entries would reproduce stale detection results and are rejected by the version check.
 - **`--timing` sub-millisecond stages render as `<1ms`** instead of the misleading `0s`.
 
 ### Added
+
+- **Source positions in `--dump-tokens`**: token rows now carry `line:col` (byte columns, go/token semantics) plus an `-endline:endcol` span for multi-line statement tokens, so stream offsets map directly back to source lines when debugging false negatives/positives. Files that vanish mid-run degrade to `?` instead of failing the dump.
+- **Zero-match warning for `--include-pattern`**: an include glob that matches no candidate file prints the same class of misconfiguration warning `--exclude-pattern` already had (patterns are globs, not regexes). Both warnings stay unconditional under `--quiet` — they are diagnostics, not progress output (`HOW_TO_USE.md` documents the split).
+- **`anchor_id` in JSON output**: each `clone_groups` entry carries the stable HTML deep-link anchor (`groupAnchorID(hash, display-position)`), enabling HTML ↔ JSON cross-format linking. Anchors are derived after the final sort so the positional fallback matches the HTML report exactly. The minimal/plumbing JSON format stays unchanged.
+- **Real-PTY end-to-end test for HTML auto-write** (`cmd/html_pty_test.go`): runs the compiled binary under `script(1)` so a genuine terminal exercises TTY-probe → auto-write → notice; skips when `script(1)` is unavailable.
+- **Testing conventions documented** (`TESTING.md`): reference-implementation parity pattern (naive reference + full-state enumeration + invariant assertions, per `suffixtree/tran_parity_test.go`) and coverage-guard-in-test pattern (assert the interesting branch actually ran, per `TestBoundaryStatesUseExpectedBranch`).
+- **Keyboard focus ring for `.anchor-link`** (HTML report): `:focus-visible` outline matching the hover accent, so perm links are reachable by keyboard.
 
 - **Deterministic benchmark input** (`suffixtree`): `generateRandomTokens` uses a fixed RNG seed; the time-seeded input made allocs/op vary ±25 and could fail the ±1 alloc gate spuriously. `BenchmarkMemoryUsage` budget re-captured at the deterministic value.
 - **Regression guards for detection granularity**: `syntax/nested_statement_serial_test.go` (emission structure, arena-count mirror, divergent-tail detection, guard-clone trimming), `bdd/nested_block_clone_test.go` (end-to-end DescribeTable over the five masking classes), `syntax/golang/nodetypes_pin_test.go` (pins node-type literals the syntax package relies on).
@@ -116,6 +140,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Stale "defense-in-depth" comments**: 4 references in `bdd/filter_features_test.go` and 2 in production code updated to reflect content-only detection.
 - **Stale gomoddirectives config**: `replace-allow-list` for gogenfilter and `replace-local: true` removed from `.golangci.yml` (no replace directives remain in go.mod).
 - **go.mod local replace directive**: Removed `replace github.com/LarsArtmann/gogenfilter/v3 => /home/lars/...`.
+
+## [0.6.2] - 2026-08-04
+
+Patch release: `go install`-usable templ build and test-race hardening.
+
+### Fixed
+
+- **Committed generated `report_templ.go`** so `go install` works without the templ toolchain.
+- **Command tests no longer race on global output** (streamlined capture, serial where needed).
+
+### Changed
+
+- **`.envrc` switched to the Go environment** for non-Nix workflows.
 
 ## [0.6.1] - 2026-07-29
 

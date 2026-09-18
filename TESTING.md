@@ -63,6 +63,55 @@ Rule: **a test that captures or reassigns `os.Stdout`/`os.Stderr` must NOT call
 globals directly). Prefer keeping such tests serial — the parallelism win on a
 fast capture test is negligible and the race is silent and intermittent.
 
+## Property and Parity Test Conventions
+
+### Reference-implementation parity
+
+When a hot path is refactored for performance (map → sorted slice, arena
+allocation, caching), pair the optimized implementation with a **naive
+reference implementation** in a `_test.go` file and assert that both agree on
+the same inputs. The reference is allowed to be slow — it exists to define the
+semantics the optimization must preserve.
+
+Canonical example: `suffixtree/tran_parity_test.go` (ADR-0022). The pattern:
+
+1. Write `referenceFindTran` — a full linear scan that implements the
+   pre-refactor (map) semantics, independent of any cutoffs or fast paths.
+2. Enumerate **all** states of trees built from representative corpora
+   (`enumerateStates`), not just hand-picked ones — the bug class this catches
+   (binary-search off-by-one on high-fanout states) only appears at specific
+   shapes.
+3. Assert agreement for every present key AND near-miss probes (keys that fall
+   between/gap positions) — misses are where binary search diverges from scans.
+4. Assert the structural invariants the fast path silently depends on (strictly
+   ascending, unique keys). If the invariant breaks, the fast path's answers
+   are undefined; the reference comparison alone would not localize it.
+
+Use this pattern for any change where "same answers, faster" is the contract.
+
+### Coverage-guard-in-test: assert the interesting branch actually ran
+
+A benchmark or fixture test is green noise if the branch it was built to
+measure never executes. Guard it with an explicit assertion:
+
+- `suffixtree/linear_scan_boundary_test.go::TestBoundaryStatesUseExpectedBranch`
+  verifies that the boundary benchmark fixtures really straddle the
+  `linearScanMax` cutoff (n == linearScanMax vs n+1) and answer lookups
+  correctly — "otherwise the benchmarks measure nothing".
+- `syntax/syntax_test.go::TestSerializePreservesAllFields` asserts every field
+  survives serialization, so a field dropped from `serial()` fails here instead
+  of silently degrading actionability patterns downstream.
+
+Rules of thumb:
+
+- If a fixture has a "critical" configuration (boundary size, flag combination,
+  branch trigger), write a cheap companion test that proves the configuration
+  lands where intended.
+- Prefer structural assertions (fixture has exactly n transitions) over
+  instrumentation (test-only counters in production code).
+- When adding a new cutoff, mode, or fast path: add the guard test in the same
+  commit as the benchmark or feature.
+
 ## Concurrency: Atomic/Mutex Mixing
 
 The cache once shipped a real data race of the _mixing_ class: `Get` incremented

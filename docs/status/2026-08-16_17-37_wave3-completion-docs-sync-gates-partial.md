@@ -70,7 +70,7 @@
 19. Expose `AnchorID` in JSON output for cross-format linking
 20. `--html-out`: mkdir -p parent dir
 21. Extend HTML goldens with one clone group (covers anchors/diff markup)
-22. Investigate corpus drift 2665→2670 (which 5 clone groups appeared?)
+22. Investigate corpus drift 2665→2670 — **RESOLVED 2026-09-18: concurrent go-cqrs-lite edits (release wave); tool verified deterministic.**
 23. Decide budget ratchet: tighten `MemoryUsage` 4802→~4785 or keep headroom
 24. Consider wiring the threshold-1 self-scan as a fast unit test, not only flake check
 25. Update `docs/status/2026-08-16_13-13...` cross-ref or mark superseded by this report

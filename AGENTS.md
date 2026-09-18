@@ -38,10 +38,20 @@ nix flake check    # reproducible CI (includes templ generate in preBuild)
 > **Benchmark baselines** are committed in `docs/benchmarks/`. Compare with `benchstat` to detect regressions.
 > **CPU affinity matters on this machine** (AMD Ryzen AI MAX+ 395): 1 NUMA node but 2 L3 domains (CPUs `0-7,16-23` vs `8-15,24-31`). Pinning the parallel search to one CCX (`taskset -c 0-7,16-23`) beats the full machine by ~25-30% — L3-latency bound, read-shared tree. `numactl` membinding is a no-op (UMA). See `docs/benchmarks/CPU_TOPOLOGY.md` for analysis and reproduction steps.
 
-> **`GOEXPERIMENT=jsonv2` is required.** The project migrated to `encoding/json/v2`.
-> The `flake.nix` devShell sets this automatically. For non-Nix workflows, export it
-> manually: `export GOEXPERIMENT=jsonv2`. Convention: use `omitzero` (not `omitempty`)
-> on custom `MarshalJSON` types, and `format:nano` for `time.Duration` fields.
+> **`GOEXPERIMENT=jsonv2` is required.** The project uses the v2 JSON ENGINE
+> through the stable **v1 API** (`encoding/json`); as of the Go 1.27.1 upgrade
+> (2026-09-18) NO code imports `encoding/json/v2` directly — Go 1.27 removed the
+> v2 struct-tag grammar (`format:` tags, go.dev/issue/71631), which broke
+> `format:nano`. Convention: use `omitzero` (not `omitempty`) on custom
+> `MarshalJSON` types. **`format:nano` is obsolete**: v1 defaults already
+> marshal `time.Duration` as integer nanoseconds (`FormatDurationAsNano` v1
+> default). Wire-format fidelity rules: ALL JSON output goes through
+> `internal/jsonutil.MarshalIndent` (no HTML escaping of `<>&`, no trailing
+> newline — both v2-era behaviors that v1 defaults would change); scalar
+> (numeric/bool) fields on output structs must NOT use `omitempty` (v2 always
+> emitted them, v1 would drop zeros). `pkg/artdupl` keeps its own escaping-free
+> marshal semantics by depending only on plain v1 `json` on identifier-safe
+> payloads.
 > **Go 1.27.1 (upgraded 2026-09-18)**: go.mod, `flake.nix` (`pkgs.go_1_27`), and
 > `.golangci.yml` (`run.go`) are aligned on Go 1.27.1. The pre-2026-09-18 guidance
 > ("do NOT bump to 1.27") is obsolete — Go 1.27.1 is stable and the bump also

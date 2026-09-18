@@ -1,6 +1,6 @@
 # TODO List
 
-**Last Updated:** 2026-09-14
+**Last Updated:** 2026-09-18
 
 Actionable items for the next 2-4 weeks. Completed work lives in `CHANGELOG.md`.
 This file is OPEN work only — no completed, rejected, or resolved items.
@@ -26,35 +26,20 @@ Never compare pinned and unpinned runs taken hours apart (machine state dominate
 
 ### Detection granularity follow-ups (ADR-0023, 2026-09-14)
 
-**Source:** `docs/status/2026-09-13_15-45_gopaperless-false-negative-investigation.md` §f; fix shipped 2026-09-14 (`docs/adr/0023-nested-statement-token-emission.md`).
+*(go-paperless follow-ups #16-#20 completed 2026-09-18: find-by-name family
+consolidated into `findByName[T]`, counting-server fixture extracted to
+`newNoRequestServer`, doc-example/client-test clones accepted with rationale,
+type-aware-suppressed groups verified gone — type-aware ≡ semantic on the
+current tree. Default `-t 2` run now shows 0 groups. Details: CHANGELOG.)*
 
-- [ ] **go-paperless: consolidate the find-by-name family** — `FindCustomField` / `FindStoragePath` / `findNamed` share the query+doRequest+decode skeleton; ADR-0023 now surfaces the shared runs (client.go:939-941 and 956-968 pairs as of 2026-09-14). (report #17)
-- [ ] **go-paperless: `//art-dupl:accept` rationale** for any clones now visible post-ADR-0023 that are kept deliberately. (report #16)
-- [ ] **go-paperless: manually review the 5 type-aware-suppressed groups** to confirm they are true false positives. (report #18)
-- [ ] **go-paperless: audit `client_test.go`** (1612 lines) with `--include-tests --no-actionability` for test-helper extraction. (report #19)
-- [ ] **go-paperless: explicitly accept `example_test.go` client-construction clones** (doc-example boilerplate). (report #20)
-- [ ] **`--dump-tokens`: add source positions (`file:line-col`)** — the dump shows stream offsets only, which made the FN investigation waste a diagnostic round. (report #21 / d2)
-- [ ] **templ nested-emission validation** — templ got nested emission as a side effect of ADR-0023; validate recall/noise on templ-heavy repos and decide whether an html-sibling-boilerplate actionability pattern is warranted at `-t 1` (go-sse examples show 11 templ sibling groups at `-t 1`). (report #32 + corpus re-validation)
-- [ ] **Confirm precedence-warning wording for all flag combos** (`--structural`+`--type-aware` etc.). (report #27)
 - [ ] **Release ADR-0023**: minor version bump, tag, `go get` + pkg.go.dev verification. CHANGELOG migration note already written. (report #46)
-- [ ] **Self-clean the ~46 small clone pairs art-dupl now sees in its own source at `-t 1`** (ADR-0023 recall: e.g. `syntax/templ/transform_node.go:101-108` vs `119-126`, `printer/text.go:323-335`, `cmd/type_aware.go:51-77`). Inventory: `art-dupl -t 1 --explain .`. The self-test gate now enforces the default threshold (-t 5, 0 groups); decide per pair: extract, `//art-dupl:accept`, or leave.
-
-### Wave-3 quality follow-ups
-
-**Source:** `docs/status/2026-08-16_13-13_master-plan-wave3-signal-hardening.md` §f.
-
-- [ ] **BDD/PTY test for HTML auto-write**: current tests inject the TTY probe; a real-PTY end-to-end test (via `script(1)` or a pty lib) would lock the full path.
-- [ ] **Decide + document `--quiet` vs zero-match warning**: should `WarnUnmatchedExcludePatterns` respect `--quiet`? Currently unconditional.
-- [ ] **Symmetric zero-match warning for `--include-pattern`**: same misconfig trap as `--exclude-pattern` (T12), opposite direction.
-- [ ] **Coverage script: filter test-only packages**: `scripts/check-coverage.sh` reports 0.0% rows for test-only packages — noise.
-- [ ] **TESTING.md: property/parity-test conventions**: document the reference-implementation parity pattern (T20) + coverage-guard-in-test pattern (assert the interesting branch actually ran).
-- [ ] **a11y: focus style for `.anchor-link`**: anchor perm links have hover styling but no visible keyboard focus ring.
-- [ ] **JSON output: expose stable anchor id**: cross-format linking (HTML deep link ↔ JSON record) needs the `AnchorID` in JSON too.
-- [ ] **`--html-out`: mkdir -p parent dir** on demand instead of erroring on a missing directory.
 
 ### Carry-over questions
 
-- [ ] **Corpus drift 2665 → 2670**: which feedback-corpus clone count grew by 5 between validations?
+*(none — corpus drift 2665→2670 resolved 2026-09-18: concurrent go-cqrs-lite
+edits during the engine release wave; art-dupl verified deterministic via
+back-to-back byte-identical runs. See annotations in the 2026-08-16 status
+reports.)*
 
 ## PARKED: Explicit Entry Criteria (not amnesia)
 
