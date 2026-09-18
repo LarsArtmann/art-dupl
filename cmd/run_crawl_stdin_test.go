@@ -227,8 +227,8 @@ func TestStdinFeed_FiltersGeneratedCode(t *testing.T) {
 		t.Fatalf("expected 1 file (generated filtered), got %d: %v", len(got), got)
 	}
 
-	if got[0] != normalFile {
-		t.Errorf("expected %q, got %q", normalFile, got[0])
+	if got[0] != filepath.ToSlash(normalFile) {
+		t.Errorf("expected %q, got %q", filepath.ToSlash(normalFile), got[0])
 	}
 
 	if stats.TotalFiltered() != 1 {

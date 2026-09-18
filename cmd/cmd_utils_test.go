@@ -5,6 +5,7 @@ import (
 	"context"
 	"io"
 	"os"
+	"path/filepath"
 	"testing"
 	"time"
 
@@ -555,8 +556,8 @@ func TestCrawlSinglePath_File(t *testing.T) {
 		t.Errorf("Expected 1 file, got %d", len(files))
 	}
 
-	if len(files) > 0 && files[0] != testFile {
-		t.Errorf("Expected %s, got %s", testFile, files[0])
+	if len(files) > 0 && files[0] != filepath.ToSlash(testFile) {
+		t.Errorf("Expected %s, got %s", filepath.ToSlash(testFile), files[0])
 	}
 }
 

@@ -395,7 +395,8 @@ func shouldSkipPath(path string, includeVendor, includeNodeModules, includeExamp
 // pathContainsExampleDir reports whether any path component matches a known
 // example/demo directory name. This excludes throwaway demo code by default.
 func pathContainsExampleDir(path string) bool {
-	sep := string(filepath.Separator)
+	// Slash-based: callers normalize paths via filepath.ToSlash first.
+	const sep = "/"
 
 	for dir := range exampleDirNames {
 		if strings.HasPrefix(path, dir+sep) || strings.Contains(path, sep+dir+sep) {
