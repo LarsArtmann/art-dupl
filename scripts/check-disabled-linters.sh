@@ -30,7 +30,9 @@ for linter in $DISABLED_LINTERS; do
 		# Attempt auto-fix: remove the offending line(s) if the file is writable.
 		if [ -w "$CONFIG" ]; then
 			# Remove lines that enable the linter ("- lintername").
-			sed -i.bak "/^[[:space:]]*-[[:space:]]*${linter}\b/d" "$CONFIG"
+			# POSIX-portable: no \b (BSD sed lacks it); the [[:space:]]*$ anchor
+			# keeps "- linter" matching without eating "- linter-variant" names.
+			sed -i.bak "/^[[:space:]]*-[[:space:]]*${linter}[[:space:]]*$/d" "$CONFIG"
 			rm -f "$CONFIG.bak"
 			# Remove orphaned settings blocks ("lintername:").
 			sed -i.bak "/^[[:space:]]*${linter}:/d" "$CONFIG"
