@@ -21,7 +21,7 @@ Enduring context that's hard to discover from code. For everything else, see the
 
 ```bash
 templ generate     # run templ generate (required before build if .templ files changed)
-go build ./...     # build all packages (requires GOEXPERIMENT=jsonv2, see below)
+go build ./...     # build all packages (GOEXPERIMENT=jsonv2 optional since ADR-0024, see below)
 go test ./...      # run all tests
 golangci-lint run --timeout 5m ./...  # lint
 nix flake check    # reproducible CI (includes templ generate in preBuild)
@@ -38,7 +38,14 @@ nix flake check    # reproducible CI (includes templ generate in preBuild)
 > **Benchmark baselines** are committed in `docs/benchmarks/`. Compare with `benchstat` to detect regressions.
 > **CPU affinity matters on this machine** (AMD Ryzen AI MAX+ 395): 1 NUMA node but 2 L3 domains (CPUs `0-7,16-23` vs `8-15,24-31`). Pinning the parallel search to one CCX (`taskset -c 0-7,16-23`) beats the full machine by ~25-30% — L3-latency bound, read-shared tree. `numactl` membinding is a no-op (UMA). See `docs/benchmarks/CPU_TOPOLOGY.md` for analysis and reproduction steps.
 
-> **`GOEXPERIMENT=jsonv2` is required.** The project uses the v2 JSON ENGINE
+> **`GOEXPERIMENT=jsonv2` is optional since ADR-0024** (the v1 API compiles and emits
+> identical bytes with or without it); the flake and the linux/macOS CI lanes still set
+> it. The CI **windows** Test lane deliberately runs WITHOUT it (2026-09-19): windows/amd64
+> Go 1.27.1 crashes nondeterministically with fatal GC/runtime errors (`found pointer to
+> free object`, `missing stackmap`, `fault`) across unrelated test binaries — binary-
+> identical runs flip between pass and crash, the codebase has zero unsafe, so the
+> experiment is scoped out of that lane until upstream is fixed.
+> The project uses the v2 JSON ENGINE
 > through the stable **v1 API** (`encoding/json`); as of the Go 1.27.1 upgrade
 > (2026-09-18) NO code imports `encoding/json/v2` directly — Go 1.27 removed the
 > v2 struct-tag grammar (`format:` tags, go.dev/issue/71631), which broke
