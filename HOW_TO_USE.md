@@ -82,6 +82,11 @@ notice — raw HTML on a terminal is unreadable. Redirect or pipe stdout, or pas
 ./art-dupl --json -t 20 | jq '.' > dupl_report_pretty.json
 ```
 
+Each entry in `clone_groups` carries an `anchor_id` that matches the HTML
+report's deep-link anchor for the same group, so cross-format links (issue
+references, dashboards) stay valid regardless of sort order. The minimal
+`--simple-json` and `--plumbing` outputs deliberately omit it.
+
 ### 3. Analyzing Specific Code
 
 #### Target Directories
@@ -102,6 +107,15 @@ find . -name '*_test.go' | ./art-dupl --files -t 20
 
 # Analyze generated files separately
 find . -name '*_gen.go' | ./art-dupl --files -t 50
+```
+
+Test files (`*_test.go`) are excluded by default (`ignoreFiles` default,
+see the config example below). Pass `--include-tests` to analyze them
+normally, overriding that default for a single run:
+
+```bash
+# Include test files in the analysis
+./art-dupl --include-tests -t 10 ./...
 ```
 
 ## Smart Filtering
@@ -461,6 +475,7 @@ art-dupl --suggest-generics -t 1 --json ./src
 
 - Same ~100x slower as `--type-aware` (full type checking required)
 - Takes precedence over `--type-aware` when both flags are set (a warning is printed)
+- INVALID with `--exact` or `--structural`: these modes make the type-divergent grouping the enhancer needs impossible, so the combination is rejected with a validation error instead of silently paying the slow parse for zero candidates
 - Candidates require ≥2 distinct positions with differing types and ≥4 lines per instance (tune or disable with `--suggest-generics-min-lines`, `0` disables the line gate)
 - Use `--min-tokens` to filter noise from small clone groups
 - Output shows `generics:` hint line with type differences (text), `generics_candidate`/`generics_hint` fields (JSON), or result properties (SARIF)

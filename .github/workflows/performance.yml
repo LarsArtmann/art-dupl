@@ -15,7 +15,7 @@ jobs:
     name: Performance Regression
     runs-on: ubuntu-latest
     env:
-      GO_VERSION: stable
+      GO_VERSION: "1.27.1"
       CGO_ENABLED: 0
 
     steps:
@@ -83,7 +83,7 @@ jobs:
     name: Memory Profiling
     runs-on: ubuntu-latest
     env:
-      GO_VERSION: stable
+      GO_VERSION: "1.27.1"
       CGO_ENABLED: 0
 
     steps:
