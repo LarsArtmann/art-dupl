@@ -52,6 +52,10 @@ components:
   stats:
     in: printer/stats/**
 
+  # go-finding output adapter (sub-package of printer)
+  finding-output:
+    in: printer/finding/**
+
   # Output formatting
   printer:
     in: printer/**
@@ -170,6 +174,12 @@ deps:
       - errors
       - pkg-utils
 
+  finding-output:
+    mayDependOn:
+      - domain
+      - config
+      - pkg-utils
+
   stats:
     mayDependOn:
       - jsonutil
@@ -189,6 +199,7 @@ deps:
       - pkg-utils
       - domain
       - actionability
+      - finding-output
       - baseline
 
   sdk:
