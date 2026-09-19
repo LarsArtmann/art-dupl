@@ -35,7 +35,7 @@ for linter in $DISABLED_LINTERS; do
 			# Rewrite via grep -v instead of sed -i: BSD and GNU sed disagree
 			# on -i semantics, and in-place edits of freshly written files are
 			# unreliable on Windows runners.
-			grep -vE "^[[:space:]]*-[[:space:]]+${linter}([[:space:]]|$)|^[[:space:]]*${linter}:" "$CONFIG" > "$CONFIG.tmp" || true
+			grep -vE "^[[:space:]]*-[[:space:]]+${linter}([[:space:]]|$)|^[[:space:]]*${linter}:" "$CONFIG" >"$CONFIG.tmp" || true
 			mv -f "$CONFIG.tmp" "$CONFIG"
 			echo "WARN: auto-removed '${linter}' from $CONFIG" >&2
 			echo "  This linter is intentionally disabled (see CHANGELOG / AGENTS.md)." >&2

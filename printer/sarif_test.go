@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/LarsArtmann/art-dupl/internal/testutil"
+	"github.com/LarsArtmann/art-dupl/printer/finding"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
@@ -75,6 +76,34 @@ func TestSARIFPrinter_PrintClones(t *testing.T) {
 
 	// Should have 2 results (one per clone instance)
 	testutil.AssertCount(t, len(printer.results), 2, "results")
+}
+
+func TestSARIFPrinter_GroupIDPropertySharedAcrossGroup(t *testing.T) {
+	var buf bytes.Buffer
+
+	printer := newTestSARIFPrinter(&buf, "test")
+	printer.SetHash("abcdef0123456789")
+
+	dups := [][]*syntax.Node{
+		createTestSARIFNodes("test.go", 0, 50),
+		createTestSARIFNodes("test2.go", 0, 50),
+	}
+
+	err := printer.PrintClones(processTestNodes(mockSARIFReadFile, "test", dups))
+	if err != nil {
+		t.Fatalf("PrintClones returned error: %v", err)
+	}
+
+	if len(printer.results) == 0 {
+		t.Fatal("PrintClones produced no results")
+	}
+
+	for i, result := range printer.results {
+		got := result.Properties[finding.PropertyKeyGroupID]
+		if got != "abcdef0123456789" {
+			t.Errorf("results[%d].Properties[%q] = %q, want the group hash", i, finding.PropertyKeyGroupID, got)
+		}
+	}
 }
 
 func TestSARIFPrinter_PrintClones_Empty(t *testing.T) {

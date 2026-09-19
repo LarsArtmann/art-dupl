@@ -73,7 +73,7 @@
 // LICENSE: MIT
 module github.com/LarsArtmann/art-dupl
 
-go 1.27.1
+go 1.27
 
 require (
 	charm.land/lipgloss/v2 v2.0.6
@@ -83,10 +83,10 @@ require (
 	github.com/charmbracelet/fang v1.0.0
 	github.com/charmbracelet/x/exp/golden v0.0.0-20260913004009-c615ff2f7805
 	github.com/charmbracelet/x/term v0.2.2
-	github.com/dustin/go-humanize v1.0.1
+	github.com/dustin/go-humanize v1.1.0
 	github.com/go-faster/yaml v0.4.6
 	github.com/larsartmann/go-finding v1.12.0
-	github.com/onsi/ginkgo/v2 v2.32.2
+	github.com/onsi/ginkgo/v2 v2.33.0
 	github.com/onsi/gomega v1.43.0
 	github.com/sergi/go-diff v1.4.0
 	github.com/spf13/cobra v1.10.2

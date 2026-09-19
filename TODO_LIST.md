@@ -26,24 +26,22 @@ Never compare pinned and unpinned runs taken hours apart (machine state dominate
 
 ### Detection granularity follow-ups (ADR-0023, 2026-09-14)
 
-*(go-paperless follow-ups #16-#20 completed 2026-09-18: find-by-name family
+_(go-paperless follow-ups #16-#20 completed 2026-09-18: find-by-name family
 consolidated into `findByName[T]`, counting-server fixture extracted to
 `newNoRequestServer`, doc-example/client-test clones accepted with rationale,
 type-aware-suppressed groups verified gone — type-aware ≡ semantic on the
-current tree. Default `-t 2` run now shows 0 groups. Details: CHANGELOG.)*
+current tree. Default `-t 2` run now shows 0 groups. Details: CHANGELOG.)_
 
-*(Release completed 2026-09-18: v0.7.0 tagged at 6dd99aec, module proxy
+_(Release completed 2026-09-18: v0.7.0 tagged at 6dd99aec, module proxy
 propagated, `go get github.com/LarsArtmann/art-dupl@v0.7.0` verified with a
-compile-and-run consumer, GitHub Release published.)*
-
-
+compile-and-run consumer, GitHub Release published.)_
 
 ### Carry-over questions
 
-*(none — corpus drift 2665→2670 resolved 2026-09-18: concurrent go-cqrs-lite
+_(none — corpus drift 2665→2670 resolved 2026-09-18: concurrent go-cqrs-lite
 edits during the engine release wave; art-dupl verified deterministic via
 back-to-back byte-identical runs. See annotations in the 2026-08-16 status
-reports.)*
+reports.)_
 
 ## PARKED: Explicit Entry Criteria (not amnesia)
 

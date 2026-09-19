@@ -105,6 +105,7 @@ linters:
     - sqlclosecheck
     - staticcheck
     - tagalign
+    - tagliatelle
     - testableexamples
     - testifylint
     - testpackage
@@ -356,6 +357,7 @@ linters:
           - recvcheck
           - contextcheck
           - exhaustive
+          - exhaustruct
       - path: bdd/
         linters:
           - funlen

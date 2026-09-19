@@ -14,7 +14,15 @@ import (
 	gofinding "github.com/larsartmann/go-finding"
 )
 
-func testGroup(hash string, tokenCount int) domain.ProcessedCloneGroup {
+func testGroup(hash string, tokensPerClone ...int) domain.ProcessedCloneGroup {
+	tokens := func(i int) int {
+		if i < len(tokensPerClone) {
+			return tokensPerClone[i]
+		}
+
+		return 10
+	}
+
 	clones := []domain.ProcessedClone{
 		{
 			CloneRef: domain.CloneRef{
@@ -25,14 +33,14 @@ func testGroup(hash string, tokenCount int) domain.ProcessedCloneGroup {
 			},
 			StartPos:   100,
 			EndPos:     220,
-			TokenCount: tokenCount,
+			TokenCount: tokens(0),
 			FileSize:   1000,
 			Classification: domain.CloneClassification{
 				Category:      domain.CategoryFunction,
 				Priority:      domain.PriorityMedium,
 				Actionability: domain.Actionable,
 				CloneType:     domain.CloneType1,
-				Tokens:        tokenCount,
+				Tokens:        tokens(0),
 				Lines:         10,
 			},
 		},
@@ -45,7 +53,7 @@ func testGroup(hash string, tokenCount int) domain.ProcessedCloneGroup {
 			},
 			StartPos:   300,
 			EndPos:     420,
-			TokenCount: tokenCount,
+			TokenCount: tokens(1),
 			FileSize:   2000,
 			Classification: domain.CloneClassification{
 				Category:             domain.CategoryFunction,
@@ -53,7 +61,7 @@ func testGroup(hash string, tokenCount int) domain.ProcessedCloneGroup {
 				Actionability:        domain.NonActionable,
 				CloneType:            domain.CloneType2,
 				NonActionablePattern: "signature-only",
-				Tokens:               tokenCount,
+				Tokens:               tokens(1),
 				Lines:                10,
 			},
 		},
@@ -154,13 +162,13 @@ func TestToFindingsMetadataCarriesCloneData(t *testing.T) {
 
 	first := findings[0].Metadata
 	want := map[string]string{
-		finding.MetadataKeyGroupSize:     "2",
-		finding.MetadataKeyGroupTokens:   "20",
-		finding.MetadataKeyLines:         "10",
-		finding.MetadataKeyCloneType:     string(domain.CloneType1),
-		finding.MetadataKeyCategory:      string(domain.CategoryFunction),
-		finding.MetadataKeyPriority:      string(domain.PriorityMedium),
-		finding.MetadataKeyActionability: string(domain.Actionable),
+		finding.MetadataKeyGroupSize:       "2",
+		finding.MetadataKeyGroupTokens:     "20",
+		finding.MetadataKeyLines:           "10",
+		finding.MetadataKeyCloneType:       string(domain.CloneType1),
+		finding.MetadataKeyCategory:        string(domain.CategoryFunction),
+		finding.MetadataKeyPriority:        string(domain.PriorityMedium),
+		finding.MetadataKeyActionability:   string(domain.Actionable),
 		finding.MetadataKeyDetectionMethod: "semantic",
 	}
 	for key, wantValue := range want {
@@ -206,26 +214,25 @@ func TestToFindingsGenericsCandidateMetadata(t *testing.T) {
 }
 
 func TestToFindingsSeverityMirrorsSARIFLadder(t *testing.T) {
-	const threshold = 5
-
 	tests := []struct {
-		name  string
-		size  int
-		level gofinding.Severity
+		name      string
+		groupSize int
+		level     gofinding.Severity
 	}{
-		{"below first escalation", threshold, gofinding.SeverityInfo},
-		{"at warning escalation", threshold * 2, gofinding.SeverityWarning},
-		{"at error escalation", threshold * 4, gofinding.SeverityError},
+		{"below first escalation", config.DefaultThreshold, gofinding.SeverityInfo},
+		{"at warning escalation", config.DefaultThreshold * 2, gofinding.SeverityWarning},
+		{"at error escalation", config.DefaultThreshold * 4, gofinding.SeverityError},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			group := testGroup("group0123456789a", tt.size)
+			pair := testGroup("group0123456789a", tt.groupSize)
+			group := domain.NewProcessedCloneGroup(pair.Hash, pair.Clones[:1])
 
-			findings := finding.ToFindings(group, finding.Options{Threshold: threshold})
+			findings := finding.ToFindings(group, finding.Options{})
 			for i, f := range findings {
 				if f.Severity != tt.level {
-					t.Errorf("findings[%d].Severity = %q, want %q for size %d", i, f.Severity, tt.level, tt.size)
+					t.Errorf("findings[%d].Severity = %q, want %q for size %d", i, f.Severity, tt.level, tt.groupSize)
 				}
 			}
 		})
