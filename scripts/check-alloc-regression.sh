@@ -1,10 +1,19 @@
 #!/usr/bin/env bash
 # Allocation-regression gate: fails when any guarded benchmark's allocs/op
-# exceeds its committed budget by more than the ±1 tolerance.
+# exceeds its committed budget by more than the +1 tolerance.
 #
-# Allocation counts are the deterministic perf metric on this project (CPU
-# timings are thermally noisy); the gate turns "we cut allocations X%" into an
-# enforced invariant.
+# Allocation counts are the near-deterministic perf metric on this project
+# (CPU timings are thermally noisy); the gate turns "we cut allocations X%"
+# into an enforced invariant. Counts for the suffixtree benchmarks fluctuate
+# within a small noise band (measured 2026-09-19: seq/tokens_10000 drew
+# 30742-30745 across runs on the SAME machine and toolchain — goroutine- and
+# runtime-internal allocation noise, NOT machine variance; GOMAXPROCS=1 does
+# not stabilize it). The gate therefore runs each benchmark suite with
+# -count=3 and compares the MINIMUM observed allocs/op against the budget:
+# the min converges to the deterministic floor, so budgets are stable and a
+# real regression still trips the +1 headroom. Budget values in the file are
+# the FLOOR, not the ceiling — a single-draw capture above the floor shows up
+# as "improved" info lines, never as a failure.
 #
 # Usage:
 #   scripts/check-alloc-regression.sh            # use default budgets
@@ -33,11 +42,11 @@ bench_out="$tmp/bench.txt"
 
 (cd "$repo_root" && GOEXPERIMENT=jsonv2 go test ./suffixtree/ -run '^$' \
 	-bench '^(BenchmarkSTreeUpdate|BenchmarkFindDuplOver|BenchmarkMemoryUsage)' \
-	-benchmem -count=1 | tee "$bench_out") >&2
+	-benchmem -count=3 | tee "$bench_out") >&2
 
 (cd "$repo_root" && GOEXPERIMENT=jsonv2 go test ./syntax/ -run '^$' \
 	-bench '^BenchmarkSerialize' \
-	-benchmem -count=1 | tee -a "$bench_out") >&2
+	-benchmem -count=3 | tee -a "$bench_out") >&2
 
 fail=0
 improved=0
@@ -48,13 +57,13 @@ while IFS=$'\t' read -r bench budget _note; do
 	# Strip optional -procs suffix from budget entries.
 	bench="${bench%%-*}"
 
-	# Find the allocs/op field: the field immediately before "allocs/op".
-	# The bench output name carries a -<procs> suffix; strip it before
-	# comparing so the match is exact (not prefix-loose).
+	# Find ALL allocs/op draws for this benchmark across the -count=3 runs
+	# and keep the minimum: the min converges to the deterministic floor,
+	# filtering the run-to-run allocation noise documented in the header.
 	actual="$(
 		awk -v b="$bench" \
-			'{ name = $1; sub(/-[0-9]+$/, "", name); if (name == b) {for (i = 2; i <= NF; i++) if ($(i+1) == "allocs/op") {print $i; exit}}}' \
-			"$bench_out"
+			'{ name = $1; sub(/-[0-9]+$/, "", name); if (name == b) {for (i = 2; i <= NF; i++) if ($(i+1) == "allocs/op") {print $i}}}' \
+			"$bench_out" | sort -n | head -1
 	)"
 
 	if [[ -z "$actual" ]]; then

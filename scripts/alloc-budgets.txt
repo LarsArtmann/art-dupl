@@ -1,5 +1,11 @@
 # Allocation budgets for the guarded suffixtree + syntax benchmarks (allocs/op).
-# Enforced by scripts/check-alloc-regression.sh (±1 tolerance for env variance).
+# Enforced by scripts/check-alloc-regression.sh (+1 headroom on the MIN of 3
+# draws — see the script header for why min-of-3).
+# 2026-09-19: seq/tokens_10000 re-anchored at the band FLOOR 30742. Same-
+# machine same-toolchain runs drew 30742-30745, so the 2026-09-18 note below
+# was a MISATTRIBUTION: it is run-to-run allocation noise (goroutine/runtime-
+# internal), not cross-machine variance. The gate now denoises with min-of-3.
+#
 # 2026-09-18: Go 1.27.1 re-capture; seq/tokens_10000 +2 (30742→30744) for
 # cross-machine variance observed between dev box (30742) and CI runner (30744).
 #
@@ -43,7 +49,7 @@ BenchmarkFindDuplOverParallel/seq/tokens_5000	15437
 BenchmarkFindDuplOverParallel/par2/tokens_5000	15492
 BenchmarkFindDuplOverParallel/par4/tokens_5000	15493
 BenchmarkFindDuplOverParallel/par32/tokens_5000	15497
-BenchmarkFindDuplOverParallel/seq/tokens_10000	30744
+BenchmarkFindDuplOverParallel/seq/tokens_10000	30742
 BenchmarkFindDuplOverParallel/par2/tokens_10000	30798
 BenchmarkFindDuplOverParallel/par4/tokens_10000	30798
 BenchmarkFindDuplOverParallel/par32/tokens_10000	30803
