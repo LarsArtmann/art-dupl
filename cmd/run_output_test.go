@@ -15,10 +15,8 @@ func TestShouldSuppressGroup_MinLines(t *testing.T) {
 
 	cloneWithLines := func(start, end int) domain.ProcessedClone {
 		return domain.ProcessedClone{
-			CloneRef: domain.CloneRef{
-				LineStart: start,
-				LineEnd:   end,
-			},
+			LineStart: start,
+			LineEnd:   end,
 		}
 	}
 
@@ -97,7 +95,7 @@ func TestMinCloneLineCount(t *testing.T) {
 
 	cloneWithLines := func(start, end int) domain.ProcessedClone {
 		return domain.ProcessedClone{
-			CloneRef: domain.CloneRef{LineStart: start, LineEnd: end},
+			LineStart: start, LineEnd: end,
 		}
 	}
 

@@ -37,7 +37,7 @@ func runBinaryExitCode(t *testing.T, binaryPath string, args ...string) int {
 	// started as authoritative.
 	const attempts = 3
 
-	for i := 0; i < attempts; i++ {
+	for i := range attempts {
 		if i > 0 {
 			time.Sleep(250 * time.Millisecond)
 		}

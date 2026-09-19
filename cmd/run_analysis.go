@@ -184,15 +184,13 @@ func buildSuffixTreeIncremental(params buildParams) treeBuildResult {
 		printCacheStats(params.stderr, params.cfg, cacheStats)
 
 		return job.ParseStats{
-			ParseStatsMixin: job.ParseStatsMixin{
-				FilesCount: incStats.FilesCount,
-				LinesCount: incStats.LinesCount,
-				Cache: &job.RunCacheStats{
-					Hits:       incStats.CacheHits,
-					Misses:     incStats.CacheMisses,
-					MemoryHits: cacheStats.MemHits,
-					Entries:    cacheStats.Size,
-				},
+			FilesCount: incStats.FilesCount,
+			LinesCount: incStats.LinesCount,
+			Cache: &job.RunCacheStats{
+				Hits:       incStats.CacheHits,
+				Misses:     incStats.CacheMisses,
+				MemoryHits: cacheStats.MemHits,
+				Entries:    cacheStats.Size,
 			},
 		}
 	})

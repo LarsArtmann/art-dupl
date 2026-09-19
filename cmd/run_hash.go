@@ -76,7 +76,7 @@ func executeHashOnlyAnalysis(
 	duplChan := convertFileDuplicatesToMatches(ctx, fileDuplicates)
 
 	return duplChan, job.ParseStats{
-		ParseStatsMixin: job.ParseStatsMixin{FilesCount: len(files), LinesCount: 0},
+		FilesCount: len(files), LinesCount: 0,
 	}, filterStats, nil
 }
 

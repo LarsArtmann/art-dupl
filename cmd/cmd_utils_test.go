@@ -298,7 +298,7 @@ func TestWriteFormatFile(t *testing.T) {
 		cfg := &config.Config{Threshold: 15}
 		matches := []syntax.Match{}
 		parseStats := job.ParseStats{
-			ParseStatsMixin: job.ParseStatsMixin{FilesCount: 10, LinesCount: 100},
+			FilesCount: 10, LinesCount: 100,
 		}
 		format := config.OutputFormatText
 		sortByEnum := config.SortBySize

@@ -46,7 +46,7 @@ func bar() {
 			group: domain.ProcessedCloneGroup{
 				Hash: "abc123",
 				Clones: []domain.ProcessedClone{
-					{CloneRef: domain.CloneRef{Filename: fileWithDirective, LineStart: 5, LineEnd: 10}},
+					{Filename: fileWithDirective, LineStart: 5, LineEnd: 10},
 				},
 			},
 			want: true,
@@ -56,7 +56,7 @@ func bar() {
 			group: domain.ProcessedCloneGroup{
 				Hash: "abc123",
 				Clones: []domain.ProcessedClone{
-					{CloneRef: domain.CloneRef{Filename: fileWithDirective, LineStart: 12, LineEnd: 17}},
+					{Filename: fileWithDirective, LineStart: 12, LineEnd: 17},
 				},
 			},
 			want: false,
@@ -66,7 +66,7 @@ func bar() {
 			group: domain.ProcessedCloneGroup{
 				Hash: "abc123",
 				Clones: []domain.ProcessedClone{
-					{CloneRef: domain.CloneRef{Filename: fileWithDirective, LineStart: 7, LineEnd: 12}},
+					{Filename: fileWithDirective, LineStart: 7, LineEnd: 12},
 				},
 			},
 			want: true,
@@ -76,7 +76,7 @@ func bar() {
 			group: domain.ProcessedCloneGroup{
 				Hash: "abc123",
 				Clones: []domain.ProcessedClone{
-					{CloneRef: domain.CloneRef{Filename: fileWithDirective, LineStart: 4, LineEnd: 7}},
+					{Filename: fileWithDirective, LineStart: 4, LineEnd: 7},
 				},
 			},
 			want: true,
@@ -86,8 +86,8 @@ func bar() {
 			group: domain.ProcessedCloneGroup{
 				Hash: "abc123",
 				Clones: []domain.ProcessedClone{
-					{CloneRef: domain.CloneRef{Filename: "other.go", LineStart: 1, LineEnd: 5}},
-					{CloneRef: domain.CloneRef{Filename: fileWithDirective, LineStart: 6, LineEnd: 8}},
+					{Filename: "other.go", LineStart: 1, LineEnd: 5},
+					{Filename: fileWithDirective, LineStart: 6, LineEnd: 8},
 				},
 			},
 			want: true,
@@ -97,7 +97,7 @@ func bar() {
 			group: domain.ProcessedCloneGroup{
 				Hash: "abc123",
 				Clones: []domain.ProcessedClone{
-					{CloneRef: domain.CloneRef{Filename: "other.go", LineStart: 1, LineEnd: 5}},
+					{Filename: "other.go", LineStart: 1, LineEnd: 5},
 				},
 			},
 			want: false,
@@ -126,7 +126,7 @@ func TestAcceptedSetNilIsSafe(t *testing.T) {
 	group := domain.ProcessedCloneGroup{
 		Hash: "abc123",
 		Clones: []domain.ProcessedClone{
-			{CloneRef: domain.CloneRef{Filename: "test.go", LineStart: 1, LineEnd: 5}},
+			{Filename: "test.go", LineStart: 1, LineEnd: 5},
 		},
 	}
 
@@ -155,14 +155,14 @@ func foo() {
 	matchingGroup := domain.ProcessedCloneGroup{
 		Hash: "abc123",
 		Clones: []domain.ProcessedClone{
-			{CloneRef: domain.CloneRef{Filename: "test.go", LineStart: 1, LineEnd: 6}},
+			{Filename: "test.go", LineStart: 1, LineEnd: 6},
 		},
 	}
 
 	nonMatchingGroup := domain.ProcessedCloneGroup{
 		Hash: "xyz789",
 		Clones: []domain.ProcessedClone{
-			{CloneRef: domain.CloneRef{Filename: "test.go", LineStart: 1, LineEnd: 6}},
+			{Filename: "test.go", LineStart: 1, LineEnd: 6},
 		},
 	}
 
@@ -199,7 +199,7 @@ func foo() {
 	anyGroup := domain.ProcessedCloneGroup{
 		Hash: "any-hash-value",
 		Clones: []domain.ProcessedClone{
-			{CloneRef: domain.CloneRef{Filename: "test.go", LineStart: 4, LineEnd: 7}},
+			{Filename: "test.go", LineStart: 4, LineEnd: 7},
 		},
 	}
 
@@ -233,7 +233,7 @@ func foo() {
 	group := domain.ProcessedCloneGroup{
 		Hash: "abc123",
 		Clones: []domain.ProcessedClone{
-			{CloneRef: domain.CloneRef{Filename: "test.go", LineStart: 4, LineEnd: 7}},
+			{Filename: "test.go", LineStart: 4, LineEnd: 7},
 		},
 	}
 
@@ -260,14 +260,14 @@ func TestAcceptedSetInlineDirectiveWithHash(t *testing.T) {
 	matching := domain.ProcessedCloneGroup{
 		Hash: "deadbeef",
 		Clones: []domain.ProcessedClone{
-			{CloneRef: domain.CloneRef{Filename: "test.go", LineStart: 3, LineEnd: 5}},
+			{Filename: "test.go", LineStart: 3, LineEnd: 5},
 		},
 	}
 
 	nonMatching := domain.ProcessedCloneGroup{
 		Hash: "cafef00d",
 		Clones: []domain.ProcessedClone{
-			{CloneRef: domain.CloneRef{Filename: "test.go", LineStart: 3, LineEnd: 5}},
+			{Filename: "test.go", LineStart: 3, LineEnd: 5},
 		},
 	}
 
@@ -302,7 +302,7 @@ func foo() {
 	group := domain.ProcessedCloneGroup{
 		Hash: "abc123",
 		Clones: []domain.ProcessedClone{
-			{CloneRef: domain.CloneRef{Filename: "test.go", LineStart: 1, LineEnd: 6}},
+			{Filename: "test.go", LineStart: 1, LineEnd: 6},
 		},
 	}
 
@@ -336,14 +336,14 @@ func foo() {
 	acceptedGroup := domain.ProcessedCloneGroup{
 		Hash: "abc123",
 		Clones: []domain.ProcessedClone{
-			{CloneRef: domain.CloneRef{Filename: "test.go", LineStart: 1, LineEnd: 6}},
+			{Filename: "test.go", LineStart: 1, LineEnd: 6},
 		},
 	}
 
 	nonAcceptedGroup := domain.ProcessedCloneGroup{
 		Hash: "abc123",
 		Clones: []domain.ProcessedClone{
-			{CloneRef: domain.CloneRef{Filename: "test.go", LineStart: 10, LineEnd: 15}},
+			{Filename: "test.go", LineStart: 10, LineEnd: 15},
 		},
 	}
 
@@ -396,14 +396,14 @@ func bar() {
 	standalone := domain.ProcessedCloneGroup{
 		Hash: "abc123",
 		Clones: []domain.ProcessedClone{
-			{CloneRef: domain.CloneRef{Filename: "test.go", LineStart: 4, LineEnd: 4}},
+			{Filename: "test.go", LineStart: 4, LineEnd: 4},
 		},
 	}
 
 	inline := domain.ProcessedCloneGroup{
 		Hash: "def456",
 		Clones: []domain.ProcessedClone{
-			{CloneRef: domain.CloneRef{Filename: "test.go", LineStart: 7, LineEnd: 7}},
+			{Filename: "test.go", LineStart: 7, LineEnd: 7},
 		},
 	}
 

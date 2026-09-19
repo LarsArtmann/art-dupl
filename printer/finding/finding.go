@@ -128,6 +128,7 @@ func toFinding(
 	opts Options,
 ) gofinding.Finding {
 	size := group.TotalTokenCount()
+
 	threshold := opts.Threshold
 	if threshold <= 0 {
 		threshold = config.DefaultThreshold

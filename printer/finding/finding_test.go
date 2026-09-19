@@ -25,12 +25,10 @@ func testGroup(hash string, tokensPerClone ...int) domain.ProcessedCloneGroup {
 
 	clones := []domain.ProcessedClone{
 		{
-			CloneRef: domain.CloneRef{
-				Filename:  "a.go",
-				LineStart: 10,
-				LineEnd:   19,
-				Fragment:  "func a() {\n\tprintln(1)\n}",
-			},
+			Filename:   "a.go",
+			LineStart:  10,
+			LineEnd:    19,
+			Fragment:   "func a() {\n\tprintln(1)\n}",
 			StartPos:   100,
 			EndPos:     220,
 			TokenCount: tokens(0),
@@ -45,12 +43,10 @@ func testGroup(hash string, tokensPerClone ...int) domain.ProcessedCloneGroup {
 			},
 		},
 		{
-			CloneRef: domain.CloneRef{
-				Filename:  "b.go",
-				LineStart: 30,
-				LineEnd:   39,
-				Fragment:  "func b() {\n\tprintln(2)\n}",
-			},
+			Filename:   "b.go",
+			LineStart:  30,
+			LineEnd:    39,
+			Fragment:   "func b() {\n\tprintln(2)\n}",
 			StartPos:   300,
 			EndPos:     420,
 			TokenCount: tokens(1),
@@ -161,6 +157,7 @@ func TestToFindingsMetadataCarriesCloneData(t *testing.T) {
 	})
 
 	first := findings[0].Metadata
+
 	want := map[string]string{
 		finding.MetadataKeyGroupSize:       "2",
 		finding.MetadataKeyGroupTokens:     "20",
@@ -244,7 +241,11 @@ func TestToFindingsZeroThresholdUsesDefault(t *testing.T) {
 
 	findings := finding.ToFindings(group, finding.Options{})
 	if findings[0].Severity != gofinding.SeverityError {
-		t.Errorf("Severity = %q, want %q when size reaches the default threshold escalation", findings[0].Severity, gofinding.SeverityError)
+		t.Errorf(
+			"Severity = %q, want %q when size reaches the default threshold escalation",
+			findings[0].Severity,
+			gofinding.SeverityError,
+		)
 	}
 }
 
@@ -268,7 +269,11 @@ func TestToFindingsSuggestionSetsFixStrategy(t *testing.T) {
 
 	findings := finding.ToFindings(group, finding.Options{})
 	if findings[0].FixStrategy != gofinding.FixStrategySuggest {
-		t.Errorf("FixStrategy = %q, want %q when a suggestion exists", findings[0].FixStrategy, gofinding.FixStrategySuggest)
+		t.Errorf(
+			"FixStrategy = %q, want %q when a suggestion exists",
+			findings[0].FixStrategy,
+			gofinding.FixStrategySuggest,
+		)
 	}
 
 	if findings[0].Suggestion != "extract to a shared helper" {
@@ -306,6 +311,7 @@ func TestToFindingsRelatedLinksAllSiblings(t *testing.T) {
 	}
 
 	single := domain.NewProcessedCloneGroup("solo", group.Clones[:1])
+
 	soloFindings := finding.ToFindings(single, finding.Options{})
 	if soloFindings[0].Related != nil {
 		t.Errorf("single-clone finding has %d related refs, want none", len(soloFindings[0].Related))
@@ -334,6 +340,7 @@ func TestReportGroupFindingsReconstructsCloneGroups(t *testing.T) {
 	}
 
 	report := finding.ToReport(groups, finding.Options{Version: "test"})
+
 	grouped := report.GroupFindings()
 	if len(grouped) != len(groups) {
 		t.Fatalf("GroupFindings() = %d groups, want %d", len(grouped), len(groups))
@@ -341,6 +348,7 @@ func TestReportGroupFindingsReconstructsCloneGroups(t *testing.T) {
 
 	for _, group := range groups {
 		wantID := finding.GroupIDOf(group)
+
 		findings, ok := grouped[wantID]
 		if !ok {
 			t.Fatalf("GroupFindings() missing group %q", wantID)
@@ -354,12 +362,14 @@ func TestReportGroupFindingsReconstructsCloneGroups(t *testing.T) {
 		for _, cl := range group.Clones {
 			wantOccurrences = append(wantOccurrences, cl.Filename+":"+strconv.Itoa(cl.LineStart))
 		}
+
 		slices.Sort(wantOccurrences)
 
 		gotOccurrences := make([]string, 0, len(findings))
 		for _, f := range findings {
 			gotOccurrences = append(gotOccurrences, string(f.Position.File)+":"+strconv.Itoa(f.Position.Line))
 		}
+
 		slices.Sort(gotOccurrences)
 
 		if !slices.Equal(wantOccurrences, gotOccurrences) {
@@ -378,6 +388,7 @@ func TestSARIFRoundTripPreservesGroupID(t *testing.T) {
 	}
 
 	report := finding.ToReport(groups, finding.Options{Version: "test"})
+
 	data, err := report.ToSARIF()
 	if err != nil {
 		t.Fatalf("ToSARIF() = %v, want nil", err)
@@ -389,6 +400,7 @@ func TestSARIFRoundTripPreservesGroupID(t *testing.T) {
 	}
 
 	byGroup := map[gofinding.GroupID][]string{}
+
 	for _, f := range imported {
 		if f.GroupID == "" {
 			t.Errorf("imported finding %q lost its GroupID", f.ID)
