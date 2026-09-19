@@ -36,6 +36,7 @@
 | **Simple-JSON Output** | FULLY_FUNCTIONAL | Simpler JSON format with score=impact, instances with token_count                               |
 | **Plumbing Output**    | FULLY_FUNCTIONAL | Machine-readable `file:startLine-endLine` format for CI/CD                                      |
 | **SARIF Output**       | FULLY_FUNCTIONAL | SARIF 2.1.0 for GitHub Advanced Security, clones reported as results                            |
+| **go-finding Adapter** | FULLY_FUNCTIONAL | `printer/finding` converts clone groups to go-finding `Finding`s: one deterministic `GroupID` per group (the group hash), clone metadata in `Finding.Metadata`, sibling `clone-of` links. SARIF results carry the same id as the `go-finding/groupId` property; LSP round-trips via `Data.GroupID`. |
 | **CSV Output**         | FULLY_FUNCTIONAL | Stats CSV uses `encoding/csv` for proper escaping and quoting                                   |
 
 ### Batch & Report Generation

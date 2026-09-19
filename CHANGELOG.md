@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **go-finding output adapter (GAP-2)**: new `printer/finding` package converts clone groups into go-finding `Finding`s with a deterministic `GroupID` per group (the group's content hash), clone-specific data in `Finding.Metadata`, and `clone-of` links between sibling occurrences. SARIF results now carry the group id as the `go-finding/groupId` property, so go-finding consumers (SARIF import, LSP) reconstruct exactly the groups art-dupl found. Dependency: `github.com/larsartmann/go-finding v1.12.0` ([#1](https://github.com/LarsArtmann/art-dupl/issues/1)).
 - **gogenfilter v3.6.1**: `MatchPattern` now treats Windows drive paths (`C:/...`) as absolute, so `--exclude-pattern`/`--include-pattern` work on Windows. Root cause of the Windows BDD failures in release CI.
 
 ### Fixed
