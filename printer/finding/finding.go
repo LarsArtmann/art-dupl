@@ -31,16 +31,16 @@ const (
 	// the SARIF printer emits so both output paths name the same rule.
 	RuleCloneDetected = "art-dupl/duplicate-code"
 
-	// PropertyKeyGroupID is the reserved go-finding SARIF property key under
+	// SARIFPropGroupID is the reserved go-finding SARIF property key under
 	// which a finding's GroupID round-trips (see go-finding sarif_import).
-	PropertyKeyGroupID = "go-finding/groupId"
+	SARIFPropGroupID = "go-finding/groupId"
 )
 
 // Metadata keys carry clone-specific data on each Finding (GAP-3 deferral:
 // per-relationship metadata is deliberately not modeled by go-finding).
 const (
 	MetadataKeyGroupSize            = "art-dupl/group-size"
-	MetadataKeyGroupTokens          = "art-dupl/group-tokens"
+	MetadataKeyGroupTokens          = "art-dupl/group-tokens" //nolint:gosec // metadata key name, not a credential
 	MetadataKeyDetectionMethod      = "art-dupl/detection-method"
 	MetadataKeyCloneType            = "art-dupl/clone-type"
 	MetadataKeyCategory             = "art-dupl/category"
@@ -148,7 +148,7 @@ func toFinding(
 	f.Range = rangeOf(cl)
 	f.Snippet = cl.Fragment
 	f.Metadata = metadataFor(group, cl, opts)
-	f.Related = relatedOf(group, cl, ids, index)
+	f.Related = relatedOf(group, ids, index)
 
 	if cl.Classification.Suggestion != "" {
 		f.FixStrategy = gofinding.FixStrategySuggest
@@ -229,7 +229,6 @@ func metadataFor(group domain.ProcessedCloneGroup, cl domain.ProcessedClone, opt
 
 func relatedOf(
 	group domain.ProcessedCloneGroup,
-	cl domain.ProcessedClone,
 	ids []gofinding.ID,
 	index int,
 ) []gofinding.RelatedRef {

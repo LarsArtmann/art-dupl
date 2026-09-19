@@ -445,7 +445,7 @@ func TestToLSPRoundTripPreservesGroupID(t *testing.T) {
 			t.Errorf("findings[%d] ToLSP Data.GroupID = %q, want %q", i, diag.Data.GroupID, f.GroupID)
 		}
 
-		back := gofinding.FromLSP(gofinding.FilePath(f.Position.File), diag)
+		back := gofinding.FromLSP(f.Position.File, diag)
 		if back.GroupID != f.GroupID {
 			t.Errorf("findings[%d] FromLSP GroupID = %q, want %q", i, back.GroupID, f.GroupID)
 		}

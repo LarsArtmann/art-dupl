@@ -99,9 +99,9 @@ func TestSARIFPrinter_GroupIDPropertySharedAcrossGroup(t *testing.T) {
 	}
 
 	for i, result := range printer.results {
-		got := result.Properties[finding.PropertyKeyGroupID]
+		got := result.Properties[finding.SARIFPropGroupID]
 		if got != "abcdef0123456789" {
-			t.Errorf("results[%d].Properties[%q] = %q, want the group hash", i, finding.PropertyKeyGroupID, got)
+			t.Errorf("results[%d].Properties[%q] = %q, want the group hash", i, finding.SARIFPropGroupID, got)
 		}
 	}
 }

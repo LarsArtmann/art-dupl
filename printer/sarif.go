@@ -204,7 +204,7 @@ func (p *sarifPrinter) PrintClones(
 		properties := map[string]string{
 			"clone_type":               string(cl.Classification.CloneType),
 			"category":                 string(cl.Classification.Category),
-			finding.PropertyKeyGroupID: hash,
+			finding.SARIFPropGroupID: hash,
 		}
 
 		if cl.Classification.NonActionablePattern != "" {
