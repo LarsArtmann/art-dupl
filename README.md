@@ -233,7 +233,7 @@ go build ./...                              # Build all packages
 go test ./...                               # Run all tests
 go test -race ./...                         # Run with race detector
 golangci-lint run --timeout 5m ./...        # Lint
-nix build                                   # Reproducible build (Go 1.26)
+nix build                                   # Reproducible build (Go 1.27)
 nix flake check                             # Full CI check
 ```
 
