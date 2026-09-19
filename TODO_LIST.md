@@ -1,6 +1,6 @@
 # TODO List
 
-**Last Updated:** 2026-09-18
+**Last Updated:** 2026-09-19
 
 Actionable items for the next 2-4 weeks. Completed work lives in `CHANGELOG.md`.
 This file is OPEN work only — no completed, rejected, or resolved items.
@@ -42,6 +42,30 @@ _(none — corpus drift 2665→2670 resolved 2026-09-18: concurrent go-cqrs-lite
 edits during the engine release wave; art-dupl verified deterministic via
 back-to-back byte-identical runs. See annotations in the 2026-08-16 status
 reports.)_
+
+### v0.7.0 release follow-ups (harvested 2026-09-19)
+
+**Source:** `docs/status/2026-09-19_06-41_v0.7.0-release-go1.27-coherence-ci-recovery.md` section (f);
+`(#N)` = that report's task number. Items already done during harvest (pkg.go.dev render, ADR-0024,
+FEATURES/AGENTS/HOW_TO_USE updates, jsonutil unit tests, gogenfilter CHANGELOG entry, performance.yml
+toolchain pins, Windows stdin-test skips) are NOT listed — they live in the CHANGELOG when released.
+
+- [ ] **Sweep gogenfilter consumers to v3.6.1** — the Windows pattern fix (#2) is released but other LarsArtmann repos on ≤v3.6.0 keep dead exclusions on Windows. Enumerate consumers, bump, verify CI.
+- [ ] **Fleet audit: `encoding/json/v2` imports / `format:` tags on Go 1.27** (#14) — same breakage class as art-dupl's blocker (go.dev/issue/71631); check every LarsArtmann repo on Go 1.27.
+- [ ] **Fleet audit: `filepath.Separator` matching + `strings.Split(_, ":")` path parsing** (#15) — the Windows bug class that cost seven CI cycles; sweep test and product code.
+- [ ] **`scripts/pre-release-check.sh`** (#16) — codify `git ls-remote` tag-collision check, CI-green gate, and toolchain pinning (go-release skill Phase 0–4).
+- [ ] **Branch protection with required checks + failure notifications** (#18) — red CI sat unnoticed for 4 days; needs owner action on GitHub settings.
+- [ ] **Investigate the "Auto-tag on version change" workflow** (#19) — ensure it cannot fight manual release tags (v0.7.0 collision class).
+- [ ] **go-paperless: tag + release the findByName consolidation** (#20) — pushed 2026-09-19 (`04c32dc`), CI verifying; needs CHANGELOG + version decision via go-release.
+- [ ] **Root-cause Windows exe-start `ProcessState nil`; un-skip `TestExitCodes_Process`** (#4) — 3-attempt retry insufficient, runner refuses freshly built exes; logic covered by `TestExitCodeForError` meanwhile.
+- [ ] **Investigate `seq/tokens_10000` alloc variance (30742 local vs 30744 CI)** (#11) — runtime-vs-machine attribution + CI-parity re-capture procedure for `scripts/alloc-budgets.txt`.
+- [ ] **Corpus re-baseline post-v0.7.0** (#22) — AGENTS.md corpus numbers predate ADR-0023 + Go 1.27.1; fresh validation pass then refresh numbers.
+- [ ] **Self-clean decision ledger** (#12) — durable per-group record for the `-t 1` self-scan (true current count: **40 groups**, re-measured 2026-09-19; the report's "44" was a file-count heuristic). Decision + rationale per group, so future sessions don't re-litigate.
+- [ ] **Make stale-shell failures graceful** (#24) — detect local go < go.mod requirement and print an actionable message (dart of the `GOTOOLCHAIN=local` trap).
+- [ ] **Verify `--dump-tokens` positions on a templ file** (#48) — the position work targeted Go files; templ ranges inherit differently.
+- [ ] **`nix flake check` should cover arch-lint locally** (#40) — the 2026-09-18 arch-lint break only surfaced in CI.
+- [ ] **docs-health VERIFY pass over 2026-08-* status reports** (#35) — several claims now stale post-ADR-0023/1.27.
+- [ ] **Small quality batch** — both-separator table cases for `shouldSkipPath` (#29); `t.Chdir` sweep (#38); confirm tagalign/nestif additions are wanted (#39); exhaustruct bdd-exclusion noise check (#30); monthly `-t 1` self-scan routine documented (#31); evaluate `errors.AsType[E]` in errors/marshal.go (#32).
 
 ## PARKED: Explicit Entry Criteria (not amnesia)
 

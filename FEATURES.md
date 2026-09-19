@@ -1,11 +1,11 @@
 # art-dupl Feature Documentation
 
-> **Last Updated:** 2026-08-10
-> **Version:** v0.6.1 (unreleased features pending v0.7.0)
+> **Last Updated:** 2026-09-19
+> **Version:** v0.7.0 (current release)
 
 ## Overview
 
-**art-dupl** is a Go tool for finding code clones using suffix tree algorithms and hash-based detection. It analyzes abstract syntax trees (ASTs) to find structural code clones while ignoring literal values. Supports multi-method detection, professional CLI (Fang/Cobra), 7 output formats, and 30 actionability patterns. Tuned on real-world Go projects (6,000+ Go files, 320+ templ files) to minimize false positives at the default threshold.
+**art-dupl** is a Go tool for finding code clones using suffix tree algorithms and hash-based detection. It analyzes abstract syntax trees (ASTs) to find structural code clones while ignoring literal values. Supports multi-method detection, professional CLI (Fang/Cobra), 7 output formats, and 33 actionability patterns (plus 4 property-engine labels). Tuned on real-world Go projects (6,000+ Go files, 320+ templ files) to minimize false positives at the default threshold.
 
 ---
 
@@ -32,7 +32,7 @@
 | ---------------------- | ---------------- | ----------------------------------------------------------------------------------------------- |
 | **Text Output**        | FULLY_FUNCTIONAL | Human-readable clone listing with file paths, line numbers, one-line source preview, diff hints |
 | **HTML Output**        | FULLY_FUNCTIONAL | Dark theme, syntax highlighting, VSCode links, diff visualization                               |
-| **JSON Output**        | FULLY_FUNCTIONAL | Structured data with version, timestamp, clone_groups, summary                                  |
+| **JSON Output**        | FULLY_FUNCTIONAL | Structured data with version, timestamp, clone_groups, summary; each group carries `anchor_id` matching the HTML report deep-link (`printer/json.go`)           |
 | **Simple-JSON Output** | FULLY_FUNCTIONAL | Simpler JSON format with score=impact, instances with token_count                               |
 | **Plumbing Output**    | FULLY_FUNCTIONAL | Machine-readable `file:startLine-endLine` format for CI/CD                                      |
 | **SARIF Output**       | FULLY_FUNCTIONAL | SARIF 2.1.0 for GitHub Advanced Security, clones reported as results                            |
@@ -148,7 +148,7 @@
 | **Mockgen Filtering**         | FULLY_FUNCTIONAL | Filters mockgen generated files                                                                                                                     |
 | **Stringer Filtering**        | FULLY_FUNCTIONAL | Filters stringer generated files                                                                                                                    |
 | **Include Overrides**         | FULLY_FUNCTIONAL | `--include-generated <category>` to override (`sqlc`, `templ`, `protobuf`, `mockgen`, `stringer`, `generic`, `all`)                                 |
-| **Custom Include/Exclude**    | FULLY_FUNCTIONAL | `--include-pattern` / `--exclude-pattern` glob patterns                                                                                             |
+| **Custom Include/Exclude**    | FULLY_FUNCTIONAL | `--include-pattern` / `--exclude-pattern` glob patterns; user-supplied patterns that match zero files print a warning after the run (unconditional, even under `--quiet`)                                             |
 | **Directory Exclusions**      | FULLY_FUNCTIONAL | `vendor/`, `.git/`, `node_modules/` excluded by default                                                                                             |
 | **Node Modules**              | FULLY_FUNCTIONAL | `--include-node-modules` includes for hash detection                                                                                                |
 | **File Type Filter (--only)** | FULLY_FUNCTIONAL | Restrict to `go` or `templ` file types                                                                                                              |
@@ -162,7 +162,7 @@
 | **Parallel Parsing**      | FULLY_FUNCTIONAL | Worker pool via `--workers` flag (0=auto, NumCPU)                                                                                                                                                                                                                                            |
 | **Parallel Search**       | FULLY_FUNCTIONAL | `--search-workers` flag parallelizes suffix tree DFS across root subtrees (0/1=sequential, >1=N workers). 1.5-3.4x speedup.                                                                                                                                                                  |
 | **Memory-Compact Tree**   | FULLY_FUNCTIONAL | Suffix tree data stored as `[]TokenValue` (int32, 4 bytes) instead of `[]Token` (interface, 16 bytes). 75% pointer-array memory reduction.                                                                                                                                                   |
-| **Incremental Analysis**  | FULLY_FUNCTIONAL | SHA-256 content-hash AST caching, `--incremental` flag, CacheVersion 3                                                                                                                                                                                                                       |
+| **Incremental Analysis**  | FULLY_FUNCTIONAL | SHA-256 content-hash AST caching, `--incremental` flag, CacheVersion 4 (mode-aware keys prevent cross-mode contamination)                                                                                                    |
 | **Git-Aware Incremental** | REMOVED          | `--since` flag removed (was a dead stub, never read). Only content-hash caching via `--incremental` works. Git-diff file selection not implemented.                                                                                                                                          |
 | **Cache Management**      | FULLY_FUNCTIONAL | `--cache-dir`, `--clear-cache`, `--max-cache-entries`, `--memory-cache-entries`, file-based gob serialization, hysteresis pruning (110%/90%)                                                                                                                                                 |
 | **In-Memory LRU Cache**   | FULLY_FUNCTIONAL | Configurable-entry (`--memory-cache-entries`, default 512) `container/list`-based LRU on top of `FileCache`. O(1) hit, no gob deserialization (~5x faster than disk, benchmark-proven in `BenchmarkFileCacheGet`). Deep-clone on read; `MemHits` surfaced in verbose stats. (`cache/lru.go`) |
@@ -188,12 +188,12 @@
 | **Token-Count Filtering**    | FULLY_FUNCTIONAL | `--min-tokens` suppresses clone groups where any clone has fewer than N tokens      |
 | **Test Threshold**           | FULLY_FUNCTIONAL | `--test-threshold` sets a separate (higher) threshold for test files                |
 | **Test Suppression**         | FULLY_FUNCTIONAL | `--suppress-test-low` suppresses low-priority clones in test files                  |
-| **Token Dump**               | FULLY_FUNCTIONAL | `--dump-tokens` outputs serialized token stream for debugging false positives       |
+| **Token Dump**               | FULLY_FUNCTIONAL | `--dump-tokens` outputs serialized token stream with byte offsets and `line:col` source positions (span for multi-line statement tokens) for debugging false positives |
 | **Rich Text Output**         | FULLY_FUNCTIONAL | `--rich-text` adds priority/category/actionability badges to text output            |
 | **Explain Mode**             | FULLY_FUNCTIONAL | `--explain` prints a per-group rationale (type, actionability, category, savings)   |
 | **Actionability Toggle**     | FULLY_FUNCTIONAL | `--no-actionability` shows all clones, including non-actionable boilerplate         |
 | **Disable Pattern**          | FULLY_FUNCTIONAL | `--disable-pattern <label>` re-enables a specific boilerplate pattern               |
-| **List Patterns**            | FULLY_FUNCTIONAL | `--list-patterns` prints all 30 pattern labels                                      |
+| **List Patterns**            | FULLY_FUNCTIONAL | `--list-patterns` prints all 37 pattern labels (33 denylist + 4 property-engine)                                                                                    |
 | **Threshold Recommendation** | FULLY_FUNCTIONAL | `--recommend-threshold` suggests CI gate and deep-audit thresholds                  |
 | **Token-Count Filter**       | FULLY_FUNCTIONAL | `--min-tokens N` suppresses clone groups where any clone has < N tokens             |
 | **Diff Report**              | FULLY_FUNCTIONAL | `--diff-report <baseline>` shows new/suppressed/resolved clones                     |

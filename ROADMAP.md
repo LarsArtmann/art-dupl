@@ -35,6 +35,18 @@ Shipped 2026-09-14: nested-block statements (loop/if/switch/select bodies, else-
 - **maxChildren truncation as a second false-negative class**: children beyond index `maxChildren` are dropped from the stream; very long functions/blocks could silently lose detectable clones. (report #35)
 - **Seed `--suggest-generics` from sub-statement analysis**: with nested emission, generics candidates can now be found at statement level inside composite bodies; annotate those specifically. (report #40)
 
+## Platform and Ecosystem (harvested 2026-09-19)
+
+**Source:** `docs/status/2026-09-19_06-41_v0.7.0-release-go1.27-coherence-ci-recovery.md` (#N = that report's task number).
+
+- **Real Windows stdin cancellation** (#5, gated on the platform-investment question): `feedFromStdin`'s close-on-cancel relies on `os.File.Close` unblocking a pending `Read`, which Windows `os.Pipe` does not guarantee — three stdin tests are Windows-skipped because of it. A real fix means a thread-based reader or `CancelIoEx`; a supported-Windows decision would also add a windows-required CI lane. Until the platform question is answered, skip-and-document is the correct resting state.
+- **Go 1.28 watch item: `GOEXPERIMENT=jsonv2` retirement** (#50): the flake sets the flag; a graduated/retired flag change would alter engine behavior under the v1 API. Output bytes are experiment-independent by construction (ADR-0024), so the risk is confined to build breakage — verify `nix build` on the first 1.28 beta.
+- **treefmt withGo127 wrappers → upstream env option** (#33): the symlinkJoin wrappers around goimports/templ exist because the treefmt sandbox has no network for toolchain download; replace with an upstream treefmt env option if one lands.
+- **Type-aware ≡ semantic re-verification on go-paperless** (#43): the contract held on the 2026-09-18 tree; re-run type-aware after any future client.go change.
+- **`//nolint:dupl`-style parallel tests in go-paperless client_test.go** (#44): documented as intentional; converting to table tests needs owner sign-off.
+- **`anchor_id` in minimal/plumbing JSON** (#46): deliberately excluded today; expose only if cross-format linking demand appears from `--simple-json` consumers.
+- **Irreducible `-t 1` residue**: after the 2026-09-18 self-clean (47→44, re-measured at 40 shown groups on 2026-09-19), remaining groups are idioms or deliberate mirrors marked `//art-dupl:accept`; revisit only when new patterns land.
+
 ## Quality and Intelligence
 
 - **Interface-aware suppression (cross-package)**: Same-package interface detection via `go/types` is implemented (the `interface-method` pattern). Cross-package and stdlib interfaces still rely on the static name list (`commonInterfaceMethodNames`). Full call-graph analysis remains future work.
