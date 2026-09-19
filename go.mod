@@ -85,6 +85,7 @@ require (
 	github.com/charmbracelet/x/term v0.2.2
 	github.com/dustin/go-humanize v1.0.1
 	github.com/go-faster/yaml v0.4.6
+	github.com/larsartmann/go-finding v1.12.0
 	github.com/onsi/ginkgo/v2 v2.32.2
 	github.com/onsi/gomega v1.43.0
 	github.com/sergi/go-diff v1.4.0
@@ -112,11 +113,11 @@ require (
 	github.com/go-logfmt/logfmt v0.6.1 // indirect
 	github.com/go-logr/logr v1.4.4 // indirect
 	github.com/go-task/slim-sprig/v3 v3.0.0 // indirect
-	github.com/goccy/go-yaml v1.19.2 // indirect
 	github.com/google/go-cmp v0.7.0 // indirect
 	github.com/google/pprof v0.0.0-20260906184651-6331bc6350fe // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/klauspost/cpuid/v2 v2.4.0 // indirect
+	github.com/larsartmann/go-error-family v0.10.1 // indirect
 	github.com/lucasb-eyer/go-colorful v1.4.1 // indirect
 	github.com/mattn/go-runewidth v0.0.30 // indirect
 	github.com/muesli/cancelreader v0.2.2 // indirect
@@ -125,7 +126,6 @@ require (
 	github.com/muesli/mango-pflag v0.2.0 // indirect
 	github.com/muesli/roff v0.1.0 // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
-	github.com/rogpeppe/go-internal v1.14.1 // indirect
 	github.com/segmentio/asm v1.2.1 // indirect
 	github.com/spf13/pflag v1.0.10 // indirect
 	github.com/xo/terminfo v1.2.0 // indirect
@@ -136,6 +136,4 @@ require (
 	golang.org/x/net v0.59.0 // indirect
 	golang.org/x/sys v0.48.0 // indirect
 	golang.org/x/text v0.42.0 // indirect
-	google.golang.org/protobuf v1.36.11 // indirect
-	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 )

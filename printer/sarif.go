@@ -9,6 +9,7 @@ import (
 	"github.com/LarsArtmann/art-dupl/domain"
 	errors "github.com/LarsArtmann/art-dupl/errors"
 	"github.com/LarsArtmann/art-dupl/internal/jsonutil"
+	"github.com/LarsArtmann/art-dupl/printer/finding"
 )
 
 // SARIF level constants.
@@ -201,8 +202,9 @@ func (p *sarifPrinter) PrintClones(
 			size, len(group.Clones))
 
 		properties := map[string]string{
-			"clone_type": string(cl.Classification.CloneType),
-			"category":   string(cl.Classification.Category),
+			"clone_type":               string(cl.Classification.CloneType),
+			"category":                 string(cl.Classification.Category),
+			finding.PropertyKeyGroupID: hash,
 		}
 
 		if cl.Classification.NonActionablePattern != "" {
