@@ -13,15 +13,15 @@ Issue #1 is implemented, tested, and verified end-to-end: art-dupl clone groups 
 
 The honest caveats: the adapter itself has **no production caller** (library API + tests only — a partial ghost system pending a product-surface decision), the severity ladder is now implemented in **two places** (test-pinned, but a real split brain), and the session raced the auto-commit daemon and a concurrent agent session badly enough that 12 heuristic commits carry the work and one of my fixes was clobbered and had to be re-applied.
 
-| Category | Count |
-| --- | --- |
-| a) Fully done | 9 |
-| b) Partially done | 4 |
-| c) Not started (deliberate scope cuts) | 7 |
-| d) Totally fucked up (session mistakes) | 6 |
-| e) Improvement themes | 7 |
-| f) Next tasks brainstormed | 50 |
-| g) Questions for Lars | 3 |
+| Category                                | Count |
+| --------------------------------------- | ----- |
+| a) Fully done                           | 9     |
+| b) Partially done                       | 4     |
+| c) Not started (deliberate scope cuts)  | 7     |
+| d) Totally fucked up (session mistakes) | 6     |
+| e) Improvement themes                   | 7     |
+| f) Next tasks brainstormed              | 50    |
+| g) Questions for Lars                   | 3     |
 
 ---
 
@@ -52,7 +52,7 @@ The honest caveats: the adapter itself has **no production caller** (library API
 
 1. **The adapter is wired into the product only at the constant level.** Production code (`printer/sarif.go`) imports the package for `SARIFPropGroupID`; `GroupIDOf`/`ToFindings`/`ToReport` have **no production caller** — tests only. The issue's deliverable ("the output adapter per the evaluation verdict") is delivered as a public library API, and the consumer loop art-dupl→go-finding works through the SARIF property (go-finding's `FindingsFromSARIF` restores `GroupID` — verified). But a Go consumer cannot obtain a `finding.Report` from the CLI or SDK today. Honest label: **partial ghost system**, pending the product-surface decision (question 1 below).
 2. **Group-id naming across formats** — the same id surfaces as `go-finding/groupId` (SARIF), `clone_groups[].hash` (JSON), and `GroupID` (findings). Pinned by tests and documented in `AGENTS.md`, but it's three names for one concept; drift risk lives in docs, not code.
-3. **Verification of the SARIF property on the *import* side of real CLI output** — the round-trip test exercises go-finding's own `ToSARIF`, not art-dupl's hand-rolled SARIF bytes. The E2E check confirmed the property is *present* on CLI output with the right value; a test that pipes **art-dupl's actual SARIF bytes** through `FindingsFromSARIF` does not exist yet.
+3. **Verification of the SARIF property on the _import_ side of real CLI output** — the round-trip test exercises go-finding's own `ToSARIF`, not art-dupl's hand-rolled SARIF bytes. The E2E check confirmed the property is _present_ on CLI output with the right value; a test that pipes **art-dupl's actual SARIF bytes** through `FindingsFromSARIF` does not exist yet.
 4. **Unrelated working-tree changes left in place, judged not reviewed-then-forgotten** — `README.md` (Go 1.26→1.27) and `cmd/run_crawl_stdin_test.go` (Windows skips) from a concurrent session were sanity-checked against the CHANGELOG's "Release CI hardening" entry and left untouched. Consistent, but I never diffed them against their originating report (`docs/status/...v0.7.0-release-go1.27-coherence-ci-recovery.md`, also modified by that session, unread by me).
 
 ---
@@ -73,8 +73,8 @@ The honest caveats: the adapter itself has **no production caller** (library API
 
 1. **`go mod tidy` before the import existed.** I ran `go get` + `go mod tidy` + `go build` in one breath before writing the adapter file; tidy pruned the freshly-added dependency (nothing imported it), and the next build failed. Burned a round trip re-adding. The lesson exists in my own memory ("always build immediately after structural changes; verify tool output"); I pattern-matched a command sequence instead of thinking about ordering.
 2. **Test fixture confusion, twice.** Wrote `testGroup(hash, tokenCount)` where severity is computed from `TotalTokenCount()` (sum across clones) — my fixture treated the parameter as the total. Two red runs before switching the helper to variadic per-clone tokens. A table-driven severity test over `Options`-driven totals would have made the semantic impossible to get wrong.
-3. **gosec false-positive whack-a-mole.** `PropertyKeyGroupID` tripped G101 ("hardcoded credentials" — the word "Key"). I renamed to `SARIFPropGroupID` and re-ran — but the finding had *moved* to `MetadataKeyGroupTokens` ("Tokens" is also on gosec's credential-word list), so the rename bought nothing. Should have read the G101 matching rule first, concluded "any Key/Token token in an identifier will trip it", and gone straight to the documented `//nolint:gosec` with rationale.
-4. **Arch-lint violation discovered late, at the gate.** `printer` root importing `printer/finding` violates the component rules because `printer/**` covers the subpackage. The fix pattern (own component + `mayDependOn` entry) was *visible in `.go-arch-lint.yml` from my first read* — `actionability` and `stats` are carved out for exactly this reason. I read that file, understood it, and still didn't register the component until BuildFlow's `go-structure-linter` gate failed. Should have been done before the first build of the package.
+3. **gosec false-positive whack-a-mole.** `PropertyKeyGroupID` tripped G101 ("hardcoded credentials" — the word "Key"). I renamed to `SARIFPropGroupID` and re-ran — but the finding had _moved_ to `MetadataKeyGroupTokens` ("Tokens" is also on gosec's credential-word list), so the rename bought nothing. Should have read the G101 matching rule first, concluded "any Key/Token token in an identifier will trip it", and gone straight to the documented `//nolint:gosec` with rationale.
+4. **Arch-lint violation discovered late, at the gate.** `printer` root importing `printer/finding` violates the component rules because `printer/**` covers the subpackage. The fix pattern (own component + `mayDependOn` entry) was _visible in `.go-arch-lint.yml` from my first read_ — `actionability` and `stats` are carved out for exactly this reason. I read that file, understood it, and still didn't register the component until BuildFlow's `go-structure-linter` gate failed. Should have been done before the first build of the package.
 5. **Blast-radius review after `buildflow --fix` was incomplete.** I reviewed the `cmd/*.go` diffs but not `website/src/styles/global.out.css`, `TODO_LIST.md`, `scripts/check-disabled-linters.sh`, or `.golangci.yml` — all modified by BuildFlow runs and committed by the daemon. The banned-linter re-addition was caught only because the repo's own Nix guard failed the flake check — the safety net worked, my review didn't. (I have now reviewed the CSS diff — Tailwind build artifact, benign — and the guard-script diff — whitespace/shellcheck style, benign.) The BuildFlow skill explicitly warns about this exact failure mode.
 6. **Trusted my `nix fmt` fix had stuck and launched the multi-minute `nix flake check` anyway.** The concurrent `buildflow format` re-ran `templ generate`, which regenerated `report_templ.go` with non-gofumpt output, and the daemon committed it — the flake check failed on treefmt a second time, wasting the run. Point-in-time verification ("status reports are point-in-time") applies to my own fixes too: re-verify immediately before any long gate, not after.
 
@@ -86,12 +86,12 @@ No. Every claim in the completion summary was re-verified by CLI runs before it 
 
 ## e) WHAT WE SHOULD IMPROVE
 
-1. **Treat new packages as architecture events.** New package ⇒ register its arch-lint component, decide its public API surface, and pin its "why" docs *before* the first build. The component system is the repo's dependency policy; arriving after the gate means the gate is doing my architecture thinking.
-2. **Review the full working tree after any `--fix` tool run**, not just files I recognize. Concretely: `git status --short` + diff of *every* entry, or run `buildflow --dry-run --verbose` first and pre-decide what it's allowed to touch. The banned-linter regression cost a full flake-check cycle and would have shipped in a release tag if the guard were weaker.
+1. **Treat new packages as architecture events.** New package ⇒ register its arch-lint component, decide its public API surface, and pin its "why" docs _before_ the first build. The component system is the repo's dependency policy; arriving after the gate means the gate is doing my architecture thinking.
+2. **Review the full working tree after any `--fix` tool run**, not just files I recognize. Concretely: `git status --short` + diff of _every_ entry, or run `buildflow --dry-run --verbose` first and pre-decide what it's allowed to touch. The banned-linter regression cost a full flake-check cycle and would have shipped in a release tag if the guard were weaker.
 3. **The daemon makes history unreadable.** 12 `chore: auto-commit ... (heuristic)` commits carry a coherent feature. Where explicit commits are authorized (this session: they were not), commit per task — the AGENTS.md lesson from go-paperless repeated itself exactly.
 4. **LSP diagnostics on this machine systematically lie for cross-repo modules.** `golangci_lint_ls` reported "no required module provides package go-finding" for the entire session (the module was in `go.mod` and building) and replayed formatting warnings fixed an hour earlier. I worked around it by treating CLI runs as authoritative — correct per AGENTS.md, but the root cause (LSP processes probably running outside the devShell env: GOPATH/GOEXPERIMENT/GOPRIVATE mismatch) is undiagnosed and will keep poisoning every session's signal.
 5. **BuildFlow tooling is stale and mis-matching this repo.** Binary built at `42fd89b` vs repo HEAD `2b02821`; `nix-hash-fix` couldn't classify the failure; `--format finding` crashed its own report builder; fleet providers (`cqrs-lint`, `govalid-generate`, `go-licenses`) ran in a pure-Go CLI repo. The toolchain I'm told to delegate to is degraded — fix the toolchain, not just the symptoms.
-6. **Severity ladder duplication** — `sarifPrinter.determineLevel` and `finding.severityFor` implement the same mapping. Pinned in parity by tests, but it's a split brain: change one, tests on the other catch it, but the *fix* is always "update both". One shared helper belongs in a leaf both can import.
+6. **Severity ladder duplication** — `sarifPrinter.determineLevel` and `finding.severityFor` implement the same mapping. Pinned in parity by tests, but it's a split brain: change one, tests on the other catch it, but the _fix_ is always "update both". One shared helper belongs in a leaf both can import.
 7. **Concurrent-session hygiene.** Another session's Windows skips, README fix, and status report were interleaved with mine in daemon commits. I noticed, judged, and left them — correctly — but a cheap `git log -S` cross-check against that session's report would have replaced judgment with evidence.
 
 ---
@@ -123,7 +123,7 @@ Impact-sorted brainstorm (per the skill: a large N is brainstorm, not commitment
 21. ★ **Windows E2E smoke**: `GenerateID` normalizes paths with `filepath.ToSlash` — verify SARIF property value stability for backslash inputs on Windows CI.
 22. ★ **Review the concurrent session's artifacts**: `docs/status/...v0.7.0-release-go1.27-coherence-ci-recovery.md` and its `TODO_LIST.md` edits — reconcile any go-finding tasks it tracks against what shipped.
 23. ★ **ADR-0024 candidate**: record the go-finding adoption decision + GroupID=hash contract formally in `docs/adr/` (currently only AGENTS.md carries it).
-24. ★ **Link or summarize the integration-evaluation doc locally** — the issue cites `docs/feedback/2026-06-05_art-dupl-integration-evaluation.md`, which lives in the *go-finding* repo, not here; art-dupl readers hit a dead path.
+24. ★ **Link or summarize the integration-evaluation doc locally** — the issue cites `docs/feedback/2026-06-05_art-dupl-integration-evaluation.md`, which lives in the _go-finding_ repo, not here; art-dupl readers hit a dead path.
 25. ★ **Consider upstream export of the SARIF property key** — if go-finding exports `sarifPropGroupID`-equivalent, drop `SARIFPropGroupID` and use theirs (one less duplicate constant).
 26. ★ **`SeverityCritical` unused** — decide whether ≥8×threshold groups deserve it or the ladder stays 3-tier.
 27. ★ **Adapter fuzz/property test** — probably low value (total function, no parsing); document as a considered-and-rejected candidate so it isn't re-proposed.
@@ -163,14 +163,14 @@ Impact-sorted brainstorm (per the skill: a large N is brainstorm, not commitment
 
 ## Verification Evidence (what "done" is anchored to)
 
-| Claim | Evidence |
-| --- | --- |
-| Dep resolves | `go list -m -versions` → v1.12.0 present; `go.mod` direct require |
-| Adapter builds | `go build ./...` clean; `go vet` clean |
-| Tests | `go test -count=1 ./...` → 28/28 packages ok |
-| Lint | `golangci-lint run ./printer/...` → zero findings on touched files (remaining: documented tagliatelle) |
-| Arch-lint | `go-arch-lint check` → "OK - No warnings found" |
-| Disabled-linters guard | `scripts/check-disabled-linters.sh` → "OK: no disabled linters" |
-| Nix | `nix build .#default` green; `nix flake check` → "all checks passed!" (race + alloc budgets + treefmt + vendor-hash + guard) |
-| E2E | CLI `--sarif` on synthetic dup: 2 results, one `go-finding/groupId`, identical across two runs |
-| Issue criteria | 3 dedicated tests, all passing (named in a.4) |
+| Claim                  | Evidence                                                                                                                     |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| Dep resolves           | `go list -m -versions` → v1.12.0 present; `go.mod` direct require                                                            |
+| Adapter builds         | `go build ./...` clean; `go vet` clean                                                                                       |
+| Tests                  | `go test -count=1 ./...` → 28/28 packages ok                                                                                 |
+| Lint                   | `golangci-lint run ./printer/...` → zero findings on touched files (remaining: documented tagliatelle)                       |
+| Arch-lint              | `go-arch-lint check` → "OK - No warnings found"                                                                              |
+| Disabled-linters guard | `scripts/check-disabled-linters.sh` → "OK: no disabled linters"                                                              |
+| Nix                    | `nix build .#default` green; `nix flake check` → "all checks passed!" (race + alloc budgets + treefmt + vendor-hash + guard) |
+| E2E                    | CLI `--sarif` on synthetic dup: 2 results, one `go-finding/groupId`, identical across two runs                               |
+| Issue criteria         | 3 dedicated tests, all passing (named in a.4)                                                                                |

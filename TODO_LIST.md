@@ -63,7 +63,7 @@ toolchain pins, Windows stdin-test skips) are NOT listed — they live in the CH
 - [ ] **Make stale-shell failures graceful** (#24) — detect local go < go.mod requirement and print an actionable message (dart of the `GOTOOLCHAIN=local` trap).
 - [ ] **Verify `--dump-tokens` positions on a templ file** (#48) — the position work targeted Go files; templ ranges inherit differently.
 - [ ] **`nix flake check` should cover arch-lint locally** (#40) — the 2026-09-18 arch-lint break only surfaced in CI.
-- [ ] **docs-health VERIFY pass over 2026-08-* status reports** (#35) — several claims now stale post-ADR-0023/1.27.
+- [ ] __docs-health VERIFY pass over 2026-08-_ status reports_* (#35) — several claims now stale post-ADR-0023/1.27.
 - [ ] **Small quality batch** — both-separator table cases for `shouldSkipPath` (#29); `t.Chdir` sweep (#38); confirm tagalign/nestif additions are wanted (#39); exhaustruct bdd-exclusion noise check (#30); monthly `-t 1` self-scan routine documented (#31); evaluate `errors.AsType[E]` in errors/marshal.go (#32).
 
 ## PARKED: Explicit Entry Criteria (not amnesia)

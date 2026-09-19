@@ -28,16 +28,16 @@
 
 ### Output Formats
 
-| Feature                | Status           | Description                                                                                     |
-| ---------------------- | ---------------- | ----------------------------------------------------------------------------------------------- |
-| **Text Output**        | FULLY_FUNCTIONAL | Human-readable clone listing with file paths, line numbers, one-line source preview, diff hints |
-| **HTML Output**        | FULLY_FUNCTIONAL | Dark theme, syntax highlighting, VSCode links, diff visualization                               |
-| **JSON Output**        | FULLY_FUNCTIONAL | Structured data with version, timestamp, clone_groups, summary; each group carries `anchor_id` matching the HTML report deep-link (`printer/json.go`)           |
-| **Simple-JSON Output** | FULLY_FUNCTIONAL | Simpler JSON format with score=impact, instances with token_count                               |
-| **Plumbing Output**    | FULLY_FUNCTIONAL | Machine-readable `file:startLine-endLine` format for CI/CD                                      |
-| **SARIF Output**       | FULLY_FUNCTIONAL | SARIF 2.1.0 for GitHub Advanced Security, clones reported as results                            |
+| Feature                | Status           | Description                                                                                                                                                                                                                                                                                         |
+| ---------------------- | ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Text Output**        | FULLY_FUNCTIONAL | Human-readable clone listing with file paths, line numbers, one-line source preview, diff hints                                                                                                                                                                                                     |
+| **HTML Output**        | FULLY_FUNCTIONAL | Dark theme, syntax highlighting, VSCode links, diff visualization                                                                                                                                                                                                                                   |
+| **JSON Output**        | FULLY_FUNCTIONAL | Structured data with version, timestamp, clone_groups, summary; each group carries `anchor_id` matching the HTML report deep-link (`printer/json.go`)                                                                                                                                               |
+| **Simple-JSON Output** | FULLY_FUNCTIONAL | Simpler JSON format with score=impact, instances with token_count                                                                                                                                                                                                                                   |
+| **Plumbing Output**    | FULLY_FUNCTIONAL | Machine-readable `file:startLine-endLine` format for CI/CD                                                                                                                                                                                                                                          |
+| **SARIF Output**       | FULLY_FUNCTIONAL | SARIF 2.1.0 for GitHub Advanced Security, clones reported as results                                                                                                                                                                                                                                |
 | **go-finding Adapter** | FULLY_FUNCTIONAL | `printer/finding` converts clone groups to go-finding `Finding`s: one deterministic `GroupID` per group (the group hash), clone metadata in `Finding.Metadata`, sibling `clone-of` links. SARIF results carry the same id as the `go-finding/groupId` property; LSP round-trips via `Data.GroupID`. |
-| **CSV Output**         | FULLY_FUNCTIONAL | Stats CSV uses `encoding/csv` for proper escaping and quoting                                   |
+| **CSV Output**         | FULLY_FUNCTIONAL | Stats CSV uses `encoding/csv` for proper escaping and quoting                                                                                                                                                                                                                                       |
 
 ### Batch & Report Generation
 
@@ -139,19 +139,19 @@
 
 ## 🛡️ Smart Filtering
 
-| Feature                       | Status           | Description                                                                                                                                         |
-| ----------------------------- | ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **SQLC Detection**            | FULLY_FUNCTIONAL | Auto-detects `sqlc.yaml` in parent dirs, filters generated `.go`                                                                                    |
-| **Templ Filtering**           | FULLY_FUNCTIONAL | `.templ` source files included by default; `*_templ.go` filtered by default                                                                         |
-| **Lazy Content Reading**      | FULLY_FUNCTIONAL | gogenfilter v3.4.0 `FilterDetailedAndContent` reads file content only when phase-2 detection runs. Phase-1 filename catches skip disk I/O entirely. |
-| **Protobuf Filtering**        | FULLY_FUNCTIONAL | Filters `.pb.go`, `_grpc.pb.go` files                                                                                                               |
-| **Mockgen Filtering**         | FULLY_FUNCTIONAL | Filters mockgen generated files                                                                                                                     |
-| **Stringer Filtering**        | FULLY_FUNCTIONAL | Filters stringer generated files                                                                                                                    |
-| **Include Overrides**         | FULLY_FUNCTIONAL | `--include-generated <category>` to override (`sqlc`, `templ`, `protobuf`, `mockgen`, `stringer`, `generic`, `all`)                                 |
-| **Custom Include/Exclude**    | FULLY_FUNCTIONAL | `--include-pattern` / `--exclude-pattern` glob patterns; user-supplied patterns that match zero files print a warning after the run (unconditional, even under `--quiet`)                                             |
-| **Directory Exclusions**      | FULLY_FUNCTIONAL | `vendor/`, `.git/`, `node_modules/` excluded by default                                                                                             |
-| **Node Modules**              | FULLY_FUNCTIONAL | `--include-node-modules` includes for hash detection                                                                                                |
-| **File Type Filter (--only)** | FULLY_FUNCTIONAL | Restrict to `go` or `templ` file types                                                                                                              |
+| Feature                       | Status           | Description                                                                                                                                                               |
+| ----------------------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **SQLC Detection**            | FULLY_FUNCTIONAL | Auto-detects `sqlc.yaml` in parent dirs, filters generated `.go`                                                                                                          |
+| **Templ Filtering**           | FULLY_FUNCTIONAL | `.templ` source files included by default; `*_templ.go` filtered by default                                                                                               |
+| **Lazy Content Reading**      | FULLY_FUNCTIONAL | gogenfilter v3.4.0 `FilterDetailedAndContent` reads file content only when phase-2 detection runs. Phase-1 filename catches skip disk I/O entirely.                       |
+| **Protobuf Filtering**        | FULLY_FUNCTIONAL | Filters `.pb.go`, `_grpc.pb.go` files                                                                                                                                     |
+| **Mockgen Filtering**         | FULLY_FUNCTIONAL | Filters mockgen generated files                                                                                                                                           |
+| **Stringer Filtering**        | FULLY_FUNCTIONAL | Filters stringer generated files                                                                                                                                          |
+| **Include Overrides**         | FULLY_FUNCTIONAL | `--include-generated <category>` to override (`sqlc`, `templ`, `protobuf`, `mockgen`, `stringer`, `generic`, `all`)                                                       |
+| **Custom Include/Exclude**    | FULLY_FUNCTIONAL | `--include-pattern` / `--exclude-pattern` glob patterns; user-supplied patterns that match zero files print a warning after the run (unconditional, even under `--quiet`) |
+| **Directory Exclusions**      | FULLY_FUNCTIONAL | `vendor/`, `.git/`, `node_modules/` excluded by default                                                                                                                   |
+| **Node Modules**              | FULLY_FUNCTIONAL | `--include-node-modules` includes for hash detection                                                                                                                      |
+| **File Type Filter (--only)** | FULLY_FUNCTIONAL | Restrict to `go` or `templ` file types                                                                                                                                    |
 
 ---
 
@@ -162,7 +162,7 @@
 | **Parallel Parsing**      | FULLY_FUNCTIONAL | Worker pool via `--workers` flag (0=auto, NumCPU)                                                                                                                                                                                                                                            |
 | **Parallel Search**       | FULLY_FUNCTIONAL | `--search-workers` flag parallelizes suffix tree DFS across root subtrees (0/1=sequential, >1=N workers). 1.5-3.4x speedup.                                                                                                                                                                  |
 | **Memory-Compact Tree**   | FULLY_FUNCTIONAL | Suffix tree data stored as `[]TokenValue` (int32, 4 bytes) instead of `[]Token` (interface, 16 bytes). 75% pointer-array memory reduction.                                                                                                                                                   |
-| **Incremental Analysis**  | FULLY_FUNCTIONAL | SHA-256 content-hash AST caching, `--incremental` flag, CacheVersion 4 (mode-aware keys prevent cross-mode contamination)                                                                                                    |
+| **Incremental Analysis**  | FULLY_FUNCTIONAL | SHA-256 content-hash AST caching, `--incremental` flag, CacheVersion 4 (mode-aware keys prevent cross-mode contamination)                                                                                                                                                                    |
 | **Git-Aware Incremental** | REMOVED          | `--since` flag removed (was a dead stub, never read). Only content-hash caching via `--incremental` works. Git-diff file selection not implemented.                                                                                                                                          |
 | **Cache Management**      | FULLY_FUNCTIONAL | `--cache-dir`, `--clear-cache`, `--max-cache-entries`, `--memory-cache-entries`, file-based gob serialization, hysteresis pruning (110%/90%)                                                                                                                                                 |
 | **In-Memory LRU Cache**   | FULLY_FUNCTIONAL | Configurable-entry (`--memory-cache-entries`, default 512) `container/list`-based LRU on top of `FileCache`. O(1) hit, no gob deserialization (~5x faster than disk, benchmark-proven in `BenchmarkFileCacheGet`). Deep-clone on read; `MemHits` surfaced in verbose stats. (`cache/lru.go`) |
@@ -175,34 +175,34 @@
 
 ## 🖥️ Professional CLI (via Fang)
 
-| Feature                      | Status           | Description                                                                         |
-| ---------------------------- | ---------------- | ----------------------------------------------------------------------------------- |
-| **Styled Help Output**       | FULLY_FUNCTIONAL | Rich, themed help text via Fang framework                                           |
-| **Shell Completion**         | FULLY_FUNCTIONAL | bash, zsh, fish, PowerShell with `--no-descriptions` option                         |
-| **Man Page Generation**      | FULLY_FUNCTIONAL | `art-dupl man` generates manual pages                                               |
-| **Version Information**      | FULLY_FUNCTIONAL | Version, commit, build date; `version --json`, `version --short`                    |
-| **Configurable Verbosity**   | FULLY_FUNCTIONAL | `-v` (verbose), `-vv` (extra verbose), `--quiet`/`-q` (suppress status)             |
-| **Color Control**            | FULLY_FUNCTIONAL | `--no-color` flag, `NO_COLOR` env var (lipgloss native)                             |
-| **Typed Exit Codes**         | FULLY_FUNCTIONAL | 0=success, 1=general, 2=config/validation, 3=internal, 130=interrupted (ADR-0013)   |
-| **Line-Count Filtering**     | FULLY_FUNCTIONAL | `--min-lines` suppresses clone groups with fewer lines (minimum across all clones)  |
-| **Token-Count Filtering**    | FULLY_FUNCTIONAL | `--min-tokens` suppresses clone groups where any clone has fewer than N tokens      |
-| **Test Threshold**           | FULLY_FUNCTIONAL | `--test-threshold` sets a separate (higher) threshold for test files                |
-| **Test Suppression**         | FULLY_FUNCTIONAL | `--suppress-test-low` suppresses low-priority clones in test files                  |
+| Feature                      | Status           | Description                                                                                                                                                            |
+| ---------------------------- | ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Styled Help Output**       | FULLY_FUNCTIONAL | Rich, themed help text via Fang framework                                                                                                                              |
+| **Shell Completion**         | FULLY_FUNCTIONAL | bash, zsh, fish, PowerShell with `--no-descriptions` option                                                                                                            |
+| **Man Page Generation**      | FULLY_FUNCTIONAL | `art-dupl man` generates manual pages                                                                                                                                  |
+| **Version Information**      | FULLY_FUNCTIONAL | Version, commit, build date; `version --json`, `version --short`                                                                                                       |
+| **Configurable Verbosity**   | FULLY_FUNCTIONAL | `-v` (verbose), `-vv` (extra verbose), `--quiet`/`-q` (suppress status)                                                                                                |
+| **Color Control**            | FULLY_FUNCTIONAL | `--no-color` flag, `NO_COLOR` env var (lipgloss native)                                                                                                                |
+| **Typed Exit Codes**         | FULLY_FUNCTIONAL | 0=success, 1=general, 2=config/validation, 3=internal, 130=interrupted (ADR-0013)                                                                                      |
+| **Line-Count Filtering**     | FULLY_FUNCTIONAL | `--min-lines` suppresses clone groups with fewer lines (minimum across all clones)                                                                                     |
+| **Token-Count Filtering**    | FULLY_FUNCTIONAL | `--min-tokens` suppresses clone groups where any clone has fewer than N tokens                                                                                         |
+| **Test Threshold**           | FULLY_FUNCTIONAL | `--test-threshold` sets a separate (higher) threshold for test files                                                                                                   |
+| **Test Suppression**         | FULLY_FUNCTIONAL | `--suppress-test-low` suppresses low-priority clones in test files                                                                                                     |
 | **Token Dump**               | FULLY_FUNCTIONAL | `--dump-tokens` outputs serialized token stream with byte offsets and `line:col` source positions (span for multi-line statement tokens) for debugging false positives |
-| **Rich Text Output**         | FULLY_FUNCTIONAL | `--rich-text` adds priority/category/actionability badges to text output            |
-| **Explain Mode**             | FULLY_FUNCTIONAL | `--explain` prints a per-group rationale (type, actionability, category, savings)   |
-| **Actionability Toggle**     | FULLY_FUNCTIONAL | `--no-actionability` shows all clones, including non-actionable boilerplate         |
-| **Disable Pattern**          | FULLY_FUNCTIONAL | `--disable-pattern <label>` re-enables a specific boilerplate pattern               |
-| **List Patterns**            | FULLY_FUNCTIONAL | `--list-patterns` prints all 37 pattern labels (33 denylist + 4 property-engine)                                                                                    |
-| **Threshold Recommendation** | FULLY_FUNCTIONAL | `--recommend-threshold` suggests CI gate and deep-audit thresholds                  |
-| **Token-Count Filter**       | FULLY_FUNCTIONAL | `--min-tokens N` suppresses clone groups where any clone has < N tokens             |
-| **Diff Report**              | FULLY_FUNCTIONAL | `--diff-report <baseline>` shows new/suppressed/resolved clones                     |
-| **HTML to File**             | FULLY_FUNCTIONAL | `--html-out <file>` writes HTML report to file with auto-open                       |
-| **Quiet Mode**               | FULLY_FUNCTIONAL | `--quiet`/`-q` suppresses progress and status output                                |
-| **Color Control**            | FULLY_FUNCTIONAL | `--no-color` disables colored output                                                |
-| **Type-Aware Mode**          | FULLY_FUNCTIONAL | `--type-aware` encodes variable types into hashes via `go/types` (see Semantic)     |
-| **Parallel Search**          | FULLY_FUNCTIONAL | `--search-workers N` parallelizes suffix tree search (0/1=sequential, >1=N workers) |
-| **Version Subcommand**       | FULLY_FUNCTIONAL | `art-dupl version [--json                                                           |
+| **Rich Text Output**         | FULLY_FUNCTIONAL | `--rich-text` adds priority/category/actionability badges to text output                                                                                               |
+| **Explain Mode**             | FULLY_FUNCTIONAL | `--explain` prints a per-group rationale (type, actionability, category, savings)                                                                                      |
+| **Actionability Toggle**     | FULLY_FUNCTIONAL | `--no-actionability` shows all clones, including non-actionable boilerplate                                                                                            |
+| **Disable Pattern**          | FULLY_FUNCTIONAL | `--disable-pattern <label>` re-enables a specific boilerplate pattern                                                                                                  |
+| **List Patterns**            | FULLY_FUNCTIONAL | `--list-patterns` prints all 37 pattern labels (33 denylist + 4 property-engine)                                                                                       |
+| **Threshold Recommendation** | FULLY_FUNCTIONAL | `--recommend-threshold` suggests CI gate and deep-audit thresholds                                                                                                     |
+| **Token-Count Filter**       | FULLY_FUNCTIONAL | `--min-tokens N` suppresses clone groups where any clone has < N tokens                                                                                                |
+| **Diff Report**              | FULLY_FUNCTIONAL | `--diff-report <baseline>` shows new/suppressed/resolved clones                                                                                                        |
+| **HTML to File**             | FULLY_FUNCTIONAL | `--html-out <file>` writes HTML report to file with auto-open                                                                                                          |
+| **Quiet Mode**               | FULLY_FUNCTIONAL | `--quiet`/`-q` suppresses progress and status output                                                                                                                   |
+| **Color Control**            | FULLY_FUNCTIONAL | `--no-color` disables colored output                                                                                                                                   |
+| **Type-Aware Mode**          | FULLY_FUNCTIONAL | `--type-aware` encodes variable types into hashes via `go/types` (see Semantic)                                                                                        |
+| **Parallel Search**          | FULLY_FUNCTIONAL | `--search-workers N` parallelizes suffix tree search (0/1=sequential, >1=N workers)                                                                                    |
+| **Version Subcommand**       | FULLY_FUNCTIONAL | `art-dupl version [--json                                                                                                                                              |
 
 ---
 
