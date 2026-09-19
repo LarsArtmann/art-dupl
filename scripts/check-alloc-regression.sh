@@ -40,11 +40,11 @@ trap 'rm -rf "$tmp"' EXIT
 
 bench_out="$tmp/bench.txt"
 
-(cd "$repo_root" && GOEXPERIMENT=jsonv2 go test ./suffixtree/ -run '^$' \
+(cd "$repo_root" && GOEXPERIMENT=jsonv2 GOTOOLCHAIN=auto go test ./suffixtree/ -run '^$' \
 	-bench '^(BenchmarkSTreeUpdate|BenchmarkFindDuplOver|BenchmarkMemoryUsage)' \
 	-benchmem -count=3 | tee "$bench_out") >&2
 
-(cd "$repo_root" && GOEXPERIMENT=jsonv2 go test ./syntax/ -run '^$' \
+(cd "$repo_root" && GOEXPERIMENT=jsonv2 GOTOOLCHAIN=auto go test ./syntax/ -run '^$' \
 	-bench '^BenchmarkSerialize' \
 	-benchmem -count=3 | tee -a "$bench_out") >&2
 
