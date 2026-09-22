@@ -73,7 +73,7 @@
 // LICENSE: MIT
 module github.com/LarsArtmann/art-dupl
 
-go 1.27
+go 1.27.1
 
 require (
 	charm.land/lipgloss/v2 v2.0.6
@@ -81,11 +81,11 @@ require (
 	github.com/LarsArtmann/gogenfilter/v3 v3.6.1
 	github.com/a-h/templ v0.3.1020
 	github.com/charmbracelet/fang v1.0.0
-	github.com/charmbracelet/x/exp/golden v0.0.0-20260913004009-c615ff2f7805
+	github.com/charmbracelet/x/exp/golden v0.0.0-20260920004010-53e2afe73ae5
 	github.com/charmbracelet/x/term v0.2.2
 	github.com/dustin/go-humanize v1.1.0
 	github.com/go-faster/yaml v0.4.6
-	github.com/larsartmann/go-finding v1.12.0
+	github.com/larsartmann/go-finding v1.13.0
 	github.com/onsi/ginkgo/v2 v2.33.0
 	github.com/onsi/gomega v1.43.0
 	github.com/sergi/go-diff v1.4.0
@@ -99,11 +99,11 @@ require (
 	github.com/Masterminds/semver/v3 v3.5.0 // indirect
 	github.com/a-h/parse v0.0.0-20250122154542-74294addb73e // indirect
 	github.com/aymanbagabas/go-udiff v0.4.1 // indirect
-	github.com/bmatcuk/doublestar/v4 v4.10.0 // indirect
+	github.com/bmatcuk/doublestar/v4 v4.10.2 // indirect
 	github.com/charmbracelet/colorprofile v0.4.3 // indirect
-	github.com/charmbracelet/ultraviolet v0.0.0-20260910203606-6c9e17dc7a16 // indirect
+	github.com/charmbracelet/ultraviolet v0.0.0-20260922123528-4e49372c11f9 // indirect
 	github.com/charmbracelet/x/ansi v0.11.8 // indirect
-	github.com/charmbracelet/x/exp/charmtone v0.0.0-20260913004009-c615ff2f7805 // indirect
+	github.com/charmbracelet/x/exp/charmtone v0.0.0-20260920004010-53e2afe73ae5 // indirect
 	github.com/charmbracelet/x/termios v0.1.1 // indirect
 	github.com/charmbracelet/x/windows v0.2.2 // indirect
 	github.com/clipperhouse/displaywidth v0.11.0 // indirect
@@ -117,7 +117,7 @@ require (
 	github.com/google/pprof v0.0.0-20260906184651-6331bc6350fe // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/klauspost/cpuid/v2 v2.4.0 // indirect
-	github.com/larsartmann/go-error-family v0.10.1 // indirect
+	github.com/larsartmann/go-error-family v0.10.2 // indirect
 	github.com/lucasb-eyer/go-colorful v1.4.1 // indirect
 	github.com/mattn/go-runewidth v0.0.30 // indirect
 	github.com/muesli/cancelreader v0.2.2 // indirect

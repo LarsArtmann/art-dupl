@@ -78,11 +78,11 @@ AGAINST the unpinned arm (it shares all 32 CPUs with foreign load while the
 pinned arm claims 16 of them), so conclusions that favor unpinned are robust
 in direction.
 
-| Benchmark (30 samples/arm)      | Unpinned (32 CPUs) | Pinned (CCX 0-7,16-23) | Δ time, pinned vs unpinned |
-| ------------------------------- | ------------------ | ---------------------- | ---------------- |
-| FindDuplOver/threshold_10       | 117.5µs ± 19%      | 114.2µs ± 4%           | ~ (p=0.146)      |
-| Parallel par4/tokens_10000      | 987.0µs ± 7%       | 921.1µs ± 11%          | −6.7% (p=0.080)  |
-| Parallel parNumCPU/tokens_10000 | 463.1µs ± 2% (n=32) | 481.3µs ± 4% (n=16)  | **+3.9% (p=0.011)** |
+| Benchmark (30 samples/arm)      | Unpinned (32 CPUs)  | Pinned (CCX 0-7,16-23) | Δ time, pinned vs unpinned |
+| ------------------------------- | ------------------- | ---------------------- | -------------------------- |
+| FindDuplOver/threshold_10       | 117.5µs ± 19%       | 114.2µs ± 4%           | ~ (p=0.146)                |
+| Parallel par4/tokens_10000      | 987.0µs ± 7%        | 921.1µs ± 11%          | −6.7% (p=0.080)            |
+| Parallel parNumCPU/tokens_10000 | 463.1µs ± 2% (n=32) | 481.3µs ± 4% (n=16)    | **+3.9% (p=0.011)**        |
 
 (parNumCPU = the sub-benchmark whose worker count follows `runtime.NumCPU()`
 under the affinity mask: par32 unpinned vs par16 pinned — the configuration
@@ -151,12 +151,12 @@ See `linear-scan-boundary-2026-09-22.txt` (pinned, 20 samples/size, the
 quietest window of the session: load ~3-8). Per-probe cost = ns/op ÷ 2n
 (each iteration probes every present key plus a miss above each):
 
-| Size (transitions) | Branch used   | ns/op (2n probes) | ns/probe |
-| ------------------ | ------------- | ----------------- | -------- |
-| 4                  | linear scan   | 22.97n ± 5%       | 2.87     |
-| 8 (= linearScanMax)| linear scan   | 67.66n ± 4%       | 4.23     |
-| 9                  | binary search | 62.24n ± 1%       | 3.46     |
-| 16                 | binary search | 123.2n ± 2%       | 3.85     |
+| Size (transitions)  | Branch used   | ns/op (2n probes) | ns/probe |
+| ------------------- | ------------- | ----------------- | -------- |
+| 4                   | linear scan   | 22.97n ± 5%       | 2.87     |
+| 8 (= linearScanMax) | linear scan   | 67.66n ± 4%       | 4.23     |
+| 9                   | binary search | 62.24n ± 1%       | 3.46     |
+| 16                  | binary search | 123.2n ± 2%       | 3.85     |
 
 The linear/binary crossover sits between 4 and 8: linear at 4 is the
 cheapest lookup measured (~2.9 ns), linear at 8 is already ~18%/probe
