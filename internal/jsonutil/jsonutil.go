@@ -1,21 +1,25 @@
 // Package jsonutil provides the project's canonical JSON marshaling.
 //
-// art-dupl standardized on encoding/json/v2 output semantics (no HTML
-// escaping of <, >, & and no trailing newline) when it migrated to
-// GOEXPERIMENT=jsonv2. Go 1.27 removed the v2 struct-tag grammar
-// (format:, see go.dev/issue/71631), so the project uses the stable v1 API
-// with the v2 engine underneath. v1 defaults differ in exactly two visible
-// ways; this package neutralizes both so output bytes stay identical to the
-// v2-era wire format that golden files and downstream consumers expect:
+// art-dupl standardized on v2-era output semantics (no HTML escaping of
+// <, >, & and no trailing newline) when it migrated to GOEXPERIMENT=jsonv2.
+// Go 1.27 removed the v2 struct-tag grammar (format:, go.dev/issue/71631),
+// and the pure encoding/json/v2 API also refuses plain time.Duration values
+// ("no default representation"), so this package marshals through the stable
+// v1 API exclusively. v1 defaults differ from the v2-era wire format in
+// exactly two visible ways; both are neutralized here so output bytes stay
+// identical to what golden files and downstream consumers expect:
 //
-//   - v1 escapes <, >, & by default; v2 never did.
-//   - v1 Encoder.Encode appends a trailing newline; v2 Marshal did not.
+//   - v1 escapes <, >, & by default; v2 never did → Encoder.SetEscapeHTML(false).
+//   - v1 Encoder.Encode appends a trailing newline; v2 Marshal did not →
+//     trimmed here.
+//
+// v1 defaults format time.Duration as integer nanoseconds, which the config
+// save/load round-trip relies on; do not reintroduce direct v2 imports.
 package jsonutil
 
 import (
 	"bytes"
-	"encoding/json/jsontext"
-	"encoding/json/v2"
+	"encoding/json"
 	"fmt"
 )
 
@@ -24,22 +28,15 @@ import (
 // indentation. It is the drop-in replacement for the v2-era
 // json.Marshal(v, jsontext.WithIndentPrefix(prefix), jsontext.WithIndent(indent)).
 func MarshalIndent(v any, prefix, indent string) ([]byte, error) {
-	// jsontext.WithIndent enables multiline output even for an empty indent
-	// string, so the compact case must not construct an encoder at all.
-	if prefix == "" && indent == "" {
-		data, err := json.Marshal(v, jsontext.EscapeForHTML(false))
-		if err != nil {
-			return nil, fmt.Errorf("encode json: %w", err)
-		}
-
-		return data, nil
-	}
-
 	var buf bytes.Buffer
 
-	enc := jsontext.NewEncoder(&buf, jsontext.EscapeForHTML(false), jsontext.WithIndentPrefix(prefix), jsontext.WithIndent(indent))
+	enc := json.NewEncoder(&buf)
+	enc.SetEscapeHTML(false)
+	if indent != "" || prefix != "" {
+		enc.SetIndent(prefix, indent)
+	}
 
-	if err := json.MarshalEncode(enc, v); err != nil {
+	if err := enc.Encode(v); err != nil {
 		return nil, fmt.Errorf("encode json: %w", err)
 	}
 
