@@ -48,44 +48,13 @@ func processBigIntData(bi *big.Int) string {
 }
 `
 
-	dirA := t.TempDir()
-	dirB := t.TempDir()
-
-	fileA := dirA + "/a.go"
-	fileB := dirB + "/b.go"
-
-	writeFile(t, fileA, srcA)
-	writeFile(t, fileB, srcB)
-
-	typeDataA, err := LoadTypeAwareData([]string{fileA}, false)
-	if err != nil {
-		t.Fatalf("LoadTypeAwareData A failed: %v", err)
-	}
-
-	typeDataB, err := LoadTypeAwareData([]string{fileB}, false)
-	if err != nil {
-		t.Fatalf("LoadTypeAwareData B failed: %v", err)
-	}
-
-	preA := typeDataA.LookupPreloaded(fileA)
-	preB := typeDataB.LookupPreloaded(fileB)
-
-	if preA == nil {
-		t.Fatal("preA is nil")
-	}
-
-	if preB == nil {
-		t.Fatal("preB is nil")
-	}
-
-	nodeA := parsePreloadedTest(t, fileA, preA)
-	nodeB := parsePreloadedTest(t, fileB, preB)
+	pair := newTypeAwarePair(t, srcA, srcB, false)
 
 	// The receiver variables "ts" (type time.Time) and "bi" (type *big.Int)
 	// are both canonicalized to v0, but type-aware mode should produce
 	// different hashes because their types differ.
-	receiverHashA := findIdentHashForName(nodeA, "ts")
-	receiverHashB := findIdentHashForName(nodeB, "bi")
+	receiverHashA := findIdentHashForName(pair.NodeA, "ts")
+	receiverHashB := findIdentHashForName(pair.NodeB, "bi")
 
 	if receiverHashA == 0 {
 		t.Fatal("could not find 'ts' ident hash in nodeA")
@@ -123,27 +92,11 @@ func formatB(tm time.Time) string {
 }
 `
 
-	dirA := t.TempDir()
-	dirB := t.TempDir()
-
-	fileA := dirA + "/a.go"
-	fileB := dirB + "/b.go"
-
-	writeFile(t, fileA, srcA)
-	writeFile(t, fileB, srcB)
-
-	typeDataA, _ := LoadTypeAwareData([]string{fileA}, false)
-	typeDataB, _ := LoadTypeAwareData([]string{fileB}, false)
-
-	preA := typeDataA.LookupPreloaded(fileA)
-	preB := typeDataB.LookupPreloaded(fileB)
-
-	nodeA := parsePreloadedTest(t, fileA, preA)
-	nodeB := parsePreloadedTest(t, fileB, preB)
+	pair := newTypeAwarePair(t, srcA, srcB, false)
 
 	// Both "ts" and "tm" have type time.Time → same canonical hash
-	hashA := findIdentHashForName(nodeA, "ts")
-	hashB := findIdentHashForName(nodeB, "tm")
+	hashA := findIdentHashForName(pair.NodeA, "ts")
+	hashB := findIdentHashForName(pair.NodeB, "tm")
 
 	if hashA == 0 {
 		t.Fatal("could not find 'ts' ident hash in nodeA")
@@ -272,6 +225,59 @@ func parsePreloadedTest(t *testing.T, filename string, pre *PreloadedAST) *synta
 	}
 
 	return tr.trans(pre.File)
+}
+
+// typeAwarePair holds two Go sources written to per-test temp files and parsed
+// through the type-aware pipeline (LoadTypeAwareData → LookupPreloaded →
+// parsePreloadedTest).
+type typeAwarePair struct {
+	NodeA, NodeB *syntax.Node
+	PreA, PreB   *PreloadedAST
+	FileA, FileB string
+}
+
+// newTypeAwarePair writes srcA and srcB into separate temp files and parses
+// both with type-aware data. eraseHash selects --suggest-generics erase-hash
+// mode (types recorded on nodes but not encoded into identifier hashes).
+func newTypeAwarePair(t *testing.T, srcA, srcB string, eraseHash bool) typeAwarePair {
+	t.Helper()
+
+	fileA := filepath.Join(t.TempDir(), "a.go")
+	fileB := filepath.Join(t.TempDir(), "b.go")
+
+	writeFile(t, fileA, srcA)
+	writeFile(t, fileB, srcB)
+
+	nodeA, preA := parseTypeAwareFile(t, fileA, eraseHash)
+	nodeB, preB := parseTypeAwareFile(t, fileB, eraseHash)
+
+	return typeAwarePair{
+		NodeA: nodeA,
+		NodeB: nodeB,
+		PreA:  preA,
+		PreB:  preB,
+		FileA: fileA,
+		FileB: fileB,
+	}
+}
+
+// parseTypeAwareFile loads type-aware data for an existing Go file and parses
+// it into a syntax tree, failing the test on load errors or a missing
+// preloaded AST.
+func parseTypeAwareFile(t *testing.T, file string, eraseHash bool) (*syntax.Node, *PreloadedAST) {
+	t.Helper()
+
+	typeData, err := LoadTypeAwareData([]string{file}, eraseHash)
+	if err != nil {
+		t.Fatalf("LoadTypeAwareData %s failed: %v", file, err)
+	}
+
+	pre := typeData.LookupPreloaded(file)
+	if pre == nil {
+		t.Fatalf("LookupPreloaded(%s) returned nil", file)
+	}
+
+	return parsePreloadedTest(t, file, pre), pre
 }
 
 func collectIdentHashes(root *syntax.Node) []int32 {

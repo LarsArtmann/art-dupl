@@ -30,42 +30,15 @@ func processBigIntData(bi *big.Int) string {
 }
 `
 
-	dirA := t.TempDir()
-	dirB := t.TempDir()
-
-	fileA := dirA + "/a.go"
-	fileB := dirB + "/b.go"
-
-	writeFile(t, fileA, srcA)
-	writeFile(t, fileB, srcB)
-
 	// Load with EraseHash=true (suggest-generics mode)
-	typeDataA, err := LoadTypeAwareData([]string{fileA}, true)
-	if err != nil {
-		t.Fatalf("LoadTypeAwareData A failed: %v", err)
-	}
+	pair := newTypeAwarePair(t, srcA, srcB, true)
 
-	typeDataB, err := LoadTypeAwareData([]string{fileB}, true)
-	if err != nil {
-		t.Fatalf("LoadTypeAwareData B failed: %v", err)
-	}
-
-	preA := typeDataA.LookupPreloaded(fileA)
-	preB := typeDataB.LookupPreloaded(fileB)
-
-	if preA == nil || preB == nil {
-		t.Fatal("preloaded AST is nil")
-	}
-
-	if !preA.EraseHash || !preB.EraseHash {
+	if !pair.PreA.EraseHash || !pair.PreB.EraseHash {
 		t.Fatal("EraseHash should be true on preloaded data")
 	}
 
-	nodeA := parsePreloadedTest(t, fileA, preA)
-	nodeB := parsePreloadedTest(t, fileB, preB)
-
-	hashA := findIdentHashForName(nodeA, "ts")
-	hashB := findIdentHashForName(nodeB, "bi")
+	hashA := findIdentHashForName(pair.NodeA, "ts")
+	hashB := findIdentHashForName(pair.NodeB, "bi")
 
 	if hashA == 0 {
 		t.Fatal("could not find 'ts' ident hash in nodeA")
@@ -97,20 +70,9 @@ func processTimeData(ts time.Time) string {
 
 	dir := t.TempDir()
 	file := dir + "/a.go"
-
 	writeFile(t, file, src)
 
-	typeData, err := LoadTypeAwareData([]string{file}, true)
-	if err != nil {
-		t.Fatalf("LoadTypeAwareData failed: %v", err)
-	}
-
-	pre := typeData.LookupPreloaded(file)
-	if pre == nil {
-		t.Fatal("preloaded AST is nil")
-	}
-
-	node := parsePreloadedTest(t, file, pre)
+	node, _ := parseTypeAwareFile(t, file, true)
 
 	vt := findVarTypeForName(node, "ts")
 	if vt == "" {
@@ -135,41 +97,19 @@ import "math/big"
 func f(bi *big.Int) string { return bi.String() }
 `
 
-	dirA := t.TempDir()
-	dirB := t.TempDir()
-
-	fileA := dirA + "/a.go"
-	fileB := dirB + "/b.go"
-
-	writeFile(t, fileA, srcA)
-	writeFile(t, fileB, srcB)
-
 	// Type-aware mode: different hashes
-	typeDataA, _ := LoadTypeAwareData([]string{fileA}, false)
-	typeDataB, _ := LoadTypeAwareData([]string{fileB}, false)
+	pair := newTypeAwarePair(t, srcA, srcB, false)
 
-	preA := typeDataA.LookupPreloaded(fileA)
-	preB := typeDataB.LookupPreloaded(fileB)
-
-	nodeA := parsePreloadedTest(t, fileA, preA)
-	nodeB := parsePreloadedTest(t, fileB, preB)
-
-	taHashA := findIdentHashForName(nodeA, "ts")
-	taHashB := findIdentHashForName(nodeB, "bi")
+	taHashA := findIdentHashForName(pair.NodeA, "ts")
+	taHashB := findIdentHashForName(pair.NodeB, "bi")
 
 	if taHashA == taHashB {
 		t.Error("type-aware mode should produce DIFFERENT hashes for time.Time vs *big.Int")
 	}
 
 	// Erase-hash mode: same hashes
-	typeDataA2, _ := LoadTypeAwareData([]string{fileA}, true)
-	typeDataB2, _ := LoadTypeAwareData([]string{fileB}, true)
-
-	preA2 := typeDataA2.LookupPreloaded(fileA)
-	preB2 := typeDataB2.LookupPreloaded(fileB)
-
-	nodeA2 := parsePreloadedTest(t, fileA, preA2)
-	nodeB2 := parsePreloadedTest(t, fileB, preB2)
+	nodeA2, _ := parseTypeAwareFile(t, pair.FileA, true)
+	nodeB2, _ := parseTypeAwareFile(t, pair.FileB, true)
 
 	ehHashA := findIdentHashForName(nodeA2, "ts")
 	ehHashB := findIdentHashForName(nodeB2, "bi")
