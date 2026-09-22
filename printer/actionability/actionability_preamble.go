@@ -193,6 +193,25 @@ func isTestMainBoilerplate(nodeSeqs [][]*domain.CloneNode) bool {
 	})
 }
 
+// hasMethodCall reports whether the call subtree contains the shape
+// recv.method(...) — a SelectorExpr named method whose children include a
+// bare receiver Ident named recv.
+func hasMethodCall(call *domain.CloneNode, recv, method string) bool {
+	for _, sel := range call.Children {
+		if sel.BaseType != golang.SelectorExpr || sel.Name != method {
+			continue
+		}
+
+		for _, rcv := range sel.Children {
+			if rcv.BaseType == golang.Ident && rcv.Name == recv {
+				return true
+			}
+		}
+	}
+
+	return false
+}
+
 // isAssignFromMRun checks that a statement is `code := m.Run()` — an
 // AssignStmt whose RHS call targets a SelectorExpr named "Run" with a bare
 // receiver Ident "m".
@@ -202,20 +221,8 @@ func isAssignFromMRun(stmt *domain.CloneNode) bool {
 	}
 
 	for _, child := range stmt.Children {
-		if child.BaseType != golang.CallExpr {
-			continue
-		}
-
-		for _, cc := range child.Children {
-			if cc.BaseType != golang.SelectorExpr || cc.Name != "Run" {
-				continue
-			}
-
-			for _, sc := range cc.Children {
-				if sc.BaseType == golang.Ident && sc.Name == "m" {
-					return true
-				}
-			}
+		if child.BaseType == golang.CallExpr && hasMethodCall(child, "m", "Run") {
+			return true
 		}
 	}
 
@@ -231,19 +238,7 @@ func isOSExitCall(stmt *domain.CloneNode) bool {
 		return false
 	}
 
-	for _, child := range unwrapped.Children {
-		if child.BaseType != golang.SelectorExpr || child.Name != "Exit" {
-			continue
-		}
-
-		for _, sc := range child.Children {
-			if sc.BaseType == golang.Ident && sc.Name == "os" {
-				return true
-			}
-		}
-	}
-
-	return false
+	return hasMethodCall(unwrapped, "os", "Exit")
 }
 
 // maxEmbedDirectiveStatements bounds the statement count of an embed bootstrap
