@@ -1,7 +1,9 @@
 package config
 
 import (
-	"encoding/json/v2"
+	// v1 API only: the pure v2 package refuses plain time.Duration fields
+	// ("no default representation"), which Config carries.
+	"encoding/json"
 	"errors"
 	"os"
 	"path/filepath"

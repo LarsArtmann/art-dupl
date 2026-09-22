@@ -53,8 +53,12 @@ nix flake check    # reproducible CI (includes templ generate in preBuild)
 > identical runs flip between pass and crash, the codebase has zero unsafe, so the
 > experiment is scoped out of that lane until upstream is fixed.
 > The project uses the v2 JSON ENGINE
-> through the stable **v1 API** (`encoding/json`); as of the Go 1.27.1 upgrade
-> (2026-09-18) NO code imports `encoding/json/v2` directly — Go 1.27 removed the
+> through the stable **v1 API** (`encoding/json`) for all output-wire-format
+> paths. **`internal/jsonutil` is v1-only since 2026-09-23** (it briefly
+> imported `encoding/json/v2` directly after ADR-0024; the pure v2 package
+> REFUSES plain `time.Duration` with "no default representation", which broke
+> `config.SaveConfig` for any config carrying a timeout — caught 2026-09-23,
+> masked for days by stale `go test` caches). Go 1.27 removed the
 > v2 struct-tag grammar (`format:` tags, go.dev/issue/71631), which broke
 > `format:nano`. Convention: use `omitzero` (not `omitempty`) on custom
 > `MarshalJSON` types. **`format:nano` is obsolete**: v1 defaults already
@@ -63,9 +67,13 @@ nix flake check    # reproducible CI (includes templ generate in preBuild)
 > `internal/jsonutil.MarshalIndent` (no HTML escaping of `<>&`, no trailing
 > newline — both v2-era behaviors that v1 defaults would change); scalar
 > (numeric/bool) fields on output structs must NOT use `omitempty` (v2 always
-> emitted them, v1 would drop zeros). `pkg/artdupl` keeps its own escaping-free
-> marshal semantics by depending only on plain v1 `json` on identifier-safe
-> payloads.
+> emitted them, v1 would drop zeros). **Remaining direct `encoding/json/v2`
+> imports (~30 files, mostly `_test.go` and enum/string-only payloads) are
+> tolerated only where no Duration/wire-fidelity concern exists — migrate any
+> file that must marshal Duration-bearing types to the v1 API** (see
+> TODO_LIST fleet-audit entry). After Go toolchain or GOEXPERIMENT churn,
+> re-verify with `go test -count=1 ./...` — cached results can predate the
+> breakage.
 > **Go toolchain: 1.27.1 everywhere that executes Go (2026-09-22)**: `flake.nix`
 > (`pkgs.go_1_27`) and `.golangci.yml` (`run.go`) pin the toolchain/analysis to
 > Go 1.27.1. **go.mod deliberately says `go 1.27` (no patch pin)**: BuildFlow's
