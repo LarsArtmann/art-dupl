@@ -1,7 +1,7 @@
 package bdd
 
 import (
-	"encoding/json"
+	"encoding/json/v2"
 
 	"github.com/LarsArtmann/art-dupl/internal/testutil"
 	. "github.com/onsi/ginkgo/v2"

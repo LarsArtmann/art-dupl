@@ -35,6 +35,13 @@ nix flake check    # reproducible CI (includes templ generate in preBuild)
 > stay within `scripts/alloc-budgets.txt` (allocs/op, ±1 tolerance) — allocation
 > counts are the deterministic perf metric on the thermally noisy dev machine.
 
+> **Monthly self-scan cadence (decided 2026-09-22)**: the CI/nix gate covers
+> `-t 5` only; once a month run `scripts/self-scan.sh` (`-t 1 --type-aware` on
+> art-dupl itself), judge every shown group (extract harmful / accept
+> intentional), and append decisions to `docs/SELF_CLEAN_LEDGER.md`. The ledger
+> is the durable per-group record — do not re-litigate accepted groups without
+> reading it first.
+
 > **Benchmark baselines** are committed in `docs/benchmarks/`. Compare with `benchstat` to detect regressions.
 > **CPU affinity on this machine** (AMD Ryzen AI MAX+ 395): 1 NUMA node but 2 L3 domains (CPUs `0-7,16-23` vs `8-15,24-31`). **Pinning is for benchmark STABILITY, not speed (2026-09-22 A/B)**: on the ADR-0022 slice layout, one-CCX pinning gives ~5x tighter timing CIs but no longer wins — full-machine par32 is ~4% FASTER than pinned par16, and the old "~25-30% pinning wins" claim only held on the superseded map layout (L3-latency-bound pointer chasing). `numactl` membinding is a no-op (UMA). See `docs/benchmarks/CPU_TOPOLOGY.md` and `docs/benchmarks/baseline-2026-08-16-v3_notes.md` for analysis, measurements, and reproduction steps.
 
