@@ -18,23 +18,23 @@
 
 ## a) FULLY DONE
 
-| # | Item | Evidence |
-|---|------|----------|
-| 1 | Issue **#1 verified and closed as completed** — it was OPEN despite the 2026-09-19 report declaring it implemented; all three "To verify" criteria green as committed tests on current HEAD (`eabe5f77`) | Evidence comment: https://github.com/LarsArtmann/art-dupl/issues/1#issuecomment-5784060679 |
-| 2 | Test run on devShell toolchain (go1.27.1): `go test ./printer/finding/...` → ok (17 tests incl. the three interchange guarantees at finding_test.go:384/:336/:435); `go test ./printer -run TestSARIF` → ok | bash output, 2026-09-22 |
-| 3 | Three follow-up issues filed from report №1's P0 list: **#2** real-CLI-SARIF-bytes → `FindingsFromSARIF` integration test; **#3** adapter production-surface decision + missing adoption ADR; **#4** evaluation-doc dead path | gh output: issues/2, issues/3, issues/4 |
-| 4 | All four GitHub drafts in-voice: check-draft.py 0 FAIL / 0 WARN after one revision (evidence fence added to closing comment) | checker output |
-| 5 | github-voice skill + full profile loaded and applied (own-repo issue §8 skeleton: Why / Source-level evidence / Design checklist / To verify; closing formula §9; Crush footer on AI-drafted bodies) | SKILL.md + voice-profile.md read in full |
-| 6 | Investigation + report №1 from segments 1-2 remain fully done (unchanged) | report №1 |
+| # | Item                                                                                                                                                                                                                          | Evidence                                                                                   |
+| - | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| 1 | Issue **#1 verified and closed as completed** — it was OPEN despite the 2026-09-19 report declaring it implemented; all three "To verify" criteria green as committed tests on current HEAD (`eabe5f77`)                      | Evidence comment: https://github.com/LarsArtmann/art-dupl/issues/1#issuecomment-5784060679 |
+| 2 | Test run on devShell toolchain (go1.27.1): `go test ./printer/finding/...` → ok (17 tests incl. the three interchange guarantees at finding_test.go:384/:336/:435); `go test ./printer -run TestSARIF` → ok                   | bash output, 2026-09-22                                                                    |
+| 3 | Three follow-up issues filed from report №1's P0 list: **#2** real-CLI-SARIF-bytes → `FindingsFromSARIF` integration test; **#3** adapter production-surface decision + missing adoption ADR; **#4** evaluation-doc dead path | gh output: issues/2, issues/3, issues/4                                                    |
+| 4 | All four GitHub drafts in-voice: check-draft.py 0 FAIL / 0 WARN after one revision (evidence fence added to closing comment)                                                                                                  | checker output                                                                             |
+| 5 | github-voice skill + full profile loaded and applied (own-repo issue §8 skeleton: Why / Source-level evidence / Design checklist / To verify; closing formula §9; Crush footer on AI-drafted bodies)                          | SKILL.md + voice-profile.md read in full                                                   |
+| 6 | Investigation + report №1 from segments 1-2 remain fully done (unchanged)                                                                                                                                                     | report №1                                                                                  |
 
 ## b) PARTIALLY DONE
 
-| # | Item | State |
-|---|------|-------|
-| 1 | Issue **#2** (integration test) | Filed with design checklist; not implemented. Converts the 2026-09-19 one-off live CLI proof into a permanent gate. |
+| # | Item                                  | State                                                                                                                      |
+| - | ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| 1 | Issue **#2** (integration test)       | Filed with design checklist; not implemented. Converts the 2026-09-19 one-off live CLI proof into a permanent gate.        |
 | 2 | Issue **#3** (surface decision + ADR) | Filed; the decision itself is blocked on product intent (report №1's Q1/Q2, still unanswered — now embedded in the issue). |
-| 3 | Issue **#4** (dead path) | Filed; copy-vs-summary choice blocked on preference (report №1's Q3, still unanswered — embedded in the issue). |
-| 4 | Report №1 → tracker linkage | P0 items now have issue numbers, but the mapping is recorded nowhere durable (see self-critique 4/5). |
+| 3 | Issue **#4** (dead path)              | Filed; copy-vs-summary choice blocked on preference (report №1's Q3, still unanswered — embedded in the issue).            |
+| 4 | Report №1 → tracker linkage           | P0 items now have issue numbers, but the mapping is recorded nowhere durable (see self-critique 4/5).                      |
 
 ## c) NOT STARTED
 
@@ -61,6 +61,7 @@
 ## f) Next Tasks (prioritized; ~26 substantive, not padded to 50)
 
 **P0 — blocks correctness/tracking hygiene**
+
 1. Implement **#2**: real CLI `--sarif` bytes → `FindingsFromSARIF`, assert GroupID + group reconstruction (BDD harness candidate: `internal/testutil`).
 2. Unblock + execute **#3**: answer the surface question (library-only vs wired), then write the adoption ADR (verdict + GroupID=hash contract + decision).
 3. Execute **#4**: fix the evaluation-doc dead path (needs copy-vs-summary preference).
