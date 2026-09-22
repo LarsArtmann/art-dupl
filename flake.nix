@@ -231,9 +231,26 @@
               touch $out
             '';
 
-            # arch-lint cannot run in the pure Nix sandbox because go-arch-lint
-            # uses go/packages which needs a Go toolchain + module cache at runtime.
-            # It runs as a GitHub Actions step instead: .github/workflows/arch-lint.yml
+            # arch-lint (TODO #40, 2026-09-23): the 2026-09-18 arch-lint break
+            # only surfaced in CI. go/packages needs a Go toolchain + writable
+            # module/build cache at runtime, which the sandbox DOES provide via
+            # buildGoModule's env (same pattern as the `lint` check above) —
+            # checkPhase runs after the default build, so stdlib export data is
+            # warm. CI still runs it too (workflow pinning go1.27.1 explicitly).
+            arch-lint = config.packages.default.overrideAttrs (old: {
+              name = "${old.pname}-arch-lint";
+              nativeBuildInputs = old.nativeBuildInputs ++ [ pkgs.go-arch-lint ];
+              GOCACHE = "/tmp/go-arch-build";
+              doCheck = true;
+              checkPhase = ''
+                runHook preCheck
+                go-arch-lint check
+                runHook postCheck
+              '';
+              installPhase = ''
+                touch $out
+              '';
+            });
 
             self-test =
               pkgs.runCommand "art-dupl-self-test"
