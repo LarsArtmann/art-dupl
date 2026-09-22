@@ -59,14 +59,20 @@ nix flake check    # reproducible CI (includes templ generate in preBuild)
 > emitted them, v1 would drop zeros). `pkg/artdupl` keeps its own escaping-free
 > marshal semantics by depending only on plain v1 `json` on identifier-safe
 > payloads.
-> **Go 1.27.1 (upgraded 2026-09-18)**: go.mod, `flake.nix` (`pkgs.go_1_27`), and
-> `.golangci.yml` (`run.go`) are aligned on Go 1.27.1. The pre-2026-09-18 guidance
-> ("do NOT bump to 1.27") is obsolete — Go 1.27.1 is stable and the bump also
-> eliminates the old gopls `stdversion` false positives (`json.Unmarshal requires
-> go1.27 (file is go1.26)`), which were pure IDE noise from `GOEXPERIMENT=jsonv2`.
+> **Go toolchain: 1.27.1 everywhere that executes Go (2026-09-22)**: `flake.nix`
+> (`pkgs.go_1_27`) and `.golangci.yml` (`run.go`) pin the toolchain/analysis to
+> Go 1.27.1. **go.mod deliberately says `go 1.27` (no patch pin)**: BuildFlow's
+> `go-mod-normalize` canonicalizes patch-pinned go lines fleet-wide and will
+> silently downgrade `go 1.27.1` → `go 1.27` (observed 3x on 2026-09-19/22) —
+> do NOT restore the patch pin; it re-triggers the oscillation. The go directive
+> is only a floor; the actual 1.27.1 pin lives in flake.nix + CI matrix. The
+> pre-2026-09-18 guidance ("do NOT bump to 1.27") is obsolete — Go 1.27.1 is
+> stable and the bump also eliminates the old gopls `stdversion` false positives
+> (`json.Unmarshal requires go1.27 (file is go1.26)`), which were pure IDE noise
+> from `GOEXPERIMENT=jsonv2`.
 > If gopls fails to load after a shell change, re-enter the devShell (`direnv reload`)
 > so the toolchain matches go.mod; `GOTOOLCHAIN=local` + an older local go fails
-> hard with `go.mod requires go >= 1.27.1`.
+> hard with `go.mod requires go >= 1.27`.
 
 ## Architecture
 
