@@ -48,18 +48,13 @@ func HandleMarshalingError(operation, context string, err error) error {
 		return nil
 	}
 
-	var (
-		ute        *json.UnmarshalTypeError
-		uteMarshal *json.UnsupportedTypeError
-		uve        *json.UnsupportedValueError
-	)
-
-	switch {
-	case errors.As(err, &ute), errors.As(err, &uteMarshal), errors.As(err, &uve):
+	_, isUnmarshalTypeErr := errors.AsType[*json.UnmarshalTypeError](err)
+	_, isUnsupportedTypeErr := errors.AsType[*json.UnsupportedTypeError](err)
+	_, isUnsupportedValueErr := errors.AsType[*json.UnsupportedValueError](err)
+	if isUnmarshalTypeErr || isUnsupportedTypeErr || isUnsupportedValueErr {
 		return newMarshalError(operation, context, err, ErrUnsupportedType)
-	default:
-		return &MarshalError{Operation: operation, Context: context, Cause: err}
 	}
+	return &MarshalError{Operation: operation, Context: context, Cause: err}
 }
 
 // newMarshalError creates a new MarshalError with a wrapped static error.
