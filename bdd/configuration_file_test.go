@@ -135,12 +135,13 @@ var _ = Describe("Configuration File Loading", func() {
 			err = setup.CreateFileWithContent("lib/file.go", pathTestCode)
 			Expect(err).NotTo(HaveOccurred())
 
-			// Change to temp directory so relative paths work
-			originalDir, _ := os.Getwd()
-
-			defer func() { _ = os.Chdir(originalDir) }() // test cleanup
-
-			_ = os.Chdir(setup.TmpDir) // test setup
+			// Change to temp directory so relative paths work.
+			// t.Chdir is unavailable in Ginkgo specs (no *testing.T here);
+			// DeferCleanup is the framework's panic-safe equivalent.
+			originalDir, err := os.Getwd()
+			Expect(err).NotTo(HaveOccurred())
+			Expect(os.Chdir(setup.TmpDir)).To(Succeed())
+			DeferCleanup(os.Chdir, originalDir)
 
 			// Run with config file (uses paths from config)
 			output, err := setup.RunArtDupl("--config", configPath)
