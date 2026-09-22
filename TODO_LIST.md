@@ -45,15 +45,15 @@ toolchain pins, Windows stdin-test skips) are NOT listed — they live in the CH
 Items live in ROADMAP/DEFERRED until their trigger fires. Triggers mirror
 plan §5.
 
-| Item (detail in ROADMAP / ADR)                        | Entry criterion                                  |
-| ----------------------------------------------------- | ------------------------------------------------ |
-| Suffix Array + LCP detector (ADR-0020)                | T1 stage split shows suffix tree ≥30% of wall clock on real repos |
-| Per-file offset map (8N→2N memory)                    | T1 + memory profile on a 100k-file corpus        |
-| Winnowing pre-filter                                  | A user actually hits 100k-file scale             |
-| int32 arena indices, []Pos pool                       | Profile shows pointer-chasing / search allocs dominant again |
-| Threshold cliff, `.art-duplignore`, `--ci-gate`, `--diff-baseline`, test-aware thresholds | Post-T10 corpus numbers define which UX lever pays first |
-| TS/Python support, LSP, watch mode, ML actionability  | Explicit user pull                               |
-| TypeAwareData restructure, branded NodeType, syntax/golang facade | Breaking-change windows only (major version) |
+| Item (detail in ROADMAP / ADR)                                                            | Entry criterion                                                   |
+| ----------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| Suffix Array + LCP detector (ADR-0020)                                                    | T1 stage split shows suffix tree ≥30% of wall clock on real repos |
+| Per-file offset map (8N→2N memory)                                                        | T1 + memory profile on a 100k-file corpus                         |
+| Winnowing pre-filter                                                                      | A user actually hits 100k-file scale                              |
+| int32 arena indices, []Pos pool                                                           | Profile shows pointer-chasing / search allocs dominant again      |
+| Threshold cliff, `.art-duplignore`, `--ci-gate`, `--diff-baseline`, test-aware thresholds | Post-T10 corpus numbers define which UX lever pays first          |
+| TS/Python support, LSP, watch mode, ML actionability                                      | Explicit user pull                                                |
+| TypeAwareData restructure, branded NodeType, syntax/golang facade                         | Breaking-change windows only (major version)                      |
 
 ### Architecturally constrained (DEFERRED)
 
