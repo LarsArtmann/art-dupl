@@ -1,6 +1,6 @@
 # TODO List
 
-**Last Updated:** 2026-09-19
+**Last Updated:** 2026-09-22
 
 Actionable items for the next 2-4 weeks. Completed work lives in `CHANGELOG.md`.
 This file is OPEN work only — no completed, rejected, or resolved items.
@@ -9,18 +9,6 @@ Master plan `docs/planning/2026-08-16_04-27_measure-first-trust-and-signal-maste
 is complete (24/26 done or no-go-verified). Remaining items below.
 
 ---
-
-## HIGH Priority
-
-### Timing evidence for ADR-0022 (parked on machine load)
-
-**Source:** master plan T2.2 + T23; `docs/status/2026-08-16_12-27_master-plan-wave2-flake-green.md`.
-**Entry criterion:** machine idle — `uptime` load sustained < ~4, no foreign nixbld/govulncheck/service jobs.
-Never compare pinned and unpinned runs taken hours apart (machine state dominates; only interleaved A/B counts).
-
-- [ ] **T2.2: Interleaved pinned/unpinned A/B** — `taskset -c 0-7,16-23` vs full machine, ≥6 alternations on `FindDuplOver/threshold_10` + `par4/tokens_10000`; annotate `docs/benchmarks/baseline-2026-08-16-v3_notes.md` (replaces the "still open, see TODO_LIST" note).
-- [ ] **T23: `perf stat` cache-miss A/B vs `23fa1b4f`** — `git worktree add /tmp/artdupl-23fa1b4f 23fa1b4f`; counters `cache-references,cache-misses,LLC-load-misses` on suffixtree benches; verdict into baseline notes + ADR-0022 addendum.
-- [ ] Pinned `benchstat` for `BenchmarkFindTranBoundary8/9`; record in `docs/benchmarks/` and as a comment on `linearScanMax` justifying the cutoff.
 
 ## MEDIUM Priority
 

@@ -36,7 +36,7 @@ nix flake check    # reproducible CI (includes templ generate in preBuild)
 > counts are the deterministic perf metric on the thermally noisy dev machine.
 
 > **Benchmark baselines** are committed in `docs/benchmarks/`. Compare with `benchstat` to detect regressions.
-> **CPU affinity matters on this machine** (AMD Ryzen AI MAX+ 395): 1 NUMA node but 2 L3 domains (CPUs `0-7,16-23` vs `8-15,24-31`). Pinning the parallel search to one CCX (`taskset -c 0-7,16-23`) beats the full machine by ~25-30% — L3-latency bound, read-shared tree. `numactl` membinding is a no-op (UMA). See `docs/benchmarks/CPU_TOPOLOGY.md` for analysis and reproduction steps.
+> **CPU affinity on this machine** (AMD Ryzen AI MAX+ 395): 1 NUMA node but 2 L3 domains (CPUs `0-7,16-23` vs `8-15,24-31`). **Pinning is for benchmark STABILITY, not speed (2026-09-22 A/B)**: on the ADR-0022 slice layout, one-CCX pinning gives ~5x tighter timing CIs but no longer wins — full-machine par32 is ~4% FASTER than pinned par16, and the old "~25-30% pinning wins" claim only held on the superseded map layout (L3-latency-bound pointer chasing). `numactl` membinding is a no-op (UMA). See `docs/benchmarks/CPU_TOPOLOGY.md` and `docs/benchmarks/baseline-2026-08-16-v3_notes.md` for analysis, measurements, and reproduction steps.
 
 > **`GOEXPERIMENT=jsonv2` is optional since ADR-0024** (the v1 API compiles and emits
 > identical bytes with or without it); the flake and the linux/macOS CI lanes still set

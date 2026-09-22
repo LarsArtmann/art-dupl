@@ -9,16 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Timing evidence for ADR-0022 (T2.2, T23, boundary)**: interleaved pinned/unpinned A/B (30 samples/arm) shows CCX pinning no longer speeds up the slice-layout search — full-machine par32 is 3.9% faster than pinned par16 (p=0.011), reversing the map-layout-era 25-30% claim; pinning remains the protocol for regression benchmarks (~5x tighter CIs). `perf stat` vs the last map-layout commit (`23fa1b4f`) confirms the layout's cache claim in hardware counters: cache-references −67.8%, cache-misses −59.2% (<3% round variance). `FindTranBoundary` 4/8/9/16 fixtures bracket the linear/binary lookup crossover (between 4 and 8) and justify `linearScanMax = 8` on the constant's doc comment. Evidence: `docs/benchmarks/pinned-unpinned-2026-09-22.txt`, `linear-scan-boundary-2026-09-22.txt`, updated `baseline-2026-08-16-v3_notes.md`, ADR-0022 addendum, CPU_TOPOLOGY.md supersession note.
 - **go-finding output adapter (GAP-2)**: new `printer/finding` package converts clone groups into go-finding `Finding`s with a deterministic `GroupID` per group (the group's content hash), clone-specific data in `Finding.Metadata`, and `clone-of` links between sibling occurrences. SARIF results now carry the group id as the `go-finding/groupId` property, so go-finding consumers (SARIF import, LSP) reconstruct exactly the groups art-dupl found. Dependency: `github.com/larsartmann/go-finding v1.12.0` ([#1](https://github.com/LarsArtmann/art-dupl/issues/1)).
 - **gogenfilter v3.6.1**: `MatchPattern` now treats Windows drive paths (`C:/...`) as absolute, so `--exclude-pattern`/`--include-pattern` work on Windows. Root cause of the Windows BDD failures in release CI.
 
 ### Fixed
 
 - **Release CI hardening**: register `internal/jsonutil` in the architecture config; pin the arch-lint toolchain and upgrade go-arch-lint to v1.19.0 (old go/packages cannot read Go 1.27 export data); skip the stdin-cancel stderr test and the exit-code process test on Windows (os.Pipe/AV runner limitations; logic covered on unix and in-process respectively); normalize the crawl paths to forward slashes so vendor/`.git`/examples skipping and pattern filtering work on Windows; portable sed in the linter auto-fixer; +2 alloc budget for cross-machine variance under Go 1.27.1.
-
-### Fixed
-
-- Nothing yet.
 
 ## [0.7.0] - 2026-09-18
 
