@@ -1,9 +1,12 @@
 # T2.2 interleaved pinned/unpinned A/B - 2026-09-22
-# binary: go test -c ./suffixtree at fork@dd7d211c (clean tree), go1.27.1, GOEXPERIMENT=jsonv2
+# binary: go test -c ./suffixtree at 2026-09-22 21:57 (working tree at commits dd7d211c..3f839885; no suffixtree changes in that range; allocs/op match the committed baselines exactly), go1.27.1, GOEXPERIMENT=jsonv2
 # protocol: 6 alternations/arm, -count=5 per invocation (30 samples/arm), 8s cooldown
-# ambient 1-min load recorded before each invocation; entry criterion (load<4) never opened
-
-### round 1 pinned (taskset -c 0-7,16-23)
+# ambient 1-min load before each invocation is recorded per round below; the
+# entry criterion (load < 4 sustained, no foreign jobs) never opened - 12+ min of
+# polling showed 1-min load oscillating 8-27 with go/golangci-lint bursts from
+# other sessions. Residual bias runs AGAINST the unpinned arm (shares all 32 CPUs
+# with foreign load), so conclusions favoring unpinned are robust in direction.
+### round 1 pinned (taskset -c 0-7,16-23), pre-run 1-min load: 14.76
 goos: linux
 goarch: amd64
 pkg: github.com/LarsArtmann/art-dupl/suffixtree
@@ -20,7 +23,7 @@ BenchmarkFindDuplOverParallel/par4/tokens_10000-16         	    1363	    892910 
 BenchmarkFindDuplOverParallel/par4/tokens_10000-16         	    1351	    916380 ns/op	  175421 B/op	   30798 allocs/op
 PASS
 
-### round 1 unpinned (full machine)
+### round 1 unpinned (full machine), pre-run 1-min load: 13.66
 goos: linux
 goarch: amd64
 pkg: github.com/LarsArtmann/art-dupl/suffixtree
@@ -37,7 +40,7 @@ BenchmarkFindDuplOverParallel/par4/tokens_10000-32         	    1197	    975497 
 BenchmarkFindDuplOverParallel/par4/tokens_10000-32         	    1160	    949855 ns/op	  175562 B/op	   30798 allocs/op
 PASS
 
-### round 2 pinned (taskset -c 0-7,16-23)
+### round 2 pinned (taskset -c 0-7,16-23), pre-run 1-min load: 10.49
 goos: linux
 goarch: amd64
 pkg: github.com/LarsArtmann/art-dupl/suffixtree
@@ -54,7 +57,7 @@ BenchmarkFindDuplOverParallel/par4/tokens_10000-16         	    1419	    840912 
 BenchmarkFindDuplOverParallel/par4/tokens_10000-16         	    1407	    855280 ns/op	  175407 B/op	   30798 allocs/op
 PASS
 
-### round 2 unpinned (full machine)
+### round 2 unpinned (full machine), pre-run 1-min load: 9.41
 goos: linux
 goarch: amd64
 pkg: github.com/LarsArtmann/art-dupl/suffixtree
@@ -71,7 +74,7 @@ BenchmarkFindDuplOverParallel/par4/tokens_10000-32         	    1333	    860719 
 BenchmarkFindDuplOverParallel/par4/tokens_10000-32         	    1400	    881423 ns/op	  175548 B/op	   30798 allocs/op
 PASS
 
-### round 3 pinned (taskset -c 0-7,16-23)
+### round 3 pinned (taskset -c 0-7,16-23), pre-run 1-min load: 9.86
 goos: linux
 goarch: amd64
 pkg: github.com/LarsArtmann/art-dupl/suffixtree
@@ -88,7 +91,7 @@ BenchmarkFindDuplOverParallel/par4/tokens_10000-16         	    1292	    948542 
 BenchmarkFindDuplOverParallel/par4/tokens_10000-16         	    1084	   1867274 ns/op	  175421 B/op	   30799 allocs/op
 PASS
 
-### round 3 unpinned (full machine)
+### round 3 unpinned (full machine), pre-run 1-min load: 10.08
 goos: linux
 goarch: amd64
 pkg: github.com/LarsArtmann/art-dupl/suffixtree
@@ -105,7 +108,7 @@ BenchmarkFindDuplOverParallel/par4/tokens_10000-32         	     962	   1203850 
 BenchmarkFindDuplOverParallel/par4/tokens_10000-32         	    1101	   1027511 ns/op	  175544 B/op	   30798 allocs/op
 PASS
 
-### round 4 pinned (taskset -c 0-7,16-23)
+### round 4 pinned (taskset -c 0-7,16-23), pre-run 1-min load: 10.03
 goos: linux
 goarch: amd64
 pkg: github.com/LarsArtmann/art-dupl/suffixtree
@@ -122,7 +125,7 @@ BenchmarkFindDuplOverParallel/par4/tokens_10000-16         	    1261	   1017782 
 BenchmarkFindDuplOverParallel/par4/tokens_10000-16         	    1398	   1018536 ns/op	  175432 B/op	   30798 allocs/op
 PASS
 
-### round 4 unpinned (full machine)
+### round 4 unpinned (full machine), pre-run 1-min load: 11.66
 goos: linux
 goarch: amd64
 pkg: github.com/LarsArtmann/art-dupl/suffixtree
@@ -139,7 +142,7 @@ BenchmarkFindDuplOverParallel/par4/tokens_10000-32         	    1350	    871362 
 BenchmarkFindDuplOverParallel/par4/tokens_10000-32         	    1221	    918902 ns/op	  175570 B/op	   30798 allocs/op
 PASS
 
-### round 5 pinned (taskset -c 0-7,16-23)
+### round 5 pinned (taskset -c 0-7,16-23), pre-run 1-min load: 9.47
 goos: linux
 goarch: amd64
 pkg: github.com/LarsArtmann/art-dupl/suffixtree
@@ -156,7 +159,7 @@ BenchmarkFindDuplOverParallel/par4/tokens_10000-16         	    1365	    871354 
 BenchmarkFindDuplOverParallel/par4/tokens_10000-16         	    1412	    890224 ns/op	  175420 B/op	   30798 allocs/op
 PASS
 
-### round 5 unpinned (full machine)
+### round 5 unpinned (full machine), pre-run 1-min load: 8.26
 goos: linux
 goarch: amd64
 pkg: github.com/LarsArtmann/art-dupl/suffixtree
@@ -173,7 +176,7 @@ BenchmarkFindDuplOverParallel/par4/tokens_10000-32         	    1257	   1239435 
 BenchmarkFindDuplOverParallel/par4/tokens_10000-32         	     967	   1167696 ns/op	  175567 B/op	   30798 allocs/op
 PASS
 
-### round 6 pinned (taskset -c 0-7,16-23)
+### round 6 pinned (taskset -c 0-7,16-23), pre-run 1-min load: 12.46
 goos: linux
 goarch: amd64
 pkg: github.com/LarsArtmann/art-dupl/suffixtree
@@ -190,7 +193,7 @@ BenchmarkFindDuplOverParallel/par4/tokens_10000-16         	     781	   1608157 
 BenchmarkFindDuplOverParallel/par4/tokens_10000-16         	    1222	    984196 ns/op	  175416 B/op	   30798 allocs/op
 PASS
 
-### round 6 unpinned (full machine)
+### round 6 unpinned (full machine), pre-run 1-min load: 18.80
 goos: linux
 goarch: amd64
 pkg: github.com/LarsArtmann/art-dupl/suffixtree
@@ -209,7 +212,7 @@ PASS
 
 # --- supplement: NumCPU-matched workers (GOMAXPROCS follows the mask) ---
 # pinned arm = par16, unpinned arm = par32; renamed parNumCPU for benchstat
-### round 1 pinned par16
+### round 1 pinned par16, pre-run 1-min load: 16.07
 goos: linux
 goarch: amd64
 pkg: github.com/LarsArtmann/art-dupl/suffixtree
@@ -221,7 +224,7 @@ BenchmarkFindDuplOverParallel/par16/tokens_10000-16         	    2432	    495208
 BenchmarkFindDuplOverParallel/par16/tokens_10000-16         	    2464	    478928 ns/op	  175608 B/op	   30800 allocs/op
 PASS
 
-### round 1 unpinned par32
+### round 1 unpinned par32, pre-run 1-min load: 15.15
 goos: linux
 goarch: amd64
 pkg: github.com/LarsArtmann/art-dupl/suffixtree
@@ -233,7 +236,7 @@ BenchmarkFindDuplOverParallel/par32/tokens_10000-32         	    2563	    464030
 BenchmarkFindDuplOverParallel/par32/tokens_10000-32         	    2400	    462078 ns/op	  176047 B/op	   30803 allocs/op
 PASS
 
-### round 2 pinned par16
+### round 2 pinned par16, pre-run 1-min load: 13.88
 goos: linux
 goarch: amd64
 pkg: github.com/LarsArtmann/art-dupl/suffixtree
@@ -245,7 +248,7 @@ BenchmarkFindDuplOverParallel/par16/tokens_10000-16         	    2600	    495171
 BenchmarkFindDuplOverParallel/par16/tokens_10000-16         	    2635	    476075 ns/op	  175600 B/op	   30800 allocs/op
 PASS
 
-### round 2 unpinned par32
+### round 2 unpinned par32, pre-run 1-min load: 12.44
 goos: linux
 goarch: amd64
 pkg: github.com/LarsArtmann/art-dupl/suffixtree
@@ -257,7 +260,7 @@ BenchmarkFindDuplOverParallel/par32/tokens_10000-32         	    2536	    481663
 BenchmarkFindDuplOverParallel/par32/tokens_10000-32         	    2494	    472827 ns/op	  176058 B/op	   30803 allocs/op
 PASS
 
-### round 3 pinned par16
+### round 3 pinned par16, pre-run 1-min load: 11.11
 goos: linux
 goarch: amd64
 pkg: github.com/LarsArtmann/art-dupl/suffixtree
@@ -269,7 +272,7 @@ BenchmarkFindDuplOverParallel/par16/tokens_10000-16         	    2251	    491026
 BenchmarkFindDuplOverParallel/par16/tokens_10000-16         	    2432	    457412 ns/op	  175588 B/op	   30800 allocs/op
 PASS
 
-### round 3 unpinned par32
+### round 3 unpinned par32, pre-run 1-min load: 12.78
 goos: linux
 goarch: amd64
 pkg: github.com/LarsArtmann/art-dupl/suffixtree
@@ -281,7 +284,7 @@ BenchmarkFindDuplOverParallel/par32/tokens_10000-32         	    2481	    467491
 BenchmarkFindDuplOverParallel/par32/tokens_10000-32         	    2761	    472198 ns/op	  176056 B/op	   30803 allocs/op
 PASS
 
-### round 4 pinned par16
+### round 4 pinned par16, pre-run 1-min load: 12.04
 goos: linux
 goarch: amd64
 pkg: github.com/LarsArtmann/art-dupl/suffixtree
@@ -293,7 +296,7 @@ BenchmarkFindDuplOverParallel/par16/tokens_10000-16         	    2652	    487828
 BenchmarkFindDuplOverParallel/par16/tokens_10000-16         	    2630	    515158 ns/op	  175634 B/op	   30800 allocs/op
 PASS
 
-### round 4 unpinned par32
+### round 4 unpinned par32, pre-run 1-min load: 10.60
 goos: linux
 goarch: amd64
 pkg: github.com/LarsArtmann/art-dupl/suffixtree
@@ -305,7 +308,7 @@ BenchmarkFindDuplOverParallel/par32/tokens_10000-32         	    2736	    437171
 BenchmarkFindDuplOverParallel/par32/tokens_10000-32         	    2684	    436975 ns/op	  176046 B/op	   30803 allocs/op
 PASS
 
-### round 5 pinned par16
+### round 5 pinned par16, pre-run 1-min load: 8.39
 goos: linux
 goarch: amd64
 pkg: github.com/LarsArtmann/art-dupl/suffixtree
@@ -317,7 +320,7 @@ BenchmarkFindDuplOverParallel/par16/tokens_10000-16         	    2742	    444629
 BenchmarkFindDuplOverParallel/par16/tokens_10000-16         	    2458	    455407 ns/op	  175580 B/op	   30800 allocs/op
 PASS
 
-### round 5 unpinned par32
+### round 5 unpinned par32, pre-run 1-min load: 7.25
 goos: linux
 goarch: amd64
 pkg: github.com/LarsArtmann/art-dupl/suffixtree
@@ -329,7 +332,7 @@ BenchmarkFindDuplOverParallel/par32/tokens_10000-32         	    2724	    454707
 BenchmarkFindDuplOverParallel/par32/tokens_10000-32         	    2625	    451049 ns/op	  176048 B/op	   30803 allocs/op
 PASS
 
-### round 6 pinned par16
+### round 6 pinned par16, pre-run 1-min load: 8.50
 goos: linux
 goarch: amd64
 pkg: github.com/LarsArtmann/art-dupl/suffixtree
@@ -341,7 +344,7 @@ BenchmarkFindDuplOverParallel/par16/tokens_10000-16         	    2287	    527148
 BenchmarkFindDuplOverParallel/par16/tokens_10000-16         	    2217	    505486 ns/op	  175650 B/op	   30801 allocs/op
 PASS
 
-### round 6 unpinned par32
+### round 6 unpinned par32, pre-run 1-min load: 8.20
 goos: linux
 goarch: amd64
 pkg: github.com/LarsArtmann/art-dupl/suffixtree

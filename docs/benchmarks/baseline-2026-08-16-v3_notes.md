@@ -61,7 +61,10 @@ par4/10k): the remaining allocations are the `[]Pos` position slices and
 ## Pinned/unpinned A/B (2026-09-22, T2.2)
 
 Interleaved A/B on compiled test binaries (`go test -c`, go1.27.1,
-`GOEXPERIMENT=jsonv2`, fork@`dd7d211c` clean tree): 6 alternations per arm,
+`GOEXPERIMENT=jsonv2`, working tree 2026-09-22 21:57, commits
+`dd7d211c..3f839885` — no suffixtree changes in that range, and the
+binaries' deterministic alloc columns (1543 / 30,798 allocs/op) match the
+committed baselines byte-for-byte): 6 alternations per arm,
 `-count=5` per invocation (30 samples/arm), 8 s cooldown between invocations.
 Raw output: `pinned-unpinned-2026-09-22.txt`. The `-16`/`-32` GOMAXPROCS
 suffixes were normalized so benchstat groups the arms.
@@ -75,7 +78,7 @@ AGAINST the unpinned arm (it shares all 32 CPUs with foreign load while the
 pinned arm claims 16 of them), so conclusions that favor unpinned are robust
 in direction.
 
-| Benchmark (30 samples/arm)      | Unpinned (32 CPUs) | Pinned (CCX 0-7,16-23) | Delta            |
+| Benchmark (30 samples/arm)      | Unpinned (32 CPUs) | Pinned (CCX 0-7,16-23) | Δ time, pinned vs unpinned |
 | ------------------------------- | ------------------ | ---------------------- | ---------------- |
 | FindDuplOver/threshold_10       | 117.5µs ± 19%      | 114.2µs ± 4%           | ~ (p=0.146)      |
 | Parallel par4/tokens_10000      | 987.0µs ± 7%       | 921.1µs ± 11%          | −6.7% (p=0.080)  |
@@ -107,7 +110,7 @@ the working set well enough that cross-CCX duplication stopped mattering.
 
 `perf stat -e cache-references,cache-misses` on compiled binaries at
 `23fa1b4f` (last committed map-layout state, pre contextList-pool) vs
-fork@`dd7d211c`, both arms pinned to CCX 0-7,16-23, interleaved ×4; each
+fork HEAD `3f839885` (same binary as above), both arms pinned to CCX 0-7,16-23, interleaved ×4; each
 invocation runs STreeUpdate/tokens_2000 + FindDuplOver/threshold_10 +
 par4/tokens_10000 at `-count=5` (~equal wall time per arm, so process-total
 counters are directly comparable).
