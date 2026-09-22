@@ -127,7 +127,7 @@ fi
 if [ "$SKIP_CI" -eq 1 ]; then
 	say "SKIP: CI gate overridden by --skip-ci"
 elif command -v gh >/dev/null 2>&1; then
-	default_branch=$(gh repo view --json defaultBranchRef --jq .defaultBranchRef)
+	default_branch=$(gh repo view --json defaultBranchRef --jq .defaultBranchRef.name)
 	red=$(gh run list --branch "$default_branch" --limit 5 --json conclusion \
 		--jq '[.[] | select(.conclusion == "failure" or .conclusion == "cancelled")] | length')
 	[ "$red" -eq 0 ] || fail "$red of the last 5 runs on $default_branch are red — green CI is a release prerequisite"

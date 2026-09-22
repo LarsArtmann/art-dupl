@@ -266,6 +266,10 @@ exclude:
   - "docs/**"
   - "examples/**"
   - "bdd/**"
+  # The flake's two-phase private-dep pattern mounts gogenfilter under this
+  # placeholder dir inside the Nix sandbox (see flake.nix preBuild); CI checks
+  # out the real module instead, so this only matters for `nix flake check`.
+  - "**/gogenfilter-real/**"
 
 excludeFiles:
   - ".*_test\\.go$"
