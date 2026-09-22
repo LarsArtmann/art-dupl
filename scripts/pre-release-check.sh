@@ -32,9 +32,18 @@ while [ $# -gt 0 ]; do
 		VERSION="${2:?--version needs a value}"
 		shift 2
 		;;
-	--race) RACE=1; shift ;;
-	--lint) LINT=1; shift ;;
-	--skip-ci) SKIP_CI=1; shift ;;
+	--race)
+		RACE=1
+		shift
+		;;
+	--lint)
+		LINT=1
+		shift
+		;;
+	--skip-ci)
+		SKIP_CI=1
+		shift
+		;;
 	*)
 		echo "unknown flag: $1" >&2
 		exit 2
