@@ -1,0 +1,13 @@
+# BuildFlow project overrides — minimal, non-default information only.
+# Unknown keys warn at every load; see the BuildFlow skill's canonical key list.
+env:
+  CGO_ENABLED: "1" # test-race requires CGO; mirrors the flake's race check
+skip_steps:
+  # go.mod deliberately pins the patch version (`go 1.27.1`): it aligns with
+  # .golangci.yml run.go, flake.nix go_1_27, and the CI matrix, and keeps the
+  # stale-shell guard hard-failing below 1.27.1. go-mod-normalize rewrites it
+  # to "go 1.27" on every full run while `buildflow update` raises it back to
+  # the toolchain version — the go-line flip-flop BuildFlow's own preflight
+  # warns about (workspace/go-line-flipflop). Skipped until the fleet aligns
+  # the go-version-auto-configure and go-mod-update dispositions upstream.
+  - go-mod-normalize

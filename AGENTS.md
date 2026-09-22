@@ -74,20 +74,23 @@ nix flake check    # reproducible CI (includes templ generate in preBuild)
 > TODO_LIST fleet-audit entry). After Go toolchain or GOEXPERIMENT churn,
 > re-verify with `go test -count=1 ./...` — cached results can predate the
 > breakage.
-> **Go toolchain: 1.27.1 everywhere that executes Go (2026-09-22)**: `flake.nix`
-> (`pkgs.go_1_27`) and `.golangci.yml` (`run.go`) pin the toolchain/analysis to
-> Go 1.27.1. **go.mod deliberately says `go 1.27` (no patch pin)**: BuildFlow's
-> `go-mod-normalize` canonicalizes patch-pinned go lines fleet-wide and will
-> silently downgrade `go 1.27.1` → `go 1.27` (observed 3x on 2026-09-19/22) —
-> do NOT restore the patch pin; it re-triggers the oscillation. The go directive
-> is only a floor; the actual 1.27.1 pin lives in flake.nix + CI matrix. The
-> pre-2026-09-18 guidance ("do NOT bump to 1.27") is obsolete — Go 1.27.1 is
-> stable and the bump also eliminates the old gopls `stdversion` false positives
-> (`json.Unmarshal requires go1.27 (file is go1.26)`), which were pure IDE noise
-> from `GOEXPERIMENT=jsonv2`.
+> **Go toolchain: 1.27.1 everywhere (2026-09-23)**: go.mod pins `go 1.27.1`,
+> `flake.nix` (`pkgs.go_1_27`) and `.golangci.yml` (`run.go`) match, and the CI
+> matrix uses 1.27.1. The patch pin is DELIBERATE: `go get -u` (BuildFlow
+> update) raises the go line to the toolchain version while BuildFlow's
+> `go-mod-normalize` would rewrite it down to `go 1.27` — an endless flip-flop
+> (observed 5x across 2026-09-19/23; BuildFlow's own preflight warns
+> `workspace/go-line-flipflop`). Resolution: `.buildflow.yml` skips
+> `go-mod-normalize` for this repo; do NOT "normalize" the go line by hand and
+> do NOT remove the skip until BuildFlow aligns the two dispositions upstream.
+> The pre-2026-09-18 guidance ("do NOT bump to 1.27") is obsolete — Go 1.27.1
+> is stable and the bump also eliminates the old gopls `stdversion` false
+> positives (`json.Unmarshal requires go1.27 (file is go1.26)`), which were
+> pure IDE noise from `GOEXPERIMENT=jsonv2`.
 > If gopls fails to load after a shell change, re-enter the devShell (`direnv reload`)
 > so the toolchain matches go.mod; `GOTOOLCHAIN=local` + an older local go fails
-> hard with `go.mod requires go >= 1.27`.
+> hard with `go.mod requires go >= 1.27.1` — `scripts/go-env-doctor.sh`
+> diagnoses this with an actionable message.
 
 ## Architecture
 

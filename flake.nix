@@ -40,9 +40,9 @@
       mkPackage =
         pkgs:
         let
-          # buildGoModule must run the SAME go generation the module targets;
-          # go.mod's floor is "go 1.27" (patch pin normalized away by BuildFlow),
-          # but pkgs.go_1_27 tracks 1.27.x and nixpkgs' default go lags behind.
+          # buildGoModule must run the SAME go the module requires
+          # (go.mod pins go 1.27.1; see .buildflow.yml for why the pin is
+          # deliberate); nixpkgs' default go lags behind.
           buildGoModule = pkgs.buildGoModule.override { go = pkgs.go_1_27; };
         in
         buildGoModule {
