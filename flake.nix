@@ -158,6 +158,12 @@
         {
           treefmt = {
             projectRootFile = "go.mod";
+            # Generated code is machine output and must not be formatted:
+            # gofumpt rewrites templ's `var x = ...` bindings inside
+            # report_templ.go, making the treefmt check permanently red after
+            # every `templ generate` (mirrors .golangci.yml's _templ\.go$
+            # formatter exclusion).
+            settings.excludes = [ "*_templ.go" ];
             programs = {
               gofumpt.enable = true;
               goimports.package = withGo127 pkgs.goimports "goimports";
