@@ -223,6 +223,7 @@ func (s *FilterStats) WarnUnmatchedExcludePatterns(stderr io.Writer) { //art-dup
 		return result
 	})
 
+	//art-dupl:accept deliberate exclude/include symmetry — see WarnUnmatchedIncludePatterns
 	for _, pattern := range unmatched {
 		fmt.Fprintf(
 			stderr,
@@ -250,6 +251,7 @@ func (s *FilterStats) WarnUnmatchedIncludePatterns(stderr io.Writer) { //art-dup
 		return result
 	})
 
+	//art-dupl:accept deliberate exclude/include symmetry — see WarnUnmatchedExcludePatterns
 	for _, pattern := range unmatched {
 		fmt.Fprintf(
 			stderr,
