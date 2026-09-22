@@ -119,4 +119,4 @@ T2 (taskset protocol note — partially covered by the bench script's `PIN_CORES
 - `go test ./cmd/ ./job/ ./cache/` — green
 - `go test -race ./...` — **green (all packages)**
 - `nix flake check` — **red**: `disabled-linters` (tagliatelle); fix is next session's first action
-- Lint — not yet re-run this session (gopls stdversion warnings are the known false positives; `golangci-lint` run pending after tagliatelle fix)
+- Lint — not yet re-run this session (~~gopls stdversion warnings are the known false positives~~ OBSOLETE 2026-09-23: the Go 1.27.1 upgrade eliminated the stdversion false-positive class entirely, see AGENTS.md `GOEXPERIMENT=jsonv2` note; `golangci-lint` run pending after tagliatelle fix)
