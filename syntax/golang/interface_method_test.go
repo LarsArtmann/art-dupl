@@ -160,17 +160,7 @@ func (u User) GetName() string { return u.name }
 	path := dir + "/src.go"
 	writeFile(t, path, src)
 
-	typeData, err := LoadTypeAwareData([]string{path}, false)
-	if err != nil {
-		t.Fatalf("LoadTypeAwareData failed: %v", err)
-	}
-
-	pre := typeData.LookupPreloaded(path)
-	if pre == nil {
-		t.Fatal("LookupPreloaded returned nil")
-	}
-
-	root := parsePreloadedTest(t, path, pre)
+	root, _ := parseTypeAwareFile(t, path, false)
 
 	validateNode := findFuncDeclNode(t, root, "Validate")
 	if !validateNode.InterfaceMethod {
@@ -220,17 +210,7 @@ func (u User) GetName() string { return u.name }`
 	path := dir + "/src.go"
 	writeFile(t, path, src)
 
-	typeData, err := LoadTypeAwareData([]string{path}, false)
-	if err != nil {
-		t.Fatalf("LoadTypeAwareData failed: %v", err)
-	}
-
-	pre := typeData.LookupPreloaded(path)
-	if pre == nil {
-		t.Fatal("LookupPreloaded returned nil")
-	}
-
-	root := parsePreloadedTest(t, path, pre)
+	root, _ := parseTypeAwareFile(t, path, false)
 
 	validateNode := findFuncDeclNode(t, root, "Validate")
 	if !validateNode.InterfaceMethod {
