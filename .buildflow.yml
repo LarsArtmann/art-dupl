@@ -11,3 +11,11 @@ skip_steps:
   # warns about (workspace/go-line-flipflop). Skipped until the fleet aligns
   # the go-version-auto-configure and go-mod-update dispositions upstream.
   - go-mod-normalize
+  # This repo deliberately bans exhaustruct and tagliatelle (see AGENTS.md
+  # "Lint config" and scripts/check-disabled-linters.sh). The auto-configurer
+  # re-adds both from its fleet defaults on every pipeline run; the guard
+  # script then removes them, and the nix disabled-linters check fails in the
+  # read-only sandbox whenever a re-add got committed — the chronic red-green
+  # loop since 2026-09-19. The linter set here is hand-curated; config sync
+  # for it is unwanted.
+  - golangci-lint-auto-configure
