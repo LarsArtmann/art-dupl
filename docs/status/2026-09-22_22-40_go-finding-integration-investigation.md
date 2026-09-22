@@ -19,23 +19,23 @@
 
 ## a) FULLY DONE (this session)
 
-| # | Item | Evidence |
-|---|------|----------|
-| 1 | Root-cause answer delivered: art-dupl DOES use go-finding — as output/interchange layer at the boundary, by deliberate decision, not oversight | go.mod:88 (`go-finding v1.12.0` direct dep), `printer/finding/finding.go` adapter |
-| 2 | Located and fully read the governing decision doc: `go-finding/docs/feedback/2026-06-05_art-dupl-integration-evaluation.md` (373 lines) — verdict: adopt as consumer-side output layer, NEVER internal representation; appendix records the rejected alternative (domain mismatch: findings = single issue/position, art-dupl = clone groups = N-location relationships) | Read lines 1-373 |
-| 3 | Verified production wiring state: adapter is wired at **constant level only** — `printer/sarif.go` imports it for `SARIFPropGroupID`; `ToFindings`/`ToReport`/`GroupIDOf` have **zero production callers** (grep across `printer/`, `cmd/`, tests excluded) | grep, 2026-09-22 |
-| 4 | Confirmed NO ADR exists for the go-finding adoption decision (`docs/adr/` stops at 0024-json-v1-api-behind-canonical-marshaler) — the status report's item 23 remains open | `ls docs/adr/` |
-| 5 | Verified test-suite shape (turn 2): 17 test functions in `finding_test.go`, incl. the three interchange guarantees (SARIF round-trip :384, LSP round-trip :435, Report.GroupFindings reconstruction :336) and 10 ToFindings behavior tests | grep + view |
-| 6 | Answer included the three known gaps with an offer of follow-up (user then requested this report instead) | turn-1 reply |
+| # | Item                                                                                                                                                                                                                                                                                                                                                                     | Evidence                                                                          |
+| - | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------- |
+| 1 | Root-cause answer delivered: art-dupl DOES use go-finding — as output/interchange layer at the boundary, by deliberate decision, not oversight                                                                                                                                                                                                                           | go.mod:88 (`go-finding v1.12.0` direct dep), `printer/finding/finding.go` adapter |
+| 2 | Located and fully read the governing decision doc: `go-finding/docs/feedback/2026-06-05_art-dupl-integration-evaluation.md` (373 lines) — verdict: adopt as consumer-side output layer, NEVER internal representation; appendix records the rejected alternative (domain mismatch: findings = single issue/position, art-dupl = clone groups = N-location relationships) | Read lines 1-373                                                                  |
+| 3 | Verified production wiring state: adapter is wired at **constant level only** — `printer/sarif.go` imports it for `SARIFPropGroupID`; `ToFindings`/`ToReport`/`GroupIDOf` have **zero production callers** (grep across `printer/`, `cmd/`, tests excluded)                                                                                                              | grep, 2026-09-22                                                                  |
+| 4 | Confirmed NO ADR exists for the go-finding adoption decision (`docs/adr/` stops at 0024-json-v1-api-behind-canonical-marshaler) — the status report's item 23 remains open                                                                                                                                                                                               | `ls docs/adr/`                                                                    |
+| 5 | Verified test-suite shape (turn 2): 17 test functions in `finding_test.go`, incl. the three interchange guarantees (SARIF round-trip :384, LSP round-trip :435, Report.GroupFindings reconstruction :336) and 10 ToFindings behavior tests                                                                                                                               | grep + view                                                                       |
+| 6 | Answer included the three known gaps with an offer of follow-up (user then requested this report instead)                                                                                                                                                                                                                                                                | turn-1 reply                                                                      |
 
 ## b) PARTIALLY DONE (project-level work surfaced by this session — none of it authored this session)
 
-| # | Item | State |
-|---|------|-------|
-| 1 | go-finding adoption overall | Adapter shipped + tested (2026-09-19, issue #1, GAP-2), but library-only surface: no production code path calls `ToFindings`/`ToReport`. Consumers reach findings via art-dupl's SARIF output + go-finding's `FindingsFromSARIF`. |
-| 2 | GroupID identity | One concept, three names: SARIF `go-finding/groupId`, JSON `clone_groups[].hash`, go-finding `Finding.GroupID`. Documented in AGENTS.md, pinned by tests; drift risk lives in docs, not code (status report's known-gap b.2). |
-| 3 | Evaluation-doc linkage | The verdict doc lives only in the go-finding repo; art-dupl readers following its path hit a dead end (status item 24). Not fixed this session. |
-| 4 | Adoption decision formalization | Carried in AGENTS.md convention entry + status report; no ADR, no TODO_LIST tracking verified. |
+| # | Item                            | State                                                                                                                                                                                                                             |
+| - | ------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1 | go-finding adoption overall     | Adapter shipped + tested (2026-09-19, issue #1, GAP-2), but library-only surface: no production code path calls `ToFindings`/`ToReport`. Consumers reach findings via art-dupl's SARIF output + go-finding's `FindingsFromSARIF`. |
+| 2 | GroupID identity                | One concept, three names: SARIF `go-finding/groupId`, JSON `clone_groups[].hash`, go-finding `Finding.GroupID`. Documented in AGENTS.md, pinned by tests; drift risk lives in docs, not code (status report's known-gap b.2).     |
+| 3 | Evaluation-doc linkage          | The verdict doc lives only in the go-finding repo; art-dupl readers following its path hit a dead end (status item 24). Not fixed this session.                                                                                   |
+| 4 | Adoption decision formalization | Carried in AGENTS.md convention entry + status report; no ADR, no TODO_LIST tracking verified.                                                                                                                                    |
 
 ## c) NOT STARTED (untouched this session; known-open from the 2026-09-19 report)
 
@@ -64,6 +64,7 @@ The honest worst-candidate is the self-critique item 1: I stated two unverified 
 ## f) Next Tasks (up to 50 — brainstorm, ROADMAP fuel; prioritized by impact)
 
 **P0 — closes real verification/wiring gaps**
+
 1. Committed integration test: run the actual CLI with `--sarif` on a synthetic duplicate, pipe the emitted bytes through `FindingsFromSARIF`, assert GroupIDs restore (closes the import-side gap; converts the 2026-09-19 one-off live proof into a permanent gate).
 2. Decision + ADR: is the adapter's library-only surface final, or does a production path (SDK `Detector.Report()` / CLI flag) come? Record either way as an ADR (frees the stale "item 23").
 3. Run `go test ./printer/finding/...` this session's successor — confirm all 17 green on current HEAD (never executed this session).
