@@ -187,7 +187,7 @@ Carried in TODO_LIST/ROADMAP with citations (report #N refs); listed here for co
     gate first run); the script-level fix landed, the product-level UX did not.
 11. **`--dump-tokens` positions on a templ file** (#48).
 12. **`nix flake check` arch-lint coverage** (#40).
-13. **docs-health VERIFY over 2026-08-* reports** (#35).
+13. __docs-health VERIFY over 2026-08-_ reports_* (#35).
 14. **Small quality batch** (#29 shouldSkipPath separator tables, #30 exhaustruct noise, #31
     monthly -t 1 routine, #32 errors.AsType, #38 t.Chdir, #39 tagalign/nestif confirm).
 15. **Windows real cancellation / windows-required lane** (ROADMAP) — gated on the platform
@@ -282,34 +282,34 @@ Radical honesty — what I broke, got wrong, or mishandled this session.
 Ranked by impact. Effort: S (<30m) / M (30m–2h) / L (>2h). Items already in TODO_LIST keep
 their `(#N)` citations; new discoveries from this session are marked **[new]**.
 
-| #  | Task                                                                                                                                                                                                          | Impact | Effort | Source    |
-| -- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ | ------ | --------- |
-| 1  | Fix the 9 red-baseline fleet repos so the gogenfilter bump can land fleet-wide — start with go-filewatcher's `TestFilterGeneratedCode_SingleFilters/SQLC` (may be a real behavior assumption, not rot)          | High   | M–L    | [new]     |
-| 2  | Watch the windows Test lane for 1–2 weeks; if the GC-crash class recurs WITHOUT the experiment, prepare the upstream Go issue (repro needs Windows access — see question 2)                                    | High   | S–M    | [new]     |
-| 3  | Fleet audit: `encoding/json/v2` / `format:` tags on Go 1.27 repos (#14) — same breakage class as the v0.7.0 blocker                                                                                            | High   | M      | TODO_LIST |
-| 4  | `scripts/pre-release-check.sh`: ls-remote tag-collision + CI-green + toolchain-pin gate (#16)                                                                                                                  | High   | M      | TODO_LIST |
-| 5  | Branch protection with required checks + failure notifications (#18) — owner action; red CI sat 4 days last week and ~10h again this week                                                                      | High   | S      | TODO_LIST |
-| 6  | go-paperless: tag + release the findByName consolidation via go-release (#20) — pushed but unreleased; also confirm its CI green on `04c32dc`                                                                   | Medium | M      | TODO_LIST |
-| 7  | erraudit TestRunner_OopsFix failures (3 pre-existing) — my own adjacent tooling, likely quick                                                                                                                   | Medium | S–M    | [new]     |
-| 8  | Corpus re-baseline post-v0.7.0 + AGENTS.md number refresh (#22)                                                                                                                                                | Medium | M      | TODO_LIST |
-| 9  | Self-clean decision ledger from the true 40-group baseline (#12)                                                                                                                                               | Medium | S–M    | TODO_LIST |
-| 10 | CHANGELOG entries for this session's infra work (alloc gate min-of-3, windows experiment scoping, fleet sweep) at the next release cut                                                                          | Medium | S      | [new]     |
-| 11 | Root-cause Windows exe-start `ProcessState nil`; un-skip TestExitCodes_Process (#4) — requires a Windows runner session                                                                                         | Medium | M      | TODO_LIST |
-| 12 | Stale-shell graceful error in the product (#24) — hit twice in practice this session                                                                                                                           | Medium | S      | TODO_LIST |
-| 13 | Investigate dynamic-markdown-site's pre-push hook: it runs `-race` tests without guaranteeing CGO — hook bug or env assumption?                                                                                 | Medium | S      | [new]     |
-| 14 | templ `--dump-tokens` position verification (#48)                                                                                                                                                              | Medium | S      | TODO_LIST |
-| 15 | `nix flake check` arch-lint coverage (#40)                                                                                                                                                                     | Medium | S      | TODO_LIST |
-| 16 | Fleet audit: `filepath.Separator` + `Split(_,":")` path parsing (#15)                                                                                                                                          | Medium | M      | TODO_LIST |
-| 17 | Auto-tag workflow vs manual release tags (#19)                                                                                                                                                                 | Medium | S      | TODO_LIST |
-| 18 | docs-health VERIFY over 2026-08-* reports (#35)                                                                                                                                                                | Medium | M      | TODO_LIST |
-| 19 | Persist a generalized fleet-sweep runner (parameterized lib+version) in a tools repo — this session's script logic survives only in this report                                                                | Low    | S      | [new]     |
-| 20 | Verify go-auto-upgrade CI actually ran on the bump commit (only Dependency Graph observed)                                                                                                                     | Low    | S      | [new]     |
-| 21 | BuildFlow baseline build failure (go.mod/go.work interplay?) — unblocks a bumped consumer later                                                                                                                | Medium | M      | [new]     |
-| 22 | auto-deduplicate baseline build failure + v3.3.2 pin — oldest consumer, likely needs two hops                                                                                                                  | Low    | M      | [new]     |
-| 23 | Small quality batch (#29 separator tables, #30 exhaustruct noise, #31 monthly -t 1 routine, #32 errors.AsType, #38 t.Chdir, #39 tagalign confirm)                                                               | Low    | S each | TODO_LIST |
-| 24 | ROADMAP capture: report section-(f) template should embed "verify-then-execute-if-S" (status-report skill feedback, e9/#36)                                                                                     | Low    | S      | [new]     |
-| 25 | Go 1.28 watch: `GOEXPERIMENT=jsonv2` retirement behavior (ADR-0024 consequence; re-verify `nix build` on first 1.28 beta) (#50)                                                                                 | Medium | S      | ROADMAP   |
-| 26 | Keep the PARKED benchmark items parked (T2.2/T23) — entry criterion (load <4) was never met this session either; revisit only when the machine is idle                                                          | —      | —      | TODO_LIST |
+| #  | Task                                                                                                                                                                                                   | Impact | Effort | Source    |
+| -- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------ | ------ | --------- |
+| 1  | Fix the 9 red-baseline fleet repos so the gogenfilter bump can land fleet-wide — start with go-filewatcher's `TestFilterGeneratedCode_SingleFilters/SQLC` (may be a real behavior assumption, not rot) | High   | M–L    | [new]     |
+| 2  | Watch the windows Test lane for 1–2 weeks; if the GC-crash class recurs WITHOUT the experiment, prepare the upstream Go issue (repro needs Windows access — see question 2)                            | High   | S–M    | [new]     |
+| 3  | Fleet audit: `encoding/json/v2` / `format:` tags on Go 1.27 repos (#14) — same breakage class as the v0.7.0 blocker                                                                                    | High   | M      | TODO_LIST |
+| 4  | `scripts/pre-release-check.sh`: ls-remote tag-collision + CI-green + toolchain-pin gate (#16)                                                                                                          | High   | M      | TODO_LIST |
+| 5  | Branch protection with required checks + failure notifications (#18) — owner action; red CI sat 4 days last week and ~10h again this week                                                              | High   | S      | TODO_LIST |
+| 6  | go-paperless: tag + release the findByName consolidation via go-release (#20) — pushed but unreleased; also confirm its CI green on `04c32dc`                                                          | Medium | M      | TODO_LIST |
+| 7  | erraudit TestRunner_OopsFix failures (3 pre-existing) — my own adjacent tooling, likely quick                                                                                                          | Medium | S–M    | [new]     |
+| 8  | Corpus re-baseline post-v0.7.0 + AGENTS.md number refresh (#22)                                                                                                                                        | Medium | M      | TODO_LIST |
+| 9  | Self-clean decision ledger from the true 40-group baseline (#12)                                                                                                                                       | Medium | S–M    | TODO_LIST |
+| 10 | CHANGELOG entries for this session's infra work (alloc gate min-of-3, windows experiment scoping, fleet sweep) at the next release cut                                                                 | Medium | S      | [new]     |
+| 11 | Root-cause Windows exe-start `ProcessState nil`; un-skip TestExitCodes_Process (#4) — requires a Windows runner session                                                                                | Medium | M      | TODO_LIST |
+| 12 | Stale-shell graceful error in the product (#24) — hit twice in practice this session                                                                                                                   | Medium | S      | TODO_LIST |
+| 13 | Investigate dynamic-markdown-site's pre-push hook: it runs `-race` tests without guaranteeing CGO — hook bug or env assumption?                                                                        | Medium | S      | [new]     |
+| 14 | templ `--dump-tokens` position verification (#48)                                                                                                                                                      | Medium | S      | TODO_LIST |
+| 15 | `nix flake check` arch-lint coverage (#40)                                                                                                                                                             | Medium | S      | TODO_LIST |
+| 16 | Fleet audit: `filepath.Separator` + `Split(_,":")` path parsing (#15)                                                                                                                                  | Medium | M      | TODO_LIST |
+| 17 | Auto-tag workflow vs manual release tags (#19)                                                                                                                                                         | Medium | S      | TODO_LIST |
+| 18 | docs-health VERIFY over 2026-08-* reports (#35)                                                                                                                                                        | Medium | M      | TODO_LIST |
+| 19 | Persist a generalized fleet-sweep runner (parameterized lib+version) in a tools repo — this session's script logic survives only in this report                                                        | Low    | S      | [new]     |
+| 20 | Verify go-auto-upgrade CI actually ran on the bump commit (only Dependency Graph observed)                                                                                                             | Low    | S      | [new]     |
+| 21 | BuildFlow baseline build failure (go.mod/go.work interplay?) — unblocks a bumped consumer later                                                                                                        | Medium | M      | [new]     |
+| 22 | auto-deduplicate baseline build failure + v3.3.2 pin — oldest consumer, likely needs two hops                                                                                                          | Low    | M      | [new]     |
+| 23 | Small quality batch (#29 separator tables, #30 exhaustruct noise, #31 monthly -t 1 routine, #32 errors.AsType, #38 t.Chdir, #39 tagalign confirm)                                                      | Low    | S each | TODO_LIST |
+| 24 | ROADMAP capture: report section-(f) template should embed "verify-then-execute-if-S" (status-report skill feedback, e9/#36)                                                                            | Low    | S      | [new]     |
+| 25 | Go 1.28 watch: `GOEXPERIMENT=jsonv2` retirement behavior (ADR-0024 consequence; re-verify `nix build` on first 1.28 beta) (#50)                                                                        | Medium | S      | ROADMAP   |
+| 26 | Keep the PARKED benchmark items parked (T2.2/T23) — entry criterion (load <4) was never met this session either; revisit only when the machine is idle                                                 | —      | —      | TODO_LIST |
 
 (Stopping at 26: items 27–50 of the 06-41 report remain routed in TODO_LIST/ROADMAP and are not
 duplicated here; the ranking above is the delta this session added on top of them.)
@@ -319,7 +319,7 @@ duplicated here; the ranking above is the delta this session added on top of the
 ## g) TOP 3 QUESTIONS I CANNOT ANSWER MYSELF
 
 1. **The windows fatal GC crashes: mitigation accepted, or chase the root cause upstream?** The
-   `GOEXPERIMENT` scoping has held for 3 consecutive windows runs, but I cannot *prove* the
+   `GOEXPERIMENT` scoping has held for 3 consecutive windows runs, but I cannot _prove_ the
    experiment was the trigger — binary-identical runs crashed with it ON, and I have no Windows
    environment to reproduce against. If you have a Windows machine/VM I can drive, I will build
    a minimal repro and file the Go issue; otherwise, is skip-and-mitigate the accepted resting
