@@ -1,0 +1,355 @@
+# T2.2 interleaved pinned/unpinned A/B - 2026-09-22
+# binary: go test -c ./suffixtree at fork@dd7d211c (clean tree), go1.27.1, GOEXPERIMENT=jsonv2
+# protocol: 6 alternations/arm, -count=5 per invocation (30 samples/arm), 8s cooldown
+# ambient 1-min load recorded before each invocation; entry criterion (load<4) never opened
+
+### round 1 pinned (taskset -c 0-7,16-23)
+goos: linux
+goarch: amd64
+pkg: github.com/LarsArtmann/art-dupl/suffixtree
+cpu: AMD RYZEN AI MAX+ 395 w/ Radeon 8060S          
+BenchmarkFindDuplOver/threshold_10-16         	   10000	    117355 ns/op	    8888 B/op	    1543 allocs/op
+BenchmarkFindDuplOver/threshold_10-16         	   10000	    115536 ns/op	    8887 B/op	    1543 allocs/op
+BenchmarkFindDuplOver/threshold_10-16         	   10000	    116674 ns/op	    8887 B/op	    1543 allocs/op
+BenchmarkFindDuplOver/threshold_10-16         	   10000	    112962 ns/op	    8888 B/op	    1543 allocs/op
+BenchmarkFindDuplOver/threshold_10-16         	   10000	    114287 ns/op	    8887 B/op	    1543 allocs/op
+BenchmarkFindDuplOverParallel/par4/tokens_10000-16         	    1266	    902617 ns/op	  175595 B/op	   30799 allocs/op
+BenchmarkFindDuplOverParallel/par4/tokens_10000-16         	    1357	    927615 ns/op	  175437 B/op	   30798 allocs/op
+BenchmarkFindDuplOverParallel/par4/tokens_10000-16         	    1206	    931148 ns/op	  175425 B/op	   30798 allocs/op
+BenchmarkFindDuplOverParallel/par4/tokens_10000-16         	    1363	    892910 ns/op	  175421 B/op	   30798 allocs/op
+BenchmarkFindDuplOverParallel/par4/tokens_10000-16         	    1351	    916380 ns/op	  175421 B/op	   30798 allocs/op
+PASS
+
+### round 1 unpinned (full machine)
+goos: linux
+goarch: amd64
+pkg: github.com/LarsArtmann/art-dupl/suffixtree
+cpu: AMD RYZEN AI MAX+ 395 w/ Radeon 8060S          
+BenchmarkFindDuplOver/threshold_10-32         	   10000	    114056 ns/op	    8895 B/op	    1543 allocs/op
+BenchmarkFindDuplOver/threshold_10-32         	   10000	    111135 ns/op	    8895 B/op	    1543 allocs/op
+BenchmarkFindDuplOver/threshold_10-32         	   10000	    111782 ns/op	    8895 B/op	    1543 allocs/op
+BenchmarkFindDuplOver/threshold_10-32         	   10000	    113483 ns/op	    8895 B/op	    1543 allocs/op
+BenchmarkFindDuplOver/threshold_10-32         	   10000	    109796 ns/op	    8896 B/op	    1543 allocs/op
+BenchmarkFindDuplOverParallel/par4/tokens_10000-32         	    1340	    899080 ns/op	  175755 B/op	   30799 allocs/op
+BenchmarkFindDuplOverParallel/par4/tokens_10000-32         	    1119	   1006427 ns/op	  175600 B/op	   30798 allocs/op
+BenchmarkFindDuplOverParallel/par4/tokens_10000-32         	    1254	    975038 ns/op	  175557 B/op	   30798 allocs/op
+BenchmarkFindDuplOverParallel/par4/tokens_10000-32         	    1197	    975497 ns/op	  175561 B/op	   30798 allocs/op
+BenchmarkFindDuplOverParallel/par4/tokens_10000-32         	    1160	    949855 ns/op	  175562 B/op	   30798 allocs/op
+PASS
+
+### round 2 pinned (taskset -c 0-7,16-23)
+goos: linux
+goarch: amd64
+pkg: github.com/LarsArtmann/art-dupl/suffixtree
+cpu: AMD RYZEN AI MAX+ 395 w/ Radeon 8060S          
+BenchmarkFindDuplOver/threshold_10-16         	   10000	    108352 ns/op	    8888 B/op	    1543 allocs/op
+BenchmarkFindDuplOver/threshold_10-16         	   10000	    109121 ns/op	    8888 B/op	    1543 allocs/op
+BenchmarkFindDuplOver/threshold_10-16         	   10000	    110756 ns/op	    8887 B/op	    1543 allocs/op
+BenchmarkFindDuplOver/threshold_10-16         	   10000	    109556 ns/op	    8887 B/op	    1543 allocs/op
+BenchmarkFindDuplOver/threshold_10-16         	   10000	    110213 ns/op	    8887 B/op	    1543 allocs/op
+BenchmarkFindDuplOverParallel/par4/tokens_10000-16         	    1443	    827629 ns/op	  175572 B/op	   30799 allocs/op
+BenchmarkFindDuplOverParallel/par4/tokens_10000-16         	    1450	    880741 ns/op	  175440 B/op	   30798 allocs/op
+BenchmarkFindDuplOverParallel/par4/tokens_10000-16         	    1320	    905670 ns/op	  175431 B/op	   30798 allocs/op
+BenchmarkFindDuplOverParallel/par4/tokens_10000-16         	    1419	    840912 ns/op	  175411 B/op	   30798 allocs/op
+BenchmarkFindDuplOverParallel/par4/tokens_10000-16         	    1407	    855280 ns/op	  175407 B/op	   30798 allocs/op
+PASS
+
+### round 2 unpinned (full machine)
+goos: linux
+goarch: amd64
+pkg: github.com/LarsArtmann/art-dupl/suffixtree
+cpu: AMD RYZEN AI MAX+ 395 w/ Radeon 8060S          
+BenchmarkFindDuplOver/threshold_10-32         	    9852	    113503 ns/op	    8896 B/op	    1543 allocs/op
+BenchmarkFindDuplOver/threshold_10-32         	   10000	    125790 ns/op	    8896 B/op	    1543 allocs/op
+BenchmarkFindDuplOver/threshold_10-32         	    8995	    154116 ns/op	    8896 B/op	    1543 allocs/op
+BenchmarkFindDuplOver/threshold_10-32         	    7438	    140036 ns/op	    8896 B/op	    1543 allocs/op
+BenchmarkFindDuplOver/threshold_10-32         	   10000	    126095 ns/op	    8896 B/op	    1543 allocs/op
+BenchmarkFindDuplOverParallel/par4/tokens_10000-32         	    1270	    919786 ns/op	  175773 B/op	   30799 allocs/op
+BenchmarkFindDuplOverParallel/par4/tokens_10000-32         	    1371	    882705 ns/op	  175586 B/op	   30798 allocs/op
+BenchmarkFindDuplOverParallel/par4/tokens_10000-32         	    1272	    907917 ns/op	  175570 B/op	   30798 allocs/op
+BenchmarkFindDuplOverParallel/par4/tokens_10000-32         	    1333	    860719 ns/op	  175544 B/op	   30798 allocs/op
+BenchmarkFindDuplOverParallel/par4/tokens_10000-32         	    1400	    881423 ns/op	  175548 B/op	   30798 allocs/op
+PASS
+
+### round 3 pinned (taskset -c 0-7,16-23)
+goos: linux
+goarch: amd64
+pkg: github.com/LarsArtmann/art-dupl/suffixtree
+cpu: AMD RYZEN AI MAX+ 395 w/ Radeon 8060S          
+BenchmarkFindDuplOver/threshold_10-16         	   10132	    118880 ns/op	    8887 B/op	    1543 allocs/op
+BenchmarkFindDuplOver/threshold_10-16         	   10000	    110931 ns/op	    8887 B/op	    1543 allocs/op
+BenchmarkFindDuplOver/threshold_10-16         	   10564	    111269 ns/op	    8887 B/op	    1543 allocs/op
+BenchmarkFindDuplOver/threshold_10-16         	   10000	    109200 ns/op	    8888 B/op	    1543 allocs/op
+BenchmarkFindDuplOver/threshold_10-16         	   10000	    114750 ns/op	    8887 B/op	    1543 allocs/op
+BenchmarkFindDuplOverParallel/par4/tokens_10000-16         	    1266	    881794 ns/op	  175592 B/op	   30799 allocs/op
+BenchmarkFindDuplOverParallel/par4/tokens_10000-16         	    1406	    851021 ns/op	  175440 B/op	   30798 allocs/op
+BenchmarkFindDuplOverParallel/par4/tokens_10000-16         	    1346	    925727 ns/op	  175422 B/op	   30798 allocs/op
+BenchmarkFindDuplOverParallel/par4/tokens_10000-16         	    1292	    948542 ns/op	  175420 B/op	   30798 allocs/op
+BenchmarkFindDuplOverParallel/par4/tokens_10000-16         	    1084	   1867274 ns/op	  175421 B/op	   30799 allocs/op
+PASS
+
+### round 3 unpinned (full machine)
+goos: linux
+goarch: amd64
+pkg: github.com/LarsArtmann/art-dupl/suffixtree
+cpu: AMD RYZEN AI MAX+ 395 w/ Radeon 8060S          
+BenchmarkFindDuplOver/threshold_10-32         	   10101	    117382 ns/op	    8895 B/op	    1543 allocs/op
+BenchmarkFindDuplOver/threshold_10-32         	   10000	    113568 ns/op	    8896 B/op	    1543 allocs/op
+BenchmarkFindDuplOver/threshold_10-32         	   10000	    112168 ns/op	    8895 B/op	    1543 allocs/op
+BenchmarkFindDuplOver/threshold_10-32         	   10000	    116978 ns/op	    8895 B/op	    1543 allocs/op
+BenchmarkFindDuplOver/threshold_10-32         	   10000	    122219 ns/op	    8895 B/op	    1543 allocs/op
+BenchmarkFindDuplOverParallel/par4/tokens_10000-32         	     694	   1637864 ns/op	  175878 B/op	   30799 allocs/op
+BenchmarkFindDuplOverParallel/par4/tokens_10000-32         	     600	   1761982 ns/op	  175676 B/op	   30799 allocs/op
+BenchmarkFindDuplOverParallel/par4/tokens_10000-32         	     832	   1412478 ns/op	  175600 B/op	   30798 allocs/op
+BenchmarkFindDuplOverParallel/par4/tokens_10000-32         	     962	   1203850 ns/op	  175608 B/op	   30798 allocs/op
+BenchmarkFindDuplOverParallel/par4/tokens_10000-32         	    1101	   1027511 ns/op	  175544 B/op	   30798 allocs/op
+PASS
+
+### round 4 pinned (taskset -c 0-7,16-23)
+goos: linux
+goarch: amd64
+pkg: github.com/LarsArtmann/art-dupl/suffixtree
+cpu: AMD RYZEN AI MAX+ 395 w/ Radeon 8060S          
+BenchmarkFindDuplOver/threshold_10-16         	   10000	    125374 ns/op	    8888 B/op	    1543 allocs/op
+BenchmarkFindDuplOver/threshold_10-16         	    8836	    124447 ns/op	    8887 B/op	    1543 allocs/op
+BenchmarkFindDuplOver/threshold_10-16         	    8296	    168108 ns/op	    8887 B/op	    1543 allocs/op
+BenchmarkFindDuplOver/threshold_10-16         	    9174	    147302 ns/op	    8888 B/op	    1543 allocs/op
+BenchmarkFindDuplOver/threshold_10-16         	    8998	    180193 ns/op	    8888 B/op	    1543 allocs/op
+BenchmarkFindDuplOverParallel/par4/tokens_10000-16         	     756	   1480997 ns/op	  175657 B/op	   30799 allocs/op
+BenchmarkFindDuplOverParallel/par4/tokens_10000-16         	    1149	   1045428 ns/op	  175491 B/op	   30799 allocs/op
+BenchmarkFindDuplOverParallel/par4/tokens_10000-16         	    1182	   1019336 ns/op	  175434 B/op	   30798 allocs/op
+BenchmarkFindDuplOverParallel/par4/tokens_10000-16         	    1261	   1017782 ns/op	  175423 B/op	   30798 allocs/op
+BenchmarkFindDuplOverParallel/par4/tokens_10000-16         	    1398	   1018536 ns/op	  175432 B/op	   30798 allocs/op
+PASS
+
+### round 4 unpinned (full machine)
+goos: linux
+goarch: amd64
+pkg: github.com/LarsArtmann/art-dupl/suffixtree
+cpu: AMD RYZEN AI MAX+ 395 w/ Radeon 8060S          
+BenchmarkFindDuplOver/threshold_10-32         	   10000	    113588 ns/op	    8895 B/op	    1543 allocs/op
+BenchmarkFindDuplOver/threshold_10-32         	   10000	    114042 ns/op	    8895 B/op	    1543 allocs/op
+BenchmarkFindDuplOver/threshold_10-32         	    9854	    112344 ns/op	    8896 B/op	    1543 allocs/op
+BenchmarkFindDuplOver/threshold_10-32         	   10000	    109782 ns/op	    8895 B/op	    1543 allocs/op
+BenchmarkFindDuplOver/threshold_10-32         	   10000	    113710 ns/op	    8895 B/op	    1543 allocs/op
+BenchmarkFindDuplOverParallel/par4/tokens_10000-32         	    1206	    908475 ns/op	  175772 B/op	   30799 allocs/op
+BenchmarkFindDuplOverParallel/par4/tokens_10000-32         	    1376	    884426 ns/op	  175586 B/op	   30798 allocs/op
+BenchmarkFindDuplOverParallel/par4/tokens_10000-32         	    1356	    909567 ns/op	  175564 B/op	   30798 allocs/op
+BenchmarkFindDuplOverParallel/par4/tokens_10000-32         	    1350	    871362 ns/op	  175588 B/op	   30798 allocs/op
+BenchmarkFindDuplOverParallel/par4/tokens_10000-32         	    1221	    918902 ns/op	  175570 B/op	   30798 allocs/op
+PASS
+
+### round 5 pinned (taskset -c 0-7,16-23)
+goos: linux
+goarch: amd64
+pkg: github.com/LarsArtmann/art-dupl/suffixtree
+cpu: AMD RYZEN AI MAX+ 395 w/ Radeon 8060S          
+BenchmarkFindDuplOver/threshold_10-16         	    9673	    111952 ns/op	    8887 B/op	    1543 allocs/op
+BenchmarkFindDuplOver/threshold_10-16         	   10000	    113703 ns/op	    8887 B/op	    1543 allocs/op
+BenchmarkFindDuplOver/threshold_10-16         	   10000	    112384 ns/op	    8887 B/op	    1543 allocs/op
+BenchmarkFindDuplOver/threshold_10-16         	   10000	    113798 ns/op	    8887 B/op	    1543 allocs/op
+BenchmarkFindDuplOver/threshold_10-16         	   10000	    114041 ns/op	    8887 B/op	    1543 allocs/op
+BenchmarkFindDuplOverParallel/par4/tokens_10000-16         	    1365	    859464 ns/op	  175584 B/op	   30799 allocs/op
+BenchmarkFindDuplOverParallel/par4/tokens_10000-16         	    1368	    860577 ns/op	  175451 B/op	   30798 allocs/op
+BenchmarkFindDuplOverParallel/par4/tokens_10000-16         	    1392	    855426 ns/op	  175411 B/op	   30798 allocs/op
+BenchmarkFindDuplOverParallel/par4/tokens_10000-16         	    1365	    871354 ns/op	  175417 B/op	   30798 allocs/op
+BenchmarkFindDuplOverParallel/par4/tokens_10000-16         	    1412	    890224 ns/op	  175420 B/op	   30798 allocs/op
+PASS
+
+### round 5 unpinned (full machine)
+goos: linux
+goarch: amd64
+pkg: github.com/LarsArtmann/art-dupl/suffixtree
+cpu: AMD RYZEN AI MAX+ 395 w/ Radeon 8060S          
+BenchmarkFindDuplOver/threshold_10-32         	   10000	    117583 ns/op	    8895 B/op	    1543 allocs/op
+BenchmarkFindDuplOver/threshold_10-32         	   10000	    144177 ns/op	    8895 B/op	    1543 allocs/op
+BenchmarkFindDuplOver/threshold_10-32         	    7645	    156762 ns/op	    8895 B/op	    1543 allocs/op
+BenchmarkFindDuplOver/threshold_10-32         	    9328	    139507 ns/op	    8896 B/op	    1543 allocs/op
+BenchmarkFindDuplOver/threshold_10-32         	   10000	    123940 ns/op	    8895 B/op	    1543 allocs/op
+BenchmarkFindDuplOverParallel/par4/tokens_10000-32         	    1268	    930769 ns/op	  175741 B/op	   30799 allocs/op
+BenchmarkFindDuplOverParallel/par4/tokens_10000-32         	    1208	   1003758 ns/op	  175611 B/op	   30799 allocs/op
+BenchmarkFindDuplOverParallel/par4/tokens_10000-32         	    1204	   1056800 ns/op	  175567 B/op	   30798 allocs/op
+BenchmarkFindDuplOverParallel/par4/tokens_10000-32         	    1257	   1239435 ns/op	  175583 B/op	   30798 allocs/op
+BenchmarkFindDuplOverParallel/par4/tokens_10000-32         	     967	   1167696 ns/op	  175567 B/op	   30798 allocs/op
+PASS
+
+### round 6 pinned (taskset -c 0-7,16-23)
+goos: linux
+goarch: amd64
+pkg: github.com/LarsArtmann/art-dupl/suffixtree
+cpu: AMD RYZEN AI MAX+ 395 w/ Radeon 8060S          
+BenchmarkFindDuplOver/threshold_10-16         	   10000	    118366 ns/op	    8889 B/op	    1543 allocs/op
+BenchmarkFindDuplOver/threshold_10-16         	   10000	    118687 ns/op	    8887 B/op	    1543 allocs/op
+BenchmarkFindDuplOver/threshold_10-16         	    9747	    113485 ns/op	    8887 B/op	    1543 allocs/op
+BenchmarkFindDuplOver/threshold_10-16         	    9634	    133538 ns/op	    8887 B/op	    1543 allocs/op
+BenchmarkFindDuplOver/threshold_10-16         	    6873	    190857 ns/op	    8888 B/op	    1543 allocs/op
+BenchmarkFindDuplOverParallel/par4/tokens_10000-16         	     938	   1196732 ns/op	  175666 B/op	   30799 allocs/op
+BenchmarkFindDuplOverParallel/par4/tokens_10000-16         	    1332	   1100269 ns/op	  175450 B/op	   30799 allocs/op
+BenchmarkFindDuplOverParallel/par4/tokens_10000-16         	    1375	   1203038 ns/op	  175429 B/op	   30799 allocs/op
+BenchmarkFindDuplOverParallel/par4/tokens_10000-16         	     781	   1608157 ns/op	  175440 B/op	   30799 allocs/op
+BenchmarkFindDuplOverParallel/par4/tokens_10000-16         	    1222	    984196 ns/op	  175416 B/op	   30798 allocs/op
+PASS
+
+### round 6 unpinned (full machine)
+goos: linux
+goarch: amd64
+pkg: github.com/LarsArtmann/art-dupl/suffixtree
+cpu: AMD RYZEN AI MAX+ 395 w/ Radeon 8060S          
+BenchmarkFindDuplOver/threshold_10-32         	    8918	    160850 ns/op	    8896 B/op	    1543 allocs/op
+BenchmarkFindDuplOver/threshold_10-32         	    7904	    147279 ns/op	    8896 B/op	    1543 allocs/op
+BenchmarkFindDuplOver/threshold_10-32         	    8559	    142686 ns/op	    8896 B/op	    1543 allocs/op
+BenchmarkFindDuplOver/threshold_10-32         	    7618	    144981 ns/op	    8895 B/op	    1543 allocs/op
+BenchmarkFindDuplOver/threshold_10-32         	    8275	    139759 ns/op	    8896 B/op	    1543 allocs/op
+BenchmarkFindDuplOverParallel/par4/tokens_10000-32         	    1002	   1107842 ns/op	  175806 B/op	   30799 allocs/op
+BenchmarkFindDuplOverParallel/par4/tokens_10000-32         	     926	   1084736 ns/op	  175629 B/op	   30799 allocs/op
+BenchmarkFindDuplOverParallel/par4/tokens_10000-32         	    1254	    998434 ns/op	  175605 B/op	   30798 allocs/op
+BenchmarkFindDuplOverParallel/par4/tokens_10000-32         	    1134	   1037252 ns/op	  175551 B/op	   30798 allocs/op
+BenchmarkFindDuplOverParallel/par4/tokens_10000-32         	    1035	   1048936 ns/op	  175546 B/op	   30798 allocs/op
+PASS
+
+# --- supplement: NumCPU-matched workers (GOMAXPROCS follows the mask) ---
+# pinned arm = par16, unpinned arm = par32; renamed parNumCPU for benchstat
+### round 1 pinned par16
+goos: linux
+goarch: amd64
+pkg: github.com/LarsArtmann/art-dupl/suffixtree
+cpu: AMD RYZEN AI MAX+ 395 w/ Radeon 8060S          
+BenchmarkFindDuplOverParallel/par16/tokens_10000-16         	    2308	    483059 ns/op	  175786 B/op	   30801 allocs/op
+BenchmarkFindDuplOverParallel/par16/tokens_10000-16         	    2439	    518057 ns/op	  175642 B/op	   30800 allocs/op
+BenchmarkFindDuplOverParallel/par16/tokens_10000-16         	    2209	    520667 ns/op	  175645 B/op	   30800 allocs/op
+BenchmarkFindDuplOverParallel/par16/tokens_10000-16         	    2432	    495208 ns/op	  175612 B/op	   30800 allocs/op
+BenchmarkFindDuplOverParallel/par16/tokens_10000-16         	    2464	    478928 ns/op	  175608 B/op	   30800 allocs/op
+PASS
+
+### round 1 unpinned par32
+goos: linux
+goarch: amd64
+pkg: github.com/LarsArtmann/art-dupl/suffixtree
+cpu: AMD RYZEN AI MAX+ 395 w/ Radeon 8060S          
+BenchmarkFindDuplOverParallel/par32/tokens_10000-32         	    1711	    737808 ns/op	  176568 B/op	   30804 allocs/op
+BenchmarkFindDuplOverParallel/par32/tokens_10000-32         	    2227	    542180 ns/op	  176080 B/op	   30803 allocs/op
+BenchmarkFindDuplOverParallel/par32/tokens_10000-32         	    2430	    472048 ns/op	  176060 B/op	   30803 allocs/op
+BenchmarkFindDuplOverParallel/par32/tokens_10000-32         	    2563	    464030 ns/op	  176059 B/op	   30803 allocs/op
+BenchmarkFindDuplOverParallel/par32/tokens_10000-32         	    2400	    462078 ns/op	  176047 B/op	   30803 allocs/op
+PASS
+
+### round 2 pinned par16
+goos: linux
+goarch: amd64
+pkg: github.com/LarsArtmann/art-dupl/suffixtree
+cpu: AMD RYZEN AI MAX+ 395 w/ Radeon 8060S          
+BenchmarkFindDuplOverParallel/par16/tokens_10000-16         	    2172	    479543 ns/op	  175803 B/op	   30801 allocs/op
+BenchmarkFindDuplOverParallel/par16/tokens_10000-16         	    2551	    515918 ns/op	  175651 B/op	   30801 allocs/op
+BenchmarkFindDuplOverParallel/par16/tokens_10000-16         	    2376	    453740 ns/op	  175588 B/op	   30800 allocs/op
+BenchmarkFindDuplOverParallel/par16/tokens_10000-16         	    2600	    495171 ns/op	  175619 B/op	   30800 allocs/op
+BenchmarkFindDuplOverParallel/par16/tokens_10000-16         	    2635	    476075 ns/op	  175600 B/op	   30800 allocs/op
+PASS
+
+### round 2 unpinned par32
+goos: linux
+goarch: amd64
+pkg: github.com/LarsArtmann/art-dupl/suffixtree
+cpu: AMD RYZEN AI MAX+ 395 w/ Radeon 8060S          
+BenchmarkFindDuplOverParallel/par32/tokens_10000-32         	    2365	    472840 ns/op	  176441 B/op	   30804 allocs/op
+BenchmarkFindDuplOverParallel/par32/tokens_10000-32         	    2462	    478670 ns/op	  176073 B/op	   30803 allocs/op
+BenchmarkFindDuplOverParallel/par32/tokens_10000-32         	    2552	    498566 ns/op	  176103 B/op	   30803 allocs/op
+BenchmarkFindDuplOverParallel/par32/tokens_10000-32         	    2536	    481663 ns/op	  176074 B/op	   30803 allocs/op
+BenchmarkFindDuplOverParallel/par32/tokens_10000-32         	    2494	    472827 ns/op	  176058 B/op	   30803 allocs/op
+PASS
+
+### round 3 pinned par16
+goos: linux
+goarch: amd64
+pkg: github.com/LarsArtmann/art-dupl/suffixtree
+cpu: AMD RYZEN AI MAX+ 395 w/ Radeon 8060S          
+BenchmarkFindDuplOverParallel/par16/tokens_10000-16         	    2502	    453301 ns/op	  175763 B/op	   30801 allocs/op
+BenchmarkFindDuplOverParallel/par16/tokens_10000-16         	    2428	    487596 ns/op	  175636 B/op	   30800 allocs/op
+BenchmarkFindDuplOverParallel/par16/tokens_10000-16         	    2479	    491740 ns/op	  175632 B/op	   30800 allocs/op
+BenchmarkFindDuplOverParallel/par16/tokens_10000-16         	    2251	    491026 ns/op	  175623 B/op	   30800 allocs/op
+BenchmarkFindDuplOverParallel/par16/tokens_10000-16         	    2432	    457412 ns/op	  175588 B/op	   30800 allocs/op
+PASS
+
+### round 3 unpinned par32
+goos: linux
+goarch: amd64
+pkg: github.com/LarsArtmann/art-dupl/suffixtree
+cpu: AMD RYZEN AI MAX+ 395 w/ Radeon 8060S          
+BenchmarkFindDuplOverParallel/par32/tokens_10000-32         	    2432	    470313 ns/op	  176448 B/op	   30804 allocs/op
+BenchmarkFindDuplOverParallel/par32/tokens_10000-32         	    2498	    472195 ns/op	  176078 B/op	   30803 allocs/op
+BenchmarkFindDuplOverParallel/par32/tokens_10000-32         	    2655	    469372 ns/op	  176064 B/op	   30803 allocs/op
+BenchmarkFindDuplOverParallel/par32/tokens_10000-32         	    2481	    467491 ns/op	  176051 B/op	   30803 allocs/op
+BenchmarkFindDuplOverParallel/par32/tokens_10000-32         	    2761	    472198 ns/op	  176056 B/op	   30803 allocs/op
+PASS
+
+### round 4 pinned par16
+goos: linux
+goarch: amd64
+pkg: github.com/LarsArtmann/art-dupl/suffixtree
+cpu: AMD RYZEN AI MAX+ 395 w/ Radeon 8060S          
+BenchmarkFindDuplOverParallel/par16/tokens_10000-16         	    2775	    452577 ns/op	  175742 B/op	   30800 allocs/op
+BenchmarkFindDuplOverParallel/par16/tokens_10000-16         	    2678	    466638 ns/op	  175601 B/op	   30800 allocs/op
+BenchmarkFindDuplOverParallel/par16/tokens_10000-16         	    2328	    461269 ns/op	  175593 B/op	   30800 allocs/op
+BenchmarkFindDuplOverParallel/par16/tokens_10000-16         	    2652	    487828 ns/op	  175601 B/op	   30800 allocs/op
+BenchmarkFindDuplOverParallel/par16/tokens_10000-16         	    2630	    515158 ns/op	  175634 B/op	   30800 allocs/op
+PASS
+
+### round 4 unpinned par32
+goos: linux
+goarch: amd64
+pkg: github.com/LarsArtmann/art-dupl/suffixtree
+cpu: AMD RYZEN AI MAX+ 395 w/ Radeon 8060S          
+BenchmarkFindDuplOverParallel/par32/tokens_10000-32         	    2341	    465928 ns/op	  176428 B/op	   30804 allocs/op
+BenchmarkFindDuplOverParallel/par32/tokens_10000-32         	    2512	    458266 ns/op	  176062 B/op	   30803 allocs/op
+BenchmarkFindDuplOverParallel/par32/tokens_10000-32         	    2620	    443754 ns/op	  176055 B/op	   30803 allocs/op
+BenchmarkFindDuplOverParallel/par32/tokens_10000-32         	    2736	    437171 ns/op	  176055 B/op	   30803 allocs/op
+BenchmarkFindDuplOverParallel/par32/tokens_10000-32         	    2684	    436975 ns/op	  176046 B/op	   30803 allocs/op
+PASS
+
+### round 5 pinned par16
+goos: linux
+goarch: amd64
+pkg: github.com/LarsArtmann/art-dupl/suffixtree
+cpu: AMD RYZEN AI MAX+ 395 w/ Radeon 8060S          
+BenchmarkFindDuplOverParallel/par16/tokens_10000-16         	    2725	    441389 ns/op	  175737 B/op	   30800 allocs/op
+BenchmarkFindDuplOverParallel/par16/tokens_10000-16         	    2689	    451354 ns/op	  175580 B/op	   30800 allocs/op
+BenchmarkFindDuplOverParallel/par16/tokens_10000-16         	    2800	    455448 ns/op	  175586 B/op	   30800 allocs/op
+BenchmarkFindDuplOverParallel/par16/tokens_10000-16         	    2742	    444629 ns/op	  175579 B/op	   30800 allocs/op
+BenchmarkFindDuplOverParallel/par16/tokens_10000-16         	    2458	    455407 ns/op	  175580 B/op	   30800 allocs/op
+PASS
+
+### round 5 unpinned par32
+goos: linux
+goarch: amd64
+pkg: github.com/LarsArtmann/art-dupl/suffixtree
+cpu: AMD RYZEN AI MAX+ 395 w/ Radeon 8060S          
+BenchmarkFindDuplOverParallel/par32/tokens_10000-32         	    2599	    434243 ns/op	  176427 B/op	   30804 allocs/op
+BenchmarkFindDuplOverParallel/par32/tokens_10000-32         	    2701	    439668 ns/op	  176072 B/op	   30803 allocs/op
+BenchmarkFindDuplOverParallel/par32/tokens_10000-32         	    2808	    433204 ns/op	  176064 B/op	   30803 allocs/op
+BenchmarkFindDuplOverParallel/par32/tokens_10000-32         	    2724	    454707 ns/op	  176054 B/op	   30803 allocs/op
+BenchmarkFindDuplOverParallel/par32/tokens_10000-32         	    2625	    451049 ns/op	  176048 B/op	   30803 allocs/op
+PASS
+
+### round 6 pinned par16
+goos: linux
+goarch: amd64
+pkg: github.com/LarsArtmann/art-dupl/suffixtree
+cpu: AMD RYZEN AI MAX+ 395 w/ Radeon 8060S          
+BenchmarkFindDuplOverParallel/par16/tokens_10000-16         	    2241	    494683 ns/op	  175822 B/op	   30801 allocs/op
+BenchmarkFindDuplOverParallel/par16/tokens_10000-16         	    2312	    469120 ns/op	  175612 B/op	   30800 allocs/op
+BenchmarkFindDuplOverParallel/par16/tokens_10000-16         	    2490	    498885 ns/op	  175631 B/op	   30800 allocs/op
+BenchmarkFindDuplOverParallel/par16/tokens_10000-16         	    2287	    527148 ns/op	  175651 B/op	   30801 allocs/op
+BenchmarkFindDuplOverParallel/par16/tokens_10000-16         	    2217	    505486 ns/op	  175650 B/op	   30801 allocs/op
+PASS
+
+### round 6 unpinned par32
+goos: linux
+goarch: amd64
+pkg: github.com/LarsArtmann/art-dupl/suffixtree
+cpu: AMD RYZEN AI MAX+ 395 w/ Radeon 8060S          
+BenchmarkFindDuplOverParallel/par32/tokens_10000-32         	    2508	    457835 ns/op	  176427 B/op	   30804 allocs/op
+BenchmarkFindDuplOverParallel/par32/tokens_10000-32         	    2587	    448550 ns/op	  176065 B/op	   30803 allocs/op
+BenchmarkFindDuplOverParallel/par32/tokens_10000-32         	    2766	    453081 ns/op	  176064 B/op	   30803 allocs/op
+BenchmarkFindDuplOverParallel/par32/tokens_10000-32         	    2689	    452961 ns/op	  176065 B/op	   30803 allocs/op
+BenchmarkFindDuplOverParallel/par32/tokens_10000-32         	    2670	    453376 ns/op	  176065 B/op	   30803 allocs/op
+PASS
+

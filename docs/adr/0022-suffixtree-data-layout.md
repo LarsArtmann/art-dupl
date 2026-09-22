@@ -138,3 +138,38 @@ pool repopulates within a few operations after each GC. GC accounts for
 - The stack-buffer threshold `maxStackKeys` now applies only to
   `contextList.getAll` key extraction (contextList maps hold 1–5 entries);
   the transition side no longer needs it.
+
+## Addendum (2026-09-22): measured timing, pinning, and cache-counter evidence
+
+The original results above leaned on deterministic allocation counts because
+timing on this machine is thermally noisy. Three follow-up measurements
+(raw data and full protocol in `docs/benchmarks/baseline-2026-08-16-v3_notes.md`
+and `docs/benchmarks/pinned-unpinned-2026-09-22.txt`) closed that gap:
+
+1. **Pinning (interleaved A/B, 30 samples/arm):** on the slice layout, CCX
+   pinning no longer speeds up the search. Fixed par4: pinned −6.7%
+   (p=0.080, not significant). NumCPU-matched workers: full machine par32
+   463µs vs one-CCX par16 481µs — **unpinned is 3.9% faster (p=0.011)**.
+   The earlier 25-30% pinning advantage (CPU_TOPOLOGY.md) was measured on
+   the map layout, whose pointer-chasing search was L3-latency bound.
+   Pinned runs remain the right protocol for regression detection (~5×
+   tighter CIs), just not for speed.
+2. **perf stat vs `23fa1b4f` (last map-layout commit, both arms pinned,
+   interleaved ×4):** cache-references −67.8%, cache-misses (LLC-bound
+   traffic; the platform's closest `LLC-load-misses` equivalent — no
+   amd_nb/l3 PMU is registered on this kernel) **−59.2%**, round-to-round
+   variation < 3%. Same-window timing medians: construction −41%,
+   sequential search −52%, par4/10k −63%. This is the direct hardware-
+   counter confirmation of the layout's cache-behavior claim.
+3. **`linearScanMax` boundary (pinned, 20 samples/size):** per-probe lookup
+   cost 2.87 ns (n=4, linear) / 4.23 ns (n=8, linear) / 3.46 ns (n=9,
+   binary) / 3.85 ns (n=16, binary). The linear/binary crossover sits
+   between 4 and 8; the cutoff of 8 trades a ~18%/probe penalty on
+   6-8-transition states for the early-exit scan on the 2-5-transition
+   majority. Numbers live on the constant's doc comment in
+   `suffixtree/findtran.go`.
+
+Provenance note: `23fa1b4f` predates the search-path pooling, so this A/B
+measures the full `081e347f` overhaul (pool + slices + arena) — the v2
+baseline file's 1,543 search allocs came from an uncommitted intermediate
+state and do not describe any committed map-layout revision.

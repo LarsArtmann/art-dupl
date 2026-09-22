@@ -41,7 +41,18 @@ proximity domain and Linux exposes one node.
   migrate pages between domains chasing a ~10–20 ns delta against ~100 ns
   DRAM latency — churn with no payoff.
 
-## Benchmark Evidence: CCX Pinning Wins
+## Benchmark Evidence: CCX Pinning Wins (map layout, 2026-08-16 — SUPERSEDED, see below)
+
+> **Update 2026-09-22:** the pinning advantage below was measured on the
+> map-based transition layout, whose pointer-chasing search was L3-latency
+> bound. After the ADR-0022 slice layout landed, an interleaved A/B (30
+> samples/arm) measured the opposite: full-machine par32 463µs vs one-CCX
+> par16 481µs — **unpinned is 3.9% faster (p=0.011)** — and fixed-par4
+> pinning is no longer significant. Parallel search improved ~4.7× overall
+> (par32: ~2.2ms → 463µs), which is what obsoleted the pinning advice.
+> Pinning still yields ~5× tighter timing CIs, so it remains the protocol
+> for regression benchmarks, just not for speed. Details:
+> `baseline-2026-08-16-v3_notes.md` § "Pinned/unpinned A/B (2026-09-22)".
 
 `BenchmarkFindDuplOverParallel`, `tokens_10000`, median ns/op of 5 runs
 (`GOEXPERIMENT=jsonv2`, two independent run orderings to control for
@@ -74,17 +85,21 @@ Caveats:
 
 ## Practical Guidance
 
-**Do:**
+**Do (2026-09-22):**
 
 ```bash
-# Pin to one CCX (fastest on this machine for the search phase)
-taskset -c 0-7,16-23 art-dupl ...
+# For REGRESSION benchmarks: pin to one CCX for tight CIs (timing stability)
+taskset -c 0-7,16-23 go test ./suffixtree -bench=... -count=10
 
-# GOMAXPROCS follows the affinity mask automatically
+# For THROUGHPUT (real runs, parallel search): do NOT pin. On the slice
+# layout the parallel search scales across both CCXes; pinning to one CCX
+# is now ~4% SLOWER than the full machine (and halves available workers).
 ```
 
 **Don't:**
 
+- Pin for speed on current code — the 25-30% advantage below was a property
+  of the superseded map layout.
 - `numactl --membind` / `--cpunodebind` — no-op or meaningless on this
   UMA machine.
 - In-process pinned thread pools (`LockOSThread` + `sched_setaffinity`) —
@@ -95,8 +110,9 @@ taskset -c 0-7,16-23 art-dupl ...
 
 **Proposed follow-ups (not yet implemented):**
 
-1. `--cpu-affinity <cpuspec>` CLI flag — `sched_setaffinity` at startup;
-   `GOMAXPROCS` adapts automatically.
+1. ~~`--cpu-affinity <cpuspec>` CLI flag~~ — **dropped 2026-09-22**: pinning
+   no longer speeds up the search on the slice layout (see update above), so
+   there is nothing for a user-facing affinity flag to deliver.
 2. Per-worker match batching in `walkTrans` (`suffixtree/dupl.go`) to cut
    cross-core channel traffic — the only shared write in the hot loop.
 
