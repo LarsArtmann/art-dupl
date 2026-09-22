@@ -24,6 +24,17 @@ import (
 // indentation. It is the drop-in replacement for the v2-era
 // json.Marshal(v, jsontext.WithIndentPrefix(prefix), jsontext.WithIndent(indent)).
 func MarshalIndent(v any, prefix, indent string) ([]byte, error) {
+	// jsontext.WithIndent enables multiline output even for an empty indent
+	// string, so the compact case must not construct an encoder at all.
+	if prefix == "" && indent == "" {
+		data, err := json.Marshal(v, jsontext.EscapeForHTML(false))
+		if err != nil {
+			return nil, fmt.Errorf("encode json: %w", err)
+		}
+
+		return data, nil
+	}
+
 	var buf bytes.Buffer
 
 	enc := jsontext.NewEncoder(&buf, jsontext.EscapeForHTML(false), jsontext.WithIndentPrefix(prefix), jsontext.WithIndent(indent))
