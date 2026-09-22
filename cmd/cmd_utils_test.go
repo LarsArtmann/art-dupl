@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"runtime"
 	"testing"
 	"time"
 
@@ -444,6 +445,25 @@ func TestShouldSkipPath(t *testing.T) {
 		{"demo prefix excluded", "demo/app.go", false, false, false, true},
 		{"demo in path excluded", "pkg/demo/test.go", false, false, false, true},
 		{"examples included", "examples/foo/main.go", false, false, true, false},
+
+		// Both-separator cases (Windows invariant): filepath.Walk yields
+		// platform-native separators, and shouldSkipPath must normalize them via
+		// filepath.ToSlash. FromSlash produces backslash paths on Windows (a no-op
+		// on POSIX), mirroring what the walker hands us on each OS.
+		{"vendor native separators", filepath.FromSlash("vendor/github.com/foo/bar.go"), false, false, false, true},
+		{"vendor in path native separators", filepath.FromSlash("project/vendor/github.com/foo"), false, false, false, true},
+		{"git in path native separators", filepath.FromSlash("project/.git/objects"), false, false, false, true},
+		{"node_modules in path native separators", filepath.FromSlash("project/node_modules/react"), false, false, false, true},
+		{"examples in path native separators", filepath.FromSlash("project/examples/demo.go"), false, false, false, true},
+		{"demo in path native separators", filepath.FromSlash("pkg/demo/test.go"), false, false, false, true},
+		{
+			"literal backslashes are only boundaries on Windows",
+			`project\vendor\github.com\foo`,
+			false,
+			false,
+			false,
+			runtime.GOOS == "windows",
+		}, // ToSlash rewrites separators only on Windows; on POSIX a backslash is a plain filename character, not a dir boundary
 
 		// Edge cases
 		{"empty path", "", false, false, false, false},
