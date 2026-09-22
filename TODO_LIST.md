@@ -1,6 +1,6 @@
 # TODO List
 
-**Last Updated:** 2026-09-22
+**Last Updated:** 2026-09-23
 
 Actionable items for the next 2-4 weeks. Completed work lives in `CHANGELOG.md`.
 This file is OPEN work only — no completed, rejected, or resolved items.
@@ -12,25 +12,6 @@ is complete (24/26 done or no-go-verified). Remaining items below.
 
 ## MEDIUM Priority
 
-### Detection granularity follow-ups (ADR-0023, 2026-09-14)
-
-_(go-paperless follow-ups #16-#20 completed 2026-09-18: find-by-name family
-consolidated into `findByName[T]`, counting-server fixture extracted to
-`newNoRequestServer`, doc-example/client-test clones accepted with rationale,
-type-aware-suppressed groups verified gone — type-aware ≡ semantic on the
-current tree. Default `-t 2` run now shows 0 groups. Details: CHANGELOG.)_
-
-_(Release completed 2026-09-18: v0.7.0 tagged at 6dd99aec, module proxy
-propagated, `go get github.com/LarsArtmann/art-dupl@v0.7.0` verified with a
-compile-and-run consumer, GitHub Release published.)_
-
-### Carry-over questions
-
-_(none — corpus drift 2665→2670 resolved 2026-09-18: concurrent go-cqrs-lite
-edits during the engine release wave; art-dupl verified deterministic via
-back-to-back byte-identical runs. See annotations in the 2026-08-16 status
-reports.)_
-
 ### v0.7.0 release follow-ups (harvested 2026-09-19)
 
 **Source:** `docs/status/2026-09-19_06-41_v0.7.0-release-go1.27-coherence-ci-recovery.md` section (f);
@@ -38,40 +19,46 @@ reports.)_
 FEATURES/AGENTS/HOW_TO_USE updates, jsonutil unit tests, gogenfilter CHANGELOG entry, performance.yml
 toolchain pins, Windows stdin-test skips) are NOT listed — they live in the CHANGELOG when released.
 
-- [ ] **Sweep gogenfilter consumers to v3.6.1** — DONE 2026-09-19 for all 14 clean consumers (8 direct + 6 indirect, incl. vendor sync in oxlint-auto-configure). **Follow-up:** 9 consumers were SKIPPED with pre-existing red baselines and still carry ≤v3.6.0 — branching-flow, BuildFlow, auto-deduplicate (build failures), erraudit [formerly hierarchical-errors - same repo, listed twice in error until 2026-09-22], go-filewatcher, Cyberdom, overview, project-discovery-daemon (test failures). Fixing those baselines is its own task per repo; go-filewatcher's `TestFilterGeneratedCode_SingleFilters/SQLC` failure may be a stale gogenfilter-behavior assumption worth checking first.
-- [ ] **Fleet audit: `encoding/json/v2` imports / `format:` tags on Go 1.27** (#14) — same breakage class as art-dupl's blocker (go.dev/issue/71631); check every LarsArtmann repo on Go 1.27.
+**Done 2026-09-23 (removed per the no-completed-items rule; details: CHANGELOG [Unreleased]):**
+#12 self-clean ledger, #16 pre-release-check.sh, #19 auto-tag workflow, #22 corpus re-baseline,
+#24 stale-shell doctor, #29 separator tables, #30 exhaustruct noise, #31 monthly self-scan routine,
+#32 errors.AsType, #35 2026-08 VERIFY pass, #38 t.Chdir, #39 tagalign/nestif, #40 arch-lint in flake,
+#48 dump-tokens templ verification.
+
+- [ ] **Sweep gogenfilter consumers to v3.6.1** — DONE 2026-09-19 for all 14 clean consumers (8 direct + 6 indirect, incl. vendor sync in oxlint-auto-configure). **Follow-up:** 9 consumers were SKIPPED with pre-existing red baselines and still carry ≤v3.6.0 — branching-flow, BuildFlow, auto-deduplicate (build failures), erraudit, go-filewatcher, Cyberdom, overview, project-discovery-daemon (test failures). Fixing those baselines is its own task per repo; go-filewatcher's `TestFilterGeneratedCode_SingleFilters/SQLC` failure may be a stale gogenfilter-behavior assumption worth checking first.
+- [ ] **Fleet audit: `encoding/json/v2` imports / `format:` tags on Go 1.27** (#14) — same breakage class as art-dupl's blocker (go.dev/issue/71631); check every LarsArtmann repo on Go 1.27. **art-dupl in-repo slice (2026-09-23):** ~30 files still import `encoding/json/v2`/`jsontext` directly (mostly `_test.go` and enum/string-only payloads — tolerated per AGENTS.md); migrate any file that must marshal Duration-bearing types to the v1 API (the `internal/jsonutil` regression class).
 - [ ] **Fleet audit: `filepath.Separator` matching + `strings.Split(_, ":")` path parsing** (#15) — the Windows bug class that cost seven CI cycles; sweep test and product code.
-- [ ] **`scripts/pre-release-check.sh`** (#16) — codify `git ls-remote` tag-collision check, CI-green gate, and toolchain pinning (go-release skill Phase 0–4).
 - [ ] **Branch protection with required checks + failure notifications** (#18) — red CI sat unnoticed for 4 days; needs owner action on GitHub settings.
-- [ ] **Investigate the "Auto-tag on version change" workflow** (#19) — ensure it cannot fight manual release tags (v0.7.0 collision class).
+- [ ] **Root-cause Windows exe-start `ProcessState nil`; un-skip `TestExitCodes_Process`** (#4) — 3-attempt retry insufficient, runner refuses freshly built exes; logic covered by `TestExitCodeForError` meanwhile.
 - [ ] **go-paperless: tag + release the findByName consolidation** (#20) — pushed 2026-09-19 (`04c32dc`), CI verifying; needs CHANGELOG + version decision via go-release.
-- [ ] **Root-cause Windows exe-start `ProcessState nil`; un-skip `TestExitCodes_Process`** (#4) — 3-attempt retry insufficient, runner refuses freshly built exes; logic covered by `TestExitCodeForError` meanwhile. (The stdin-cancel flakes were fixed 2026-09-19: the three `TestStdinFeed_*` tests are Windows-skipped with documented rationale, and the windows Test lane runs without `GOEXPERIMENT=jsonv2` to dodge the fatal-GC-crash class — CI green since `ea05eb1e`.)
-- [ ] **Corpus re-baseline post-v0.7.0** (#22) — AGENTS.md corpus numbers predate ADR-0023 + Go 1.27.1; fresh validation pass then refresh numbers.
-- [ ] **Self-clean decision ledger** (#12) — durable per-group record for the `-t 1` self-scan (true current count: **40 groups**, re-measured 2026-09-19; the report's "44" was a file-count heuristic). Decision + rationale per group, so future sessions don't re-litigate.
-- [ ] **Make stale-shell failures graceful** (#24) — detect local go < go.mod requirement and print an actionable message (dart of the `GOTOOLCHAIN=local` trap).
-- [ ] **Verify `--dump-tokens` positions on a templ file** (#48) — the position work targeted Go files; templ ranges inherit differently.
-- [ ] **`nix flake check` should cover arch-lint locally** (#40) — the 2026-09-18 arch-lint break only surfaced in CI.
-- [ ] __docs-health VERIFY pass over 2026-08-_ status reports_* (#35) — several claims now stale post-ADR-0023/1.27.
-- [ ] **Small quality batch** — both-separator table cases for `shouldSkipPath` (#29); `t.Chdir` sweep (#38); confirm tagalign/nestif additions are wanted (#39); exhaustruct bdd-exclusion noise check (#30); monthly `-t 1` self-scan routine documented (#31); evaluate `errors.AsType[E]` in errors/marshal.go (#32).
+
+### BuildFlow upstream (discovered 2026-09-23)
+
+- [ ] Align `go-version-auto-configure` (raises the go line to the toolchain on `go get -u`) with `go-mod-normalize` (canonicalizes patch pins away) — the two dispositions fought through repo go.mods 5x on 2026-09-19/23 (BuildFlow preflight `workspace/go-line-flipflop`). Worked around in art-dupl via `.buildflow.yml` `skip_steps`; fleet fix belongs upstream.
+- [ ] `golangci-lint-auto-configure` re-adds fleet-default linters that repos deliberately banned (exhaustruct, tagliatelle here) on every pipeline run, fighting per-repo guard scripts — the chronic nix `disabled-linters` red since 2026-09-19. Worked around via `skip_steps`; consider a "respect existing ban list" heuristic upstream.
+- [ ] Rebuild the BuildFlow binary (stale: built at `7e1fbfe`, repo at later HEAD) — `go-structure-linter` currently emits false "unknown field" errors because its analysis packages are go1.26 against a go1.27 `go list`.
+- [ ] Re-verify `nix-hash-fix` now that treefmt/disabled-linters are green — it failed 36/36 historically because unrelated red checks blocked the pipeline; confirm the vendorHash update for the 2026-09-22/23 go.sum bumps landed.
+- [ ] pma auto-commit daemon blind spot: mid-edit files were committed unformatted several times during 2026-09-22/23 sessions; consider a post-format hook or debounce (BuildFlow skill anti-pattern note).
 
 ## PARKED: Explicit Entry Criteria (not amnesia)
 
-Items live in ROADMAP/DEFERRED until their trigger fires. Triggers mirror plan §5.
+Items live in ROADMAP/DEFERRED until their trigger fires. Triggers mirror
+plan §5.
 
-| Item (detail in ROADMAP / ADR)                                                            | Entry criterion                                                   |
-| ----------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
-| Suffix Array + LCP detector (ADR-0020)                                                    | T1 stage split shows suffix tree ≥30% of wall clock on real repos |
-| Per-file offset map (8N→2N memory)                                                        | T1 + memory profile on a 100k-file corpus                         |
-| Winnowing pre-filter                                                                      | A user actually hits 100k-file scale                              |
-| `int32` arena indices, `[]Pos` pool                                                       | Profile shows pointer-chasing / search allocs dominant again      |
-| Threshold cliff, `.art-duplignore`, `--ci-gate`, `--diff-baseline`, test-aware thresholds | Post-T10 corpus numbers define which UX lever pays first          |
-| TS/Python support, LSP, watch mode, ML actionability                                      | Explicit user pull                                                |
-| TypeAwareData restructure, branded `NodeType`, `syntax/golang` facade                     | Breaking-change windows only (major version)                      |
+| Item (detail in ROADMAP / ADR)                        | Entry criterion                                  |
+| ----------------------------------------------------- | ------------------------------------------------ |
+| Suffix Array + LCP detector (ADR-0020)                | T1 stage split shows suffix tree ≥30% of wall clock on real repos |
+| Per-file offset map (8N→2N memory)                    | T1 + memory profile on a 100k-file corpus        |
+| Winnowing pre-filter                                  | A user actually hits 100k-file scale             |
+| int32 arena indices, []Pos pool                       | Profile shows pointer-chasing / search allocs dominant again |
+| Threshold cliff, `.art-duplignore`, `--ci-gate`, `--diff-baseline`, test-aware thresholds | Post-T10 corpus numbers define which UX lever pays first |
+| TS/Python support, LSP, watch mode, ML actionability  | Explicit user pull                               |
+| TypeAwareData restructure, branded NodeType, syntax/golang facade | Breaking-change windows only (major version) |
 
 ### Architecturally constrained (DEFERRED)
 
-- [ ] **Branded `NodeType int32`**: prevents cross-package constant collision, but touches the gob cache format. Current 8-bit shared encoding is intentional (ADR-0008).
-- [ ] **Hide `syntax/golang` behind facade**: blocked by import cycle (`syntax/golang` imports `syntax` for Node; `printer/actionability` imports `syntax/golang` for AST constants).
-- [ ] **`sync.Pool` for `[]*Node` stream slices**: NO-GO, measured 2026-08-16 — after the T13 arena, serialization costs 2 allocs/file (~0.03% of run allocs); pooling would add cross-package lifetime plumbing for no measurable win. Re-evaluate only if serialization allocations regress.
-- [ ] **`sync.Pool` for contextList `[]Pos` slices**: rejected in ADR-0022 — slices transfer between contextLists via `append` (which may reallocate); lifetime tracking would out-complex the savings.
-- [ ] **Restructure `TypeAwareData` so `EraseHash` is collection-level**: per-entry on `PreloadedAST`, validated at runtime with a warning (`job/incremental.go::SetTypeAwareData`). Collection-level type would enforce the invariant at compile time. Breaking change to `syntax/golang/typeinfo.go`.
+- [ ] Branded `NodeType int32`: prevents cross-package constant collision, but touches the gob cache format. Current 8-bit shared encoding is intentional (ADR-0008).
+- [ ] Hide `syntax/golang` behind facade: blocked by import cycle (`syntax/golang` imports `syntax` for Node; `printer/actionability` imports `syntax/golang` for AST constants).
+- [ ] `sync.Pool` for `[]*Node` stream slices: NO-GO, measured 2026-08-16 — after the T13 arena, serialization costs 2 allocs/file (~0.03% of run allocs); pooling would add cross-package lifetime plumbing for no measurable win. Re-evaluate only if serialization allocations regress.
+- [ ] `sync.Pool` for contextList `[]Pos` slices: rejected in ADR-0022 — slices transfer between contextLists via `append` (which may reallocate); lifetime tracking would out-complex the savings.
+- [ ] Restructure `TypeAwareData` so `EraseHash` is collection-level: per-entry on `PreloadedAST`, validated at runtime with a warning (`job/incremental.go::SetTypeAwareData`). Collection-level type would enforce the invariant at compile time. Breaking change to `syntax/golang/typeinfo.go`.
