@@ -24,6 +24,12 @@ func stateWithExactTransitions(n int) (*STree, *state) {
 	return tree, tree.root
 }
 
+// BenchmarkFindTranBoundary4 is a mid-range linear-scan size (half of
+// linearScanMax), representative of the majority of internal states.
+func BenchmarkFindTranBoundary4(b *testing.B) {
+	benchmarkBoundaryLookup(b, linearScanMax/2)
+}
+
 // BenchmarkFindTranBoundary8 is the last linear-scan size (== linearScanMax).
 func BenchmarkFindTranBoundary8(b *testing.B) {
 	benchmarkBoundaryLookup(b, linearScanMax)
@@ -33,6 +39,12 @@ func BenchmarkFindTranBoundary8(b *testing.B) {
 // (== linearScanMax+1).
 func BenchmarkFindTranBoundary9(b *testing.B) {
 	benchmarkBoundaryLookup(b, linearScanMax+1)
+}
+
+// BenchmarkFindTranBoundary16 is a comfortably-above-cutoff size where
+// binary search is well into its asymptotic advantage.
+func BenchmarkFindTranBoundary16(b *testing.B) {
+	benchmarkBoundaryLookup(b, linearScanMax*2)
 }
 
 func benchmarkBoundaryLookup(b *testing.B, n int) {
