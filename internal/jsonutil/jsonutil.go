@@ -32,6 +32,7 @@ func MarshalIndent(v any, prefix, indent string) ([]byte, error) {
 
 	enc := json.NewEncoder(&buf)
 	enc.SetEscapeHTML(false)
+
 	if indent != "" || prefix != "" {
 		enc.SetIndent(prefix, indent)
 	}

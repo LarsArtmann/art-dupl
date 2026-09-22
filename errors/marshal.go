@@ -50,10 +50,12 @@ func HandleMarshalingError(operation, context string, err error) error {
 
 	_, isUnmarshalTypeErr := errors.AsType[*json.UnmarshalTypeError](err)
 	_, isUnsupportedTypeErr := errors.AsType[*json.UnsupportedTypeError](err)
+
 	_, isUnsupportedValueErr := errors.AsType[*json.UnsupportedValueError](err)
 	if isUnmarshalTypeErr || isUnsupportedTypeErr || isUnsupportedValueErr {
 		return newMarshalError(operation, context, err, ErrUnsupportedType)
 	}
+
 	return &MarshalError{Operation: operation, Context: context, Cause: err}
 }
 
