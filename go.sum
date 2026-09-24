@@ -84,6 +84,8 @@ github.com/larsartmann/go-error-family v0.10.2 h1:WXrBI60IZBli5bvjOr/XOZbqzPtGAP
 github.com/larsartmann/go-error-family v0.10.2/go.mod h1:SYSVwVMTkw2GcqXI4khjMYOg7ey39o8sh7rXC9LfNcY=
 github.com/larsartmann/go-finding v1.13.0 h1:JTLKvlNb6C9Yldwu1Iojyte7c6ng8frzGTdq5DNEvcc=
 github.com/larsartmann/go-finding v1.13.0/go.mod h1:0ebJF4MSuJDqO1+u2SK/QVJF+vJfwxJDuzTSjc39eIs=
+github.com/larsartmann/go-finding/toolsdk v1.13.1 h1:CHwOfUGb/xZXYt/5L7bruORcKV6I/XuwSChmvdjsTxE=
+github.com/larsartmann/go-finding/toolsdk v1.13.1/go.mod h1:Ic6n6qgRLxjFvju1cDveWYryGdBjAgUDT7Macoj5gpk=
 github.com/lucasb-eyer/go-colorful v1.4.1 h1:1EO+WB73+EH8EVbzlrG3KLAfEypQWVHIBqlTf+2hNss=
 github.com/lucasb-eyer/go-colorful v1.4.1/go.mod h1:R4dSotOR9KMtayYi1e77YzuveK+i7ruzyGqttikkLy0=
 github.com/maruel/natural v1.1.1 h1:Hja7XhhmvEFhcByqDoHz9QZbkWey+COd9xWfCfn1ioo=
