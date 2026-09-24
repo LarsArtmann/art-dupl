@@ -9,9 +9,11 @@
 // Detect runs the public SDK (pkg/artdupl) in semantic mode at the default
 // threshold and converts groups to go-finding Findings through the
 // printer/finding adapter, so GroupID, severity ladder, positions, snippets,
-// and Related links are identical to the CLI's SARIF/finding output. The SDK
-// pipeline does not run actionability classification (CLI-only), so
-// classification metadata keys are absent from these findings; severity
+// and Related links come from the same adapter code the CLI's finding output
+// uses. The SDK pipeline does not run actionability or generics analysis
+// (CLI-only), so Classification is zero-valued: after stripEmptyMetadata the
+// classification metadata keys (art-dupl/clone-type, -category, -priority,
+// -actionability, -generics-*) are absent from these findings; severity
 // gating in BuildFlow works off the threshold ladder regardless.
 //
 // File discovery mirrors the CLI's default exclusions: only .go/.templ files,
@@ -119,7 +121,9 @@ func providerOptions() *artdupl.Options {
 
 // findingsFromGroups converts SDK clone groups into go-finding findings via
 // the shared printer/finding adapter, keeping IDs, GroupIDs, severity, and
-// metadata byte-identical with the CLI's finding output for the same input.
+// positions identical to the CLI's finding output for the same group input.
+// Classification metadata keys are intentionally absent: the SDK pipeline
+// never computes them (see the package doc).
 func findingsFromGroups(groups []*artdupl.CloneGroup) []gofinding.Finding {
 	opts := finding.Options{
 		Version:         providerVersion(),
