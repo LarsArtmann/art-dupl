@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Nothing yet.
+
+### Fixed
+
+- Nothing yet.
+
+## [0.7.1] - 2026-09-24
+
+### Added
+
 - **Pre-release gate script** (`scripts/pre-release-check.sh`): codifies the go-release Phase 0–4 checks — dirty-tree, toolchain pinning, replace-directive and pseudo-version scans, tidy idempotence, build/vet/test (opt-in `--race`/`--lint`), remote tag-collision check via `git ls-remote` (the v0.7.0 collision class), and a green-CI gate via `gh` with explicit `--skip-ci` override.
 - **Stale-shell doctor** (`scripts/go-env-doctor.sh`): detects the `GOTOOLCHAIN=local` + older-go trap and prints the exact fix (`direnv reload` / `nix develop` / one-off toolchain override) instead of a bare version error.
 - **Monthly self-scan routine**: `scripts/self-scan.sh` runs the documented `-t 1 --type-aware` self-scan; per-group decisions land in the new durable ledger `docs/SELF_CLEAN_LEDGER.md` (seeded with the 2026-09-19 and 2026-09-22 sweeps). Cadence documented in AGENTS.md.
