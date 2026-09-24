@@ -15,25 +15,33 @@ const toolName = finding.ToolName
 
 const duplicatedFunction = `func processOrder(orderID string, quantity int) (int, error) {
 	total := quantity * 3
-	if total > 100 {
-		total = total - 10
+	adjusted := total + 7
+	scaled := adjusted * 2
+	if scaled > 100 {
+		scaled = scaled - 10
 	}
 	if orderID == "" {
 		return 0, errors.New("empty order")
 	}
-	return total, nil
+	normalized := scaled / 2
+	finalTotal := normalized + adjusted
+	return finalTotal, nil
 }
 `
 
 const renamedFunction = `func processShipment(shipmentID string, boxes int) (int, error) {
-	count := boxes * 3
-	if count > 100 {
-		count = count - 10
+	total := boxes * 3
+	adjusted := total + 11
+	scaled := adjusted * 2
+	if scaled > 100 {
+		scaled = scaled - 10
 	}
 	if shipmentID == "" {
 		return 0, errors.New("empty shipment")
 	}
-	return count, nil
+	normalized := scaled / 2
+	finalTotal := normalized + adjusted
+	return finalTotal, nil
 }
 `
 
@@ -129,7 +137,13 @@ func TestDetectFindsType1AndType2Clones(t *testing.T) {
 			t.Error("finding Snippet must be populated (IncludeFragments)")
 		}
 
-		files[string(f.Position.File)] = true
+		for key, value := range f.Metadata {
+			if value == "" {
+				t.Errorf("finding metadata %q is empty; unclassified keys must be dropped", key)
+			}
+		}
+
+		files[filepath.Base(string(f.Position.File))] = true
 		groupIDs[f.GroupID]++
 	}
 

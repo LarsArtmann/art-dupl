@@ -56,6 +56,10 @@ components:
   finding-output:
     in: printer/finding/**
 
+  # BuildFlow toolsdk provider (self-registering go-finding Detector)
+  provider:
+    in: pkg/provider/**
+
   # Output formatting
   printer:
     in: printer/**
@@ -179,6 +183,12 @@ deps:
       - domain
       - config
       - pkg-utils
+
+  provider:
+    mayDependOn:
+      - sdk
+      - finding-output
+      - domain
 
   stats:
     mayDependOn:

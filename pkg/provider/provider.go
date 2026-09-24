@@ -23,6 +23,7 @@ package provider
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"runtime/debug"
 
@@ -93,6 +94,12 @@ func (cloneDetector) Detect(ctx context.Context) ([]gofinding.Finding, error) {
 
 	result, err := detector.FindClones(ctx, files)
 	if err != nil {
+		// A clone-free repo is a successful Detect run, not an error: the
+		// SDK surfaces zero groups as a sentinel.
+		if errors.Is(err, artdupl.ErrNoDuplicatesFound) {
+			return []gofinding.Finding{}, nil
+		}
+
 		return nil, fmt.Errorf("detect clones in %s: %w", dir, err)
 	}
 
@@ -125,7 +132,22 @@ func findingsFromGroups(groups []*artdupl.CloneGroup) []gofinding.Finding {
 		findings = append(findings, finding.ToFindings(toProcessedGroup(group), opts)...)
 	}
 
+	stripEmptyMetadata(findings)
+
 	return findings
+}
+
+// stripEmptyMetadata drops empty-valued metadata entries. The shared adapter
+// emits classification keys unconditionally; the SDK pipeline (unlike the
+// CLI) has no classification, so those keys would all be empty strings.
+func stripEmptyMetadata(findings []gofinding.Finding) {
+	for i := range findings {
+		for key, value := range findings[i].Metadata {
+			if value == "" {
+				delete(findings[i].Metadata, key)
+			}
+		}
+	}
 }
 
 // toProcessedGroup maps an SDK CloneGroup onto the domain group shape the

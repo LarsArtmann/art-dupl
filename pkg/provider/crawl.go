@@ -36,7 +36,7 @@ func collectSourceFiles(root string) ([]string, error) {
 		return nil, fmt.Errorf("create generated-code filter: %w", err)
 	}
 
-	files := make([]string, 0, 64)
+	var files []string
 
 	walkErr := filepath.WalkDir(root, func(path string, entry fs.DirEntry, err error) error {
 		if err != nil {
@@ -61,9 +61,11 @@ func collectSourceFiles(root string) ([]string, error) {
 			return nil
 		}
 
-		filtered, err := filter.Filter(path)
-		if err != nil || filtered {
-			return nil
+		filtered, filterErr := filter.Filter(path)
+		if filterErr != nil || filtered {
+			// Deliberate skip: a file that vanished or became unreadable
+			// mid-walk must not fail the whole detection run.
+			return nil //nolint:nilerr // deliberate skip, see comment above
 		}
 
 		files = append(files, path)
