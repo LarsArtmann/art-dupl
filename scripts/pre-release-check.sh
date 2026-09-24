@@ -99,7 +99,8 @@ go build ./... || fail "go build failed"
 go vet ./... || fail "go vet failed"
 say "build + vet ok"
 if [ "$RACE" -eq 1 ]; then
-	go test -race -count=1 ./... || fail "race tests failed"
+	# -race needs cgo (matches the flake's race check, which sets CGO_ENABLED=1).
+	CGO_ENABLED=1 go test -race -count=1 ./... || fail "race tests failed"
 else
 	go test -count=1 ./... || fail "tests failed"
 fi
