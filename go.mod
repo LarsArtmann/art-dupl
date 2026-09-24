@@ -86,6 +86,7 @@ require (
 	github.com/dustin/go-humanize v1.1.0
 	github.com/go-faster/yaml v0.4.6
 	github.com/larsartmann/go-finding v1.13.0
+	github.com/larsartmann/go-finding/toolsdk v1.13.1
 	github.com/onsi/ginkgo/v2 v2.33.0
 	github.com/onsi/gomega v1.43.0
 	github.com/sergi/go-diff v1.4.0
@@ -118,7 +119,6 @@ require (
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/klauspost/cpuid/v2 v2.4.0 // indirect
 	github.com/larsartmann/go-error-family v0.10.2 // indirect
-	github.com/larsartmann/go-finding/toolsdk v1.13.1 // indirect
 	github.com/lucasb-eyer/go-colorful v1.4.1 // indirect
 	github.com/mattn/go-runewidth v0.0.30 // indirect
 	github.com/muesli/cancelreader v0.2.2 // indirect

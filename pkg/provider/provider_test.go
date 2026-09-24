@@ -6,9 +6,12 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/LarsArtmann/art-dupl/printer/finding"
 	gofinding "github.com/larsartmann/go-finding"
 	toolsdk "github.com/larsartmann/go-finding/toolsdk"
 )
+
+const toolName = finding.ToolName
 
 const duplicatedFunction = `func processOrder(orderID string, quantity int) (int, error) {
 	total := quantity * 3
@@ -56,8 +59,8 @@ func dirContext(t *testing.T, dir string) context.Context {
 func TestProviderRegistersValidSpec(t *testing.T) {
 	var spec *toolsdk.Spec
 
-	for i, candidate := range toolsdk.All() {
-		if candidate.Name == findingToolName {
+	for i := range toolsdk.All() {
+		if toolsdk.All()[i].Name == toolName {
 			spec = &toolsdk.All()[i]
 
 			break
@@ -65,7 +68,7 @@ func TestProviderRegistersValidSpec(t *testing.T) {
 	}
 
 	if spec == nil {
-		t.Fatalf("toolsdk registry has no %q spec; registered: %d specs", findingToolName, len(toolsdk.All()))
+		t.Fatalf("toolsdk registry has no %q spec; registered: %d specs", toolName, len(toolsdk.All()))
 	}
 
 	if spec.Description == "" {
@@ -76,8 +79,8 @@ func TestProviderRegistersValidSpec(t *testing.T) {
 		t.Error("spec Detect must be set")
 	}
 
-	if spec.Detect != nil && spec.Detect.Name() != findingToolName {
-		t.Errorf("Detect.Name() = %q, want %q", spec.Detect.Name(), findingToolName)
+	if spec.Detect != nil && spec.Detect.Name() != toolName {
+		t.Errorf("Detect.Name() = %q, want %q", spec.Detect.Name(), toolName)
 	}
 
 	if len(spec.Trigger.Files) == 0 {
@@ -110,16 +113,16 @@ func TestDetectFindsType1AndType2Clones(t *testing.T) {
 	groupIDs := map[gofinding.GroupID]int{}
 
 	for _, f := range findings {
-		if f.ToolName != findingToolName {
-			t.Errorf("finding ToolName = %q, want %q", f.ToolName, findingToolName)
+		if f.ToolName != toolName {
+			t.Errorf("finding ToolName = %q, want %q", f.ToolName, toolName)
 		}
 
 		if f.GroupID == "" {
 			t.Error("finding GroupID must not be empty")
 		}
 
-		if f.Rule != gofinding.RuleName(ruleCloneDetected) {
-			t.Errorf("finding Rule = %q, want %q", f.Rule, ruleCloneDetected)
+		if f.Rule != gofinding.RuleName(finding.RuleCloneDetected) {
+			t.Errorf("finding Rule = %q, want %q", f.Rule, finding.RuleCloneDetected)
 		}
 
 		if f.Snippet == "" {
