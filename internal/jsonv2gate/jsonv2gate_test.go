@@ -23,17 +23,17 @@ import (
 // migrated to the v1 API (preferred; byte-identical output via
 // internal/jsonutil for wire paths) or added here with a reviewed rationale.
 var toleratedV2Importers = map[string]string{
-	"config/enum_helpers.go":    "enum string-only payloads, no Duration",
-	"config/config_migrate.go":  "raw jsontext.Value migration parsing, never marshals structs",
-	"pkg/enum/enum.go":          "enum string-only payloads, no Duration",
-	"baseline/baseline.go":      "baseline format is string/int payloads, no Duration fields",
-	"internal/testutil/assert.go":   "test-support package, string-only payloads",
+	"config/enum_helpers.go":           "enum string-only payloads, no Duration",
+	"config/config_migrate.go":         "raw jsontext.Value migration parsing, never marshals structs",
+	"pkg/enum/enum.go":                 "enum string-only payloads, no Duration",
+	"baseline/baseline.go":             "baseline format is string/int payloads, no Duration fields",
+	"internal/testutil/assert.go":      "test-support package, string-only payloads",
 	"internal/testutil/bdd_runners.go": "test-support package, string-only payloads",
 }
 
 // jsonv2ImportPaths are the banned-under-risk import paths.
 var jsonv2ImportPaths = map[string]bool{
-	"encoding/json/v2":        true,
+	"encoding/json/v2":          true,
 	"encoding/json/v2/jsontext": true,
 }
 
@@ -60,7 +60,6 @@ func TestNoDurationRiskyJSONV2Imports(t *testing.T) {
 
 			return nil
 		}
-
 
 		if !strings.HasSuffix(name, ".go") || strings.HasSuffix(name, "_test.go") {
 			return nil
@@ -116,6 +115,11 @@ func scanFile(t *testing.T, path string) (bool, bool) {
 		t.Fatalf("parse %s: %v", path, err)
 	}
 
+	var (
+		importsV2    bool
+		durationRisk bool
+	)
+
 	for _, imp := range file.Imports {
 		if jsonv2ImportPaths[strings.Trim(imp.Path.Value, `"`)] {
 			importsV2 = true
@@ -141,12 +145,12 @@ func scanFile(t *testing.T, path string) (bool, bool) {
 			return true
 		}
 
-		risk = true
+		durationRisk = true
 
 		return true
 	})
 
-	return risk
+	return importsV2, durationRisk
 }
 
 // isTimeDuration reports whether the expression is time.Duration.
