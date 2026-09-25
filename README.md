@@ -179,6 +179,27 @@ result, err := detector.FindClones(ctx)
 
 The SDK has zero imports of `config/` or `errors/` — fully independent types. See [SDK Design](SDK_DESIGN.md) and [pkg.go.dev](https://pkg.go.dev/github.com/LarsArtmann/art-dupl/pkg/artdupl).
 
+### toolsdk Provider (BuildFlow integration)
+
+art-dupl ships a self-registering [go-finding toolsdk](https://github.com/larsartmann/go-finding) provider: any consumer that blank-imports `pkg/provider` gets a fully-wired duplication detector with zero glue code.
+
+```go
+import (
+    _ "github.com/LarsArtmann/art-dupl/pkg/provider" // the import is the registration
+)
+```
+
+The provider runs the SDK in semantic mode at the fixed default threshold
+(5 statements) over Go + templ files, honors `.gitignore`, skips
+vendor/generated/dot-directories, and emits go-finding `Finding`s with a
+deterministic `GroupID` per clone group. `ErrNoDuplicatesFound` from the SDK
+maps to an empty finding list — a clean repo is success, not an error.
+Classification metadata (actionability, clone type) is intentionally
+CLI-only — see [ADR-0025](docs/adr/0025-sdk-findings-classification-free.md).
+Consumer #1 is [BuildFlow](https://github.com/larsartmann/BuildFlow), where
+art-dupl is the core Go+templ duplication detector and jscpd covers the
+other languages.
+
 ---
 
 ## Supported Languages

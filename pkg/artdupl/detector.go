@@ -57,6 +57,12 @@ func NewDetector(opts *Options) (Detector, error) {
 
 // FindClones performs complete duplication analysis.
 // Not safe for concurrent use — see FindClonesStreamResult for concurrent scenarios.
+//
+// Error contract for SDK consumers: a clean repo is SUCCESS, not an error —
+// when the analysis completes but finds no clone groups, FindClones returns
+// (nil, ErrNoDuplicatesFound). Check with errors.Is and treat it as an empty
+// result (the toolsdk provider in pkg/provider maps it to an empty findings
+// list for exactly this reason).
 func (d *detector) FindClones(ctx context.Context, files []string) (*Result, error) {
 	startTime := time.Now()
 

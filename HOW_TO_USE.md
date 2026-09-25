@@ -918,3 +918,19 @@ cat dupl.json | jq '.'
 ```
 
 This guide should help you effectively integrate art-dupl into your development workflow. Remember that the goal is maintainable code, not zero duplication; some duplication may be acceptable for clarity or performance reasons.
+
+## SDK / Provider Integration
+
+Two programmatic integration channels exist beyond the CLI:
+
+1. **Go SDK** (`pkg/artdupl`): construct `artdupl.New(artdupl.Options{...})`
+   and call `FindClones(ctx, files)`. A clean repo returns
+   `ErrNoDuplicatesFound` (check with `errors.Is`) — that is success, not
+   failure.
+
+2. **toolsdk provider** (`pkg/provider`): a self-registering go-finding
+   provider. Blank-import it and the tool registers itself — BuildFlow uses
+   this to run art-dupl as its core Go+templ duplication detector
+   (jscpd stays as the non-Go backup lane). Fixed contract: semantic mode,
+   threshold 5 statements; honors `.gitignore`; skips vendor/generated/
+   dot-directories; classification metadata is CLI-only (ADR-0025).

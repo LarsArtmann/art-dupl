@@ -50,3 +50,42 @@ judged (details: `docs/status/2026-09-22_21-47_dedup-sprint-self-scan-t4-t1.md`)
 **Result of the sweep:** 1059 detected / 28 shown after the extraction; no new
 groups introduced. Sort-order churn between runs is expected (parallel search
 output order is nondeterministic — documented in ADR-0019).
+
+## 2026-09-25 sweep (C3, post-B1 gitignore work)
+
+Scan: `scripts/self-scan.sh` (`-t 1 --type-aware`) → 1078 detected / 28 shown
+(after fixing the one group this change-set introduced; the raw scan first
+reported 29 shown).
+
+**Extracted this sweep:**
+- `internal/gitignore/gitignore.go` — the duplicated `if len(rules) == 0 {
+  return nil }` tail across `LoadGitignore` and the new `LoadTree` collapsed
+  into `matcherFromRules` (the new group this scan caught in our own B1 work;
+  found by our own tool the same day it was written).
+
+**Accepted (existing idiom classes, unchanged from the 2026-09-22 table):**
+- `case golang.IfStmt:` rows, single `default:` clauses (actionability
+  pattern-table rows are data, not logic).
+- `child.Statement = true` pairs across `syntax/golang` / `syntax/templ`
+  (transformer shape mirrors the two ASTs; a shared helper would need the
+  two node types to unify, which is the ROADMAP syntax-facade cut).
+- `statsChan <- stats` finalize pairs, `if i > maxChildren` arena guards,
+  `if split` match pairs, BDD `if s.T != nil` guards (test-support
+  boilerplate), filter_stats guard pairs, min/max cross-package loops — all
+  carry their prior rationales in the table above.
+
+## B7 — SDK-path self-scan (provider crawl on art-dupl itself)
+
+Ran the toolsdk provider path (`toolsdk.All()` → `spec.Detect` with the
+art-dupl repo as working dir) against our own tree:
+
+- SDK path: **179 findings / 72 distinct clone groups** (GroupID-stable).
+- CLI at `-t 5`: 60 detected groups, 0 shown (23 non-actionable, 37
+  filtered suppressed).
+- The 60→72 delta is crawl policy, not detection drift: the CLI's default
+  config ignores `*_test.go`; the provider's crawl deliberately does NOT
+  (BuildFlow parity — jscpd also scans test files). Consumers comparing the
+  two channels must expect this difference.
+- Cross-checked GroupID determinism in
+  `TestFindingsFromGroups_GroupIDStableAcrossRuns` (identical GroupIDs
+  across independent runs).
