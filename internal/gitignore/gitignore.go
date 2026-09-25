@@ -76,11 +76,7 @@ func LoadGitignore(paths []string, stderr io.Writer) *GitignoreMatcher {
 		}
 	}
 
-	if len(rules) == 0 {
-		return nil
-	}
-
-	return &GitignoreMatcher{rules: rules}
+	return matcherFromRules(rules)
 }
 
 // LoadTree collects .gitignore rules from root and EVERY nested directory,
@@ -125,11 +121,7 @@ func LoadTree(root string, stderr io.Writer) *GitignoreMatcher {
 		fmt.Fprintf(stderr, "warning: walk %s for .gitignore files: %v\n", absRoot, walkErr)
 	}
 
-	if len(rules) == 0 {
-		return nil
-	}
-
-	return &GitignoreMatcher{rules: rules}
+	return matcherFromRules(rules)
 }
 
 // IsIgnored reports whether path should be ignored according to the loaded
@@ -263,4 +255,14 @@ func parseGitignoreFile(path string) ([]gitignorePattern, error) {
 	}
 
 	return patterns, nil
+}
+
+// matcherFromRules returns nil when no rules were collected (callers treat a
+// nil matcher as "no gitignore layer"), mirroring the LoadGitignore contract.
+func matcherFromRules(rules []gitignoreRule) *GitignoreMatcher {
+	if len(rules) == 0 {
+		return nil
+	}
+
+	return &GitignoreMatcher{rules: rules}
 }

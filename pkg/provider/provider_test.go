@@ -615,7 +615,6 @@ func TestDetect_MultiModuleWorkspaceShape(t *testing.T) {
 
 	// Cross-module clone pair: identical 6-statement bodies in mod-a and
 	// mod-b (function names differ — package-level API surface).
-	clone := "package %s\n\nfunc Process(items []int) int {\n\ttotal := 0\n\tscaled := 0\n\toffset := 100\n\tflag := false\n\tfor _, item := range items {\n\t\ttotal += item\n\t\tscaled += item * 2\n\t}\n\tif total > offset {\n\t\tflag = true\n\t}\n\treturn total\n}\n"
 
 	write("mod-a/clone.go", "package a\n\nfunc ProcessA(items []int) int {\n\ttotal := 0\n\tscaled := 0\n\toffset := 100\n\tflag := false\n\tfor _, item := range items {\n\t\ttotal += item\n\t\tscaled += item * 2\n\t}\n\tif total > offset {\n\t\tflag = true\n\t}\n\treturn total\n}\n")
 	write("mod-b/clone.go", "package b\n\nfunc ProcessB(items []int) int {\n\ttotal := 0\n\tscaled := 0\n\toffset := 100\n\tflag := false\n\tfor _, item := range items {\n\t\ttotal += item\n\t\tscaled += item * 2\n\t}\n\tif total > offset {\n\t\tflag = true\n\t}\n\treturn total\n}\n")
