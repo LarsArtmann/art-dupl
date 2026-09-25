@@ -2,7 +2,7 @@ package artdupl
 
 import (
 	"context"
-	"encoding/json/v2"
+	"encoding/json"
 	"fmt"
 	"os"
 	"time"
