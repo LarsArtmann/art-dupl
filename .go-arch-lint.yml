@@ -68,6 +68,10 @@ components:
   jsonutil:
     in: internal/jsonutil/**
 
+  # .gitignore matching (shared by cmd and the toolsdk provider crawl)
+  gitignore:
+    in: internal/gitignore/**
+
   # Public SDK
   sdk:
     in: pkg/artdupl/**
@@ -131,6 +135,7 @@ deps:
       - baseline
       - pkg-utils
       - jsonutil
+      - gitignore
 
   detection:
     mayDependOn:
@@ -189,6 +194,7 @@ deps:
       - sdk
       - finding-output
       - domain
+      - gitignore
 
   stats:
     mayDependOn:

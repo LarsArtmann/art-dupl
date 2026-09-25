@@ -1,4 +1,4 @@
-package cmd
+package gitignore
 
 import (
 	"io"
