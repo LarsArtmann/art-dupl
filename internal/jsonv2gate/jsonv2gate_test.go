@@ -82,6 +82,7 @@ func TestNoDurationRiskyJSONV2Imports(t *testing.T) {
 				rel+" imports encoding/json/v2 on a Duration-bearing path; "+
 					"migrate to the v1 API (stdlib encoding/json or internal/jsonutil) - "+
 					"the pure v2 API refuses time.Duration and Go 1.27 removed the format-tag grammar")
+
 			return nil
 		}
 

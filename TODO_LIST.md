@@ -1,6 +1,6 @@
 # TODO List
 
-**Last Updated:** 2026-09-23
+**Last Updated:** 2026-09-25
 
 Actionable items for the next 2-4 weeks. Completed work lives in `CHANGELOG.md`.
 This file is OPEN work only — no completed, rejected, or resolved items.
@@ -11,6 +11,23 @@ is complete (24/26 done or no-go-verified). Remaining items below.
 ---
 
 ## MEDIUM Priority
+
+### BuildFlow core-lane follow-ups (harvested 2026-09-25)
+
+**Source:** `docs/planning/2026-09-24_18-04_artdupl-core-lane-buildflow-inversion.md` phases 2–3 and
+`docs/status/2026-09-25_05-00_artdupl-core-lane-live-jscpd-demotion-ghost-purge.md` (BuildFlow side).
+Done in that arc (NOT re-listed): BuildFlow wiring (v0.7.2), jscpd Go-lane demotion, ghost purge,
+install hints, E2E + budget verification, provider .gitignore (B1), concurrency suite (B2),
+provider polish (B4), multi-module fixture (B6), self-scan + SDK dogfood (B7/C3), classification
+ADR (B5 = docs/adr/0025), json/v2 AST gate (C1 = internal/jsonv2gate), ln-evidence re-verify (C2),
+flipflop skip verify (C4).
+
+- [ ] **Provider threshold knob (D1)** — toolsdk upstream: options/config channel on `Spec` so BuildFlow users can raise/lower the fixed 5-statement threshold without a release; prototype + PR in go-finding.
+- [ ] **toolsdk Spec.Timeout mapping (D1)** — BuildFlow maps no timeout from Spec; measure art-dupl at BuildFlow workspace scale (33-module fixture benchmark, numbers into docs/benchmarks/) and decide whether a Spec-level timeout field is needed upstream.
+- [ ] **Warnings budget for art-dupl in BuildFlow's own .buildflow.yml (D2)** — BuildFlow's tree shows 1210+ findings at the default threshold; set a telemetry-derived ceiling (+20% headroom, gotcha #184 pattern) in BuildFlow, verify render collapse.
+- [ ] **Lane-overlap measurement (D3, post-soak)** — after the fleet picks up the BuildFlow release: query jscpd non-Go findings vs art-dupl Go findings per repo; verdict on whether the backup lane pulls weight.
+- [ ] **Provider version flake pin (D6 oddment)** — art-dupl is public + proxy-servable (gotcha #105 rule 1: no flake input needed), but BuildFlow's flake comment still lists art-dupl under "install manually" — update the comment to point at `go install github.com/LarsArtmann/art-dupl@v0.7.2` (fixed) or the tools buildEnv.
+- [ ] **Fleet rollout of the core-lane pattern** — the same blank-import + registration-test + jscpd-lane-split recipe applies to any other BuildFlow consumer repo with Go duplication needs.
 
 ### v0.7.0 release follow-ups (harvested 2026-09-19)
 
@@ -34,7 +51,7 @@ toolchain pins, Windows stdin-test skips) are NOT listed — they live in the CH
 
 ### BuildFlow upstream (discovered 2026-09-23)
 
-- [ ] Align `go-version-auto-configure` (raises the go line to the toolchain on `go get -u`) with `go-mod-normalize` (canonicalizes patch pins away) — the two dispositions fought through repo go.mods 5x on 2026-09-19/23 (BuildFlow preflight `workspace/go-line-flipflop`). Worked around in art-dupl via `.buildflow.yml` `skip_steps`; fleet fix belongs upstream.
+- [ ] Align `go-version-auto-configure` (raises the go line to the toolchain on `go get -u`) with `go-mod-normalize` (canonicalizes patch pins away) — the two dispositions fought through repo go.mods 5x on 2026-09-19/23 (BuildFlow preflight `workspace/go-line-flipflop`). Worked around in art-dupl via `.buildflow.yml` `skip_steps`; fleet fix belongs upstream. **Skip verified effective 2026-09-25:** the pin survived every pipeline run this session (multiple `buildflow -s` + preflight) with `go 1.27.1` intact, and the normalize step is absent from matched tools.
 - [ ] `golangci-lint-auto-configure` re-adds fleet-default linters that repos deliberately banned (exhaustruct, tagliatelle here) on every pipeline run, fighting per-repo guard scripts — the chronic nix `disabled-linters` red since 2026-09-19. Worked around via `skip_steps`; consider a "respect existing ban list" heuristic upstream.
 - [ ] Rebuild the BuildFlow binary (stale: built at `7e1fbfe`, repo at later HEAD) — `go-structure-linter` currently emits false "unknown field" errors because its analysis packages are go1.26 against a go1.27 `go list`.
 - [ ] Re-verify `nix-hash-fix` now that treefmt/disabled-linters are green — it failed 36/36 historically because unrelated red checks blocked the pipeline; confirm the vendorHash update for the 2026-09-22/23 go.sum bumps landed.

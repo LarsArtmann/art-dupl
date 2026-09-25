@@ -188,9 +188,11 @@ func capAdvisorySeverities(findings []gofinding.Finding) {
 // CLI) has no classification, so those keys would all be empty strings.
 func stripEmptyMetadata(findings []gofinding.Finding) {
 	for i := range findings {
-		for key, value := range findings[i].Metadata {
+		metadata := findings[i].Metadata
+
+		for key, value := range metadata {
 			if value == "" {
-				delete(findings[i].Metadata, key)
+				delete(metadata, key)
 			}
 		}
 	}
