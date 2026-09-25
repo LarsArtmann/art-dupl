@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"io"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"strings"
@@ -73,6 +74,55 @@ func LoadGitignore(paths []string, stderr io.Writer) *GitignoreMatcher {
 
 			dir = parent
 		}
+	}
+
+	if len(rules) == 0 {
+		return nil
+	}
+
+	return &GitignoreMatcher{rules: rules}
+}
+
+// LoadTree collects .gitignore rules from root and EVERY nested directory,
+// mirroring git's own discovery semantics (each .gitignore governs its
+// directory and below; deeper files override shallower ones via negation).
+// Unlike LoadGitignore (which only walks UP from explicit paths), this is the
+// right loader for a full-tree crawl such as the toolsdk provider's. A nil
+// matcher is returned when no .gitignore exists under root.
+func LoadTree(root string, stderr io.Writer) *GitignoreMatcher {
+	var rules []gitignoreRule
+
+	absRoot, err := filepath.Abs(root)
+	if err != nil {
+		absRoot = root
+	}
+
+	walkErr := filepath.WalkDir(absRoot, func(path string, entry fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+
+		if entry.IsDir() || entry.Name() != ".gitignore" {
+			return nil
+		}
+
+		baseDir := filepath.Dir(path)
+
+		pats, parseErr := parseGitignoreFile(path)
+		if parseErr != nil {
+			fmt.Fprintf(stderr, "warning: %v\n", parseErr)
+
+			return nil
+		}
+
+		if len(pats) > 0 {
+			rules = append(rules, gitignoreRule{baseDir: baseDir, patterns: pats})
+		}
+
+		return nil
+	})
+	if walkErr != nil {
+		fmt.Fprintf(stderr, "warning: walk %s for .gitignore files: %v\n", absRoot, walkErr)
 	}
 
 	if len(rules) == 0 {

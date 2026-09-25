@@ -18,18 +18,19 @@
 //
 // File discovery mirrors the CLI's default exclusions: only .go/.templ files,
 // no dot-directories, vendor/, node_modules/, examples/, demo/, demos/, and
-// generated files (gogenfilter, all categories). .gitignore patterns are NOT
-// honored here (the matcher lives in the cmd layer) — the directory skips
-// above cover the dominant noise sources.
+// generated files (gogenfilter, all categories), plus .gitignore-ignored
+// files via the same matcher the CLI uses (internal/gitignore).
 package provider
 
 import (
 	"context"
 	"errors"
 	"fmt"
+	"io"
 	"runtime/debug"
 
 	"github.com/LarsArtmann/art-dupl/domain"
+	"github.com/LarsArtmann/art-dupl/internal/gitignore"
 	"github.com/LarsArtmann/art-dupl/pkg/artdupl"
 	"github.com/LarsArtmann/art-dupl/printer/finding"
 	gofinding "github.com/larsartmann/go-finding"
@@ -69,10 +70,16 @@ const originalSeverityTagPrefix = "original-severity-"
 var Provider = toolsdk.Register(toolsdk.Spec{
 	Name: finding.ToolName,
 	Description: "Code duplication detection: suffix-tree + AST-hash clones " +
-		"(Type 1 exact, Type 2 renamed, Type 3 near-miss) across Go and templ files",
+		"(Type 1 exact, Type 2 renamed, Type 3 near-miss) across Go and templ files. " +
+		"Fixed contract: semantic mode, threshold 5 statements (not configurable via the SDK)",
 	Trigger: toolsdk.OnFiles("go", "**/*.go", "**/*.templ"),
 	Inputs:  []string{"**/*.go", "**/*.templ"},
 	Detect:  cloneDetector{},
+	// Self-documenting no-op: the detector is pure-Go (suffix tree over
+	// parsed ASTs, no external binary, no network), so there is nothing to
+	// probe. Declared explicitly so consumers do not mistake the absent
+	// check for an unverified one.
+	HealthCheck: func(context.Context) error { return nil },
 })
 
 // cloneDetector implements the go-finding Detector contract on top of the
@@ -92,7 +99,7 @@ func (cloneDetector) Detect(ctx context.Context) ([]gofinding.Finding, error) {
 		dir = "."
 	}
 
-	files, err := collectSourceFiles(dir)
+	files, err := collectSourceFiles(dir, gitignore.LoadTree(dir, io.Discard))
 	if err != nil {
 		return nil, fmt.Errorf("collect source files under %s: %w", dir, err)
 	}

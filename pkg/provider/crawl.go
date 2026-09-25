@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/LarsArtmann/art-dupl/internal/gitignore"
 	"github.com/LarsArtmann/gogenfilter/v3"
 )
 
@@ -22,10 +23,13 @@ var excludedDirs = map[string]struct{}{ //nolint:gochecknoglobals // fixed exclu
 
 // collectSourceFiles walks root and returns every analyzable source file:
 // .go and .templ files outside excluded directories, with generated Go files
-// removed via gogenfilter (all categories, content-based detection included).
-// A file whose generated-filter check fails I/O-wise (e.g. vanished mid-walk)
-// is skipped rather than failing the whole run.
-func collectSourceFiles(root string) ([]string, error) {
+// removed via gogenfilter (all categories, content-based detection included)
+// and .gitignore-ignored files removed via the shared matcher (parity with
+// the CLI crawl and jscpd's --gitignore). A nil ignore matcher (no .gitignore
+// found) disables the gitignore layer. A file whose generated-filter check
+// fails I/O-wise (e.g. vanished mid-walk) is skipped rather than failing the
+// whole run.
+func collectSourceFiles(root string, ignore *gitignore.GitignoreMatcher) ([]string, error) {
 	filterConfig, err := gogenfilter.WithFilterOptions(gogenfilter.FilterAll)
 	if err != nil {
 		return nil, fmt.Errorf("configure generated-code filter: %w", err)
@@ -48,10 +52,18 @@ func collectSourceFiles(root string) ([]string, error) {
 				return fs.SkipDir
 			}
 
+			if ignore.IsIgnored(path) {
+				return fs.SkipDir
+			}
+
 			return nil
 		}
 
 		if !isSourceFile(path) {
+			return nil
+		}
+
+		if ignore.IsIgnored(path) {
 			return nil
 		}
 
