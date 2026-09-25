@@ -47,6 +47,20 @@ const versionFallback = "dev"
 // semanticMode labels the SDK's default detection mode in finding metadata.
 const semanticMode = "semantic"
 
+// maxAdvisorySeverity is the highest severity the SDK interchange emits.
+// The finding interchange feeds pipeline gates that key on error-or-above
+// (BuildFlow's default findings gate); a detector-only tool with no Repairer
+// must never produce gate-failing findings, or repos with large clone groups
+// would fail every run with no automated fix path. The SARIF ladder's
+// escalation survives in a tag; the CLI's own output paths are untouched.
+const maxAdvisorySeverity = gofinding.SeverityWarning
+
+// originalSeverityTagPrefix marks downgraded findings with the pre-cap
+// severity. Hyphenated on purpose: a colonated tag fails report validation,
+// which breaks consumers' `--format finding` output (found via PapDashboard
+// 2026-09-22 in branching-flow, the same pattern mirrored here).
+const originalSeverityTagPrefix = "original-severity-"
+
 // Provider is the registered toolsdk spec. The var initializer performs the
 // registration; keeping it as a package-level var (per the toolsdk contract)
 // makes the blank import in BuildFlow the entire wiring step.
@@ -120,10 +134,11 @@ func providerOptions() *artdupl.Options {
 }
 
 // findingsFromGroups converts SDK clone groups into go-finding findings via
-// the shared printer/finding adapter, keeping IDs, GroupIDs, severity, and
-// positions identical to the CLI's finding output for the same group input.
-// Classification metadata keys are intentionally absent: the SDK pipeline
-// never computes them (see the package doc).
+// the shared printer/finding adapter, keeping IDs, GroupIDs, and positions
+// identical to the CLI's finding output for the same group input. Severity
+// is advisory-capped (see capAdvisorySeverities). Classification metadata
+// keys are intentionally absent: the SDK pipeline never computes them (see
+// the package doc).
 func findingsFromGroups(groups []*artdupl.CloneGroup) []gofinding.Finding {
 	opts := finding.Options{
 		Version:         providerVersion(),
@@ -136,9 +151,29 @@ func findingsFromGroups(groups []*artdupl.CloneGroup) []gofinding.Finding {
 		findings = append(findings, finding.ToFindings(toProcessedGroup(group), opts)...)
 	}
 
+	capAdvisorySeverities(findings)
 	stripEmptyMetadata(findings)
 
 	return findings
+}
+
+// capAdvisorySeverities downgrades error findings to warning, appending an
+// original-severity tag. Mutates the slice in place. The shared adapter's
+// ladder mirrors the SARIF printer's error escalation, but the interchange
+// consumer gates on error-or-above over findings nothing can auto-fix
+// (detector-only provider), so the SDK surface tops out at warning.
+func capAdvisorySeverities(findings []gofinding.Finding) {
+	for i := range findings {
+		if findings[i].Severity != gofinding.SeverityError && findings[i].Severity != gofinding.SeverityCritical {
+			continue
+		}
+
+		findings[i].Tags = append(
+			findings[i].Tags,
+			gofinding.Tag(originalSeverityTagPrefix+findings[i].Severity.String()),
+		)
+		findings[i].Severity = maxAdvisorySeverity
+	}
 }
 
 // stripEmptyMetadata drops empty-valued metadata entries. The shared adapter

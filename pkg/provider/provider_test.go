@@ -216,3 +216,100 @@ func TestProviderVersionResolvesFromDeps(t *testing.T) {
 		t.Error("providerVersion must not return empty")
 	}
 }
+
+func TestCapAdvisorySeverities(t *testing.T) {
+	tests := []struct {
+		name         string
+		in           gofinding.Severity
+		want         gofinding.Severity
+		wantTag      bool
+		wantTagValue string
+	}{
+		{
+			"error downgraded to warning",
+			gofinding.SeverityError,
+			gofinding.SeverityWarning,
+			true,
+			"original-severity-error",
+		},
+		{
+			"critical downgraded to warning",
+			gofinding.SeverityCritical,
+			gofinding.SeverityWarning,
+			true,
+			"original-severity-critical",
+		},
+		{"warning untouched", gofinding.SeverityWarning, gofinding.SeverityWarning, false, ""},
+		{"info untouched", gofinding.SeverityInfo, gofinding.SeverityInfo, false, ""},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			findings := []gofinding.Finding{
+				gofinding.NewFinding(
+					"rule",
+					"art-dupl",
+					"msg",
+					tt.in,
+					gofinding.Pos("a.go", 1, 1),
+					gofinding.ConfidenceNone,
+				),
+			}
+
+			capAdvisorySeverities(findings)
+
+			if findings[0].Severity != tt.want {
+				t.Errorf("Severity = %q, want %q", findings[0].Severity, tt.want)
+			}
+
+			gotTag := ""
+
+			for _, tag := range findings[0].Tags {
+				if string(tag) == tt.wantTagValue {
+					gotTag = string(tag)
+				}
+			}
+
+			if tt.wantTag && gotTag == "" {
+				t.Errorf("Tags = %v, want %q present", findings[0].Tags, tt.wantTagValue)
+			}
+
+			if !tt.wantTag && len(findings[0].Tags) != 0 {
+				t.Errorf("Tags = %v, want none for untouched severity", findings[0].Tags)
+			}
+		})
+	}
+}
+
+// TestDetectFindingsNeverExceedWarningSeverity pins the interchange contract
+// regardless of threshold tuning: the provider path must never emit error or
+// critical severity, because interchange consumers gate on error-or-above
+// over findings nothing can auto-fix (detector-only provider).
+func TestDetectFindingsNeverExceedWarningSeverity(t *testing.T) {
+	dir := t.TempDir()
+	header := "package fixtures\n\nimport \"errors\"\n\n"
+
+	writeFile(t, dir, "a.go", header+duplicatedFunction)
+	writeFile(t, dir, "b.go", header+duplicatedFunction)
+	writeFile(t, dir, "c.go", header+renamedFunction)
+	writeFile(t, dir, "d.go", header+renamedFunction)
+
+	findings, err := cloneDetector{}.Detect(dirContext(t, dir))
+	if err != nil {
+		t.Fatalf("Detect: %v", err)
+	}
+
+	if len(findings) == 0 {
+		t.Fatal("Detect returned no findings; fixtures must contain clones")
+	}
+
+	for _, f := range findings {
+		if f.Severity == gofinding.SeverityError || f.Severity == gofinding.SeverityCritical {
+			t.Errorf(
+				"finding %s carries gate-failing severity %q; SDK interchange must cap at warning",
+				f.ID,
+				f.Severity,
+			)
+		}
+	}
+}
