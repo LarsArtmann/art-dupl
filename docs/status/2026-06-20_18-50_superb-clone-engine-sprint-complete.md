@@ -25,7 +25,7 @@
 | **T4** Non-Commutative Hash   | `d8a90e6`    | FNV multiply-pair replaces XOR; `(A,B)≠(B,A)`                     |
 | **T2** Alpha-Normalization    | `91554e5`    | Per-function symbol table canonicalizes locals → Type 2 detection |
 | **T5** Three-Mode System      | `91554e5`    | `--semantic` (default), `--exact`, `--structural`                 |
-| ~~T1 Statement Tokenization~~ | **Deferred** | High risk; `serial()` still inflates thresholds                   |
+| ~~T1 Statement Tokenization~~ | ~~**Deferred**~~ done — ADR-0023 nested emission shipped (CacheVersion 4) | ~~High risk; `serial()` still inflates thresholds~~ shipped |
 
 ### Phase 2: Detection Quality (3/3 DONE)
 
@@ -47,11 +47,11 @@
 
 | Task                        | Commit    | Impact                             |
 | --------------------------- | --------- | ---------------------------------- |
-| **T12** ctx in run_crawl    | `650a4b0` | Last goroutine leak eliminated     |
-| ~~T13 Printer Decoupling~~  | Pending   | 13 prod files import `syntax.Node` |
-| ~~T14 Clone Consolidation~~ | Pending   | 3 parallel Clone types             |
-| ~~T15 Printer Split~~       | Pending   | 29 files in one package            |
-| ~~T16 Fragment Unify~~      | Pending   | `[]byte` vs `string` mismatch      |
+| ~~**T12** ctx in run_crawl~~    | ~~`650a4b0`~~ | ~~Last goroutine leak eliminated~~ |
+| ~~T13 Printer Decoupling~~  | ~~Pending~~ done — printer decoupled 2026-07-26 | ~~13 prod files import `syntax.Node`~~ bridge-only today |
+| ~~T14 Clone Consolidation~~ | ~~Pending~~ done — domain.CloneRef embedded everywhere (ADR-0005) | ~~3 parallel Clone types~~ DTOs kept by design |
+| ~~T15 Printer Split~~       | ~~Pending~~ done — stats/, actionability/, finding/ extracted | ~~29 files in one package~~ split landed |
+| ~~T16 Fragment Unify~~      | ~~Pending~~ done — Fragment is string everywhere | ~~`[]byte` vs `string` mismatch~~ resolved |
 
 ### Phase 5: Testing (3/4 DONE)
 
