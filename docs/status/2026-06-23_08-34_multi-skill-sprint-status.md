@@ -3,7 +3,7 @@
 > **Session:** Multi-skill architecture sprint (14 skills requested)
 > **Branch:** `fork`
 > **Commits this session:** 7 (d25028f → cdd04bc)
-> **Build:** GREEN · **Tests:** 24/24 packages pass · **Lint:** 0 production issues
+~~> **Build:** GREEN · **Tests:** 24/24 packages pass · **Lint:** 0 production issues~~ resolved by alternative — negation not added; *.html stays ignored, reports switched to .md
 
 ---
 
@@ -53,15 +53,15 @@
 
 | Skill                 | What's Done                                                            | What Remains                                                                                           |
 | --------------------- | ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| **full-code-review**  | All 143 production files reviewed, 8 issues fixed, findings catalogued | Full HTML report at `docs/reviews/` not written (HTML files gitignored); Pareto planning not delegated |
-| **data-model-review** | HTML report written with redesign proposals                            | `CloneRef` value object not yet implemented in code (design only)                                      |
-| **todo-list-builder** | TODO_LIST.md updated with session findings                             | Phase 2 (sub-agent per .md file) not executed; existing TODO_LIST was already comprehensive            |
+~~| **full-code-review**  | All 143 production files reviewed, 8 issues fixed, findings catalogued | Full HTML report at `docs/reviews/` not written (HTML files gitignored); Pareto planning not delegated |~~ resolved by alternative — HTML gitignored; reviews written as .md
+~~| **data-model-review** | HTML report written with redesign proposals                            | `CloneRef` value object not yet implemented in code (design only)                                      |~~ done — domain.CloneRef embedded across clone-bearing types
+~~| **todo-list-builder** | TODO_LIST.md updated with session findings                             | Phase 2 (sub-agent per .md file) not executed; existing TODO_LIST was already comprehensive            |~~ done/resolved — TODO_LIST curated per-session; open work tiered
 
 ### Code Review Findings Identified But Not Fixed
 
 | #  | Finding                                                                       | Severity | Why Deferred                                                    |
 | -- | ----------------------------------------------------------------------------- | -------- | --------------------------------------------------------------- |
-| 1  | Incremental cache data race (`job/incremental.go:139`)                        | Critical | Needs deep-copy design decision (memory vs safety tradeoff)     |
+~~| 1  | Incremental cache data race (`job/incremental.go:139`)                        | Critical | Needs deep-copy design decision (memory vs safety tradeoff)     |~~ done — cache deep-clones on Get/Store
 | 2  | Broad panic recovery in `addWithNilCheck` (`syntax/golang/parse.go:63`)       | High     | Scoping requires understanding what AST nodes actually panic    |
 | 3  | `debug.Stack()` on every error (`errors/types.go:39`)                         | Medium   | Needs gating behind debug flag — touches all error constructors |
 | 4  | Non-deterministic map iteration in hash detector (`hash/file_detector.go:58`) | Medium   | Needs sort keys like suffixtree already does                    |
@@ -82,18 +82,18 @@
 
 | Skill                   | Rationale                                                                                                                                               |
 | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **go-modularize**       | Single Go module, clean 8-layer DAG, enforced via `.go-arch-lint.yml`. Not a monorepo. Splitting into sub-modules would add complexity without benefit. |
-| **nix-flake-migration** | Already on the standard stack: `flake-parts` + `treefmt-nix` + `systems` input + `nixos-unstable`. No justfile/Makefile remains. Fully migrated.        |
-| **copywriting**         | Landing page (`site/index.html`) has compelling copy: "Find Every Clone. Miss Nothing." Hero, subhead, and CTAs are accurate and conversion-focused.    |
-| **frontend-design**     | Site already has distinctive design: Syne/DM Sans/IBM Plex Mono typography, canvas hero animation, dark aesthetic. Not a templated default.             |
+~~| **go-modularize**       | Single Go module, clean 8-layer DAG, enforced via `.go-arch-lint.yml`. Not a monorepo. Splitting into sub-modules would add complexity without benefit. |~~ won't implement — documented: single Go module, DAG enforced via arch-lint
+~~| **nix-flake-migration** | Already on the standard stack: `flake-parts` + `treefmt-nix` + `systems` input + `nixos-unstable`. No justfile/Makefile remains. Fully migrated.        |~~ done — already on the flake-parts + treefmt stack
+~~| **copywriting**         | Landing page (`site/index.html`) has compelling copy: "Find Every Clone. Miss Nothing." Hero, subhead, and CTAs are accurate and conversion-focused.    |~~ won't implement — documented: site copy accurate
+~~| **frontend-design**     | Site already has distinctive design: Syne/DM Sans/IBM Plex Mono typography, canvas hero animation, dark aesthetic. Not a templated default.             |~~ won't implement — documented: distinctive design in place
 
 ### Type Safety Improvements Not Started
 
 | Item                                             | Risk   | Why Deferred                                                                                                                                      |
 | ------------------------------------------------ | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Branded `NodeType int32`                         | HIGH   | 81 `.Type` references; touches gob serialization cache format and semantic encoding layout `[24-bit hash][8-bit base type]`. Cache breakage risk. |
-| Shared `CloneRef` value object                   | MEDIUM | Needs embedding refactor across 7 parallel Clone types — design decision about how far to unify                                                   |
-| Relocate `SortCriteria`/`OutputFormat` to domain | MEDIUM | Decouples printer from config (21 files), but is a breaking change for config consumers                                                           |
+~~| Branded `NodeType int32`                         | HIGH   | 81 `.Type` references; touches gob serialization cache format and semantic encoding layout `[24-bit hash][8-bit base type]`. Cache breakage risk. |~~ parked — TODO_LIST DEFERRED/PARKED (breaking-change window; ADR-0008 8-bit encoding intentional)
+~~| Shared `CloneRef` value object                   | MEDIUM | Needs embedding refactor across 7 parallel Clone types — design decision about how far to unify                                                   |~~ done — domain.CloneRef embedded
+~~| Relocate `SortCriteria`/`OutputFormat` to domain | MEDIUM | Decouples printer from config (21 files), but is a breaking change for config consumers                                                           |~~ done — domain.SortCriteria canonical; config aliases
 | `Name()` method on `MethodDetector` interface    | LOW    | Eliminates type switch at `multidetector.go:117` — additive but touches interface                                                                 |
 
 ---
@@ -119,17 +119,17 @@
 ### Process Improvements
 
 1. **Commit after every smallest self-contained change** — not in batches
-2. **Check `.gitignore` before generating artifacts** — HTML reports are excluded; use `.md` for committable reports or force-add
+~~2. **Check `.gitignore` before generating artifacts** — HTML reports are excluded; use `.md` for committable reports or force-add~~ done — status reports are .md; HTML stays ignored
 3. **Verify all sub-agent claims against actual code** before acting — ~10% were wrong
 4. **Gate high-risk type changes** behind a risk assessment before starting
 
 ### Code Improvements (Prioritized)
 
-1. **Fix incremental cache data race** — the most dangerous remaining bug
+~~1. **Fix incremental cache data race** — the most dangerous remaining bug~~ done — deep-clone cache design
 2. **Add `Name()` to MethodDetector** — eliminates encapsulation leak
-3. **Unify the remaining parallel Clone types** via shared embedding
+~~3. **Unify the remaining parallel Clone types** via shared embedding~~ done — domain.CloneRef embedded everywhere
 4. **Sort hash detector map iteration** for reproducible output
-5. **Gate `debug.Stack()` behind a debug flag** — unnecessary overhead for routine errors
+~~5. **Gate `debug.Stack()` behind a debug flag** — unnecessary overhead for routine errors~~ resolved by alternative — debug.Stack removed from error paths entirely
 
 ---
 
@@ -139,7 +139,7 @@
 
 | # | Task                                                                                                          | Effort | Impact                                   |
 | - | ------------------------------------------------------------------------------------------------------------- | ------ | ---------------------------------------- |
-| 1 | Fix incremental cache data race (`job/incremental.go:139` — mutate shared cached nodes)                       | Medium | Prevents corruption under parallel parse |
+~~| 1 | Fix incremental cache data race (`job/incremental.go:139` — mutate shared cached nodes)                       | Medium | Prevents corruption under parallel parse |~~ done — deep-clone on cache hit/store
 | 2 | Add `Name()` to `MethodDetector` interface, eliminate type switch at `multidetector.go:117`                   | Small  | Removes encapsulation leak               |
 | 3 | Fix non-deterministic hash detector output (`hash/file_detector.go:58` — sort map keys)                       | Small  | Reproducible CI results                  |
 | 4 | Scope `addWithNilCheck` panic recovery (`syntax/golang/parse.go:63`) — catches ALL panics including real bugs | Medium | Prevents silent incomplete ASTs          |
@@ -148,33 +148,33 @@
 
 | #  | Task                                                                                                  | Effort | Impact                            |
 | -- | ----------------------------------------------------------------------------------------------------- | ------ | --------------------------------- |
-| 5  | Gate `debug.Stack()` behind debug flag (`errors/types.go:39`)                                         | Small  | Eliminates per-error overhead     |
+~~| 5  | Gate `debug.Stack()` behind debug flag (`errors/types.go:39`)                                         | Small  | Eliminates per-error overhead     |~~ resolved by alternative — removed entirely
 | 6  | Add per-filename content cache in SDK (`detector_conversion.go:78` — reads file N times for N clones) | Small  | Major perf win for large analyses |
 | 7  | Rename `FileProcessor` → `FileStore`, `ProcessClones` → `BuildProcessedClones` (naming review)        | Medium | Clearer intent                    |
 | 8  | Cache package: replace `fmt.Fprintf(os.Stderr)` with `logger.Default`                                 | Small  | Consistent logging                |
 | 9  | Extract magic sentinel `Type: -1` to `syntax.SentinelType` constant                                   | Small  | Self-documenting                  |
-| 10 | Fix `chan bool` → `chan struct{}` in `buildtree.go`                                                   | Small  | Idiomatic Go                      |
+~~| 10 | Fix `chan bool` → `chan struct{}` in `buildtree.go`                                                   | Small  | Idiomatic Go                      |~~ done — buildtree clean; only a test helper keeps chan bool
 
 ### 🔵 Medium (Do This Quarter)
 
 | #  | Task                                                                                           | Effort | Impact                                       |
 | -- | ---------------------------------------------------------------------------------------------- | ------ | -------------------------------------------- |
-| 11 | Introduce shared `CloneRef` value object in domain (embed across 7 Clone types)                | Large  | Unifies parallel types                       |
-| 12 | Relocate `SortCriteria`/`OutputFormat` from config to domain                                   | Medium | Decouples printer from config                |
-| 13 | Split `printer/` into sub-packages (stats, html, analyze)                                      | Large  | 29 files / 3500 LOC too many for one package |
-| 14 | Add `Config.Validate()` calls at all entry points (currently exists but not called everywhere) | Small  | Defense in depth                             |
+~~| 11 | Introduce shared `CloneRef` value object in domain (embed across 7 Clone types)                | Large  | Unifies parallel types                       |~~ done — domain.CloneRef embedded
+~~| 12 | Relocate `SortCriteria`/`OutputFormat` from config to domain                                   | Medium | Decouples printer from config                |~~ done — domain canonical + config alias
+~~| 13 | Split `printer/` into sub-packages (stats, html, analyze)                                      | Large  | 29 files / 3500 LOC too many for one package |~~ done — printer subpackages
+~~| 14 | Add `Config.Validate()` calls at all entry points (currently exists but not called everywhere) | Small  | Defense in depth                             |~~ done — ValidateConfig at the entry points
 | 15 | Fix `NewLogger` to return `Logger` interface instead of `*charmLogger`                         | Small  | Proper encapsulation                         |
 | 16 | Add language parser registry (SDK hardcodes `syntax/golang`)                                   | Large  | Unblocks multi-language support              |
-| 17 | Fix `AnalysisTime` JSON tag (`time.Duration` marshals as ns, tag says `_ms`)                   | Small  | Honest output                                |
-| 18 | Thread `context.Context` through `cmd/run_crawl.go` file feeders                               | Medium | Proper cancellation                          |
-| 19 | Unexport dead `SortClonesBy*` functions in `printer/sorter.go` (only test callers remain)      | Small  | API surface reduction                        |
-| 20 | Consolidate `countDiffStats` and `countDiffLineStats` (split-brain duplicate)                  | Small  | Eliminates duplication                       |
+~~| 17 | Fix `AnalysisTime` JSON tag (`time.Duration` marshals as ns, tag says `_ms`)                   | Small  | Honest output                                |~~ done — MarshalJSON emits analysis_time_ms
+~~| 18 | Thread `context.Context` through `cmd/run_crawl.go` file feeders                               | Medium | Proper cancellation                          |~~ done — ctx selects + stdin cancellation tested
+~~| 19 | Unexport dead `SortClonesBy*` functions in `printer/sorter.go` (only test callers remain)      | Small  | API surface reduction                        |~~ resolved by alternative — removed; unified SortCloneGroups
+~~| 20 | Consolidate `countDiffStats` and `countDiffLineStats` (split-brain duplicate)                  | Small  | Eliminates duplication                       |~~ done — single countDiffStats in printer/html_diff.go
 
 ### ⚪ Lower Priority
 
 | #  | Task                                                                 | Effort     | Impact                                |
 | -- | -------------------------------------------------------------------- | ---------- | ------------------------------------- |
-| 21 | Branded `NodeType int32` type (prevent cross-package collision)      | Very Large | Type safety (high risk: cache format) |
+~~| 21 | Branded `NodeType int32` type (prevent cross-package collision)      | Very Large | Type safety (high risk: cache format) |~~ parked — TODO_LIST DEFERRED (cache format risk; ADR-0008 intentional)
 | 22 | Remove dead `crawlPaths` in `cmd/run_crawl.go` (only test callers)   | Small      | Dead code cleanup                     |
 | 23 | Fix broken BDD test variable assignments (5 ginkgolinter warnings)   | Small      | Lint clean                            |
 | 24 | Add gosec `#nosec` audit — review all suppressions are still needed  | Small      | Security hygiene                      |

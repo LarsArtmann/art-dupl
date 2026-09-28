@@ -81,17 +81,17 @@ The old `semantic bool` threaded through `job.Parse` is replaced by `golang.Dete
 
 | Task                        | Status   | Notes                                           |
 | --------------------------- | -------- | ----------------------------------------------- |
-| T10 — Baseline/CI Mode      | Next     | `baseline` + `check` subcommands                |
-| T11 — Extractability Score  | Pending  | Refactoring hints                               |
-| T17 — Property Tests        | Pending  | Suffix tree correctness                         |
+~~| T10 — Baseline/CI Mode      | Next     | `baseline` + `check` subcommands                |~~ done — baseline+check subcommands shipped (cmd/baseline_cmd.go)
+~~| T11 — Extractability Score  | Pending  | Refactoring hints                               |~~ done — extractable+lines_saved in JSON (printer/json.go); extractability engine (ADR-0017)
+~~| T17 — Property Tests        | Pending  | Suffix tree correctness                         |~~ done — property tests shipped; suffixtree coverage high
 | T1 — Statement Tokenization | Deferred | High risk; `serial()` still inflates thresholds |
-| T12-T16 — Architecture      | Pending  | Printer decoupling, type consolidation          |
-| T20-T24 — Ecosystem         | Pending  | Benchmarks, GitHub Actions, pre-commit          |
+~~| T12-T16 — Architecture      | Pending  | Printer decoupling, type consolidation          |~~ done/resolved — T12 ctx threaded; T13 printer decoupled 07-26; T14 CloneRef embed; T15 printer split; T16 Fragment string
+~~| T20-T24 — Ecosystem         | Pending  | Benchmarks, GitHub Actions, pre-commit          |~~ done — benchmarks (docs/benchmarks/, performance.yml), Actions+pre-commit templates, json v1-API (ADR-0024), Data→View split
 
 ---
 
 ## Known Limitations
 
-1. **Normalizer is heuristic** — flat per-function symbol table (no nested-scope shadowing resolution). Shadowed variables are rare in duplicated code; first declaration wins. `go/types` would give precise resolution but adds import/type-checking overhead.
-2. **`serial()` still inflates thresholds** — T1 (statement-level tokenization) remains the root-cause fix for false positives from structural wrapper inflation. Deferred due to cascading risk.
-3. **Templ has no semantic mode** — `syntax/templ/` matching is purely structural.
+~~1. **Normalizer is heuristic** — flat per-function symbol table (no nested-scope shadowing resolution). Shadowed variables are rare in duplicated code; first declaration wins. `go/types` would give precise resolution but adds import/type-checking overhead.~~ parked — ROADMAP "Nested-scope shadowing in alpha-normalization"
+~~2. **`serial()` still inflates thresholds** — T1 (statement-level tokenization) remains the root-cause fix for false positives from structural wrapper inflation. Deferred due to cascading risk.~~ done — root cause fixed by statement-level tokenization (ADR-0023)
+~~3. **Templ has no semantic mode** — `syntax/templ/` matching is purely structural.~~ done — syntax/templ has semantic encoding + Statement marking

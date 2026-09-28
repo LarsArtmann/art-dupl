@@ -128,7 +128,7 @@ Lint:      ✅ golangci-lint run ./... — 0 issues
 
 ## Known Limitations
 
-1. **Normalizer is heuristic** — flat per-function symbol table (no shadowing resolution). `go/types` would give precise scope resolution but adds type-checking overhead.
-2. **`serial()` still inflates thresholds** — T1 addresses this but is deferred due to cascading risk through the entire pipeline.
-3. **Templ has no semantic mode** — `syntax/templ/` matching is purely structural.
-4. **3 parallel Clone types** — `domain.ProcessedClone`, `printer.CloneGroup`, `pkg/artdupl.Clone` (T14 consolidation pending).
+~~1. **Normalizer is heuristic** — flat per-function symbol table (no shadowing resolution). `go/types` would give precise scope resolution but adds type-checking overhead.~~ parked — ROADMAP "Nested-scope shadowing in alpha-normalization"
+~~2. **`serial()` still inflates thresholds** — T1 addresses this but is deferred due to cascading risk through the entire pipeline.~~ done — fixed by statement-level tokenization (ADR-0023)
+~~3. **Templ has no semantic mode** — `syntax/templ/` matching is purely structural.~~ done — templ semantic mode + statement marking shipped
+~~4. **3 parallel Clone types** — `domain.ProcessedClone`, `printer.CloneGroup`, `pkg/artdupl.Clone` (T14 consolidation pending).~~ resolved by alternative — CloneRef embedded everywhere; 3-DTO split documented as intentional
