@@ -9,11 +9,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Nothing yet.
+- **BuildFlow provider honors `.gitignore`** (post-v0.7.2 hardening): the toolsdk crawl now excludes gitignored files via a shared `internal/gitignore` matcher (extracted from `cmd/`; nested `.gitignore` files honored git-style with directory-level pruning; CLI `--include-ignored` unchanged). Provider Spec hardened with an explicit no-op `HealthCheck`, a stated fixed contract (semantic mode, threshold 5), an 8-goroutine `-race` concurrency/determinism suite, and a multi-module workspace fixture. Source: `docs/status/2026-09-25_09-43_core-lane-live-phase2-hardening-full-arc.md` (B1/B2/B4/B6).
+- **ADR-0025 — SDK findings stay classification-free**: actionability/clone-type metadata remains CLI-only by design; the SDK pipeline never computes it (`docs/adr/0025-sdk-findings-classification-free.md`).
+- **`internal/jsonv2gate` AST gate**: a scanner test in the default suite fails on any production file importing `encoding/json/v2`/`jsontext` while declaring a wire-facing (`json:` tag ≠ `-`) `time.Duration` field; other production v2 importers require a reviewed allowlist rationale. Wired via the default suite so CI and `nix flake check` get it with zero plumbing.
+- **Monthly self-scan refactor**: duplicated `len(rules)==0` tail in the gitignore matcher extracted to `matcherFromRules` (2026-09-25 self-scan finding; ledger updated in `docs/SELF_CLEAN_LEDGER.md`).
 
 ### Fixed
 
-- Nothing yet.
+- **`pkg/artdupl/types.go` carried a wire-facing `time.Duration` next to a direct `encoding/json/v2` import** — the exact latent "no default representation" crash class from 2026-09-23/24. Caught by the new `internal/jsonv2gate` gate on its first run; migrated to the v1 API (identical aux-struct pattern).
+
+## [0.7.2] - 2026-09-25
+
+### Changed
+
+- **Provider findings severity capped at warning**: the toolsdk interchange downgrades error-severity findings to warning (`maxAdvisorySeverity`), preserving the original severity in an `original-severity-` tag, so a detector-only tool can never fail pipeline gates keyed on error-or-above (BuildFlow's default findings gate). The CLI and SARIF output ladders are untouched.
 
 ## [0.7.1] - 2026-09-24
 

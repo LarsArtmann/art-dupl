@@ -45,7 +45,7 @@ Full documentation: **[art-dupl.lars.software](https://art-dupl.lars.software)**
 | CI baseline gating       | No                    | `baseline` + `check` subcommands                                                                                     |
 | Diff visualization       | No                    | Side-by-side and inline diffs in HTML                                                                                |
 | Clone classification     | No                    | Type 1 / 2 / 3 labels + extractability scores                                                                        |
-| Actionability filtering  | No                    | Suppresses 15+ boilerplate patterns (test scaffolding, error wrapping, Lock+Defer, etc.) — only in `--semantic` mode |
+| Actionability filtering  | No                    | Suppresses 33 boilerplate patterns + 4 property-engine labels (test scaffolding, error wrapping, Lock+Defer, etc.) — only in `--semantic` mode |
 | Parallel parsing         | No                    | Worker pool with auto-detect                                                                                         |
 | Programmatic SDK         | No                    | `pkg/artdupl` — Detector interface with streaming                                                                    |
 
@@ -206,7 +206,7 @@ other languages.
 
 | Language | Extension | Notes                                                      |
 | -------- | --------- | ---------------------------------------------------------- |
-| Go       | `.go`     | Full AST analysis, 45 node types                           |
+| Go       | `.go`     | Full AST analysis, 49 node types                           |
 | Templ    | `.templ`  | Full AST analysis via official templ parser, 28 node types |
 
 `.templ` source files included by default. Templ-generated `*_templ.go` files filtered by default.
@@ -244,6 +244,7 @@ Output Formatting (text, HTML, JSON, SARIF, plumbing, rich-text)
 | `baseline/`    | Baseline recording + CI check file format               |
 | `cache/`       | File-based AST caching with SHA-256 content hashing     |
 | `pkg/artdupl/` | Public SDK with `Detector` interface                    |
+| `pkg/provider/`| Self-registering BuildFlow toolsdk detector             |
 
 ---
 

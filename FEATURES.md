@@ -1,7 +1,7 @@
 # art-dupl Feature Documentation
 
-> **Last Updated:** 2026-09-19
-> **Version:** v0.7.0 (current release)
+> **Last Updated:** 2026-09-28
+> **Version:** v0.7.2 (current release)
 
 ## Overview
 
@@ -15,7 +15,7 @@
 
 | Language  | Extension | Status           | Notes                                        |
 | --------- | --------- | ---------------- | -------------------------------------------- |
-| **Go**    | `.go`     | FULLY_FUNCTIONAL | Full AST analysis, 50 node types             |
+| **Go**    | `.go`     | FULLY_FUNCTIONAL | Full AST analysis, 49 node types             |
 | **Templ** | `.templ`  | FULLY_FUNCTIONAL | Pure Go parser, semantic mode, ON by default |
 
 ### Detection Methods
@@ -60,7 +60,7 @@
 | **Health Grade**            | FULLY_FUNCTIONAL | A-F health grade (`domain.HealthScore`) with validation                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | **Clone Metrics**           | FULLY_FUNCTIONAL | Total clones, groups, files affected, duplication %                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | **Spread Analysis**         | FULLY_FUNCTIONAL | Complexity scores, severity distributions                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| **Actionability Class.**    | FULLY_FUNCTIONAL | AST-based detection of 29 non-actionable patterns (signature-only, interface-implementation, interface-method, RAII defer, error-propagation, error-wrapping, assertion-chain, cobra-boilerplate, testdata-pair, table-driven-test, test-scaffolding, data-dominated, describe-table, builder-callback, assign-error-check, single-call-expression, guard-clause, single-simple-statement, bool-accumulator-initializer, single-declaration, test-helper-delegate, bool-guard, templ-rendering-idiom, interface-assertion, type-alias-block, defer-call, test-framework-call, state-flag-mutation, empty-default) |
+| **Actionability Class.**    | FULLY_FUNCTIONAL | AST-based detection of 33 denylist boilerplate patterns + 4 property-engine labels (full table with examples and priority order: [`docs/ACTIONABILITY_PATTERNS.md`](docs/ACTIONABILITY_PATTERNS.md)) |
 | **Clone Classification**    | FULLY_FUNCTIONAL | 17 categories (function, method, test, struct, interface, handler, loop, conditional, test-boilerplate, test-fixture, assignment, expression, block, call, return, defer, unknown), 4 priority levels                                                                                                                                                                                                                                                                                                                                                                                                             |
 | **Refactoring Suggestions** | FULLY_FUNCTIONAL | Category + actionability pattern based suggestions (`printer/clone_classify.go::getSuggestion`)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | **Stats Recommendations**   | FULLY_FUNCTIONAL | Grade-specific (A-F) actionable next steps in stats output                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
@@ -114,7 +114,7 @@
 | **Actionability Verdict**                | FULLY_FUNCTIONAL | Labels clones actionable vs non-actionable (test boilerplate, idioms, etc.)                                                                                     |
 | **Actionability Override**               | FULLY_FUNCTIONAL | `--no-actionability` disables filtering, showing ALL clones including boilerplate                                                                               |
 | **Disable Specific Pattern**             | FULLY_FUNCTIONAL | `--disable-pattern <label>` selectively re-enables a single boilerplate pattern                                                                                 |
-| **List Patterns**                        | FULLY_FUNCTIONAL | `--list-patterns` prints all 30 pattern labels (plus 4 property-engine labels)                                                                                  |
+| **List Patterns**                        | FULLY_FUNCTIONAL | `--list-patterns` prints all 37 pattern labels (33 denylist + 4 property-engine)                                                                                |
 | **Explain Mode**                         | FULLY_FUNCTIONAL | `--explain` prints why each clone group was reported (type, actionability, category, extractability)                                                            |
 | **Property-Based Extractability Engine** | PARTIALLY_DONE   | Second-pass analysis using 4 computable properties (control-flow, ROI, parameterizability, confidence). Patterns run first, engine catches misses. See ADR-0017 |
 | **Confidence Tiers**                     | PARTIALLY_DONE   | Three-tier output: actionable / low-confidence / non-actionable with `confidence` field in JSON                                                                 |
@@ -203,7 +203,7 @@
 | **Color Control**            | FULLY_FUNCTIONAL | `--no-color` disables colored output                                                                                                                                   |
 | **Type-Aware Mode**          | FULLY_FUNCTIONAL | `--type-aware` encodes variable types into hashes via `go/types` (see Semantic)                                                                                        |
 | **Parallel Search**          | FULLY_FUNCTIONAL | `--search-workers N` parallelizes suffix tree search (0/1=sequential, >1=N workers)                                                                                    |
-| **Version Subcommand**       | FULLY_FUNCTIONAL | `art-dupl version [--json                                                                                                                                              |
+| **Version Subcommand**       | FULLY_FUNCTIONAL | `art-dupl version [--json|--short]` prints version, commit, build date                                                                                             |                                                                                                                                              |
 
 ---
 
@@ -283,7 +283,7 @@
 | --------------------------- | ------ | ---------------------------------------------------------------------------------------------- |
 | **Go and Templ Only**       | High   | Only `.go` and `.templ` files supported                                                        |
 | **No Git-Diff Incremental** | Low    | Only content-hash caching (`--incremental`); git-diff file selection not implemented           |
-| **No GitHub Releases**      | Low    | v0.1.0 and v0.4.0 have GitHub Releases. v0.2.0 and v0.3.0 have git tags but no release assets. |
+| **Legacy tags without assets** | Low | v0.2.0 and v0.3.0 have git tags but no GitHub release assets; every release since v0.5.0 ships full assets via goreleaser.                     |
 
 ---
 
@@ -341,7 +341,7 @@ art-dupl --recommend-threshold ./src
 ### Pattern Control
 
 ```bash
-# List all 30 actionability pattern labels (plus 4 property-engine labels)
+# List all 37 actionability pattern labels (33 denylist + 4 property-engine)
 art-dupl --list-patterns
 
 # Re-enable a specific boilerplate pattern

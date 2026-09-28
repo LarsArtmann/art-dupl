@@ -14,7 +14,7 @@ import (
 //
 // Regenerate after intentional format changes via:
 //
-//	go test -run TestTextCloneOutputGolden -args -update ./printer/
+//	go test -update -run TestTextCloneOutputGolden ./printer/
 func TestTextCloneOutputGolden(t *testing.T) {
 	var buf bytes.Buffer
 

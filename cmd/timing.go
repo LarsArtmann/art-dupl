@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io"
 	"runtime"
-	"sort"
 	"time"
 
 	"github.com/LarsArtmann/art-dupl/job"
@@ -138,15 +137,4 @@ func humanBytes(b uint64) string {
 	}
 
 	return fmt.Sprintf("%.1f %cB", float64(b)/float64(div), "KMGTPE"[exp])
-}
-
-// sortedStageNames returns snapshot keys in deterministic order for tests.
-func sortedStageNames(stages map[string]time.Duration) []string {
-	names := make([]string, 0, len(stages))
-	for name := range stages {
-		names = append(names, name)
-	}
-	sort.Strings(names)
-
-	return names
 }
