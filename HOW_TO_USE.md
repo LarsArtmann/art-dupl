@@ -1,5 +1,7 @@
 # How to Use art-dupl - A Practical Guide
 
+**Last Updated:** 2026-09-28
+
 This guide provides practical examples and workflows for using **art-dupl** effectively in real-world scenarios.
 
 ## Table of Contents

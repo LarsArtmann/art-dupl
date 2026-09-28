@@ -101,6 +101,11 @@ def main():
             if key.startswith("any:") and key[4:] in line:
                 hits[key] = i
                 break
+    banned = {"open", "todo", "pending", "later", "tbd"}
+    for k, v in specs.items():
+        if v.lower().strip(" .") in banned:
+            print(f"FAIL {path.name}: spec {k!r} has verdict {v!r}; open items stay BARE (absence is the open signal) — omit the key instead")
+            sys.exit(1)
     missing = [k for k in order if k not in hits]
     if missing:
         print(f"FAIL {path.name}: unmatched specs: {missing}")

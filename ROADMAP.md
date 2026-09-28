@@ -1,5 +1,7 @@
 # Roadmap
 
+**Last Updated:** 2026-09-28
+
 **No timeline.** Aspirational items for future consideration. Items graduate to `TODO_LIST.md` when they become actionable.
 
 ---
