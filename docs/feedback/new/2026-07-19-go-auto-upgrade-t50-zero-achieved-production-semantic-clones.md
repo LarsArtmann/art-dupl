@@ -1,5 +1,7 @@
 # Feedback: Drove to literal zero at every threshold from `-t 5` to `-t 50`; production semantic clones real and actionable; Ginkgo `DescribeTable` variadic gotcha forces helper shape
 
+**Routed (2026-09-28):** the DescribeTable variadic gotcha is covered by the bdd-testing skill docs (decided — no art-dupl change); the zero-at-every-threshold result is corpus-specific, no action.
+
 **Date:** 2026-07-19
 **Project:** go-auto-upgrade — Go monorepo for automated code migrations (`github.com/larsartmann/go-auto-upgrade`, ~7 500 production LOC, ~5 500 test LOC, 8 migrator subpackages with shared `goldentest` framework)
 **Command:** `art-dupl --semantic --sort total-tokens -t 50 --html` (initial), then `--json` for triage, then plain text for verification

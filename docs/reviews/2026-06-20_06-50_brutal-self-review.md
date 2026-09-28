@@ -62,7 +62,7 @@ Found and fixed 10 categories of issues across the codebase: ghost systems, dead
 
 ### 10. Split brains?
 
-- Fragment []byte vs string — real split brain, deferred (works at boundaries)
+~~- Fragment []byte vs string — real split brain, deferred (works at boundaries)~~ done — Fragment is string everywhere (AGENTS shared-types bullet)
 - Duplicate sentinels — ACCEPTED (expected decoupling pattern)
 - Duplicate noOpLogger — ACCEPTED (expected decoupling pattern)
 
@@ -70,7 +70,7 @@ Found and fixed 10 categories of issues across the codebase: ghost systems, dead
 
 - All 22 packages pass
 - Fixed 12 unusedwrite + 3 infertypeargs diagnostics
-- detection 61.8%, domain 63.5% — below 80% target, deferred
+~~- detection 61.8%, domain 63.5% — below 80% target, deferred~~ resolved by tracking — coverage baseline + trend script shipped (T16); the 80% target stays advisory
 
 ## Completed Work (10 commits)
 

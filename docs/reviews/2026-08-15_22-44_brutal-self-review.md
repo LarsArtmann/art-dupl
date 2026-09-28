@@ -52,12 +52,12 @@ warning, HTML summary, cache follow-ups) plus this continuation session
 
 ## Improvement Plan (priority order)
 
-1. Fix the BuildFlow pre-commit (add tools to devShell or exclude) — stop the
+~~1. Fix the BuildFlow pre-commit (add tools to devShell or exclude) — stop the~~ done — BuildFlow's lint auto-configure is skipped via .buildflow.yml skip_steps (AGENTS 2026-09-23); the --no-verify ritual is gone
    `--no-verify` ritual.
-2. Wire cache stats into the `stats` subcommand.
-3. Commit a coverage baseline (mirror the benchmark-baseline pattern).
-4. Strip `command-line-arguments.` from generics hints (types.Qualifier).
-5. Fix or delete the 4 Pending BDD specs.
+~~2. Wire cache stats into the `stats` subcommand.~~ done — T11 shipped: run-scoped cache stats in the stats subcommand (AGENTS)
+~~3. Commit a coverage baseline (mirror the benchmark-baseline pattern).~~ done — docs/benchmarks/coverage-baseline.txt + scripts/check-coverage.sh (T16)
+~~4. Strip `command-line-arguments.` from generics hints (types.Qualifier).~~ done — the string no longer appears anywhere in the Go code (grep clean 2026-09-28)
+~~5. Fix or delete the 4 Pending BDD specs.~~ done — no Pending specs remain in bdd/ (grep clean 2026-09-28)
 
 All claims verified against source or real CLI runs at commit time
 (`f9320174`, `80be8dc6`, `3afc4ae6`, `9cae480d`).

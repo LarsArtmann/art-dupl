@@ -1,5 +1,7 @@
 # Feedback: Excellent test-code dedup signal at `-t 25`; HTML report shine; cross-package helper duplication flagged as noise
 
+**Routed (2026-09-28):** helper-call-site detection (the cross-package noise class) → ROADMAP; the HTML-report praise needs no action.
+
 **Date:** 2026-07-19
 **Project:** httputil — Go HTTP middleware library (`github.com/larsartmann/httputil`, ~3 700 production LOC, ~6 000 test LOC, 2 packages)
 **Command:** `art-dupl --semantic --sort total-tokens -t 25 --html`

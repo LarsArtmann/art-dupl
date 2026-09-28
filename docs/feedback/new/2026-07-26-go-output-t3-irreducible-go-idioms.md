@@ -1,5 +1,7 @@
 # Feedback: Threshold 3 reports irreducible Go idioms as actionable clones
 
+**Routed (2026-09-28):** idiom suppression at low thresholds → ROADMAP (threshold-cliff entry criterion); no action at the default threshold.
+
 **Date:** 2026-07-26\
 **Project:** `go-output`, a 19-module Go workspace for CLI output formatting and progress visualization\
 **Command:** `art-dupl --semantic --sort total-tokens -t 3 --html`\
