@@ -66,10 +66,10 @@
 
 | Task                     | Commit    | Impact                                 |
 | ------------------------ | --------- | -------------------------------------- |
-| **T21** GitHub Actions   | `5356d17` | `.github/workflows/art-dupl-check.yml` |
-| **T22** Pre-Commit Hook  | `5356d17` | `.pre-commit-hooks.yaml`               |
-| ~~T23 json/v2~~          | ~~Pending~~ done — ADR-0024 shipped in v0.7.0 after Go 1.27 dropped the v2 tag grammar | see ADR-0024 |
-| ~~T24 Rename Data→View~~ | ~~Pending~~ done — Data→View rename shipped (`b60aca6`) | 5 `*View` types in printer/ |
+| ~~**T21** GitHub Actions~~   | `5356d17` | `.github/workflows/art-dupl-check.yml` |
+| ~~**T22** Pre-Commit Hook~~  | `5356d17` | `.pre-commit-hooks.yaml`               |
+| ~~T23 json/v2~~          | ~~Pending~~ done — ADR-0024 shipped in v0.7.0 | ~~Go 1.26 stability TBD~~ superseded: Go 1.27 dropped the v2 tag grammar |
+| ~~T24 Rename Data→View~~ | ~~Pending~~ done — Data→View rename shipped (`b60aca6`) | ~~5 `*Data` types in printer/~~ now 5 `*View` types |
 
 ---
 
