@@ -33,8 +33,8 @@ All 7 items are in committed history across commits `493eb006` and `cc01dffb`.
 
 | #  | Task                                                              | File           | Status                                                                                                                                       |
 | -- | ----------------------------------------------------------------- | -------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| 10 | Add `TypeAware` + `SuggestGenerics` rows to FEATURES.md SDK table | `FEATURES.md`  | **Staged** — 2 rows added after `Custom FileReader`                                                                                          |
-| 11 | Remove tagliatelle item from TODO_LIST.md HIGH priority section   | `TODO_LIST.md` | **Staged** — entire subsection deleted                                                                                                       |
+~~| 10 | Add `TypeAware` + `SuggestGenerics` rows to FEATURES.md SDK table | `FEATURES.md`  | **Staged** — 2 rows added after `Custom FileReader`                                                                                          |~~ done — both FEATURES SDK rows present
+~~| 11 | Remove tagliatelle item from TODO_LIST.md HIGH priority section   | `TODO_LIST.md` | **Staged** — entire subsection deleted                                                                                                       |~~ done — tagliatelle banned and gone from .golangci.yml
 | 12 | Build + test verification                                         | —              | **PASSED** — `go build ./...` clean, `go test ./...` 28/28 packages pass                                                                     |
 | 13 | Lint verification                                                 | —              | **PASSED** — golangci-lint has only 2 pre-existing warnings (nestif, varnamelen in untouched files). Tagliatelle's 50 violations eliminated. |
 
@@ -42,7 +42,7 @@ All 7 items are in committed history across commits `493eb006` and `cc01dffb`.
 
 | Task     | Why                                                               |
 | -------- | ----------------------------------------------------------------- |
-| Git push | Commit hasn't happened yet; push is meaningless without a commit. |
+~~| Git push | Commit hasn't happened yet; push is meaningless without a commit. |~~ done — all referenced changes present at HEAD; v0.7.x published
 
 ## d) TOTALLY FUCKED UP
 
@@ -106,40 +106,40 @@ The hook's `templ-fmt` repair step reformatted `printer/report_templ.go` (22 lin
 
 ### Critical (blocking the commit)
 
-1. **Resolve the tagliatelle re-addition** — Find what BuildFlow step re-adds it and either update the source or exclude the file from that step
-2. **Resolve dprint-format binary missing** — Either install dprint in PATH, add to `.buildflow.yml` skip_steps, or run inside `nix develop`
-3. **Resolve tailwind-build binary missing** — Same as above for tailwindcss
+~~1. **Resolve the tagliatelle re-addition** — Find what BuildFlow step re-adds it and either update the source or exclude the file from that step~~ done — auto-configurer skipped via .buildflow.yml skip_steps
+~~2. **Resolve dprint-format binary missing** — Either install dprint in PATH, add to `.buildflow.yml` skip_steps, or run inside `nix develop`~~ resolved by alternative — BuildFlow rebuilt minimal (2026-09-24 core-lane); --no-verify ritual gone
+~~3. **Resolve tailwind-build binary missing** — Same as above for tailwindcss~~ resolved by alternative — same BuildFlow rebuild
 4. **Clean up `printer/report_templ.go`** — Either commit it separately (it's a templ-fmt reformatting) or restore it to HEAD
-5. **Commit the 3 doc changes** — `.golangci.yml`, `FEATURES.md`, `TODO_LIST.md` need to land
+~~5. **Commit the 3 doc changes** — `.golangci.yml`, `FEATURES.md`, `TODO_LIST.md` need to land~~ done — all three changes present at HEAD
 
 ### High priority (docs accuracy)
 
-6. **Add automated pattern-count sync check** — CI test that verifies pattern count in code matches docs (like `TestMarkersMatchGogenfilter`)
-7. **Fix the 2 pre-existing golangci-lint warnings** — `nestif` in `printer/text.go:147` (complexity 13), `varnamelen` in `job/incremental.go:67` (`td` too short)
-8. **Document the BuildFlow tagliatelle conflict in AGENTS.md** — Under Known Limitations, note that BuildFlow re-adds tagliatelle and must be manually excluded
-9. **Add `.golangci.yml` to BuildFlow's repair exclusion list** — If the formatter can't respect manual edits, it should not auto-format this file
-10. **Verify all docs are in sync after the commit lands** — Pattern counts, feature tables, SDK options all need a final cross-check
+~~6. **Add automated pattern-count sync check** — CI test that verifies pattern count in code matches docs (like `TestMarkersMatchGogenfilter`)~~ resolved by alternative — docs-health count gate derives counts from code (cmd/docs_health_counts_test.go)
+~~7. **Fix the 2 pre-existing golangci-lint warnings** — `nestif` in `printer/text.go:147` (complexity 13), `varnamelen` in `job/incremental.go:67` (`td` too short)~~ done — lint at 0 issues in subsequent passes
+~~8. **Document the BuildFlow tagliatelle conflict in AGENTS.md** — Under Known Limitations, note that BuildFlow re-adds tagliatelle and must be manually excluded~~ done — AGENTS lint-config bullet documents it
+~~9. **Add `.golangci.yml` to BuildFlow's repair exclusion list** — If the formatter can't respect manual edits, it should not auto-format this file~~ resolved by alternative — golangci-lint-auto-configure in .buildflow.yml skip_steps
+~~10. **Verify all docs are in sync after the commit lands** — Pattern counts, feature tables, SDK options all need a final cross-check~~ done — the 2026-09-28 full docs-health audit rebuilt all living docs
 
 ### Medium priority (from TODO_LIST.md)
 
-11. **`--suggest-generics` output quality** — `generics_hint` uses fully-qualified type paths (375 chars, unreadable). Truncate/package-shorten the type strings.
-12. **Add unit tests for `minCloneTokenCount` suppression logic** — Mirror `TestShouldSuppressGroup_MinLines`
-13. **Add BDD test for `--min-tokens` flag**
-14. **Fix GitHub Actions SHA pinning** — 40 findings across all workflow files (actions/checkout@v4 etc. should be pinned to SHA)
+~~11. **`--suggest-generics` output quality** — `generics_hint` uses fully-qualified type paths (375 chars, unreadable). Truncate/package-shorten the type strings.~~ done — shortenTypeString strips import-path prefixes (+ tests)
+~~12. **Add unit tests for `minCloneTokenCount` suppression logic** — Mirror `TestShouldSuppressGroup_MinLines`~~ done — TestMinCloneTokenCount (cmd/run_output_test.go)
+~~13. **Add BDD test for `--min-tokens` flag**~~ done — bdd/min_tokens_test.go
+~~14. **Fix GitHub Actions SHA pinning** — 40 findings across all workflow files (actions/checkout@v4 etc. should be pinned to SHA)~~ done — all uses: pinned to full SHAs
 15. **Fix `accept_fixture` package naming** — Package name has underscores (go-structure-linter finding)
-16. **Fix go.mod direct/indirect requires mixing** — Should be separate blocks since Go 1.17+
+~~16. **Fix go.mod direct/indirect requires mixing** — Should be separate blocks since Go 1.17+~~ done — separate require blocks in go.mod
 17. **Fix `dist` directory not ignored in go.mod**
 18. **Extract vendorHash from flake.nix to dedicated file** — Cleaner diffs, better tool interop
 
 ### Lower priority (quality of life)
 
-19. **Add `GOEXPERIMENT=jsonv2` check to BuildFlow** — The preflight warns it's redundant; verify whether it's actually needed or can be removed
-20. **Add CGO_ENABLED=1 to `.buildflow.yml`** — So test-race can run in pre-commit
+~~19. **Add `GOEXPERIMENT=jsonv2` check to BuildFlow** — The preflight warns it's redundant; verify whether it's actually needed or can be removed~~ resolved by alternative — dropped as redundant (output is experiment-independent per ADR-0024)
+~~20. **Add CGO_ENABLED=1 to `.buildflow.yml`** — So test-race can run in pre-commit~~ done — CGO_ENABLED "1" in .buildflow.yml
 21. **Install go-licenses in devShell** — License verification currently fails
 22. **Add a "docs sync" CI job** — Cross-validate pattern counts, feature tables, SDK options across all doc files
-23. **Consider `--no-verify` escape hatch documentation** — When BuildFlow binaries are missing, document how to bypass
+~~23. **Consider `--no-verify` escape hatch documentation** — When BuildFlow binaries are missing, document how to bypass~~ resolved by alternative — hook path fixed via skip_steps; ritual gone
 24. **Update plan doc** — Mark tasks 10-14 as completed/blocked in `docs/planning/2026-08-10_07-05_docs-health-gap-fix-sprint.md`
-25. **Review whether tagliatelle should actually be enabled** — Maybe the codebase CAN conform to a single JSON convention; ADR-0016 decided "mixed is fine" but that was a choice, not a constraint
+~~25. **Review whether tagliatelle should actually be enabled** — Maybe the codebase CAN conform to a single JSON convention; ADR-0016 decided "mixed is fine" but that was a choice, not a constraint~~ resolved by alternative — banned outright with auto-remove guard
 
 ---
 

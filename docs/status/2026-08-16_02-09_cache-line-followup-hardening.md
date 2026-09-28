@@ -61,8 +61,8 @@
    - Documents the decision that no CacheVersion bump is needed
 
 10. **Full test suite passes** — all 28+ packages (`go test ./... -count=1 -timeout=10m`)
-11. **Full build clean** — `go build ./...`
-12. **Lint clean** — 0 new issues in all touched packages (46 pre-existing tagliatelle in untouched files)
+~~11. **Full build clean** — `go build ./...`~~ done — serial() arena allocation (syntax/syntax.go)
+~~12. **Lint clean** — 0 new issues in all touched packages (46 pre-existing tagliatelle in untouched files)~~ won't implement — NO-GO measured (~0.03% of run allocations; TODO_LIST parked tier)
 
 ### Benchmark Results (deterministic allocation data)
 
@@ -87,12 +87,12 @@ Nothing — all started items are complete.
 
 ## c) NOT STARTED (identified but not attempted)
 
-1. **ADR-0022**: No Architecture Decision Record created for the field reordering + stack buffer decisions
-2. **Instrument `len(s.trans)` distribution**: Still don't know the real distribution of transition counts across suffix tree states. The threshold of 32 remains an educated guess.
-3. **`parallelWalkRoot` stack buffer**: Same `make([]TokenValue, ...)` pattern exists in `suffixtree/parallel.go` but was not optimized (one-time call, but root state has the most transitions — might actually benefit)
-4. **`state.tree` back-pointer removal**: Identified as a 8B-per-state saving (~288KB on 10k-token trees) but not attempted (too invasive without measuring blast radius)
-5. **`sync.Pool` for `contextList`/`posList`**: The biggest remaining allocation win (~13,000 allocs per 10k-token search vs ~360 saved by stack buffers) — not attempted
-6. **`-race` test run**: Not run this session (was run in prior sessions, but the field reordering + new code paths warrant a re-run)
+~~1. **ADR-0022**: No Architecture Decision Record created for the field reordering + stack buffer decisions~~ done — docs/adr/0022-suffixtree-data-layout.md
+~~2. **Instrument `len(s.trans)` distribution**: Still don't know the real distribution of transition counts across suffix tree states. The threshold of 32 remains an educated guess.~~ done — instrumented: 80-90% leaves (ADR-0022)
+~~3. **`parallelWalkRoot` stack buffer**: Same `make([]TokenValue, ...)` pattern exists in `suffixtree/parallel.go` but was not optimized (one-time call, but root state has the most transitions — might actually benefit)~~ resolved by alternative — slice transitions removed the root key-slice allocation
+~~4. **`state.tree` back-pointer removal**: Identified as a 8B-per-state saving (~288KB on 10k-token trees) but not attempted (too invasive without measuring blast radius)~~ done — tree back-pointer removed (suffixtree/suffixtree.go)
+~~5. **`sync.Pool` for `contextList`/`posList`**: The biggest remaining allocation win (~13,000 allocs per 10k-token search vs ~360 saved by stack buffers) — not attempted~~ done — contextListPool (suffixtree/dupl.go); posList eliminated
+~~6. **`-race` test run**: Not run this session (was run in prior sessions, but the field reordering + new code paths warrant a re-run)~~ done — full-suite -race green; found and fixed the cache metadata race
 
 ---
 
@@ -119,21 +119,21 @@ Nothing catastrophic. But there are serious concerns:
 
 ### What This Session Got Wrong
 
-1. **I didn't create an ADR.** The prior session's self-critique listed "Create ADR-0022" as item #10. I skipped it. This is an architectural decision (struct field ordering, stack buffer threshold) that affects future maintainability. An ADR would capture the rationale, tradeoffs, and the "why 32?" question in a permanent, discoverable location.
+~~1. **I didn't create an ADR.** The prior session's self-critique listed "Create ADR-0022" as item #10. I skipped it. This is an architectural decision (struct field ordering, stack buffer threshold) that affects future maintainability. An ADR would capture the rationale, tradeoffs, and the "why 32?" question in a permanent, discoverable location.~~ done — docs/adr/0022
 
-2. **I didn't instrument `len(s.trans)` distribution.** This was listed as item #3 in the prior session's next steps. The threshold of 32 is still a guess. A 10-line benchmark with a `fmt.Println` histogram would have taken 5 minutes and would have justified (or corrected) the threshold. I prioritized the fallback test (which proves correctness) over the instrumentation (which proves optimality). Both are needed.
+~~2. **I didn't instrument `len(s.trans)` distribution.** This was listed as item #3 in the prior session's next steps. The threshold of 32 is still a guess. A 10-line benchmark with a `fmt.Println` histogram would have taken 5 minutes and would have justified (or corrected) the threshold. I prioritized the fallback test (which proves correctness) over the instrumentation (which proves optimality). Both are needed.~~ done — distribution data captured in ADR-0022
 
-3. **I didn't run `go test -race ./...`.** Field reordering on concurrent data structures without a race test is irresponsible. The changes are type-safe, but `go test -race` is the gold standard for concurrency verification. It takes 2 minutes and I skipped it.
+~~3. **I didn't run `go test -race ./...`.** Field reordering on concurrent data structures without a race test is irresponsible. The changes are type-safe, but `go test -race` is the gold standard for concurrency verification. It takes 2 minutes and I skipped it.~~ done — full -race run found and fixed the cache race
 
-4. **I didn't optimize `parallelWalkRoot`.** It has the same allocation pattern as `walkTrans`. I dismissed it as "one-time call" in the prior session and didn't revisit. But the root state has the MOST transitions (one per distinct first token), so it's the one case where the heap fallback ALWAYS fires. The stack buffer would never help for the root — but a pre-allocated slice would. This is a missed optimization.
+~~4. **I didn't optimize `parallelWalkRoot`.** It has the same allocation pattern as `walkTrans`. I dismissed it as "one-time call" in the prior session and didn't revisit. But the root state has the MOST transitions (one per distinct first token), so it's the one case where the heap fallback ALWAYS fires. The stack buffer would never help for the root — but a pre-allocated slice would. This is a missed optimization.~~ resolved by alternative — root key-slice allocation eliminated by slice transitions
 
-5. **The benchmark methodology is still flawed.** I ran 10 samples (up from 3), which is better, but on a throttling laptop CPU, 10 samples of thermal noise is still thermal noise. I should have:
+~~5. **The benchmark methodology is still flawed.** I ran 10 samples (up from 3), which is better, but on a throttling laptop CPU, 10 samples of thermal noise is still thermal noise. I should have:~~ done — pinned/unpinned A/B protocol (docs/benchmarks/pinned-unpinned-2026-09-22.txt)
    - Used `taskset -c 1` to pin to a single core
    - Run benchmarks in a temperature-stable environment (idle between runs)
    - Used `perflock` or similar to control CPU frequency
    - Or just admitted that timing data from this CPU is unreliable and focused only on allocation counts
 
-6. **The AGENTS.md entry is now even longer.** The prior session's self-critique said it was "too verbose" (item #11). I made it LONGER by adding test references, gob notes, and the shared constant name. I should have moved the detail to an ADR and left a one-liner in AGENTS.md.
+~~6. **The AGENTS.md entry is now even longer.** The prior session's self-critique said it was "too verbose" (item #11). I made it LONGER by adding test references, gob notes, and the shared constant name. I should have moved the detail to an ADR and left a one-liner in AGENTS.md.~~ done — cache bullets rewritten; detail in ADR-0022
 
 7. **I didn't test `CloneNode` field preservation through the `syntaxToCloneNode` bridge.** The `TestSerializePreservesAllFields` test covers `serial()` for `Node`, but there's no equivalent test that verifies `syntaxToCloneNode` in `printer/clone_processor.go` copies ALL fields from `syntax.Node` to `domain.CloneNode`. If a new field is added to `CloneNode` and the bridge isn't updated, the field will silently be zero. This was listed as a concern in the prior session's status report and I didn't address it.
 
@@ -149,43 +149,43 @@ Nothing catastrophic. But there are serious concerns:
 
 ### High Priority — Verify and Validate Current Work
 
-1. **Run `go test -race ./...`** — verify no data races from field reordering on concurrent paths
-2. **Instrument `len(s.trans)` distribution** — add a temporary benchmark variant that records transition counts across a real-world tree construction. Use this to justify (or correct) the 32-entry threshold
-3. **Create ADR-0022** — document the field reordering decision, stack buffer threshold choice, gob compatibility analysis, and the sort-necessity conclusion
+~~1. **Run `go test -race ./...`** — verify no data races from field reordering on concurrent paths~~ done — full-suite -race green (04-23; ci.yml)
+~~2. **Instrument `len(s.trans)` distribution** — add a temporary benchmark variant that records transition counts across a real-world tree construction. Use this to justify (or correct) the 32-entry threshold~~ done — distribution data in ADR-0022
+~~3. **Create ADR-0022** — document the field reordering decision, stack buffer threshold choice, gob compatibility analysis, and the sort-necessity conclusion~~ done — docs/adr/0022-suffixtree-data-layout.md
 4. **Add `TestSyntaxToCloneNodePreservesAllFields`** — verify the `printer/clone_processor.go` bridge copies every field from `syntax.Node` to `domain.CloneNode`. If a new `CloneNode` field is added, this test should fail until the bridge is updated
-5. **Run benchmarks with `taskset -c 1`** — pin to a single core to reduce thermal throttling noise. Compare allocation counts (reliable) and timing (may still be noisy but better)
+~~5. **Run benchmarks with `taskset -c 1`** — pin to a single core to reduce thermal throttling noise. Compare allocation counts (reliable) and timing (may still be noisy but better)~~ done — pinned/unpinned A/B
 6. **Add `BenchmarkStackBufferFallback`** — benchmark the >32 transitions path specifically to measure the cost of the heap fallback vs the stack path
 
 ### Medium Priority — Deeper Allocation Reduction
 
-7. **`sync.Pool` for `contextList`** — each `walkTrans` call allocates a `contextList` (map header + map). A pool with `Reset()` would eliminate ~7,000+ allocs per 10k-token search (vs ~360 saved by stack buffers)
-8. **`sync.Pool` for `posList`** — same pattern, allocated per leaf state
-9. **Pre-allocated arena for `state` objects** — all states in one contiguous `[]state` slice with int32 indices instead of pointers. Eliminates per-state heap allocation during construction AND improves cache locality (states are adjacent in memory)
-10. **Pre-allocated arena for `tran` objects** — same pattern as states
+~~7. **`sync.Pool` for `contextList`** — each `walkTrans` call allocates a `contextList` (map header + map). A pool with `Reset()` would eliminate ~7,000+ allocs per 10k-token search (vs ~360 saved by stack buffers)~~ done — contextListPool (suffixtree/dupl.go)
+~~8. **`sync.Pool` for `posList`** — same pattern, allocated per leaf state~~ resolved by alternative — posList eliminated; []Pos stored directly
+~~9. **Pre-allocated arena for `state` objects** — all states in one contiguous `[]state` slice with int32 indices instead of pointers. Eliminates per-state heap allocation during construction AND improves cache locality (states are adjacent in memory)~~ done — stateArena (suffixtree/suffixtree.go, stateBlockSize=512)
+~~10. **Pre-allocated arena for `tran` objects** — same pattern as states~~ resolved by alternative — transitions stored as values in each state's []tran slice
 11. **Bulk `Node` allocation in `serial()`** — pre-allocate `make([]Node, count)` and index into it instead of `&Node{}` per node. Nodes would be cache-line adjacent instead of scattered across the heap
 12. **`sync.Pool` for `[]*Node` stream slices** — `SerializeWithMaxChildren` allocates `make([]*Node, 0, 10)` every call. A pool with `Reset()` would eliminate this
-13. **Optimize `parallelWalkRoot`** — the root state has the most transitions (one per distinct first token). Pre-allocate a correctly-sized slice instead of using the stack buffer (which will always fall back to heap for root). This is the one case where the stack buffer NEVER helps.
+~~13. **Optimize `parallelWalkRoot`** — the root state has the most transitions (one per distinct first token). Pre-allocate a correctly-sized slice instead of using the stack buffer (which will always fall back to heap for root). This is the one case where the stack buffer NEVER helps.~~ done — parallelWalkRoot walks the root slice directly; rootKeys allocation gone
 
 ### Medium Priority — Measurement Infrastructure
 
-14. **Add `testing.AllocsPerRun` assertions** — in `TestNodeScalarFieldsInOneCacheLine` or a separate test, assert that `Val()` does not allocate. This catches accidental allocations in the hot path
-15. **Add memory profiling** (`-memprofile`) to benchmark runs — identify which allocations dominate
+~~14. **Add `testing.AllocsPerRun` assertions** — in `TestNodeScalarFieldsInOneCacheLine` or a separate test, assert that `Val()` does not allocate. This catches accidental allocations in the hot path~~ done — suffixtree/alloc_budget_test.go (AllocsPerRun budgets)
+~~15. **Add memory profiling** (`-memprofile`) to benchmark runs — identify which allocations dominate~~ done — before/after profiles in ADR-0022
 16. **Add `runtime.MemStats` before/after** to benchmarks — measure total memory footprint, not just per-op allocs
-17. **Set up CI benchmark regression detection** — compare against committed baselines in `docs/benchmarks/` and fail on allocation regressions (timing is too noisy for CI)
-18. **Add a real-world benchmark** — use an actual Go project (not synthetic tokens) to measure end-to-end impact of the optimizations
+~~17. **Set up CI benchmark regression detection** — compare against committed baselines in `docs/benchmarks/` and fail on allocation regressions (timing is too noisy for CI)~~ done — performance.yml benchstat gate + scripts/check-alloc-regression.sh
+~~18. **Add a real-world benchmark** — use an actual Go project (not synthetic tokens) to measure end-to-end impact of the optimizations~~ done — docs/benchmarks/realworld-cli.md + scripts/bench-realworld.sh
 
 ### Medium Priority — Algorithm-Level Improvements
 
-19. **Replace `map[TokenValue]*tran` with a slice-based structure for small transition counts** — most states have 1-5 transitions; a linear scan of a `[4]tran` is faster than a map lookup and avoids map allocation overhead
-20. **Remove `state.tree` back-pointer** — pass `data []TokenValue` as parameter to `testAndSplit`/`canonize`/`addTran`/`fork`. Saves 8B per state (~288KB on 10k-token trees). Requires updating all methods that access `s.tree.data`
-21. **Consider `int32` indices for `state.linkState` and `tran.state`** — enables contiguous `[]state` arena allocation and eliminates pointer chasing
-22. **Reorder `state` fields** — `trans` (most accessed) first, then `linkState`, then `tree` (or remove `tree`). Currently `tree` is first but rarely accessed during search
-23. **Profile with `pprof`** — run `go test -bench=. -cpuprofile=cpu.prof` and identify actual cache miss hotspots (not theoretical ones)
-24. **Consider `slices.Sort` vs insertion sort** — for very small `transKeys` slices (1-5 elements), insertion sort may be faster than `slices.Sort` due to lower overhead
+~~19. **Replace `map[TokenValue]*tran` with a slice-based structure for small transition counts** — most states have 1-5 transitions; a linear scan of a `[4]tran` is faster than a map lookup and avoids map allocation overhead~~ done — sorted []tran value slices
+~~20. **Remove `state.tree` back-pointer** — pass `data []TokenValue` as parameter to `testAndSplit`/`canonize`/`addTran`/`fork`. Saves 8B per state (~288KB on 10k-token trees). Requires updating all methods that access `s.tree.data`~~ done — back-pointer removed; data parameter
+~~21. **Consider `int32` indices for `state.linkState` and `tran.state`** — enables contiguous `[]state` arena allocation and eliminates pointer chasing~~ won't implement — int32 indices rejected in ADR-0022
+~~22. **Reorder `state` fields** — `trans` (most accessed) first, then `linkState`, then `tree` (or remove `tree`). Currently `tree` is first but rarely accessed during search~~ done — TestStateLayout pins the field offsets (suffixtree/layout_test.go)
+~~23. **Profile with `pprof`** — run `go test -bench=. -cpuprofile=cpu.prof` and identify actual cache miss hotspots (not theoretical ones)~~ done — pprof before/after in ADR-0022
+~~24. **Consider `slices.Sort` vs insertion sort** — for very small `transKeys` slices (1-5 elements), insertion sort may be faster than `slices.Sort` due to lower overhead~~ resolved by alternative — sorted-on-insert transitions; no standalone sort to tune
 
 ### Low Priority — Code Quality
 
-25. **Simplify AGENTS.md cache line entry** — move detail to ADR-0022, leave a one-liner in AGENTS.md
+~~25. **Simplify AGENTS.md cache line entry** — move detail to ADR-0022, leave a one-liner in AGENTS.md~~ done — AGENTS cache bullets rewritten; detail in ADR-0022
 26. **Add `//go:noinline` to `walkTrans`** — prevent the compiler from inlining it into `parallelWalkRoot` (which would duplicate the stack buffer on the stack)
 27. **Check if `fingerprintSubtree` could use iterative traversal** — avoids goroutine stack growth on deep ASTs
 28. **Consider `xxHash` for `fingerprintSubtree`** — faster than FNV-1a but adds a dependency
@@ -194,26 +194,26 @@ Nothing catastrophic. But there are serious concerns:
 
 ### Low Priority — Documentation
 
-31. **Document the benchmark methodology limitations** — add a note to `docs/benchmarks/README.md` explaining that timing on this CPU is unreliable due to thermal throttling, and that allocation counts are the primary regression signal
-32. **Add `docs/benchmarks/baseline-2026-08-16_notes.md`** — capture the benchstat comparison output and interpretation for future reference
-33. **Update `FEATURES.md`** — if cache line optimizations are a user-facing feature (they're not, but they could be mentioned in a "Performance" section)
-34. **Add `CHANGELOG.md` entry** — document the cache line optimizations and stack buffer optimization
+~~31. **Document the benchmark methodology limitations** — add a note to `docs/benchmarks/README.md` explaining that timing on this CPU is unreliable due to thermal throttling, and that allocation counts are the primary regression signal~~ done — methodology notes in docs/benchmarks/README.md
+~~32. **Add `docs/benchmarks/baseline-2026-08-16_notes.md`** — capture the benchstat comparison output and interpretation for future reference~~ done — docs/benchmarks/baseline-2026-08-16-v3_notes.md
+~~33. **Update `FEATURES.md`** — if cache line optimizations are a user-facing feature (they're not, but they could be mentioned in a "Performance" section)~~ won't implement — judged not warranted (performance-only change covered by CHANGELOG)
+~~34. **Add `CHANGELOG.md` entry** — document the cache line optimizations and stack buffer optimization~~ done — CHANGELOG layout overhaul + cache race Fixed entries
 
 ### Low Priority — Exploration
 
-35. **Investigate Swiss table map** (`swiss.Map`) — Go's new Swiss table map implementation may have better cache behavior for transition lookup than the built-in map
+~~35. **Investigate Swiss table map** (`swiss.Map`) — Go's new Swiss table map implementation may have better cache behavior for transition lookup than the built-in map~~ resolved by alternative — transition map replaced by sorted []tran slices
 36. **Consider SIMD-accelerated sort** for `TokenValue` (int32) — for large transition counts, SIMD sort could be faster than `slices.Sort`
-37. **Explore `runtime.GOMAXPROCS` pinning** for benchmark runs — reduce scheduling noise
-38. **Consider `sync.Pool` for `[]TokenValue` buffers** used in `parallelWalkRoot`
+~~37. **Explore `runtime.GOMAXPROCS` pinning** for benchmark runs — reduce scheduling noise~~ done — GOMAXPROCS pinned/unpinned A/B
+~~38. **Consider `sync.Pool` for `[]TokenValue` buffers** used in `parallelWalkRoot`~~ resolved by alternative — root key-slice allocation eliminated (slice transitions)
 39. **Investigate lock-free `contextList.append`** — for the parallel search path, atomic CAS instead of mutex
 40. **Explore `ragel` or table-driven state machine** for suffix tree construction — potential for better branch prediction
-41. **Profile `serial()` allocation pattern** — if `&Node{}` calls are sequential, the allocator may already place them cache-line adjacent
-42. **Consider `[]Node` (slice of values) instead of `[]*Node`** in `serial()` — eliminates pointer chasing, improves cache locality
+~~41. **Profile `serial()` allocation pattern** — if `&Node{}` calls are sequential, the allocator may already place them cache-line adjacent~~ resolved by alternative — serial() rewritten to []Node arena (master-plan T13)
+~~42. **Consider `[]Node` (slice of values) instead of `[]*Node`** in `serial()` — eliminates pointer chasing, improves cache locality~~ done — serial() indexes into []Node arena
 43. **Investigate `go/types` checker caching** — the 10-100x slowdown for `--type-aware` is the biggest performance bottleneck, not cache line optimizations
 44. **Add `--cache-version` CLI flag** — print current `CacheVersion` for debugging
 45. **Consider `testing.B.ReportMetric`** for custom benchmark metrics (e.g., "cache_misses/op") if a cache profiler is available
-46. **Explore `perf stat` integration** — use Linux perf to measure cache misses directly (L1-dcache-load-misses)
-47. **Add a `BenchmarkFindDuplOverAllocs` that uses `testing.AllocsPerRun`** — programmatic allocation measurement, not just `-benchmem`
+~~46. **Explore `perf stat` integration** — use Linux perf to measure cache misses directly (L1-dcache-load-misses)~~ done — perf stat cache-counter A/B (ADR-0022)
+~~47. **Add a `BenchmarkFindDuplOverAllocs` that uses `testing.AllocsPerRun`** — programmatic allocation measurement, not just `-benchmem`~~ resolved by alternative — AllocsPerRun budgets cover this (suffixtree/alloc_budget_test.go)
 48. **Consider `unsafe.Alignof` assertions** — verify that `Node` and `CloneNode` have the expected alignment (8 bytes for pointer-containing structs)
 49. **Investigate `runtime.KeepAlive`** — ensure stack buffers are not prematurely optimized away in edge cases
 50. **Explore `compiler flags`** — `-gcflags="-l -B"` (disable inlining + bounds check) to measure theoretical ceiling vs current performance

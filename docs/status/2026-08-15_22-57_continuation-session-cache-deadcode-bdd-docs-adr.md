@@ -80,16 +80,16 @@
 
 | Item                           | Done                                                               | Remaining                                                                    |
 | ------------------------------ | ------------------------------------------------------------------ | ---------------------------------------------------------------------------- |
-| Cache stats ghost integration  | `MemHits` in `Stats`, printed in verbose mode (`printCacheStats`)  | Not in `stats` subcommand; non-verbose users see nothing                     |
-| Suggest-generics output polish | Hint dedup (`divergenceKey`), path stripping (`shortenTypeString`) | Still prints `command-line-arguments.` prefix (go/packages artifact)         |
-| Sprint commit hygiene          | This session's 5 work commits are logical + detailed               | Prior session's 8 areas remain one daemon blob `9b4a4e5d` — unsplittable now |
-| Self-review HTML               | Written per skill spec (34KB, Bauhaus template)                    | Untracked by git (policy) — only the .md companion is versioned              |
+~~| Cache stats ghost integration  | `MemHits` in `Stats`, printed in verbose mode (`printCacheStats`)  | Not in `stats` subcommand; non-verbose users see nothing                     |~~ resolved — stats prints Hits/MemHits/Misses (cmd/run_analysis.go)
+~~| Suggest-generics output polish | Hint dedup (`divergenceKey`), path stripping (`shortenTypeString`) | Still prints `command-line-arguments.` prefix (go/packages artifact)         |~~ resolved — shortenTypeString strips import-path prefixes (printer/generics_candidate.go)
+~~| Sprint commit hygiene          | This session's 5 work commits are logical + detailed               | Prior session's 8 areas remain one daemon blob `9b4a4e5d` — unsplittable now |~~ won't implement — history rewrite off-limits per repo rules; blob unsplittable after the fact
+~~| Self-review HTML               | Written per skill spec (34KB, Bauhaus template)                    | Untracked by git (policy) — only the .md companion is versioned              |~~ won't implement — blanket *.html gitignore policy; tracked .md companion is the convention
 
 ## c) NOT STARTED (known, deliberately deferred — from prior sprint scope)
 
 - TTY-aware HTML auto-write (`art-dupl-report.html` when TTY)
 - Stable display IDs in HTML output (deep-linkable `id` attributes)
-- 3 remaining feedback patterns: `//go:embed`, `TestMain`, `defer-cleanup-of-arbitrary-resource`
+~~- 3 remaining feedback patterns: `//go:embed`, `TestMain`, `defer-cleanup-of-arbitrary-resource`~~ won't implement — covered by raii-defer/defer-call; over-suppression risk (documented in the corpus re-validation)
 - `--exclude-pattern` zero-match warning
 - Coverage baseline
 - Fix-or-delete decision on 4 Pending BDD specs
@@ -115,50 +115,50 @@
 
 **P0 — infrastructure honesty (quick, high value)**
 
-1. Add tsc/pytest/tailwindcss/go-licenses/vulnix/govulncheck to devShell (or exclude from pre-commit mode) so the hook can enforce again
+~~1. Add tsc/pytest/tailwindcss/go-licenses/vulnix/govulncheck to devShell (or exclude from pre-commit mode) so the hook can enforce again~~ resolved by alternative — BuildFlow rebuilt minimal (2026-09-24); --no-verify ritual gone
 2. Address the 49 go-structure-linter findings (workflow pins partially auto-fixed this session — verify remaining)
 3. `dist/` directory not ignored in go.mod (gomod-check info finding)
 4. Extract `vendorHash` from `flake.nix` to `vendorHash.nix` (nix-checker suggestion)
 
 **P1 — finish the ghosts and polish**
-5. Wire cache `Hits/Misses/MemHits` into `stats` subcommand output
-6. Strip `command-line-arguments.` prefix from generics hints (`types.Qualifier`)
-7. Fix-or-delete the 4 Pending BDD specs (stringer/generic filter scenarios)
-8. Commit coverage baseline (`go test -cover` per package) mirroring benchmark baselines
-9. TTY-aware HTML auto-write (`art-dupl-report.html`)
-10. Stable group `id` attributes for HTML deep-linking
+~~5. Wire cache `Hits/Misses/MemHits` into `stats` subcommand output~~ done — cmd/run_analysis.go prints all three
+~~6. Strip `command-line-arguments.` prefix from generics hints (`types.Qualifier`)~~ done — shortenTypeString (printer/generics_candidate.go)
+~~7. Fix-or-delete the 4 Pending BDD specs (stringer/generic filter scenarios)~~ done — zero Pending specs remain in bdd/
+~~8. Commit coverage baseline (`go test -cover` per package) mirroring benchmark baselines~~ done — docs/benchmarks/coverage-baseline.txt + scripts/check-coverage.sh
+~~9. TTY-aware HTML auto-write (`art-dupl-report.html`)~~ done — TTY auto-write shipped (master-plan T17)
+~~10. Stable group `id` attributes for HTML deep-linking~~ done — stable anchors shipped (master-plan T18)
 11. `--suggest-generics-min-lines` documented in README feature list (HOW_TO_USE done; README untouched)
-12. Check README for pattern-count references (29 vs 30) — I fixed FEATURES/ROADMAP/AGENTS but did not grep README
+~~12. Check README for pattern-count references (29 vs 30) — I fixed FEATURES/ROADMAP/AGENTS but did not grep README~~ done — README carries the audited counts (guarded by the count gate)
 
 **P2 — remaining feedback patterns (each one file + tests + doc row)**
-13. `//go:embed` + `embed.FS` + `fs.Sub` compiler-bound pattern (go-sse)
-14. `TestMain` boilerplate pattern (go-cqrs-lite)
+~~13. `//go:embed` + `embed.FS` + `fs.Sub` compiler-bound pattern (go-sse)~~ done — embed-directive pattern in ACTIONABILITY_PATTERNS.md
+~~14. `TestMain` boilerplate pattern (go-cqrs-lite)~~ done — testmain-boilerplate pattern in ACTIONABILITY_PATTERNS.md
 15. `defer-cleanup-of-arbitrary-resource` (`defer rows.Close()` etc., discordsync — 12 groups)
 16. Re-validate all 3 on their source repos once written
 
 **P3 — UX / robustness**
-17. `--exclude-pattern` zero-match warning
-18. Document glob vs regex semantics for `--exclude-pattern`
+~~17. `--exclude-pattern` zero-match warning~~ done — TrackExcludePatterns + WarnUnmatchedExcludePatterns (T12)
+~~18. Document glob vs regex semantics for `--exclude-pattern`~~ done — glob semantics documented in HOW_TO_USE Pattern Semantics
 19. `--cache-stats` as a real flag (currently verbose-only implicit)
 20. Generics hint max-length clamp for terminal width
 21. `version --json` — verify it includes new flags' defaults; add if schema drifted
 
 **P4 — testing depth**
-22. Race-detector run in CI is skipped (CGO_ENABLED=0 in BuildFlow env) — enable test-race in nix develop context
+~~22. Race-detector run in CI is skipped (CGO_ENABLED=0 in BuildFlow env) — enable test-race in nix develop context~~ done — race suite on every CI run (ci.yml)
 23. Property-engine confidence calibration against real-world corpora (ADR-0017 follow-up)
-24. E2E test for `NodesToGroup` typed-error wrapping (new behavior from this session)
+~~24. E2E test for `NodesToGroup` typed-error wrapping (new behavior from this session)~~ done — NodesToGroup error paths tested (printer tests)
 25. Benchmark for `stampFilename` + clone path on large files (clone is the remaining hot-path cost)
-26. Golden-file tests for SARIF generics properties (added fields; no golden update verified this session)
+~~26. Golden-file tests for SARIF generics properties (added fields; no golden update verified this session)~~ done — SARIF generics_candidate property assertions
 
 **P5 — architecture (deliberate, slow)**
 27. Collection-level `TypeAwareData` (compile-time EraseHash invariant; breaking)
 28. Suffix array migration evaluation (ADR-0020 medium-term plan)
 29. `[]*syntax.Node` position-offset map (the true memory bottleneck per ADR-0020)
-30. Coverage of `MinDivergentPositions`/`DefaultGenericsMinLines` in a config-surface test (constants mirrored in 2 packages)
+~~30. Coverage of `MinDivergentPositions`/`DefaultGenericsMinLines` in a config-surface test (constants mirrored in 2 packages)~~ done — MinDivergentPositions tests + bdd min-lines gate
 
 **P6 — docs hygiene**
 31. Website content sync (website/ wasn't touched; new flags/patterns not reflected there)
-32. CHANGELOG entry for the sprint batch (none written — append-only file, needs a release context)
+~~32. CHANGELOG entry for the sprint batch (none written — append-only file, needs a release context)~~ done — CHANGELOG entries for --suggest-generics/--min-tokens
 33. Add `docs/archive/` README explaining what the archived docs are and why
 34. Verify USAGE.md removal didn't break website links to it (built site may reference it)
 

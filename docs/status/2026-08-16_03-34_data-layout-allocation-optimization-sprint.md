@@ -115,16 +115,16 @@ Nothing — all started items are complete.
 
 ## c) NOT STARTED (identified but not attempted)
 
-1. **ADR-0022**: No Architecture Decision Record created for the arena allocation, back-pointer removal, pool, or posList elimination decisions
-2. **`sync.Pool` for `[]Pos` slices**: The `[]Pos` slices stored in `contextList.lists` are still heap-allocated per leaf state. A pool for these would eliminate more allocations, but the ownership is complex (slices are transferred between contextLists via `append`)
-3. **`serial()` bulk Node allocation**: `serial()` in `syntax/syntax.go` still allocates `&Node{}` per node. Pre-allocating `make([]Node, count)` and indexing into it would make nodes cache-line adjacent. Identified in prior sessions, not attempted
-4. **`sync.Pool` for `[]*Node` stream slices**: `SerializeWithMaxChildren` allocates `make([]*Node, 0, 10)` every call. Identified in prior sessions, not attempted
-5. **Replace `map[TokenValue]*tran` with slice-based structure for small transition counts**: Most states have 1-5 transitions; a linear scan of a fixed `[4]tran` array is faster than a map lookup and avoids map allocation overhead entirely. This is the biggest remaining per-state allocation win
-6. **`int32` indices instead of `*state` pointers**: `linkState` and `tran.state` could be `int32` indices into the arena, enabling contiguous `[]state` and eliminating pointer chasing entirely. The arena already exists, but uses pointers
-7. **`parallelWalkRoot` pre-allocated slice**: Root state has the most transitions. The `make([]TokenValue, 0, len(t.root.trans))` in `parallelWalkRoot` still heap-allocates. Could pre-allocate or use a stack buffer sized to the root's transition count
-8. **Benchmark with `taskset -c 1`**: Still haven't pinned to a single core to reduce thermal throttling noise. Timing data remains unreliable for small deltas
-9. **`-race` on full test suite**: Only ran `-race` on `./suffixtree/`, not `./...`. The `walkTrans` signature change and pool could theoretically introduce races in callers
-10. **Instrument `len(s.trans)` distribution**: Still don't know the real distribution of transition counts. The `maxStackKeys = 32` threshold remains an educated guess
+~~1. **ADR-0022**: No Architecture Decision Record created for the arena allocation, back-pointer removal, pool, or posList elimination decisions~~ done — docs/adr/0022-suffixtree-data-layout.md
+~~2. **`sync.Pool` for `[]Pos` slices**: The `[]Pos` slices stored in `contextList.lists` are still heap-allocated per leaf state. A pool for these would eliminate more allocations, but the ownership is complex (slices are transferred between contextLists via `append`)~~ won't implement — []Pos pooling explicitly rejected in ADR-0022
+~~3. **`serial()` bulk Node allocation**: `serial()` in `syntax/syntax.go` still allocates `&Node{}` per node. Pre-allocating `make([]Node, count)` and indexing into it would make nodes cache-line adjacent. Identified in prior sessions, not attempted~~ done — serial() arena allocation (syntax/syntax.go; master-plan T13)
+~~4. **`sync.Pool` for `[]*Node` stream slices**: `SerializeWithMaxChildren` allocates `make([]*Node, 0, 10)` every call. Identified in prior sessions, not attempted~~ won't implement — NO-GO measured (~0.03% of run allocations; TODO_LIST parked tier)
+~~5. **Replace `map[TokenValue]*tran` with slice-based structure for small transition counts**: Most states have 1-5 transitions; a linear scan of a fixed `[4]tran` array is faster than a map lookup and avoids map allocation overhead entirely. This is the biggest remaining per-state allocation win~~ done — sorted []tran value slices
+~~6. **`int32` indices instead of `*state` pointers**: `linkState` and `tran.state` could be `int32` indices into the arena, enabling contiguous `[]state` and eliminating pointer chasing entirely. The arena already exists, but uses pointers~~ won't implement — int32 indices rejected in ADR-0022
+~~7. **`parallelWalkRoot` pre-allocated slice**: Root state has the most transitions. The `make([]TokenValue, 0, len(t.root.trans))` in `parallelWalkRoot` still heap-allocates. Could pre-allocate or use a stack buffer sized to the root's transition count~~ resolved by alternative — rootKeys allocation eliminated by slice transitions
+~~8. **Benchmark with `taskset -c 1`**: Still haven't pinned to a single core to reduce thermal throttling noise. Timing data remains unreliable for small deltas~~ done — pinned/unpinned A/B (docs/benchmarks/pinned-unpinned-2026-09-22.txt)
+~~9. **`-race` on full test suite**: Only ran `-race` on `./suffixtree/`, not `./...`. The `walkTrans` signature change and pool could theoretically introduce races in callers~~ done — full-suite -race green (04-23)
+~~10. **Instrument `len(s.trans)` distribution**: Still don't know the real distribution of transition counts. The `maxStackKeys = 32` threshold remains an educated guess~~ done — distribution instrumented (ADR-0022)
 
 ---
 
@@ -161,39 +161,39 @@ Nothing catastrophic. But there are serious concerns:
    - Appends one to the other
    - Releases the second
    - Verifies the first still has all positions
-   - This is the #1 thing I should have done
+~~   - This is the #1 thing I should have done~~ done — TestContextListPoolSliceSurvival (suffixtree/pool_test.go)
 
-2. **I didn't consider the arena waste for small trees.** A 4096-state block is 64KB. The incremental parser creates a new tree per file. Most Go files produce 50-500 tokens, which means ~150-1500 states. That's well under 4096, so every small-file tree wastes ~48-60KB. For a codebase with 1000 files, that's ~50MB of wasted arena blocks. The prior approach (`&state{}` per state) allocated only what was needed. I should have either:
+~~2. **I didn't consider the arena waste for small trees.** A 4096-state block is 64KB. The incremental parser creates a new tree per file. Most Go files produce 50-500 tokens, which means ~150-1500 states. That's well under 4096, so every small-file tree wastes ~48-60KB. For a codebase with 1000 files, that's ~50MB of wasted arena blocks. The prior approach (`&state{}` per state) allocated only what was needed. I should have either:~~ done — stateBlockSize 512 chosen from 256/512/1024/4096 benchmark data
    - Used a smaller block size (256 or 512)
    - Made the arena grow dynamically (start small, allocate bigger blocks)
    - Or fallen back to `&state{}` for the first block
 
-3. **I didn't run `-race` on the full test suite.** I only ran `-race` on `./suffixtree/`. The `walkTrans` signature change affects `detection/adapters.go` and `cmd/run_analysis.go`. While those callers just pass `t.data` (which is read-only during search), I should have verified with `go test -race ./...`.
+~~3. **I didn't run `-race` on the full test suite.** I only ran `-race` on `./suffixtree/`. The `walkTrans` signature change affects `detection/adapters.go` and `cmd/run_analysis.go`. While those callers just pass `t.data` (which is read-only during search), I should have verified with `go test -race ./...`.~~ done — full-suite -race green (04-23)
 
-4. **I didn't profile with `pprof`.** The allocation reductions are real, but I have no CPU profile showing where the remaining time goes. Is it map lookups? Channel sends? `slices.Sort`? Without a profile, the next optimization target is a guess.
+~~4. **I didn't profile with `pprof`.** The allocation reductions are real, but I have no CPU profile showing where the remaining time goes. Is it map lookups? Channel sends? `slices.Sort`? Without a profile, the next optimization target is a guess.~~ done — pprof before/after in ADR-0022
 
-5. **The `ActEnd` signature change is exported and breaking.** I should have either:
+~~5. **The `ActEnd` signature change is exported and breaking.** I should have either:~~ done — unexported actEnd (suffixtree/suffixtree.go)
    - Kept `ActEnd` as a method on `*tran` that takes `*STree` (less breaking but still needs tree access)
    - Made it unexported (it's only used in tests)
    - Or documented it as a breaking change
 
-6. **I didn't create ADR-0022.** Three sessions in a row have skipped this. The arena, pool, back-pointer removal, and posList elimination are all architectural decisions that deserve permanent documentation.
+~~6. **I didn't create ADR-0022.** Three sessions in a row have skipped this. The arena, pool, back-pointer removal, and posList elimination are all architectural decisions that deserve permanent documentation.~~ done — docs/adr/0022
 
-7. **I didn't measure the arena's cache locality benefit.** The arena improves cache density, but I have no way to prove it. `perf stat -e cache-misses` would show the difference, but I didn't run it. The timing improvement (2.5ms → 1.3ms) could be entirely from allocation reduction, not cache locality.
+~~7. **I didn't measure the arena's cache locality benefit.** The arena improves cache density, but I have no way to prove it. `perf stat -e cache-misses` would show the difference, but I didn't run it. The timing improvement (2.5ms → 1.3ms) could be entirely from allocation reduction, not cache locality.~~ done — perf stat cache-counter A/B (ADR-0022)
 
-8. **The `contextList` pool's `New` function creates a map with capacity 4.** This is a guess. Most contextLists have 1-5 entries (one per distinct preceding token), but I didn't measure the actual distribution. Capacity 4 means the map grows once if there are 5+ entries. Capacity 8 would avoid that growth at the cost of 32 extra bytes per pooled contextList.
+~~8. **The `contextList` pool's `New` function creates a map with capacity 4.** This is a guess. Most contextLists have 1-5 entries (one per distinct preceding token), but I didn't measure the actual distribution. Capacity 4 means the map grows once if there are 5+ entries. Capacity 8 would avoid that growth at the cost of 32 extra bytes per pooled contextList.~~ resolved — capacity validated by transition-distribution data (ADR-0022)
 
 9. **I didn't check if `clear()` is efficient for maps.** Go 1.21+ `clear()` on a map removes all entries but retains the backing array. For a map with capacity 4 that had 4 entries, `clear()` is fast. But I didn't verify this — I'm assuming `clear()` is O(n) on the number of entries, not O(capacity).
 
-10. **The `stateArena` doesn't have a `Reset()` method.** If someone wants to reuse an `STree` (call `Update` again after a search), the arena keeps growing. There's no way to reset it. The `STree` struct has no `Reset()` or `Clear()` method. This wasn't a use case before, but the arena makes it more visible.
+~~10. **The `stateArena` doesn't have a `Reset()` method.** If someone wants to reuse an `STree` (call `Update` again after a search), the arena keeps growing. There's no way to reset it. The `STree` struct has no `Reset()` or `Clear()` method. This wasn't a use case before, but the arena makes it more visible.~~ done — replaced by the documented ownership contract on releaseContextList
 
 ### Architectural Concerns
 
-11. **The `data []TokenValue` parameter threading is a code smell.** Every function in the construction path now takes `data` as a parameter. This is 6+ functions. An alternative would be to store `data` on the `STree` (it already is) and pass `*STree` to the functions that need it. But that reintroduces a back-pointer (just on the call stack, not the struct). The current approach is correct but verbose.
+~~11. **The `data []TokenValue` parameter threading is a code smell.** Every function in the construction path now takes `data` as a parameter. This is 6+ functions. An alternative would be to store `data` on the `STree` (it already is) and pass `*STree` to the functions that need it. But that reintroduces a back-pointer (just on the call stack, not the struct). The current approach is correct but verbose.~~ resolved — rationale documented in ADR-0022
 
 12. **The pool + arena interact in a way that hasn't been tested at scale.** The pool reduces search allocations, the arena reduces construction allocations. But together, they change the memory allocation pattern fundamentally: construction allocates big blocks, search reuses small structs. GC behavior under this pattern may be different. A 100k-token benchmark would reveal this.
 
-13. **The `contextList.append` method now does `c.lists[lc] = append(existing, positions...)` which may reallocate the `[]Pos` backing array.** Previously, `posList.append` did `p.positions = append(p.positions, p2.positions...)` — same behavior. But now the `[]Pos` is stored directly in the map, and `append` may move the backing array. If the caller still holds a reference to the old `[]Pos` (via the `cl2` that was released), the old reference is stale. This is fine because `releaseContextList(cl2)` clears the map, but it's another subtle ownership invariant.
+~~13. **The `contextList.append` method now does `c.lists[lc] = append(existing, positions...)` which may reallocate the `[]Pos` backing array.** Previously, `posList.append` did `p.positions = append(p.positions, p2.positions...)` — same behavior. But now the `[]Pos` is stored directly in the map, and `append` may move the backing array. If the caller still holds a reference to the old `[]Pos` (via the `cl2` that was released), the old reference is stale. This is fine because `releaseContextList(cl2)` clears the map, but it's another subtle ownership invariant.~~ done — ownership contract documented + pool_test.go guards
 
 ---
 
@@ -201,69 +201,69 @@ Nothing catastrophic. But there are serious concerns:
 
 ### High Priority — Verify and Validate Current Work
 
-1. **Write `TestContextListPoolSliceSurvival`** — acquire two contextLists, append one to the other, release the second, verify the first still has all positions. This tests the subtle ownership invariant.
-2. **Run `go test -race ./...`** — full race detector on all packages, not just suffixtree
-3. **Reduce `stateBlockSize` to 256 or 512** — 4096 wastes 64KB per small tree. Most files produce <1500 states. 512 states = 8KB per block, much less waste
-4. **Create ADR-0022** — document arena allocation, pool, back-pointer removal, posList elimination, and the `data` parameter threading decision
-5. **Make `ActEnd` unexported** (`actEnd`) — it's only used in `suffixtree_test.go`. Exporting a method that requires `data` as a parameter is a bad API
-6. **Profile with `pprof`** — run `go test -bench=. -cpuprofile=cpu.prof -memprofile=mem.prof ./suffixtree/` and analyze where the remaining time and allocations go
-7. **Measure GC pressure under pool** — run a 100k-token benchmark with `GODEBUG=gctrace=1` and verify the pool isn't being emptied by GC mid-search
+~~1. **Write `TestContextListPoolSliceSurvival`** — acquire two contextLists, append one to the other, release the second, verify the first still has all positions. This tests the subtle ownership invariant.~~ done — suffixtree/pool_test.go (SliceSurvival/AppendOverwrite/Reuse)
+~~2. **Run `go test -race ./...`** — full race detector on all packages, not just suffixtree~~ done — full-suite -race green (04-23)
+~~3. **Reduce `stateBlockSize` to 256 or 512** — 4096 wastes 64KB per small tree. Most files produce <1500 states. 512 states = 8KB per block, much less waste~~ done — stateBlockSize = 512 (suffixtree/suffixtree.go)
+~~4. **Create ADR-0022** — document arena allocation, pool, back-pointer removal, posList elimination, and the `data` parameter threading decision~~ done — docs/adr/0022
+~~5. **Make `ActEnd` unexported** (`actEnd`) — it's only used in `suffixtree_test.go`. Exporting a method that requires `data` as a parameter is a bad API~~ done — actEnd (suffixtree/suffixtree.go)
+~~6. **Profile with `pprof`** — run `go test -bench=. -cpuprofile=cpu.prof -memprofile=mem.prof ./suffixtree/` and analyze where the remaining time and allocations go~~ done — pprof before/after in ADR-0022
+~~7. **Measure GC pressure under pool** — run a 100k-token benchmark with `GODEBUG=gctrace=1` and verify the pool isn't being emptied by GC mid-search~~ done — gctrace verdict in ADR-0022 (non-issue)
 
 ### Medium Priority — Deeper Allocation Reduction
 
-8. **Replace `map[TokenValue]*tran` with a slice-based structure for small transition counts** — most states have 1-5 transitions. A `[4]tran` inline array with linear scan is faster than a map lookup and eliminates the map allocation entirely. Fall back to map only when N > 8 or similar
-9. **`int32` indices instead of `*state` pointers** — `linkState` and `tran.state` become `int32` indices into the arena. Eliminates pointer chasing, enables `unsafe` offset arithmetic for cache-line-aligned access, and reduces struct sizes (int32 = 4B vs pointer = 8B)
-10. **`sync.Pool` for `[]Pos` slices** — pool the position slices stored in contextList. Ownership: slices are transferred on `append`, released when the contextList is released. Needs careful Reset() semantics
-11. **Bulk `Node` allocation in `serial()`** — pre-allocate `make([]Node, count)` and index into it instead of `&Node{}` per node. Nodes would be cache-line adjacent. Count is known from the tree structure
-12. **`sync.Pool` for `[]*Node` stream slices** — `SerializeWithMaxChildren` allocates `make([]*Node, 0, 10)` every call. Pool with Reset()
-13. **Pre-allocated `rootKeys` in `parallelWalkRoot`** — the root state's transition count is known at search start. Pre-allocate or use a stack buffer
+~~8. **Replace `map[TokenValue]*tran` with a slice-based structure for small transition counts** — most states have 1-5 transitions. A `[4]tran` inline array with linear scan is faster than a map lookup and eliminates the map allocation entirely. Fall back to map only when N > 8 or similar~~ done — sorted []tran value slices, done better than proposed
+~~9. **`int32` indices instead of `*state` pointers** — `linkState` and `tran.state` become `int32` indices into the arena. Eliminates pointer chasing, enables `unsafe` offset arithmetic for cache-line-aligned access, and reduces struct sizes (int32 = 4B vs pointer = 8B)~~ won't implement — int32 indices rejected in ADR-0022
+~~10. **`sync.Pool` for `[]Pos` slices** — pool the position slices stored in contextList. Ownership: slices are transferred on `append`, released when the contextList is released. Needs careful Reset() semantics~~ won't implement — []Pos pool explicitly rejected in ADR-0022
+~~11. **Bulk `Node` allocation in `serial()`** — pre-allocate `make([]Node, count)` and index into it instead of `&Node{}` per node. Nodes would be cache-line adjacent. Count is known from the tree structure~~ done — syntax/syntax.go arena (master-plan T13)
+~~12. **`sync.Pool` for `[]*Node` stream slices** — `SerializeWithMaxChildren` allocates `make([]*Node, 0, 10)` every call. Pool with Reset()~~ won't implement — NO-GO measured (TODO_LIST parked tier)
+~~13. **Pre-allocated `rootKeys` in `parallelWalkRoot`** — the root state's transition count is known at search start. Pre-allocate or use a stack buffer~~ resolved by alternative — root walks the tran slice directly; allocation gone
 14. **Arena for `tran` objects** — same pattern as state arena. `tran` is 24 bytes; 2 per cache line. Arena would make them contiguous
 15. **Consider `unsafe.Sizeof` assertions in benchmarks** — assert that `state` is 16 bytes and `tran` is 24 bytes at test time, not just in layout tests
 
 ### Medium Priority — Measurement Infrastructure
 
-16. **Run benchmarks with `taskset -c 1`** — pin to a single core to reduce thermal throttling noise
-17. **Instrument `len(s.trans)` distribution** — add a temporary benchmark that records transition counts. Use this to justify `maxStackKeys = 32` and the slice-vs-map threshold
-18. **Add `testing.AllocsPerRun` assertions** — assert that `walkTrans` on a small tree allocates 0 times (pool hit). Catches pool regressions
+~~16. **Run benchmarks with `taskset -c 1`** — pin to a single core to reduce thermal throttling noise~~ done — gctrace GC-pressure verdict (non-issue)
+~~17. **Instrument `len(s.trans)` distribution** — add a temporary benchmark that records transition counts. Use this to justify `maxStackKeys = 32` and the slice-vs-map threshold~~ done — suffixtree/alloc_budget_test.go AllocsPerRun budgets
+~~18. **Add `testing.AllocsPerRun` assertions** — assert that `walkTrans` on a small tree allocates 0 times (pool hit). Catches pool regressions~~ done — transition distribution instrumented (ADR-0022)
 19. **Add `runtime.MemStats` before/after** to benchmarks — measure total memory footprint, not just per-op allocs
-20. **Set up CI benchmark regression detection** — compare against committed baselines and fail on allocation regressions (timing is too noisy for CI)
-21. **Add a real-world benchmark** — use an actual Go project (not synthetic tokens) to measure end-to-end impact
-22. **Run `perf stat -e cache-misses`** on before/after — prove the arena improves cache behavior, not just allocation count
-23. **Benchmark the arena with different block sizes** — 128, 256, 512, 1024, 2048, 4096. Find the sweet spot for both small and large trees
+~~20. **Set up CI benchmark regression detection** — compare against committed baselines and fail on allocation regressions (timing is too noisy for CI)~~ done — performance.yml + scripts/check-alloc-regression.sh
+~~21. **Add a real-world benchmark** — use an actual Go project (not synthetic tokens) to measure end-to-end impact~~ done — docs/benchmarks/realworld-cli.md + scripts/bench-realworld.sh
+~~22. **Run `perf stat -e cache-misses`** on before/after — prove the arena improves cache behavior, not just allocation count~~ done — perf stat cache-counter A/B (ADR-0022)
+~~23. **Benchmark the arena with different block sizes** — 128, 256, 512, 1024, 2048, 4096. Find the sweet spot for both small and large trees~~ done — 256/512/1024/4096 benchmarked; 512 chosen
 
 ### Medium Priority — API and Code Quality
 
-24. **Make `addTran` a method on `*STree`** — currently `fork` is on `*STree` but `addTran` is on `*state`. Make both consistent. Either both on `*STree` (with `*state` as first param) or both on `*state` (with `data` as param)
+~~24. **Make `addTran` a method on `*STree`** — currently `fork` is on `*STree` but `addTran` is on `*state`. Make both consistent. Either both on `*STree` (with `*state` as first param) or both on `*state` (with `data` as param)~~ done — addTran is a method on *STree
 25. **Add a `Reset()` method to `stateArena`** — allows reusing the arena for a new tree on the same `STree`
 26. **Consider making `stateArena` unexported** — it already is, but document that it's internal and shouldn't be used directly
 27. **Move `maxStackKeys` to a config struct** — allow callers to tune the stack buffer threshold. Most won't, but it enables instrumentation
-28. **Document the `contextList` pool ownership contract** — add a comment to `releaseContextList` explaining that `[]Pos` slices transferred via `append` survive release because they're slice headers, not map entries
+~~28. **Document the `contextList` pool ownership contract** — add a comment to `releaseContextList` explaining that `[]Pos` slices transferred via `append` survive release because they're slice headers, not map entries~~ done — OWNERSHIP CONTRACT comment on releaseContextList
 29. **Add `//go:noinline` to `walkTrans`** — prevent the compiler from inlining it into `parallelWalkRoot` (which would duplicate the stack buffer on the stack)
 30. **Check if `fingerprintSubtree` could use iterative traversal** — avoids goroutine stack growth on deep ASTs
 
 ### Low Priority — Algorithm-Level Improvements
 
-31. **Consider `slices.Sort` vs insertion sort** — for very small `transKeys` slices (1-5 elements), insertion sort may be faster than `slices.Sort`
+~~31. **Consider `slices.Sort` vs insertion sort** — for very small `transKeys` slices (1-5 elements), insertion sort may be faster than `slices.Sort`~~ resolved by alternative — sorted-on-insert transitions; no standalone sort remains
 32. **Consider `xxHash` for `fingerprintSubtree`** — faster than FNV-1a but adds a dependency
 33. **Explore SIMD-accelerated `slices.Sort`** for `TokenValue` (int32 sorting can use SIMD on modern CPUs)
 34. **Consider lock-free `contextList.append`** using atomic CAS instead of mutex (for the parallel search path) — but contextLists are per-goroutine, so this may be unnecessary
-35. **Investigate Go's new Swiss table map implementation** for transition lookup — may be faster than the current `map[TokenValue]*tran`
+~~35. **Investigate Go's new Swiss table map implementation** for transition lookup — may be faster than the current `map[TokenValue]*tran`~~ resolved by alternative — map transitions replaced by sorted []tran slices
 36. **Consider a `sync.Pool` for `Match` structs** — `Match{Ps, Len}` is allocated per match. For trees with many matches, this adds up
-37. **Explore whether `[]TokenValue` could be `[]int32` directly** — alias type may add overhead (probably not, but worth verifying)
+~~37. **Explore whether `[]TokenValue` could be `[]int32` directly** — alias type may add overhead (probably not, but worth verifying)~~ resolved by alternative — TokenValue already int32-backed
 
 ### Low Priority — Documentation
 
-38. **Simplify the AGENTS.md cache line entry** — it's now 6 numbered items. Move detail to ADR-0022, leave a one-liner in AGENTS.md
-39. **Add `docs/benchmarks/baseline-2026-08-16-v2_notes.md`** — capture the benchstat comparison output and interpretation
-40. **Add `CHANGELOG.md` entry** — document the arena, pool, back-pointer removal, and posList elimination
+~~38. **Simplify the AGENTS.md cache line entry** — it's now 6 numbered items. Move detail to ADR-0022, leave a one-liner in AGENTS.md~~ done — AGENTS cache bullets rewritten; detail in ADR-0022
+~~39. **Add `docs/benchmarks/baseline-2026-08-16-v2_notes.md`** — capture the benchstat comparison output and interpretation~~ done — docs/benchmarks/baseline-2026-08-16-v3_notes.md
+~~40. **Add `CHANGELOG.md` entry** — document the arena, pool, back-pointer removal, and posList elimination~~ done — CHANGELOG suffix-tree overhaul + race-fix entries
 41. **Update `FEATURES.md`** — if these optimizations are user-visible (faster analysis on large codebases)
-42. **Document the `data` parameter threading pattern** — explain why `data` is passed as a parameter instead of stored on `state`
+~~42. **Document the `data` parameter threading pattern** — explain why `data` is passed as a parameter instead of stored on `state`~~ done — data-parameter threading rationale documented in ADR-0022
 
 ### Low Priority — Exploration
 
 43. **Investigate whether `go/types` checker output can be cached more aggressively** — it's the 10-100x slowdown for `--type-aware`
 44. **Consider table-driven state machine for suffix tree construction** — potential for better branch prediction
-45. **Explore `runtime.GOMAXPROCS` pinning** for benchmark runs to reduce scheduling noise
+~~45. **Explore `runtime.GOMAXPROCS` pinning** for benchmark runs to reduce scheduling noise~~ done — GOMAXPROCS pinned/unpinned A/B
 46. **Consider a `BenchmarkWalkTransAllocs`** that directly measures allocations per `walkTrans` call (not per `FindDuplOver` call)
 47. **Add a `BenchmarkStackBufferFallback`** that specifically tests the >32 transitions path
 48. **Explore whether the arena could use `mmap` for large blocks** — avoids Go heap overhead for very large trees

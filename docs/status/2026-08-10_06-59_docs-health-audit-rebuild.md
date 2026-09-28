@@ -116,27 +116,27 @@ The `[Unreleased]` section now has ~40 entries across Added/Changed/Fixed/Remove
 
 ## c) NOT STARTED
 
-### 1. `docs/ACTIONABILITY_PATTERNS.md` NOT updated
+~~### 1. `docs/ACTIONABILITY_PATTERNS.md` NOT updated~~ done — 33 pattern checks + property engine documented
 
 The file still says "25 pattern checks" (line 1). I added 4 new patterns to the codebase (25→29) but did NOT update this reference doc. The AGENTS.md says "See `docs/ACTIONABILITY_PATTERNS.md` for the full table" — that table is now 4 patterns short. This was specifically flagged as done in the 2026-08-05_22-47 report (updated to 25) but I didn't carry it forward to 29.
 
-### 2. `HOW_TO_USE.md` NOT updated
+~~### 2. `HOW_TO_USE.md` NOT updated~~ done — --suggest-generics + --min-tokens sections present
 
 Neither `--suggest-generics` nor `--min-tokens` are documented in the user guide. Zero mentions of either flag. Multiple status reports explicitly listed "update HOW_TO_USE.md" as a TODO and it was never done. Users have no documentation for two new CLI flags.
 
-### 3. `SDK_DESIGN.md` NOT updated
+~~### 3. `SDK_DESIGN.md` NOT updated~~ done — SDK_DESIGN documents Options.SuggestGenerics
 
 `Options.SuggestGenerics` is wired in the SDK (`pkg/artdupl/types.go`, `detector_utils.go`, `detector_pipeline.go`) but SDK_DESIGN.md has zero mentions. SDK consumers have no documentation.
 
-### 4. FEATURES.md SDK section NOT updated
+~~### 4. FEATURES.md SDK section NOT updated~~ done — TypeAware + SuggestGenerics SDK rows present
 
 The SDK table (`## 📦 SDK / Programmatic API`) doesn't mention `SuggestGenerics` or `MinTokens` options.
 
-### 5. ADR for EraseHash NOT created
+~~### 5. ADR for EraseHash NOT created~~ done — docs/adr/0021-suggest-generics-erasehash-precision-gates.md
 
 The CHANGELOG entry for `--suggest-generics` references "See ADR-0020" but ADR-0020 is about algorithmic alternatives (suffix tree vs suffix array), NOT about the EraseHash design decision. The EraseHash ADR was listed as a TODO in two status reports and was never created. The CHANGELOG reference is misleading.
 
-### 6. `nix flake check` NOT run
+~~### 6. `nix flake check` NOT run~~ done — flake green (archived wave2 report)
 
 The docs-health VERIFY step says "Run the project's quality gate." I ran `go build` and `go test` but NOT `nix flake check` or `golangci-lint run`. The tagliatelle issue (which I put in TODO_LIST) would have been caught and could have been fixed in this session (one-line edit).
 
@@ -144,7 +144,7 @@ The docs-health VERIFY step says "Run the project's quality gate." I ran `go bui
 
 `docs/feedback/new/` still has 7 files from July 2026. These are outside the "2026-08-*" scope the user requested, but they remain un-annotated in the "new" directory. Some may already be addressed.
 
-### 8. Inline numbered item resolution NOT done (23 of 24 reports)
+~~### 8. Inline numbered item resolution NOT done (23 of 24 reports)~~ won't implement — legacy-archive retrofit policy documented (docs/status/archived/README.md); open items routed to TODO_LIST
 
 As noted in §b.2, the batch-archived reports have appendix-only annotations. The numbered action items in their "NOT STARTED" and "Up to 50 Things" sections were not individually resolved with `~~strikethrough~~ done at <hash>` markers.
 
@@ -189,7 +189,7 @@ I identified the tagliatelle contradiction (`.golangci.yml` has it enabled, AGEN
 
 4. **I referenced an ADR without verifying it exists and covers the right topic.** This is a factual accuracy failure in the CHANGELOG. I should have checked `ls docs/adr/0020*` and `head -5` before citing it.
 
-5. **I didn't update 3 user-facing docs (HOW_TO_USE.md, SDK_DESIGN.md, ACTIONABILITY_PATTERNS.md).** These were explicitly listed as TODO in the status reports I read. I focused on the 4 docs the user named (TODO_LIST, ROADMAP, FEATURES, CHANGELOG) and didn't check whether the features I was documenting were also documented in the user guide.
+~~5. **I didn't update 3 user-facing docs (HOW_TO_USE.md, SDK_DESIGN.md, ACTIONABILITY_PATTERNS.md).** These were explicitly listed as TODO in the status reports I read. I focused on the 4 docs the user named (TODO_LIST, ROADMAP, FEATURES, CHANGELOG) and didn't check whether the features I was documenting were also documented in the user guide.~~ done — HOW_TO_USE, SDK_DESIGN, ACTIONABILITY_PATTERNS all updated since
 
 ### Code Quality
 
@@ -205,41 +205,41 @@ I identified the tagliatelle contradiction (`.golangci.yml` has it enabled, AGEN
 
 | # | Task                                                                                                                           | Impact | Effort  |
 | - | ------------------------------------------------------------------------------------------------------------------------------ | ------ | ------- |
-| 1 | Update `docs/ACTIONABILITY_PATTERNS.md` — add defer-call, test-framework-call, state-flag-mutation, empty-default. Count 25→29 | High   | Small   |
-| 2 | Update `HOW_TO_USE.md` — add `--suggest-generics` section with usage examples, `--min-tokens` section                          | High   | Small   |
-| 3 | Update `SDK_DESIGN.md` — add `Options.SuggestGenerics` and `Options.MinTokens`                                                 | Medium | Small   |
-| 4 | Fix CHANGELOG ADR-0020 reference — either create the EraseHash ADR or remove the reference                                     | Medium | Trivial |
-| 5 | Add `SuggestGenerics` to FEATURES.md SDK table                                                                                 | Low    | Trivial |
-| 6 | Shorten AGENTS.md actionability patterns bullet — replace inline list with one-liner + link to ACTIONABILITY_PATTERNS.md       | Medium | Small   |
-| 7 | Fix tagliatelle in `.golangci.yml` — remove `- tagliatelle` from enable list (one-line fix)                                    | Medium | Trivial |
-| 8 | Run `nix flake check` to verify full quality gate passes                                                                       | Medium | Small   |
+~~| 1 | Update `docs/ACTIONABILITY_PATTERNS.md` — add defer-call, test-framework-call, state-flag-mutation, empty-default. Count 25→29 | High   | Small   |~~ done — all four in the pattern table; count now 33 checks
+~~| 2 | Update `HOW_TO_USE.md` — add `--suggest-generics` section with usage examples, `--min-tokens` section                          | High   | Small   |~~ done — HOW_TO_USE Generics-Extraction Enhancer section
+~~| 3 | Update `SDK_DESIGN.md` — add `Options.SuggestGenerics` and `Options.MinTokens`                                                 | Medium | Small   |~~ done — SDK_DESIGN + FEATURES SDK rows
+~~| 4 | Fix CHANGELOG ADR-0020 reference — either create the EraseHash ADR or remove the reference                                     | Medium | Trivial |~~ done — no ADR-0020 reference remains in CHANGELOG
+~~| 5 | Add `SuggestGenerics` to FEATURES.md SDK table                                                                                 | Low    | Trivial |~~ done — FULLY_FUNCTIONAL row present
+~~| 6 | Shorten AGENTS.md actionability patterns bullet — replace inline list with one-liner + link to ACTIONABILITY_PATTERNS.md       | Medium | Small   |~~ done — counts now point at docs/ACTIONABILITY_PATTERNS.md (2026-09-28 audit)
+~~| 7 | Fix tagliatelle in `.golangci.yml` — remove `- tagliatelle` from enable list (one-line fix)                                    | Medium | Trivial |~~ done — banned with CI guard (AGENTS)
+~~| 8 | Run `nix flake check` to verify full quality gate passes                                                                       | Medium | Small   |~~ done — flake green (archived wave2 report)
 
 ### Inline annotation fixes (fixing the #1 failure mode)
 
 | #  | Task                                                                                                | Impact | Effort |
 | -- | --------------------------------------------------------------------------------------------------- | ------ | ------ |
-| 9  | Re-annotate `docs/status/archived/2026-08-05_05-06_*` with inline item resolution                   | Medium | Medium |
-| 10 | Re-annotate `docs/status/archived/2026-08-05_05-47_*` with inline item resolution                   | Medium | Medium |
-| 11 | Re-annotate `docs/status/archived/2026-08-05_06-03_*` with inline item resolution                   | Medium | Medium |
-| 12 | Re-annotate `docs/status/archived/2026-08-05_06-13_*` with inline item resolution (dead-code items) | Medium | Medium |
-| 13 | Re-annotate `docs/status/archived/2026-08-05_06-40_*` with inline item resolution                   | Medium | Medium |
-| 14 | Re-annotate `docs/status/archived/2026-08-05_06-46_*` with inline item resolution                   | Medium | Medium |
-| 15 | Re-annotate `docs/status/archived/2026-08-05_07-30_*` with inline item resolution                   | Medium | Medium |
-| 16 | Re-annotate `docs/status/archived/2026-08-05_10-39_*` with inline item resolution                   | Medium | Medium |
-| 17 | Re-annotate `docs/status/archived/2026-08-05_16-41_*` with inline item resolution                   | Medium | Medium |
-| 18 | Re-annotate `docs/status/archived/2026-08-05_16-50_*` with inline item resolution                   | Medium | Medium |
-| 19 | Re-annotate `docs/status/archived/2026-08-05_17-33_*` with inline item resolution                   | Medium | Medium |
-| 20 | Re-annotate `docs/status/archived/2026-08-05_18-00_*` with inline item resolution                   | Medium | Medium |
-| 21 | Re-annotate `docs/status/archived/2026-08-05_18-21_*` with inline item resolution                   | Medium | Medium |
-| 22 | Re-annotate `docs/status/archived/2026-08-05_19-18_*` with inline item resolution                   | Medium | Medium |
-| 23 | Re-annotate `docs/status/archived/2026-08-05_22-47_*` with inline item resolution                   | Medium | Medium |
-| 24 | Re-annotate `docs/status/archived/2026-08-07_21-20_*` with inline item resolution                   | Medium | Medium |
-| 25 | Re-annotate `docs/status/archived/2026-08-07_22-05_*` with inline item resolution                   | Medium | Medium |
-| 26 | Re-annotate `docs/status/archived/2026-08-10_02-39_*` with inline item resolution                   | High   | Large  |
-| 27 | Re-annotate `docs/status/archived/2026-08-10_03-37_*` with inline item resolution                   | High   | Large  |
-| 28 | Re-annotate `docs/status/archived/2026-08-10_04-09_*` with inline item resolution                   | Medium | Medium |
-| 29 | Re-annotate `docs/status/archived/2026-08-10_04-39_*` with inline item resolution                   | Medium | Medium |
-| 30 | Re-annotate `docs/status/archived/2026-08-10_05-29_*` with inline item resolution                   | High   | Large  |
+~~| 9  | Re-annotate `docs/status/archived/2026-08-05_05-06_*` with inline item resolution                   | Medium | Medium |~~ won't implement — legacy-archive retrofit not scheduled (docs/status/archived/README.md); items routed to TODO_LIST
+~~| 10 | Re-annotate `docs/status/archived/2026-08-05_05-47_*` with inline item resolution                   | Medium | Medium |~~ won't implement — legacy-archive retrofit not scheduled; items routed to TODO_LIST
+~~| 11 | Re-annotate `docs/status/archived/2026-08-05_06-03_*` with inline item resolution                   | Medium | Medium |~~ won't implement — legacy-archive retrofit not scheduled; items routed to TODO_LIST
+~~| 12 | Re-annotate `docs/status/archived/2026-08-05_06-13_*` with inline item resolution (dead-code items) | Medium | Medium |~~ won't implement — legacy-archive retrofit not scheduled; items routed to TODO_LIST
+~~| 13 | Re-annotate `docs/status/archived/2026-08-05_06-40_*` with inline item resolution                   | Medium | Medium |~~ won't implement — legacy-archive retrofit not scheduled; items routed to TODO_LIST
+~~| 14 | Re-annotate `docs/status/archived/2026-08-05_06-46_*` with inline item resolution                   | Medium | Medium |~~ won't implement — legacy-archive retrofit not scheduled; items routed to TODO_LIST
+~~| 15 | Re-annotate `docs/status/archived/2026-08-05_07-30_*` with inline item resolution                   | Medium | Medium |~~ won't implement — legacy-archive retrofit not scheduled; items routed to TODO_LIST
+~~| 16 | Re-annotate `docs/status/archived/2026-08-05_10-39_*` with inline item resolution                   | Medium | Medium |~~ won't implement — legacy-archive retrofit not scheduled; items routed to TODO_LIST
+~~| 17 | Re-annotate `docs/status/archived/2026-08-05_16-41_*` with inline item resolution                   | Medium | Medium |~~ won't implement — legacy-archive retrofit not scheduled; items routed to TODO_LIST
+~~| 18 | Re-annotate `docs/status/archived/2026-08-05_16-50_*` with inline item resolution                   | Medium | Medium |~~ won't implement — legacy-archive retrofit not scheduled; items routed to TODO_LIST
+~~| 19 | Re-annotate `docs/status/archived/2026-08-05_17-33_*` with inline item resolution                   | Medium | Medium |~~ won't implement — legacy-archive retrofit not scheduled; items routed to TODO_LIST
+~~| 20 | Re-annotate `docs/status/archived/2026-08-05_18-00_*` with inline item resolution                   | Medium | Medium |~~ won't implement — legacy-archive retrofit not scheduled; items routed to TODO_LIST
+~~| 21 | Re-annotate `docs/status/archived/2026-08-05_18-21_*` with inline item resolution                   | Medium | Medium |~~ won't implement — legacy-archive retrofit not scheduled; items routed to TODO_LIST
+~~| 22 | Re-annotate `docs/status/archived/2026-08-05_19-18_*` with inline item resolution                   | Medium | Medium |~~ won't implement — legacy-archive retrofit not scheduled; items routed to TODO_LIST
+~~| 23 | Re-annotate `docs/status/archived/2026-08-05_22-47_*` with inline item resolution                   | Medium | Medium |~~ won't implement — legacy-archive retrofit not scheduled; items routed to TODO_LIST
+~~| 24 | Re-annotate `docs/status/archived/2026-08-07_21-20_*` with inline item resolution                   | Medium | Medium |~~ won't implement — legacy-archive retrofit not scheduled; items routed to TODO_LIST
+~~| 25 | Re-annotate `docs/status/archived/2026-08-07_22-05_*` with inline item resolution                   | Medium | Medium |~~ won't implement — legacy-archive retrofit not scheduled; items routed to TODO_LIST
+~~| 26 | Re-annotate `docs/status/archived/2026-08-10_02-39_*` with inline item resolution                   | High   | Large  |~~ won't implement — legacy-archive retrofit not scheduled; items routed to TODO_LIST
+~~| 27 | Re-annotate `docs/status/archived/2026-08-10_03-37_*` with inline item resolution                   | High   | Large  |~~ won't implement — legacy-archive retrofit not scheduled; items routed to TODO_LIST
+~~| 28 | Re-annotate `docs/status/archived/2026-08-10_04-09_*` with inline item resolution                   | Medium | Medium |~~ won't implement — legacy-archive retrofit not scheduled; items routed to TODO_LIST
+~~| 29 | Re-annotate `docs/status/archived/2026-08-10_04-39_*` with inline item resolution                   | Medium | Medium |~~ won't implement — legacy-archive retrofit not scheduled; items routed to TODO_LIST
+~~| 30 | Re-annotate `docs/status/archived/2026-08-10_05-29_*` with inline item resolution                   | High   | Large  |~~ won't implement — legacy-archive retrofit not scheduled; items routed to TODO_LIST
 
 ### July feedback files
 
@@ -247,34 +247,34 @@ I identified the tagliatelle contradiction (`.golangci.yml` has it enabled, AGEN
 | -- | ----------------------------------------------------------------------------------------------------- | ------ | ------ |
 | 31 | Annotate `docs/feedback/new/2026-07-19_*` (4 files) — check if addressed, route to done/ or TODO_LIST | Low    | Small  |
 | 32 | Annotate `docs/feedback/new/2026-07-26_*` — check if addressed                                        | Low    | Small  |
-| 33 | Annotate `docs/feedback/new/2026-07-27_*` — check if addressed                                        | Low    | Small  |
-| 34 | Annotate `docs/feedback/new/2026-07-29_*` — check if addressed                                        | Low    | Small  |
+~~| 33 | Annotate `docs/feedback/new/2026-07-27_*` — check if addressed                                        | Low    | Small  |~~ done — docs/feedback/done/ discordsync resolution
+~~| 34 | Annotate `docs/feedback/new/2026-07-29_*` — check if addressed                                        | Low    | Small  |~~ done — docs/feedback/done/ go-cqrs-lite resolution
 
 ### From harvested status reports (already in TODO_LIST but listed for completeness)
 
 | #  | Task                                                                                                          | Impact   | Effort  |
 | -- | ------------------------------------------------------------------------------------------------------------- | -------- | ------- |
-| 35 | `--suggest-generics` precision filtering (min-line-count gate, pattern exclusion, multi-position requirement) | Critical | Medium  |
-| 36 | `--min-tokens` unit tests and BDD test                                                                        | High     | Small   |
-| 37 | Create EraseHash ADR (not ADR-0020 — new number)                                                              | Medium   | Small   |
-| 38 | `--suggest-generics` SARIF support                                                                            | Medium   | Small   |
-| 39 | `--suggest-generics` BDD test                                                                                 | Medium   | Small   |
-| 40 | `--suggest-generics` full-pipeline integration test                                                           | Medium   | Medium  |
-| 41 | Bump `CacheVersion` to 3                                                                                      | Medium   | Trivial |
-| 42 | In-memory LRU cache layer                                                                                     | High     | Medium  |
-| 43 | Hysteresis pruning (110%/90%)                                                                                 | Medium   | Small   |
-| 44 | HTML "Detected vs Actionable" summary support                                                                 | Medium   | Small   |
-| 45 | TTY-aware HTML output (auto-write to file)                                                                    | Medium   | Small   |
+~~| 35 | `--suggest-generics` precision filtering (min-line-count gate, pattern exclusion, multi-position requirement) | Critical | Medium  |~~ done — ADR-0021 precision gates + --suggest-generics-min-lines flag
+~~| 36 | `--min-tokens` unit tests and BDD test                                                                        | High     | Small   |~~ done — bdd/min_tokens_test.go + TestMinCloneTokenCount
+~~| 37 | Create EraseHash ADR (not ADR-0020 — new number)                                                              | Medium   | Small   |~~ done — docs/adr/0021
+~~| 38 | `--suggest-generics` SARIF support                                                                            | Medium   | Small   |~~ done — printer/sarif.go generics_candidate property
+~~| 39 | `--suggest-generics` BDD test                                                                                 | Medium   | Small   |~~ done — bdd/suggest_generics_test.go
+~~| 40 | `--suggest-generics` full-pipeline integration test                                                           | Medium   | Medium  |~~ done — printer/actionability pipeline integration tests
+~~| 41 | Bump `CacheVersion` to 3                                                                                      | Medium   | Trivial |~~ done — CHANGELOG CacheVersion entry (later bumped to 4 for ADR-0023)
+~~| 42 | In-memory LRU cache layer                                                                                     | High     | Medium  |~~ done — cache/lru.go in-memory LRU
+~~| 43 | Hysteresis pruning (110%/90%)                                                                                 | Medium   | Small   |~~ done — TestFileCache_HysteresisPruning
+~~| 44 | HTML "Detected vs Actionable" summary support                                                                 | Medium   | Small   |~~ done — printer/html_views.go suppression breakdown
+~~| 45 | TTY-aware HTML output (auto-write to file)                                                                    | Medium   | Small   |~~ done — TTY auto-write art-dupl-report.html (T17)
 
 ### Polish
 
 | #  | Task                                                                                                                                                                                                | Impact  | Effort  |
 | -- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- | ------- |
-| 46 | Organize CHANGELOG `[Unreleased]` into sub-groups (Detection, Actionability, Bug Fixes, Infra)                                                                                                      | Low     | Small   |
-| 47 | Add `--suggest-generics` and `--min-tokens` to `--help` examples in CLI                                                                                                                             | Low     | Trivial |
+~~| 46 | Organize CHANGELOG `[Unreleased]` into sub-groups (Detection, Actionability, Bug Fixes, Infra)                                                                                                      | Low     | Small   |~~ done — CHANGELOG organized into Keep-a-Changelog release sections
+~~| 47 | Add `--suggest-generics` and `--min-tokens` to `--help` examples in CLI                                                                                                                             | Low     | Trivial |~~ done — both flags registered and visible in --help
 | 48 | Verify `--recommend-threshold` actually outputs two thresholds (CI gate + deep audit)                                                                                                               | Low     | Trivial |
-| 49 | Add `global.out.css` to `.gitignore`                                                                                                                                                                | Low     | Trivial |
-| 50 | Consider whether the 23 batch-archived reports should be de-archived for proper inline treatment, or whether the appendix + TODO_LIST routing is "good enough" given they're already in `archived/` | Process | N/A     |
+~~| 49 | Add `global.out.css` to `.gitignore`                                                                                                                                                                | Low     | Trivial |~~ done — gitignore covers the generated CSS artifact
+~~| 50 | Consider whether the 23 batch-archived reports should be de-archived for proper inline treatment, or whether the appendix + TODO_LIST routing is "good enough" given they're already in `archived/` | Process | N/A     |~~ won't implement — archive-regime policy documented (docs/status/archived/README.md); appendix+TODO routing retained
 
 ---
 

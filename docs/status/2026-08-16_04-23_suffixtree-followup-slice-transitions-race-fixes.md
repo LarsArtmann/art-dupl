@@ -118,14 +118,14 @@ Nothing — every started item is complete and verified.
 
 ## c) NOT STARTED (deliberately, with reasons — full list lives in TODO_LIST.md)
 
-1. **`serial()` bulk Node allocation** (`syntax/syntax.go`) — next-best allocation target, untouched this session (different package, wanted the suffix tree change verified first).
-2. **`sync.Pool` for `[]*Node` stream slices** — same reasoning.
-3. **`taskset -c 1` benchmark protocol** — timing claims in v3 notes are labeled noisy; not set up.
-4. **CI allocation-regression detection** — budgets cover suffixtree only; a benchstat-based CI job on allocation columns not built.
-5. **Real-world benchmark** (actual Go repo, not synthetic tokens) — end-to-end impact of three sessions of suffix tree work still unmeasured.
-6. **`perf stat -e cache-misses`** — cache-locality claims in ADR-0022 remain inference from allocation/profile data, not hardware counters.
-7. **`nix flake check`** — canonical CI gate not run this session (build/test/lint/race all green via direct Go tooling).
-8. **FEATURES.md update** — judged not warranted: the optimizations are performance-only, no user-visible feature change (CHANGELOG covers them).
+~~1. **`serial()` bulk Node allocation** (`syntax/syntax.go`) — next-best allocation target, untouched this session (different package, wanted the suffix tree change verified first).~~ done — serial() arena allocation (syntax/syntax.go; master-plan T13)
+~~2. **`sync.Pool` for `[]*Node` stream slices** — same reasoning.~~ won't implement — NO-GO measured (TODO_LIST parked tier; master-plan T14)
+~~3. **`taskset -c 1` benchmark protocol** — timing claims in v3 notes are labeled noisy; not set up.~~ done — pinned/unpinned A/B (docs/benchmarks/pinned-unpinned-2026-09-22.txt)
+~~4. **CI allocation-regression detection** — budgets cover suffixtree only; a benchstat-based CI job on allocation columns not built.~~ done — performance.yml benchstat gate + scripts/check-alloc-regression.sh extend coverage
+~~5. **Real-world benchmark** (actual Go repo, not synthetic tokens) — end-to-end impact of three sessions of suffix tree work still unmeasured.~~ done — docs/benchmarks/realworld-cli.md + scripts/bench-realworld.sh
+~~6. **`perf stat -e cache-misses`** — cache-locality claims in ADR-0022 remain inference from allocation/profile data, not hardware counters.~~ done — perf stat cache-counter A/B (ADR-0022; cache-miss collapsed)
+~~7. **`nix flake check`** — canonical CI gate not run this session (build/test/lint/race all green via direct Go tooling).~~ done — wave2 flake green (archived report)
+~~8. **FEATURES.md update** — judged not warranted: the optimizations are performance-only, no user-visible feature change (CHANGELOG covers them).~~ won't implement — judged not warranted; CHANGELOG covers the perf work
 9. **Remaining low-priority items from prior §f** (31–37, 43–50: xxHash, SIMD sort, Match pool, go/types caching, mmap arena, etc.) — untouched, mostly speculative without profile evidence.
 
 ---
@@ -155,9 +155,9 @@ Nothing catastrophic. Honest failures:
 ### What This Session Got Wrong / Should Do Better
 
 1. **The cache race fix is only verified by tests, not by reasoning about all callers.** I enumerated Get/Set/Clear/Stats/saveMetadata, but `Prune`→`Remove` paths were spot-checked, not systematically audited for the same atomic/lock-mixing pattern elsewhere in the codebase. A one-off audit script for `atomic.` fields also read without atomics would close this class.
-2. **No `nix flake check`.** The project's canonical gate includes templ generate + lint inside Nix; I verified with direct Go tooling only. Cheap to run, should have been part of the loop.
-3. **`benchmarkFindTranMethod` may now be dead code** (benchmarks call `benchmarkFindTran` directly with `findTranFunc`). Noticed while editing, not cleaned up or verified.
-4. **`b.N` vs `b.Loop()` modernization** surfaced by the linter in `parallel_bench_test.go:55` — pre-existing, untouched (not my change), but it's a 2-minute fix that keeps getting deferred.
+~~2. **No `nix flake check`.** The project's canonical gate includes templ generate + lint inside Nix; I verified with direct Go tooling only. Cheap to run, should have been part of the loop.~~ done — wave2 flake green (archived report)
+~~3. **`benchmarkFindTranMethod` may now be dead code** (benchmarks call `benchmarkFindTran` directly with `findTranFunc`). Noticed while editing, not cleaned up or verified.~~ done — retained as a used helper (suffixtree bench tests call it)
+~~4. **`b.N` vs `b.Loop()` modernization** surfaced by the linter in `parallel_bench_test.go:55` — pre-existing, untouched (not my change), but it's a 2-minute fix that keeps getting deferred.~~ done — b.Loop() in suffixtree bench files (wave-3 sweep; completed 2026-09-28)
 5. **The v3 notes' timing tables mix pre-v2 and v2 comparators.** The "cumulative ~2.5ms → ~1.0ms" claim spans three code states; fine as narrative, but a benchstat-grade comparison exists only for v2→v3 on allocations. If timing ever matters for a decision, re-run with pinned cores first.
 
 ---
@@ -166,39 +166,39 @@ Nothing catastrophic. Honest failures:
 
 ### High Priority — Consolidate and Close Out
 
-1. **Run `nix flake check`** on the current tree (canonical CI gate; includes templ generate).
+~~1. **Run `nix flake check`** on the current tree (canonical CI gate; includes templ generate).~~ done — wave2 flake green (archived report)
 2. **Audit the codebase for the atomic/mutex-mixing pattern** that caused the cache race: any struct field touched by `atomic.*` in one method and plainly in another (grep-driven, one afternoon at most). Fix or document each.
-3. **Delete or use `benchmarkFindTranMethod`** in `suffixtree_bench_test.go` (verify dead → remove).
-4. **Modernize `b.N` → `b.Loop()`** in `parallel_bench_test.go` (linter warning, 2 minutes).
-5. **Real-world benchmark harness**: run the binary against a pinned external repo (e.g., spf13/cobra or similar sized), commit timings + allocs as a baseline; measure end-to-end impact of the three-session suffix tree work.
-6. **`serial()` bulk Node allocation** (`syntax/syntax.go`): pre-allocate `make([]Node, count)`; nodes become cache-adjacent. The last identified big allocation target on the parse/serialize path.
-7. **`sync.Pool` for `[]*Node` stream slices** in `SerializeWithMaxChildren` (`make([]*Node, 0, 10)` per call).
+~~3. **Delete or use `benchmarkFindTranMethod`** in `suffixtree_bench_test.go` (verify dead → remove).~~ done — used as helper (suffixtree bench tests)
+~~4. **Modernize `b.N` → `b.Loop()`** in `parallel_bench_test.go` (linter warning, 2 minutes).~~ done — b.Loop() in suffixtree bench files
+~~5. **Real-world benchmark harness**: run the binary against a pinned external repo (e.g., spf13/cobra or similar sized), commit timings + allocs as a baseline; measure end-to-end impact of the three-session suffix tree work.~~ done — scripts/bench-realworld.sh + docs/benchmarks/realworld-cli.md
+~~6. **`serial()` bulk Node allocation** (`syntax/syntax.go`): pre-allocate `make([]Node, count)`; nodes become cache-adjacent. The last identified big allocation target on the parse/serialize path.~~ done — syntax/syntax.go arena (master-plan T13)
+~~7. **`sync.Pool` for `[]*Node` stream slices** in `SerializeWithMaxChildren` (`make([]*Node, 0, 10)` per call).~~ won't implement — NO-GO measured (TODO_LIST parked tier)
 
 ### Medium Priority — Measurement Infrastructure
 
-8. **`taskset -c 1` benchmark wrapper** (script or Makefile-less nix attr) + re-baseline timing columns with it once.
-9. **CI allocation regression job**: run suffixtree benchmarks with `-count=1` in CI and diff allocs/op columns against the committed baseline via benchstat; fail on increase. (Budget tests already cover the unit level; this covers the benchmark level.)
-10. **`perf stat -e cache-misses,cache-references`** before/after comparison to substantiate (or falsify) the arena/slice cache-locality claims in ADR-0022.
-11. **Coverage baseline**: `go test -cover` snapshot committed like benchmark baselines.
-12. **Add `linearScanMax` micro-benchmark boundary test**: exact 8 vs 9 transitions per state, asserting the crossover doesn't regress (currently only indirectly exercised).
+~~8. **`taskset -c 1` benchmark wrapper** (script or Makefile-less nix attr) + re-baseline timing columns with it once.~~ done — pinned protocol documented (docs/benchmarks/README.md)
+~~9. **CI allocation regression job**: run suffixtree benchmarks with `-count=1` in CI and diff allocs/op columns against the committed baseline via benchstat; fail on increase. (Budget tests already cover the unit level; this covers the benchmark level.)~~ done — performance.yml benchstat gate + scripts/check-alloc-regression.sh
+~~10. **`perf stat -e cache-misses,cache-references`** before/after comparison to substantiate (or falsify) the arena/slice cache-locality claims in ADR-0022.~~ done — perf stat cache-counter A/B (ADR-0022)
+~~11. **Coverage baseline**: `go test -cover` snapshot committed like benchmark baselines.~~ done — docs/benchmarks/coverage-baseline.txt + scripts/check-coverage.sh
+~~12. **Add `linearScanMax` micro-benchmark boundary test**: exact 8 vs 9 transitions per state, asserting the crossover doesn't regress (currently only indirectly exercised).~~ done — linear-scan boundary bench + committed baseline (docs/benchmarks/linear-scan-boundary-2026-09-22.txt)
 
 ### Medium Priority — Robustness
 
-13. **Fuzz the new transition slice harder**: extend `FuzzSuffixTreeUpdate` seeds with high-fanout alphabets (many distinct tokens) to stress binary-search `findTran` and insert-sorted `addTran` interleavings.
-14. **Property test: slice vs reference-map implementation** — build both representations from the same token stream and assert identical `findTran` results and transition sets (guards against insert-sort bugs the golden tests miss).
-15. **Document the `-race` policy**: CI runs full `-race ./...` now that it's green (it wasn't before this session). Decide cadence (every push vs nightly) — it costs minutes.
-16. **`Clear()` semantics test for cache stats**: assert hit/miss counters reset atomically under concurrent Get (regression test for the exact race fixed this session).
+~~13. **Fuzz the new transition slice harder**: extend `FuzzSuffixTreeUpdate` seeds with high-fanout alphabets (many distinct tokens) to stress binary-search `findTran` and insert-sorted `addTran` interleavings.~~ done — suffixtree/fuzz_test.go high-fanout seeds
+~~14. **Property test: slice vs reference-map implementation** — build both representations from the same token stream and assert identical `findTran` results and transition sets (guards against insert-sort bugs the golden tests miss).~~ done — tran_parity_test.go + dupl_property_test.go
+~~15. **Document the `-race` policy**: CI runs full `-race ./...` now that it's green (it wasn't before this session). Decide cadence (every push vs nightly) — it costs minutes.~~ done — race suite every CI run + flake race check
+~~16. **`Clear()` semantics test for cache stats**: assert hit/miss counters reset atomically under concurrent Get (regression test for the exact race fixed this session).~~ done — cache Clear() concurrent-stats regression test (clear_race_test.go)
 
 ### Low Priority — Code Quality
 
 17. **Consider removing `maxStackKeys` fallback duplication** in `contextList.getAll` (stack vs heap path) now that it's the only remaining consumer — could become a tiny helper shared with future call sites.
-18. **`suffixtree` package doc**: mentions "Token (interface)" — refresh the type list to include `linearScanMax` semantics.
+~~18. **`suffixtree` package doc**: mentions "Token (interface)" — refresh the type list to include `linearScanMax` semantics.~~ done — linearScanMax doc comment documents the semantics
 19. **Unexport or use `benchmarkMemoryUsage`'s magic numbers** (50/5000 unique) as named constants in comments for future tuners.
-20. **AGENTS.md**: the "Workers routing" bullet says "Never use `> 1`, that sends 0 to sequential instead of parallel" — verify still true after this session's parallel.go edits and fix the wording if stale.
+~~20. **AGENTS.md**: the "Workers routing" bullet says "Never use `> 1`, that sends 0 to sequential instead of parallel" — verify still true after this session's parallel.go edits and fix the wording if stale.~~ done — AGENTS Workers bullet corrected (0 = auto, 1 = only sequential)
 
 ### Low Priority — Exploration (only with profile evidence)
 
-21. **`int32` arena indices instead of `*state`** — revisit only if a future profile shows pointer-chasing dominating (rejected in ADR-0022 for now).
+~~21. **`int32` arena indices instead of `*state`** — revisit only if a future profile shows pointer-chasing dominating (rejected in ADR-0022 for now).~~ won't implement — int32 indices rejected in ADR-0022 (as the item itself notes)
 22. **`sync.Pool` for `Match` structs** — search allocs are output-dominated; only if output shape changes.
 23. **`go/types` caching for `--type-aware`** — 10–100× slowdown is the real UX bottleneck for that mode; separate investigation.
 24. **xxHash / SIMD sort for `fingerprintSubtree` / transKeys** — speculative; profile first.

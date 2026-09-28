@@ -62,24 +62,27 @@ def main():
     for i, line in enumerate(lines):
         if "~~" in line:
             continue
+        matched = False
         m = num_pat.match(line)
         if not m:
             m = row_pat.match(line)
         if m:
             tok = m.group(2) if m.lastindex and m.lastindex >= 2 else m.group(1)
-            if "@" in tok:
-                continue
-            for key in specs:
-                if key in hits:
-                    continue
-                if "@" in key:
-                    tok_req, _, substr = key.partition("@")
-                    if tok == tok_req and substr in line:
+            if "@" not in tok:
+                for key in specs:
+                    if key in hits:
+                        continue
+                    if "@" in key:
+                        tok_req, _, substr = key.partition("@")
+                        if tok == tok_req and substr in line:
+                            hits[key] = i
+                            matched = True
+                            break
+                    elif tok == key:
                         hits[key] = i
+                        matched = True
                         break
-                elif tok == key:
-                    hits[key] = i
-                    break
+        if matched:
             continue
         m = cb_pat.match(line)
         if m:
@@ -88,7 +91,9 @@ def main():
                     continue
                 if key in m.group(2):
                     hits[key] = i
+                    matched = True
                     break
+        if matched:
             continue
         for key in specs:
             if key in hits:

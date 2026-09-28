@@ -52,7 +52,7 @@
 
 6. **Updated config comment** (`config/config.go:222-231`) — Changed from "Only generics-extraction candidates are shown" to "All clone groups are shown; generics candidates are annotated with a hint and suggestion."
 
-7. **Updated domain comment** (`domain/processed_clone.go:298-307`) — Changed "Only populated when --suggest-generics is active" to accurate description of when classification runs.
+~~7. **Updated domain comment** (`domain/processed_clone.go:298-307`) — Changed "Only populated when --suggest-generics is active" to accurate description of when classification runs.~~ done — BDD runs the real CLI over generics fixtures (bdd/suggest_generics_test.go)
 
 8. **Updated SDK types comment** (`pkg/artdupl/types.go:175`) — Changed from "Find generics-extraction candidates" to "Highlight generics-extraction candidates... all clones still returned".
 
@@ -76,20 +76,20 @@
 
 ## PARTIALLY DONE (b)
 
-1. **Comment/doc updates across the codebase** — Most done, but `docs/ACTIONABILITY_PATTERNS.md` and `SDK_DESIGN.md` may still reference old filtering behavior. Not verified.
+~~1. **Comment/doc updates across the codebase** — Most done, but `docs/ACTIONABILITY_PATTERNS.md` and `SDK_DESIGN.md` may still reference old filtering behavior. Not verified.~~ done — ACTIONABILITY_PATTERNS.md has zero generics references; SDK_DESIGN.md documents enhancer semantics
 
-2. **Test coverage for the enhancer redesign** — Unit test added, but no BDD/integration test. The unit test uses synthetic syntax nodes, not a real `--suggest-generics` run through the full pipeline.
+~~2. **Test coverage for the enhancer redesign** — Unit test added, but no BDD/integration test. The unit test uses synthetic syntax nodes, not a real `--suggest-generics` run through the full pipeline.~~ done — bdd/suggest_generics_test.go + printer generics integration tests
 
-3. **Pre-existing `nestif` on `PrintFooter`** — I reduced complexity (13→11) by removing a branch, but didn't fully fix it. The function still has deeply nested if-blocks that could be extracted.
+~~3. **Pre-existing `nestif` on `PrintFooter`** — I reduced complexity (13→11) by removing a branch, but didn't fully fix it. The function still has deeply nested if-blocks that could be extracted.~~ done — suppression summary extracted as writeSuppressionSummary (printer/text.go)
 
 ---
 
 ## NOT STARTED (c)
 
-1. **BDD test for `--suggest-generics` enhancer behavior** — No BDD scenario exists for this flag at all.
-2. **Golden file verification** — Didn't check if any golden files in `printer/testdata/` need updating.
+~~1. **BDD test for `--suggest-generics` enhancer behavior** — No BDD scenario exists for this flag at all.~~ done — bdd/suggest_generics_test.go: candidates annotated, non-candidates still shown
+~~2. **Golden file verification** — Didn't check if any golden files in `printer/testdata/` need updating.~~ done — zero SuppressedGenerics references remain under printer/ (field deleted)
 3. **`--type-aware` + `--suggest-generics` combined test** — No test verifying enhancer behavior when both flags are set.
-4. **`formatGenericsHint` dedup bug fix** — Reversed type pairs (`B vs A` vs `A vs B`) produce different keys in the `seen` map.
+~~4. **`formatGenericsHint` dedup bug fix** — Reversed type pairs (`B vs A` vs `A vs B`) produce different keys in the `seen` map.~~ done — divergenceKey canonicalizes pair order (printer/generics_candidate.go)
 5. **Progress output indentation standardization** — `run_analysis.go` (4 spaces), `progress.go` (0 spaces), `type_aware.go` (1 space) — still inconsistent.
 6. **Line-length truncation for `generics:` hint** — Long hints can produce very long terminal lines.
 
@@ -103,7 +103,7 @@
 
 ## WHAT WE SHOULD IMPROVE (e)
 
-1. **`PrintFooter` needs refactoring** — Extract suppression summary into a helper. The `nestif` complexity is 11, still above golangci-lint's threshold. I was in the file and should have fixed it.
+~~1. **`PrintFooter` needs refactoring** — Extract suppression summary into a helper. The `nestif` complexity is 11, still above golangci-lint's threshold. I was in the file and should have fixed it.~~ done — extracted as TextPrinter.writeSuppressionSummary
 2. **`GenericsCandidate` classification runs unconditionally now** — This is correct but potentially confusing. `ProcessClones` always calls `ClassifyGenericsCandidate`, which always returns `false` when there's no `VarType` data. Consider gating it behind a "has type info" check for clarity.
 3. **`SuggestGenerics` field semantics split-brain** — It's in `config.Config` (pipeline control: triggers type loading) but no longer in `SuppressionConfig` (output control). This asymmetry needs a comment explaining why.
 4. **No telemetry on generics candidate precision** — The old HOW_TO_USE had "12.5% precision" which I removed. We need real metrics on how many candidates are true positives.
@@ -115,37 +115,37 @@
 
 ### High Priority — Correctness & Test Gaps
 
-1. Add BDD test for `--suggest-generics` enhancer behavior (all clones shown)
+~~1. Add BDD test for `--suggest-generics` enhancer behavior (all clones shown)~~ done — bdd/suggest_generics_test.go (4 scenarios incl. all-clones-shown)
 2. Add BDD test for `--suggest-generics --explain` combined output
 3. Add test verifying `--type-aware` output is unchanged by this redesign
 4. Add test for `--type-aware` + `--suggest-generics` combined (precedence)
-5. Fix `formatGenericsHint` dedup bug (normalize `TypeA | TypeB` key order)
-6. Verify no golden files in `printer/testdata/` reference `SuppressedGenerics`
+~~5. Fix `formatGenericsHint` dedup bug (normalize `TypeA | TypeB` key order)~~ done — divergenceKey normalizes A|B order + TestFormatGenericsHint_CanonicalizesReversedPairs
+~~6. Verify no golden files in `printer/testdata/` reference `SuppressedGenerics`~~ done — grep finds zero matches in printer/ incl. testdata
 7. Add integration test running full pipeline with `--suggest-generics` on real Go code
 8. Add test for `tokenLineSummary(1, 1)` returning "1 token, 1 line" (singular path)
 9. Add test for generics candidate suggestion override in `clone_processor_test.go`
 
 ### Medium Priority — Code Quality
 
-10. Refactor `PrintFooter` to fix `nestif` — extract `formatSuppressionSummary(stats) string`
+~~10. Refactor `PrintFooter` to fix `nestif` — extract `formatSuppressionSummary(stats) string`~~ done — resolved as writeSuppressionSummary (printer/text.go); nestif cleared
 11. Add comment explaining why `SuggestGenerics` is in `Config` but not `SuppressionConfig`
 12. Standardize progress output indentation (4 spaces / 0 spaces / 1 space → pick one)
 13. Add line-length truncation for `generics:` hint line in text output
 14. Consider merging `generics:` and `explain:` lines when both are active
 15. Gate `ClassifyGenericsCandidate` behind a "has type info" check for clarity
 16. Shorten `--suggest-generics` flag help text (currently 168 chars, may wrap poorly)
-17. Clean up `flake.nix` `vendorHash` (currently `"sha256-AAA..."` — busted, needs `nix build` to rehash)
-18. Investigate the uncommitted `.golangci.yml` `tagliatelle` addition (not from this session)
+~~17. Clean up `flake.nix` `vendorHash` (currently `"sha256-AAA..."` — busted, needs `nix build` to rehash)~~ done — flake.nix has a real vendorHash plus vendor-hash drift check
+~~18. Investigate the uncommitted `.golangci.yml` `tagliatelle` addition (not from this session)~~ done — tagliatelle absent from .golangci.yml; ban + CI auto-removal guard documented (AGENTS)
 19. Investigate the uncommitted `go.mod`/`go.sum` ultraviolet dep bump (not from this session)
 
 ### Medium Priority — Documentation
 
-20. Update `docs/ACTIONABILITY_PATTERNS.md` if it references generics filtering
-21. Update `SDK_DESIGN.md` for the enhancer semantics
-22. Update `docs/DOMAIN_LANGUAGE.md` if generics terminology is listed
+~~20. Update `docs/ACTIONABILITY_PATTERNS.md` if it references generics filtering~~ done — ACTIONABILITY_PATTERNS.md contains no generics/filtering references; nothing to update
+~~21. Update `SDK_DESIGN.md` for the enhancer semantics~~ done — SDK_DESIGN.md documents Options.SuggestGenerics enhancer semantics
+~~22. Update `docs/DOMAIN_LANGUAGE.md` if generics terminology is listed~~ done — DOMAIN_LANGUAGE.md intentionally lists no generics terminology; nothing to update
 23. Update `TODO_LIST.md` — mark the filter→enhancer redesign as done, add remaining items
 24. Update `ROADMAP.md` if generics-extraction is mentioned
-25. Write an ADR for the filter→enhancer decision (rationale: user confusion, better UX)
+~~25. Write an ADR for the filter→enhancer decision (rationale: user confusion, better UX)~~ done — docs/adr/0021-suggest-generics-erasehash-precision-gates.md exists; AGENTS cites it
 
 ### Medium Priority — UX
 
@@ -166,18 +166,18 @@
 37. Consider cross-package generics detection (currently only same-package type checking)
 38. Add support for `*T` vs `T` normalization in type comparison
 39. Consider channel/goroutine type divergence detection
-40. Add unit tests for `shortenTypeString` edge cases (nested generics, multi-path)
+~~40. Add unit tests for `shortenTypeString` edge cases (nested generics, multi-path)~~ done — TestShortenTypeString covers multi-path, map/nested, pointer/slice cases
 
 ### Polish
 
-41. Consistent terminology: "enhancer" vs "highlighter" vs "annotator" — pick one
+~~41. Consistent terminology: "enhancer" vs "highlighter" vs "annotator" — pick one~~ done — docs settled on "enhancer" (HOW_TO_USE, AGENTS); no "highlighter"/"annotator" remains
 42. Consider renaming `GenericsCandidate` → `GenericsExtractionCandidate` for clarity
 43. Consider renaming `SuggestGenerics` → `HighlightGenerics` in config (breaking)
 44. Add `--suggest-generics` example to README.md
 45. Add a `--generics-only` shortcut alias for `--suggest-generics --no-actionability`
 46. Consider color/highlighting for generics candidates in rich text mode
 47. Add machine-readable output format (`--plumbing`) support for generics candidates
-48. Consider SARIF output enrichment with generics candidate info
+~~48. Consider SARIF output enrichment with generics candidate info~~ done — printer/sarif.go emits generics_candidate/generics_hint properties (+ test)
 49. Add baseline support: track generics candidates across runs
 50. Add CI check: fail if NEW generics candidates appear (regression detection)
 

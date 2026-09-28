@@ -83,25 +83,25 @@ No regressions, no broken tests, no data loss. All 29 test packages pass clean.
 
 ### Issues Found During Implementation
 
-1. **Double-clone on cache-miss path (performance, not correctness):** The `Set` method receives `cachedNodes` (already deep-cloned by `deepCloneNodes`), stores it in the LRU via `mem.put(contentHash, nodes)`. But `Set` receives the same `nodes` slice — the LRU stores the canonical reference, and `Set` also serializes it to disk. This is correct, but the caller (`parseFile`) does `deepCloneNodes(nodes)` → `cache.Set(cachedNodes)` → LRU stores `cachedNodes`. Then `parseFile` returns the original `nodes` (not `cachedNodes`), and the singleflight callers each `deepCloneNodes(parsedNodes)` again. So the miss path does: 1 clone for cache storage + 1 clone per singleflight waiter = N+1 clones for N waiters. This is the same as before (the pre-LRU code also did `deepCloneNodes` for cache + `cloneWithFilename` per caller), so no regression — but the LRU's `get` path now also clones, meaning a double-check cache hit inside singleflight does 2 clones (Get returns clone, then singleflight returns it, then caller deep-clones again). Minor, but could be optimized with a `GetShared` method that returns the canonical pointer for cases where the caller will clone anyway.
+~~1. **Double-clone on cache-miss path (performance, not correctness):** The `Set` method receives `cachedNodes` (already deep-cloned by `deepCloneNodes`), stores it in the LRU via `mem.put(contentHash, nodes)`. But `Set` receives the same `nodes` slice — the LRU stores the canonical reference, and `Set` also serializes it to disk. This is correct, but the caller (`parseFile`) does `deepCloneNodes(nodes)` → `cache.Set(cachedNodes)` → LRU stores `cachedNodes`. Then `parseFile` returns the original `nodes` (not `cachedNodes`), and the singleflight callers each `deepCloneNodes(parsedNodes)` again. So the miss path does: 1 clone for cache storage + 1 clone per singleflight waiter = N+1 clones for N waiters. This is the same as before (the pre-LRU code also did `deepCloneNodes` for cache + `cloneWithFilename` per caller), so no regression — but the LRU's `get` path now also clones, meaning a double-check cache hit inside singleflight does 2 clones (Get returns clone, then singleflight returns it, then caller deep-clones again). Minor, but could be optimized with a `GetShared` method that returns the canonical pointer for cases where the caller will clone anyway.~~ won't implement — no-clone "shared Get" API documented UNSAFE (AGENTS; rationale job/incremental.go)
 
-2. **`memHits` counter is tracked but not exposed:** `lru.memHits` is incremented on every LRU hit but never surfaced in `Stats()`. Users can't distinguish LRU hits from disk hits. Should add `MemHits int64` to the `Stats` struct.
+~~2. **`memHits` counter is tracked but not exposed:** `lru.memHits` is incremented on every LRU hit but never surfaced in `Stats()`. Users can't distinguish LRU hits from disk hits. Should add `MemHits int64` to the `Stats` struct.~~ done — Stats.MemHits populated (cache/file_cache.go) and printed via printCacheStats (cmd/run_analysis.go:484)
 
-3. **LRU capacity is hardcoded at 512:** `defaultMemoryEntries = 512` with no way to configure it. For very large codebases, 512 might be too small. Should be configurable via `Config` and a CLI flag (e.g., `--memory-cache-entries`).
+~~3. **LRU capacity is hardcoded at 512:** `defaultMemoryEntries = 512` with no way to configure it. For very large codebases, 512 might be too small. Should be configurable via `Config` and a CLI flag (e.g., `--memory-cache-entries`).~~ done — Config.MemoryCacheEntries + --memory-cache-entries flag
 
-4. **Lock ordering concern (safe but fragile):** `FileCache.Get` calls `fc.mem.get()` (acquires `lru.mu`) while holding `fc.mu` (via `withCachePath` RLock). The lock order is `FileCache.mu` → `lru.mu`. `Set` also acquires `FileCache.mu` (write) then calls `lru.put()` (acquires `lru.mu`). This is consistent — no reverse ordering exists. But there's no comment enforcing this invariant in the code. A future developer could accidentally call `fc.Get` from within an `lru` method, creating a deadlock. Should add a lock-ordering comment on both types.
+~~4. **Lock ordering concern (safe but fragile):** `FileCache.Get` calls `fc.mem.get()` (acquires `lru.mu`) while holding `fc.mu` (via `withCachePath` RLock). The lock order is `FileCache.mu` → `lru.mu`. `Set` also acquires `FileCache.mu` (write) then calls `lru.put()` (acquires `lru.mu`). This is consistent — no reverse ordering exists. But there's no comment enforcing this invariant in the code. A future developer could accidentally call `fc.Get` from within an `lru` method, creating a deadlock. Should add a lock-ordering comment on both types.~~ done — lock-ordering comments on both types (cache/file_cache.go, cache/lru.go)
 
-5. **`Set` stores caller's slice directly in LRU:** `fc.mem.put(contentHash, nodes)` stores the `nodes` parameter directly. The comment says "The caller's slice is independent" — but this is only true because `parseFile` passes `cachedNodes` (a deep clone). If a future caller passes a slice they retain a reference to, they could corrupt the LRU. The `Set` method should defensively clone, or the contract should be more explicitly documented.
+~~5. **`Set` stores caller's slice directly in LRU:** `fc.mem.put(contentHash, nodes)` stores the `nodes` parameter directly. The comment says "The caller's slice is independent" — but this is only true because `parseFile` passes `cachedNodes` (a deep clone). If a future caller passes a slice they retain a reference to, they could corrupt the LRU. The `Set` method should defensively clone, or the contract should be more explicitly documented.~~ resolved by alternative — explicit OWNERSHIP CONTRACT on Set instead of defensive clone
 
-6. **No benchmark for LRU vs disk-only:** The performance gain (avoiding gob deserialization) is theoretical. Should add a benchmark comparing `Get` with LRU vs `Get` with empty LRU (disk-only) to quantify the improvement and prevent regressions.
+~~6. **No benchmark for LRU vs disk-only:** The performance gain (avoiding gob deserialization) is theoretical. Should add a benchmark comparing `Get` with LRU vs `Get` with empty LRU (disk-only) to quantify the improvement and prevent regressions.~~ done — BenchmarkFileCacheGet memory-hit vs disk-hit subtests (cache/file_cache_test.go)
 
-7. **`Get` does double-clone on disk-hit path:** When the LRU misses but disk hits, `Get` deserializes, calls `fc.mem.put(contentHash, nodes)` (stores canonical), then returns `cloneNodes(nodes)`. The next `Get` for the same key hits the LRU and clones again. So the disk-hit path does: 1 deserialize + 1 clone (for LRU storage, via `put` which doesn't clone) + 1 clone (return value). Wait — `put` stores the reference, doesn't clone. So it's: 1 deserialize + 1 clone (return). The LRU stores the deserialized nodes. Next call: 1 clone (from LRU). This is correct and optimal. No issue here — I was wrong during initial analysis. The only waste is if the caller of the disk-hit `Get` immediately discards the result (unlikely).
+~~7. **`Get` does double-clone on disk-hit path:** When the LRU misses but disk hits, `Get` deserializes, calls `fc.mem.put(contentHash, nodes)` (stores canonical), then returns `cloneNodes(nodes)`. The next `Get` for the same key hits the LRU and clones again. So the disk-hit path does: 1 deserialize + 1 clone (for LRU storage, via `put` which doesn't clone) + 1 clone (return value). Wait — `put` stores the reference, doesn't clone. So it's: 1 deserialize + 1 clone (return). The LRU stores the deserialized nodes. Next call: 1 clone (from LRU). This is correct and optimal. No issue here — I was wrong during initial analysis. The only waste is if the caller of the disk-hit `Get` immediately discards the result (unlikely).~~ won't implement — self-retracted in this report: "correct and optimal, no issue here"
 
 8. **Hysteresis test `prune_evicts_from_lru` is indirect:** The test removes all disk files then checks that `Get` only returns hits for entries still in the LRU. This is a roundabout way to verify LRU eviction. A direct test would check `fc.mem.entries` or expose an `lruHas(key)` method. The current test works but is harder to reason about.
 
 9. **`stampFilename` only stamps top-level nodes:** The function sets `node.Filename` on top-level slice entries but not on their `Children`. `Clone()` copies `Filename` from the original, so children get the filename from the cached copy (which may be different). This was the same behavior as the old `cloneWithFilename` — `Clone()` copies all fields including `Filename` for every node in the subtree. So children get the filename from the `Clone()` call, not from `stampFilename`. This is correct because `Clone()` already set `Filename` on every node in the subtree. But it's subtle and could break if `Clone()` is ever changed to not copy `Filename`.
 
-10. **`varnamelen` lint warning on `SetTypeAwareData(td ...)`** — pre-existing, not introduced by this session. Parameter `td` is too short for its scope. Should be renamed to `typeAwareData` or `data`.
+~~10. **`varnamelen` lint warning on `SetTypeAwareData(td ...)`** — pre-existing, not introduced by this session. Parameter `td` is too short for its scope. Should be renamed to `typeAwareData` or `data`.~~ done — SetTypeAwareData takes typed golang.TypeAwareData (job/incremental.go)
 
 ### Process Issues
 
@@ -115,15 +115,15 @@ No regressions, no broken tests, no data loss. All 29 test packages pass clean.
 
 ### Cache (direct follow-ups)
 
-1. Expose `memHits` in `Stats()` struct and CLI `--cache-stats` output
-2. Make LRU capacity configurable via `Config.MemoryCacheEntries` + `--memory-cache-entries` CLI flag
-3. Add lock-ordering comments on `FileCache` and `lru` types
-4. Document `Set` ownership contract: caller must not retain/mutate the slice after `Set`
-5. Add benchmark: `Get` with LRU hit vs `Get` with disk-only (empty LRU)
+~~1. Expose `memHits` in `Stats()` struct and CLI `--cache-stats` output~~ done — Stats.MemHits + verbose printCacheStats + stats memory_hits
+~~2. Make LRU capacity configurable via `Config.MemoryCacheEntries` + `--memory-cache-entries` CLI flag~~ done — Config.MemoryCacheEntries + NewFileCacheWithMemoryEntries
+~~3. Add lock-ordering comments on `FileCache` and `lru` types~~ done — cache/lru.go and cache/file_cache.go both document the order
+~~4. Document `Set` ownership contract: caller must not retain/mutate the slice after `Set`~~ done — Set OWNERSHIP CONTRACT documented (cache/file_cache.go)
+~~5. Add benchmark: `Get` with LRU hit vs `Get` with disk-only (empty LRU)~~ done — BenchmarkFileCacheGet disk-hit subtest
 6. Add benchmark: `Get` with disk-hit + LRU promotion vs cold disk miss
 7. Add `lru.len()` method and expose LRU size in `Stats()`
 8. Add direct LRU eviction test (check `fc.mem.entries` map, not indirect via disk removal)
-9. Consider `GetShared` method that returns the canonical pointer (no clone) for cases where caller will clone anyway (singleflight double-check)
+~~9. Consider `GetShared` method that returns the canonical pointer (no clone) for cases where caller will clone anyway (singleflight double-check)~~ won't implement — shared-Get documented UNSAFE (stampFilename mutates in place)
 10. Consider memory budget (bytes) instead of entry count for LRU eviction
 11. Add `lruStats` to `Stats` struct: `MemHits`, `MemSize`, `MemCapacity`
 12. Consider `sync.Map` for LRU entries map (read-heavy workload) — benchmark first
@@ -146,20 +146,20 @@ No regressions, no broken tests, no data loss. All 29 test packages pass clean.
 
 ### job/incremental.go
 
-26. Rename `td` parameter in `SetTypeAwareData` to fix pre-existing `varnamelen` lint warning
+~~26. Rename `td` parameter in `SetTypeAwareData` to fix pre-existing `varnamelen` lint warning~~ done — SetTypeAwareData signature typed (job/incremental.go)
 27. Add benchmark for `parseFile` cache-hit vs cache-miss path
 28. Consider `singleflight` key prefixing to avoid hash collisions across different cache directories
 29. Add metrics: average parse time, cache hit rate, singleflight coalescing count
-30. Document the clone invariant: "every `[]*syntax.Node` returned from `parseFile` must be independently owned by the caller"
+~~30. Document the clone invariant: "every `[]*syntax.Node` returned from `parseFile` must be independently owned by the caller"~~ done — clone invariant documented (job/incremental.go stampFilename doc)
 
 ### Testing
 
-31. Add `-race` CI job (currently can't run locally due to `CGO_ENABLED=0` in Nix devShell)
+~~31. Add `-race` CI job (currently can't run locally due to `CGO_ENABLED=0` in Nix devShell)~~ done — Race Test CI step with CGO_ENABLED=1 (.github/workflows/ci.yml)
 32. Add fuzz test for `cacheKey()` with random params combinations
 33. Add fuzz test for `KeyWithParams` length-prefix collision resistance
 34. Add property-based test: LRU eviction always brings size ≤ capacity
 35. Add property-based test: `Get` after `Set` always returns equal nodes (deep equality)
-36. Add stress test: 1000 goroutines, mixed `Get`/`Set`/`Prune`/`Clear`, verify no panics or data races
+~~36. Add stress test: 1000 goroutines, mixed `Get`/`Set`/`Prune`/`Clear`, verify no panics or data races~~ resolved by alternative — mixed-op race tests TestClearConcurrentWithGets/TestConcurrentMixedAccess
 37. Add test: `Prune` with `maxEntries=1` (edge case: highWater=1, lowWater=0)
 38. Add test: LRU eviction order after `Get` promotes an entry (verify MRU ordering)
 39. Add test: `Clear` resets LRU (verify `Get` after `Clear` is a miss)
@@ -171,11 +171,11 @@ No regressions, no broken tests, no data loss. All 29 test packages pass clean.
 42. Update `HOW_TO_USE.md` with `--memory-cache-entries` flag (once implemented)
 43. Update `TESTING.md` with cache test conventions (LRU testing patterns)
 44. Add `docs/CACHE_ARCHITECTURE.md` with diagrams (disk + LRU + singleflight interaction)
-45. Update `FEATURES.md` with "In-memory LRU cache layer" feature entry
+~~45. Update `FEATURES.md` with "In-memory LRU cache layer" feature entry~~ done — FEATURES "In-Memory LRU Cache | FULLY_FUNCTIONAL" row
 
 ### Code Quality
 
-46. Consider extracting `cloneNodes` to `syntax` package (duplicated in `cache/lru.go` and `job/incremental.go::deepCloneNodes`)
+~~46. Consider extracting `cloneNodes` to `syntax` package (duplicated in `cache/lru.go` and `job/incremental.go::deepCloneNodes`)~~ done — syntax.CloneNodes is the canonical deep-clone; per-callsite helpers removed (AGENTS)
 47. Consider `lru` interface for testability (mock LRU in FileCache tests)
 48. Add `//nolint:forcetypeassert` with justification on the `elem.Value.(*lruEntry)` assertions (they are safe because only `lru` code pushes to the list)
 49. Consider `sync.Pool` for `bytes.Buffer` in `serialize`/`deserialize` to reduce allocations
