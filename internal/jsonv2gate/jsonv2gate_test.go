@@ -24,9 +24,7 @@ import (
 // internal/jsonutil for wire paths) or added here with a reviewed rationale.
 var toleratedV2Importers = map[string]string{
 	"config/enum_helpers.go":           "enum string-only payloads, no Duration",
-	"config/config_migrate.go":         "raw jsontext.Value migration parsing, never marshals structs",
 	"pkg/enum/enum.go":                 "enum string-only payloads, no Duration",
-	"baseline/baseline.go":             "baseline format is string/int payloads, no Duration fields",
 	"internal/testutil/assert.go":      "test-support package, string-only payloads",
 	"internal/testutil/bdd_runners.go": "test-support package, string-only payloads",
 }
