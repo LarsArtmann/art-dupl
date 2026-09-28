@@ -71,7 +71,9 @@ var Provider = toolsdk.Register(toolsdk.Spec{
 	Name: finding.ToolName,
 	Description: "Code duplication detection: suffix-tree + AST-hash clones " +
 		"(Type 1 exact, Type 2 renamed, Type 3 near-miss) across Go and templ files. " +
-		"Fixed contract: semantic mode, threshold 5 statements (not configurable via the SDK)",
+		"Fixed contract: semantic mode, threshold 5 statements (not configurable via the SDK). " +
+		"Crawl includes *_test.go files (the CLI default-ignores them), so group counts " +
+		"are intentionally higher than a default CLI run on the same tree",
 	Trigger: toolsdk.OnFiles("go", "**/*.go", "**/*.templ"),
 	Inputs:  []string{"**/*.go", "**/*.templ"},
 	Detect:  cloneDetector{},
