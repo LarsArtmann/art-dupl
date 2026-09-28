@@ -38,6 +38,13 @@ Every term below should mean the **same thing** to everyone who reads it.
 | Include Generated | Override to analyze generated code by category (sqlc, templ, protobuf, mockgen, etc.) | `--include-generated` flag                                             |
 | ProcessedClone    | Decoupled DTO representing a clone fragment for printer output                        | `domain.ProcessedClone`                                                |
 | Incremental Mode  | Re-parse only files whose content hash changed                                        | `--incremental`                                                        |
+| Finding           | The go-finding interchange record for one tool result (clone occurrence, here)        | `printer/finding/` adapter, SARIF output                               |
+| GroupID           | Stable content-hash identifier of a Clone Group; identical across formats and runs    | `finding.GroupIDOf`, SARIF `go-finding/groupId`, JSON `clone_groups[].hash` |
+| toolsdk           | The go-finding Tool SDK: registration contract providers implement to expose a tool   | `pkg/provider/`, BuildFlow integration                                 |
+| Provider          | art-dupl's self-registering toolsdk provider; BuildFlow consumes it via blank import   | `pkg/provider/provider.go`                                             |
+| Advisory Cap      | Provider findings are severity-capped at warning so detector output never fails gates  | v0.7.2 `maxAdvisorySeverity`                                           |
+| Original Severity | The pre-cap severity preserved in an `original-severity-` metadata tag                 | `pkg/provider` metadata                                                |
+| Actionability Pattern | Named denylist rule suppressing idiomatic-Go clone groups (33 rules + 4 property labels) | `printer/actionability/`, `docs/ACTIONABILITY_PATTERNS.md`         |
 
 ## Entities
 
