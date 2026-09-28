@@ -49,34 +49,34 @@
 
 ## f) NEXT — ordered queue (up to 50, realistic for next session(s))
 
-1. `gofmt -l` on edited files; fix if dirty
-2. Full-repo `golangci-lint run --timeout 5m ./...`
-3. `go test -race ./...`
-4. `scripts/check-alloc-regression.sh` re-confirm green
-5. `git add -A`, then background `nix flake check` (~40 min)
-6. **T2.2** interleaved A/B: `taskset -c 0-7,16-23` vs unpinned, ≥6 alternations, `FindDuplOver/threshold_10` + `par4/tokens_10000`
-7. Annotate `docs/benchmarks/baseline-2026-08-16-v3_notes.md` with the verdict (replaces "still open")
-8. **T23** `git worktree add /tmp/artdupl-23fa1b4f 23fa1b4f`
-9. T23 `perf stat -e cache-references,cache-misses,LLC-load-misses` A/B, pinned
-10. T23 verdict → baseline notes + ADR-0022 addendum
-11. Pinned benchstat `Boundary8/9` → `docs/benchmarks/`
-12. Justification comment on `linearScanMax` citing the measured 8-vs-9 numbers
-13. BDD/PTY test for HTML auto-write (real `script(1)` or pty lib)
-14. Decide + document `--quiet` vs `WarnUnmatchedExcludePatterns` (currently unconditional)
-15. Symmetric zero-match warning for `--include-pattern`
-16. `scripts/check-coverage.sh`: filter test-only packages (0.0% rows are noise)
-17. TESTING.md: property/parity-test conventions section (reference-scan pattern, coverage-guard-in-test pattern)
-18. a11y: visible focus style for `.anchor-link`
-19. Expose `AnchorID` in JSON output for cross-format linking
-20. `--html-out`: mkdir -p parent dir
-21. Extend HTML goldens with one clone group (covers anchors/diff markup)
-22. Investigate corpus drift 2665→2670 — **RESOLVED 2026-09-18: concurrent go-cqrs-lite edits (release wave); tool verified deterministic.**
-23. Decide budget ratchet: tighten `MemoryUsage` 4802→~4785 or keep headroom
-24. Consider wiring the threshold-1 self-scan as a fast unit test, not only flake check
-25. Update `docs/status/2026-08-16_13-13...` cross-ref or mark superseded by this report
-26. Re-run `benchstat` on committed baselines after T2.2 verdicts; commit refreshed numbers
-27. Sweep for other daemon-committed surprises: `git log --since="2026-08-16 13:00" --oneline` review
-28. Master-plan closure note in the plan doc (26/26 or explicitly-parked status)
+~~1. `gofmt -l` on edited files; fix if dirty~~ done — edited files committed clean (formatting enforced by CI since)
+~~2. Full-repo `golangci-lint run --timeout 5m ./...`~~ done — lint green in the completion wave; standard gate in every later pass
+~~3. `go test -race ./...`~~ done — race suite runs on EVERY nix flake check since the 2026-08-16 cadence decision (AGENTS)
+~~4. `scripts/check-alloc-regression.sh` re-confirm green~~ done — gate green; wired as the flake alloc-gate check
+~~5. `git add -A`, then background `nix flake check` (~40 min)~~ done — T5.1b ALL GREEN; CI flake lane green since
+~~6. **T2.2** interleaved A/B: `taskset -c 0-7,16-23` vs unpinned, ≥6 alternations, `FindDuplOver/threshold_10` + `par4/tokens_10000`~~ done — docs/benchmarks/pinned-unpinned-2026-09-22.txt (pinning no longer wins on the slice layout)
+~~7. Annotate `docs/benchmarks/baseline-2026-08-16-v3_notes.md` with the verdict (replaces "still open")~~ done — the notes carry the 2026-09-22 verdict section
+~~8. **T23** `git worktree add /tmp/artdupl-23fa1b4f 23fa1b4f`~~ done — A/B performed 2026-09-22
+~~9. T23 `perf stat -e cache-references,cache-misses,LLC-load-misses` A/B, pinned~~ done — ADR-0022:157 cache-counter evidence
+~~10. T23 verdict → baseline notes + ADR-0022 addendum~~ done — ADR-0022:142 addendum (2026-09-22)
+~~11. Pinned benchstat `Boundary8/9` → `docs/benchmarks/`~~ done — docs/benchmarks/linear-scan-boundary-2026-09-22.txt (pinned)
+~~12. Justification comment on `linearScanMax` citing the measured 8-vs-9 numbers~~ done — linearScanMax doc comment cites the measurements (suffixtree/findtran.go:3-19)
+~~13. BDD/PTY test for HTML auto-write (real `script(1)` or pty lib)~~ resolved by design — TTY probe injected + unit-tested (AGENTS "HTML output resolution"); real branch manually PTY-verified at ship
+~~14. Decide + document `--quiet` vs `WarnUnmatchedExcludePatterns` (currently unconditional)~~ done — decision recorded: warnings unconditional; --quiet suppresses progress only (AGENTS)
+~~15. Symmetric zero-match warning for `--include-pattern`~~ done — WarnUnmatchedIncludePatterns shipped (AGENTS include-pattern zero-match warning)
+~~16. `scripts/check-coverage.sh`: filter test-only packages (0.0% rows are noise)~~ done — scripts/check-coverage.sh:29 excludes test-only packages
+~~17. TESTING.md: property/parity-test conventions section (reference-scan pattern, coverage-guard-in-test pattern)~~ done — TESTING.md "Property and Parity Test Conventions" section
+~~18. a11y: visible focus style for `.anchor-link`~~ done — .anchor-link:focus-visible in printer/html_template.go:102
+~~19. Expose `AnchorID` in JSON output for cross-format linking~~ done — JSONClone.AnchorID as anchor_id (printer/json.go:27)
+~~20. `--html-out`: mkdir -p parent dir~~ done — MkdirAll on the output dir (cmd/run_all_modes.go:27)
+~~21. Extend HTML goldens with one clone group (covers anchors/diff markup)~~ routed — TODO_LIST "HTML goldens: one real clone group" (source cites this item)
+~~22. Investigate corpus drift 2665→2670 — **RESOLVED 2026-09-18: concurrent go-cqrs-lite edits (release wave); tool verified deterministic.**~~ done — the inline note on this line records the 2026-09-18 resolution
+~~23. Decide budget ratchet: tighten `MemoryUsage` 4802→~4785 or keep headroom~~ done — budgets re-baselined deterministically after the time-seed fix (scripts/alloc-budgets.txt)
+~~24. Consider wiring the threshold-1 self-scan as a fast unit test, not only flake check~~ resolved by decision — monthly threshold-1 self-scan cadence chosen instead (AGENTS 2026-09-22)
+~~25. Update `docs/status/2026-08-16_13-13...` cross-ref or mark superseded by this report~~ done this pass — the 13-13 report is annotated item-by-item against current repo state
+~~26. Re-run `benchstat` on committed baselines after T2.2 verdicts; commit refreshed numbers~~ done — 2026-09-22 baselines committed (linear-scan, pinned-unpinned)
+~~27. Sweep for other daemon-committed surprises: `git log --since="2026-08-16 13:00" --oneline` review~~ done at a10 — website/package.json was daemon commit 9d7f9813
+~~28. Master-plan closure note in the plan doc (26/26 or explicitly-parked status)~~ done at 90e43832 — master-plan header carries the audited closure status
 
 _(28 items — the queue from the 13-13 report's §f items 26–38 is fully represented above; nothing beyond it is invented.)_
 
