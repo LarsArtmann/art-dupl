@@ -45,14 +45,14 @@
 
 ## c) NOT STARTED
 
-1. **`docs/status/2026-09-25_09-43` (the newest full-arc report) — not annotated.** Its (f) list was harvested into TODO_LIST/ROADMAP, but resolved items are unstruck. It is the report a reader is MOST likely to open right now.
-2. **Master plan's "24/26" — the 2 unspecified open items were never identified.** TODO_LIST's header repeats the claim; I inherited it without chasing which 2 tasks remain open. That number is currently unauditable.
-3. **Legacy archive retrofit:** 272 pre-existing `archived/` files have no strikethroughs (they predate the inline regime). Deliberately untouched — per-item retrofit without re-verification would fabricate evidence — but no decision/documentation exists for how they ever get converted.
-4. **`docs/status/archived/README.md`** explaining the two archive regimes (annotated-sweep vs legacy) — not written.
+~~1. **`docs/status/2026-09-25_09-43` (the newest full-arc report) — not annotated.** Its (f) list was harvested into TODO_LIST/ROADMAP, but resolved items are unstruck. It is the report a reader is MOST likely to open right now.~~ done at 0832359e — SUPERB M01: 10 items struck with per-item evidence (binfmt, BuildFlow push, windows CI, HOW_TO_USE parity, FEATURES lane-split, CHANGELOG Unreleased, /tmp pruning, LSP state, 13-30 loop closed)
+~~2. **Master plan's "24/26" — the 2 unspecified open items were never identified.** TODO_LIST's header repeats the claim; I inherited it without chasing which 2 tasks remain open. That number is currently unauditable.~~ done at 90e43832 — SUPERB M02: all 26 tasks audited; the 2 no-gos named (T7 defer-cleanup, T14 stream pool) and the claim rewritten in TODO_LIST + the plan header
+~~3. **Legacy archive retrofit:** 272 pre-existing `archived/` files have no strikethroughs (they predate the inline regime). Deliberately untouched — per-item retrofit without re-verification would fabricate evidence — but no decision/documentation exists for how they ever get converted.~~ resolved — policy documented: docs/status/archived/README.md (retrofit not scheduled; decision rests with Lars, question g1)
+~~4. **`docs/status/archived/README.md`** explaining the two archive regimes (annotated-sweep vs legacy) — not written.~~ resolved — docs/status/archived/README.md written this pass (regimes, gates verbatim, archive/ vs archived/ split)
 5. **`github-actions-distribution-plan.md` (2026-07-28): 0/20 items done** — never routed to TODO_LIST or explicitly Won't-implement. It is the single biggest fully-unstarted plan still sitting unannotated in `docs/planning/`.
 6. **Subdirectory doc dirs not deep-dived:** `docs/api/`, `docs/quality/`, `docs/fuzz/`, `docs/calibration/`, `docs/baselines/`, `docs/bug-reports/` were inventoried by name only; stale 2026-0* content inside them was not read this session.
 7. **Formal AGENTS.md scoring** per the skill's `agents-quality-guide.md` rubric — my AGENTS fixes were drift-driven, not rubric-scored.
-8. **The annotator script is in `/tmp`** — it will vanish on reboot; not persisted into `scripts/` or offered upstream to the skill.
+~~8. **The annotator script is in `/tmp`** — it will vanish on reboot; not persisted into `scripts/` or offered upstream to the skill.~~ done at 124ac4dc — persisted as scripts/annotate-status-items.py with the full spec grammar + ambiguity rules
 9. **Full `-race` suite** after the two code-file touches — only touched-package tests + build + lint were run (`nix flake check` remains environmentally blocked on this host: `/run/binfmt` missing, gotcha #190).
 
 ## d) TOTALLY FUCKED UP
@@ -64,7 +64,7 @@
 5. **Wrote the empty-snapshot resolution note before verifying the claim inside it** (see b4) — a template fact applied to ten files, three of which I never cross-checked.
 6. **`multiedit` rejected twice with "modified since read"** after the annotator script rewrote files I'd viewed earlier in the same breath — I kept issuing batch edits against stale reads instead of re-reading first. Recovered each time, but the loop pattern (write → reject → re-read → write) cost several round trips per file.
 7. **A `sed` expression error mid-investigation** (`sed: -e expression #1, char 3`) — stray command noise, caught immediately, but it happened while I was lecturing myself about reading before running.
-8. **I declared "0 known false claims remain" while knowing two unverified claims survived my own pass**: the FEATURES "45+ flags" and templ "28 node types" rows. I fixed the Go node-type number and left its two neighbors unaudited because they were adjacent to lines I was already editing — proximity editing without proximity verification.
+~~8. **I declared "0 known false claims remain" while knowing two unverified claims survived my own pass**: the FEATURES "45+ flags" and templ "28 node types" rows. I fixed the Go node-type number and left its two neighbors unaudited because they were adjacent to lines I was already editing — proximity editing without proximity verification.~~ done at 8f07cea6 — both claims verified and fixed: exactly 45 flags, 29 templ node types; the sweep also found the ACTIONABILITY table missing 2 rows (now 33)
 
 ## e) WHAT WE SHOULD IMPROVE
 
