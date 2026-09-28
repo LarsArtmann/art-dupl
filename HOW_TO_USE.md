@@ -242,6 +242,26 @@ art-dupl --dump-tokens ./src/file.go
 Positions make it easy to map a stream range back to source lines when
 debugging false negatives/positives.
 
+### Stage Timing (`--timing`)
+
+Use `--timing` to see where a run spends its time — crawl, parse,
+serialize, tree-build, search, print — plus allocation totals and GC
+pressure. Active stages sum goroutine busy time across workers; wall
+stages include channel waits, so phases may overlap:
+
+```bash
+art-dupl --timing ./src
+# ⏱️  Stage timing:
+#   crawl      6ms   wall; includes back-pressure while feeding parsers
+#   parse     42ms   active, summed across workers
+#   ...
+#   allocations: 146863 objects, 10.7 MB total, 6 GC cycles
+```
+
+Benchmark baselines committed under `docs/benchmarks/` use this report;
+allocation counts (not wall time) are the deterministic comparison metric
+on noisy machines.
+
 ### Quiet and Color Control
 
 ```bash
