@@ -148,15 +148,15 @@ All 30 tasks from the plan have been at least started (flag + config field added
 
 ### Process Improvements
 
-1. **Commit at logical milestones.** After each phase (Phase 1 done, Phase 2 done, etc.), commit with a descriptive message. This prevents losing work and provides rollback points.
+~~1. **Commit at logical milestones.** After each phase (Phase 1 done, Phase 2 done, etc.), commit with a descriptive message. This prevents losing work and provides rollback points.~~ resolved by process — the auto-commit daemon + per-M-task explicit commits replaced manual milestone discipline
 
-2. **Run lint after every code change.** Not just build+test. The linter catches real issues (magic numbers, unchecked errors, formatting) that the compiler misses.
+~~2. **Run lint after every code change.** Not just build+test. The linter catches real issues (magic numbers, unchecked errors, formatting) that the compiler misses.~~ resolved by process — lint is a standing gate (flake check + BuildFlow), not a manual step
 
-3. **Run `nix flake check` before declaring done.** It's the CI gate. If it doesn't pass, the work isn't done.
+~~3. **Run `nix flake check` before declaring done.** It's the CI gate. If it doesn't pass, the work isn't done.~~ resolved by process — it is the CI gate now; -race runs on every flake check (AGENTS 2026-08-16)
 
-4. **Don't stub flags without implementations.** A flag that does nothing is a lie to the user. Either implement the full feature or don't add the flag.
+~~4. **Don't stub flags without implementations.** A flag that does nothing is a lie to the user. Either implement the full feature or don't add the flag.~~ open
 
-5. **Understand the domain model before writing tests.** The statement-level tokenization model is documented in AGENTS.md. I should have read it before writing BDD fixtures.
+~~5. **Understand the domain model before writing tests.** The statement-level tokenization model is documented in AGENTS.md. I should have read it before writing BDD fixtures.~~ open
 
 6. **Use `multiedit` for em-dash cleanup, not bulk Python.** Each replacement should be reviewed for grammatical correctness. The plan explicitly called for per-line review.
 

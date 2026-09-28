@@ -97,15 +97,15 @@ AGENTS.md says `nix flake check` is the reproducible CI (includes `templ generat
 
 ### Process Improvements
 
-1. **The auto-committer is a repeat offender** — `cbb329a7` re-added disabled linters for the Nth time. The CI guard script exists but didn't prevent the commit. The guard only runs in Nix CI, not as a git hook. Consider a pre-commit hook.
+~~1. **The auto-committer is a repeat offender** — `cbb329a7` re-added disabled linters for the Nth time. The CI guard script exists but didn't prevent the commit. The guard only runs in Nix CI, not as a git hook. Consider a pre-commit hook.~~ done — BuildFlow's golangci-lint-auto-configure is skipped via .buildflow.yml skip_steps (AGENTS 2026-09-23); the nix disabled-linters check stays as the red light
 
-2. **No sync-test between SDK and CLI constants** — `pkg/artdupl.DefaultThreshold` duplicates `config.DefaultThreshold` by architectural necessity. There is no test asserting they're equal. A drift test (`if DefaultThreshold != config.DefaultThreshold { t.Error(...) }`) would catch future drift, but it can't live in `pkg/artdupl` (can't import `config/`). It could live in a top-level integration test package.
+~~2. **No sync-test between SDK and CLI constants** — `pkg/artdupl.DefaultThreshold` duplicates `config.DefaultThreshold` by architectural necessity. There is no test asserting they're equal. A drift test (`if DefaultThreshold != config.DefaultThreshold { t.Error(...) }`) would catch future drift, but it can't live in `pkg/artdupl` (can't import `config/`). It could live in a top-level integration test package.~~ done this pass — TestSDKDefaultThresholdMirrorsConfig added to the docs-health gate file (cmd/docs_health_counts_test.go)
 
-3. **`SourceBreakdown()` is dead code** — I added a public method that nothing consumes. This is the definition of YAGNI until it's wired to output. Either finish the wiring or don't merge the infrastructure.
+~~3. **`SourceBreakdown()` is dead code** — I added a public method that nothing consumes. This is the definition of YAGNI until it's wired to output. Either finish the wiring or don't merge the infrastructure.~~ done — wired into cmd/stats.go:67 and surfaced via printer stats
 
-4. **Documentation drift is pervasive** — `doc.go`, `SDK_DESIGN.md`, and test fixtures all had stale threshold 15. The codebase has no single source of truth that documentation references. Every constant that's duplicated (even intentionally) will drift.
+~~4. **Documentation drift is pervasive** — `doc.go`, `SDK_DESIGN.md`, and test fixtures all had stale threshold 15. The codebase has no single source of truth that documentation references. Every constant that's duplicated (even intentionally) will drift.~~ done — the docs-health count gate (cmd/docs_health_counts_test.go) re-derives documented numbers from code; the threshold-15 drift class is closed
 
-5. **Comment preservation after nolint removal** — When removing `//nolint:exhaustruct`, I preserved the explanatory comment (e.g., `// zero-value counters, mutated incrementally`). Some of these comments now state the obvious. Minor, but worth a cleanup pass.
+~~5. **Comment preservation after nolint removal** — When removing `//nolint:exhaustruct`, I preserved the explanatory comment (e.g., `// zero-value counters, mutated incrementally`). Some of these comments now state the obvious. Minor, but worth a cleanup pass.~~ open
 
 ---
 

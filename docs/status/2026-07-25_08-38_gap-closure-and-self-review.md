@@ -86,14 +86,14 @@ The AGENTS.md says: _"`exhaustruct` and `tagliatelle` are NOT in the `.golangci.
 
 The following were listed as "Exact Next Steps" or Pareto items and I did **zero** work on them this session:
 
-1. **`--diff-report baseline` mode** (Pareto Tier 1, #1, 2h, HIGH) — not started.
-2. **HTML report improvements** (Pareto Tier 1) — not started.
-3. **YAML config support** (Pareto Tier 1) — not started.
-4. **SARIF rule metadata for actionability patterns** (TODO #49) — not started. SARIF output still has no rule tags for which pattern matched.
-5. **`--explain` for JSON format** (TODO #48) — I added the raw `non_actionable_pattern` STRING field, but there is no structured explanation object in JSON. A JSON consumer still can't get the formatted "why" rationale, only the pattern identifier.
-6. **Golden file tests for text printer** (TODO #35) — not started. I added unit tests for `writeExplanation` but no golden-file regression guard for the full text output.
-7. **Pre-receive/CI gate for `.golangci.yml`** (infra, TODO #37) — not started. This is the durable fix for A1.
-8. **ADR for `PatternLabel` location** (TODO #43) — I made the decision (keep `string` in domain) and documented it, but did not write a formal ADR file in `docs/adr/`.
+~~1. **`--diff-report baseline` mode** (Pareto Tier 1, #1, 2h, HIGH) — not started.~~ done — shipped as --diff-report (in --help; FEATURES FULLY_FUNCTIONAL)
+~~2. **HTML report improvements** (Pareto Tier 1) — not started.~~ done — TTY auto-write (T17) + stable anchor deep links (T18) shipped from the master plan
+~~3. **YAML config support** (Pareto Tier 1) — not started.~~ open
+~~4. **SARIF rule metadata for actionability patterns** (TODO #49) — not started. SARIF output still has no rule tags for which pattern matched.~~ open
+~~5. **`--explain` for JSON format** (TODO #48) — I added the raw `non_actionable_pattern` STRING field, but there is no structured explanation object in JSON. A JSON consumer still can't get the formatted "why" rationale, only the pattern identifier.~~ open
+~~6. **Golden file tests for text printer** (TODO #35) — not started. I added unit tests for `writeExplanation` but no golden-file regression guard for the full text output.~~ done — TestTextCloneOutputGolden (printer/text_golden_test.go)
+~~7. **Pre-receive/CI gate for `.golangci.yml`** (infra, TODO #37) — not started. This is the durable fix for A1.~~ done — lint-config-guard.yml workflow + scripts/check-disabled-linters.sh nix check
+~~8. **ADR for `PatternLabel` location** (TODO #43) — I made the decision (keep `string` in domain) and documented it, but did not write a formal ADR file in `docs/adr/`.~~ resolved by alternative — the decision (string in domain, pattern taxonomy owned by printer/) is durably documented in the AGENTS --explain bullet where sessions actually read it
 
 ---
 

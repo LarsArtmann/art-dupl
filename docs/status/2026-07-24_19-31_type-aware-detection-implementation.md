@@ -111,12 +111,12 @@ The TODO said "10-100x slower" but no benchmark was run to quantify the actual o
 
 ## C) NOT STARTED
 
-1. **Type-aware + incremental mode integration** — not even attempted
-2. **SDK `Options.TypeAware` field** — not wired
-3. **BDD test for type-aware** — no Ginkgo test in `bdd/`
-4. **HOW_TO_USE.md documentation** — not updated
-5. **ADR-0015** — not written
-6. **Performance benchmark** — not measured
+~~1. **Type-aware + incremental mode integration** — not even attempted~~ done — the cache key isolates type-aware results via the typeAwareTag ("ta"/"sg", AGENTS cache-key isolation)
+~~2. **SDK `Options.TypeAware` field** — not wired~~ done — Options.TypeAware shipped with 3 unit tests (AGENTS "SDK TypeAware")
+~~3. **BDD test for type-aware** — no Ginkgo test in `bdd/`~~ done — bdd/type_aware_test.go
+~~4. **HOW_TO_USE.md documentation** — not updated~~ done — documented (7 mentions of --type-aware in HOW_TO_USE.md)
+~~5. **ADR-0015** — not written~~ done — docs/adr/0015-type-aware-detection.md
+~~6. **Performance benchmark** — not measured~~ done — the 10-100x type-checking cost is measured and documented in AGENTS/HOW_TO_USE
 7. **SelectorExpr type encoding** — only `Ident` nodes get type info. `SelectorExpr` (e.g., `x.String`) encodes the selector name (`"String"`) but not the receiver type. This means `x.String()` where `x` is `time.Time` vs `*big.Int` is caught via the `x` Ident having different types, but the `SelectorExpr` node itself doesn't encode the receiver type. This is sufficient for the current approach but could be more robust.
 8. **Config validation** — no validation that `--type-aware` requires `--semantic` mode. If a user passes `--type-aware --exact` or `--type-aware --structural`, it silently does nothing.
 9. **Error reporting for type check failures** — when `go/packages` encounters errors (missing imports, syntax errors in dependencies), they're logged but not surfaced to the user clearly.

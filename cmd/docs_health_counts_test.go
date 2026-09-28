@@ -7,6 +7,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/LarsArtmann/art-dupl/config"
+	"github.com/LarsArtmann/art-dupl/pkg/artdupl"
 	"github.com/LarsArtmann/art-dupl/printer/actionability"
 	"github.com/spf13/pflag"
 )
@@ -101,5 +103,15 @@ func TestCountGateClaimPatternsArePresent(t *testing.T) {
 		if !pattern.MatchString(readRepoFile(t, doc)) {
 			t.Errorf("no countable claims found in %s; the docs-health gate lost its anchors", doc)
 		}
+	}
+}
+
+// Duplicated-constant drift guard: pkg/artdupl cannot import config (arch
+// lint), so DefaultThreshold exists on both sides by necessity. If they
+// silently diverge, the SDK and CLI disagree about the default threshold.
+func TestSDKDefaultThresholdMirrorsConfig(t *testing.T) {
+	if artdupl.DefaultThreshold != config.DefaultThreshold {
+		t.Errorf("SDK DefaultThreshold = %d but config.DefaultThreshold = %d; keep the deliberate duplication in sync",
+			artdupl.DefaultThreshold, config.DefaultThreshold)
 	}
 }
