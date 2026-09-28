@@ -43,7 +43,7 @@
 
 ## B) PARTIALLY DONE ⚠️
 
-### 1. Documentation Drift — Multiple Files Out of Date
+~~### 1. Documentation Drift — Multiple Files Out of Date~~ done — living docs rewritten 2026-06-12 and maintained since
 
 | File                      | Last Updated | Issue                                                                                                          |
 | ------------------------- | ------------ | -------------------------------------------------------------------------------------------------------------- |
@@ -52,7 +52,7 @@
 | `docs/DOMAIN_LANGUAGE.md` | Never        | Empty template with placeholder "Example Term" — never populated                                               |
 | `TODO_LIST.md`            | 2026-06-11   | MEDIUM items "CSV encoding/csv" and "--output-file" still marked unchecked despite being done                  |
 
-### 2. Enum Unification — Analyzed but Not Executed
+~~### 2. Enum Unification — Analyzed but Not Executed~~ done — shipped as pkg/enum; domain imports it
 
 **What was found:**
 
@@ -65,7 +65,7 @@
 
 **What SHOULD have been done instead:** Extract shared helpers to `internal/enum/` package that both `domain/` and `config/` can import, with both strict and permissive modes.
 
-### 3. Actionability Layer Violation — Partially Fixed
+~~### 3. Actionability Layer Violation — Partially Fixed~~ won't implement — remainder deferred: import cycle blocks facade (TODO_LIST DEFERRED)
 
 - `printer/clone_classify.go` was decoupled from `syntax/golang` (moved `nodeTypeNames` map)
 - **But** `printer/actionability.go` STILL imports `syntax/golang` directly (line 9-10)
@@ -79,24 +79,24 @@
 
 ### HIGH Priority (from TODO_LIST.md)
 
-1. **ProcessedClone DTO** — Decouple printer from `syntax.Node` (111 test call sites)
-2. **Clone type consolidation** — 4 parallel types: `printer.clone`, `pkg/artdupl.Clone`, `printer.CloneGroup`, `domain.ProcessedClone`
-3. **TokenValue type** — Validated type for suffix tree tokens
+~~1. **ProcessedClone DTO** — Decouple printer from `syntax.Node` (111 test call sites)~~ done — printers take domain.ProcessedCloneGroup
+~~2. **Clone type consolidation** — 4 parallel types: `printer.clone`, `pkg/artdupl.Clone`, `printer.CloneGroup`, `domain.ProcessedClone`~~ done — ADR-0005 canonical unification
+~~3. **TokenValue type** — Validated type for suffix tree tokens~~ done — suffixtree.TokenValue (ADR-0019)
 
 ### MEDIUM Priority
 
-4. **Extract shared enum helpers** to `internal/enum/` (consolidate domain/helpers.go + config/enum_helpers.go)
-5. **Add missing methods to domain enums** — `CloneCategory`, `ClonePriority`, `CloneActionability` all lack `IsValid()`/`String()`/JSON methods
-6. **Fix `priorityScore()` in printer/stats.go** — uses raw strings instead of `domain.ClonePriority` constants
+~~4. **Extract shared enum helpers** to `internal/enum/` (consolidate domain/helpers.go + config/enum_helpers.go)~~ resolved by alternative — landed as pkg/enum, shared by domain
+~~5. **Add missing methods to domain enums** — `CloneCategory`, `ClonePriority`, `CloneActionability` all lack `IsValid()`/`String()`/JSON methods~~ done — CHANGELOG IsValid/String on domain enums
+~~6. **Fix `priorityScore()` in printer/stats.go** — uses raw strings instead of `domain.ClonePriority` constants~~ done — typed ClonePriority in stats
 7. **Fix LSP stale diagnostic cache** — exhaustive/cyclop/godoclint warnings from stale LSP, not real code issues
 
 ### LOW Priority
 
-8. **Transform.go table-driven refactor** — 369L, 300L switch. Skipped — each case has unique logic, table would be harder to read.
-9. **String interning** — Referenced in docs but never implemented. `syntax.Node.Filename` duplicated across thousands of nodes.
-10. **Populate `docs/DOMAIN_LANGUAGE.md`** — Still an empty template
-11. **Fuzz tests for templ parser** edge cases
-12. **Wire TODO/Legacy detectors** to CLI (implemented but not exposed)
+~~8. **Transform.go table-driven refactor** — 369L, 300L switch. Skipped — each case has unique logic, table would be harder to read.~~ won't implement — documented in-report skip
+~~9. **String interning** — Referenced in docs but never implemented. `syntax.Node.Filename` duplicated across thousands of nodes.~~ done — syntax.InternFilename (CHANGELOG)
+~~10. **Populate `docs/DOMAIN_LANGUAGE.md`** — Still an empty template~~ done — docs/DOMAIN_LANGUAGE.md populated
+~~11. **Fuzz tests for templ parser** edge cases~~ done — syntax/templ/fuzz_test.go
+~~12. **Wire TODO/Legacy detectors** to CLI (implemented but not exposed)~~ won't implement — detectors deleted 2026-06-17
 
 ---
 
@@ -137,18 +137,18 @@ Empty template with "Example Term" placeholders. Every AI session sees this file
 
 ### Type Models
 
-1. **`domain.CloneCategory`** — 14 constants, zero methods. No `IsValid()`, no `String()`, no JSON marshaling. Same package as `CloneSeverity` which has all of these.
-2. **`domain.ClonePriority`** — 4 constants, only display methods. Missing `IsValid()`/`String()`/JSON.
-3. **`domain.CloneActionability`** — 2 constants, zero methods. Completely bare.
-4. **`printer/stats.go:priorityScore()`** — Maps raw strings `"critical"→4` instead of using `domain.ClonePriority`. Fragile.
-5. **`domain/helpers.go`** duplicates `config/enum_helpers.go`\*\* — Both have generic string marshaling helpers. Should be in shared `internal/enum/`.
+~~1. **`domain.CloneCategory`** — 14 constants, zero methods. No `IsValid()`, no `String()`, no JSON marshaling. Same package as `CloneSeverity` which has all of these.~~ done — IsValid/String/JSON methods shipped
+~~2. **`domain.ClonePriority`** — 4 constants, only display methods. Missing `IsValid()`/`String()`/JSON.~~ done — full method set shipped
+~~3. **`domain.CloneActionability`** — 2 constants, zero methods. Completely bare.~~ done — full method set shipped
+~~4. **`printer/stats.go:priorityScore()`** — Maps raw strings `"critical"→4` instead of using `domain.ClonePriority`. Fragile.~~ done — priorityScore uses typed domain.ClonePriority
+~~5. **`domain/helpers.go`** duplicates `config/enum_helpers.go`\*\* — Both have generic string marshaling helpers. Should be in shared `internal/enum/`.~~ resolved by alternative — shared pkg/enum package
 
 ### Architecture
 
-6. **`printer/` is a god package** — 51 files mixing output formatting with business logic (classification, actionability, sorting, clone processing).
-7. **4 parallel Clone types** — `printer.clone`, `pkg/artdupl.Clone`, `printer.CloneGroup`, `domain.ProcessedClone`. Same concept, different shapes.
-8. **Layer violations** — `printer/actionability.go` and `printer/clone_processor.go` import `syntax/golang` directly.
-9. **`detection/todo_detector.go`** re-parses files with `go/parser` instead of using the existing `syntax/` layer.
+~~6. **`printer/` is a god package** — 51 files mixing output formatting with business logic (classification, actionability, sorting, clone processing).~~ resolved by alternative — actionability/stats/finding extracted to printer subpackages
+~~7. **4 parallel Clone types** — `printer.clone`, `pkg/artdupl.Clone`, `printer.CloneGroup`, `domain.ProcessedClone`. Same concept, different shapes.~~ done — ADR-0005
+~~8. **Layer violations** — `printer/actionability.go` and `printer/clone_processor.go` import `syntax/golang` directly.~~ won't implement — deferred: import cycle (TODO_LIST DEFERRED)
+~~9. **`detection/todo_detector.go`** re-parses files with `go/parser` instead of using the existing `syntax/` layer.~~ won't implement — todo_detector.go deleted 2026-06-17
 
 ### Code Reuse
 
@@ -171,46 +171,46 @@ Sorted by **Impact × Effort⁻¹** (highest ROI first):
 
 | # | Task                                                                               | Impact | Effort | Why                                            |
 | - | ---------------------------------------------------------------------------------- | ------ | ------ | ---------------------------------------------- |
-| 1 | Update `TODO_LIST.md` — mark completed items                                       | Medium | 5min   | Simple housekeeping, prevents confusion        |
-| 2 | Update `CHANGELOG.md` — fix lies, add entries                                      | High   | 20min  | Document is actively misleading                |
-| 3 | Update `FEATURES.md` — CSV, `--output-file`, actionability                         | Medium | 10min  | Stale since May                                |
-| 4 | Populate `docs/DOMAIN_LANGUAGE.md`                                                 | High   | 15min  | Empty template = dead documentation            |
-| 5 | Add `IsValid()/String()` to `CloneCategory`, `ClonePriority`, `CloneActionability` | Medium | 15min  | Consistency with `CloneSeverity`/`HealthScore` |
-| 6 | Fix `priorityScore()` to use `domain.ClonePriority` constants                      | Low    | 5min   | Eliminates fragile raw strings                 |
+~~| 1 | Update `TODO_LIST.md` — mark completed items                                       | Medium | 5min   | Simple housekeeping, prevents confusion        |~~ done — maintained through 2026-09-28
+~~| 2 | Update `CHANGELOG.md` — fix lies, add entries                                      | High   | 20min  | Document is actively misleading                |~~ done — rewritten 2026-06-12; maintained through v0.7.2
+~~| 3 | Update `FEATURES.md` — CSV, `--output-file`, actionability                         | Medium | 10min  | Stale since May                                |~~ done — maintained, count-gate-enforced
+~~| 4 | Populate `docs/DOMAIN_LANGUAGE.md`                                                 | High   | 15min  | Empty template = dead documentation            |~~ done — populated
+~~| 5 | Add `IsValid()/String()` to `CloneCategory`, `ClonePriority`, `CloneActionability` | Medium | 15min  | Consistency with `CloneSeverity`/`HealthScore` |~~ done — CHANGELOG
+~~| 6 | Fix `priorityScore()` to use `domain.ClonePriority` constants                      | Low    | 5min   | Eliminates fragile raw strings                 |~~ done — typed values in printer stats
 | 7 | Restart LSP to clear stale diagnostic cache                                        | Low    | 1min   | 6 phantom warnings                             |
 
 ### Tier 2: High Impact, Medium Effort (Architecture)
 
 | #  | Task                                                                              | Impact | Effort | Why                                       |
 | -- | --------------------------------------------------------------------------------- | ------ | ------ | ----------------------------------------- |
-| 8  | Extract shared enum helpers to `internal/enum/`                                   | Medium | 30min  | Eliminates parallel implementations       |
-| 9  | Decouple `printer/actionability.go` from `syntax/golang`                          | High   | 1h     | Last layer violation in printer           |
-| 10 | Extract `printer/clone_classify.go` + `actionability.go` to `detection/classify/` | High   | 2h     | Business logic should not live in printer |
-| 11 | Consolidate Clone types: define canonical `domain.ProcessedClone`                 | High   | 4h     | 4 types for same concept is madness       |
+~~| 8  | Extract shared enum helpers to `internal/enum/`                                   | Medium | 30min  | Eliminates parallel implementations       |~~ resolved by alternative — shipped as pkg/enum
+~~| 9  | Decouple `printer/actionability.go` from `syntax/golang`                          | High   | 1h     | Last layer violation in printer           |~~ won't implement — deferred: import cycle (TODO_LIST DEFERRED)
+~~| 10 | Extract `printer/clone_classify.go` + `actionability.go` to `detection/classify/` | High   | 2h     | Business logic should not live in printer |~~ resolved by alternative — extracted to printer/actionability (+ printer/finding)
+~~| 11 | Consolidate Clone types: define canonical `domain.ProcessedClone`                 | High   | 4h     | 4 types for same concept is madness       |~~ done — ADR-0005; printers consume ProcessedCloneGroup
 | 12 | Add `--output-file` support to root command (not just stats)                      | Medium | 30min  | Users expect this on all subcommands      |
 
 ### Tier 3: High Impact, High Effort (Major Refactor)
 
 | #  | Task                                                               | Impact    | Effort | Why                                         |
 | -- | ------------------------------------------------------------------ | --------- | ------ | ------------------------------------------- |
-| 13 | ProcessedClone DTO — decouple printer from `syntax.Node`           | Very High | 8h     | 111 test call sites, biggest coupling issue |
-| 14 | TokenValue type with validation                                    | High      | 4h     | Type safety for suffix tree tokens          |
-| 15 | Wire TODO/Legacy detectors to CLI                                  | Medium    | 2h     | Implemented but inaccessible to users       |
-| 16 | Fix `detection/todo_detector.go` to use existing `syntax/` parsing | Medium    | 2h     | Eliminates redundant re-parsing             |
+~~| 13 | ProcessedClone DTO — decouple printer from `syntax.Node`           | Very High | 8h     | 111 test call sites, biggest coupling issue |~~ done — printer/printer.go
+~~| 14 | TokenValue type with validation                                    | High      | 4h     | Type safety for suffix tree tokens          |~~ done — suffixtree.TokenValue
+~~| 15 | Wire TODO/Legacy detectors to CLI                                  | Medium    | 2h     | Implemented but inaccessible to users       |~~ won't implement — deleted 2026-06-17
+~~| 16 | Fix `detection/todo_detector.go` to use existing `syntax/` parsing | Medium    | 2h     | Eliminates redundant re-parsing             |~~ won't implement — detector deleted
 
 ### Tier 4: Nice to Have
 
 | #  | Task                                                                   | Impact | Effort | Why                                       |
 | -- | ---------------------------------------------------------------------- | ------ | ------ | ----------------------------------------- |
 | 17 | Use `x/exp/slices` for dedup/filtering in `config/detection_method.go` | Low    | 15min  | Already in go.mod                         |
-| 18 | String interning for `syntax.Node.Filename`                            | Medium | 2h     | Memory optimization for large codebases   |
+~~| 18 | String interning for `syntax.Node.Filename`                            | Medium | 2h     | Memory optimization for large codebases   |~~ done — syntax.InternFilename (CHANGELOG)
 | 19 | Consolidate `pkg/format/hash.go` into `pkg/format/` or inline it       | Low    | 10min  | Single 17-line file, questionable package |
-| 20 | Fuzz tests for templ parser edge cases                                 | Medium | 3h     | Coverage for parser robustness            |
+~~| 20 | Fuzz tests for templ parser edge cases                                 | Medium | 3h     | Coverage for parser robustness            |~~ done — syntax/templ/fuzz_test.go
 | 21 | Move `isTestFile()` from printer to domain                             | Low    | 15min  | Domain logic in wrong package             |
 | 22 | Deduplicate `BuildCloneGroups()` and `collectMatchesIntoGroups()`      | Low    | 30min  | Same function in two packages             |
 | 23 | Add `--verbose` output for stats `--output-file` path confirmation     | Low    | 10min  | User experience                           |
 | 24 | Investigate `charm.land/fang/v2` migration (from v1)                   | Low    | 2h     | Library policy warning in CI              |
-| 25 | Implement proper general clone CSV output (not just stats)             | Medium | 2h     | Stats CSV is done, clone CSV is not       |
+~~| 25 | Implement proper general clone CSV output (not just stats)             | Medium | 2h     | Stats CSV is done, clone CSV is not       |~~ done — CSV is a full output format (stats --format csv)
 
 ---
 
