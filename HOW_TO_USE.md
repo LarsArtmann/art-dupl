@@ -120,6 +120,31 @@ normally, overriding that default for a single run:
 ./art-dupl --include-tests -t 10 ./...
 ```
 
+#### Reading File Paths from stdin
+
+`--files` reads newline-delimited file paths from stdin instead of walking a
+directory tree, so any path-selection tool composes cleanly:
+
+```bash
+# Analyze test files only
+find . -name '*_test.go' | ./art-dupl --files -t 20
+
+# Analyze files changed on this branch
+git diff --name-only main | grep '\.go$' | ./art-dupl --files -t 10
+```
+
+Two behaviors worth knowing:
+
+- **Ctrl+C cancels everything, cleanly.** The stdin scanner and the whole
+  pipeline share one context: interrupting mid-read closes the reader,
+  aborts parsing, and exits with code 130 (`interrupted`), leaving no
+  half-written output.
+- **Normal filtering still applies** to stdin paths: the generated-code
+  filter, `--only <type>`, and exclude patterns all run, and the usual
+  unmatched `--include-pattern`/`--exclude-pattern` warnings print when
+  stdin reaches EOF. Paths are matched slash-normalized (a leading `./`
+  is trimmed).
+
 ## Smart Filtering
 
 art-dupl automatically filters common generated code patterns:
@@ -884,6 +909,25 @@ statements. For debugging, compare token streams:
 ```bash
 ./art-dupl --dump-tokens ./file.go   # shows the emitted token stream
 ```
+
+#### Writing Test Fixtures That Actually Fire
+
+art-dupl counts duplicated STATEMENTS, not lines or AST nodes. A fixture
+pair whose duplication lives entirely INSIDE one composite statement (a
+single loop body, one `if/else` arm) can emit too few top-level statement
+tokens to clear the default threshold of 5. Recipes that reliably fire:
+
+- Give each duplicated function **at least 6 flat top-level statements**
+  (simple assignments count), or drop `-t` to 1-2 while debugging.
+- Make the A/B variants differ in SHAPE (operators), not only in literal
+  values — semantic mode normalizes literals, and fixtures differing only
+  in values are rejected by the cyclic-pattern check.
+- Verify with `-t 1 --no-actionability` FIRST; a fixture that needs
+  `--show-suppressed` to fire is telling you the group is boilerplate-shaped,
+  not that detection failed.
+
+`TESTING.md` ("The fixture must fire in the core tool first") carries the
+full E2E-writing rules.
 
 #### Performance Issues
 

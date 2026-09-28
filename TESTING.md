@@ -262,6 +262,29 @@ regress. A/B pairs whose statements differ ONLY in literal values
 by the cyclic-pattern check — make fixture statements differ in shape
 (operator), not just in literal.
 
+### The fixture must fire in the core tool first
+
+Rule for every E2E/BDD fixture (gotcha from the core-lane arc, 2026-09-25):
+before encoding a fixture into `bdd/` or a consumer-side test, run it through
+the core tool directly and watch the group APPEAR:
+
+```bash
+/tmp/art-dupl -t 1 --no-actionability --show-suppressed /tmp/detq
+```
+
+A fixture that does not fire in the core tool tests nothing — the E2E assertion
+then passes (or fails) for reasons unrelated to the behavior under test, and
+the suite grows green noise. Order of operations:
+
+1. Core tool fires on the fixture (`-t 1 --no-actionability`) — detection is real.
+2. Core tool fires at the FLAG CONFIGURATION the E2E uses (default `-t 5` needs
+   ≥6 duplicated flat statements; nested-body-only duplication may not clear it).
+3. Only then write the BDD spec, asserting on the group's shape (files, line
+   counts, hash), not just "exit code 0".
+
+If step 1 passes but step 2 does not, the fixture is wrong for the threshold —
+do not weaken the assertion to compensate; reshape the fixture.
+
 ## Running Tests
 
 ```bash
