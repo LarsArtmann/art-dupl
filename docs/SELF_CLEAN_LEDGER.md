@@ -91,3 +91,31 @@ art-dupl repo as working dir) against our own tree:
 - Cross-checked GroupID determinism in
   `TestFindingsFromGroups_GroupIDStableAcrossRuns` (identical GroupIDs
   across independent runs).
+
+## 2026-09-28/29 — SUPERB docs-health completion pass (M00–M20)
+
+Doc-debt decisions from the plan in
+`docs/planning/2026-09-28_21-57_SUPERB-docs-health-completion-plan.md` — recorded so the
+monthly self-scan does not re-litigate them:
+
+- **Master plan closure**: the "24/26 done" claim resolved as 24 executed + 2
+  measured no-gos (T7 defer-cleanup pattern, T14 stream-slice pool). Nothing open.
+  Evidence map lives in the master-plan header and TODO_LIST.
+- **GitHub-Action distribution plan**: formally won't-implement — superseded by the
+  BuildFlow provider lane; revisit trigger documented on the plan file itself.
+- **Legacy-archive retrofit (272→294 pre-regime files)**: not scheduled; policy and
+  gates documented in `docs/status/archived/README.md`. DO NOT strike legacy files
+  without per-item verification (fabricated evidence is worse than silence).
+- **Count regime**: living-doc numbers are CI-enforced by
+  `cmd/docs_health_counts_test.go` (patterns 37, user-visible flags 56 of 64
+  registered — the 8 hidden are 6 deprecated `--include-*` aliases plus
+  `profile`/`timeout` — Go node types 49, templ 29). Update the DOC to the
+  derived number, never the test to the doc.
+- **Accepted classes** (unchanged from prior sweeps): tolerated `_test.go` v2
+  importers (gate prevents new ones), format-specific clone DTOs (ADR-0025),
+  single-module layout (arch-lint DAG), table-driven skip for transform.go.
+- **New standing gates**: docs count gate, SDK/CLI DefaultThreshold drift test,
+  docs-freshness script (warn-only until one clean cycle), archive regime README.
+- **Template flags fixed**: consumer templates referenced non-existent flags
+  (`--output`, `--baseline`); corrected to `--plumbing` / `--baseline-path` and
+  verified against the built binary end-to-end.
