@@ -1,6 +1,6 @@
 # TODO List
 
-**Last Updated:** 2026-09-25
+**Last Updated:** 2026-09-28
 
 Actionable items for the next 2-4 weeks. Completed work lives in `CHANGELOG.md`.
 This file is OPEN work only — no completed, rejected, or resolved items.
@@ -29,6 +29,24 @@ flipflop skip verify (C4).
 - [ ] **Provider version flake pin (D6 oddment)** — art-dupl is public + proxy-servable (gotcha #105 rule 1: no flake input needed), but BuildFlow's flake comment still lists art-dupl under "install manually" — update the comment to point at `go install github.com/LarsArtmann/art-dupl@v0.7.2` (fixed) or the tools buildEnv.
 - [ ] **Fleet rollout of the core-lane pattern** — the same blank-import + registration-test + jscpd-lane-split recipe applies to any other BuildFlow consumer repo with Go duplication needs.
 
+### Docs-health verified harvest (2026-09-28)
+
+Every item below was re-verified against the code on 2026-09-28. Sources cite the
+status report + the code that proves the gap. Small bounded items first.
+
+- [ ] **Release the post-v0.7.2 hardening** (v0.8.0 candidate) — provider `.gitignore` (B1), concurrency suite (B2), ADR-0025 (B5), multi-module fixture (B6), `internal/jsonv2gate` (C1) are committed but UNRELEASED (git tag v0.7.2 = `502476ad`, severity cap only); BuildFlow pins v0.7.2, whose provider still documents ".gitignore patterns are NOT honored". Cut v0.8.0 via `scripts/pre-release-check.sh`, then bump BuildFlow and re-run its E2E. **Source:** `docs/status/2026-09-25_09-43` (f)#11; `git log v0.7.1..v0.7.2`.
+- [ ] **Issue #2: committed SARIF integration test** — feed real CLI `--sarif` bytes through go-finding's `FindingsFromSARIF` and assert the exact groups come back (today only `printer/finding/finding_test.go` uses go-finding's own `ToSARIF`). **Source:** `docs/status/2026-09-22_22-40_go-finding-integration-investigation` c2/f1; repeated in 09-22_23-01 and 09-23_01-34.
+- [ ] **Issue #4: give the integration-evaluation doc a live path** — it exists only as a referenced-by-nothing file; copy or summarize into `docs/`. **Source:** same report c3/f4 (3 reports).
+- [ ] **Dead-directive detector** — after a run, warn when an `//art-dupl:accept <hash>` directive matched zero current groups (stale hash after refactors). **Source:** `docs/status/2026-09-22_21-47` f6 + `docs/status/2026-07-25_19-37` f11.
+- [ ] **Provider Spec Description: document the `_test.go`-inclusive crawl policy** — the visible 60-vs-72 group delta vs the CLI default. **Source:** `docs/status/2026-09-25_09-43` (e)#7, (f)#10.
+- [ ] **Go-line pin test** — mechanical test asserting `go.mod` pins `go 1.27.1` (guards the BuildFlow flip-flop class without relying on the skip). **Source:** `docs/status/2026-09-24_13-30` c6/f9.
+- [ ] **Go-1.27 product-correctness cluster** — encode struct-literal selector keys (`T{A.B: 1}` ≠ `T{X.Y: 2}`) in `transform.go` KeyValueExpr + tests; generic-method fixtures through parse/serialize/normalizer/type-aware/suggest-generics; dogfood over GOROOT `src/math/rand/v2`; gotypesalias alias-heavy revalidation; `api/go1.27.txt` diff. **Source:** `docs/status/2026-09-14_03-55` f9-f17/f19/f21/f25/f32/f35 (verified untracked 2026-09-28).
+- [ ] **HTML goldens: one real clone group** — `printer/html_golden_test.go` renders header+footer only; add a fixture with an actual group so clone-group HTML changes break goldens. **Source:** `docs/status/2026-08-16_17-37` f21.
+- [ ] **HOW_TO_USE gaps** — (a) stdin section (`--files`, Ctrl+C cancellation behavior); (b) composite-statement fixture caveat for E2E writers (≥6 flat statements); **TESTING.md**: fixture-must-fire-in-core-tool-first rule. **Source:** `docs/status/2026-07-16_07-23` f4/f14 + `2026-09-25_09-43` (f)#33/#41.
+- [ ] **SDK_DESIGN.md: fold in ADR-0025 + the provider** — architecture diagram still pre-dates both. **Source:** `docs/status/2026-09-25_09-43` (f)#34.
+- [ ] **Provider test-gap bundle** — provider↔`printer/finding.ToFindings` equivalence test; GroupID-determinism pin; gogenfilter parity pin; `GOOS=windows` live-crawl compile check. **Source:** `docs/status/2026-09-24_13-30` f3 + `2026-09-24_17-00` f22-f24 + `2026-09-25_09-43` (f)#28.
+- [ ] **Dependabot: add `go-finding`** — verified absent from `.github/dependabot.yml` while `printer/finding` + `pkg/provider` depend on it. **Source:** `docs/status/2026-09-22_22-40` f12.
+
 ### v0.7.0 release follow-ups (harvested 2026-09-19)
 
 **Source:** `docs/status/2026-09-19_06-41_v0.7.0-release-go1.27-coherence-ci-recovery.md` section (f);
@@ -43,7 +61,7 @@ toolchain pins, Windows stdin-test skips) are NOT listed — they live in the CH
 #48 dump-tokens templ verification.
 
 - [ ] **Sweep gogenfilter consumers to v3.6.1** — DONE 2026-09-19 for all 14 clean consumers (8 direct + 6 indirect, incl. vendor sync in oxlint-auto-configure). **Follow-up:** 9 consumers were SKIPPED with pre-existing red baselines and still carry ≤v3.6.0 — branching-flow, BuildFlow, auto-deduplicate (build failures), erraudit, go-filewatcher, Cyberdom, overview, project-discovery-daemon (test failures). Fixing those baselines is its own task per repo; go-filewatcher's `TestFilterGeneratedCode_SingleFilters/SQLC` failure may be a stale gogenfilter-behavior assumption worth checking first.
-- [ ] **Fleet audit: `encoding/json/v2` imports / `format:` tags on Go 1.27** (#14) — same breakage class as art-dupl's blocker (go.dev/issue/71631); check every LarsArtmann repo on Go 1.27. **art-dupl in-repo slice (2026-09-23):** ~30 files still import `encoding/json/v2`/`jsontext` directly (mostly `_test.go` and enum/string-only payloads — tolerated per AGENTS.md); migrate any file that must marshal Duration-bearing types to the v1 API (the `internal/jsonutil` regression class).
+- [ ] **Fleet audit: `encoding/json/v2` imports / `format:` tags on Go 1.27** (#14) — same breakage class as art-dupl's blocker (go.dev/issue/71631); check every LarsArtmann repo on Go 1.27. **art-dupl in-repo slice (2026-09-23):** ~30 files still import `encoding/json/v2`/`jsontext` directly (mostly `_test.go` and enum/string-only payloads — tolerated per AGENTS.md); migrate any file that must marshal Duration-bearing types to the v1 API (the `internal/jsonutil` regression class). **In-repo reassessment (2026-09-28):** `baseline/baseline.go` + `config/config_migrate.go` remain allowlisted production v2 importers — baseline is a wire path; migrate if golden tests confirm byte-identity (**source:** `docs/status/2026-09-25_09-43` (f)#27).
 - [ ] **Fleet audit: `filepath.Separator` matching + `strings.Split(_, ":")` path parsing** (#15) — the Windows bug class that cost seven CI cycles; sweep test and product code.
 - [ ] **Branch protection with required checks + failure notifications** (#18) — red CI sat unnoticed for 4 days; needs owner action on GitHub settings.
 - [ ] **Root-cause Windows exe-start `ProcessState nil`; un-skip `TestExitCodes_Process`** (#4) — 3-attempt retry insufficient, runner refuses freshly built exes; logic covered by `TestExitCodeForError` meanwhile.

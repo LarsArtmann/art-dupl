@@ -63,12 +63,14 @@ Shipped 2026-09-14: nested-block statements (loop/if/switch/select bodies, else-
 - **Cross-repo recall survey**: scan Lars's Go repos for loop-skeleton clones to size ADR-0023's win. (report #39)
 - **CPU-affinity benchmarks post-ADR-0023**: re-run `taskset` pinned comparisons; token streams grew ~10-15%, which shifts the L3-latency tradeoff. (report #47)
 - **README before/after example showing loop-skeleton detection**: marketing artifact for the ADR-0023 recall win. (report #45)
+- **Recurring design debts (consolidated 2026-09-28 from 6+ status reports)**: threshold floor — decide whether `-t` < 3 stays legal or gets a warning (raised 2026-07-09, never decided); `buildMatch` partial-prefix fragment rendering fix (`syntax/syntax_match.go`); `--aggressive`/`--sensitive` threshold presets; `--json-schema` flag emitting the output schema; `Fragment []byte`→`string` unification (ADR candidate); `Node.Type`/`Node.Fingerprint` unification (needs an ADR; three reports); clone-type consolidation (7 types → 2-3); warn when `-t` enters idiom territory (go-output feedback #4); SDK exposure of `ExitCodeForError`/`VersionInfo`.
 
 ## Performance
 
 - **Incremental type checking**: Only re-check changed packages in type-aware mode. Currently type-aware mode loads all files for `go/packages`.
 - **Caching for type-checking results**: Similar to the AST cache, cache `go/types` results keyed by content hash and detection mode.
-- **In-memory LRU cache layer**: Add in-process cache on top of `FileCache` to avoid redundant gob deserialization on hot paths. Biggest perf win for cache-heavy workflows.
+- **Suffix-tree micro-benchmark trio**: `BenchmarkWalkTransAllocs`, `BenchmarkStackBufferFallback`, `BenchmarkContextListPool` — requested across three 2026-08-16 reports, never built. Also commit the pinned A/B runner scripts (`scripts/bench/`) and consider a load-waiting wrapper that fires benchmark suites only when machine load < 4.
+- **`scripts/ledger-diff.sh`**: auto-surface new `-t 1` groups vs `docs/SELF_CLEAN_LEDGER.md` after each self-scan.
 
 ## UX and Defaults
 
@@ -79,6 +81,16 @@ Shipped 2026-09-14: nested-block statements (loop/if/switch/select bodies, else-
 - **`--ci-gate` mode**: Exit non-zero only on actionable clones (not non-actionable boilerplate). Stricter CI gating than current `check` mode. (go-etag feedback)
 - **`--diff-baseline` mode**: Show what changed since the last baseline scan — new, suppressed, and resolved clone groups. (go-cqrs-lite feedback)
 - **Type-aware + suggest-generics as default (with `--fast` escape hatch)**: Long-term goal: make the most informative analysis the default. Revisit AFTER: (1) precision filtering brings `--suggest-generics` from 12.5% to >50%, (2) progress output during the ~100x slower type-checking phase, (3) real-world validation on 3-5 codebases confirms signal-to-noise ratio.
+
+## Website and Presence (harvested 2026-09-28)
+
+From the public-presence sprints (`docs/status/2026-07-13_21-18`, `_22-14`) — still open after the 2026-08-10 site rebuild:
+
+- **OG image + `og:` meta tags**: no social preview image exists (`website/public`); repeated in three reports.
+- **Lighthouse CI + `lighthouserc.json`**: performance/a11y budgets never wired.
+- **Sitemap + Google Search Console submission**; canonical URLs.
+- **Firebase PR preview channels** and a `website-dev` flake app.
+- **Dependabot for website deps** (Astro/pnpm are manually bumped).
 
 ## Documentation and Adoption
 
