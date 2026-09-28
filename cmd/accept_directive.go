@@ -45,13 +45,30 @@ type AcceptedDirective struct {
 type AcceptedSet struct {
 	mu       sync.RWMutex
 	scanned  map[string][]AcceptedDirective // filename → directives found
+	matched  map[directiveKey]bool          // directives that accepted ≥1 group this run
 	readFile func(string) ([]byte, error)
+}
+
+// directiveKey identifies a directive by its file and line.
+type directiveKey struct {
+	filename string
+	line     int
+}
+
+// DeadDirective is a hash-precision accept directive that matched zero clone
+// groups during the run — almost always a stale hash left behind after the
+// accepted code was edited (the group's content hash changed) or removed.
+type DeadDirective struct {
+	Filename string
+	Line     int
+	Hash     string
 }
 
 // NewAcceptedSet creates an AcceptedSet that uses the given file reader.
 func NewAcceptedSet(readFile func(string) ([]byte, error)) *AcceptedSet {
 	return &AcceptedSet{
 		scanned:  make(map[string][]AcceptedDirective),
+		matched:  make(map[directiveKey]bool),
 		readFile: readFile,
 	}
 }
@@ -90,6 +107,8 @@ func (a *AcceptedSet) IsAccepted(group domain.ProcessedCloneGroup) bool {
 			}
 
 			if d.Hash == "" || d.Hash == group.Hash {
+				a.recordMatched(clone.Filename, d.Line)
+
 				return true
 			}
 		}

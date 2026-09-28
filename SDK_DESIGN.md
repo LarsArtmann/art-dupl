@@ -67,6 +67,56 @@ for _, group := range result.CloneGroups {
    `Logger` are aliases (`type X = Y`), not new types. This ensures the SDK is
    compatible with domain-level code without requiring conversion functions.
 
+6. **Classification-free boundary (ADR-0025)**: The SDK emits positions,
+   fragments, and group identity (`CloneGroup.Hash`) — never actionability
+   verdicts, categories, or boilerplate-pattern labels. Classification is an
+   OUTPUT-layer concern owned by `printer/actionability` and applied in the
+   CLI pipeline (gated by `--no-actionability`). The go-finding adapter
+   (`printer/finding`) adds classification metadata under the `art-dupl/`
+   metadata namespace; the BuildFlow provider deliberately ships without it.
+   This keeps the SDK contract stable while the heuristic taxonomy evolves.
+
+## Downstream Consumers
+
+```
+                    ┌─────────────────────────────┐
+                    │        pkg/artdupl          │
+                    │   Detector (this contract)  │
+                    └──────────┬──────────────────┘
+                               │
+              ┌────────────────┼───────────────────┐
+              │                │                   │
+    ┌─────────▼─────────┐ ┌────▼─────┐   ┌─────────▼──────────┐
+    │   cmd/ pipeline   │ │ pkg/     │   │ external SDK users │
+    │ (classification   │ │ provider │   └────────────────────┘
+    │  via actionability│ │ (toolsdk)│
+    │  + printer/       │ └────┬─────┘
+    │  finding adapter) │      │ blank import in BuildFlow
+    └───────────────────┘      │ toolsdk.Register at init
+                               ▼
+                        BuildFlow core lane
+```
+
+**`printer/finding` (CLI output adapter)**: converts
+`domain.ProcessedCloneGroup`s into go-finding `Finding`s. Carries the
+`GroupID` contract (group content hash, 16-char lowercase hex — the same id
+as JSON `clone_groups[].hash` and the SARIF `go-finding/groupId` property)
+and the classification metadata under `art-dupl/*` metadata keys.
+
+**`pkg/provider` (BuildFlow toolsdk provider)**: self-registers via
+package-level `toolsdk.Register`; BuildFlow wires it with a single blank
+import. Detect runs the PUBLIC SDK (semantic mode, threshold 5, not
+configurable), so findings carry positions/snippets/GroupID/severity but no
+classification metadata (ADR-0025). Crawl mirrors CLI defaults (`.go` +
+`.templ`, vendor/generated/examples excluded, `.gitignore` honored via
+`gitignore.LoadTree`) EXCEPT `_test.go` files are included — CLI
+default-ignores them, so pipeline group counts run higher than a default
+CLI run on the same tree. Severity is advisory-capped at warning (the
+pre-cap value survives in an `original-severity-` tag) so detector findings
+can never fail BuildFlow gates keyed on error-or-above.
+`artdupl.ErrNoDuplicatesFound` maps to an empty finding list — a clean repo
+is success, not an error.
+
 ## Architecture Constraints
 
 - The `detection` package uses `[]domain.DetectionMethod` (typed, not `[]string`).
