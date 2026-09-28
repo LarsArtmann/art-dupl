@@ -100,23 +100,23 @@ Wired into 4 transformer construction sites, but the interner uses a simple `RWM
 
 ### HIGH Priority Architecture Refactors (Deferred — multi-session)
 
-1. **ProcessedClone DTO decoupling** — Printer still imports `syntax.Node` directly in `actionability.go`. `clone_processor.go` is the bridge. Requires redesigning the actionability pattern evaluation to work on serializable data instead of AST nodes.
+~~1. **ProcessedClone DTO decoupling** — Printer still imports `syntax.Node` directly in `actionability.go`. `clone_processor.go` is the bridge. Requires redesigning the actionability pattern evaluation to work on serializable data instead of AST nodes.~~ resolved by alternative — actionability runs on serializable CloneNode (ADR-0006)
 
-2. **Consolidate three parallel Clone types** — `printer.CloneGroup` (JSON DTO), `pkg/artdupl.Clone` (SDK DTO), `domain.ProcessedClone` (canonical internal DTO). Each has different field names and shapes. Consolidation blocked on Printer/SDK DTO design decisions.
+~~2. **Consolidate three parallel Clone types** — `printer.CloneGroup` (JSON DTO), `pkg/artdupl.Clone` (SDK DTO), `domain.ProcessedClone` (canonical internal DTO). Each has different field names and shapes. Consolidation blocked on Printer/SDK DTO design decisions.~~ resolved by alternative — domain.CloneRef embedded in ALL clone types (ADR-0005)
 
-3. **Split `printer/` package** — 50+ files in one package. Should split into `printer/clone/`, `printer/stats/`, `printer/actionability/`, etc. Large mechanical refactor with no behavior change.
+~~3. **Split `printer/` package** — 50+ files in one package. Should split into `printer/clone/`, `printer/stats/`, `printer/actionability/`, etc. Large mechanical refactor with no behavior change.~~ done — printer/stats/, actionability/, finding/ extracted
 
-4. **Type-strengthen ProcessedClone** — `Filename string → domain.Filepath`, `LineStart/LineEnd int → domain.LineNumber`. ~25 consumer sites need updating. Low risk but tedious.
+~~4. **Type-strengthen ProcessedClone** — `Filename string → domain.Filepath`, `LineStart/LineEnd int → domain.LineNumber`. ~25 consumer sites need updating. Low risk but tedious.~~ resolved by alternative — branded types deleted as dead (06-20); CloneRef consolidation
 
 ### Architecturally Blocked
 
-5. **`syntax/golang` facade** — BLOCKED by import cycle (`syntax/golang` imports `syntax` for `Node` type, so `syntax` cannot re-export `golang` symbols). Would require splitting `Node` into a separate package.
+~~5. **`syntax/golang` facade** — BLOCKED by import cycle (`syntax/golang` imports `syntax` for `Node` type, so `syntax` cannot re-export `golang` symbols). Would require splitting `Node` into a separate package.~~ parked — TODO_LIST "Architecturally constrained (DEFERRED)" (import cycle)
 
 ### MEDIUM Priority
 
-6. **Refactor `actionability.go`** (623 lines) — Patterns already extracted into 30 functions, but file is still large. Could split into `actionability_test_patterns.go`, `actionability_defer_patterns.go`, etc.
+~~6. **Refactor `actionability.go`** (623 lines) — Patterns already extracted into 30 functions, but file is still large. Could split into `actionability_test_patterns.go`, `actionability_defer_patterns.go`, etc.~~ done — 624L actionability.go split into 4 focused files
 
-7. **Hybrid slice/map transition storage** — Suffix tree transitions use map for O(1) lookup. For nodes with few transitions (<8), a slice would be more cache-friendly. Low value since map is already O(1).
+~~7. **Hybrid slice/map transition storage** — Suffix tree transitions use map for O(1) lookup. For nodes with few transitions (<8), a slice would be more cache-friendly. Low value since map is already O(1).~~ done — linearScanMax=8 hybrid boundary (ADR-0022)
 
 ---
 
@@ -144,35 +144,35 @@ BuildFlow flags 4 binaries that are NOT in git but exist in the working director
 
 ### Architecture
 
-1. **Break the import cycle** — The `syntax` ↔ `syntax/golang` cycle prevents clean facade design. Extract `syntax.Node` into a `syntax/types` or `ast/types` package that both can import.
+~~1. **Break the import cycle** — The `syntax` ↔ `syntax/golang` cycle prevents clean facade design. Extract `syntax.Node` into a `syntax/types` or `ast/types` package that both can import.~~ parked — TODO_LIST "Architecturally constrained (DEFERRED)" (import cycle)
 
-2. **Single Clone type** — Having 3 parallel types for the same concept (clone group) is a maintenance burden. Pick one canonical type and use adapters at boundaries.
+~~2. **Single Clone type** — Having 3 parallel types for the same concept (clone group) is a maintenance burden. Pick one canonical type and use adapters at boundaries.~~ resolved by alternative — CloneRef embedded; format DTOs kept deliberately (ADR-0005)
 
-3. **Printer package decomposition** — 50 files in `printer/` is a code smell. Split by concern: `output/text/`, `output/json/`, `output/html/`, `output/sarif/`, `analyze/actionability/`.
+~~3. **Printer package decomposition** — 50 files in `printer/` is a code smell. Split by concern: `output/text/`, `output/json/`, `output/html/`, `output/sarif/`, `analyze/actionability/`.~~ done — printer subpackages extracted
 
 ### Testing
 
-4. **Fix BDD timeout** — Profile the BDD suite to find the hanging spec(s). Likely a goroutine leak. Use `runtime.NumGoroutine()` in tests to detect leaks.
+~~4. **Fix BDD timeout** — Profile the BDD suite to find the hanging spec(s). Likely a goroutine leak. Use `runtime.NumGoroutine()` in tests to detect leaks.~~ done — root-caused and fixed 06-17 (gogenfilter error-swallowing); suite green
 
-5. **Integration test for findings** — Add a BDD spec that verifies `--detection-methods todos` produces expected output in text, JSON, and SARIF formats.
+~~5. **Integration test for findings** — Add a BDD spec that verifies `--detection-methods todos` produces expected output in text, JSON, and SARIF formats.~~ won't implement — findings pipeline removed 06-17
 
-6. **Benchmark findings pipeline** — Measure overhead of the findings goroutine on clone detection performance.
+~~6. **Benchmark findings pipeline** — Measure overhead of the findings goroutine on clone detection performance.~~ won't implement — findings pipeline removed 06-17
 
 ### Code Quality
 
-7. **Delete `CloneSeverity` type alias** — The deprecated aliases in `domain/types_severity.go` cause `exhaustive` lint false positives. Schedule deletion for next breaking version.
+~~7. **Delete `CloneSeverity` type alias** — The deprecated aliases in `domain/types_severity.go` cause `exhaustive` lint false positives. Schedule deletion for next breaking version.~~ done — CloneSeverity aliases deleted 06-16
 
-8. **Templ semantic mode** — Templ matching is purely structural. Adding identifier/operator encoding (like Go has) would reduce false positives.
+~~8. **Templ semantic mode** — Templ matching is purely structural. Adding identifier/operator encoding (like Go has) would reduce false positives.~~ done — templ semantic encoding shipped (syntax/templ)
 
-9. **Consistent error wrapping** — The findings path uses `fmt.Errorf` in some places and `duplerrors.Wrap` in others. Standardize.
+~~9. **Consistent error wrapping** — The findings path uses `fmt.Errorf` in some places and `duplerrors.Wrap` in others. Standardize.~~ resolved — duplerrors.Wrap is the documented standard (AGENTS errors convention)
 
 ### Developer Experience
 
-10. **HOW_TO_USE.md update** — Document `--detection-methods todos,legacy` and what the findings output looks like.
+~~10. **HOW_TO_USE.md update** — Document `--detection-methods todos,legacy` and what the findings output looks like.~~ won't implement — todos/legacy methods removed 06-17
 
-11. **`.gitignore` for build artifacts** — Add `art-dupl`, `dist/`, `result` to `.gitignore`.
+~~11. **`.gitignore` for build artifacts** — Add `art-dupl`, `dist/`, `result` to `.gitignore`.~~ done — build artifacts in .gitignore
 
-12. **gopls reliability** — Document the stale cache issue in AGENTS.md with the workaround (`go clean -cache && go build`).
+~~12. **gopls reliability** — Document the stale cache issue in AGENTS.md with the workaround (`go clean -cache && go build`).~~ done — AGENTS documents the devShell reload fix for gopls
 
 ---
 
@@ -222,9 +222,9 @@ I've verified:
 
 The hang is pre-existing — it existed before this session's changes. But it blocks `go test ./...` from completing, which is a significant developer experience problem. The most likely cause is either:
 
-1. **Goroutine accumulation** — Each spec spawns goroutines (clone detection, findings detection) that don't fully drain before the next spec starts. Over 264 specs, goroutines pile up.
-2. **File handle exhaustion** — Each spec creates temp files and runs analysis. On Linux, file descriptor limits could be hit.
-3. **Ginkgo serial execution deadlock** — Some specs may depend on shared state (package-level variables) that gets corrupted when run in sequence.
+~~1. **Goroutine accumulation** — Each spec spawns goroutines (clone detection, findings detection) that don't fully drain before the next spec starts. Over 264 specs, goroutines pile up.~~ resolved — root cause was gogenfilter error-swallowing, fixed 06-17
+~~2. **File handle exhaustion** — Each spec creates temp files and runs analysis. On Linux, file descriptor limits could be hit.~~ resolved — fixed alongside the 06-17 root-cause fix
+~~3. **Ginkgo serial execution deadlock** — Some specs may depend on shared state (package-level variables) that gets corrupted when run in sequence.~~ resolved — fixed alongside the 06-17 root-cause fix
 
 **What I'd need to figure this out:** Run the BDD suite with `-ginkgo.progress` and `-ginkgo.v` to see exactly which spec hangs, then examine its setup/teardown. A `runtime.NumGoroutine()` check before/after each spec would reveal if goroutines are leaking.
 

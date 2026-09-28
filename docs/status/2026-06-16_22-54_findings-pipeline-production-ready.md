@@ -106,23 +106,23 @@ Found total 3 findings.
 
 ### Architecture (Multi-session refactors — documented in TODO_LIST.md)
 
-1. **ProcessedClone DTO decoupling** — `actionability.go` still imports `syntax.Node` directly
-2. **Consolidate three parallel Clone types** — `printer.CloneGroup`, `pkg/artdupl.Clone`, `domain.ProcessedClone`
-3. **Split `printer/` into sub-packages** — 50+ files in one package
-4. **Type-strengthen ProcessedClone** — `Filename string → Filepath`, `LineStart/End int → LineNumber` (~25 sites)
-5. **`syntax/golang` facade** — BLOCKED by import cycle
+~~1. **ProcessedClone DTO decoupling** — `actionability.go` still imports `syntax.Node` directly~~ resolved by alternative — actionability on serializable CloneNode (ADR-0006)
+~~2. **Consolidate three parallel Clone types** — `printer.CloneGroup`, `pkg/artdupl.Clone`, `domain.ProcessedClone`~~ resolved by alternative — CloneRef embedded in ALL clone types (ADR-0005)
+~~3. **Split `printer/` into sub-packages** — 50+ files in one package~~ done — printer/stats/, actionability/, finding/ extracted
+~~4. **Type-strengthen ProcessedClone** — `Filename string → Filepath`, `LineStart/End int → LineNumber` (~25 sites)~~ resolved by alternative — branded types deleted as dead (06-20); CloneRef instead
+~~5. **`syntax/golang` facade** — BLOCKED by import cycle~~ parked — TODO_LIST "Architecturally constrained (DEFERRED)" (import cycle)
 
 ### Code Quality
 
-6. **Refactor `printDupls` signature** — 11 parameters, should use a struct (deferred — high churn, stable interface)
-7. **`LegacyIssue` Tags field** — Asymmetric with `TodoIssue` which has Tags (low value — no natural tag source)
-8. **HOW_TO_USE.md** — No detection-methods or findings documentation
-9. **README.md** — Missing todos/legacy in detection methods table
+~~6. **Refactor `printDupls` signature** — 11 parameters, should use a struct (deferred — high churn, stable interface)~~ resolved by alternative — reduced to 9 params via SuppressionConfig (AGENTS)
+~~7. **`LegacyIssue` Tags field** — Asymmetric with `TodoIssue` which has Tags (low value — no natural tag source)~~ won't implement — legacy detection removed 06-17
+~~8. **HOW_TO_USE.md** — No detection-methods or findings documentation~~ won't implement — todos/legacy methods removed 06-17
+~~9. **README.md** — Missing todos/legacy in detection methods table~~ won't implement — todos/legacy removed 06-17
 
 ### Testing
 
-10. **BDD spec for findings output** — No Ginkgo spec verifies `--detection-methods todos` produces expected output across formats
-11. **BDD test suite timeout** — 264 specs hang at 600s (pre-existing, likely goroutine accumulation)
+~~10. **BDD spec for findings output** — No Ginkgo spec verifies `--detection-methods todos` produces expected output across formats~~ won't implement — findings removed 06-17
+~~11. **BDD test suite timeout** — 264 specs hang at 600s (pre-existing, likely goroutine accumulation)~~ done — fixed 06-17; suite green
 
 ---
 
@@ -149,29 +149,29 @@ BuildFlow flags 4 untracked binaries: `art-dupl`, `dist/art-dupl`, `result`, `bd
 
 ### Architecture
 
-1. **Break the import cycle** — Extract `syntax.Node` into `syntax/types` so `syntax/golang` can import it without circular dependency. Unblocks the facade refactor.
+~~1. **Break the import cycle** — Extract `syntax.Node` into `syntax/types` so `syntax/golang` can import it without circular dependency. Unblocks the facade refactor.~~ parked — TODO_LIST "Architecturally constrained (DEFERRED)" (import cycle)
 
-2. **Single Clone type** — 3 parallel types for the same concept is maintenance debt. Pick `domain.ProcessedClone` as canonical, use adapters at JSON/SDK boundaries.
+~~2. **Single Clone type** — 3 parallel types for the same concept is maintenance debt. Pick `domain.ProcessedClone` as canonical, use adapters at JSON/SDK boundaries.~~ resolved by alternative — CloneRef embedded; format DTOs kept (ADR-0005)
 
-3. **Printer package decomposition** — 50 files in `printer/` is a smell. Split: `output/text/`, `output/json/`, `output/html/`, `output/sarif/`, `analyze/actionability/`.
+~~3. **Printer package decomposition** — 50 files in `printer/` is a smell. Split: `output/text/`, `output/json/`, `output/html/`, `output/sarif/`, `analyze/actionability/`.~~ done — printer subpackages extracted
 
-4. **`printDupls` struct refactor** — 11 params → struct with config fields. Currently deferred due to churn.
+~~4. **`printDupls` struct refactor** — 11 params → struct with config fields. Currently deferred due to churn.~~ resolved by alternative — SuppressionConfig struct landed (AGENTS)
 
 ### Testing
 
-5. **Fix BDD timeout** — Profile with `-ginkgo.progress` to find hanging spec. Add `runtime.NumGoroutine()` checks.
+~~5. **Fix BDD timeout** — Profile with `-ginkgo.progress` to find hanging spec. Add `runtime.NumGoroutine()` checks.~~ done — fixed 06-17
 
 6. **Add goleak** — `go.uber.org/goleak` in TestMain to catch goroutine leaks automatically.
 
-7. **BDD findings spec** — Verify `--detection-methods todos` produces output in text, JSON, SARIF.
+~~7. **BDD findings spec** — Verify `--detection-methods todos` produces output in text, JSON, SARIF.~~ won't implement — findings removed 06-17
 
 ### Code Quality
 
-8. **HOW_TO_USE.md** — Document findings output, detection methods, examples.
+~~8. **HOW_TO_USE.md** — Document findings output, detection methods, examples.~~ won't implement — todos/legacy removed 06-17
 
-9. **Rich text findings** — Group by file, priority badges, consistent with clone rich text mode.
+~~9. **Rich text findings** — Group by file, priority badges, consistent with clone rich text mode.~~ won't implement — findings removed 06-17
 
-10. **Templ semantic mode** — Add identifier/operator encoding to reduce false positives.
+~~10. **Templ semantic mode** — Add identifier/operator encoding to reduce false positives.~~ done — templ semantic encoding shipped
 
 ---
 
