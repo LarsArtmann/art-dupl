@@ -99,7 +99,7 @@
 | Area                         | Current State               | What Remains                                                                                                                                                 |
 | ---------------------------- | --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | **Test Coverage**            | 74.3% average               | `detection` (61.8%) and `domain` (66.2%) below 80% target. Need integration tests for MultiDetector and enum MarshalJSON roundtrips                          |
-| **Concurrency**              | 14/17 goroutines fixed      | `cmd/run_crawl.go` file feeders (3 goroutines) still use blocking sends — stdin scanner and filepath.Walk are inherently blocking, needs full chain refactor |
+~~| **Concurrency**              | 14/17 goroutines fixed      | `cmd/run_crawl.go` file feeders (3 goroutines) still use blocking sends — stdin scanner and filepath.Walk are inherently blocking, needs full chain refactor |~~ done — ctx.Done() selects present in cmd/run_crawl.go
 | **Printer Package**          | ~3500 lines across 29 files | Splitting into sub-packages (stats, html, analyze) deferred — needs core extraction first                                                                    |
 | **Clone Type Consolidation** | Field names aligned         | 5 parallel Clone types exist with identical field names but separate type definitions. Consolidation needs DTO architecture design                           |
 | **Fragment Type**            | Works at boundaries         | `[]byte` in domain vs `string` in SDK — flips at every boundary. Needs unified type decision                                                                 |
@@ -139,33 +139,33 @@
 
 ### Architecture
 
-1. **Clone type consolidation is the #1 architecture debt.** Five parallel types with identical fields is a maintenance liability. The `LineRange` value object (enforcing `end >= start` at construction) should be the first step — it eliminates 3 copies of the same runtime validation.
+~~1. **Clone type consolidation is the #1 architecture debt.** Five parallel types with identical fields is a maintenance liability. The `LineRange` value object (enforcing `end >= start` at construction) should be the first step — it eliminates 3 copies of the same runtime validation.~~ resolved by alternative — CloneRef (Filename/LineStart/LineEnd + LineCount()) consolidated instead (0.5.0)
 
-2. **Printer→syntax.Node coupling (34 references).** All are field reads, no method calls — a read-only `NodeReader` interface would decouple without changing behavior.
+~~2. **Printer→syntax.Node coupling (34 references).** All are field reads, no method calls — a read-only `NodeReader` interface would decouple without changing behavior.~~ resolved by alternative — actionability decoupled via serializable CloneNode DTO (ADR-0006)
 
 3. **`config.Config` is a 43-field god object.** The `Include*` family (6 bools) is a bitmask masquerading as independent fields. Reflection-based merge prevents extracting sub-structs without breaking field-by-field override.
 
 ### Testing
 
-4. **Detection package needs real assertions.** Current tests drain channels without checking what comes out. Need table-driven tests with known clone inputs and expected match counts.
+~~4. **Detection package needs real assertions.** Current tests drain channels without checking what comes out. Need table-driven tests with known clone inputs and expected match counts.~~ done — detection/coverage_test.go adapter tests with real assertions
 
-5. **Domain enum coverage gap.** `CloneCategory` and `CloneActionability` MarshalJSON/UnmarshalJSON at 0%. Should follow the same pattern as the HealthScore tests just added.
+~~5. **Domain enum coverage gap.** `CloneCategory` and `CloneActionability` MarshalJSON/UnmarshalJSON at 0%. Should follow the same pattern as the HealthScore tests just added.~~ done — domain/enums_test.go MarshalJSON tests incl. invalid cases
 
 ### Concurrency
 
-6. **`cmd/run_crawl.go` needs ctx threaded through.** The `filesFeedWithOptions` → `buildParams` → caller chain needs `context.Context` as first param. The stdin scanner should use a context-aware reader.
+~~6. **`cmd/run_crawl.go` needs ctx threaded through.** The `filesFeedWithOptions` → `buildParams` → caller chain needs `context.Context` as first param. The stdin scanner should use a context-aware reader.~~ done — ctx.Done() selects in cmd/run_crawl.go feeders
 
 ### Type Safety
 
-7. **`Fragment []byte` vs `string` split brain.** Pick one representation at the domain layer. `[]byte` is more efficient for diffing; `string` is simpler for JSON. A branded `SourceFragment` type with conversion methods would localize the flip.
+~~7. **`Fragment []byte` vs `string` split brain.** Pick one representation at the domain layer. `[]byte` is more efficient for diffing; `string` is simpler for JSON. A branded `SourceFragment` type with conversion methods would localize the flip.~~ resolved by alternative — single CloneRef.Fragment string embedded everywhere
 
 8. **`CloneHash string` unbranded in 5 places.** A `type CloneHash string` with `Partial()` method would localize the `hash[:8]` hack in SARIF.
 
 ### Tooling
 
-9. **`encoding/json/v2`** is available in Go 1.26.3 but unused. Migration would get better performance and `nil` handling.
+~~9. **`encoding/json/v2`** is available in Go 1.26.3 but unused. Migration would get better performance and `nil` handling.~~ resolved by alternative — v2 abandoned (Go 1.27 dropped v2 tags); v1 API behind internal/jsonutil (ADR-0024)
 
-10. **No benchmarks in CI.** The suffix tree algorithm should have performance regression tests.
+~~10. **No benchmarks in CI.** The suffix tree algorithm should have performance regression tests.~~ done — alloc benchmark gates + pinned protocol (0.7.1)
 
 ---
 
@@ -175,24 +175,24 @@ Sorted by **impact / effort ratio** (highest first).
 
 | #  | Task                                                                                               | Impact  | Effort | Sprint  |
 | -- | -------------------------------------------------------------------------------------------------- | ------- | ------ | ------- |
-| 1  | Add detection adapter tests (`suffixTreeAdapter`, `hashAdapter` FindDuplOver with real assertions) | 🔴 HIGH | 2h     | Next    |
-| 2  | Add `CloneCategory` + `CloneActionability` MarshalJSON/UnmarshalJSON tests                         | 🟡 MED  | 30m    | Next    |
-| 3  | Run `go mod tidy` to fix go.sum drift                                                              | 🟢 LOW  | 1m     | Next    |
-| 4  | Fix wsl_v5 warnings in `health_test.go` (blank line separation)                                    | 🟢 LOW  | 5m     | Next    |
+~~| 1  | Add detection adapter tests (`suffixTreeAdapter`, `hashAdapter` FindDuplOver with real assertions) | 🔴 HIGH | 2h     | Next    |~~ done — TestSuffixTreeAdapter/TestHashAdapter in detection/coverage_test.go
+~~| 2  | Add `CloneCategory` + `CloneActionability` MarshalJSON/UnmarshalJSON tests                         | 🟡 MED  | 30m    | Next    |~~ done — domain/enums_test.go covers MarshalJSON/UnmarshalJSON
+~~| 3  | Run `go mod tidy` to fix go.sum drift                                                              | 🟢 LOW  | 1m     | Next    |~~ done — tidy idempotence gated by scripts/pre-release-check.sh
+~~| 4  | Fix wsl_v5 warnings in `health_test.go` (blank line separation)                                    | 🟢 LOW  | 5m     | Next    |~~ done — blank-line separation fixed
 | 5  | Thread `context.Context` through `cmd/run_crawl.go` file feeders                                   | 🔴 HIGH | 4h     | Next    |
-| 6  | Migrate `encoding/json` → `encoding/json/v2` in 6 production files                                 | 🟡 MED  | 3h     | Next    |
-| 7  | Add `LineRange` value object (enforce `end >= start` at construction)                              | 🟡 MED  | 4h     | Next    |
-| 8  | Unify `Fragment` type (`[]byte` vs `string`) with branded `SourceFragment`                         | 🟡 MED  | 6h     | Later   |
+~~| 6  | Migrate `encoding/json` → `encoding/json/v2` in 6 production files                                 | 🟡 MED  | 3h     | Next    |~~ resolved by alternative — v2 abandoned; v1 API behind internal/jsonutil + jsonv2gate
+~~| 7  | Add `LineRange` value object (enforce `end >= start` at construction)                              | 🟡 MED  | 4h     | Next    |~~ resolved by alternative — CloneRef carries line fields + Validate/LineCount
+~~| 8  | Unify `Fragment` type (`[]byte` vs `string`) with branded `SourceFragment`                         | 🟡 MED  | 6h     | Later   |~~ resolved by alternative — unified on CloneRef.Fragment string
 | 9  | Add `CloneHash` branded type with `Partial()` method                                               | 🟡 MED  | 2h     | Later   |
-| 10 | Add real assertions to `detection/detection_test.go` (match count, hash, filenames)                | 🔴 HIGH | 3h     | Next    |
-| 11 | Add domain `ProcessedClone.Validate()` roundtrip tests                                             | 🟡 MED  | 1h     | Next    |
-| 12 | Consolidate 5 Clone types into `CloneLocation` + format-specific extensions                        | 🔴 HIGH | 8h     | Later   |
-| 13 | Extract `NodeReader` interface to decouple printer from `syntax.Node`                              | 🟡 MED  | 6h     | Later   |
-| 14 | Split `printer/` into sub-packages (stats, html, analyze)                                          | 🟡 MED  | 8h     | Later   |
-| 15 | Rename `…Data` view models to `…View` in printer (requires templ regen)                            | 🟢 LOW  | 3h     | Later   |
+~~| 10 | Add real assertions to `detection/detection_test.go` (match count, hash, filenames)                | 🔴 HIGH | 3h     | Next    |~~ done — adapter tests assert real duplicates
+~~| 11 | Add domain `ProcessedClone.Validate()` roundtrip tests                                             | 🟡 MED  | 1h     | Next    |~~ done — domain_test.go ProcessedClone.Validate cases
+~~| 12 | Consolidate 5 Clone types into `CloneLocation` + format-specific extensions                        | 🔴 HIGH | 8h     | Later   |~~ resolved by alternative — CloneRef embedded in all clone types (ADR-0005)
+~~| 13 | Extract `NodeReader` interface to decouple printer from `syntax.Node`                              | 🟡 MED  | 6h     | Later   |~~ resolved by alternative — CloneNode serial DTO decouples actionability (ADR-0006)
+~~| 14 | Split `printer/` into sub-packages (stats, html, analyze)                                          | 🟡 MED  | 8h     | Later   |~~ done — printer subpackages extracted; full split deferred
+~~| 15 | Rename `…Data` view models to `…View` in printer (requires templ regen)                            | 🟢 LOW  | 3h     | Later   |~~ done — HTML view models in printer/html_views.go
 | 16 | Add `GeneratorFilter` bitmask to replace 6 `Include*` bools in config                              | 🟡 MED  | 4h     | Later   |
-| 17 | Add benchmarks for suffix tree construction + search                                               | 🟡 MED  | 3h     | Later   |
-| 18 | Add CI performance regression detection                                                            | 🟢 LOW  | 4h     | Later   |
+~~| 17 | Add benchmarks for suffix tree construction + search                                               | 🟡 MED  | 3h     | Later   |~~ done — suffixtree benchmarks incl. BenchmarkMemoryUsage with alloc budget
+~~| 18 | Add CI performance regression detection                                                            | 🟢 LOW  | 4h     | Later   |~~ done — alloc budget gates + pinned protocol (0.7.1)
 | 19 | Wire `examples/` package or delete it (currently orphaned)                                         | 🟢 LOW  | 1h     | Next    |
 | 20 | Add `domain` coverage to reach 75%+ (currently 66.2%)                                              | 🟡 MED  | 3h     | Next    |
 | 21 | Add `detection` coverage to reach 75%+ (currently 61.8%)                                           | 🟡 MED  | 4h     | Next    |

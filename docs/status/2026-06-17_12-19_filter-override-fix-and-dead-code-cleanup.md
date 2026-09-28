@@ -102,21 +102,21 @@ None. All changes compile, all 22 packages pass tests, no regressions introduced
 
 ## e) WHAT WE SHOULD IMPROVE
 
-1. **Consolidate Clone DTOs** — `domain.ProcessedCloneGroup`, `printer.CloneGroup`, `pkg/artdupl.Clone` should be unified into a single canonical type with format-specific views.
+~~1. **Consolidate Clone DTOs** — `domain.ProcessedCloneGroup`, `printer.CloneGroup`, `pkg/artdupl.Clone` should be unified into a single canonical type with format-specific views.~~ resolved by alternative — CloneRef embedded in all clone types (ADR-0005)
 
 2. **Unify position types** — Extract a `Position` or `LineNumber` type in `pkg/position` and use it consistently across `syntax.Node` (`int32`), `domain` (`uint16`), and `printer` (`int`).
 
-3. **Thread content through pipeline** — Pass `chan FileContent` instead of `chan string` through the crawl pipeline to eliminate redundant disk reads (currently up to 4x per file).
+~~3. **Thread content through pipeline** — Pass `chan FileContent` instead of `chan string` through the crawl pipeline to eliminate redundant disk reads (currently up to 4x per file).~~ resolved by alternative — content reads injected via printer.ReadFile func type
 
 4. **`DetectionMethods` as set** — Change from `[]DetectionMethod` wrapper to `map[DetectionMethod]struct{}` for O(1) lookup.
 
-5. **Push content-only detection upstream** — The `allowsContent` function in `cmd/util.go` uses hardcoded markers (`sqlcMarker`, `templMarker`, `protobufMarker`) because gogenfilter's `Is*Generated` functions are filename-gated for SQLC/templ/protobuf. Consider contributing content-only variants to gogenfilter.
+~~5. **Push content-only detection upstream** — The `allowsContent` function in `cmd/util.go` uses hardcoded markers (`sqlcMarker`, `templMarker`, `protobufMarker`) because gogenfilter's `Is*Generated` functions are filename-gated for SQLC/templ/protobuf. Consider contributing content-only variants to gogenfilter.~~ done — gogenfilter v3.4.0 content-only detection; workaround removed (CHANGELOG)
 
-6. **Consolidate config and SDK detection method enums** — Two parallel enum systems (`config.DetectionMethod` and `pkg/artdupl.DetectionMethod`) with conversion at the SDK boundary.
+~~6. **Consolidate config and SDK detection method enums** — Two parallel enum systems (`config.DetectionMethod` and `pkg/artdupl.DetectionMethod`) with conversion at the SDK boundary.~~ won't implement — SDK type independence is a documented design goal
 
 7. **Simplify `executeAnalysis` return type** — Returns `(chan syntax.Match, job.ParseStats, *FilterStats, error)`. Consider a callback-based API or a result struct.
 
-8. **Audit `printer/html.go`** — 1484 lines, may have residual Finding references. Noted in AGENTS.md as overweight.
+~~8. **Audit `printer/html.go`** — 1484 lines, may have residual Finding references. Noted in AGENTS.md as overweight.~~ done — zero Finding references in printer/html.go and report.templ
 
 ---
 
@@ -124,17 +124,17 @@ None. All changes compile, all 22 packages pass tests, no regressions introduced
 
 ### High Impact / Low Effort (Quick Wins)
 
-1. Audit `printer/html.go` for residual Finding references (1484 lines)
+~~1. Audit `printer/html.go` for residual Finding references (1484 lines)~~ done — zero Finding references remain
 2. Remove `TestDetectionMethods` hardcoded count assertion (`len(methods) == 2`) — fragile
-3. Run `go vet ./...` and fix shadow/unreachable warnings
-4. Run `gofumpt` + `goimports` on all files across the repo
+~~3. Run `go vet ./...` and fix shadow/unreachable warnings~~ done — go vet zero warnings (06-20)
+~~4. Run `gofumpt` + `goimports` on all files across the repo~~ done — gofumpt/goimports clean (06-17)
 
 ### High Impact / Medium Effort
 
 5. Unify position types: `syntax.Node.Pos` (`int32`), `domain.LineNumber` (`uint16`), `LineRangeMixin.StartLine` (`int`)
 6. Fix `duplications-checker` BuildFlow failure (1 clone group >30 tokens — pre-existing, may be inherent)
-7. Add `jscpd` timeout/skip config for this repo (OOM on large repos)
-8. Consolidate `domain.ProcessedClone`, `printer.CloneGroup`, `pkg/artdupl.Clone` into single DTO
+~~7. Add `jscpd` timeout/skip config for this repo (OOM on large repos)~~ resolved by alternative — jscpd step removed from BuildFlow entirely
+~~8. Consolidate `domain.ProcessedClone`, `printer.CloneGroup`, `pkg/artdupl.Clone` into single DTO~~ resolved by alternative — CloneRef embedded in all clone types (ADR-0005)
 9. Refactor `DetectionMethods` from slice to set type (`map[DetectionMethod]struct{}`)
 10. Simplify `Printer` interface — evaluate if `StatsPrinter` extension can be a method on `Printer`
 
@@ -143,22 +143,22 @@ None. All changes compile, all 22 packages pass tests, no regressions introduced
 11. Thread content through pipeline (`chan FileContent` instead of `chan string`) — eliminate 4x disk reads
 12. Modularize into sub-modules (`go-modularize` skill) — split printer, syntax, suffixtree
 13. Extract `Position` type in `pkg/position` and use consistently across all packages
-14. Consolidate `config` and `pkg/artdupl` detection method enums
+~~14. Consolidate `config` and `pkg/artdupl` detection method enums~~ won't implement — SDK type independence is a documented design goal
 15. Remove `nolint:funlen` annotations by extracting smaller functions in `cmd/run_*.go`
 
 ### Medium Impact / Low Effort
 
 16. Standardize test helper naming (`createTestNode` vs `setupXxx` vs `mustXxx`)
 17. Add `//go:build` integration test tags for slower BDD tests
-18. Update `SDK_DESIGN.md` if it references `Finding` or `PrintFindings`
+~~18. Update `SDK_DESIGN.md` if it references `Finding` or `PrintFindings`~~ done — SDK_DESIGN.md rewritten; zero Finding references remain
 19. Introduce `buildflow` allowlist for `duplications-checker` (art-dupl has legitimate structural duplication)
 20. Add `--method` flag simplification (only 2 valid methods now)
 
 ### Medium Impact / Medium Effort
 
-21. Contribute content-only `Is*Generated` variants to gogenfilter (eliminates hardcoded markers in art-dupl)
+~~21. Contribute content-only `Is*Generated` variants to gogenfilter (eliminates hardcoded markers in art-dupl)~~ done — gogenfilter v3.4.0 content-only detection; workaround removed
 22. Add `StreamResult` error propagation at `executeAnalysis` boundaries instead of multi-return tuples
-23. Split `printer/actionability.go` (623L) into pattern-specific sub-files
+~~23. Split `printer/actionability.go` (623L) into pattern-specific sub-files~~ done — 624L actionability.go split into 4 files (06-20)
 24. Introduce proper error wrapping at `executeAnalysis` boundaries
 25. Add benchmark tests for the filter override path to verify no perf regression
 
