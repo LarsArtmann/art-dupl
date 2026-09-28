@@ -18,6 +18,12 @@ Key forms:
   any:substring  any line containing <substring> (use sparingly — last resort)
   - [ ] checkbox lines match by literal substring of the checkbox text
 
+AMBIGUITY RULE: keys are first-unstruck-match-wins. If a file has MULTIPLE
+numbered lists (lists restarting at 1), a bare `1` hits the FIRST unstruck
+"1." line — always disambiguate with `1@<distinct substring>`. Already-struck
+lines are doubly protected: `~~1. ...~~` wrapping does not match the number
+patterns, and any line containing ~~ is skipped outright.
+
 Workflow: ALWAYS dry-run a new file shape first — copy the file to /tmp, run
 the spec against the copy, inspect, then run against the real file. After a
 sweep, verify with:
