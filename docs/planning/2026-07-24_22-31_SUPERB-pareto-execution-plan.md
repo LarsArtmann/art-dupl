@@ -85,21 +85,21 @@ Sorted by: Impact (descending) > Effort (ascending) > Customer Value (descending
 | M23 | Deprecation warning for `--semantic`           | UX           | Low      | 15min  | Low            | -          |
 | M24 | SDK `Options.TypeAware` field                  | SDK          | Medium   | 60min  | Medium         | -          |
 | M25 | "unknown" category to AST type fallback        | UX           | Medium   | 45min  | Medium         | -          |
-| M26 | YAML config file support                       | Feature      | Medium   | 90min  | Medium         | -          |
-| M27 | `--diff-report <baseline>` mode                | Feature      | Medium   | 90min  | Medium         | -          |
-| M28 | `--explain` flag                               | Feature      | Medium   | 60min  | Medium         | -          |
-| M29 | HTML report improvements                       | Feature      | Low      | 60min  | Low            | -          |
-| M30 | `--recommend-threshold`                        | Feature      | Low      | 45min  | Low            | -          |
+~~| M26 | YAML config file support                       | Feature      | Medium   | 90min  | Medium         | -          |~~ done — YAML config shipped (config/config_yaml_test.go)
+~~| M27 | `--diff-report <baseline>` mode                | Feature      | Medium   | 90min  | Medium         | -          |~~ done — --diff-report shipped (CHANGELOG 0.5.0; bdd/diff_report_test.go)
+~~| M28 | `--explain` flag                               | Feature      | Medium   | 60min  | Medium         | -          |~~ done — --explain shipped (CHANGELOG 0.5.0)
+~~| M29 | HTML report improvements                       | Feature      | Low      | 60min  | Low            | -          |~~ done — --html-out + TTY detect + stable anchors
+~~| M30 | `--recommend-threshold`                        | Feature      | Low      | 45min  | Low            | -          |~~ done — --recommend-threshold shipped (CHANGELOG 0.5.0)
 
 **Deferred / Architecturally Constrained (not scheduled):**
 
 | #   | Task                                    | Blocker                                               |
 | --- | --------------------------------------- | ----------------------------------------------------- |
-| D01 | Split `printer/` into sub-packages      | Circular dep: core printer.go references StatsPrinter |
-| D02 | Branded `NodeType int32`                | Touches gob cache format (ADR-0008)                   |
-| D03 | Hide `syntax/golang` behind facade      | Import cycle                                          |
-| D04 | Hybrid slice/map transition storage     | Map already O(1), low value                           |
-| D05 | Templ Phase 3: expression normalization | Low impact at threshold 5                             |
+~~| D01 | Split `printer/` into sub-packages      | Circular dep: core printer.go references StatsPrinter |~~ done — printer split into actionability/, finding/, stats/ subpackages (circular dep gone)
+~~| D02 | Branded `NodeType int32`                | Touches gob cache format (ADR-0008)                   |~~ parked — TODO_LIST parked tier (breaking-change windows only; ADR-0008 gob cache)
+~~| D03 | Hide `syntax/golang` behind facade      | Import cycle                                          |~~ parked — TODO_LIST "Architecturally constrained (DEFERRED)" (import cycle; breaking-change windows only)
+~~| D04 | Hybrid slice/map transition storage     | Map already O(1), low value                           |~~ resolved by alternative — ADR-0001 kept map-based transition lookup (map already O(1))
+~~| D05 | Templ Phase 3: expression normalization | Low impact at threshold 5                             |~~ done — templ expression normalization shipped (syntax/templ/normalize.go)
 
 ---
 

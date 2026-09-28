@@ -35,7 +35,7 @@
 1. **#14 fleet audit (`encoding/json/v2` on Go 1.27)** — art-dupl's in-repo slice documented (~30 files, tolerated-by-convention, migrate Duration-bearing ones); **no other LarsArtmann repo checked**.
 2. **#32 erraudit workflow** — single flagged site migrated; the skill's full `erraudit fix/lint` pass (dry-run → write → CI gate) over the repo and fleet NOT run.
 3. **Banned-linter skip: config-verified, not execution-verified in a real full pipeline** — dry-run lists the skip; `buildflow format` (the run that re-added before) has not been re-run since the skip landed. "Closed" in CHANGELOG is provisional until one full run stays clean.
-4. **#35 VERIFY pass over 2026-08 reports** — 5 of 16 files genuinely examined (grep-audited, 1 inline annotation); 11 untouched. Justified by the "so what" test, but it is a sample, not coverage.
+~~4. **#35 VERIFY pass over 2026-08 reports** — 5 of 16 files genuinely examined (grep-audited, 1 inline annotation); 11 untouched. Justified by the "so what" test, but it is a sample, not coverage.~~ resolved by alternative — the 2026-09-28 audit inventoried all ~250 2026-0* files
 5. **Auto-tag fix untestable locally** — `workflow_dispatch` behavior verified by inspection only; the remote-tag guard logic mirrors the (locally verified) pre-release-script pattern.
 6. **pma dotfile blind spot** — `.go-arch-lint.yml` was never auto-committed (had to stash to verify the gate); documented as a TODO item, root cause (pma config) untouched.
 7. **Final flake-check gap (theoretical)** — full `nix flake check` verdict predates the last two commits (`.go-arch-lint.yml`, jq fix); only the fast checks were re-run on the final tree. Inputs to the heavy checks (race/test/alloc-gate) did not change, so the gap is nominal.
@@ -80,7 +80,7 @@
 5. `erraudit fix ./... --type-aware` over art-dupl (skill Step 1–2), then review remaining `errors.Is` advisories per the decision tree.
 6. Migrate the ~5 production files still importing `encoding/json/v2`/`jsontext` (baseline, pkg/enum, config_migrate, enum_helpers, pkg/artdupl/types) to v1 or document why each is safe.
 7. Migrate the ~25 test files importing v2 → v1 (mechanical; prevents the next Duration-class surprise).
-8. Add a repo lint/test guard that runs `go test -count=1` (CI already does fresh runs; make the local convention a buildflow step or justkill the cached-ok trap in docs).
+~~8. Add a repo lint/test guard that runs `go test -count=1` (CI already does fresh runs; make the local convention a buildflow step or justkill the cached-ok trap in docs).~~ done — AGENTS mandates go test -count=1 re-verify after toolchain churn (docs route)
 9. gogenfilter sweep: go-filewatcher first (suspected stale behavior assumption), then Cyberdom, overview, branching-flow, auto-deduplicate, erraudit, project-discovery-daemon, BuildFlow itself.
 10. #20 go-paperless tag + release (needs version decision — see questions).
 11. #18 branch protection + failure notifications (owner action; prepare the exact required-checks list to make it a 5-minute task).
@@ -92,12 +92,12 @@
 17. Run `erraudit lint ./... --type-aware` in CI as an opt-in gate (or record the decision NOT to, per fleet convention).
 18. Add `.github/workflows` lint (actionlint) — 9 hand-edited workflow files, zero local validation.
 19. SARIF committed integration test (from the 22:40 report P0 item 1): run the CLI with `--sarif`, pipe through `FindingsFromSARIF`, assert GroupIDs restore.
-20. go-finding adoption ADR (status item 23 still open; the 22:40 report flags it) — record the library-only-surface decision.
+~~20. go-finding adoption ADR (status item 23 still open; the 22:40 report flags it) — record the library-only-surface decision.~~ resolved by alternative — AGENTS verdict + ADR-0025
 21. Link the go-finding evaluation doc into this repo (status item 24; readers hit a dead end today).
 22. `jsonutil`: golden-file property test — assert v1-API output is byte-identical to recorded v2-era outputs for the real wire payloads (SARIF, JSON report, config, baseline) — protects the "byte-compatible" CHANGELOG claim forever.
 23. Duration round-trip property test at the config boundary (any struct field adding `time.Duration` in the future must not reintroduce the v2 refusal).
 24. `t.Setenv` sweep — same intent-completeness gap as the `t.Chdir` sweep (tests mutating process env with manual save/restore).
-25. `sortedStageNames` (gopls unusedfunc, `cmd/timing.go:144`) — delete or wire; it's the only project diagnostic open.
+~~25. `sortedStageNames` (gopls unusedfunc, `cmd/timing.go:144`) — delete or wire; it's the only project diagnostic open.~~ done — deleted from cmd/timing.go (2026-09-28 audit; zero callers)
 26. Make `scripts/self-scan.sh` emit machine-readable output (`--json`) so the ledger can be diffed mechanically between months.
 27. Ledger tooling: `scripts/ledger-diff.sh` — diff this month's shown groups vs `docs/SELF_CLEAN_LEDGER.md` entries to auto-surface NEW groups (kills re-litigation).
 28. Pre-release script: add `--dry-run` mode (checks only, no test rerun) for quick pre-flight during release prep.
@@ -110,8 +110,8 @@
 35. Fleet audit #15 kickoff: grep all repos for `filepath.Separator` matching + `strings.Split(_, ":")` path parsing; art-dupl is clean (slash-normalization invariant + tests) — export the pattern as the fix template.
 36. `nix flake check` runtime: the full check takes minutes; split `alloc-gate`/`bench` into a nightly check if PR latency matters (measure first).
 37. Benchmark re-baseline: `docs/benchmarks/` baselines predate the jsonutil v1 rewrite — re-run the JSON-output benchmarks if they exist; otherwise skip.
-38. ADR-0025: go-finding adoption decision (formalizes item 21 above).
-39. CHANGELOG: add the missing gogenfilter v3.6.1 entry upstream if the convention exists (carried TODO #21 from the 09-19 report — still open).
+~~38. ADR-0025: go-finding adoption decision (formalizes item 21 above).~~ done — docs/adr/0025-sdk-findings-classification-free.md
+~~39. CHANGELOG: add the missing gogenfilter v3.6.1 entry upstream if the convention exists (carried TODO #21 from the 09-19 report — still open).~~ done — pushed to gogenfilter 2026-09-19; TODO_LIST records it
 40. FEATURES.md: decide whether dev-tooling (scripts) belongs in the inventory; currently undocumented either way.
 41. Review `.golangci.yml` `nestif`/`tagalign` configs after a month — confirm they stay at 0 findings (they're free until they're not).
 42. `docs/SELF_CLEAN_LEDGER.md`: backfill the 2026-08-16 sweep's per-group table (currently summarized, the detail lives in status reports).
@@ -122,7 +122,7 @@
 47. Verify `website/` builds after the templ regeneration (pnpm/esbuild approvals were a past incident; not touched this session).
 48. Run gitleaks + codespell on-demand (`buildflow -s gitleaks -s codespell`) — never run in pipeline modes; due diligence before the next release.
 49. Write the release checklist INTO the go-release skill's learnings (tag collision, CI-green gate, toolchain pinning — carried TODO #36 from 09-19, still open).
-50. Close the loop on this report: docs-health HARVEST of section (f) into TODO_LIST/ROADMAP (items 1–12 bounded → TODO_LIST; the rest → ROADMAP).
+~~50. Close the loop on this report: docs-health HARVEST of section (f) into TODO_LIST/ROADMAP (items 1–12 bounded → TODO_LIST; the rest → ROADMAP).~~ done — TODO_LIST harvest cites it
 
 ## g) Questions I cannot figure out myself
 

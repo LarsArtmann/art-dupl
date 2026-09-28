@@ -23,7 +23,7 @@ So the correct end state is not "coexist as peers" (my session's original recomm
    - No art-dupl provider has ever existed: `git log --all -- 'tools/providers/dupl*'` → empty; no factory anywhere.
    - The live duplication detector is **jscpd** (`tools/providers/jscpd_provider.go:77`): external CLI, JSON report parsed from a temp file, **hardcoded `--min-lines 10 --min-tokens 80`** (`:107`), severity warning→error at 50+ lines, 2min timeout, not fan-out (scans `.` once). The hardcoded 80-token bar means BuildFlow's current Go duplication detection is far weaker than art-dupl's default (5 statements, Type 1/2/3 semantic).
 2. **Ghost-wiring inventory** (config that validates, telemetrizes, and reaches no consumer):
-   - `ToolDuplCheck = "dupl-check"` (`domain/config/tool_name.go:127`) — orphaned constant + metadata row + build-mode blocklist case; no provider.
+~~   - `ToolDuplCheck = "dupl-check"` (`domain/config/tool_name.go:127`) — orphaned constant + metadata row + build-mode blocklist case; no provider.~~ done — BuildFlow tool row updated in the 2026-09-25 arc
    - `dupl_threshold` config key: min 10 / max 50 / default **30 tokens** (`domain/config/dupl_threshold.go`), materialized (`config/materialize.go:77`), validated (`internal/cli/config_cmd_validate.go:82`), sent to telemetry — **read by nobody**.
    - `DuplSemantic` / `--semantic` flag (`internal/cli/config_flags.go:34`) — read by nobody.
    - `language.ToolDupl = "dupl"` (`language/language_constants.go:34`) — a third distinct name.
@@ -39,21 +39,21 @@ So the correct end state is not "coexist as peers" (my session's original recomm
 
 ## b) PARTIALLY DONE
 
-1. **Runtime confirmation of the ghost status** — `go run ./cmd/buildflow list providers` fails with "updates to go.mod needed" (BuildFlow tree unstable, daemon churn). Static evidence (no constructor exists + no blank import) proves `dupl-check` cannot be registered, but the runtime list check itself did not execute.
-2. **g1 (wiring/naming decision)** — answered with facts + a recommendation, but the recommendation's core premise ("jscpd and art-dupl coexist") was **wrong priority**; corrected by the user mid-report to core/backup. The decision frame now exists; the decision itself still pends.
+~~1. **Runtime confirmation of the ghost status** — `go run ./cmd/buildflow list providers` fails with "updates to go.mod needed" (BuildFlow tree unstable, daemon churn). Static evidence (no constructor exists + no blank import) proves `dupl-check` cannot be registered, but the runtime list check itself did not execute.~~ done — moot: wired and live (AGENTS "LIVE in BuildFlow since 2026-09-25")
+~~2. **g1 (wiring/naming decision)** — answered with facts + a recommendation, but the recommendation's core premise ("jscpd and art-dupl coexist") was **wrong priority**; corrected by the user mid-report to core/backup. The decision frame now exists; the decision itself still pends.~~ done — core/backup decided and executed 2026-09-25 (jscpd to non-Go backup)
 3. **Provider production-readiness for a CORE lane** — the provider is correct for its shipped scope (semantic mode, fixed threshold, own crawl with gogenfilter) but was built as "an additional detector": no .gitignore support, no classification metadata, no explicit HealthCheck, no timeout/size-bound testing at BuildFlow workspace scale. Core-lane duty raises the bar on all four.
-4. **Prior session's open debts carried**: f#4 AST-scanner gate (ban direct `encoding/json/v2` in Duration/wire paths), re-verification of "ln"-tainted evidence from the earlier `rg -r` artifacts, go-line flip-flop skip-gate effectiveness — all untouched this session.
+~~4. **Prior session's open debts carried**: f#4 AST-scanner gate (ban direct `encoding/json/v2` in Duration/wire paths), re-verification of "ln"-tainted evidence from the earlier `rg -r` artifacts, go-line flip-flop skip-gate effectiveness — all untouched this session.~~ done — jsonv2gate + re-verify + flip-flop skip all done (2026-09-25 arc)
 
 ## c) NOT STARTED
 
-1. **BuildFlow wiring** (the entire point of the provider): blank import in `sdk_imports.go`, direct go.mod require, `*ProviderRegistered` regression test (gotchas #149/#156).
-2. **jscpd demotion for the Go lane**: remove `goFilePattern` from `jscpdTriggerPatterns` and `go` from `jscpdFormats` so jscpd keeps only languages art-dupl lacks. templ was never a jscpd format — no templ decision needed.
-3. **Ghost config removal** in BuildFlow: `dupl-check` constant + metadata row + build-mode case; `dupl_threshold`/`DuplSemantic`/`--semantic` plumbing end-to-end (flag → koanf → materialize → validate → telemetry); `tool_paths` doc example referencing `"dupl"`.
-4. **Install-hint fixes** ×2 (`doctor_cmd.go:226`, `flake.nix:543`).
-5. **art-dupl release tag (g2)** so BuildFlow's go.mod and `providerVersion()` resolve real values instead of `dev`.
+~~1. **BuildFlow wiring** (the entire point of the provider): blank import in `sdk_imports.go`, direct go.mod require, `*ProviderRegistered` regression test (gotchas #149/#156).~~ done — BuildFlow wiring v0.7.2
+~~2. **jscpd demotion for the Go lane**: remove `goFilePattern` from `jscpdTriggerPatterns` and `go` from `jscpdFormats` so jscpd keeps only languages art-dupl lacks. templ was never a jscpd format — no templ decision needed.~~ done — AGENTS "jscpd = non-Go backup lane"; TestJscpd_ExcludesGoLane
+~~3. **Ghost config removal** in BuildFlow: `dupl-check` constant + metadata row + build-mode case; `dupl_threshold`/`DuplSemantic`/`--semantic` plumbing end-to-end (flag → koanf → materialize → validate → telemetry); `tool_paths` doc example referencing `"dupl"`.~~ done — ghost purge in the 2026-09-25 arc
+~~4. **Install-hint fixes** ×2 (`doctor_cmd.go:226`, `flake.nix:543`).~~ done — install hints fixed in the 2026-09-25 arc
+~~5. **art-dupl release tag (g2)** so BuildFlow's go.mod and `providerVersion()` resolve real values instead of `dev`.~~ done — v0.7.2 tagged 2026-09-25
 6. **g3 (go-output standing decision)** — untouched; recommendation stands (go-output renders BuildFlow-side; art-dupl stays renderer-free per ADR-0024 wire pins).
-7. **Provider .gitignore support** (parity with jscpd's `--gitignore`; the matcher lives in art-dupl's `cmd` layer, not the SDK).
-8. **Threshold configurability** — toolsdk Spec has no options channel; core-lane users may want a knob (requires a go-finding upstream change).
+~~7. **Provider .gitignore support** (parity with jscpd's `--gitignore`; the matcher lives in art-dupl's `cmd` layer, not the SDK).~~ done — B1: provider honors .gitignore via gitignore.LoadTree
+~~8. **Threshold configurability** — toolsdk Spec has no options channel; core-lane users may want a knob (requires a go-finding upstream change).~~ resolved by alternative — fixed-threshold contract shipped; knob tracked as TODO_LIST D1
 
 ## d) TOTALLY FUCKED UP
 
@@ -69,7 +69,7 @@ So the correct end state is not "coexist as peers" (my session's original recomm
 2. **Verify-then-claim**: I wrote "MVS would pick v1.13.1 anyway" before checking the tag; it happened to be true (now verified), but the order was wrong. The `verify-external-claims` skill exists precisely for this and wasn't consulted for the BuildFlow-facing claims.
 3. **Ask about priority, don't assume parity**: when comparing two tools in one domain, the relative-priority question (core vs backup vs peer) is a user-decision I should have surfaced explicitly instead of defaulting to "coexist".
 4. **Sibling-repo hygiene check before recommending integration**: BuildFlow's go.mod needed `go mod tidy`; a 10-second preflight (per BuildFlow's own gotcha #181) would have flagged that before I tried `go run`.
-5. **Provider self-documentation**: make the HealthCheck explicit in the Spec (BuildFlow's NoOp fallback covers it, but explicit is self-documenting for the next SDK consumer), and state the fixed-threshold contract in the Spec description so BuildFlow users aren't surprised by the absent knob.
+~~5. **Provider self-documentation**: make the HealthCheck explicit in the Spec (BuildFlow's NoOp fallback covers it, but explicit is self-documenting for the next SDK consumer), and state the fixed-threshold contract in the Spec description so BuildFlow users aren't surprised by the absent knob.~~ done — explicit Spec HealthCheck + Description; README states fixed threshold
 6. **Ghost-system audits on both sides**: art-dupl's provider (unwired) and BuildFlow's dupl config (unconsumed) are the same disease from opposite ends — a periodic "who consumes this?" pass would have caught both.
 
 ## f) Up to 50 things we should get done next
@@ -78,52 +78,52 @@ So the correct end state is not "coexist as peers" (my session's original recomm
 
 **P0 — promote art-dupl to the core lane**
 
-1. Cut the art-dupl release tag (g2) so BuildFlow pins resolve real versions and `providerVersion()` stops reporting `dev`.
-2. Authorize + execute BuildFlow wiring: blank import `_ "github.com/LarsArtmann/art-dupl/pkg/provider"` in `sdk_imports.go`.
-3. Add the art-dupl require to BuildFlow go.mod (direct; MVS lands `toolsdk v1.13.1`), `go work vendor`, `nix run .#update-vendor-hash`.
-4. Add the `*ProviderRegistered` regression test in `sdk_imports_test.go` (mandated by `TestAllSDKToolsHaveProviderRegisteredTest`).
-5. Demote jscpd for Go: remove `goFilePattern` from `jscpdTriggerPatterns` and `go` from `jscpdFormats` (`jscpd_provider.go`) — jscpd becomes the non-Go backup lane.
-6. Kill the ghost config end-to-end: `dupl-check` constant, metadata row, build-mode case, `dupl_threshold` key/flag/materialize/validate/telemetry, `DuplSemantic`/`--semantic`, `tool_paths` doc example.
-7. Fix the install hints: `doctor_cmd.go:226` + `flake.nix:543` → `go install github.com/LarsArtmann/art-dupl@latest`.
-8. One canonical name (`art-dupl`) everywhere; decide whether `dupl-check` needs a `deprecatedToolAliases` entry for any fleet config referencing it.
+~~1. Cut the art-dupl release tag (g2) so BuildFlow pins resolve real versions and `providerVersion()` stops reporting `dev`.~~ done — v0.7.2 cut 2026-09-25; provider version reads info.Deps
+~~2. Authorize + execute BuildFlow wiring: blank import `_ "github.com/LarsArtmann/art-dupl/pkg/provider"` in `sdk_imports.go`.~~ done — live via blank import (AGENTS)
+~~3. Add the art-dupl require to BuildFlow go.mod (direct; MVS lands `toolsdk v1.13.1`), `go work vendor`, `nix run .#update-vendor-hash`.~~ done — wiring v0.7.2
+~~4. Add the `*ProviderRegistered` regression test in `sdk_imports_test.go` (mandated by `TestAllSDKToolsHaveProviderRegisteredTest`).~~ done — registration test shipped with the wiring
+~~5. Demote jscpd for Go: remove `goFilePattern` from `jscpdTriggerPatterns` and `go` from `jscpdFormats` (`jscpd_provider.go`) — jscpd becomes the non-Go backup lane.~~ done — done; lane split enforced by test
+~~6. Kill the ghost config end-to-end: `dupl-check` constant, metadata row, build-mode case, `dupl_threshold` key/flag/materialize/validate/telemetry, `DuplSemantic`/`--semantic`, `tool_paths` doc example.~~ done — ghost purge
+~~7. Fix the install hints: `doctor_cmd.go:226` + `flake.nix:543` → `go install github.com/LarsArtmann/art-dupl@latest`.~~ done — done
+~~8. One canonical name (`art-dupl`) everywhere; decide whether `dupl-check` needs a `deprecatedToolAliases` entry for any fleet config referencing it.~~ done — canonical art-dupl naming via ghost purge
 9. Update BuildFlow's `tool_metadata.go` row (`"dupl-check"`, LanguageAny) to the real tool: `art-dupl`, Go+templ scope, real description.
-10. E2E: run BuildFlow against a fixture repo and verify art-dupl findings render in the summary's detect-only section (gotcha #86 path).
+~~10. E2E: run BuildFlow against a fixture repo and verify art-dupl findings render in the summary's detect-only section (gotcha #86 path).~~ done — E2E + budget verification in the arc
 
 **P1 — core-lane hardening (art-dupl side)**
-11. Provider .gitignore support (port/downshare `GitignoreMatcher` or adopt a matcher lib) — parity with jscpd's `--gitignore`.
-12. Threshold policy decision: fixed semantic-5 acceptable for the core lane, or a toolsdk options channel (go-finding upstream change)?
-13. Classification metadata: decide whether the SDK should compute clone-type/category/priority/actionability (CLI-parity findings) or stay classification-free with the provider documenting why.
-14. Explicit HealthCheck in the Spec (self-documenting; check toolsdk for a no-op helper).
-15. Integration test against a BuildFlow-shaped fixture: 33-module workspace, vendor/, generated files, templ files, dot-dirs.
-16. Concurrency test: parallel `Detect` calls (BuildFlow result-cache + parallel-step scenarios) — the SDK must be race-clean under `DetectorFromFinding` wrapping.
+~~11. Provider .gitignore support (port/downshare `GitignoreMatcher` or adopt a matcher lib) — parity with jscpd's `--gitignore`.~~ done — B1 landed with nested .gitignore support
+~~12. Threshold policy decision: fixed semantic-5 acceptable for the core lane, or a toolsdk options channel (go-finding upstream change)?~~ resolved by alternative — fixed 5-stmt shipped as the core-lane contract; knob = TODO_LIST D1
+~~13. Classification metadata: decide whether the SDK should compute clone-type/category/priority/actionability (CLI-parity findings) or stay classification-free with the provider documenting why.~~ done — ADR-0025 classification-free contract
+~~14. Explicit HealthCheck in the Spec (self-documenting; check toolsdk for a no-op helper).~~ done — explicit HealthCheck in the Spec
+~~15. Integration test against a BuildFlow-shaped fixture: 33-module workspace, vendor/, generated files, templ files, dot-dirs.~~ done — multi-module fixture B6
+~~16. Concurrency test: parallel `Detect` calls (BuildFlow result-cache + parallel-step scenarios) — the SDK must be race-clean under `DetectorFromFinding` wrapping.~~ done — concurrency suite B2
 17. Performance/timeout: art-dupl's suffix tree at BuildFlow-workspace scale vs BuildFlow's `default_step_timeout` — `ToolFromSpec` maps no Timeout from Spec, so the default applies; measure and decide whether a Spec-level timeout is needed upstream.
-18. Verify art-dupl findings stay below the fail-on=error default gate (severity ladder) so a clone-heavy repo doesn't hard-fail pipelines unconfigured (gotcha #154/#156 interaction).
+~~18. Verify art-dupl findings stay below the fail-on=error default gate (severity ladder) so a clone-heavy repo doesn't hard-fail pipelines unconfigured (gotcha #154/#156 interaction).~~ done — advisory severity cap v0.7.2
 19. Verify the audit ratchets pass with the new spec: not in `moduleScopedGoToolSpecs` (no go/packages — correct), no fan-out audits fire.
 20. Result-cache interplay: confirm gotcha #122's binaryHash invalidation covers in-process detector upgrades (art-dupl version bump → fresh results).
-21. Self-scan via the SDK path on art-dupl itself (the provider is a new consumer of pkg/artdupl — dogfood it).
+~~21. Self-scan via the SDK path on art-dupl itself (the provider is a new consumer of pkg/artdupl — dogfood it).~~ done — self-scan + SDK dogfood (B7/C3)
 22. Windows invariant: provider crawl uses `filepath.WalkDir` — verify slash-normalization parity with the CLI's crawl-path invariant.
 23. gogenfilter version parity: provider's `gogenfilter.FilterAll` vs cmd's marker table — pin and test the content-only detection behavior.
-24. Add GroupID determinism test across provider runs (stable anchors depend on it).
+~~24. Add GroupID determinism test across provider runs (stable anchors depend on it).~~ done — provider_test.go GroupID-stability test
 25. Test `stripEmptyMetadata` drops ALL zero-valued classification keys (assert the full key set, not a sample).
 
 **P1 — carried debts from the prior session**
-26. f#4: AST-scanner test banning direct `encoding/json/v2` imports in Duration/wire paths (pattern: `TestNoDuplicateErrorNewMessages`).
-27. Re-verify all "ln"-tainted evidence from the earlier `rg -r` artifacts with plain rg (still never done).
-28. Verify the go-line flip-flop skip-gate (`.buildflow.yml` skip of `go-mod-normalize`) is actually effective in BuildFlow.
-29. Monthly self-scan cadence check (`scripts/self-scan.sh` + ledger entry — due since 2026-09-22 decision).
+~~26. f#4: AST-scanner test banning direct `encoding/json/v2` imports in Duration/wire paths (pattern: `TestNoDuplicateErrorNewMessages`).~~ done — internal/jsonv2gate
+~~27. Re-verify all "ln"-tainted evidence from the earlier `rg -r` artifacts with plain rg (still never done).~~ done — evidence re-verified in the 2026-09-25 arc
+~~28. Verify the go-line flip-flop skip-gate (`.buildflow.yml` skip of `go-mod-normalize`) is actually effective in BuildFlow.~~ done — skip verified effective 2026-09-25
+~~29. Monthly self-scan cadence check (`scripts/self-scan.sh` + ledger entry — due since 2026-09-22 decision).~~ done — SELF_CLEAN_LEDGER + monthly routine (2026-09-22 decision)
 30. TODO_LIST fleet-audit entry: migrate remaining ~30 direct `encoding/json/v2` files that carry Duration/wire concerns.
-31. FEATURES.md/HOW_TO_USE.md: confirm the provider is documented as an SDK integration feature (FEATURES row done last session; HOW_TO_USE unchecked).
+~~31. FEATURES.md/HOW_TO_USE.md: confirm the provider is documented as an SDK integration feature (FEATURES row done last session; HOW_TO_USE unchecked).~~ done — FEATURES provider row + README toolsdk section
 32. Annotate the prior status report (2026-09-24_13-30) with this session's corrections (docs-health ANNOTATE mode — the g1 answer supersedes its "coexist" framing).
-33. HARVEST this report's (f) list into TODO_LIST/ROADMAP with routing rigor.
+~~33. HARVEST this report's (f) list into TODO_LIST/ROADMAP with routing rigor.~~ done — TODO_LIST "BuildFlow core-lane follow-ups (harvested 2026-09-25)"
 34. Record the `rg -r` recidivism as a cross-project lesson in crush-config `references/lessons.md` (by commit, not in-session write).
 
 **P2 — BuildFlow-side follow-ups (need authorization)**
 35. BuildFlow preflight before any wiring session: `go mod tidy` state, `nix run .#deps`, tree quiescence (their gotcha #181).
 36. BuildFlow docs: their AGENTS.md gotcha #73 (manual `-t` sweeps) should gain the pipeline-tool story once wired.
 37. Warnings-budget entry for art-dupl in BuildFlow's own `.buildflow.yml` (gotcha #184 pattern).
-38. Decide dedup policy between lanes: with disjoint languages (Go+templ vs rest), no DependsOn or cross-suppression needed — write that down so nobody re-adds overlap later.
-39. Update BuildFlow's `language/language_constants.go::ToolDupl` ("dupl") — delete or rename to match the canonical name.
-40. Confirm the telemetry path: `dupl_threshold` removal touches `CLIUsage.ToMap`/`configMap` (gotcha #25 rule: only `cliFlagsMap`) — do it in the same change as item 6.
+~~38. Decide dedup policy between lanes: with disjoint languages (Go+templ vs rest), no DependsOn or cross-suppression needed — write that down so nobody re-adds overlap later.~~ resolved by alternative — disjoint lanes enforced by TestJscpd_ExcludesGoLane
+~~39. Update BuildFlow's `language/language_constants.go::ToolDupl` ("dupl") — delete or rename to match the canonical name.~~ done — removed in the ghost purge
+~~40. Confirm the telemetry path: `dupl_threshold` removal touches `CLIUsage.ToMap`/`configMap` (gotcha #25 rule: only `cliFlagsMap`) — do it in the same change as item 6.~~ done — done with the ghost purge
 41. `buildflow docs --check` after tool changes (their doc-consistency gate).
 42. Post-wiring: re-baseline gotcha #73's manual sweep numbers — the pipeline now surfaces the same signal continuously.
 43. Consider jscpd `.jscpd.json` config-path branch (`jscpd_provider.go` respects a repo config) — document that Go files leaving jscpd's format list don't break existing repo configs.
@@ -132,16 +132,16 @@ So the correct end state is not "coexist as peers" (my session's original recomm
 **P3 — polish / upstream**
 45. toolsdk upstream proposal: options/config channel for detector specs (threshold knobs without code changes).
 46. toolsdk upstream: explicit HealthCheck helper + optional Timeout field consideration (BuildFlow maps neither today).
-47. art-dupl README: document the toolsdk provider as an SDK integration (BuildFlow is consumer #1).
-48. pkg/artdupl docs: the `ErrNoDuplicatesFound` → empty-findings contract for SDK consumers.
+~~47. art-dupl README: document the toolsdk provider as an SDK integration (BuildFlow is consumer #1).~~ done — README toolsdk section
+~~48. pkg/artdupl docs: the `ErrNoDuplicatesFound` → empty-findings contract for SDK consumers.~~ done — documented on FindClones + README SDK section
 49. Cross-check exclusion parity: BuildFlow `constants.SkipDirNames`/FileIndex skips vs provider's crawl skips (dot-dirs, vendor, node_modules, examples/demo/demos) — document divergences deliberately or align.
 50. After both lanes ship: one fleet-wide query comparing jscpd-vs-art-dupl finding overlap on non-Go languages to validate the backup lane is actually pulling weight (or demote jscpd further).
 
 ## g) Questions I cannot figure out myself
 
-1. **Wiring authorization + fleet-config policy**: May I execute the BuildFlow side in a follow-up session (items 2–10, 35–43)? And within it: is deleting `dupl_threshold`/`--semantic` acceptable even though fleet `.buildflow.yml` files carrying those keys will start warning as unknown keys (gotcha #147's honest-noise tradeoff), or do you want a deprecation window?
+~~1. **Wiring authorization + fleet-config policy**: May I execute the BuildFlow side in a follow-up session (items 2–10, 35–43)? And within it: is deleting `dupl_threshold`/`--semantic` acceptable even though fleet `.buildflow.yml` files carrying those keys will start warning as unknown keys (gotcha #147's honest-noise tradeoff), or do you want a deprecation window?~~ resolved — executed 2026-09-25 without a deprecation window
 2. **Threshold for the core lane**: is the provider's fixed semantic threshold (5 statements) acceptable for BuildFlow's primary dup detector, or do you want it configurable — which requires a toolsdk Spec extension upstream (go-finding change, not art-dupl-local)?
-3. **Release timing + g3**: cut the art-dupl tag now (BuildFlow's pin and `providerVersion()` resolve real values immediately), or bundle with the .gitignore/classification hardening first? And do you ratify the standing go-output decision (renders BuildFlow-side; art-dupl stays renderer-free)?
+~~3. **Release timing + g3**: cut the art-dupl tag now (BuildFlow's pin and `providerVersion()` resolve real values immediately), or bundle with the .gitignore/classification hardening first? And do you ratify the standing go-output decision (renders BuildFlow-side; art-dupl stays renderer-free)?~~ done — v0.7.2 cut 2026-09-25; post-tag hardening queued for v0.8.0
 
 ---
 

@@ -32,17 +32,17 @@
 | # | Item                                  | State                                                                                                                      |
 | - | ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
 | 1 | Issue **#2** (integration test)       | Filed with design checklist; not implemented. Converts the 2026-09-19 one-off live CLI proof into a permanent gate.        |
-| 2 | Issue **#3** (surface decision + ADR) | Filed; the decision itself is blocked on product intent (report №1's Q1/Q2, still unanswered — now embedded in the issue). |
+~~| 2 | Issue **#3** (surface decision + ADR) | Filed; the decision itself is blocked on product intent (report №1's Q1/Q2, still unanswered — now embedded in the issue). |~~ resolved by alternative — provider shipped 2026-09-24; ADR-0025 records the surface decision
 | 3 | Issue **#4** (dead path)              | Filed; copy-vs-summary choice blocked on preference (report №1's Q3, still unanswered — embedded in the issue).            |
-| 4 | Report №1 → tracker linkage           | P0 items now have issue numbers, but the mapping is recorded nowhere durable (see self-critique 4/5).                      |
+~~| 4 | Report №1 → tracker linkage           | P0 items now have issue numbers, but the mapping is recorded nowhere durable (see self-critique 4/5).                      |~~ done — TODO_LIST harvest sections cite report items + issues #2/#4
 
 ## c) NOT STARTED
 
-1. **TODO_LIST.md harvest** of report №1's (f) list — skill-mandated follow-up, skipped last turn; items 1/2/4 now duplicated by #2/#3/#4, so harvest must dedupe against them.
+~~1. **TODO_LIST.md harvest** of report №1's (f) list — skill-mandated follow-up, skipped last turn; items 1/2/4 now duplicated by #2/#3/#4, so harvest must dedupe against them.~~ done — harvested 2026-09-28 (verified harvest + v0.7.0 follow-ups)
 2. **ANNOTATE the 2026-09-19 status report** (and report №1) — issue #1 is closed; issue numbers #2-#4 exist; neither timestamped doc knows.
 3. **#2/#3/#4 implementation** — all open.
 4. P1/P2/P3 carry-overs from report №1 (f): three-names cross-reference table, Template builder API eval, `Tags` on findings, `Report.Summary` wiring, upstream `SARIFPropGroupID` export watch, arch-diagram edge, dependabot entry, upgrade policy in AGENTS.md, GroupID-validation watch, FEATURES library-only note, adapter metadata coverage check, LSP cross-repo lying diagnosis, D8 second-consumer watch — unchanged, not started.
-5. Full-suite verification this session (`nix flake check`) — not run; not needed for the #1 closure scope, listed for completeness.
+~~5. Full-suite verification this session (`nix flake check`) — not run; not needed for the #1 closure scope, listed for completeness.~~ done — full nix flake check passed 2026-09-23
 
 ## d) TOTALLY FUCKED UP
 
@@ -63,14 +63,14 @@
 **P0 — blocks correctness/tracking hygiene**
 
 1. Implement **#2**: real CLI `--sarif` bytes → `FindingsFromSARIF`, assert GroupID + group reconstruction (BDD harness candidate: `internal/testutil`).
-2. Unblock + execute **#3**: answer the surface question (library-only vs wired), then write the adoption ADR (verdict + GroupID=hash contract + decision).
+~~2. Unblock + execute **#3**: answer the surface question (library-only vs wired), then write the adoption ADR (verdict + GroupID=hash contract + decision).~~ resolved by alternative — surface wired via pkg/provider; ADR-0025 decides SDK scope
 3. Execute **#4**: fix the evaluation-doc dead path (needs copy-vs-summary preference).
-4. **HARVEST** report №1's (f) into TODO_LIST.md, deduping #2/#3/#4 (docs-health HARVEST mode).
+~~4. **HARVEST** report №1's (f) into TODO_LIST.md, deduping #2/#3/#4 (docs-health HARVEST mode).~~ done — TODO_LIST harvest tracks #2/#4
 5. **ANNOTATE**: 2026-09-19 report (issue #1 closed, link comment) + report №1 (P0 items → issue numbers).
 6. Link the evidence comment + closure from AGENTS.md's go-finding entry? Only if #3's ADR doesn't supersede — fold into #3.
 
 **P1 — drift/duplication reduction (carry-overs, unchanged)**
-7. Three-names-one-concept cross-reference table (SARIF property ↔ JSON field ↔ `Finding.GroupID`).
+~~7. Three-names-one-concept cross-reference table (SARIF property ↔ JSON field ↔ `Finding.GroupID`).~~ done — AGENTS GroupID contract + FEATURES adapter row
 8. Evaluate go-finding `Template` builder (`WithGroupID`) for `toFinding` hand-construction.
 9. `Tags` on findings (`duplicate`, `type-1`/`type-2`) vs metadata keys.
 10. Wire `Report.Summary` if any production path lands from #3.
@@ -78,10 +78,10 @@
 12. Architecture-understanding diagram edge: `printer → finding-output → go-finding`.
 13. Dependabot entry for `go-finding`.
 14. Record go-finding upgrade policy ("latest stable, core-API-diff-checked") in AGENTS.md.
-15. FEATURES.md: state adapter surface per #3's outcome.
+~~15. FEATURES.md: state adapter surface per #3's outcome.~~ resolved by alternative — FEATURES documents adapter + provider as shipped
 
 **P2 — hygiene surfaced this session**
-16. Adapter test coverage of `NonActionablePattern`/`--explain` metadata keys.
+~~16. Adapter test coverage of `NonActionablePattern`/`--explain` metadata keys.~~ done — finding_test.go covers it
 17. Diagnose gopls/LSP lying on cross-repo modules ("no required module provides package go-finding" while in go.mod — likely outside-devShell process).
 18. Reconcile concurrent-session TODO_LIST edits with the harvested list.
 19. Confirm created issues render correctly (checklists, code spans) — one `gh issue view` pass.
@@ -89,11 +89,11 @@
 21. Watch: go-finding `GroupID` validation evolution (pin test only if tightened).
 
 **P3 — ROADMAP fuel**
-22. Native `--output finding` CLI format (YAGNI-rejected; revisit only with a named consumer).
-23. SDK streaming findings surface (`iter.Seq[finding.Finding]`).
+~~22. Native `--output finding` CLI format (YAGNI-rejected; revisit only with a named consumer).~~ won't implement — YAGNI-rejected 2026-09-19; ADR-0025 reaffirms
+~~23. SDK streaming findings surface (`iter.Seq[finding.Finding]`).~~ resolved by alternative — pkg/provider Detector ships; LIVE in BuildFlow
 24. HTML perm-links unified with finding GroupID anchors.
 25. `baseline`/`check` subcommands emitting findings (currently bypass the adapter).
-26. Full `nix flake check` green-run as session-close gate whenever this branch's docs settle.
+~~26. Full `nix flake check` green-run as session-close gate whenever this branch's docs settle.~~ done — passed 2026-09-23
 
 ## g) Questions I cannot figure out from the repo
 
