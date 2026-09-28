@@ -57,17 +57,17 @@
 
 | Task                       | Commit    | Impact                            |
 | -------------------------- | --------- | --------------------------------- |
-| **T17** Property Tests     | `2dc1781` | 6 suffix-tree invariants verified |
-| **T18** Detection Coverage | `9fecc7f` | 61.8% → **92.7%**                 |
-| **T19** Domain Coverage    | `692c587` | 58.6% → **100%**                  |
-| ~~T20 Benchmarks~~         | Pending   | No regression risk currently      |
+| ~~**T17** Property Tests~~     | ~~`2dc1781`~~ | ~~6 suffix-tree invariants verified~~ |
+| ~~**T18** Detection Coverage~~ | ~~`9fecc7f`~~ | ~~61.8% → **92.7%**~~ |
+| ~~**T19** Domain Coverage~~    | ~~`692c587`~~ | ~~58.6% → **100%**~~ |
+| ~~T20 Benchmarks~~         | ~~Pending~~ done — performance.yml CI gate + docs/benchmarks baselines | ~~No regression risk currently~~ guarded by alloc budgets |
 
 ### Phase 6: Ecosystem (2/4 DONE)
 
 | Task                     | Commit    | Impact                                 |
 | ------------------------ | --------- | -------------------------------------- |
-| ~~**T21** GitHub Actions~~   | `5356d17` | `.github/workflows/art-dupl-check.yml` |
-| ~~**T22** Pre-Commit Hook~~  | `5356d17` | `.pre-commit-hooks.yaml`               |
+| ~~**T21** GitHub Actions~~   | ~~`5356d17`~~ | ~~`.github/workflows/art-dupl-check.yml`~~ |
+| ~~**T22** Pre-Commit Hook~~  | ~~`5356d17`~~ | ~~`.pre-commit-hooks.yaml`~~ |
 | ~~T23 json/v2~~          | ~~Pending~~ done — ADR-0024 shipped in v0.7.0 | ~~Go 1.26 stability TBD~~ superseded: Go 1.27 dropped the v2 tag grammar |
 | ~~T24 Rename Data→View~~ | ~~Pending~~ done — Data→View rename shipped (`b60aca6`) | ~~5 `*Data` types in printer/~~ now 5 `*View` types |
 
