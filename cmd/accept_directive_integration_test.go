@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"bytes"
 	"encoding/json"
 	"os"
 	"path/filepath"
@@ -102,6 +103,11 @@ func TestBaselineRecordBypassesAcceptDirectives(t *testing.T) {
 		t.Fatalf("baseline with accept directives failed: %v\nOutput: %s", err, output)
 	}
 
+	if !strings.Contains(string(output), "Recorded 1 clone group") {
+		t.Errorf("expected 'Recorded 1 clone group' with directives (bypassed), got:\n%s", output)
+	}
+}
+
 // TestDeadDirectiveWarningEndToEnd verifies the stale-directive detector over
 // the real CLI pipeline: a //art-dupl:accept <hash> directive whose hash does
 // not match any current group must produce a stderr warning, and rewriting it
@@ -155,8 +161,10 @@ func TestDeadDirectiveWarningEndToEnd(t *testing.T) {
 			Hash string `json:"hash"`
 		} `json:"clone_groups"`
 	}
-	if err := json.Unmarshal(jsonOutput, &parsed); err != nil {
-		t.Fatalf("unmarshal json output: %v\nOutput: %s", err, jsonOutput)
+	// The combined output carries the stale-directive warning (stderr) after
+	// the JSON document; Decode stops after the first top-level value.
+	if err := json.NewDecoder(bytes.NewReader(jsonOutput)).Decode(&parsed); err != nil {
+		t.Fatalf("decode json output: %v\nOutput: %s", err, jsonOutput)
 	}
 
 	if len(parsed.CloneGroups) == 0 {
@@ -164,8 +172,10 @@ func TestDeadDirectiveWarningEndToEnd(t *testing.T) {
 	}
 
 	liveCode := strings.Replace(dupCode, "deadbeefdeadbeef", parsed.CloneGroups[0].Hash, 1)
-	if err := os.WriteFile(filepath.Join(dir, "one.go"), []byte(liveCode), 0o600); err != nil {
-		t.Fatalf("rewrite directive: %v", err)
+	for _, name := range []string{"one.go", "two.go"} {
+		if err := os.WriteFile(filepath.Join(dir, name), []byte(liveCode), 0o600); err != nil {
+			t.Fatalf("rewrite directive in %s: %v", name, err)
+		}
 	}
 
 	output, err = executeTestCommand(t, []string{binaryName, "-t", "1", "--no-actionability", dir})
