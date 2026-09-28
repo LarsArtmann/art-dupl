@@ -52,7 +52,15 @@ gh release create vX.Y.0 --title "art-dupl vX.Y.0" --generate-notes
 ```
 
 Use `--generate-notes` or `--notes-file <changelog-section>` for full release notes.
-Do NOT use `--notes-from-tag` (too terse).```
+Do NOT use `--notes-from-tag` (too terse).
+```
+
+**Verify the rendered body actually contains the changes** (v0.7.2 shipped with an
+empty `## Changelog` stub and pure install boilerplate — the gap was caught three
+days later). If the body is generic, backfill without clobbering the install
+section: fetch the body (`gh release view vX.Y.Z --json body -q .body`), replace
+the `## Changelog` stub with the CHANGELOG section's content, write back with
+`gh release edit vX.Y.Z --notes-file`.
 
 ## 7. Post-Release
 
