@@ -21,10 +21,10 @@
 
 | Task                          | Commit       | Impact                                                            |
 | ----------------------------- | ------------ | ----------------------------------------------------------------- |
-| **T3** BasicLit Value Hashing | `1e37fd2`    | `return 42` ≠ `return 999` in semantic mode                       |
-| **T4** Non-Commutative Hash   | `d8a90e6`    | FNV multiply-pair replaces XOR; `(A,B)≠(B,A)`                     |
-| **T2** Alpha-Normalization    | `91554e5`    | Per-function symbol table canonicalizes locals → Type 2 detection |
-| **T5** Three-Mode System      | `91554e5`    | `--semantic` (default), `--exact`, `--structural`                 |
+| ~~**T3** BasicLit Value Hashing~~ | ~~`1e37fd2`~~    | ~~`return 42` ≠ `return 999` in semantic mode~~ |
+| ~~**T4** Non-Commutative Hash~~   | ~~`d8a90e6`~~    | ~~FNV multiply-pair replaces XOR; `(A,B)≠(B,A)`~~ |
+| ~~**T2** Alpha-Normalization~~    | ~~`91554e5`~~    | ~~Per-function symbol table canonicalizes locals → Type 2 detection~~ |
+| ~~**T5** Three-Mode System~~      | ~~`91554e5`~~    | ~~`--semantic` (default), `--exact`, `--structural`~~ |
 | ~~T1 Statement Tokenization~~ | ~~**Deferred**~~ done — ADR-0023 nested emission shipped (CacheVersion 4) | ~~High risk; `serial()` still inflates thresholds~~ shipped |
 
 ### Phase 2: Detection Quality (3/3 DONE)
