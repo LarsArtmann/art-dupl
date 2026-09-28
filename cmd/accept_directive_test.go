@@ -1,6 +1,9 @@
 package cmd
 
 import (
+	"bytes"
+	"io"
+	"strings"
 	"testing"
 
 	"github.com/LarsArtmann/art-dupl/domain"
@@ -413,5 +416,105 @@ func bar() {
 
 	if !set.IsAccepted(inline) {
 		t.Error("gofmt-canonical inline directive (code; // art-dupl:accept) must suppress the group")
+	}
+}
+
+func TestAcceptedSetDeadDirectives(t *testing.T) {
+	t.Parallel()
+
+	const (
+		liveHash  = "aaaa1111bbbb2222"
+		staleHash = "cccc3333dddd4444"
+	)
+
+	fileWithDirectives := "dead.go"
+	// Line 5: live hash directive (matches the group hash below).
+	// Line 7: stale hash directive (group hash changed under it).
+	// Line 8: hash-less directive (never dead — accepts whatever is nearby).
+	fileContent := "package example\n" +
+		"\n" +
+		"func foo() {\n" +
+		"\tfmt.Println(\"hello\")\n" +
+		"\t// art-dupl:accept " + liveHash + "\n" +
+		"\tfmt.Println(\"world\")\n" +
+		"\t//art-dupl:accept " + staleHash + "\n" +
+		"\t//art-dupl:accept bare description text\n" +
+		"\tfmt.Println(\"again\")\n" +
+		"}\n"
+
+	readFile := func(name string) ([]byte, error) {
+		if name == fileWithDirectives {
+			return []byte(fileContent), nil
+		}
+
+		return nil, &osPathError{name: name}
+	}
+
+	set := NewAcceptedSet(readFile)
+
+	group := domain.ProcessedCloneGroup{
+		Hash: liveHash,
+		Clones: []domain.ProcessedClone{
+			{Filename: fileWithDirectives, LineStart: 3, LineEnd: 10},
+		},
+	}
+
+	if !set.IsAccepted(group) {
+		t.Fatal("live-hash directive must accept the group")
+	}
+
+	dead := set.DeadDirectives()
+	if len(dead) != 1 {
+		t.Fatalf("DeadDirectives() = %d entries, want 1 (the stale hash): %+v", len(dead), dead)
+	}
+
+	if dead[0].Hash != staleHash || dead[0].Line != 7 || dead[0].Filename != fileWithDirectives {
+		t.Errorf("DeadDirectives()[0] = %+v, want {dead.go 7 %s}", dead[0], staleHash)
+	}
+}
+
+func TestAcceptedSetDeadDirectivesNilSafeAndUnscanned(t *testing.T) {
+	t.Parallel()
+
+	var nilSet *AcceptedSet
+	if dead := nilSet.DeadDirectives(); dead != nil {
+		t.Errorf("nil receiver DeadDirectives() = %v, want nil", dead)
+	}
+
+	empty := NewAcceptedSet(func(string) ([]byte, error) { return nil, nil })
+	if dead := empty.DeadDirectives(); len(dead) != 0 {
+		t.Errorf("unscanned set DeadDirectives() = %v, want empty", dead)
+	}
+
+	var nilWarn *AcceptedSet
+	nilWarn.WarnDeadDirectives(io.Discard) // must not panic
+}
+
+func TestWarnDeadDirectivesOutput(t *testing.T) {
+	t.Parallel()
+
+	set := NewAcceptedSet(func(name string) ([]byte, error) {
+		if name == "stale.go" {
+			return []byte("package a\n\n// art-dupl:accept beefbeefbeefbeef\nfunc f() {}\n"), nil
+		}
+
+		return nil, &osPathError{name: name}
+	})
+
+	group := domain.ProcessedCloneGroup{
+		Hash: "cafechafeunknown",
+		Clones: []domain.ProcessedClone{
+			{Filename: "stale.go", LineStart: 2, LineEnd: 4},
+		},
+	}
+	set.IsAccepted(group)
+
+	var buf bytes.Buffer
+	set.WarnDeadDirectives(&buf)
+
+	out := buf.String()
+	want := "warning: stale //art-dupl:accept beefbeefbeefbeef at stale.go:3 — matched no clone groups this run"
+	if !strings.Contains(out, want) {
+		t.Errorf("warning output %q missing expected text %q", out, want)
 	}
 }

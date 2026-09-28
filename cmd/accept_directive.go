@@ -3,8 +3,11 @@ package cmd
 import (
 	"bufio"
 	"bytes"
+	"fmt"
+	"io"
 	"os"
 	"regexp"
+	"sort"
 	"strings"
 	"sync"
 
@@ -183,4 +186,74 @@ func (a *AcceptedSet) scanFile(filename string) []AcceptedDirective {
 	}
 
 	return directives
+}
+
+// recordMatched marks the directive at (filename, line) as live: it accepted
+// at least one group this run.
+func (a *AcceptedSet) recordMatched(filename string, line int) {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+
+	if a.matched == nil {
+		a.matched = make(map[directiveKey]bool)
+	}
+
+	a.matched[directiveKey{filename: filename, line: line}] = true
+}
+
+// DeadDirectives returns the hash-precision directives seen this run that
+// matched zero groups. Hash-less directives (//art-dupl:accept without a
+// token) never go stale in this sense — they accept whatever sits nearby —
+// so they are never reported. Only directives in files that the run actually
+// consulted (files with at least one evaluated clone group) are visible here;
+// the set scans lazily per group's clone files.
+func (a *AcceptedSet) DeadDirectives() []DeadDirective {
+	if a == nil {
+		return nil
+	}
+
+	a.mu.RLock()
+	defer a.mu.RUnlock()
+
+	dead := make([]DeadDirective, 0)
+
+	for filename, directives := range a.scanned {
+		for _, d := range directives {
+			if d.Hash == "" {
+				continue
+			}
+
+			if a.matched[directiveKey{filename: filename, line: d.Line}] {
+				continue
+			}
+
+			dead = append(dead, DeadDirective{Filename: filename, Line: d.Line, Hash: d.Hash})
+		}
+	}
+
+	sort.Slice(dead, func(i, j int) bool {
+		if dead[i].Filename != dead[j].Filename {
+			return dead[i].Filename < dead[j].Filename
+		}
+
+		return dead[i].Line < dead[j].Line
+	})
+
+	return dead
+}
+
+// WarnDeadDirectives prints one stderr warning per dead directive. Diagnostics,
+// not progress: it prints even under --quiet (same policy as the unmatched
+// include/exclude pattern warnings). Nil-safe on receiver and writer.
+func (a *AcceptedSet) WarnDeadDirectives(stderr io.Writer) {
+	dead := a.DeadDirectives()
+	if len(dead) == 0 || stderr == nil {
+		return
+	}
+
+	for _, d := range dead {
+		fmt.Fprintf(stderr,
+			"warning: stale //art-dupl:accept %s at %s:%d — matched no clone groups this run; remove it or update the hash\n",
+			d.Hash, d.Filename, d.Line)
+	}
 }

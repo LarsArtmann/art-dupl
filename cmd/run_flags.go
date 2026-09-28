@@ -235,6 +235,8 @@ func runStandardAnalysis(
 		)
 	}
 
+	suppression.AcceptDirectives.WarnDeadDirectives(cmd.ErrOrStderr())
+
 	timing.finish(ctx, cmd.ErrOrStderr())
 
 	return nil

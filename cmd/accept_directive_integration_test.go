@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"encoding/json"
+	"os"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -100,7 +102,82 @@ func TestBaselineRecordBypassesAcceptDirectives(t *testing.T) {
 		t.Fatalf("baseline with accept directives failed: %v\nOutput: %s", err, output)
 	}
 
-	if !strings.Contains(string(output), "Recorded 1 clone group") {
-		t.Errorf("expected 'Recorded 1 clone group' with directives (bypassed), got:\n%s", output)
+// TestDeadDirectiveWarningEndToEnd verifies the stale-directive detector over
+// the real CLI pipeline: a //art-dupl:accept <hash> directive whose hash does
+// not match any current group must produce a stderr warning, and rewriting it
+// with the live group hash must silence the warning AND suppress the group.
+func TestDeadDirectiveWarningEndToEnd(t *testing.T) {
+	// executeTestCommand mutates process-global os.Stdout/os.Stderr — serial only.
+	dir := t.TempDir()
+
+	dupCode := "package dup\n\n" +
+		"import \"fmt\"\n\n" +
+		"func fa(x int) int {\n" +
+		"\t// art-dupl:accept deadbeefdeadbeef\n" +
+		"\ta := x + 1\n" +
+		"\tb := a * 2\n" +
+		"\tc := b - 3\n" +
+		"\td := c + 4\n" +
+		"\te := d * 5\n" +
+		"\tf := e - 6\n" +
+		"\treturn f\n" +
+		"}\n"
+
+	for _, name := range []string{"one.go", "two.go"} {
+		if err := os.WriteFile(filepath.Join(dir, name), []byte(dupCode), 0o600); err != nil {
+			t.Fatalf("write %s: %v", name, err)
+		}
+	}
+
+	output, err := executeTestCommand(t, []string{binaryName, "-t", "1", "--no-actionability", dir})
+	if err != nil {
+		t.Fatalf("run with stale directive failed: %v\nOutput: %s", err, output)
+	}
+
+	staleWarning := "warning: stale //art-dupl:accept deadbeefdeadbeef"
+	if !strings.Contains(string(output), staleWarning) {
+		t.Errorf("expected stale-directive warning on stderr, got:\n%s", output)
+	}
+
+	if !strings.Contains(string(output), "one.go") {
+		t.Errorf("stale directive must NOT suppress the group (clones should show), got:\n%s", output)
+	}
+
+	// Recover the live group hash from the JSON channel and rewrite the
+	// directive with it.
+	jsonOutput, err := executeTestCommand(t, []string{binaryName, "-t", "1", "--no-actionability", "--json", dir})
+	if err != nil {
+		t.Fatalf("json run failed: %v\nOutput: %s", err, jsonOutput)
+	}
+
+	var parsed struct {
+		CloneGroups []struct {
+			Hash string `json:"hash"`
+		} `json:"clone_groups"`
+	}
+	if err := json.Unmarshal(jsonOutput, &parsed); err != nil {
+		t.Fatalf("unmarshal json output: %v\nOutput: %s", err, jsonOutput)
+	}
+
+	if len(parsed.CloneGroups) == 0 {
+		t.Fatalf("expected 1 clone group in json output, got:\n%s", jsonOutput)
+	}
+
+	liveCode := strings.Replace(dupCode, "deadbeefdeadbeef", parsed.CloneGroups[0].Hash, 1)
+	if err := os.WriteFile(filepath.Join(dir, "one.go"), []byte(liveCode), 0o600); err != nil {
+		t.Fatalf("rewrite directive: %v", err)
+	}
+
+	output, err = executeTestCommand(t, []string{binaryName, "-t", "1", "--no-actionability", dir})
+	if err != nil {
+		t.Fatalf("run with live directive failed: %v\nOutput: %s", err, output)
+	}
+
+	if strings.Contains(string(output), "warning: stale") {
+		t.Errorf("live directive must not warn, got:\n%s", output)
+	}
+
+	if strings.Contains(string(output), "one.go") {
+		t.Errorf("live directive must suppress the group, got:\n%s", output)
 	}
 }
