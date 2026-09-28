@@ -104,14 +104,14 @@ These are **different tokens**. `<a href...>` only matches other `<a href...>`.
 
 ## Task Breakdown
 
-| Task                                                     | Phase   | Files                                    | Effort |
-| -------------------------------------------------------- | ------- | ---------------------------------------- | ------ |
-~~| Extract `encodeSemanticType` to shared `syntax/` package | Prep    | `syntax/semantic.go`                     | Small  |~~ done — EncodeSemanticType shared helper (Phase 1 shipped, commit 268e3bb)
-~~| Add `semantic bool` to templ transformer                 | 1       | `syntax/templ/parser.go`                 | Small  |~~ done — transformer carries the mode (Phase 1)
-~~| Encode element tag names                                 | 1       | `syntax/templ/transform_node.go`         | Small  |~~ done — element tag names encoded (Phase 1)
-~~| Encode attribute names                                   | 1       | `syntax/templ/transform_node.go`         | Small  |~~ done — attribute names encoded (Phase 1)
-~~| Wire detection mode through templ parse path             | 1       | `job/parse.go`, `syntax/templ/parser.go` | Medium |~~ done — mode threaded through the templ parse path
-~~| Mark element children as Statement=true                  | 2       | `syntax/templ/transform_node.go`         | Small  |~~ done — Phase 2 statement tokenization (commit 931d472)
-~~| Mark component children as Statement=true                | 2       | `syntax/templ/transform_components.go`   | Small  |~~ done — Phase 2 statement tokenization (commit 931d472)
-~~| Verify against SwettySwipperWeb + DiscordSync            | Measure | -                                        | Small  |~~ done — 31→5 and 10→5 groups (header note); 100% precision after 23a3b03
-~~| Write Pareto planning doc                                | Done    | `docs/planning/`                         | Done   |~~ done — this document
+| Task | Phase                                                    | Files   | Effort                                   |
+| ---- | -------------------------------------------------------- | ------- | ---------------------------------------- |
+| ~~   | Extract `encodeSemanticType` to shared `syntax/` package | Prep    | `syntax/semantic.go`                     |
+| ~~   | Add `semantic bool` to templ transformer                 | 1       | `syntax/templ/parser.go`                 |
+| ~~   | Encode element tag names                                 | 1       | `syntax/templ/transform_node.go`         |
+| ~~   | Encode attribute names                                   | 1       | `syntax/templ/transform_node.go`         |
+| ~~   | Wire detection mode through templ parse path             | 1       | `job/parse.go`, `syntax/templ/parser.go` |
+| ~~   | Mark element children as Statement=true                  | 2       | `syntax/templ/transform_node.go`         |
+| ~~   | Mark component children as Statement=true                | 2       | `syntax/templ/transform_components.go`   |
+| ~~   | Verify against SwettySwipperWeb + DiscordSync            | Measure | -                                        |
+| ~~   | Write Pareto planning doc                                | Done    | `docs/planning/`                         |

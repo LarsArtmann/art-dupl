@@ -77,6 +77,7 @@ So the correct end state is not "coexist as peers" (my session's original recomm
 > Brainstorm ranked by impact, not a commitment list; `docs-health` HARVEST applies extra routing rigor (many items are ROADMAP fuel; BuildFlow-side items need explicit authorization). P0 = make the core real; P1 = hardening + carried debts; P2 = BuildFlow-side; P3 = polish/upstream.
 
 **P0 — promote art-dupl to the core lane**
+
 1. Cut the art-dupl release tag (g2) so BuildFlow pins resolve real versions and `providerVersion()` stops reporting `dev`.
 2. Authorize + execute BuildFlow wiring: blank import `_ "github.com/LarsArtmann/art-dupl/pkg/provider"` in `sdk_imports.go`.
 3. Add the art-dupl require to BuildFlow go.mod (direct; MVS lands `toolsdk v1.13.1`), `go work vendor`, `nix run .#update-vendor-hash`.
@@ -144,4 +145,4 @@ So the correct end state is not "coexist as peers" (my session's original recomm
 
 ---
 
-*Point-in-time snapshot; per skill contract this report's (f) section is the HARVEST input for TODO_LIST/ROADMAP. Waiting for instructions.*
+_Point-in-time snapshot; per skill contract this report's (f) section is the HARVEST input for TODO_LIST/ROADMAP. Waiting for instructions._

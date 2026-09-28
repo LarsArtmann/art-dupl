@@ -80,9 +80,9 @@ Registered after `error-wrapping` in the priority table; label `PatternErrorGuar
 ### Docs — not yet updated for this session's changes
 
 - [ ] `docs/ACTIONABILITY_PATTERNS.md`: add `error-guard-fallthrough` (pattern count 29→30)
-~~- [ ] `AGENTS.md`: new pattern, `--suggest-generics-min-lines`, `--memory-cache-entries`, `syntax.CloneNodes`, cache Stats.MemHits~~ done — 2026-08-15_22-57 docs pass (commit 9cae480d)
-~~- [ ] `HOW_TO_USE.md` / `FEATURES.md`: new flags + pattern~~ done — 2026-08-15_22-57 docs pass
-~~- [ ] `TODO_LIST.md` refresh (see (e) — stale entries found)~~ done — 2026-08-15_22-57 a9
+      ~~- [ ] `AGENTS.md`: new pattern, `--suggest-generics-min-lines`, `--memory-cache-entries`, `syntax.CloneNodes`, cache Stats.MemHits~~ done — 2026-08-15_22-57 docs pass (commit 9cae480d)
+      ~~- [ ] `HOW_TO_USE.md` / `FEATURES.md`: new flags + pattern~~ done — 2026-08-15_22-57 docs pass
+      ~~- [ ] `TODO_LIST.md` refresh (see (e) — stale entries found)~~ done — 2026-08-15_22-57 a9
 
 ### NOT STARTED (from session plan)
 

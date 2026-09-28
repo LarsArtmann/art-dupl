@@ -88,13 +88,14 @@ Verified that ldflags injection works and `flake.nix:80-85` already has the wiri
 ## c) NOT STARTED
 
 ~~- **`//art-dupl:accept` directive** (Tier 2 from evaluation) — not started, correctly deferred~~ done — //art-dupl:accept shipped (cmd/accept_directive.go)
+
 - **"Same-function" category** (Tier 2) — not started, correctly deferred
-~~- **HTML `--out` flag / anchor IDs** (Tier 3) — not started, correctly deferred~~ done — --html-out + stable anchor IDs shipped (master-plan T17/T18)
+  ~~- **HTML `--out` flag / anchor IDs** (Tier 3) — not started, correctly deferred~~ done — --html-out + stable anchor IDs shipped (master-plan T17/T18)
 - **`--rich-text` mode test** — the preview feature was only tested in default text and plumbing modes. Rich-text mode (`writeRichGroupHeader`) was NOT verified to see if previews appear or interact correctly with the `[priority] [category]` tags.
 - **`nix build` end-to-end** — only manual `go build -ldflags` was tested, not the actual nix build path
-~~- **Golden/snapshot test for text output** — no regression-protection test that locks the exact text format (including preview)~~ done — TestTextCloneOutputGolden (printer/text_golden_test.go)
+  ~~- **Golden/snapshot test for text output** — no regression-protection test that locks the exact text format (including preview)~~ done — TestTextCloneOutputGolden (printer/text_golden_test.go)
 - **Benchmark for `previewFromFile`** — reads entire file via `ReadFile` just to extract one line; inefficient on large files. Should use `bufio.Scanner` with early exit. Not measured.
-~~- **`docs/dedup-decisions.md`** — mentioned in prior status report as an alternative to inline comments; not created~~ resolved by alternative — inline //art-dupl:accept + docs/ACTIONABILITY_PATTERNS.md + docs/SELF_CLEAN_LEDGER.md
+  ~~- **`docs/dedup-decisions.md`** — mentioned in prior status report as an alternative to inline comments; not created~~ resolved by alternative — inline //art-dupl:accept + docs/ACTIONABILITY_PATTERNS.md + docs/SELF_CLEAN_LEDGER.md
 
 ---
 

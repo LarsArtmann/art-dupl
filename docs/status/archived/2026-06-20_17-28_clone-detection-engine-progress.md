@@ -85,46 +85,46 @@ Dogfooding art-dupl on itself at `-t 15`:
 
 ### Phase 1 Foundation (HIGH RISK — deferred)
 
-| Task                                  | Why deferred                                                                                                                                                                                 |
-| ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-~~| **T1** — Statement-Level Tokenization | Fundamentally changes `serial()` pre-order DFS → statement-level fingerprinting. Every downstream consumer of token count would need rescaling. High risk of breaking detection correctness. |~~ done — shipped (ADR-0023, 2026-09-14)
-~~| **T2** — Alpha-Normalization          | Depends on T1. Requires AST walker with scope tracking.                                                                                                                                      |~~ done — shipped (commit 91554e5, ADR-0007)
-~~| **T5** — Three-Mode System            | Depends on T1+T2. Renames `--semantic` flag (breaking change for existing users).                                                                                                            |~~ done — shipped (ADR-0007)
+| Task | Why deferred                          |
+| ---- | ------------------------------------- |
+| ~~   | **T1** — Statement-Level Tokenization |
+| ~~   | **T2** — Alpha-Normalization          |
+| ~~   | **T5** — Three-Mode System            |
 
 ### Phase 3 Refactoring Advisor
 
-| Task                           | Why not started                                                                                     |
-| ------------------------------ | --------------------------------------------------------------------------------------------------- |
-~~| **T10** — Baseline/CI Mode     | Needs new subcommands (`baseline`, `check`), baseline file format design, clone diff logic. ~90min. |~~ done — `baseline` + `check` subcommands (CHANGELOG 0.4.0)
-~~| **T11** — Extractability Score | Needs single-entry-point check, shared-mutable-state analysis, consistent-return check. ~70min.     |~~ done — property-based extractability engine (ADR-0017, CHANGELOG 0.6.0)
+| Task | Why not started                |
+| ---- | ------------------------------ |
+| ~~   | **T10** — Baseline/CI Mode     |
+| ~~   | **T11** — Extractability Score |
 
 ### Phase 4 Architecture Cleanup
 
-| Task                                          | Why not started                                                    |
-| --------------------------------------------- | ------------------------------------------------------------------ |
-~~| **T12** — ctx in run_crawl                    | Last goroutine leak. Straightforward but touches file crawl.       |~~ done — ctx threaded through the crawl (commit 650a4b0)
-~~| **T13** — Printer decoupling from syntax.Node | Design `ReadOnlyNode` interface, update 10 actionability matchers. |~~ done@decided-against — superseded by the domain.CloneNode bridge (2026-07-26)
-~~| **T14** — Clone type consolidation            | 3 parallel Clone types. Risky refactor.                            |~~ done — CloneRef embedded everywhere (CHANGELOG 0.5.0); remaining DTOs intentional
-~~| **T15** — Printer package split               | ~29 files into sub-packages. Mechanical but tedious.               |~~ done — printer/actionability + printer/stats (CHANGELOG 0.5.0)
-~~| **T16** — Fragment type unification           | Low impact.                                                        |~~ parked — still open (ROADMAP consolidated design-debts entry)
+| Task | Why not started                               |
+| ---- | --------------------------------------------- |
+| ~~   | **T12** — ctx in run_crawl                    |
+| ~~   | **T13** — Printer decoupling from syntax.Node |
+| ~~   | **T14** — Clone type consolidation            |
+| ~~   | **T15** — Printer package split               |
+| ~~   | **T16** — Fragment type unification           |
 
 ### Phase 5 Testing & Quality
 
-| Task                                     | Why not started                                    |
-| ---------------------------------------- | -------------------------------------------------- |
-~~| **T17** — Property tests for suffix tree | Algorithm correctness unverified. Important.       |~~ done — tran_parity_test.go + property suite (CHANGELOG 0.7.0)
-~~| **T18** — Detection coverage (61.8%→80%) | MultiDetector dispatch, adapter integration tests. |~~ done — 92.7% (commit 9fecc7f)
-~~| **T19** — Domain coverage (58.6%→80%)    | CloneType, ProcessedClone, ClonePriority tests.    |~~ done — 100% (commit 692c587)
-~~| **T20** — Performance benchmarks         | No current regression risk.                        |~~ done — baselines committed under docs/benchmarks (ADR-0022 era)
+| Task | Why not started                          |
+| ---- | ---------------------------------------- |
+| ~~   | **T17** — Property tests for suffix tree |
+| ~~   | **T18** — Detection coverage (61.8%→80%) |
+| ~~   | **T19** — Domain coverage (58.6%→80%)    |
+| ~~   | **T20** — Performance benchmarks         |
 
 ### Phase 6 Ecosystem
 
-| Task                              | Why not started            |
-| --------------------------------- | -------------------------- |
-~~| **T21** — GitHub Actions template | Depends on T10 (baseline). |~~ done — templates/github-actions-duplicate-check.yml (commit 5356d17)
-~~| **T22** — Pre-commit hook         | Depends on T10.            |~~ done — .pre-commit-hooks.yaml (commit 5356d17)
-~~| **T23** — json/v2 migration       | Future-proofing.           |~~ done — shipped 0.4.0, stabilized on the v1 API (ADR-0024)
-~~| **T24** — Rename Data→View        | Naming clarity.            |~~ done — *View rename (commit b60aca6)
+| Task | Why not started                   |
+| ---- | --------------------------------- |
+| ~~   | **T21** — GitHub Actions template |
+| ~~   | **T22** — Pre-commit hook         |
+| ~~   | **T23** — json/v2 migration       |
+| ~~   | **T24** — Rename Data→View        |
 
 ---
 
@@ -158,33 +158,33 @@ Nothing. No regressions, no broken builds, no reverted changes.
 
 ## f) Top #25 Things to Get Done Next
 
-| #  | Task                                                                                       | Impact   | Effort | Risk   |
-| -- | ------------------------------------------------------------------------------------------ | -------- | ------ | ------ |
-~~| 1  | **T6 logic**: Implement clone type classification — compare `Name` fields across fragments | High     | 30min  | Low    |~~ done — classifyCloneType (commit 359f3d7)
-~~| 2  | **T6 output**: Add `clone_type` to JSON output                                             | Medium   | 15min  | Low    |~~ done — clone_type in JSON/SARIF/rich-text
-~~| 3  | **T19**: Domain coverage tests (CloneType, ClonePriority, ProcessedClone)                  | Medium   | 50min  | Low    |~~ done — domain coverage 100% (commit 692c587)
-~~| 4  | **T18**: Detection coverage tests (MultiDetector dispatch, adapter)                        | Medium   | 70min  | Low    |~~ done — detection coverage 92.7% (commit 9fecc7f)
-~~| 5  | **T17**: Property-based tests for suffix tree                                              | High     | 60min  | Low    |~~ done — tran_parity_test.go (commit 2dc1781)
-~~| 6  | **T10**: Baseline file format + `baseline` subcommand                                      | Critical | 90min  | Medium |~~ done — baseline subcommand (commit d620128)
-~~| 7  | **T10**: `check` subcommand with clone diff + exit code 1                                  | Critical | 45min  | Medium |~~ done — check subcommand + exit 1
-~~| 8  | **T12**: Thread `context.Context` through `run_crawl.go`                                   | Medium   | 45min  | Low    |~~ done — ctx threaded through crawl (commit 650a4b0)
-~~| 9  | **Dogfood T9**: Run on `.auto-deduplicate/false-positives.json` patterns                   | High     | 20min  | Low    |~~ done — false-positives.json maintained + calibration corpus (CHANGELOG 0.7.0)
-~~| 10 | **T11**: Extractability score design + implementation                                      | High     | 70min  | Medium |~~ done — extractability engine (commit c60e58b, CHANGELOG 0.6.0)
-~~| 11 | **Update AGENTS.md**: Document T3/T4/T7/T8/T9 changes                                      | Medium   | 15min  | Low    |~~ done — AGENTS.md current
-~~| 12 | **Update HOW_TO_USE.md**: Document `--ignore-tests`, `--include-tests`                     | Medium   | 15min  | Low    |~~ done — HOW_TO_USE documents --ignore-tests/--include-tests
-~~| 13 | **Update FEATURES.md**: Add overlap elimination, BasicLit hashing, new flags               | Medium   | 15min  | Low    |~~ done — FEATURES current
-~~| 14 | **T1 prototype**: Spike statement-level tokenization in a branch                           | Critical | 120min | HIGH   |~~ done — statement-level tokenization shipped (ADR-0023, 2026-09-14)
-~~| 15 | **T2 prototype**: Spike alpha-normalization walker                                         | Critical | 80min  | HIGH   |~~ done — alpha-normalization (commit 91554e5)
-~~| 16 | **T5**: Three-mode system (`--exact`/`--semantic`/`--structural`)                          | Critical | 80min  | High   |~~ done — three-mode system (ADR-0007)
-~~| 17 | **T20**: Performance benchmarks — establish baseline before T1                             | Low      | 45min  | Low    |~~ done — benchmarks + alloc budgets (commit ef77469)
-~~| 18 | **T13**: Design `ReadOnlyNode` interface for printer decoupling                            | Medium   | 80min  | Medium |~~ done@decided-against — ReadOnlyNode superseded by domain.CloneNode bridge (2026-07-26)
-~~| 19 | **T21**: GitHub Actions workflow template                                                  | Medium   | 40min  | Low    |~~ done — templates/github-actions-duplicate-check.yml (commit 5356d17)
-~~| 20 | **T22**: Pre-commit hook YAML                                                              | Medium   | 35min  | Low    |~~ done — .pre-commit-hooks.yaml (commit 5356d17)
-~~| 21 | **Fix domain coverage**: Write CloneType tests specifically                                | High     | 20min  | Low    |~~ done — printer/clone_type_test.go
-~~| 22 | **Review false-positives.json**: Check which entries T9 patterns now catch                 | High     | 30min  | Low    |~~ done — SELF_CLEAN_LEDGER + false-positives.json (CHANGELOG 0.7.1)
-~~| 23 | **T14**: Consolidate CloneLocation in ProcessedClone/CloneGroup/SDK Clone                  | Medium   | 90min  | Medium |~~ done — CloneRef consolidation (CHANGELOG 0.5.0)
-~~| 24 | **T23**: Audit and migrate to encoding/json/v2                                             | Low      | 40min  | Low    |~~ done — json/v2 shipped 0.4.0, stabilized by ADR-0024
-~~| 25 | **T24**: Rename `*Data` → `*View` in printer                                               | Low      | 35min  | Low    |~~ done — *View rename (commit b60aca6)
+| #  | Task | Impact                                                                                     | Effort   | Risk   |
+| -- | ---- | ------------------------------------------------------------------------------------------ | -------- | ------ |
+| ~~ | 1    | **T6 logic**: Implement clone type classification — compare `Name` fields across fragments | High     | 30min  |
+| ~~ | 2    | **T6 output**: Add `clone_type` to JSON output                                             | Medium   | 15min  |
+| ~~ | 3    | **T19**: Domain coverage tests (CloneType, ClonePriority, ProcessedClone)                  | Medium   | 50min  |
+| ~~ | 4    | **T18**: Detection coverage tests (MultiDetector dispatch, adapter)                        | Medium   | 70min  |
+| ~~ | 5    | **T17**: Property-based tests for suffix tree                                              | High     | 60min  |
+| ~~ | 6    | **T10**: Baseline file format + `baseline` subcommand                                      | Critical | 90min  |
+| ~~ | 7    | **T10**: `check` subcommand with clone diff + exit code 1                                  | Critical | 45min  |
+| ~~ | 8    | **T12**: Thread `context.Context` through `run_crawl.go`                                   | Medium   | 45min  |
+| ~~ | 9    | **Dogfood T9**: Run on `.auto-deduplicate/false-positives.json` patterns                   | High     | 20min  |
+| ~~ | 10   | **T11**: Extractability score design + implementation                                      | High     | 70min  |
+| ~~ | 11   | **Update AGENTS.md**: Document T3/T4/T7/T8/T9 changes                                      | Medium   | 15min  |
+| ~~ | 12   | **Update HOW_TO_USE.md**: Document `--ignore-tests`, `--include-tests`                     | Medium   | 15min  |
+| ~~ | 13   | **Update FEATURES.md**: Add overlap elimination, BasicLit hashing, new flags               | Medium   | 15min  |
+| ~~ | 14   | **T1 prototype**: Spike statement-level tokenization in a branch                           | Critical | 120min |
+| ~~ | 15   | **T2 prototype**: Spike alpha-normalization walker                                         | Critical | 80min  |
+| ~~ | 16   | **T5**: Three-mode system (`--exact`/`--semantic`/`--structural`)                          | Critical | 80min  |
+| ~~ | 17   | **T20**: Performance benchmarks — establish baseline before T1                             | Low      | 45min  |
+| ~~ | 18   | **T13**: Design `ReadOnlyNode` interface for printer decoupling                            | Medium   | 80min  |
+| ~~ | 19   | **T21**: GitHub Actions workflow template                                                  | Medium   | 40min  |
+| ~~ | 20   | **T22**: Pre-commit hook YAML                                                              | Medium   | 35min  |
+| ~~ | 21   | **Fix domain coverage**: Write CloneType tests specifically                                | High     | 20min  |
+| ~~ | 22   | **Review false-positives.json**: Check which entries T9 patterns now catch                 | High     | 30min  |
+| ~~ | 23   | **T14**: Consolidate CloneLocation in ProcessedClone/CloneGroup/SDK Clone                  | Medium   | 90min  |
+| ~~ | 24   | **T23**: Audit and migrate to encoding/json/v2                                             | Low      | 40min  |
+| ~~ | 25   | **T24**: Rename `*Data` → `*View` in printer                                               | Low      | 35min  |
 
 ---
 

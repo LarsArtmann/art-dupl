@@ -35,7 +35,11 @@ Origin: extracted from the 2026-09-28 docs-health full-audit pass
 next pass does not start from zero. See
 docs/planning/2026-09-28_21-57_SUPERB-docs-health-completion-plan.md (M00).
 """
-import sys, re, pathlib
+
+import pathlib
+import re
+import sys
+
 
 def main():
     path = pathlib.Path(sys.argv[1])
@@ -49,7 +53,9 @@ def main():
         specs[key] = verdict.strip()
         order.append(key)
     lines = path.read_text().splitlines(keepends=True)
-    num_pat = re.compile(r"^(\s*)(?:[-*]\s*)?([A-Za-z]{0,3}\d{1,3}[a-z]?|[A-Za-z]+#\d+|\d+)\.\s")
+    num_pat = re.compile(
+        r"^(\s*)(?:[-*]\s*)?([A-Za-z]{0,3}\d{1,3}[a-z]?|[A-Za-z]+#\d+|\d+)\.\s"
+    )
     row_pat = re.compile(r"^\|\s*([A-Za-z]{0,3}\d{1,3}[a-z]?)\s*\|")
     cb_pat = re.compile(r"^(\s*)- \[ \] (.*)$")
     hits = {}
@@ -103,6 +109,7 @@ def main():
         lines[idx] = new + nl
     path.write_text("".join(lines))
     print(f"OK {path.name}: annotated {len(hits)} items")
+
 
 if __name__ == "__main__":
     main()

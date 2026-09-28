@@ -58,10 +58,10 @@ spec grammar documented in its header). ALWAYS dry-run a new file shape on a
 
 Two directories, two jobs — do NOT merge them:
 
-| Directory                | Holds                                                            | Example                                        |
-| ------------------------ | ---------------------------------------------------------------- | ---------------------------------------------- |
-| `docs/archive/`          | Superseded **design documents and proposals** (not dated status) | `MIGRATION_TO_NIX_FLAKES_PROPOSAL.md`, `BDD_TESTS_REVIEW.md` |
-| `docs/status/archived/`  | Dated **point-in-time snapshots** (reports, plans, audits)       | `2026-08-16_13-13_wave-report.md`              |
+| Directory               | Holds                                                            | Example                                                      |
+| ----------------------- | ---------------------------------------------------------------- | ------------------------------------------------------------ |
+| `docs/archive/`         | Superseded **design documents and proposals** (not dated status) | `MIGRATION_TO_NIX_FLAKES_PROPOSAL.md`, `BDD_TESTS_REVIEW.md` |
+| `docs/status/archived/` | Dated **point-in-time snapshots** (reports, plans, audits)       | `2026-08-16_13-13_wave-report.md`                            |
 
 The naming is an unfortunate near-collision (`archive` vs `archived`) kept
 because both directories are established and linked from other files; the

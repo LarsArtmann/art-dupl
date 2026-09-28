@@ -58,12 +58,14 @@ Scan: `scripts/self-scan.sh` (`-t 1 --type-aware`) → 1078 detected / 28 shown
 reported 29 shown).
 
 **Extracted this sweep:**
+
 - `internal/gitignore/gitignore.go` — the duplicated `if len(rules) == 0 {
   return nil }` tail across `LoadGitignore` and the new `LoadTree` collapsed
   into `matcherFromRules` (the new group this scan caught in our own B1 work;
   found by our own tool the same day it was written).
 
 **Accepted (existing idiom classes, unchanged from the 2026-09-22 table):**
+
 - `case golang.IfStmt:` rows, single `default:` clauses (actionability
   pattern-table rows are data, not logic).
 - `child.Statement = true` pairs across `syntax/golang` / `syntax/templ`

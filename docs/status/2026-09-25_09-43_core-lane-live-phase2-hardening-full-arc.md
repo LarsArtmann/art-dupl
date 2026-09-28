@@ -146,4 +146,4 @@
 
 ---
 
-*Point-in-time snapshot; this report's (f) section is the HARVEST input (items 1–25 already routed into TODO_LIST/ROADMAP where durable). Waiting for instructions.*
+_Point-in-time snapshot; this report's (f) section is the HARVEST input (items 1–25 already routed into TODO_LIST/ROADMAP where durable). Waiting for instructions._

@@ -64,7 +64,7 @@
 5. **Wrote the empty-snapshot resolution note before verifying the claim inside it** (see b4) — a template fact applied to ten files, three of which I never cross-checked.
 6. **`multiedit` rejected twice with "modified since read"** after the annotator script rewrote files I'd viewed earlier in the same breath — I kept issuing batch edits against stale reads instead of re-reading first. Recovered each time, but the loop pattern (write → reject → re-read → write) cost several round trips per file.
 7. **A `sed` expression error mid-investigation** (`sed: -e expression #1, char 3`) — stray command noise, caught immediately, but it happened while I was lecturing myself about reading before running.
-~~8. **I declared "0 known false claims remain" while knowing two unverified claims survived my own pass**: the FEATURES "45+ flags" and templ "28 node types" rows. I fixed the Go node-type number and left its two neighbors unaudited because they were adjacent to lines I was already editing — proximity editing without proximity verification.~~ done at 8f07cea6 — both claims verified and fixed: 56 user-visible flags (64 registered; 8 hidden: 6 deprecated aliases + profile/timeout), 29 templ node types; the sweep also found the ACTIONABILITY table missing 2 rows (now 33)
+   ~~8. **I declared "0 known false claims remain" while knowing two unverified claims survived my own pass**: the FEATURES "45+ flags" and templ "28 node types" rows. I fixed the Go node-type number and left its two neighbors unaudited because they were adjacent to lines I was already editing — proximity editing without proximity verification.~~ done at 8f07cea6 — both claims verified and fixed: 56 user-visible flags (64 registered; 8 hidden: 6 deprecated aliases + profile/timeout), 29 templ node types; the sweep also found the ACTIONABILITY table missing 2 rows (now 33)
 
 ## e) WHAT WE SHOULD IMPROVE
 
@@ -80,6 +80,7 @@
 ## f) Up to 50 things we should get done next
 
 **P0 — this pass's direct leftovers**
+
 1. Annotate `docs/status/2026-09-25_09-43_core-lane-live-phase2-hardening-full-arc.md` — strike resolved (f)-items (the route-into-TODO ones are verifiable today).
 2. Identify the master plan's 2 unspecified open items; make "24/26" auditable in TODO_LIST or retire the claim.
 3. Annotate `_13-13` + `_17-37` wave reports (verdicts already extracted; 40/41 and 25/28 resolved).
@@ -147,4 +148,4 @@
 
 ---
 
-*Point-in-time snapshot. Evidence trail: daemon commits `32f12cad` (archive consolidation, 568 files), `0e53f062` (annotated archives + feedback moves, 52 files), `d172b914` (prior fixes); working tree holds TODO_LIST + the two annotated 09-xx reports pending commit. Gates at pass end: build/test/lint green, archive grep-gate green, check-rows 7/7.*
+_Point-in-time snapshot. Evidence trail: daemon commits `32f12cad` (archive consolidation, 568 files), `0e53f062` (annotated archives + feedback moves, 52 files), `d172b914` (prior fixes); working tree holds TODO_LIST + the two annotated 09-xx reports pending commit. Gates at pass end: build/test/lint green, archive grep-gate green, check-rows 7/7._

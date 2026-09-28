@@ -53,8 +53,8 @@ gh release create vX.Y.0 --title "art-dupl vX.Y.0" --generate-notes
 
 Use `--generate-notes` or `--notes-file <changelog-section>` for full release notes.
 Do NOT use `--notes-from-tag` (too terse).
-```
 
+```
 **Verify the rendered body actually contains the changes** (v0.7.2 shipped with an
 empty `## Changelog` stub and pure install boilerplate — the gap was caught three
 days later). If the body is generic, backfill without clobbering the install
@@ -81,3 +81,4 @@ the `## Changelog` stub with the CHANGELOG section's content, write back with
 - **Commit the CHANGELOG + version bump manually** as `chore(release): cut vX.Y.Z`. Do NOT rely on the daemon for release commits.
 - **Use `git push --follow-tags`** for atomic branch + tag push.
 - **Pre-commit hook**: if buildflow reinstalled the hook, re-apply the guard: `bash scripts/install-hooks.sh`
+```
