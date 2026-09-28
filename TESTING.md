@@ -206,6 +206,11 @@ go tool cover -html=coverage.out           # HTML coverage report → browser
 go tool cover -func=coverage.out           # Summary in terminal
 ```
 
+**Trend tracking**: `scripts/check-coverage.sh` snapshots coverage into
+`docs/benchmarks/coverage-baseline.txt` (test-only packages excluded); compare
+across waves to catch erosion — the baseline is advisory (trend signal), not a
+per-package gate.
+
 ## Debugging a Missed Clone: The 10-Line Fixture Pattern
 
 When a detection question arises ("why is this clone missed?"), a synthetic

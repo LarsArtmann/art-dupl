@@ -64,48 +64,48 @@ Nothing broken shipped; every failure was caught by compile/test/lint/self-revie
 
 **Finish the wave:**
 
-1. T24.1: apply the drafted package-doc refresh on `suffixtree.go`
-2. T24.2: document the getAll disjointness argument as a comment
-3. T24.3: `const memoryUsageTokens = 10000` (+ Few/ManyTokens in `memory_bench_test.go`)
-4. Commit FuzzTranLookupSemantics seed corpus to `testdata/fuzz/`
-5. AGENTS.md: T13 arena serializer bullet (+ serial() field-preservation hazard cross-ref)
-6. AGENTS.md: T11 run-scoped cache stats bullet
-7. AGENTS.md: T12 exclude-pattern warning bullet
-8. AGENTS.md: alloc-gate syntax/ coverage bullet
-9. AGENTS.md: T17 TTY auto-write bullet
-10. AGENTS.md: T18 stable anchors bullet
-11. T25.1: TODO_LIST checkbox sync (T1–T22 done states)
-12. T25.2: CHANGELOG entries (T7–T12, T13/T15, T17–T18, T19–T22)
-13. T26.1: parked-tier revisit triggers (DEFERRED/ROADMAP → entry criteria)
-14. Full-repo `golangci-lint run --timeout 5m ./...` (only touched packages done)
-15. Full `go build ./... && go test ./...`
-16. `go test -race ./...`
-17. `scripts/check-alloc-regression.sh` (gate green re-confirm)
-18. Stage everything, then `nix flake check` in background (~40 min)
+~~1. T24.1: apply the drafted package-doc refresh on `suffixtree.go`~~ done at 2026-08-16_17-37 a1 — applied next session
+~~2. T24.2: document the getAll disjointness argument as a comment~~ done at 2026-08-16_17-37 a2 — comment in suffixtree/dupl.go
+~~3. T24.3: `const memoryUsageTokens = 10000` (+ Few/ManyTokens in `memory_bench_test.go`)~~ done at 2026-08-16_17-37 a3 — const named; re-named with Few/Many constants 2026-09-28
+~~4. Commit FuzzTranLookupSemantics seed corpus to `testdata/fuzz/`~~ done — suffixtree/testdata/fuzz/FuzzTranLookupSemantics/ verified present
+~~5. AGENTS.md: T13 arena serializer bullet (+ serial() field-preservation hazard cross-ref)~~ done at 2026-08-16_17-37 a5 — bullet live in AGENTS
+~~6. AGENTS.md: T11 run-scoped cache stats bullet~~ done at 2026-08-16_17-37 a5 — bullet live in AGENTS
+~~7. AGENTS.md: T12 exclude-pattern warning bullet~~ done at 2026-08-16_17-37 a5 — bullet live in AGENTS
+~~8. AGENTS.md: alloc-gate syntax/ coverage bullet~~ done at 2026-08-16_17-37 a5 — alloc-gate syntax/ coverage in AGENTS
+~~9. AGENTS.md: T17 TTY auto-write bullet~~ done at 2026-08-16_17-37 a5 — HTML output resolution bullet in AGENTS
+~~10. AGENTS.md: T18 stable anchors bullet~~ done at 2026-08-16_17-37 a5 — stable anchors bullet in AGENTS
+~~11. T25.1: TODO_LIST checkbox sync (T1–T22 done states)~~ done at 2026-08-16_17-37 a6 — TODO_LIST rewritten open-only
+~~12. T25.2: CHANGELOG entries (T7–T12, T13/T15, T17–T18, T19–T22)~~ done at 2026-08-16_17-37 a8 — CHANGELOG entries landed
+~~13. T26.1: parked-tier revisit triggers (DEFERRED/ROADMAP → entry criteria)~~ done at 2026-08-16_17-37 a7 — parked-tier entry criteria table in TODO_LIST
+~~14. Full-repo `golangci-lint run --timeout 5m ./...` (only touched packages done)~~ done — full-repo lint green in the completion wave; standard gate since
+~~15. Full `go build ./... && go test ./...`~~ done at 2026-08-16_17-37 a11 — full build+test green; race now runs on every flake check (AGENTS 2026-08-16)
+~~16. `go test -race ./...`~~ done — race cadence on every nix flake check (AGENTS 2026-08-16 decision)
+~~17. `scripts/check-alloc-regression.sh` (gate green re-confirm)~~ done — scripts/check-alloc-regression.sh wired as the flake alloc-gate check
+~~18. Stage everything, then `nix flake check` in background (~40 min)~~ done — T5.1b flake check ALL GREEN; CI flake lane green since
 
 **Timing evidence (when machine idle):**
-19. T2.2: interleaved P/U A/B (`FindDuplOver/threshold_10`, `par4/tokens_10000`, 6 alternations)
-20. T2.2: annotate `baseline-2026-08-16-v3_notes.md` (replace "still open, see TODO_LIST")
-21. T23: `git worktree add /tmp/artdupl-23fa1b4f 23fa1b4f`
-22. T23: `perf stat -e cache-references,cache-misses,LLC-load-misses` A/B on suffixtree bench
-23. T23: record verdict in `baseline-2026-08-16-v3_notes.md` + ADR-0022 addendum
-24. Pinned `benchstat` run for Boundary8/9, record in docs/benchmarks
-25. Document 8-vs-9 result as a comment on `linearScanMax`
+~~19. T2.2: interleaved P/U A/B (`FindDuplOver/threshold_10`, `par4/tokens_10000`, 6 alternations)~~ done — docs/benchmarks/pinned-unpinned-2026-09-22.txt (30 samples/arm)
+~~20. T2.2: annotate `baseline-2026-08-16-v3_notes.md` (replace "still open, see TODO_LIST")~~ done — baseline-2026-08-16-v3_notes.md carries the pinning verdict
+~~21. T23: `git worktree add /tmp/artdupl-23fa1b4f 23fa1b4f`~~ done — A/B performed 2026-09-22 (see pinned-unpinned file header)
+~~22. T23: `perf stat -e cache-references,cache-misses,LLC-load-misses` A/B on suffixtree bench~~ done — ADR-0022 addendum "Cache-counter A/B vs 23fa1b4f" (docs/adr/0022:157)
+~~23. T23: record verdict in `baseline-2026-08-16-v3_notes.md` + ADR-0022 addendum~~ done — ADR-0022:142 addendum with perf stat evidence
+~~24. Pinned `benchstat` run for Boundary8/9, record in docs/benchmarks~~ done — docs/benchmarks/linear-scan-boundary-2026-09-22.txt (pinned, 20 samples/size)
+~~25. Document 8-vs-9 result as a comment on `linearScanMax`~~ done — linearScanMax doc comment cites the measured 8-vs-9 numbers (suffixtree/findtran.go:3-19)
 
 **Quality follow-ups:**
-26. BDD/PTY test for HTML auto-write
-27. Decide `--quiet` vs T12 warning semantics (document choice)
-28. Symmetric zero-match warning for `--include-pattern`
-29. Coverage script: filter test-only packages
-30. Consider coverage trend note in TESTING.md
-31. TESTING.md: property/parity-test conventions section
-32. a11y: focus style for `.anchor-link`
-33. JSON output: expose stable anchor id for cross-format linking
-34. `--html-out`: mkdir -p parent dir on demand
-35. Check `website/package.json` pre-existing modification (not mine — read before judging)
-36. Verify goldens diff is CSS+anchor-only (review staged `printer/testdata`)
-37. Re-check corpus count 2665→2670 drift question (carry-over)
-38. Budget-ratchet decision: 4783 < 4802 headroom (carry-over)
+~~26. BDD/PTY test for HTML auto-write~~ resolved by design — the TTY probe is injected and unit-tested (AGENTS "HTML output resolution"); the real branch is a third-party one-liner, manually PTY-verified at ship
+~~27. Decide `--quiet` vs T12 warning semantics (document choice)~~ done — decision recorded: diagnostics print unconditionally; --quiet suppresses progress only (AGENTS --quiet + include/exclude warning bullets)
+~~28. Symmetric zero-match warning for `--include-pattern`~~ done — WarnUnmatchedIncludePatterns shipped (AGENTS include-pattern zero-match warning)
+~~29. Coverage script: filter test-only packages~~ done — scripts/check-coverage.sh:29 excludes test-only packages
+~~30. Consider coverage trend note in TESTING.md~~ done this pass — TESTING.md Coverage section now documents the trend baseline workflow
+~~31. TESTING.md: property/parity-test conventions section~~ done — TESTING.md "Property and Parity Test Conventions" section
+~~32. a11y: focus style for `.anchor-link`~~ done — .anchor-link:focus-visible rule in printer/html_template.go:102
+~~33. JSON output: expose stable anchor id for cross-format linking~~ done — JSONClone.AnchorID serialized as anchor_id (printer/json.go:27)
+~~34. `--html-out`: mkdir -p parent dir on demand~~ done — output dir MkdirAll in cmd/run_all_modes.go:27
+~~35. Check `website/package.json` pre-existing modification (not mine — read before judging)~~ done at 2026-08-16_17-37 a10 — daemon commit 9d7f9813, deliberate deps bump
+~~36. Verify goldens diff is CSS+anchor-only (review staged `printer/testdata`)~~ done at 2026-08-16_17-37 a9 — goldens render header+footer only by construction
+~~37. Re-check corpus count 2665→2670 drift question (carry-over)~~ done — resolved inline in 2026-08-16_17-37 f22 (concurrent go-cqrs-lite edits; deterministic)
+~~38. Budget-ratchet decision: 4783 < 4802 headroom (carry-over)~~ done — budgets re-recorded deterministically in scripts/alloc-budgets.txt after the time-seed fix (FewTokens=23, ManyTokens=44)
 
 **Then:** wave-3 status report refresh, park T23 verdict if inconclusive, resume ROADMAP triage.
 
