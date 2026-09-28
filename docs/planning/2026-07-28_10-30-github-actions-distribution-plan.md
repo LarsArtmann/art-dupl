@@ -1,5 +1,15 @@
 # Execution Plan — art-dupl GitHub Action
 
+> **VERDICT (2026-09-28, decided in the SUPERB docs pass): WON'T IMPLEMENT — superseded by the BuildFlow provider lane.**
+> Rationale: art-dupl has shipped as a BuildFlow toolsdk provider since 2026-09-25
+> (`pkg/provider/`, LIVE in BuildFlow's dogfood as the core Go+templ duplication
+> detector). The provider IS the "embed clone-gating in CI with one line" story for
+> the consumer that actually exists (BuildFlow fleet repos); a GitHub Action would
+> build a second distribution surface with no current consumer pull. The plan sat at
+> 0/20 for two months while the provider lane went 0→live, which is the market's
+> answer. Revisit trigger: an external user asks for a standalone GitHub Action, or
+> BuildFlow adoption stalls and a marketplace presence becomes the growth lever.
+
 **Created:** 2026-07-28
 **Goal:** Make art-dupl available in GitHub Actions as a one-line, fast, pinned, verified `uses: LarsArtmann/art-dupl@v1`.
 **Companion:** `docs/research/github-actions-distribution-options.md` (option comparison + rationale).
