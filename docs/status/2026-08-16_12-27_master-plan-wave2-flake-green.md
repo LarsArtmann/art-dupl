@@ -40,16 +40,16 @@
 ### T12 — `--exclude-pattern` zero-match warning (~70%)
 
 - Done: `FilterStats.TrackExcludePatterns` / `recordPatternCandidate` (uses `gogenfilter.MatchPattern` — identical semantics to the real filter) / `WarnUnmatchedExcludePatterns`; wired into **both** file sources (directory walk + stdin feed), warning fires after crawl completes.
-- Not done: the `TrackExcludePatterns(cfg.ExcludePatterns)` registration call (site identified: `cmd/run_analysis.go:404`, `NewFilterStats` creation), tests, glob-vs-regex docs (12.2), build+test of the current edits — **the T12 edits are unbuilt and unverified**.
+- ~~Not done: the `TrackExcludePatterns(cfg.ExcludePatterns)` registration call (site identified: `cmd/run_analysis.go:404`, `NewFilterStats` creation), tests, glob-vs-regex docs (12.2), build+test of the current edits — **the T12 edits are unbuilt and unverified**.~~ Completed in wave 3 (2026-08-16_13-13 T12): registration wired, 5 tests, docs, warning E2E-verified; shipped in CHANGELOG v0.7.0.
 
 ### T2.2 — Pinned timing annotation (blocked, then deferred)
 
 - The handoff's `/tmp/bench_pinned_t2.txt` (captured 10:13) is **uniformly slower than the unpinned v3 baseline (04:19) across all benchmarks including `seq`** — which pinning cannot affect. Verdict: machine-state difference 6h apart, not a pinning effect. A pinned-vs-unpinned claim from these two files would violate the project's own compare-like-with-like rule.
-- Correct procedure defined: interleaved A/B runs (pinned, unpinned, pinned, unpinned) once the machine is free. Deferred behind the 40-min flake check (now done).
+- ~~Correct procedure defined: interleaved A/B runs (pinned, unpinned, pinned, unpinned) once the machine is free. Deferred behind the 40-min flake check (now done).~~ Executed 2026-09-22: interleaved A/B landed (`docs/benchmarks/pinned-unpinned-2026-09-22.txt`, CHANGELOG 0.7.1).
 
 ## c) Not Started
 
-T16 (coverage baseline), T17 (TTY HTML auto-write), T18 (stable display IDs), T19 (cleanup trio), T20–T22 (property test, fuzz, boundary bench), T23 (perf stat A/B vs `23fa1b4f`), T24 (suffixtree doc polish), T25 (TODO_LIST + CHANGELOG sync), T26 (parked-tier triggers). Also: AGENTS.md updates for T13/T11, realworld-cli.md verdict outcome note.
+~~T16 (coverage baseline), T17 (TTY HTML auto-write), T18 (stable display IDs), T19 (cleanup trio), T20–T22 (property test, fuzz, boundary bench), T23 (perf stat A/B vs `23fa1b4f`), T24 (suffixtree doc polish), T25 (TODO_LIST + CHANGELOG sync), T26 (parked-tier triggers). Also: AGENTS.md updates for T13/T11, realworld-cli.md verdict outcome note.~~ All completed in the wave-3 sessions (`2026-08-16_13-13`, `_17-37`) plus the 2026-09-22 timing pass; master plan closed 24/26.
 
 ## d) Totally Fucked Up (honest)
 
@@ -66,26 +66,26 @@ T16 (coverage baseline), T17 (TTY HTML auto-write), T18 (stable display IDs), T1
 
 ## f) Next Steps (in order)
 
-1. Finish T12: add `TrackExcludePatterns` call at filter-stats creation; build; tests (matched/unmatched/nil); glob-vs-regex docs in HOW_TO_USE + flag help; verify warning fires on a real misconfig E2E.
-2. Run `golangci-lint` on all touched packages (`cmd/`, `job/`, `printer/...`, `syntax/`).
-3. T19 cleanup trio: delete dead `benchmarkFindTranMethod`, `b.N`→`b.Loop()` ×3 in `parallel_bench_test.go`, AGENTS "Workers routing" bullet fix.
-4. T2.2: interleaved pinned/unpinned A/B (machine now free), annotate `baseline-2026-08-16-v3_notes.md` with honest numbers.
-5. T23: `perf stat` cache-miss A/B vs `23fa1b4f` worktree → ADR-0022 evidence.
-6. T16: coverage baseline (`go test -coverprofile`), commit under `docs/`.
-7. T17: TTY-aware HTML auto-write. 8. T18: stable display IDs.
-8. T20: slice-vs-reference-map property test. 10. T21: fuzz `findTran`/`addTran` high-fanout. 11. T22: `linearScanMax` 8-vs-9 boundary bench.
-9. T24: suffixtree doc polish trio.
-10. AGENTS.md updates: T13 arena serialization (incl. the `serial()` field-preservation hazard now living in `nodeSerializer.serial`), T11 run-scoped cache stats, T12 pattern warning, alloc-gate syntax coverage.
-11. T25: TODO_LIST checkboxes (T5–T15), CHANGELOG entries (incl. the ReadMemStats self-test fix, T13 numbers).
-12. T26: parked-tier review triggers.
-13. Final verification: build, full tests, `-race`, lint, `nix flake check` (with everything staged _before_ starting it).
-14. Commit hygiene: let the daemon pick up the staged work or commit at task boundaries with proper messages.
+~~1. Finish T12: add `TrackExcludePatterns` call at filter-stats creation; build; tests (matched/unmatched/nil); glob-vs-regex docs in HOW_TO_USE + flag help; verify warning fires on a real misconfig E2E.~~ done — warning + TrackExcludePatterns call + 5 tests + docs complete (2026-08-16_13-13 T12; CHANGELOG 0.7.0)
+~~2. Run `golangci-lint` on all touched packages (`cmd/`, `job/`, `printer/...`, `syntax/`).~~ done — lint 0 issues (2026-08-16_13-13 f14)
+~~3. T19 cleanup trio: delete dead `benchmarkFindTranMethod`, `b.N`→`b.Loop()` ×3 in `parallel_bench_test.go`, AGENTS "Workers routing" bullet fix.~~ done — verified-kept T19.1, b.Loop() sweep, AGENTS bullet fixed (2026-08-16_17-37 a1-a3, 13-13 T19)
+~~4. T2.2: interleaved pinned/unpinned A/B (machine now free), annotate `baseline-2026-08-16-v3_notes.md` with honest numbers.~~ done — interleaved A/B landed 2026-09-22 (pinned-unpinned-2026-09-22.txt; CHANGELOG 0.7.1)
+~~5. T23: `perf stat` cache-miss A/B vs `23fa1b4f` worktree → ADR-0022 evidence.~~ done — perf stat cache-miss −59.2% evidence in ADR-0022 addendum (CHANGELOG 0.7.1)
+~~6. T16: coverage baseline (`go test -coverprofile`), commit under `docs/`.~~ done — docs/benchmarks/coverage-baseline.txt 75.2% (2026-08-16_17-37)
+~~7. T17: TTY-aware HTML auto-write. 8. T18: stable display IDs.~~ done — resolveHTMLOutput + AnchorID (CHANGELOG v0.7.0 T17/T18)
+~~8. T20: slice-vs-reference-map property test. 10. T21: fuzz `findTran`/`addTran` high-fanout. 11. T22: `linearScanMax` 8-vs-9 boundary bench.~~ done — tran_parity_test.go + FuzzTranLookupSemantics + linear_scan_boundary_test.go (13-13)
+~~9. T24: suffixtree doc polish trio.~~ done — package doc, getAll comment, memoryUsageTokens (2026-08-16_17-37 a1-a3)
+~~10. AGENTS.md updates: T13 arena serialization (incl. the `serial()` field-preservation hazard now living in `nodeSerializer.serial`), T11 run-scoped cache stats, T12 pattern warning, alloc-gate syntax coverage.~~ done — six AGENTS bullets updated (2026-08-16_17-37 a5)
+~~11. T25: TODO_LIST checkboxes (T5–T15), CHANGELOG entries (incl. the ReadMemStats self-test fix, T13 numbers).~~ done — TODO/CHANGELOG synced (2026-08-16_17-37 a6/a7)
+~~12. T26: parked-tier review triggers.~~ done — TODO_LIST PARKED section carries entry criteria
+~~13. Final verification: build, full tests, `-race`, lint, `nix flake check` (with everything staged _before_ starting it).~~ done — flake ALL GREEN with everything staged first (2026-08-16_13-13 f18)
+~~14. Commit hygiene: let the daemon pick up the staged work or commit at task boundaries with proper messages.~~ done — committed at task boundaries (2026-08-16_13-13 f35)
 
 ## g) Questions (max 3)
 
 1. **Corpus drift** (carried over): go-cqrs-lite counts drifted 2665→2670 across runs — **RESOLVED 2026-09-18: concurrent editing of go-cqrs-lite (engine release-wave commits landed during the measurement window); art-dupl itself verified deterministic (two back-to-back runs produce byte-identical group sets).**
 2. **Standing rule** (carried over): should "stage new files immediately" be my standing rule, or do you prefer the auto-commit daemon as sole index-writer?
-3. **Budget ratcheting**: the gate reports `MemoryUsage 4783 < budget 4802` (map-iteration-order variance, ±19 observed). Tighten to observed-min and accept occasional CI noise, or leave headroom as now?
+3. ~~**Budget ratcheting**: the gate reports `MemoryUsage 4783 < budget 4802` (map-iteration-order variance, ±19 observed). Tighten to observed-min and accept occasional CI noise, or leave headroom as now?~~ Resolved: ratchet notes intentionally left; budgets later re-captured on deterministic seeded input (2026-08-16_13-13 f38).
 
 ---
 

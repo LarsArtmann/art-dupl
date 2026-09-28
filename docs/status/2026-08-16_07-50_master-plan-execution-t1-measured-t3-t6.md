@@ -75,20 +75,20 @@ Audited every `sync`/`atomic` usage in production code:
 
 ### T5 — `nix flake check` + `-race` cadence (5.1a done, 5.1b pending)
 
-- `nix flake check` **ran** (first time in two sessions) and **failed** on `checks.disabled-linters`: **`tagliatelle` is enabled or configured in `.golangci.yml`** and the guard treats the checkout as read-only (nix sandbox), so its auto-remove `sed` cannot fire. Fix pending: edit `.golangci.yml` directly. Because the failure aborts the check set, `test`/`race`/`lint`/`self-test` checks have not been re-verified through nix this session (they are green via direct go commands).
-- The `-race` cadence is **already structurally wired**: `checks.race` in `flake.nix` runs `CGO_ENABLED=1 go test -race ./...`. Remaining: record the cadence decision in AGENTS.md (T5.2a) after the tagliatelle fix.
+- ~~`nix flake check` **ran** (first time in two sessions) and **failed** on `checks.disabled-linters`: **`tagliatelle` is enabled or configured in `.golangci.yml`** and the guard treats the checkout as read-only (nix sandbox), so its auto-remove `sed` cannot fire. Fix pending: edit `.golangci.yml` directly. Because the failure aborts the check set, `test`/`race`/`lint`/`self-test` checks have not been re-verified through nix this session (they are green via direct go commands).~~ Resolved: tagliatelle removed; `nix flake check` ALL GREEN (2026-08-16_12-27); the daemon re-add loop closed via `.buildflow.yml` skip_steps (CHANGELOG 0.7.1).
+- The `-race` cadence is **already structurally wired**: `checks.race` in `flake.nix` runs `CGO_ENABLED=1 go test -race ./...`. ~~Remaining: record the cadence decision in AGENTS.md (T5.2a) after the tagliatelle fix.~~ Done — AGENTS.md documents the every-`nix-flake-check` cadence (2026-08-16_13-13 a5).
 
 ### T6 — CI allocation-regression gate (6.1a, 6.1b mostly done)
 
 - `scripts/check-alloc-regression.sh` written: runs the guarded suffixtree benchmarks (`STreeUpdate`, `FindDuplOver`, `MemoryUsage*`, `-count=1`, `-benchmem`), parses `allocs/op`, compares against a tab-separated budget file with **±1 tolerance**, fails on exceedance, prints ratchet hints when a benchmark beats its budget.
 - Current measurements captured (deterministic across runs): `STreeUpdate/tokens_{100,500,2000}` = 101/547/2046; `FindDuplOver/threshold_{10,50,200}` = 1543/1539/1518; `MemoryUsage{Few,Many}Tokens` = 23/44; plus the parallel-bench matrix.
-- **Pending**: write `scripts/alloc-budgets.txt`, wire as a nix check (`alloc-gate`), inject a deliberate regression to prove the gate fails (6.3a), revert and re-verify green (6.3b).
+- ~~**Pending**: write `scripts/alloc-budgets.txt`, wire as a nix check (`alloc-gate`), inject a deliberate regression to prove the gate fails (6.3a), revert and re-verify green (6.3b).~~ Done (2026-08-16_12-27 #2): budgets committed, `alloc-gate` wired, gate failure proven by injection.
 
 ---
 
 ## c) NOT STARTED (20 of 26)
 
-T2 (taskset protocol note — partially covered by the bench script's `PIN_CORES`, needs the README protocol + pinned timing re-run), T7 (defer-cleanup pattern — the −12 FP item), T8, T9, T10, T11, T12, T13–T15 (gated, verdict says GO), T16–T18, T19, T20–T22, T23 (verdict says GO), T24, T25, T26. Full detail: the plan file's §2–§3 tables remain the authoritative queue.
+~~T2 (taskset protocol note — partially covered by the bench script's `PIN_CORES`, needs the README protocol + pinned timing re-run), T7 (defer-cleanup pattern — the −12 FP item), T8, T9, T10, T11, T12, T13–T15 (gated, verdict says GO), T16–T18, T19, T20–T22, T23 (verdict says GO), T24, T25, T26. Full detail: the plan file's §2–§3 tables remain the authoritative queue.~~ All 20 completed in the same-day wave sessions (`2026-08-16_12-27`, `_13-13`, `_17-37`); master plan closed 24/26.
 
 ---
 
