@@ -80,9 +80,9 @@ Registered after `error-wrapping` in the priority table; label `PatternErrorGuar
 ### Docs — not yet updated for this session's changes
 
 - [ ] `docs/ACTIONABILITY_PATTERNS.md`: add `error-guard-fallthrough` (pattern count 29→30)
-- [ ] `AGENTS.md`: new pattern, `--suggest-generics-min-lines`, `--memory-cache-entries`, `syntax.CloneNodes`, cache Stats.MemHits
-- [ ] `HOW_TO_USE.md` / `FEATURES.md`: new flags + pattern
-- [ ] `TODO_LIST.md` refresh (see (e) — stale entries found)
+~~- [ ] `AGENTS.md`: new pattern, `--suggest-generics-min-lines`, `--memory-cache-entries`, `syntax.CloneNodes`, cache Stats.MemHits~~ done — 2026-08-15_22-57 docs pass (commit 9cae480d)
+~~- [ ] `HOW_TO_USE.md` / `FEATURES.md`: new flags + pattern~~ done — 2026-08-15_22-57 docs pass
+~~- [ ] `TODO_LIST.md` refresh (see (e) — stale entries found)~~ done — 2026-08-15_22-57 a9
 
 ### NOT STARTED (from session plan)
 
@@ -117,7 +117,7 @@ Registered after `error-wrapping` in the priority table; label `PatternErrorGuar
 
 ## QUESTIONS & DECISIONS FOR LARS (e)
 
-1. **Dead code**: delete `printer.Issuer` + `printer.NodesToGroup`? (zero production callers; possibly kept for SDK consumers?)
+~~1. **Dead code**: delete `printer.Issuer` + `printer.NodesToGroup`? (zero production callers; possibly kept for SDK consumers?)~~ done — deleted (commit 80be8dc6)
 2. **Doc sprawl**: `USAGE.md` documents the OLD `dupl` tool (pre-fork name) — split brain with `HOW_TO_USE.md`. Also candidates to archive into `docs/`: `PARTS.md`, `branching-flow-analysis.md`, `branching-flow-findings-table.md`, `MIGRATION_QUICK_START.md`, `MIGRATION_TO_NIX_FLAKES_PROPOSAL.md`, `BENCHMARK_COMPARISON.md`, `PERFORMANCE_OPTIMIZATION.md`, `BDD_TESTS_REVIEW.md`, `WHAT_THIS_PROJECT_IS_NOT.md`. Archive, delete, or keep?
 3. **TODO_LIST.md stale entries found**: `shortenTypeString` (done pre-session), `global.out.css` gitignore (done), "ADR-0020" numbering (0020 taken). Confirm I should refresh TODO_LIST.md in the docs pass.
 4. **`--suggest-generics-min-lines` default**: I chose 4 (flag default + both Default constants). JSON-config users who don't set the field get 4 via DefaultConfig; CLI default is 4; `0` disables. OK?

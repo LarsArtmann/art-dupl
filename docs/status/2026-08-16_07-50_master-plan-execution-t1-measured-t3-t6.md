@@ -105,11 +105,11 @@ T2 (taskset protocol note — partially covered by the bench script's `PIN_CORES
 
 ## e) NEXT UP (resume order)
 
-1. **T5.1b**: remove tagliatelle from `.golangci.yml` (enable list AND settings blocks), re-run `nix flake check` to completion; record the `-race`-per-flake-check cadence in AGENTS.md (T5.2a).
-2. **T6.2–6.3**: write `scripts/alloc-budgets.txt` from the captured numbers, add the `alloc-gate` nix check, inject+revert a regression to prove the gate fires.
-3. **T7** (defer-cleanup pattern) — the largest evidence-backed noise cut; then T8/T9/T10 as a unit.
-4. **T13/T14/T15** (verdict: GO, allocation-count framing) then T23.
-5. Everything else per the plan's §3 table order.
+~~1. **T5.1b**: remove tagliatelle from `.golangci.yml` (enable list AND settings blocks), re-run `nix flake check` to completion; record the `-race`-per-flake-check cadence in AGENTS.md (T5.2a).~~ done — tagliatelle removed; `nix flake check` ALL GREEN; `-race` cadence recorded in AGENTS.md (2026-08-16_12-27, _13-13 a5)
+~~2. **T6.2–6.3**: write `scripts/alloc-budgets.txt` from the captured numbers, add the `alloc-gate` nix check, inject+revert a regression to prove the gate fires.~~ done — scripts/alloc-budgets.txt + `alloc-gate` nix check + injected-failure proof (2026-08-16_12-27 #2)
+~~3. **T7** (defer-cleanup pattern) — the largest evidence-backed noise cut; then T8/T9/T10 as a unit.~~ done — defer-cleanup pattern shipped with corpus evidence (CHANGELOG v0.7.0); T8-T10 as a unit (13-13)
+~~4. **T13/T14/T15** (verdict: GO, allocation-count framing) then T23.~~ done — T13 arena, T14 measured NO-GO, T15 alloc budgets, T23 perf stat (CHANGELOG)
+~~5. Everything else per the plan's §3 table order.~~ done — all remaining plan tasks completed through wave 3 (2026-08-16_17-37); master plan 24/26
 
 ---
 
