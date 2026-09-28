@@ -54,7 +54,11 @@ func TestCLIFlagCountMatchesDocs(t *testing.T) {
 	AddFlags(root)
 	root.InitDefaultHelpFlag()
 	flags := 0
-	root.LocalFlags().VisitAll(func(*pflag.Flag) { flags++ })
+	root.LocalFlags().VisitAll(func(f *pflag.Flag) {
+		if !f.Hidden {
+			flags++
+		}
+	})
 	if flags == 0 {
 		t.Fatal("NewRootCommand exposes zero flags; the count gate is measuring the wrong thing")
 	}
