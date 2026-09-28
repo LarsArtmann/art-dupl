@@ -123,18 +123,18 @@ BDD framework generates these. Fixing it once benefits everyone.
 
 ### 20% that delivers 80% of the result
 
-1. Fix accept-directive above-range scanning (the 1%)
-2. Add test-helper-delegate pattern (the 4%)
-3. Strengthen the BDD test to assert suppression
-4. Place directives for the 2 remaining intentional clones
-5. Update documentation
+~~1. Fix accept-directive above-range scanning (the 1%)~~ done — inline-directive scanner shipped (commit 95547e7f; CHANGELOG 0.5.0)
+~~2. Add test-helper-delegate pattern (the 4%)~~ done — TestIsTestHelperDelegate + pattern (commit c30f683d)
+~~3. Strengthen the BDD test to assert suppression~~ done — BDD asserts delegate suppression
+~~4. Place directives for the 2 remaining intentional clones~~ done — directives placed
+~~5. Update documentation~~ done — HOW_TO_USE documents directive placement + gofmt forms
 
 ### Other 20% (completeness)
 
-6. Run full test suite + lint to verify no regressions
-7. Update `ACTIONABILITY_PATTERNS.md` with the new pattern
-8. Update `AGENTS.md` with the directive placement semantics
-9. Verify at multiple thresholds (-t 1, -t 2, -t 5)
+~~6. Run full test suite + lint to verify no regressions~~ done — green at execution (2026-07-25)
+~~7. Update `ACTIONABILITY_PATTERNS.md` with the new pattern~~ done — test-helper-delegate row added
+~~8. Update `AGENTS.md` with the directive placement semantics~~ done — directive placement semantics in AGENTS.md (accept-directive bullet)
+~~9. Verify at multiple thresholds (-t 1, -t 2, -t 5)~~ done — verified at -t 1/2/5 during execution
 
 ---
 
