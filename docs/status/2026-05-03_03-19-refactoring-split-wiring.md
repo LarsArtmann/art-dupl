@@ -74,9 +74,9 @@ cmd/
 
 | Priority | Task                                                              |
 | -------- | ----------------------------------------------------------------- |
-| HIGH     | Implement TokenValue type with validation                         |
-| MEDIUM   | Introduce ProcessedClone DTO to decouple Printer from syntax.Node |
-| MEDIUM   | Consolidate three parallel Clone types                            |
-| LOW      | Refactor syntax/golang/transform.go (355L switch)                 |
-| LOW      | Implement SIMD TODOs                                              |
-| LOW      | Archive old docs/status/ files                                    |
+~~| HIGH     | Implement TokenValue type with validation                         |~~ done — TokenValue int32 shipped (CHANGELOG 0.7.0, ADR-0022 era)
+~~| MEDIUM   | Introduce ProcessedClone DTO to decouple Printer from syntax.Node |~~ done — domain.CloneNode DTO (2026-07-01 DTO decoupling; CHANGELOG 0.4.0/0.5.0)
+~~| MEDIUM   | Consolidate three parallel Clone types                            |~~ done@decided-against — CloneRef embedding (CHANGELOG 0.5.0); remaining DTOs intentional (2026-06-22 §b)
+~~| LOW      | Refactor syntax/golang/transform.go (355L switch)                 |~~ Won't implement — superseded by ADR-0022 sorted []tran
+~~| LOW      | Implement SIMD TODOs                                              |~~ done@decided-against — hash_seq.go uses sync.Pool + xxh3; hand-written SIMD deleted (FEATURES N/A row)
+~~| LOW      | Archive old docs/status/ files                                    |~~ done — archive/ + archived/ dirs in active use since 2026-05

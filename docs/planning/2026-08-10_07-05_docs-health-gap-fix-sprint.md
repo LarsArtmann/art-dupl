@@ -109,19 +109,19 @@ graph TD
 
 | #  | Task                                                                     | File                           | Est   | Depends On |
 | -- | ------------------------------------------------------------------------ | ------------------------------ | ----- | ---------- |
-| 1  | Read ACTIONABILITY_PATTERNS.md current state + identify insertion points | docs/ACTIONABILITY_PATTERNS.md | 5min  | —          |
-| 2  | Add 4 new pattern rows + update count 25→29                              | docs/ACTIONABILITY_PATTERNS.md | 8min  | 1          |
-| 3  | Replace AGENTS.md pattern bullet with concise version                    | AGENTS.md                      | 8min  | 2          |
-| 4  | Remove "See ADR-0020" from CHANGELOG --suggest-generics entry            | CHANGELOG.md                   | 2min  | —          |
-| 5  | Remove `- tagliatelle` from .golangci.yml                                | .golangci.yml                  | 2min  | —          |
-| 6  | Add `global.out.css` to .gitignore                                       | .gitignore                     | 2min  | —          |
-| 7  | Add --suggest-generics section to HOW_TO_USE.md                          | HOW_TO_USE.md                  | 10min | —          |
-| 8  | Add --min-tokens section to HOW_TO_USE.md                                | HOW_TO_USE.md                  | 8min  | 7          |
-| 9  | Add SuggestGenerics to SDK_DESIGN.md                                     | SDK_DESIGN.md                  | 5min  | —          |
-| 10 | Add SuggestGenerics to FEATURES.md SDK table                             | FEATURES.md                    | 3min  | —          |
-| 11 | Remove tagliatelle item from TODO_LIST.md                                | TODO_LIST.md                   | 3min  | 5          |
-| 12 | Run `go build ./...` + `go test ./...`                                   | —                              | 5min  | 1-11       |
-| 13 | Run `golangci-lint run --timeout 5m ./...`                               | —                              | 5min  | 5,12       |
-| 14 | Git commit + push                                                        | —                              | 5min  | 12,13      |
+~~| 1  | Read ACTIONABILITY_PATTERNS.md current state + identify insertion points | docs/ACTIONABILITY_PATTERNS.md | 5min  | —          |~~ done — verified in docs/status/2026-08-10_08-53 gap-fix-sprint completion report
+~~| 2  | Add 4 new pattern rows + update count 25→29                              | docs/ACTIONABILITY_PATTERNS.md | 8min  | 1          |~~ done — verified in docs/status/2026-08-10_08-53 gap-fix-sprint completion report
+~~| 3  | Replace AGENTS.md pattern bullet with concise version                    | AGENTS.md                      | 8min  | 2          |~~ done — verified in docs/status/2026-08-10_08-53 gap-fix-sprint completion report
+~~| 4  | Remove "See ADR-0020" from CHANGELOG --suggest-generics entry            | CHANGELOG.md                   | 2min  | —          |~~ done — verified in docs/status/2026-08-10_08-53 gap-fix-sprint completion report
+~~| 5  | Remove `- tagliatelle` from .golangci.yml                                | .golangci.yml                  | 2min  | —          |~~ done — verified in docs/status/2026-08-10_08-53 gap-fix-sprint completion report
+~~| 6  | Add `global.out.css` to .gitignore                                       | .gitignore                     | 2min  | —          |~~ done — verified in docs/status/2026-08-10_08-53 gap-fix-sprint completion report
+~~| 7  | Add --suggest-generics section to HOW_TO_USE.md                          | HOW_TO_USE.md                  | 10min | —          |~~ done — verified in docs/status/2026-08-10_08-53 gap-fix-sprint completion report
+~~| 8  | Add --min-tokens section to HOW_TO_USE.md                                | HOW_TO_USE.md                  | 8min  | 7          |~~ done — verified in docs/status/2026-08-10_08-53 gap-fix-sprint completion report
+~~| 9  | Add SuggestGenerics to SDK_DESIGN.md                                     | SDK_DESIGN.md                  | 5min  | —          |~~ done — verified in docs/status/2026-08-10_08-53 gap-fix-sprint completion report
+~~| 10 | Add SuggestGenerics to FEATURES.md SDK table                             | FEATURES.md                    | 3min  | —          |~~ done — verified in docs/status/2026-08-10_08-53 gap-fix-sprint completion report
+~~| 11 | Remove tagliatelle item from TODO_LIST.md                                | TODO_LIST.md                   | 3min  | 5          |~~ done — verified in docs/status/2026-08-10_08-53 gap-fix-sprint completion report
+~~| 12 | Run `go build ./...` + `go test ./...`                                   | —                              | 5min  | 1-11       |~~ done — verified in docs/status/2026-08-10_08-53 gap-fix-sprint completion report
+~~| 13 | Run `golangci-lint run --timeout 5m ./...`                               | —                              | 5min  | 5,12       |~~ done — verified in docs/status/2026-08-10_08-53 gap-fix-sprint completion report
+~~| 14 | Git commit + push                                                        | —                              | 5min  | 12,13      |~~ done — verified in docs/status/2026-08-10_08-53 gap-fix-sprint completion report
 
 **Total estimated time:** ~71 minutes

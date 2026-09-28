@@ -71,13 +71,13 @@ Dogfooding art-dupl on itself at `-t 15`:
 
 **What's missing:**
 
-- Classification logic: compare identifier `Name` fields across fragments to determine Type 1 (identical names) vs Type 2 (different names, same structure)
-- Output integration: add `clone_type` field to JSON, SARIF, HTML output
-- Tests for the classification logic
+~~- Classification logic: compare identifier `Name` fields across fragments to determine Type 1 (identical names) vs Type 2 (different names, same structure)~~ done — classifyCloneType (commit 359f3d7)
+~~- Output integration: add `clone_type` field to JSON, SARIF, HTML output~~ done — clone_type in JSON/SARIF/rich-text output
+~~- Tests for the classification logic~~ done — printer/clone_type_test.go
 
 ### Actionability Patterns (T9) — detectors added, untested on real code
 
-The 3 new detectors (assertion chains, error wrapping, Cobra boilerplate) compile and pass existing tests, but have not been validated against real-world false positive files in `.auto-deduplicate/false-positives.json`.
+~~The 3 new detectors (assertion chains, error wrapping, Cobra boilerplate) compile and pass existing tests, but have not been validated against real-world false positive files in `.auto-deduplicate/false-positives.json`.~~ done — validated against false-positives.json + calibration corpus (CHANGELOG 0.7.0)
 
 ---
 
@@ -87,44 +87,44 @@ The 3 new detectors (assertion chains, error wrapping, Cobra boilerplate) compil
 
 | Task                                  | Why deferred                                                                                                                                                                                 |
 | ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **T1** — Statement-Level Tokenization | Fundamentally changes `serial()` pre-order DFS → statement-level fingerprinting. Every downstream consumer of token count would need rescaling. High risk of breaking detection correctness. |
-| **T2** — Alpha-Normalization          | Depends on T1. Requires AST walker with scope tracking.                                                                                                                                      |
-| **T5** — Three-Mode System            | Depends on T1+T2. Renames `--semantic` flag (breaking change for existing users).                                                                                                            |
+~~| **T1** — Statement-Level Tokenization | Fundamentally changes `serial()` pre-order DFS → statement-level fingerprinting. Every downstream consumer of token count would need rescaling. High risk of breaking detection correctness. |~~ done — shipped (ADR-0023, 2026-09-14)
+~~| **T2** — Alpha-Normalization          | Depends on T1. Requires AST walker with scope tracking.                                                                                                                                      |~~ done — shipped (commit 91554e5, ADR-0007)
+~~| **T5** — Three-Mode System            | Depends on T1+T2. Renames `--semantic` flag (breaking change for existing users).                                                                                                            |~~ done — shipped (ADR-0007)
 
 ### Phase 3 Refactoring Advisor
 
 | Task                           | Why not started                                                                                     |
 | ------------------------------ | --------------------------------------------------------------------------------------------------- |
-| **T10** — Baseline/CI Mode     | Needs new subcommands (`baseline`, `check`), baseline file format design, clone diff logic. ~90min. |
-| **T11** — Extractability Score | Needs single-entry-point check, shared-mutable-state analysis, consistent-return check. ~70min.     |
+~~| **T10** — Baseline/CI Mode     | Needs new subcommands (`baseline`, `check`), baseline file format design, clone diff logic. ~90min. |~~ done — `baseline` + `check` subcommands (CHANGELOG 0.4.0)
+~~| **T11** — Extractability Score | Needs single-entry-point check, shared-mutable-state analysis, consistent-return check. ~70min.     |~~ done — property-based extractability engine (ADR-0017, CHANGELOG 0.6.0)
 
 ### Phase 4 Architecture Cleanup
 
 | Task                                          | Why not started                                                    |
 | --------------------------------------------- | ------------------------------------------------------------------ |
-| **T12** — ctx in run_crawl                    | Last goroutine leak. Straightforward but touches file crawl.       |
-| **T13** — Printer decoupling from syntax.Node | Design `ReadOnlyNode` interface, update 10 actionability matchers. |
-| **T14** — Clone type consolidation            | 3 parallel Clone types. Risky refactor.                            |
-| **T15** — Printer package split               | ~29 files into sub-packages. Mechanical but tedious.               |
-| **T16** — Fragment type unification           | Low impact.                                                        |
+~~| **T12** — ctx in run_crawl                    | Last goroutine leak. Straightforward but touches file crawl.       |~~ done — ctx threaded through the crawl (commit 650a4b0)
+~~| **T13** — Printer decoupling from syntax.Node | Design `ReadOnlyNode` interface, update 10 actionability matchers. |~~ done@decided-against — superseded by the domain.CloneNode bridge (2026-07-26)
+~~| **T14** — Clone type consolidation            | 3 parallel Clone types. Risky refactor.                            |~~ done — CloneRef embedded everywhere (CHANGELOG 0.5.0); remaining DTOs intentional
+~~| **T15** — Printer package split               | ~29 files into sub-packages. Mechanical but tedious.               |~~ done — printer/actionability + printer/stats (CHANGELOG 0.5.0)
+~~| **T16** — Fragment type unification           | Low impact.                                                        |~~ parked — still open (ROADMAP consolidated design-debts entry)
 
 ### Phase 5 Testing & Quality
 
 | Task                                     | Why not started                                    |
 | ---------------------------------------- | -------------------------------------------------- |
-| **T17** — Property tests for suffix tree | Algorithm correctness unverified. Important.       |
-| **T18** — Detection coverage (61.8%→80%) | MultiDetector dispatch, adapter integration tests. |
-| **T19** — Domain coverage (58.6%→80%)    | CloneType, ProcessedClone, ClonePriority tests.    |
-| **T20** — Performance benchmarks         | No current regression risk.                        |
+~~| **T17** — Property tests for suffix tree | Algorithm correctness unverified. Important.       |~~ done — tran_parity_test.go + property suite (CHANGELOG 0.7.0)
+~~| **T18** — Detection coverage (61.8%→80%) | MultiDetector dispatch, adapter integration tests. |~~ done — 92.7% (commit 9fecc7f)
+~~| **T19** — Domain coverage (58.6%→80%)    | CloneType, ProcessedClone, ClonePriority tests.    |~~ done — 100% (commit 692c587)
+~~| **T20** — Performance benchmarks         | No current regression risk.                        |~~ done — baselines committed under docs/benchmarks (ADR-0022 era)
 
 ### Phase 6 Ecosystem
 
 | Task                              | Why not started            |
 | --------------------------------- | -------------------------- |
-| **T21** — GitHub Actions template | Depends on T10 (baseline). |
-| **T22** — Pre-commit hook         | Depends on T10.            |
-| **T23** — json/v2 migration       | Future-proofing.           |
-| **T24** — Rename Data→View        | Naming clarity.            |
+~~| **T21** — GitHub Actions template | Depends on T10 (baseline). |~~ done — templates/github-actions-duplicate-check.yml (commit 5356d17)
+~~| **T22** — Pre-commit hook         | Depends on T10.            |~~ done — .pre-commit-hooks.yaml (commit 5356d17)
+~~| **T23** — json/v2 migration       | Future-proofing.           |~~ done — shipped 0.4.0, stabilized on the v1 API (ADR-0024)
+~~| **T24** — Rename Data→View        | Naming clarity.            |~~ done — *View rename (commit b60aca6)
 
 ---
 
@@ -190,7 +190,7 @@ Nothing. No regressions, no broken builds, no reverted changes.
 
 ## g) Top #1 Question I Cannot Figure Out Myself
 
-**Should T1 (statement-level tokenization) be attempted now, or is the risk too high?**
+~~**Should T1 (statement-level tokenization) be attempted now, or is the risk too high?**~~ done — shipped safely (ADR-0023, 2026-09-14) with group-shape-preserving subsumed trimming
 
 T1 is the root-cause fix for the fundamental flaw: `serial()` flattens the AST via pre-order DFS, making 1 Go statement = ~8-13 tokens. The 15-token threshold measures AST nodes, not statements. Every other completed task (T3, T4, T7, T8, T9) is a post-hoc filter on top of this broken tokenization.
 
