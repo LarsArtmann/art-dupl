@@ -1,16 +1,23 @@
 package provider
 
 import (
+	"bytes"
 	"context"
 	"fmt"
+	"runtime/debug"
 	"io"
 	"os"
 	"path/filepath"
+	"reflect"
+	"slices"
 	"strings"
 	"testing"
 	"time"
 
 	"github.com/LarsArtmann/art-dupl/internal/gitignore"
+	"github.com/LarsArtmann/art-dupl/internal/jsonutil"
+	"github.com/LarsArtmann/art-dupl/internal/testutil"
+	"github.com/LarsArtmann/art-dupl/pkg/artdupl"
 	"github.com/LarsArtmann/art-dupl/printer/finding"
 	gofinding "github.com/larsartmann/go-finding"
 	toolsdk "github.com/larsartmann/go-finding/toolsdk"
@@ -50,7 +57,7 @@ const renamedFunction = `func processShipment(shipmentID string, boxes int) (int
 }
 `
 
-func writeFile(t *testing.T, dir, name, content string) {
+func writeFile(t testing.TB, dir, name, content string) {
 	t.Helper()
 
 	path := filepath.Join(dir, name)
@@ -772,11 +779,11 @@ func TestCollectSourceFilesWalkErrorPolicy(t *testing.T) {
 // emission order (parallel search makes output order unspecified).
 func sortFindingsForTest(findings []gofinding.Finding) {
 	slices.SortStableFunc(findings, func(a, b gofinding.Finding) int {
-		if c := strings.Compare(a.File, b.File); c != 0 {
+		if c := strings.Compare(string(a.Position.File), string(b.Position.File)); c != 0 {
 			return c
 		}
 
-		return int(a.Region.Start.Line) - int(b.Region.Start.Line)
+		return a.Position.Line - b.Position.Line
 	})
 }
 
@@ -862,7 +869,7 @@ func TestProviderFindingsGolden(t *testing.T) {
 	}
 
 	for i := range findings {
-		findings[i].ID = fmt.Sprintf("finding-%02d", i+1)
+		findings[i].ID = gofinding.ID(fmt.Sprintf("finding-%02d", i+1))
 		findings[i].Metadata["version"] = "golden"
 	}
 
@@ -872,6 +879,10 @@ func TestProviderFindingsGolden(t *testing.T) {
 	if err != nil {
 		t.Fatalf("marshal findings: %v", err)
 	}
+
+	// t.TempDir() paths are machine-specific; normalize them so the golden
+	// is byte-stable on every machine and in CI.
+	data = bytes.ReplaceAll(data, []byte(dir), []byte("<fixture>"))
 
 	testutil.RequireGolden(t, data)
 }
@@ -894,5 +905,46 @@ func BenchmarkCollectSourceFiles(b *testing.B) {
 		if _, err := collectSourceFiles(dir, ignore); err != nil {
 			b.Fatalf("collectSourceFiles: %v", err)
 		}
+	}
+}
+
+// TestProviderVersionFromBuildInfo pins the version-resolution rules through
+// the build-info seam: release self-builds report their own version,
+// dependency builds (BuildFlow's consumption mode) read the dependency table,
+// and everything else falls back to the dev placeholder.
+func TestProviderVersionFromBuildInfo(t *testing.T) {
+	t.Parallel()
+
+	release := &debug.BuildInfo{
+		Main: debug.Module{Path: modulePath, Version: "v0.8.0"},
+	}
+	if got := providerVersionFrom(release); got != "v0.8.0" {
+		t.Errorf("release self-build version = %q, want v0.8.0", got)
+	}
+
+	dependency := &debug.BuildInfo{
+		Main: debug.Module{Path: "github.com/LarsArtmann/BuildFlow", Version: "v1.0.0"},
+		Deps: []*debug.Module{
+			{Path: "github.com/larsartmann/go-finding", Version: "v1.13.0"},
+			{Path: modulePath, Version: "v0.7.2"},
+		},
+	}
+	if got := providerVersionFrom(dependency); got != "v0.7.2" {
+		t.Errorf("dependency version = %q, want v0.7.2", got)
+	}
+
+	devel := &debug.BuildInfo{
+		Main: debug.Module{Path: modulePath, Version: "(devel)"},
+		Deps: []*debug.Module{{Path: modulePath, Version: "v0.7.2"}},
+	}
+	if got := providerVersionFrom(devel); got != "v0.7.2" {
+		t.Errorf("devel self-build with dep entry = %q, want v0.7.2 (dep table wins)", got)
+	}
+
+	consumer := &debug.BuildInfo{
+		Main: debug.Module{Path: "github.com/LarsArtmann/BuildFlow", Version: "v1.0.0"},
+	}
+	if got := providerVersionFrom(consumer); got != versionFallback {
+		t.Errorf("consumer without art-dupl dep = %q, want %q", got, versionFallback)
 	}
 }

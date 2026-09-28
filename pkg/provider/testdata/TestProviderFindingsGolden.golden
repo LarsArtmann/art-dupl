@@ -1,0 +1,118 @@
+[
+  {
+    "id": "finding-01",
+    "rule": "art-dupl/duplicate-code",
+    "toolName": "art-dupl",
+    "message": "Duplicate code: 16 tokens in 2 instances",
+    "severity": "warning",
+    "position": {
+      "file": "<fixture>/one.go",
+      "line": 4,
+      "offset": 77
+    },
+    "category": "duplication",
+    "fixStrategy": "none",
+    "range": {
+      "start": {
+        "file": "<fixture>/one.go",
+        "line": 4,
+        "offset": 77
+      },
+      "end": {
+        "file": "<fixture>/one.go",
+        "line": 15,
+        "offset": 338
+      }
+    },
+    "snippet": "total := quantity * 3\n\tadjusted := total + 7\n\tscaled := adjusted * 2\n\tif scaled > 100 {\n\t\tscaled = scaled - 10\n\t}\n\tif orderID == \"\" {\n\t\treturn 0, errors.New(\"empty order\")\n\t}\n\tnormalized := scaled / 2\n\tfinalTotal := normalized + adjusted\n\treturn finalTotal, nil",
+    "groupId": "745c3c6f1b307b33",
+    "related": [
+      {
+        "findingId": "art-dupl:art-dupl/duplicate-code:<fixture>/two.go:4",
+        "relation": "clone-of",
+        "position": {
+          "file": "<fixture>/two.go",
+          "line": 4,
+          "offset": 80
+        },
+        "range": {
+          "start": {
+            "file": "<fixture>/two.go",
+            "line": 4,
+            "offset": 80
+          },
+          "end": {
+            "file": "<fixture>/two.go",
+            "line": 15,
+            "offset": 345
+          }
+        }
+      }
+    ],
+    "metadata": {
+      "art-dupl/detection-method": "semantic",
+      "art-dupl/group-size": "2",
+      "art-dupl/group-tokens": "16",
+      "art-dupl/lines": "12",
+      "version": "golden"
+    }
+  },
+  {
+    "id": "finding-02",
+    "rule": "art-dupl/duplicate-code",
+    "toolName": "art-dupl",
+    "message": "Duplicate code: 16 tokens in 2 instances",
+    "severity": "warning",
+    "position": {
+      "file": "<fixture>/two.go",
+      "line": 4,
+      "offset": 80
+    },
+    "category": "duplication",
+    "fixStrategy": "none",
+    "range": {
+      "start": {
+        "file": "<fixture>/two.go",
+        "line": 4,
+        "offset": 80
+      },
+      "end": {
+        "file": "<fixture>/two.go",
+        "line": 15,
+        "offset": 345
+      }
+    },
+    "snippet": "total := boxes * 3\n\tadjusted := total + 11\n\tscaled := adjusted * 2\n\tif scaled > 100 {\n\t\tscaled = scaled - 10\n\t}\n\tif shipmentID == \"\" {\n\t\treturn 0, errors.New(\"empty shipment\")\n\t}\n\tnormalized := scaled / 2\n\tfinalTotal := normalized + adjusted\n\treturn finalTotal, nil",
+    "groupId": "745c3c6f1b307b33",
+    "related": [
+      {
+        "findingId": "art-dupl:art-dupl/duplicate-code:<fixture>/one.go:4",
+        "relation": "clone-of",
+        "position": {
+          "file": "<fixture>/one.go",
+          "line": 4,
+          "offset": 77
+        },
+        "range": {
+          "start": {
+            "file": "<fixture>/one.go",
+            "line": 4,
+            "offset": 77
+          },
+          "end": {
+            "file": "<fixture>/one.go",
+            "line": 15,
+            "offset": 338
+          }
+        }
+      }
+    ],
+    "metadata": {
+      "art-dupl/detection-method": "semantic",
+      "art-dupl/group-size": "2",
+      "art-dupl/group-tokens": "16",
+      "art-dupl/lines": "12",
+      "version": "golden"
+    }
+  }
+]

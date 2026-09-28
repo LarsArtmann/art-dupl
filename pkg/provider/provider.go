@@ -227,6 +227,14 @@ func providerVersion() string {
 		return versionFallback
 	}
 
+	return providerVersionFrom(info)
+}
+
+// providerVersionFrom extracts the art-dupl version from a build-info record.
+// Seam for tests: a release build of this module reports its own version; a
+// dependency build (BuildFlow's consumption mode) reads the module from the
+// dependency table; anything else falls back to the dev placeholder.
+func providerVersionFrom(info *debug.BuildInfo) string {
 	if info.Main.Path == modulePath && isReleaseVersion(info.Main.Version) {
 		return info.Main.Version
 	}
