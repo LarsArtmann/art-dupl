@@ -11,9 +11,7 @@ func BenchmarkSerialize_Small(b *testing.B) {
 		},
 	}
 
-	b.ResetTimer()
-
-	for range b.N {
+	for b.Loop() {
 		_ = Serialize(root)
 	}
 }
@@ -21,9 +19,7 @@ func BenchmarkSerialize_Small(b *testing.B) {
 func BenchmarkSerialize_Large(b *testing.B) {
 	root := genDeepTree(100)
 
-	b.ResetTimer()
-
-	for range b.N {
+	for b.Loop() {
 		_ = Serialize(root)
 	}
 }
@@ -38,9 +34,7 @@ func BenchmarkSerialize_Statements(b *testing.B) {
 		},
 	}
 
-	b.ResetTimer()
-
-	for range b.N {
+	for b.Loop() {
 		_ = Serialize(root)
 	}
 }
@@ -48,9 +42,7 @@ func BenchmarkSerialize_Statements(b *testing.B) {
 func BenchmarkSerialize_Idempotent(b *testing.B) {
 	root := genDeepTree(50)
 
-	b.ResetTimer()
-
-	for range b.N {
+	for b.Loop() {
 		// Two serializations to verify idempotency overhead
 		_ = Serialize(root)
 		_ = Serialize(root)

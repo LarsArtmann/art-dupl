@@ -3,6 +3,7 @@
 **Date**: 2026-08-16 04:27
 **Inputs**: `TODO_LIST.md` (2026-08-16), `docs/status/2026-08-16_04-23_suffixtree-followup-slice-transitions-race-fixes.md` §f, `ROADMAP.md`, `FEATURES.md`
 **Preamble state**: build / `go test ./...` / `go test -race ./...` / lint all green. Three perf sessions (suffix tree) landed but **unvalidated end-to-end**. One real data race (cache) fixed; the class it came from is **unaudited**.
+**Status (audited 2026-09-28)**: RESOLVED — 24/26 tasks executed, 2 no-go-verified: **T7** defer-cleanup pattern (covered by raii-defer/defer-call; zero measured benefit, over-suppression risk) and **T14** `[]*Node` stream pool (~0.03% of run allocations after the T13 arena, see CHANGELOG "Arena node serialization"). Evidence map: T1+T13 verdict `docs/benchmarks/realworld-cli.md`, T2/T22/T23 `docs/benchmarks/` baselines, T5/T6 in AGENTS.md gates, T7 verdict in the 2026-09-23 corpus re-validation.
 
 ---
 

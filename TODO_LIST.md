@@ -6,7 +6,13 @@ Actionable items for the next 2-4 weeks. Completed work lives in `CHANGELOG.md`.
 This file is OPEN work only — no completed, rejected, or resolved items.
 
 Master plan `docs/planning/2026-08-16_04-27_measure-first-trust-and-signal-master-plan.md`
-is complete (24/26 done or no-go-verified). Remaining items below.
+is fully resolved (audited 2026-09-28): 24 of 26 tasks executed, 2 no-go-verified by
+evidence — **T7** (defer-cleanup pattern: covered by the existing raii-defer/defer-call
+patterns; adding an arbitrary-resource variant measured zero benefit at real
+over-suppression risk, corpus re-validation 2026-09-23) and **T14** (`[]*Node`
+stream-slice `sync.Pool`: measured ~0.03% of run allocations after the T13 arena —
+`CHANGELOG.md` "Arena node serialization" + PARKED tier below). Nothing open.
+Remaining items below are from later plans.
 
 ---
 

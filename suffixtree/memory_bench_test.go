@@ -20,12 +20,19 @@ func benchmarkMemoryUsage(b *testing.B, uniqueCount int) {
 	}
 }
 
+// Benchmark sizes for the memory-usage suite: few unique tokens stress
+// transition-list reuse; many unique tokens stress state fan-out.
+const (
+	memoryUsageFewUniqueTokens  = 50
+	memoryUsageManyUniqueTokens = 5000
+)
+
 // BenchmarkMemoryUsageFewTokens measures memory with few unique tokens.
 func BenchmarkMemoryUsageFewTokens(b *testing.B) {
-	benchmarkMemoryUsage(b, 50) // 50 unique
+	benchmarkMemoryUsage(b, memoryUsageFewUniqueTokens)
 }
 
 // BenchmarkMemoryUsageManyTokens measures memory with many unique tokens.
 func BenchmarkMemoryUsageManyTokens(b *testing.B) {
-	benchmarkMemoryUsage(b, 5000) // 5000 unique
+	benchmarkMemoryUsage(b, memoryUsageManyUniqueTokens)
 }
