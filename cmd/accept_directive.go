@@ -172,19 +172,28 @@ func (a *AcceptedSet) scanFile(filename string) []AcceptedDirective {
 
 		rest := strings.TrimSpace(text[loc[1]:])
 
-		// Only treat the text after the prefix as a hash if it is a single
-		// hex token (no spaces). Group hashes are XXH3 16-char lowercase hex,
-		// so a non-hex token could never match a group: prose that merely
-		// MENTIONS the directive ("...accepts it with //art-dupl:accept.")
-		// and abbreviation attempts ("0xdeadbeef") stay hash-less instead of
-		// becoming precision directives that can never fire (and, since the
-		// dead-directive detector, would warn as stale). Multi-word text
-		// remains a human-readable description.
-		if rest != "" && !strings.ContainsAny(rest, " \t") && isHexToken(rest) {
+		// Grammar (suppression behavior is identical for every input — only
+		// dead-directive reporting visibility changes at the edges):
+		//   //art-dupl:accept                    → bare accept (hash-less)
+		//   //art-dupl:accept <hex>              → precision hash (group
+		//       hashes are XXH3 16-char hex, so a non-hex token could never
+		//       match a group)
+		//   //art-dupl:accept <multi-word text>  → description, bare accept
+		//   //art-dupl:accept <single non-hex>   → NOT a directive. Prose
+		//       merely mentioning the syntax ("...accepts it with
+		//       //art-dupl:accept.") lands here; under the old single-token-
+		//       is-a-hash rule it became a precision directive that could
+		//       never fire — harmless before the dead-directive detector,
+		//       nonsense-warning material after.
+		switch {
+		case rest == "":
+			directives = append(directives, d)
+		case isHexToken(rest):
 			d.Hash = rest
+			directives = append(directives, d)
+		case strings.ContainsAny(rest, " \t"):
+			directives = append(directives, d)
 		}
-
-		directives = append(directives, d)
 	}
 
 	return directives

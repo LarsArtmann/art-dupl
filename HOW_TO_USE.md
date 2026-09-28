@@ -577,7 +577,25 @@ For precision, include the group hash from the clone report:
 ```
 
 This only suppresses the group with hash `a1b2c3d4e5f6`. Other clone groups
-overlapping the same lines are still reported.
+overlapping the same lines are still reported. The hash must be a hex token —
+group hashes are 16-char lowercase hex, and a non-hex single token after the
+prefix (e.g. a sentence that merely mentions the directive) is ignored rather
+than becoming an accept that can never fire.
+
+### Stale Directive Warnings
+
+After a text/HTML run, art-dupl warns when a hash-specific directive matched
+NO clone groups this run:
+
+```text
+warning: stale //art-dupl:accept a1b2c3d4e5f6 at src/order.go:42 — matched no clone groups this run; remove it or update the hash
+```
+
+That almost always means the accepted code was edited since the directive was
+written: the group's content hash changed under it, so the directive has been
+silently dead ever since. Fix it by copying the fresh hash from a new report
+or removing the directive. Machine formats (JSON, SARIF, plumbing, CSV) keep
+a diagnostics-free stderr and never print this warning.
 
 ### Disabling Accept Directives
 
