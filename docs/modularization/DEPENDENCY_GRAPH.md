@@ -1,3 +1,5 @@
+> **Reference.** The layering documented here is enforced mechanically by `.go-arch-lint.yml`.
+
 # Dependency Graph — art-dupl
 
 **Date:** 2026-05-14

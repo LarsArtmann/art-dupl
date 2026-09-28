@@ -1,3 +1,5 @@
+> **Historical review (2026-06-15).** Point-in-time snapshot; superseded by the later review passes in `docs/reviews/` and the standing gates (lint, alloc budgets, docs-health count gate).
+
 # Code Quality Scan — 2026-06-15
 
 ## Summary

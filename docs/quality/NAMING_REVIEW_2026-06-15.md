@@ -1,3 +1,5 @@
+> **Historical review (2026-06-15).** Point-in-time snapshot; superseded by the later review passes in `docs/reviews/`.
+
 # Naming Review Report — 2026-06-15
 
 ## Executive Summary

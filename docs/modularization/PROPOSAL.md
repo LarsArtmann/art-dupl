@@ -1,3 +1,5 @@
+> **DECIDED (won't implement).** art-dupl stays a single Go module; the dependency DAG is enforced by `.go-arch-lint.yml` instead (documented in AGENTS + the 2026-06-23 multi-skill report). This proposal is kept as the evaluated alternative.
+
 # Modularization Proposal — art-dupl
 
 **Date:** 2026-05-14 (updated 2026-06-15)

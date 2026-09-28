@@ -1,3 +1,5 @@
+> **Historical snapshot (2026-01-14).** All findings listed here were fixed; the fuzz targets are now permanent suite members (`suffixtree/fuzz_test.go`, `syntax/templ/fuzz_test.go`, `suffixtree/testdata/fuzz/` seeds). Kept as the original investigation record.
+
 # Fuzz Test Findings - art-dupl
 
 **Date:** January 14, 2026

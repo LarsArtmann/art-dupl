@@ -1,3 +1,5 @@
+> **DECIDED (won't implement).** See the PROPOSAL.md banner: single-module decision recorded; this plan will not execute.
+
 # Execution Plan — art-dupl Modularization
 
 **Date:** 2026-05-14

@@ -1,3 +1,5 @@
+> **Superseded.** The living baselines are `docs/benchmarks/coverage-baseline.txt` and the performance gates (`.github/workflows/performance.yml`, `scripts/check-alloc-regression.sh`). This January-2026 snapshot predates them and its numbers are stale.
+
 # Test Baseline Metrics - art-dupl
 
 **Date:** January 14, 2026

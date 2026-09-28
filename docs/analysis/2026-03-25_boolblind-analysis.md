@@ -1,3 +1,5 @@
+> **Settled.** The analysis concludes (see the tail) that the boolblind-suggested fix is not appropriate for this codebase; that decision stands. Kept as the analysis record — no open items.
+
 # BoolBlind Analysis Report: art-dupl
 
 **Analysis Date:** March 25, 2026\

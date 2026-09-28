@@ -1,3 +1,5 @@
+> **Generated snapshot (2026-01-07).** Stale by design — the authoritative API docs are `pkg/artdupl/doc.go`, `SDK_DESIGN.md`, and `docs/api/README.md`. Regenerate before trusting any number below.
+
 # art-dupl API Documentation
 
 **Generated:** 2026-01-07\
