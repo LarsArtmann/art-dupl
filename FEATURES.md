@@ -211,7 +211,7 @@
 
 | Feature                      | Status           | Description                                                                          |
 | ---------------------------- | ---------------- | ------------------------------------------------------------------------------------ |
-| **Command-Line Flags**       | FULLY_FUNCTIONAL | 45+ flags for full control                                                           |
+| **Command-Line Flags**       | FULLY_FUNCTIONAL | 45 flags for full control                                                            |
 | **JSON Configuration Files** | FULLY_FUNCTIONAL | `--config` / `-c` flag, JSON-tagged Config struct                                    |
 | **Configuration Merging**    | FULLY_FUNCTIONAL | CLI flags override file config, file overrides defaults                              |
 | **Threshold Control**        | FULLY_FUNCTIONAL | Adjustable minimum duplicated statement count (default: 5)                           |
