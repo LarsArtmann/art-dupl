@@ -666,3 +666,233 @@ func TestDetect_MultiModuleWorkspaceShape(t *testing.T) {
 		t.Fatalf("cross-module clone not detected; findings: %+v", findings)
 	}
 }
+
+func TestDetectHonorsCanceledContext(t *testing.T) {
+	t.Parallel()
+
+	dir := t.TempDir()
+	writeFile(t, dir, "a.go", "package a\n\n"+duplicatedFunction)
+	writeFile(t, dir, "b.go", "package b\n\n"+renamedFunction)
+
+	ctx, cancel := context.WithCancel(dirContext(t, dir))
+	cancel()
+
+	detector := cloneDetector{}
+
+	findings, err := detector.Detect(ctx)
+	if err == nil {
+		t.Fatalf("Detect with canceled ctx must fail, got %d findings", len(findings))
+	}
+
+	if !strings.Contains(err.Error(), context.Canceled.Error()) {
+		t.Errorf("error %v should wrap context.Canceled", err)
+	}
+}
+
+func TestCollectSourceFilesNonexistentRoot(t *testing.T) {
+	t.Parallel()
+
+	files, err := collectSourceFiles(filepath.Join(t.TempDir(), "does-not-exist"), nil)
+	if err == nil {
+		t.Fatalf("collectSourceFiles on missing root must error, got files=%v", files)
+	}
+
+	if !strings.Contains(err.Error(), "walk") {
+		t.Errorf("error should name the walk phase, got: %v", err)
+	}
+}
+
+// TestCollectSourceFilesVanishedFileSkipped pins the nilerr path: a .go entry
+// that cannot be read by the generated-code filter (here: a dangling symlink)
+// is skipped without failing the crawl.
+func TestCollectSourceFilesVanishedFileSkipped(t *testing.T) {
+	t.Parallel()
+
+	dir := t.TempDir()
+	writeFile(t, dir, "keep.go", "package keep\n\nfunc kept() {}\n")
+
+	dangling := filepath.Join(dir, "ghost.go")
+	if err := os.Symlink(filepath.Join(dir, "gone-away.go"), dangling); err != nil {
+		t.Skipf("symlinks unavailable: %v", err)
+	}
+
+	files, err := collectSourceFiles(dir, nil)
+	if err != nil {
+		t.Fatalf("vanished file must not fail the crawl: %v", err)
+	}
+
+	for _, f := range files {
+		if strings.HasSuffix(f, "ghost.go") {
+			t.Errorf("dangling file should be skipped, got %v", files)
+		}
+	}
+
+	if len(files) != 1 {
+		t.Errorf("expected only keep.go, got %v", files)
+	}
+}
+
+// TestCollectSourceFilesWalkErrorPolicy pins the deliberate strictness: an
+// unreadable directory FAILS the whole crawl (wrapped error), unlike a
+// vanished FILE which is skipped. The provider is a pipeline detector — a
+// partially-crawled tree would silently under-report, so strictness wins over
+// the CLI's tolerance. If this test ever needs to flip to tolerance, change
+// the walk callback's `if err != nil { return err }` and this comment.
+func TestCollectSourceFilesWalkErrorPolicy(t *testing.T) {
+	if os.Geteuid() == 0 {
+		t.Skip("permission bits do not stop root")
+	}
+
+	dir := t.TempDir()
+	writeFile(t, dir, "sealed/inner.go", "package inner\n\nfunc sealed() {}\n")
+
+	sealedDir := filepath.Join(dir, "sealed")
+	if err := os.Chmod(sealedDir, 0o000); err != nil {
+		t.Fatalf("chmod sealed dir: %v", err)
+	}
+
+	t.Cleanup(func() {
+		if chmodErr := os.Chmod(sealedDir, 0o755); chmodErr != nil {
+			t.Logf("restore sealed dir perms: %v", chmodErr)
+		}
+	})
+
+	files, err := collectSourceFiles(dir, nil)
+	if err == nil {
+		t.Fatalf("unreadable directory must fail the crawl (strict policy), got files=%v", files)
+	}
+
+	if !strings.Contains(err.Error(), "walk") {
+		t.Errorf("error should name the walk phase, got: %v", err)
+	}
+}
+
+// sortFindingsForTest orders findings deterministically (file, start line) so
+// equivalence and golden comparisons are independent of the SDK's group
+// emission order (parallel search makes output order unspecified).
+func sortFindingsForTest(findings []gofinding.Finding) {
+	slices.SortStableFunc(findings, func(a, b gofinding.Finding) int {
+		if c := strings.Compare(a.File, b.File); c != 0 {
+			return c
+		}
+
+		return int(a.Region.Start.Line) - int(b.Region.Start.Line)
+	})
+}
+
+// TestDetectEquivalenceWithSharedAdapter pins the composition contract:
+// Detect(ctx) must equal "SDK groups → toProcessedGroup → finding.ToFindings
+// → capAdvisorySeverities → stripEmptyMetadata" for the same tree. Any drift
+// in the provider's mapping layer breaks this instead of silently producing
+// different pipelines for the CLI and the BuildFlow lane.
+func TestDetectEquivalenceWithSharedAdapter(t *testing.T) {
+	t.Parallel()
+
+	dir := t.TempDir()
+	writeFile(t, dir, "alpha.go", "package alpha\n\n"+duplicatedFunction)
+	writeFile(t, dir, "beta.go", "package beta\n\n"+renamedFunction)
+
+	detector := cloneDetector{}
+	providerFindings, err := detector.Detect(dirContext(t, dir))
+	if err != nil {
+		t.Fatalf("Detect: %v", err)
+	}
+
+	if len(providerFindings) == 0 {
+		t.Fatal("fixture must produce findings")
+	}
+
+	sdkDetector, err := artdupl.NewDetector(providerOptions())
+	if err != nil {
+		t.Fatalf("NewDetector: %v", err)
+	}
+
+	defer func() { _ = sdkDetector.Close() }()
+
+	files, err := collectSourceFiles(dir, nil)
+	if err != nil {
+		t.Fatalf("collectSourceFiles: %v", err)
+	}
+
+	result, err := sdkDetector.FindClones(dirContext(t, dir), files)
+	if err != nil {
+		t.Fatalf("FindClones: %v", err)
+	}
+
+	expected := make([]gofinding.Finding, 0, len(result.CloneGroups))
+	for _, group := range result.CloneGroups {
+		expected = append(expected, finding.ToFindings(toProcessedGroup(group), finding.Options{
+			Version:         providerVersion(),
+			Threshold:       artdupl.DefaultThreshold,
+			DetectionMethod: semanticMode,
+		})...)
+	}
+
+	capAdvisorySeverities(expected)
+	stripEmptyMetadata(expected)
+
+	sortFindingsForTest(providerFindings)
+	sortFindingsForTest(expected)
+
+	if len(providerFindings) != len(expected) {
+		t.Fatalf("finding count drift: provider=%d adapter=%d", len(providerFindings), len(expected))
+	}
+
+	for i := range expected {
+		if !reflect.DeepEqual(providerFindings[i], expected[i]) {
+			t.Errorf("finding[%d] drift:\n provider=%+v\n adapter =%+v", i, providerFindings[i], expected[i])
+		}
+	}
+}
+
+// TestProviderFindingsGolden pins the provider's full finding shape for a
+// fixed fixture: positions, snippets, severity caps, tags, and the ABSENCE of
+// classification metadata (ADR-0025). Classification leaks or severity-cap
+// regressions break this golden instead of shipping to BuildFlow.
+func TestProviderFindingsGolden(t *testing.T) {
+	t.Parallel()
+
+	dir := t.TempDir()
+	writeFile(t, dir, "one.go", "package one\n\n"+duplicatedFunction)
+	writeFile(t, dir, "two.go", "package two\n\n"+renamedFunction)
+
+	findings, err := (cloneDetector{}).Detect(dirContext(t, dir))
+	if err != nil {
+		t.Fatalf("Detect: %v", err)
+	}
+
+	for i := range findings {
+		findings[i].ID = fmt.Sprintf("finding-%02d", i+1)
+		findings[i].Metadata["version"] = "golden"
+	}
+
+	sortFindingsForTest(findings)
+
+	data, err := jsonutil.MarshalIndent(findings, "", "  ")
+	if err != nil {
+		t.Fatalf("marshal findings: %v", err)
+	}
+
+	testutil.RequireGolden(t, data)
+}
+
+func BenchmarkCollectSourceFiles(b *testing.B) {
+	dir := b.TempDir()
+
+	for i := range 20 {
+		sub := filepath.Join(dir, fmt.Sprintf("pkg%02d", i))
+		for j := range 10 {
+			writeFile(b, sub, fmt.Sprintf("file%02d.go", j), "package p\n\n"+duplicatedFunction)
+		}
+	}
+
+	ignore := gitignore.LoadTree(dir, io.Discard)
+
+	b.ResetTimer()
+
+	for range b.N {
+		if _, err := collectSourceFiles(dir, ignore); err != nil {
+			b.Fatalf("collectSourceFiles: %v", err)
+		}
+	}
+}
