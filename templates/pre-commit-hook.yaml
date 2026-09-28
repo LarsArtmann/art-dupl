@@ -18,4 +18,4 @@ entry: art-dupl
 language: golang
 types: [go]
 pass_filenames: false
-args: ["run", "--threshold", "5", "--output", "plumbing", "."]
+args: ["run", "--threshold", "5", "--plumbing", "."]
