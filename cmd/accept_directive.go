@@ -173,12 +173,14 @@ func (a *AcceptedSet) scanFile(filename string) []AcceptedDirective {
 		rest := strings.TrimSpace(text[loc[1]:])
 
 		// Only treat the text after the prefix as a hash if it is a single
-		// token (no spaces). This distinguishes precision-hash directives
-		// (//art-dupl:accept a1b2c3d4) from human-readable descriptions
-		// (//art-dupl:accept idiomatic test helper boilerplate). Without this,
-		// any text after the prefix is stored as the hash and never matches a
-		// real group hash, silently disabling the directive.
-		if rest != "" && !strings.ContainsAny(rest, " \t") {
+		// hex token (no spaces). Group hashes are XXH3 16-char lowercase hex,
+		// so a non-hex token could never match a group: prose that merely
+		// MENTIONS the directive ("...accepts it with //art-dupl:accept.")
+		// and abbreviation attempts ("0xdeadbeef") stay hash-less instead of
+		// becoming precision directives that can never fire (and, since the
+		// dead-directive detector, would warn as stale). Multi-word text
+		// remains a human-readable description.
+		if rest != "" && !strings.ContainsAny(rest, " \t") && isHexToken(rest) {
 			d.Hash = rest
 		}
 
@@ -186,6 +188,19 @@ func (a *AcceptedSet) scanFile(filename string) []AcceptedDirective {
 	}
 
 	return directives
+}
+
+// isHexToken reports whether s consists solely of hex digits — the only
+// token shape that can ever equal a group content hash (XXH3, 16-char hex).
+func isHexToken(s string) bool {
+	for _, r := range s {
+		isHex := (r >= '0' && r <= '9') || (r >= 'a' && r <= 'f') || (r >= 'A' && r <= 'F')
+		if !isHex {
+			return false
+		}
+	}
+
+	return s != ""
 }
 
 // recordMatched marks the directive at (filename, line) as live: it accepted

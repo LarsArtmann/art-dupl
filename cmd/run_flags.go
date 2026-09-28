@@ -235,7 +235,12 @@ func runStandardAnalysis(
 		)
 	}
 
-	suppression.AcceptDirectives.WarnDeadDirectives(cmd.ErrOrStderr())
+	// Human-readable channels only: machine formats (JSON, SARIF, plumbing,
+	// CSV) keep a diagnostics-free stderr so downstream parsers of piped
+	// output are never surprised.
+	if mergedConfig.OutputFormat == config.OutputFormatText || mergedConfig.OutputFormat == config.OutputFormatHTML {
+		suppression.AcceptDirectives.WarnDeadDirectives(cmd.ErrOrStderr())
+	}
 
 	timing.finish(ctx, cmd.ErrOrStderr())
 

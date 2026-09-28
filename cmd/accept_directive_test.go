@@ -518,3 +518,41 @@ func TestWarnDeadDirectivesOutput(t *testing.T) {
 		t.Errorf("warning output %q missing expected text %q", out, want)
 	}
 }
+
+// TestAcceptedSetProseMentionIsNotDirective guards the corpus regression:
+// a sentence that MENTIONS the directive syntax ("...accepts it with
+// //art-dupl:accept.") must not become a directive — the trailing "." is not
+// hex, so it is neither a precision hash nor suppressible boilerplate.
+func TestAcceptedSetProseMentionIsNotDirective(t *testing.T) {
+	t.Parallel()
+
+	proseFile := "format_specs.go"
+	proseContent := "package specs\n\n" +
+		"// This is a borderline case — the user accepts it with //art-dupl:accept.\n" +
+		"func f() {\n" +
+		"\tdoWork()\n" +
+		"}\n"
+
+	set := NewAcceptedSet(func(name string) ([]byte, error) {
+		if name == proseFile {
+			return []byte(proseContent), nil
+		}
+
+		return nil, &osPathError{name: name}
+	})
+
+	group := domain.ProcessedCloneGroup{
+		Hash: "ab12cd34ef56ab12",
+		Clones: []domain.ProcessedClone{
+			{Filename: proseFile, LineStart: 3, LineEnd: 5},
+		},
+	}
+
+	if set.IsAccepted(group) {
+		t.Error("prose mentioning //art-dupl:accept must not suppress groups")
+	}
+
+	if dead := set.DeadDirectives(); len(dead) != 0 {
+		t.Errorf("prose mention must not be reported as a dead directive, got %+v", dead)
+	}
+}
