@@ -18,16 +18,16 @@ Executed the **next tier of the TODO sprint** from the planning document (`docs/
 
 | #  | Change                                                                                                          | Files                                                                                                                                             | Impact                                                                                                                                                           |
 | -- | --------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1  | **Fixed empty Frags guard bug**: `[][]*Node{{}}` was passing `len(Frags) > 0` check                             | `detection/multidetector.go`, `detection/issue_helpers.go`                                                                                        | Issue matches (TODO, legacy) with empty inner slices no longer leak into the clone pipeline. New `hasNonEmptyFrag()` helper checks inner depth.                  |
-| 2  | **Removed `Frags: [][]*Node{{}}` from `createIssueMatch`** — now nil                                            | `detection/issue_helpers.go`, `detection/detection_test.go`                                                                                       | Issues no longer pretend to have fragments. The guard filters them correctly. Tests updated to assert nil Frags.                                                 |
-| 3  | **Set default `Actionability` in `ClassifyClone`** — `Actionable` for normal clones, `NonActionable` for idioms | `printer/clone_classify.go`                                                                                                                       | Eliminates zero-value `""` invalid state. `CloneClassification` can no longer be constructed with an invalid `Actionability` through the normal path.            |
-| 4  | **Moved `processOrderMethodName` test constant** from production to test file                                   | `printer/actionability.go` → `printer/actionability_test.go`                                                                                      | Test-only constant no longer pollutes production code.                                                                                                           |
-| 5  | **Added `context.Context` to all detection goroutines** (M6 complete)                                           | `detection/multidetector.go`, `detection/issue_helpers.go`, `detection/todo_detector.go`, `detection/legacy_detector.go`, `detection/detector.go` | Every `FindDuplOver`, `FindTodos`, `FindLegacy`, `findIssuesInFile`, `findIssuesGeneric` now accepts and checks `ctx`. Prevents goroutine leaks on cancellation. |
-| 6  | **Updated all callers** of context-aware detection methods                                                      | `cmd/run_analysis.go`, `pkg/artdupl/detector_pipeline.go`, `pkg/artdupl/detector_uncovered_test.go`                                               | All consumers pass context through. SDK pipeline uses `select` on `ctx.Done()`.                                                                                  |
-| 7  | **Broke SDK `DetectionMethod` type alias** — now independent `type DetectionMethod string`                      | `pkg/artdupl/types.go`, `pkg/artdupl/detector_utils.go`                                                                                           | SDK no longer re-exports `config.DetectionMethod`. Has own `String()`, `IsValid()`, and boundary conversion functions.                                           |
-| 8  | **Broke SDK `Logger` type alias** — now independent interface with `noOpLogger` default                         | `pkg/artdupl/types.go`                                                                                                                            | SDK defines its own 4-method Logger interface. Structurally compatible with `pkg/logger.Logger` — no adapter needed.                                             |
-| 9  | **Refactored `FindDuplOver` complexity** — extracted `runMultiMethodDetection` + `streamMatches` helpers        | `detection/multidetector.go`                                                                                                                      | Reduced cognitive complexity from 57 to under 35 (gocognit lint pass). Each detection method's streaming loop is now DRY via `streamMatches`.                    |
-| 10 | **Fixed all test assertions** for type-alias break                                                              | `pkg/artdupl/detector_validation_test.go`                                                                                                         | Tests now compare `string()` values instead of cross-type equality.                                                                                              |
+~~| 1  | **Fixed empty Frags guard bug**: `[][]*Node{{}}` was passing `len(Frags) > 0` check                             | `detection/multidetector.go`, `detection/issue_helpers.go`                                                                                        | Issue matches (TODO, legacy) with empty inner slices no longer leak into the clone pipeline. New `hasNonEmptyFrag()` helper checks inner depth.                  |~~ done@decided-against — TODO/Legacy detectors deleted 2026-06-17
+~~| 2  | **Removed `Frags: [][]*Node{{}}` from `createIssueMatch`** — now nil                                            | `detection/issue_helpers.go`, `detection/detection_test.go`                                                                                       | Issues no longer pretend to have fragments. The guard filters them correctly. Tests updated to assert nil Frags.                                                 |~~ done — detection/adapters.go loop dispatch
+~~| 3  | **Set default `Actionability` in `ClassifyClone`** — `Actionable` for normal clones, `NonActionable` for idioms | `printer/clone_classify.go`                                                                                                                       | Eliminates zero-value `""` invalid state. `CloneClassification` can no longer be constructed with an invalid `Actionability` through the normal path.            |~~ done@decided-against — Filepath/LineNumber dead-code removal (CHANGELOG 0.4.0)
+~~| 4  | **Moved `processOrderMethodName` test constant** from production to test file                                   | `printer/actionability.go` → `printer/actionability_test.go`                                                                                      | Test-only constant no longer pollutes production code.                                                                                                           |~~ done — domain.TokenCount prevents unit mixing
+~~| 5  | **Added `context.Context` to all detection goroutines** (M6 complete)                                           | `detection/multidetector.go`, `detection/issue_helpers.go`, `detection/todo_detector.go`, `detection/legacy_detector.go`, `detection/detector.go` | Every `FindDuplOver`, `FindTodos`, `FindLegacy`, `findIssuesInFile`, `findIssuesGeneric` now accepts and checks `ctx`. Prevents goroutine leaks on cancellation. |~~ done — ProcessedCloneGroup.Validate + sentinels
+~~| 6  | **Updated all callers** of context-aware detection methods                                                      | `cmd/run_analysis.go`, `pkg/artdupl/detector_pipeline.go`, `pkg/artdupl/detector_uncovered_test.go`                                               | All consumers pass context through. SDK pipeline uses `select` on `ctx.Done()`.                                                                                  |~~ done — everySequenceMatch helper extracted
+~~| 7  | **Broke SDK `DetectionMethod` type alias** — now independent `type DetectionMethod string`                      | `pkg/artdupl/types.go`, `pkg/artdupl/detector_utils.go`                                                                                           | SDK no longer re-exports `config.DetectionMethod`. Has own `String()`, `IsValid()`, and boundary conversion functions.                                           |~~ done — actionability runs on domain.CloneNode (2026-07-26 decoupling)
+~~| 8  | **Broke SDK `Logger` type alias** — now independent interface with `noOpLogger` default                         | `pkg/artdupl/types.go`                                                                                                                            | SDK defines its own 4-method Logger interface. Structurally compatible with `pkg/logger.Logger` — no adapter needed.                                             |~~ done — printer/actionability + printer/stats (CHANGELOG 0.5.0)
+~~| 9  | **Refactored `FindDuplOver` complexity** — extracted `runMultiMethodDetection` + `streamMatches` helpers        | `detection/multidetector.go`                                                                                                                      | Reduced cognitive complexity from 57 to under 35 (gocognit lint pass). Each detection method's streaming loop is now DRY via `streamMatches`.                    |~~ done@decided-against — CloneRef embedding (CHANGELOG 0.5.0); DTO separation intentional (2026-06-22 §b)
+~~| 10 | **Fixed all test assertions** for type-alias break                                                              | `pkg/artdupl/detector_validation_test.go`                                                                                                         | Tests now compare `string()` values instead of cross-type equality.                                                                                              |~~ parked — DEFERRED in TODO_LIST (import cycle)
 
 ### Previously Completed (Prior Commits, Still on This Branch)
 
@@ -69,20 +69,20 @@ Executed the **next tier of the TODO sprint** from the planning document (`docs/
 
 ### From Planning Doc (Tier 2-3, Not Yet Begun)
 
-- [ ] **M9: Printer code quality** — Extract `everySequenceMatch` helper, `validateLocation` helper, ADR for actionability
-- [ ] **M10: Activate `MethodDetector` interface** — Create adapters for all 4 detection methods, replace if-chain with loop dispatch
-- [ ] **M11: UX Features** — `--suppress-test-low` flag, separate test/production threshold
-- [ ] **M12: Syntax facade** — Hide `syntax/golang` and `syntax/templ` behind `syntax` package
-- [ ] **M13: Enum unification** — Move domain enum helpers to use config's generic patterns
+~~- [ ] **M9: Printer code quality** — Extract `everySequenceMatch` helper, `validateLocation` helper, ADR for actionability~~ done — everySequenceMatch extracted (printer); validateLocation moot (TODO/Legacy detectors deleted 2026-06-17); pattern docs live in docs/ACTIONABILITY_PATTERNS.md
+~~- [ ] **M10: Activate `MethodDetector` interface** — Create adapters for all 4 detection methods, replace if-chain with loop dispatch~~ done — detection/adapters.go polymorphic dispatch replaced the if-chain
+~~- [ ] **M11: UX Features** — `--suppress-test-low` flag, separate test/production threshold~~ done — `--suppress-test-low` + `--test-threshold` shipped (ADR-0014)
+~~- [ ] **M12: Syntax facade** — Hide `syntax/golang` and `syntax/templ` behind `syntax` package~~ parked — DEFERRED in TODO_LIST (import cycle: syntax/golang imports syntax)
+~~- [ ] **M13: Enum unification** — Move domain enum helpers to use config's generic patterns~~ done — pkg/enum shared helpers (MarshalJSON/UnmarshalJSON/Parse)
 
 ### From TODO_LIST.md (Deferred)
 
-- [ ] Split `printer/` into sub-packages (50 files)
-- [ ] Consolidate three parallel Clone types
-- [ ] Implement string interning (performance)
-- [ ] Refactor `transform.go` (369L switch)
-- [ ] Add fuzz tests for templ parser + suffix tree
-- [ ] Add property-based tests for suffix tree
+~~- [ ] Split `printer/` into sub-packages (50 files)~~ done — printer/actionability + printer/stats split (CHANGELOG 0.5.0); formats stay in root by decision
+~~- [ ] Consolidate three parallel Clone types~~ done@decided-against — CloneRef embedded in all clone types (CHANGELOG 0.5.0); remaining DTOs are intentional format boundaries (2026-06-22 §b)
+~~- [ ] Implement string interning (performance)~~ done — filename interning wired at 4 sites (CHANGELOG 0.4.0)
+~~- [ ] Refactor `transform.go` (369L switch)~~ Won't implement — superseded: ADR-0022 sorted []tran removed the map-transition churn the refactor targeted
+~~- [ ] Add fuzz tests for templ parser + suffix tree~~ done — FuzzParseBytes (CHANGELOG 0.4.0)
+~~- [ ] Add property-based tests for suffix tree~~ done — suffixtree/dupl_property_test.go + tran_parity_test.go (CHANGELOG 0.7.0)
 
 ---
 
@@ -109,23 +109,23 @@ Executed the **next tier of the TODO sprint** from the planning document (`docs/
 
 ### Architecture Specific
 
-1. **Activate `MethodDetector` interface (M10)**: The interface exists (`detection/detector.go`) but is unused. `MultiDetector.FindDuplOver` still uses an if-chain. Creating adapters for each detector and dispatching via a loop would eliminate the if-chain and make the system extensible.
+~~1. **Activate `MethodDetector` interface (M10)**: The interface exists (`detection/detector.go`) but is unused. `MultiDetector.FindDuplOver` still uses an if-chain. Creating adapters for each detector and dispatching via a loop would eliminate the if-chain and make the system extensible.~~ done — adapters.go loop dispatch (see (c) M10)
 
-2. **Route issue-type detections separately**: TODO and legacy detectors produce code-quality findings (single-line issues), not code clones. They need their own output channel type, not the `syntax.Match` clone channel. The MethodDetector pipeline should distinguish between "clone matches" and "issue matches."
+~~2. **Route issue-type detections separately**: TODO and legacy detectors produce code-quality findings (single-line issues), not code clones. They need their own output channel type, not the `syntax.Match` clone channel. The MethodDetector pipeline should distinguish between "clone matches" and "issue matches."~~ done@decided-against — TODO/Legacy detectors deleted 2026-06-17; (g) question moot
 
-3. **Split `printer/` package**: 50 files is too many. Natural seams: `printer/stats/`, `printer/html/`, `printer/json/`, `printer/text/`, `printer/sarif/`, `printer/diff/`.
+~~3. **Split `printer/` package**: 50 files is too many. Natural seams: `printer/stats/`, `printer/html/`, `printer/json/`, `printer/text/`, `printer/sarif/`, `printer/diff/`.~~ done — actionability/stats leaf packages (CHANGELOG 0.5.0)
 
-4. **Type-strengthen `ProcessedClone` fields**: `Filename string` → `domain.Filepath`, `LineStart/LineEnd int` → `domain.LineNumber`. The domain types exist for exactly this — they validate at construction.
+~~4. **Type-strengthen `ProcessedClone` fields**: `Filename string` → `domain.Filepath`, `LineStart/LineEnd int` → `domain.LineNumber`. The domain types exist for exactly this — they validate at construction.~~ done@decided-against — Filepath/LineNumber removed as dead code (CHANGELOG 0.4.0)
 
-5. **Add `TokenCount` typed integer**: `type TokenCount int` — prevents mixing token counts with byte counts at the type level. The mutation bug we fixed earlier would have been impossible with this.
+~~5. **Add `TokenCount` typed integer**: `type TokenCount int` — prevents mixing token counts with byte counts at the type level. The mutation bug we fixed earlier would have been impossible with this.~~ done — domain.TokenCount
 
 ### Code Quality
 
-6. **Extract `everySequenceMatch` helper in actionability.go**: Multiple `is*` functions repeat the "check every sequence" pattern. DRY opportunity.
+~~6. **Extract `everySequenceMatch` helper in actionability.go**: Multiple `is*` functions repeat the "check every sequence" pattern. DRY opportunity.~~ done — extracted in printer (see (c) M9)
 
-7. **Create ADR for actionability system**: The pattern detection logic in `actionability.go` (558 lines) is complex and undocumented. An ADR would preserve institutional knowledge.
+~~7. **Create ADR for actionability system**: The pattern detection logic in `actionability.go` (558 lines) is complex and undocumented. An ADR would preserve institutional knowledge.~~ done — docs/ACTIONABILITY_PATTERNS.md table + split pattern files carry the knowledge
 
-8. **Unify enum patterns**: Domain enums (`ClonePriority`, `CloneCategory`, etc.) each have their own `IsValid()`/`String()` implementations. Config package has generic helpers. Consolidate.
+~~8. **Unify enum patterns**: Domain enums (`ClonePriority`, `CloneCategory`, etc.) each have their own `IsValid()`/`String()` implementations. Config package has generic helpers. Consolidate.~~ done — pkg/enum (see (c) M13)
 
 ---
 
@@ -150,31 +150,31 @@ Executed the **next tier of the TODO sprint** from the planning document (`docs/
 | 8  | **Split `printer/` into sub-packages**                                  | Module boundaries, testability | L      |
 | 9  | **Consolidate Clone DTOs** — single canonical type or generated mappers | Eliminates manual conversion   | L      |
 | 10 | **Hide `syntax/golang` + `syntax/templ` behind `syntax` facade** (M12)  | Clean module boundary          | M      |
-| 11 | **Add `--suppress-test-low` flag** (M11)                                | UX for noisy test clones       | S      |
-| 12 | **Separate test/production threshold** (M11)                            | UX precision                   | S      |
-| 13 | **Unify enum patterns** across domain and config (M13)                  | Consistency                    | M      |
+~~| 11 | **Add `--suppress-test-low` flag** (M11)                                | UX for noisy test clones       | S      |~~ done — `--suppress-test-low` (ADR-0014)
+~~| 12 | **Separate test/production threshold** (M11)                            | UX precision                   | S      |~~ done — `--test-threshold` (ADR-0014)
+~~| 13 | **Unify enum patterns** across domain and config (M13)                  | Consistency                    | M      |~~ done — pkg/enum helpers
 
 ### 🟡 Medium Impact
 
 | #  | Task                                                                | Impact                    | Effort |
 | -- | ------------------------------------------------------------------- | ------------------------- | ------ |
-| 14 | **Add `context.Context` to `suffixtree.FindDuplOver`**              | Goroutine leak prevention | M      |
-| 15 | **Create ADR for actionability pattern detection** (M9)             | Knowledge preservation    | S      |
-| 16 | **Extract `validateLocation` helper** in todo/legacy detectors (M9) | Code quality — DRY        | S      |
-| 17 | **Break SDK error sentinels** from internal `errors` package        | SDK independence          | S      |
-| 18 | **Add fuzz tests** for templ parser + suffix tree invariants        | Robustness                | M      |
-| 19 | **Refactor `syntax/golang/transform.go`** (369L, 300L switch)       | Maintainability           | M      |
-| 20 | **Refactor `printer/actionability.go`** (558L)                      | Maintainability           | M      |
+~~| 14 | **Add `context.Context` to `suffixtree.FindDuplOver`**              | Goroutine leak prevention | M      |~~ done — ctx threaded through FindDuplOver/walkTrans
+~~| 15 | **Create ADR for actionability pattern detection** (M9)             | Knowledge preservation    | S      |~~ done — docs/ACTIONABILITY_PATTERNS.md + split pattern files
+~~| 16 | **Extract `validateLocation` helper** in todo/legacy detectors (M9) | Code quality — DRY        | S      |~~ done@decided-against — detectors removed 2026-06-17
+~~| 17 | **Break SDK error sentinels** from internal `errors` package        | SDK independence          | S      |~~ done — SDK owns error sentinels (CHANGELOG 0.4.0)
+~~| 18 | **Add fuzz tests** for templ parser + suffix tree invariants        | Robustness                | M      |~~ done — FuzzParseBytes + suffixtree fuzz (CHANGELOG 0.4.0)
+~~| 19 | **Refactor `syntax/golang/transform.go`** (369L, 300L switch)       | Maintainability           | M      |~~ Won't implement — superseded by ADR-0022 sorted []tran
+~~| 20 | **Refactor `printer/actionability.go`** (558L)                      | Maintainability           | M      |~~ done — actionability split into leaf package + category files
 
 ### 🟢 Polish
 
 | #  | Task                                                                          | Impact                         | Effort |
 | -- | ----------------------------------------------------------------------------- | ------------------------------ | ------ |
-| 21 | **Add `DescribeTable` detection pattern**                                     | Feature enhancement            | M      |
-| 22 | **Add builder/callback detection pattern**                                    | Feature enhancement            | M      |
-| 23 | **Implement hybrid slice/map transition storage** for small transition counts | Performance micro-optimization | M      |
-| 24 | **Implement string interning** for node filenames                             | Performance                    | M      |
-| 25 | **Add property-based tests for suffix tree**                                  | Testing robustness             | M      |
+~~| 21 | **Add `DescribeTable` detection pattern**                                     | Feature enhancement            | M      |~~ done — PatternDescribeTable
+~~| 22 | **Add builder/callback detection pattern**                                    | Feature enhancement            | M      |~~ done — PatternBuilderCallback
+~~| 23 | **Implement hybrid slice/map transition storage** for small transition counts | Performance micro-optimization | M      |~~ done — ADR-0022 sorted []tran slices (chosen design)
+~~| 24 | **Implement string interning** for node filenames                             | Performance                    | M      |~~ done — InternFilename wired 4 sites (CHANGELOG 0.4.0)
+~~| 25 | **Add property-based tests for suffix tree**                                  | Testing robustness             | M      |~~ done — dupl_property_test.go + tran_parity_test.go (CHANGELOG 0.7.0)
 
 ---
 
