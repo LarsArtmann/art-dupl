@@ -305,7 +305,7 @@ func declaresEmbedFS(stmt *domain.CloneNode) bool {
 // subtreeDeclaresEmbedFS recursively searches a declaration subtree for an
 // embed.FS type reference: a SelectorExpr "FS" on receiver Ident "embed"
 // (the canonical `var x embed.FS` shape). A bare Ident "FS" is deliberately
-// NOT accepted — it cannot be distinguished from a variable named FS without
+// NOT accepted: it cannot be distinguished from a variable named FS without
 // position info, and dot-importing embed is vanishingly rare.
 func subtreeDeclaresEmbedFS(node *domain.CloneNode) bool {
 	if node.BaseType == golang.SelectorExpr && node.Name == "FS" {

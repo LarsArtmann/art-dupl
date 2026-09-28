@@ -213,12 +213,12 @@ A proper audit would either parse the markdown, extract every `art-dupl ...` inv
 
 ### On this session specifically
 
-1. **Fix the `text_golden_test.go` docstring** — 30-second fix, embarrassing that it's still there.
-2. **Add the `AGENTS.md` Critical Convention about `--` vs `-` flags.** Prevents the 21-bug class from recurring.
-3. **Run the actual quality gates** (`go test -race ./...`, `nix flake check`, `golangci-lint run`) at the end of every session, not just `go test`.
-4. **Verify the remaining root-level `.md` files** (`USAGE.md`, `CONTRIBUTING.md`, etc.) — they may have similar drift.
-5. **Decide `SDK_DESIGN.md`'s fate** (rewrite, move to history, or delete).
-6. **Cross-reference `CHANGELOG.md` ADR mentions against `docs/adr/` contents** to confirm consistency.
+~~1. **Fix the `text_golden_test.go` docstring** — 30-second fix, embarrassing that it's still there.~~ done this pass — the regen command was lying (-args never parsed); fixed at printer/text_golden_test.go:17 in the 2026-09-28 audit
+~~2. **Add the `AGENTS.md` Critical Convention about `--` vs `-` flags.** Prevents the 21-bug class from recurring.~~ open
+~~3. **Run the actual quality gates** (`go test -race ./...`, `nix flake check`, `golangci-lint run`) at the end of every session, not just `go test`.~~ done — standing gates: -race on every flake check (AGENTS 2026-08-16), lint + alloc gates in flake, docs-health count gate added 2026-09-28
+~~4. **Verify the remaining root-level `.md` files** (`USAGE.md`, `CONTRIBUTING.md`, etc.) — they may have similar drift.~~ done — the 2026-09-28 audit verified all six living docs plus HOW_TO_USE/TESTING/RELEASE
+~~5. **Decide `SDK_DESIGN.md`'s fate** (rewrite, move to history, or delete).~~ open
+~~6. **Cross-reference `CHANGELOG.md` ADR mentions against `docs/adr/` contents** to confirm consistency.~~ open
 
 ### On the workflow
 

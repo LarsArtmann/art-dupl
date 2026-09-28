@@ -63,17 +63,17 @@ All extracted duplication was real maintenance burden. All accepted duplication 
 
 ## b) PARTIALLY DONE
 
-- **Acceptance rationale** — recorded in chat final message, but NOT in the code itself. The 3 accepted files have no in-source marker that the duplication is intentional. Future maintainers will re-litigate. (See section d.)
-- **AGENTS.md update** — I introduced a new pattern (package-level unexported var shared between production and tests) but did not document it in `AGENTS.md` per the global update protocol.
+~~- **Acceptance rationale** — recorded in chat final message, but NOT in the code itself. The 3 accepted files have no in-source marker that the duplication is intentional. Future maintainers will re-litigate. (See section d.)~~ done — //art-dupl:accept directives shipped later (cmd/accept_directive.go, AGENTS directive bullet)
+~~- **AGENTS.md update** — I introduced a new pattern (package-level unexported var shared between production and tests) but did not document it in `AGENTS.md` per the global update protocol.~~ done — AGENTS "Shared-var pattern for sort metrics" bullet documents it
 
 ---
 
 ## c) NOT STARTED
 
-- Running art-dupl at lower thresholds (`-t 5`, `-t 10`, `-t 25`) — the user invoked at `-t 50` so I stayed in scope.
-- Running art-dupl against production code only (`--exclude-pattern '*_test.go'`) — separate sweep, not requested.
-- Running art-dupl with `--include-generated` to audit generated code quality.
-- Adding regression test that asserts "no new duplication above threshold X" in CI.
+~~- Running art-dupl at lower thresholds (`-t 5`, `-t 10`, `-t 25`) — the user invoked at `-t 50` so I stayed in scope.~~ done — corpus validations at -t 1/-t 2/-t 5 documented in AGENTS (2026-08-16/09-14/09-23 re-validations)
+~~- Running art-dupl against production code only (`--exclude-pattern '*_test.go'`) — separate sweep, not requested.~~ done — self-scan + corpus validations cover production-only sweeps; --ignore-tests/--include-tests ship the control
+~~- Running art-dupl with `--include-generated` to audit generated code quality.~~ resolved by alternative — gogenfilter integration + the --include-generated flag shipped
+~~- Adding regression test that asserts "no new duplication above threshold X" in CI.~~ resolved by alternative — BuildFlow dogfood gates findings continuously via warnings_budget (lane split, 2026-09-25)
 
 ---
 

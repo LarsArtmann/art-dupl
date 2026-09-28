@@ -27,7 +27,7 @@
 
 ### 1. Text output code preview — FEATURE SHIPPED
 
-The #1 genuinely-missing feature from the feedback evaluation is implemented and verified end-to-end:
+~~The #1 genuinely-missing feature from the feedback evaluation is implemented and verified end-to-end:~~ done — nix build is the release path (v0.7.0-v0.7.2 cut via flake ldflags injection)
 
 ```
 found 2 clones:
@@ -87,14 +87,14 @@ Verified that ldflags injection works and `flake.nix:80-85` already has the wiri
 
 ## c) NOT STARTED
 
-- **`//art-dupl:accept` directive** (Tier 2 from evaluation) — not started, correctly deferred
-- **"Same-function" category** (Tier 2) — not started, correctly deferred
-- **HTML `--out` flag / anchor IDs** (Tier 3) — not started, correctly deferred
-- **`--rich-text` mode test** — the preview feature was only tested in default text and plumbing modes. Rich-text mode (`writeRichGroupHeader`) was NOT verified to see if previews appear or interact correctly with the `[priority] [category]` tags.
+~~- **`//art-dupl:accept` directive** (Tier 2 from evaluation) — not started, correctly deferred~~ done — //art-dupl:accept shipped (cmd/accept_directive.go)
+~~- **"Same-function" category** (Tier 2) — not started, correctly deferred~~ open
+~~- **HTML `--out` flag / anchor IDs** (Tier 3) — not started, correctly deferred~~ done — --html-out + stable anchor IDs shipped (master-plan T17/T18)
+~~- **`--rich-text` mode test** — the preview feature was only tested in default text and plumbing modes. Rich-text mode (`writeRichGroupHeader`) was NOT verified to see if previews appear or interact correctly with the `[priority] [category]` tags.~~ open
 - **`nix build` end-to-end** — only manual `go build -ldflags` was tested, not the actual nix build path
-- **Golden/snapshot test for text output** — no regression-protection test that locks the exact text format (including preview)
-- **Benchmark for `previewFromFile`** — reads entire file via `ReadFile` just to extract one line; inefficient on large files. Should use `bufio.Scanner` with early exit. Not measured.
-- **`docs/dedup-decisions.md`** — mentioned in prior status report as an alternative to inline comments; not created
+~~- **Golden/snapshot test for text output** — no regression-protection test that locks the exact text format (including preview)~~ done — TestTextCloneOutputGolden (printer/text_golden_test.go)
+~~- **Benchmark for `previewFromFile`** — reads entire file via `ReadFile` just to extract one line; inefficient on large files. Should use `bufio.Scanner` with early exit. Not measured.~~ open
+~~- **`docs/dedup-decisions.md`** — mentioned in prior status report as an alternative to inline comments; not created~~ resolved by alternative — inline //art-dupl:accept + docs/ACTIONABILITY_PATTERNS.md + docs/SELF_CLEAN_LEDGER.md
 
 ---
 
@@ -177,15 +177,15 @@ I tested default text mode (preview appears) and `--plumbing` (no preview). I di
 
 ### On this session specifically
 
-1. **Fix the em-dashes NOW** — replace `—` with `--` or `:` or `,` in the 3 acceptance comments
-2. **Fix the lint issues NOW** — run `gci` formatter on `sort_unified_test.go`, switch to `strings.SplitSeq` in `text.go`
-3. **Test `--rich-text` mode** — run art-dupl with `--rich-text` and verify preview appears correctly
-4. **Investigate the 18 unknown modified files** — run `git diff` on each, determine if they're from `templ generate`, another agent, or a stale tree. This is a safety issue.
-5. **Resolve the comments rule conflict explicitly** — either (a) ask the user, (b) add the art-dupl:accept pattern to the global rules as an exception, or (c) remove the comments and use a `.artdupl-accepted.toml` file instead
+~~1. **Fix the em-dashes NOW** — replace `—` with `--` or `:` or `,` in the 3 acceptance comments~~ done — rewritten; no em-dash acceptance comments remain (grep clean 2026-09-28, including one straggler in actionability_preamble.go fixed this pass)
+~~2. **Fix the lint issues NOW** — run `gci` formatter on `sort_unified_test.go`, switch to `strings.SplitSeq` in `text.go`~~ done — strings.SplitSeq in printer/text.go:235; gci enforced by CI
+~~3. **Test `--rich-text` mode** — run art-dupl with `--rich-text` and verify preview appears correctly~~ open
+~~4. **Investigate the 18 unknown modified files** — run `git diff` on each, determine if they're from `templ generate`, another agent, or a stale tree. This is a safety issue.~~ done — resolved in later passes; working tree verified clean through the 2026-09-28 audit
+~~5. **Resolve the comments rule conflict explicitly** — either (a) ask the user, (b) add the art-dupl:accept pattern to the global rules as an exception, or (c) remove the comments and use a `.artdupl-accepted.toml` file instead~~ done — the //art-dupl:accept convention shipped and is documented in AGENTS
 
 ### On the workflow
 
-6. **ALWAYS run `git status` before every edit** — the tree can change between commands. Don't trust snapshots.
+~~6. **ALWAYS run `git status` before every edit** — the tree can change between commands. Don't trust snapshots.~~ open
 7. **ALWAYS load matching skills** — the skill system exists for a reason. Skipping it is not a shortcut, it's a defect.
 8. **ALWAYS run `golangci-lint` on changed files** — `go build` + `go test` is not sufficient. Lint catches formatting and modernization issues.
 9. **Test ALL affected output modes** — when changing the text printer, test text, rich-text, AND plumbing. Don't assume "plumbing doesn't use this code path" without verifying.
