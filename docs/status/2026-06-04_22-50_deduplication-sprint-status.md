@@ -71,36 +71,36 @@ From the project TODO (last updated 2026-05-23):
 
 **🔴 HIGH Priority (3 items, untouched this session):**
 
-- [ ] Introduce `ProcessedClone` DTO to decouple `Printer` from `syntax.Node` (111 test call sites)
-- [ ] Consolidate three parallel `Clone` types (`printer.clone`, `pkg/artdupl.Clone`, `printer.CloneGroup`)
-- [ ] Implement `TokenValue` type with validation and refactor `suffixtree/syntax` to use it
+~~- [ ] Introduce `ProcessedClone` DTO to decouple `Printer` from `syntax.Node` (111 test call sites)~~ done — Printer.PrintClones(domain.ProcessedCloneGroup, ...) (printer/printer.go)
+~~- [ ] Consolidate three parallel `Clone` types (`printer.clone`, `pkg/artdupl.Clone`, `printer.CloneGroup`)~~ done — ADR-0005; printers consume canonical domain.ProcessedCloneGroup
+~~- [ ] Implement `TokenValue` type with validation and refactor `suffixtree/syntax` to use it~~ done — suffixtree.TokenValue (int32) core to tree storage (ADR-0019)
 
 **🟡 MEDIUM Priority (6 items, untouched):**
 
-- [ ] Implement CSV output format properly using `encoding/csv`
-- [ ] Unify enum patterns: domain enums should use config's generic helpers
-- [ ] Optimize memory layouts for SIMD-friendly data structures and implement string interning
-- [ ] Decouple `printer/clone_classify.go` from `syntax/golang` direct import
-- [ ] Add `--output-file` flag to stats subcommand
-- [ ] Split `printer/stats_test.go` (975L → 3 files)
+~~- [ ] Implement CSV output format properly using `encoding/csv`~~ done — stats CSV via encoding/csv (CHANGELOG "CSV output with proper escaping")
+~~- [ ] Unify enum patterns: domain enums should use config's generic helpers~~ done — shared pkg/enum helpers used by domain enums
+~~- [ ] Optimize memory layouts for SIMD-friendly data structures and implement string interning~~ resolved by alternative — SIMD dropped (internal/simd deleted); ADR-0022 slice layout + InternFilename
+~~- [ ] Decouple `printer/clone_classify.go` from `syntax/golang` direct import~~ done — CHANGELOG "Clone classification decoupled from `syntax/golang`"
+~~- [ ] Add `--output-file` flag to stats subcommand~~ done — registered in cmd/stats.go
+~~- [ ] Split `printer/stats_test.go` (975L → 3 files)~~ done — printer/stats/ package with focused test files
 
 **🟢 LOW Priority (8 items, untouched):**
 
 - [ ] Refactor `syntax/golang/transform.go` (369L, 300L switch statement)
 - [ ] Fix remaining LSP hints: unused params, unnecessary type args in tests
-- [ ] Create `domain.HealthScore` typed enum (currently just a string 'A'-'F')
-- [ ] Write SDK documentation for `pkg/artdupl/`
-- [ ] Add BDD test for `art-dupl stats --only templ` and `--only go`
-- [ ] Add BDD test for `--include-generic` end-to-end
-- [ ] Add fuzz tests for templ parser edge cases
-- [ ] Add ADR for semantic-as-default and reflection-based config merge
-- [ ] Validate GoReleaser release config
+~~- [ ] Create `domain.HealthScore` typed enum (currently just a string 'A'-'F')~~ done — CHANGELOG "`domain.HealthScore` typed enum"
+~~- [ ] Write SDK documentation for `pkg/artdupl/`~~ done — pkg/artdupl/doc.go + SDK_DESIGN.md + HOW_TO_USE.md
+~~- [ ] Add BDD test for `art-dupl stats --only templ` and `--only go`~~ done — bdd/stats_command_test.go
+~~- [ ] Add BDD test for `--include-generic` end-to-end~~ done — BDD --only + --include-generic coverage
+~~- [ ] Add fuzz tests for templ parser edge cases~~ done — syntax/templ/fuzz_test.go FuzzParseBytes
+~~- [ ] Add ADR for semantic-as-default and reflection-based config merge~~ done — ADR-0002 + ADR-0003
+~~- [ ] Validate GoReleaser release config~~ done — releases v0.1.0 to v0.7.2 shipped via release.yml
 
 ### Known Architectural Debts (from `AGENTS.md`)
 
-1. **Printer ↔ syntax.Node coupling** — `Printer.PrintClones(dups [][]*syntax.Node)` forces all 6 implementations to depend on AST internals. 111 test call sites affected. Blocked on `ProcessedClone` DTO introduction (HIGH priority).
-2. **Three parallel `Clone` types** — `printer.clone`, `printer.CloneGroup/JSONClone`, `pkg/artdupl.Clone/CloneGroup`, `domain.ProcessedClone/Group`. Consolidation depends on Printer DTO refactor.
-3. **`printer/clone_classify.go` imports `syntax/golang` directly** — language-specific node type constants mapped to categories. Coupling breaks when supporting non-Go languages.
+~~1. **Printer ↔ syntax.Node coupling** — `Printer.PrintClones(dups [][]*syntax.Node)` forces all 6 implementations to depend on AST internals. 111 test call sites affected. Blocked on `ProcessedClone` DTO introduction (HIGH priority).~~ done — printers take domain.ProcessedCloneGroup (printer/printer.go)
+~~2. **Three parallel `Clone` types** — `printer.clone`, `printer.CloneGroup/JSONClone`, `pkg/artdupl.Clone/CloneGroup`, `domain.ProcessedClone/Group`. Consolidation depends on Printer DTO refactor.~~ done — ADR-0005 unification
+~~3. **`printer/clone_classify.go` imports `syntax/golang` directly** — language-specific node type constants mapped to categories. Coupling breaks when supporting non-Go languages.~~ done — CHANGELOG decoupling entry
 4. **`ConstantCSSProperty` `Pos=0,End=0` (upstream limitation)** — `a-h/templ`'s `ConstantCSSProperty` has no `Range` field. Mitigated by inheriting parent `CSSTemplate` range. Could still cause inaccurate line reporting if a `ConstantCSSProperty` is the first/last node in a matched fragment.
 
 ### Diagnostic Warning (pre-existing, not introduced this session)
@@ -121,24 +121,24 @@ and the helpers were verified by the existing test suite.
 
 ### Code Health Observations
 
-1. **The 3 remaining `printer/PrintClones` signatures at threshold 15** are
+~~1. **The 3 remaining `printer/PrintClones` signatures at threshold 15** are~~ won't implement — signature fixed by the Printer interface
    flagged as 6-clone group (`html.go:142-145`, `json.go:102-105`, etc.).
    These are interface implementations — the function signature is fixed by
    the `Printer` interface. **Cannot be deduplicated** without changing the
    interface itself.
 
-2. **The 3 remaining `if !cmd.Flags().Changed("X") { return nil }` clones at
+~~2. **The 3 remaining `if !cmd.Flags().Changed("X") { return nil }` clones at~~ won't implement — 1-line helper calls; report deems idiomatic
    threshold 15** (`config_builder.go:209-209`, `:219-219`, `:239-239`) are
    now actually 1-line calls to `flagStringReader`. They show as clones only
    because art-dupl sees the same 1-line pattern repeated. The actual
    surface is the helper, not the calls.
 
-3. **The remaining 3-block `fmt.Errorf` in `run_output.go`** at threshold 15
+~~3. **The remaining 3-block `fmt.Errorf` in `run_output.go`** at threshold 15~~ won't implement — if-err-return is Go idiom (per report)
    (`32-35`, `43-46`, `154-157`) are now 1-line `Errorf` calls. They show as
    clones only because of the 3-line `if-err-return` shape, which is Go
    idiom and cannot be reduced.
 
-4. **The 5-clone `printer/html.go:169-171` & `:174-176` & `html_diff.go:229-231` & `:245-247` & `:257-259` group at threshold 15** is the
+~~4. **The 5-clone `printer/html.go:169-171` & `:174-176` & `html_diff.go:229-231` & `:245-247` & `:257-259` group at threshold 15** is the~~ won't implement — variadic unification cuts type safety; "not worth it" (per report)
    `if-err-return-helper(...)` pattern. Different helpers (`cloneGroupErr`
    vs `cloneLocationErr`) with different argument shapes. Could be unified
    into one variadic helper, but that would _reduce_ type safety and
@@ -146,26 +146,26 @@ and the helpers were verified by the existing test suite.
 
 ### Process Improvements
 
-1. **The project's own linting pipeline doesn't run art-dupl on CI.** There's
+~~1. **The project's own linting pipeline doesn't run art-dupl on CI.** There's~~ done — .github/workflows/art-dupl-check.yml baseline gate
    a `performance.yml` and `ci.yml` but no deduplication regression check.
    Suggestion: add a job that fails CI if `art-dupl -t 30 .` reports
    non-zero clone groups. This would prevent future drift.
 
-2. **No commit-time or pre-push hook** for `just check` (format + lint + test).
+~~2. **No commit-time or pre-push hook** for `just check` (format + lint + test).~~ done — templates/pre-commit-hook.yaml + scripts/install-hooks.sh
    A simple git hook would catch regressions before they reach the branch.
 
-3. **The TODO_LIST.md is 12 days stale** (2026-05-23). The deduplication
+~~3. **The TODO_LIST.md is 12 days stale** (2026-05-23). The deduplication~~ done — TODO_LIST actively maintained through 2026-09-28
    work this session should be added under "Recently Completed".
 
 ### Architecture Observations
 
-1. **The Printer abstraction is the bottleneck** for further refactoring
+~~1. **The Printer abstraction is the bottleneck** for further refactoring~~ done — ProcessedClone DTO shipped; printers decoupled
    (111 test call sites, 4 parallel Clone types, direct `syntax/golang`
    import in `clone_classify.go`). The `ProcessedClone` DTO introduction
    is the highest-leverage refactor in the project. Until it lands, the
    printer package is the dominant source of structural coupling.
 
-2. **`printer/text.go` and `printer/json.go` are the two heaviest printers**
+~~2. **`printer/text.go` and `printer/json.go` are the two heaviest printers**~~ done — text tests split into focused files
    but neither has a unit-test file split yet (unlike `printer/html*.go`
    which is split into 4 files). They should follow the same pattern.
 
@@ -175,39 +175,39 @@ and the helpers were verified by the existing test suite.
 
 ### This Week (P0) — Quick Wins, High Signal
 
-1. **Add art-dupl to CI** — fail the build if `art-dupl -t 30 .` reports non-zero groups. Prevents regression.
-2. **Update `TODO_LIST.md`** to mark the deduplication sprint complete and reflect the new state.
-3. **Add pre-commit git hook** running `just check` (format + lint + test) — catches regressions at commit time.
-4. **Fix `cmd/run_crawl.go:45` scannererr warning** — add `sc.Err()` check after the `Scan` loop. 1-line fix.
-5. **Add `ProcessedClone` DTO migration plan doc** — the 111-test refactor is the biggest untapped leverage point; document the migration phases before touching code.
+~~1. **Add art-dupl to CI** — fail the build if `art-dupl -t 30 .` reports non-zero groups. Prevents regression.~~ done — art-dupl-check.yml fails on new clones vs baseline
+~~2. **Update `TODO_LIST.md`** to mark the deduplication sprint complete and reflect the new state.~~ done — TODO_LIST rewritten; completed work lives in CHANGELOG
+~~3. **Add pre-commit git hook** running `just check` (format + lint + test) — catches regressions at commit time.~~ done — scripts/install-hooks.sh + .pre-commit-hooks.yaml
+~~4. **Fix `cmd/run_crawl.go:45` scannererr warning** — add `sc.Err()` check after the `Scan` loop. 1-line fix.~~ done — sc.Err() checked at cmd/run_crawl.go
+~~5. **Add `ProcessedClone` DTO migration plan doc** — the 111-test refactor is the biggest untapped leverage point; document the migration phases before touching code.~~ done — ADR-0005 documents it; migration shipped
 6. **Add ADR for the deduplication helper pattern** — `cloneLocationErr` / `cloneGroupErr` / `groupErr` / `cloneWriteErr` / `flagStringReader` are reusable idioms. Future refactors should follow the pattern.
 
 ### Next Sprint (P1) — Architectural
 
-7. **Introduce `ProcessedClone` DTO** — change `Printer.PrintClones` to accept `[]ProcessedCloneGroup`. De-couples printers from `syntax.Node`. 111 test call sites need updating; do in 5 sub-PRs.
-8. **Consolidate `printer.clone` + `printer.CloneGroup` + `pkg/artdupl.Clone`** into a single `domain.ProcessedClone` (or SDK-specific extension). Eliminates split-brain.
-9. **Decouple `printer/clone_classify.go` from `syntax/golang`** — move the language-specific node-type → category mapping behind an interface. Unblocks multi-language classification.
-10. **Implement `TokenValue` typed enum** — currently `suffixtree` and `syntax` use raw `int` for token counts. Strong typing prevents negative/overflow bugs.
-11. **Add CSV output via `encoding/csv`** — current CSV in stats is hand-rolled. Stdlib is safer and faster.
-12. **Split `printer/stats_test.go`** (975L) into 3 files following the html.go pattern (core, formatter, output).
+~~7. **Introduce `ProcessedClone` DTO** — change `Printer.PrintClones` to accept `[]ProcessedCloneGroup`. De-couples printers from `syntax.Node`. 111 test call sites need updating; do in 5 sub-PRs.~~ done — interface takes domain.ProcessedCloneGroup
+~~8. **Consolidate `printer.clone` + `printer.CloneGroup` + `pkg/artdupl.Clone`** into a single `domain.ProcessedClone` (or SDK-specific extension). Eliminates split-brain.~~ done — ADR-0005; ProcessedClone canonical for the printer pipeline
+~~9. **Decouple `printer/clone_classify.go` from `syntax/golang`** — move the language-specific node-type → category mapping behind an interface. Unblocks multi-language classification.~~ done — CHANGELOG clone_classify decoupling
+~~10. **Implement `TokenValue` typed enum** — currently `suffixtree` and `syntax` use raw `int` for token counts. Strong typing prevents negative/overflow bugs.~~ done — suffixtree.TokenValue int32 throughout (ADR-0019)
+~~11. **Add CSV output via `encoding/csv`** — current CSV in stats is hand-rolled. Stdlib is safer and faster.~~ done — CHANGELOG "CSV output with proper escaping"
+~~12. **Split `printer/stats_test.go`** (975L) into 3 files following the html.go pattern (core, formatter, output).~~ done — printer/stats/ package with focused test files
 13. **Refactor `syntax/golang/transform.go`** (369L, 300L switch) — extract visitor methods, reduce cyclomatic complexity.
 
 ### Backlog (P2) — Quality Polish
 
-14. **Unify domain enum patterns with config's generic helpers** — eliminate bespoke validation per enum.
-15. **Create `domain.HealthScore` typed enum** (currently bare string 'A'-'F') — make impossible states unrepresentable.
-16. **Write SDK documentation for `pkg/artdupl/`** — the public SDK has zero godoc examples.
-17. **Add BDD test for `art-dupl stats --only templ` / `--only go`** — FileType filter has no end-to-end coverage.
-18. **Add BDD test for `--include-generic` end-to-end** — newest filter flag, no integration test.
-19. **Add fuzz tests for templ parser edge cases** — the 5 recent position-bug fixes prove the parser is fragile.
-20. **Add ADR for semantic-as-default + reflection-based config merge** — two non-obvious decisions deserve a paper trail.
+~~14. **Unify domain enum patterns with config's generic helpers** — eliminate bespoke validation per enum.~~ done — pkg/enum shared helpers; domain imports pkg/enum
+~~15. **Create `domain.HealthScore` typed enum** (currently bare string 'A'-'F') — make impossible states unrepresentable.~~ done — domain.HealthScore typed enum
+~~16. **Write SDK documentation for `pkg/artdupl/`** — the public SDK has zero godoc examples.~~ done — pkg/artdupl/doc.go; SDK_DESIGN.md; examples demo
+~~17. **Add BDD test for `art-dupl stats --only templ` / `--only go`** — FileType filter has no end-to-end coverage.~~ done — bdd/stats_command_test.go --only coverage
+~~18. **Add BDD test for `--include-generic` end-to-end** — newest filter flag, no integration test.~~ done — BDD --include-generic coverage
+~~19. **Add fuzz tests for templ parser edge cases** — the 5 recent position-bug fixes prove the parser is fragile.~~ done — syntax/templ/fuzz_test.go FuzzParseBytes
+~~20. **Add ADR for semantic-as-default + reflection-based config merge** — two non-obvious decisions deserve a paper trail.~~ done — ADR-0002 (semantic default) + ADR-0003 (config merge)
 
 ### Infrastructure (P3) — When Time Allows
 
-21. **Validate GoReleaser release config** — last validated before semantic-default flip.
-22. **Profile and optimize suffix tree for large codebases** — current benchmarks don't include 100k+ LOC inputs.
-23. **Implement string interning for filenames/identifiers** — could cut memory by 30%+ in large analyses.
-24. **Add `--output-file` flag to stats subcommand** — currently stdout-only, can't be redirected to a file from within the command.
+~~21. **Validate GoReleaser release config** — last validated before semantic-default flip.~~ done — releases v0.1.0 to v0.7.2 cut through the release workflow
+~~22. **Profile and optimize suffix tree for large codebases** — current benchmarks don't include 100k+ LOC inputs.~~ done — docs/benchmarks corpus + realworld-cli bench + alloc budgets
+~~23. **Implement string interning for filenames/identifiers** — could cut memory by 30%+ in large analyses.~~ done — syntax.InternFilename (CHANGELOG)
+~~24. **Add `--output-file` flag to stats subcommand** — currently stdout-only, can't be redirected to a file from within the command.~~ done — cmd/stats.go --output-file
 25. **Investigate `ConstantCSSProperty` upstream limitation** — open issue on `a-h/templ` for `Range` field support; remove the parent-range inheritance workaround.
 
 ---

@@ -44,7 +44,7 @@
 | Item                    | Status                 | What's Missing                                                                            |
 | ----------------------- | ---------------------- | ----------------------------------------------------------------------------------------- |
 | `nix build`             | `vendorHash` stale     | Need to update hash in flake.nix: set `vendorHash=""`, run `nix build`, copy correct hash |
-| Semantic mode for Templ | No encoding applied    | `syntax/templ/` matching is purely structural — no identifier/operator encoding           |
+~~| Semantic mode for Templ | No encoding applied    | `syntax/templ/` matching is purely structural — no identifier/operator encoding           |~~ done — syntax/templ semantic mode encodes element/attribute/callee names
 | SDK docs                | `SDK_DESIGN.md` exists | No usage examples, no godoc rendering                                                     |
 
 ---
@@ -106,31 +106,31 @@ From feedback (2026-06-08-overview-dedup-session.md):
 
 ### Architecture
 
-1. **Printer ↔ syntax.Node coupling** — All 6 printers depend on `[]*syntax.Node`. ProcessedClone DTO is the fix (111 test call sites to update).
-2. **Three parallel Clone types** — `printer.clone`, `printer.CloneGroup`, `pkg/artdupl.Clone`, `domain.ProcessedClone`. Consolidation blocked on Printer DTO change.
-3. **Decouple clone_classify.go from syntax/golang** — Classification imports golang node types directly. Should use a language-agnostic interface.
+~~1. **Printer ↔ syntax.Node coupling** — All 6 printers depend on `[]*syntax.Node`. ProcessedClone DTO is the fix (111 test call sites to update).~~ done — printers take domain.ProcessedCloneGroup
+~~2. **Three parallel Clone types** — `printer.clone`, `printer.CloneGroup`, `pkg/artdupl.Clone`, `domain.ProcessedClone`. Consolidation blocked on Printer DTO change.~~ done — DTO shipped; ADR-0005 unification
+~~3. **Decouple clone_classify.go from syntax/golang** — Classification imports golang node types directly. Should use a language-agnostic interface.~~ done — CHANGELOG clone_classify decoupling
 
 ### False Positive Reduction
 
-4. **Suppress test-only low-priority clones** — 76% of reported clones at threshold 15 were test noise. Filter at output level.
-5. **Test-table pattern detection** — Multiple clones in same file within CompositeLit → classify as `test-data`.
+~~4. **Suppress test-only low-priority clones** — 76% of reported clones at threshold 15 were test noise. Filter at output level.~~ done — actionability patterns + --test-threshold suppress test noise
+~~5. **Test-table pattern detection** — Multiple clones in same file within CompositeLit → classify as `test-data`.~~ done — table-driven-test/describe-table patterns
 6. **Inverse-condition detection** — Now mitigated by operator encoding, but a "inverse of line X" note would be even better.
 
 ### Tooling
 
-7. **Fix nix build** — Update vendorHash. 5-minute fix.
-8. **hashSeq unit tests** — Currently ZERO unit tests (only benchmarks). Should add basic coverage.
-9. **Fuzz tests for templ parser** — Important for robustness with untrusted input.
+~~7. **Fix nix build** — Update vendorHash. 5-minute fix.~~ done — ci.yml nix job green
+~~8. **hashSeq unit tests** — Currently ZERO unit tests (only benchmarks). Should add basic coverage.~~ done — syntax/perf_regression_test.go TestPerfRegressionHashSeq + benchmarks
+~~9. **Fuzz tests for templ parser** — Important for robustness with untrusted input.~~ done — syntax/templ/fuzz_test.go FuzzParseBytes
 
 ### Performance
 
-10. **SIMD memory layouts** — String interning and cache-aligned Node arrays for large codebases.
-11. **hashSeq benchmark regression check** — CI should fail if hashing regresses significantly.
+~~10. **SIMD memory layouts** — String interning and cache-aligned Node arrays for large codebases.~~ resolved by alternative — SIMD dropped; ADR-0022 slice/arena layout + InternFilename
+~~11. **hashSeq benchmark regression check** — CI should fail if hashing regresses significantly.~~ done — scripts/check-alloc-regression.sh wired into flake check
 
 ### Quality of Life
 
-12. **`--output-file` flag for stats** — Write stats to file instead of stdout.
-13. **SDK documentation** — pkg/artdupl/ needs usage examples.
+~~12. **`--output-file` flag for stats** — Write stats to file instead of stdout.~~ done — cmd/stats.go --output-file
+~~13. **SDK documentation** — pkg/artdupl/ needs usage examples.~~ done — pkg/artdupl/doc.go + SDK_DESIGN.md + examples demo
 14. **Watch mode** — Re-run on file changes (from roadmap).
 
 ---
@@ -141,31 +141,31 @@ Sorted by impact × effort (Pareto ordering):
 
 | #  | Task                                                               | Impact | Effort | Category       |
 | -- | ------------------------------------------------------------------ | ------ | ------ | -------------- |
-| 1  | **Fix nix vendorHash** — set `""`, build, copy hash                | HIGH   | 5min   | Tooling        |
-| 2  | **Suppress test-only low-priority clones** in output               | HIGH   | 30min  | False Positive |
-| 3  | **Add hashSeq unit tests** (currently zero)                        | HIGH   | 30min  | Testing        |
-| 4  | **Decouple clone_classify from syntax/golang** via interface       | HIGH   | 2h     | Architecture   |
-| 5  | **ProcessedClone DTO** — decouple printer from syntax.Node         | HIGH   | 4h     | Architecture   |
-| 6  | **Consolidate three Clone types** into one                         | HIGH   | 3h     | Architecture   |
-| 7  | **Implement TokenValue type with validation**                      | MED    | 1h     | Type Safety    |
-| 8  | **Test-table pattern detection** in classification                 | MED    | 1h     | False Positive |
-| 9  | **Cross-reference with existing helpers** detection                | MED    | 4h     | Feature        |
+~~| 1  | **Fix nix vendorHash** — set `""`, build, copy hash                | HIGH   | 5min   | Tooling        |~~ done — vendorHash stable; nix build green in CI
+~~| 2  | **Suppress test-only low-priority clones** in output               | HIGH   | 30min  | False Positive |~~ done — actionability patterns + --test-threshold
+~~| 3  | **Add hashSeq unit tests** (currently zero)                        | HIGH   | 30min  | Testing        |~~ done — TestPerfRegressionHashSeq + BenchmarkHashSeq*
+~~| 4  | **Decouple clone_classify from syntax/golang** via interface       | HIGH   | 2h     | Architecture   |~~ done — CHANGELOG decoupling entry
+~~| 5  | **ProcessedClone DTO** — decouple printer from syntax.Node         | HIGH   | 4h     | Architecture   |~~ done — printer/printer.go ProcessedCloneGroup
+~~| 6  | **Consolidate three Clone types** into one                         | HIGH   | 3h     | Architecture   |~~ done — ADR-0005
+~~| 7  | **Implement TokenValue type with validation**                      | MED    | 1h     | Type Safety    |~~ done — suffixtree.TokenValue
+~~| 8  | **Test-table pattern detection** in classification                 | MED    | 1h     | False Positive |~~ done — table-driven-test pattern shipped
+~~| 9  | **Cross-reference with existing helpers** detection                | MED    | 4h     | Feature        |~~ done — extractability engine (ADR-0017) + --explain
 | 10 | **Semantic mode for Templ** — identifier/operator encoding         | MED    | 3h     | Feature        |
-| 11 | **Fix 3 godoclint warnings** — duplicate package docs              | LOW    | 10min  | Quality        |
-| 12 | **Fix bufio scanner `sc.Err()` check** in run_crawl.go             | LOW    | 5min   | Quality        |
+~~| 11 | **Fix 3 godoclint warnings** — duplicate package docs              | LOW    | 10min  | Quality        |~~ done — godoclint fixed; 0 lint issues since
+~~| 12 | **Fix bufio scanner `sc.Err()` check** in run_crawl.go             | LOW    | 5min   | Quality        |~~ done — cmd/run_crawl.go checks sc.Err()
 | 13 | **Migrate fang v1 → fang/v2**                                      | LOW    | 1h     | Dependencies   |
-| 14 | **Replace SHA-1 in file_cache.go** with SHA-256                    | LOW    | 15min  | Security       |
-| 15 | **CSV output using encoding/csv**                                  | MED    | 2h     | Feature        |
-| 16 | **`--output-file` flag for stats subcommand**                      | LOW    | 30min  | Feature        |
-| 17 | **Split printer/stats_test.go** (975L → 3 files)                   | LOW    | 30min  | Quality        |
+~~| 14 | **Replace SHA-1 in file_cache.go** with SHA-256                    | LOW    | 15min  | Security       |~~ done — SHA-256 migration (CHANGELOG)
+~~| 15 | **CSV output using encoding/csv**                                  | MED    | 2h     | Feature        |~~ done — CHANGELOG "CSV output with proper escaping"
+~~| 16 | **`--output-file` flag for stats subcommand**                      | LOW    | 30min  | Feature        |~~ done — cmd/stats.go
+~~| 17 | **Split printer/stats_test.go** (975L → 3 files)                   | LOW    | 30min  | Quality        |~~ done — printer/stats/ package
 | 18 | **Refactor syntax/golang/transform.go** (369L switch)              | LOW    | 2h     | Quality        |
-| 19 | **Create domain.HealthScore typed enum**                           | LOW    | 15min  | Type Safety    |
-| 20 | **Unify enum patterns** across codebase                            | LOW    | 1h     | Quality        |
-| 21 | **Write SDK documentation** with examples                          | MED    | 2h     | Documentation  |
-| 22 | **BDD tests for `--only templ`, `--only go`, `--include-generic`** | MED    | 1h     | Testing        |
-| 23 | **Fuzz tests for templ parser**                                    | MED    | 2h     | Testing        |
+~~| 19 | **Create domain.HealthScore typed enum**                           | LOW    | 15min  | Type Safety    |~~ done — domain/types_health.go + CHANGELOG
+~~| 20 | **Unify enum patterns** across codebase                            | LOW    | 1h     | Quality        |~~ done — pkg/enum shared helpers
+~~| 21 | **Write SDK documentation** with examples                          | MED    | 2h     | Documentation  |~~ done — pkg/artdupl/doc.go + HOW_TO_USE.md + examples
+~~| 22 | **BDD tests for `--only templ`, `--only go`, `--include-generic`** | MED    | 1h     | Testing        |~~ done — BDD coverage
+~~| 23 | **Fuzz tests for templ parser**                                    | MED    | 2h     | Testing        |~~ done — syntax/templ/fuzz_test.go
 | 24 | **Watch mode** — re-run on file changes                            | HIGH   | 4h     | Feature        |
-| 25 | **Performance baseline benchmarks** — CI regression tracking       | MED    | 2h     | Performance    |
+~~| 25 | **Performance baseline benchmarks** — CI regression tracking       | MED    | 2h     | Performance    |~~ done — alloc budgets + perf regression tests + docs/benchmarks
 
 ---
 
