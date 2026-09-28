@@ -80,7 +80,7 @@ claim** (cache-misses −59.2%, references −67.8%, <3% round variance).
 
 1. Idle-window re-validation of the pinning reversal (a load<4 window never
    opened during 12+ min of polling; one DID open at 22:26 — see d1).
-2. Full `nix flake check` (canonical gate: full suite + race + alloc-gate);
+~~2. Full `nix flake check` (canonical gate: full suite + race + alloc-gate);~~ done — full nix flake check passed 2026-09-23
    I ran proportionate targeted checks instead (comments+benches+docs change).
 3. Committing the A/B runner scripts under `scripts/`.
 4. Fresh full-benchmark baseline generation (the new evidence is targeted, not
@@ -148,11 +148,11 @@ claim** (cache-misses −59.2%, references −67.8%, <3% round variance).
    manual when load<4) to confirm the reversal magnitude without the asterisk.
 2. Same for threshold_10 ±CI comparison (pinned-tighter-CIs claim, n=30).
 3. Commit A/B runner scripts (`/tmp/artdupl-timing/*.sh`) into `scripts/bench/`.
-4. Run full `nix flake check` on the current tree (race + alloc-gate + arch-lint).
+~~4. Run full `nix flake check` on the current tree (race + alloc-gate + arch-lint).~~ done — full check passed 2026-09-23
 5. Verify/soften the AMD event 0x64 umask semantics wording in the notes/ADR.
 6. Build the load-waiting wrapper (polls loadavg, fires suite when criterion
    holds) so "parked on machine load" tasks never park again.
-7. Decide and record: bench protocol for future committed baselines stays
+~~7. Decide and record: bench protocol for future committed baselines stays~~ done — benchmarks README: pinned capture, pinned-vs-pinned compare
    pinned-only (stability) even though unpinned is faster — one sentence in
    benchmarks README already says this; confirm it's the standing rule.
 8. Cross-check `baseline-2026-09-14-nested-tokens.txt` provenance (pinned or
@@ -183,23 +183,23 @@ process) to complete T23's attribution refinement.
 session) — sweep other sections for template leftovers.
 18. The 2026-08-16 status reports reference "T2.2 still open" — docs-health
 VERIFY pass item (#35 in TODO_LIST) now covers one more resolved claim.
-19. master plan wave2 doc lists T2.2/T23 under "Not Started" (historical
+~~19. master plan wave2 doc lists T2.2/T23 under "Not Started" (historical~~ done — master plan header carries the audited closure citing T2/T22/T23 evidence
 snapshot — annotate, don't rewrite, per docs-health convention).
-20. TODO_LIST "Corpus re-baseline post-v0.7.0" (#22) — this session's timing
+~~20. TODO_LIST "Corpus re-baseline post-v0.7.0" (#22) — this session's timing~~ done — executed 2026-09-23
 data makes that more urgent (search 4.7× faster than AGENTS corpus-era
 assumptions in the topology section).
 
 **Existing TODO_LIST MEDIUM items this session's work unblocks or informs:**
 21. Fleet audit `encoding/json/v2` on Go 1.27 (existing #14 — unaffected, keep).
-22. `scripts/pre-release-check.sh` (existing #16).
+~~22. `scripts/pre-release-check.sh` (existing #16).~~ done — scripts/pre-release-check.sh; TODO_LIST done 2026-09-23
 23. Branch protection + failure notifications (existing #18).
 24. Windows exe-start `ProcessState nil` root-cause (existing #4).
-25. `--dump-tokens` positions on templ files (existing #48).
-26. arch-lint in local `nix flake check` (existing #40) — this session relied
+~~25. `--dump-tokens` positions on templ files (existing #48).~~ done — dump-tokens templ verification done 2026-09-23
+~~26. arch-lint in local `nix flake check` (existing #40) — this session relied~~ done — flake arch-lint check (2026-09-23)
 on manual lint; would have been covered by it.
-27. Stale-shell graceful failure (existing #24).
-28. Self-clean decision ledger (existing #12).
-29. Small quality batch (existing #29-#39 grab-bag).
+~~27. Stale-shell graceful failure (existing #24).~~ done — scripts/go-env-doctor.sh
+~~28. Self-clean decision ledger (existing #12).~~ done — docs/SELF_CLEAN_LEDGER.md
+~~29. Small quality batch (existing #29-#39 grab-bag).~~ done — all in TODO_LIST Done 2026-09-23
 30. gogenfilter consumer sweep to v3.6.1 for the 9 red-baseline repos (existing).
 
 **Methodology hardening (general):**
@@ -217,7 +217,7 @@ excluded — we noted `:u`; write it into the perf script header).
 bracket if #11 ever gets serious.
 37. If linearScanMax is retuned, the layout/alloc tests pin nothing about it —
 add the fanout histogram as a test fixture instead of prose.
-38. Reconcile ADR-0022's Results table "FindDuplOver 1,543 (ADR-0019 era)"
+~~38. Reconcile ADR-0022's Results table "FindDuplOver 1,543 (ADR-0019 era)"~~ done — ADR-0022 addendum provenance note corrects the attribution
 row with the now-measured 7,158 at the actual map-era commit (one-line
 addendum footnote — the addendum already covers it; make the table honest).
 39. Add benchstat to the devShell (flake) so `go install` sandbox issues

@@ -32,17 +32,17 @@
 
 | # | Item                            | State                                                                                                                                                                                                                             |
 | - | ------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1 | go-finding adoption overall     | Adapter shipped + tested (2026-09-19, issue #1, GAP-2), but library-only surface: no production code path calls `ToFindings`/`ToReport`. Consumers reach findings via art-dupl's SARIF output + go-finding's `FindingsFromSARIF`. |
-| 2 | GroupID identity                | One concept, three names: SARIF `go-finding/groupId`, JSON `clone_groups[].hash`, go-finding `Finding.GroupID`. Documented in AGENTS.md, pinned by tests; drift risk lives in docs, not code (status report's known-gap b.2).     |
+~~| 1 | go-finding adoption overall     | Adapter shipped + tested (2026-09-19, issue #1, GAP-2), but library-only surface: no production code path calls `ToFindings`/`ToReport`. Consumers reach findings via art-dupl's SARIF output + go-finding's `FindingsFromSARIF`. |~~ resolved by alternative — provider Detector ships (pkg/provider); no longer library-only
+~~| 2 | GroupID identity                | One concept, three names: SARIF `go-finding/groupId`, JSON `clone_groups[].hash`, go-finding `Finding.GroupID`. Documented in AGENTS.md, pinned by tests; drift risk lives in docs, not code (status report's known-gap b.2).     |~~ done — AGENTS documents GroupID=hash + SARIF property contract; FEATURES adapter row
 | 3 | Evaluation-doc linkage          | The verdict doc lives only in the go-finding repo; art-dupl readers following its path hit a dead end (status item 24). Not fixed this session.                                                                                   |
-| 4 | Adoption decision formalization | Carried in AGENTS.md convention entry + status report; no ADR, no TODO_LIST tracking verified.                                                                                                                                    |
+~~| 4 | Adoption decision formalization | Carried in AGENTS.md convention entry + status report; no ADR, no TODO_LIST tracking verified.                                                                                                                                    |~~ resolved by alternative — verdict in AGENTS; SDK surface decided in ADR-0025
 
 ## c) NOT STARTED (untouched this session; known-open from the 2026-09-19 report)
 
-1. **ADR for the go-finding adoption + GroupID=hash contract** (former item 23; ADR-0024 slot was taken by the JSON marshaler).
+~~1. **ADR for the go-finding adoption + GroupID=hash contract** (former item 23; ADR-0024 slot was taken by the JSON marshaler).~~ resolved by alternative — AGENTS verdict + ADR-0025 SDK-surface decision
 2. **Integration test piping art-dupl's REAL `--sarif` CLI bytes through `FindingsFromSARIF`** (former item 10) — the existing round-trip test exercises go-finding's own `ToSARIF`, so art-dupl's hand-rolled SARIF emitter is import-verified only by a one-off live CLI run, not a committed test.
 3. **Local copy or summary of the evaluation doc** inside art-dupl (former item 24).
-4. **CLI `--output finding` format** — not started **by decision** (rejected as YAGNI; SARIF is the wire format). Listed because "not started" ≠ "forgotten": it remains the most plausible full-adoption completion if product intent changes.
+~~4. **CLI `--output finding` format** — not started **by decision** (rejected as YAGNI; SARIF is the wire format). Listed because "not started" ≠ "forgotten": it remains the most plausible full-adoption completion if product intent changes.~~ won't implement — YAGNI-rejected 2026-09-19; ADR-0025 keeps CLI classification-only
 5. Everything else in the broader project backlog (out of scope per user instruction; not researched this session).
 
 ## d) TOTALLY FUCKED UP
@@ -66,13 +66,13 @@ The honest worst-candidate is the self-critique item 1: I stated two unverified 
 **P0 — closes real verification/wiring gaps**
 
 1. Committed integration test: run the actual CLI with `--sarif` on a synthetic duplicate, pipe the emitted bytes through `FindingsFromSARIF`, assert GroupIDs restore (closes the import-side gap; converts the 2026-09-19 one-off live proof into a permanent gate).
-2. Decision + ADR: is the adapter's library-only surface final, or does a production path (SDK `Detector.Report()` / CLI flag) come? Record either way as an ADR (frees the stale "item 23").
+~~2. Decision + ADR: is the adapter's library-only surface final, or does a production path (SDK `Detector.Report()` / CLI flag) come? Record either way as an ADR (frees the stale "item 23").~~ resolved by alternative — production path shipped (pkg/provider toolsdk Detector); ADR-0025
 3. Run `go test ./printer/finding/...` this session's successor — confirm all 17 green on current HEAD (never executed this session).
 4. Copy or summarize the integration-evaluation doc into art-dupl docs; fix the dead path cited by issue #1.
-5. Verify the three known gaps exist in TODO_LIST.md; add any that are missing (HARVEST from this report).
+~~5. Verify the three known gaps exist in TODO_LIST.md; add any that are missing (HARVEST from this report).~~ done — TODO_LIST harvest tracks issues #2/#4, detector, dependabot
 
 **P1 — reduces drift / duplication**
-6. Three-names-one-concept: add a cross-reference table (SARIF property ↔ JSON field ↔ Finding field) to AGENTS.md or FEATURES.md.
+~~6. Three-names-one-concept: add a cross-reference table (SARIF property ↔ JSON field ↔ Finding field) to AGENTS.md or FEATURES.md.~~ done — AGENTS GroupID contract + FEATURES adapter row document the mappings
 7. Evaluate go-finding's `Template` builder API (`WithGroupID`) to replace hand-construction in `toFinding` (former item 19).
 8. Consider go-finding `Tags` (`duplicate`, `type-1`/`type-2`) instead of/in addition to metadata keys (former item 47).
 9. Wire `Report.Summary` (`FilesScanned`, `DurationMs`) if/when any CLI wiring exists — currently unused (former item 38).
@@ -82,20 +82,20 @@ The honest worst-candidate is the self-critique item 1: I stated two unverified 
 13. Record the "latest stable, core-API-diff-checked" go-finding upgrade policy in AGENTS.md (former item 33).
 
 **P2 — hygiene surfaced by this session**
-14. Verify FEATURES.md reflects that the adapter is library-only (update if the P0-2 decision says so).
-15. Check adapter test coverage of `NonActionablePattern`/`--explain` metadata keys (are they exercised in `finding_test.go`?).
+~~14. Verify FEATURES.md reflects that the adapter is library-only (update if the P0-2 decision says so).~~ resolved by alternative — FEATURES documents adapter + shipped provider
+~~15. Check adapter test coverage of `NonActionablePattern`/`--explain` metadata keys (are they exercised in `finding_test.go`?).~~ done — finding_test.go exercises MetadataKeyNonActionablePattern
 16. Diagnose the LSP cross-repo lying (`golangci_lint_ls` reported "no required module provides package go-finding" while in go.mod; gopls likely outside devShell env) — former known issue, root cause undiagnosed.
 17. Reconcile the concurrent session's TODO_LIST edits against this backlog (former item 22).
 18. Watch-item: upstream decision D8 — revisit `RelatedRef.Metadata` when a SECOND consumer needs per-relationship metadata.
 19. Watch-item: go-finding `GroupID` validation evolution (128-byte/machine-safe rules) — our 16-hex hashes are far inside; pin a test only if upstream tightens.
 
 **P3 — ROADMAP fuel (deliberately not scheduled)**
-20. Native `--output finding` CLI format (rejected as YAGNI 2026-09-19; revisit only with a named consumer).
-21. SDK streaming findings surface (`Options` flag emitting `iter.Seq[finding.Finding]`).
+~~20. Native `--output finding` CLI format (rejected as YAGNI 2026-09-19; revisit only with a named consumer).~~ won't implement — YAGNI-rejected 2026-09-19; ADR-0025 reaffirms
+~~21. SDK streaming findings surface (`Options` flag emitting `iter.Seq[finding.Finding]`).~~ resolved by alternative — pkg/provider Detect ships; LIVE in BuildFlow 2026-09-25
 22. HTML report perm-links carrying GroupID anchors (today: `groupAnchorID` from hash; could unify with finding GroupID).
 23. Baseline/check subcommands emitting findings (they currently bypass the adapter entirely).
 24. Evaluate `go-error-family` (transitive via go-finding) for a direct-use policy or stay transitive-only.
-25. LSP diagnostic server fed by `ToLSP()` — evaluated and rejected in the evaluation doc; revisit only if IDE demand materializes.
+~~25. LSP diagnostic server fed by `ToLSP()` — evaluated and rejected in the evaluation doc; revisit only if IDE demand materializes.~~ won't implement — rejected in the go-finding evaluation; revisit only with IDE demand
 
 (Stopped at 25 substantive items; padding to 50 would fabricate work. The status-report skill notes: larger N is a brainstorm, not a commitment list.)
 

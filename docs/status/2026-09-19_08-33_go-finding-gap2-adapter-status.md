@@ -50,7 +50,7 @@ The honest caveats: the adapter itself has **no production caller** (library API
 
 ## b) PARTIALLY DONE
 
-1. **The adapter is wired into the product only at the constant level.** Production code (`printer/sarif.go`) imports the package for `SARIFPropGroupID`; `GroupIDOf`/`ToFindings`/`ToReport` have **no production caller** — tests only. The issue's deliverable ("the output adapter per the evaluation verdict") is delivered as a public library API, and the consumer loop art-dupl→go-finding works through the SARIF property (go-finding's `FindingsFromSARIF` restores `GroupID` — verified). But a Go consumer cannot obtain a `finding.Report` from the CLI or SDK today. Honest label: **partial ghost system**, pending the product-surface decision (question 1 below).
+~~1. **The adapter is wired into the product only at the constant level.** Production code (`printer/sarif.go`) imports the package for `SARIFPropGroupID`; `GroupIDOf`/`ToFindings`/`ToReport` have **no production caller** — tests only. The issue's deliverable ("the output adapter per the evaluation verdict") is delivered as a public library API, and the consumer loop art-dupl→go-finding works through the SARIF property (go-finding's `FindingsFromSARIF` restores `GroupID` — verified). But a Go consumer cannot obtain a `finding.Report` from the CLI or SDK today. Honest label: **partial ghost system**, pending the product-surface decision (question 1 below).~~ done — production caller shipped: pkg/provider calls finding.ToFindings; surface = toolsdk provider (ADR-0025)
 2. **Group-id naming across formats** — the same id surfaces as `go-finding/groupId` (SARIF), `clone_groups[].hash` (JSON), and `GroupID` (findings). Pinned by tests and documented in `AGENTS.md`, but it's three names for one concept; drift risk lives in docs, not code.
 3. **Verification of the SARIF property on the _import_ side of real CLI output** — the round-trip test exercises go-finding's own `ToSARIF`, not art-dupl's hand-rolled SARIF bytes. The E2E check confirmed the property is _present_ on CLI output with the right value; a test that pipes **art-dupl's actual SARIF bytes** through `FindingsFromSARIF` does not exist yet.
 4. **Unrelated working-tree changes left in place, judged not reviewed-then-forgotten** — `README.md` (Go 1.26→1.27) and `cmd/run_crawl_stdin_test.go` (Windows skips) from a concurrent session were sanity-checked against the CHANGELOG's "Release CI hardening" entry and left untouched. Consistent, but I never diffed them against their originating report (`docs/status/...v0.7.0-release-go1.27-coherence-ci-recovery.md`, also modified by that session, unread by me).
@@ -59,13 +59,13 @@ The honest caveats: the adapter itself has **no production caller** (library API
 
 ## c) NOT STARTED (deliberate scope cuts — with reasons, not excuses)
 
-1. **CLI `--output finding` output format** — rejected this session as YAGNI (SARIF is the wire format into the go-finding ecosystem; a second JSON-ish output adds surface for marginal value). Still the most plausible "full adoption" completion if product intent wants it.
-2. **SDK exposure** (`artdupl.Result` → findings accessor) — SDK uses its own `CloneGroup` type (different from `domain.ProcessedCloneGroup`); adapter input types don't match. Would need a conversion or an arch-lint/sdk-policy decision. Issue doesn't require it.
+~~1. **CLI `--output finding` output format** — rejected this session as YAGNI (SARIF is the wire format into the go-finding ecosystem; a second JSON-ish output adds surface for marginal value). Still the most plausible "full adoption" completion if product intent wants it.~~ won't implement — YAGNI-rejected; go-finding stays a consumer-side output layer (AGENTS go-finding bullet)
+~~2. **SDK exposure** (`artdupl.Result` → findings accessor) — SDK uses its own `CloneGroup` type (different from `domain.ProcessedCloneGroup`); adapter input types don't match. Would need a conversion or an arch-lint/sdk-policy decision. Issue doesn't require it.~~ resolved by alternative — ADR-0025: conversion lives in pkg/provider; SDK stays classification-free
 3. **BDD scenario** for the SARIF group id through `RunArtDupl` — unit + printer + E2E-by-hand coverage exists; no committed Ginkgo scenario.
-4. **`HOW_TO_USE.md` / `README.md` user documentation** of the new property and the adapter.
-5. **GitHub issue #1 comment/close** — no commit/push/comment authorization; implementation is on `fork` in daemon commits.
-6. **`TODO_LIST.md`/`ROADMAP.md` harvest** of this report's section (f) — the status-report skill mandates it as follow-up (`docs-health` HARVEST).
-7. **Durably fixing the templ↔gofumpt conflict** — I re-applied the format after `buildflow format`'s `templ generate` clobbered it, but the underlying tension (templ's generated `.go` is gofmt-clean, not gofumpt-clean; every future `templ generate` re-breaks `treefmt`) is unresolved and WILL recur.
+~~4. **`HOW_TO_USE.md` / `README.md` user documentation** of the new property and the adapter.~~ done — README interop section; HOW_TO_USE provider section; FEATURES adapter row
+~~5. **GitHub issue #1 comment/close** — no commit/push/comment authorization; implementation is on `fork` in daemon commits.~~ done — issue #1 verified on HEAD and closed with evidence
+~~6. **`TODO_LIST.md`/`ROADMAP.md` harvest** of this report's section (f) — the status-report skill mandates it as follow-up (`docs-health` HARVEST).~~ done — TODO_LIST carries sourced adapter items (threshold knob, issue #2 test, dependabot)
+~~7. **Durably fixing the templ↔gofumpt conflict** — I re-applied the format after `buildflow format`'s `templ generate` clobbered it, but the underlying tension (templ's generated `.go` is gofmt-clean, not gofumpt-clean; every future `templ generate` re-breaks `treefmt`) is unresolved and WILL recur.~~ done — treefmt excludes *_templ.go (flake.nix)
 
 ---
 
@@ -100,19 +100,19 @@ No. Every claim in the completion summary was re-verified by CLI runs before it 
 
 Impact-sorted brainstorm (per the skill: a large N is brainstorm, not commitment — most items below the line are ROADMAP fuel). Items marked ★ are this session's direct offspring; unmarked ones surfaced from what I noticed but did not act on.
 
-1. ★ **Decide and implement the adapter's product surface** — CLI format, SDK accessor, or confirm library-only. Resolves the partial ghost system.
+~~1. ★ **Decide and implement the adapter's product surface** — CLI format, SDK accessor, or confirm library-only. Resolves the partial ghost system.~~ done — toolsdk provider shipped as the product surface (pkg/provider; ADR-0025; FEATURES FULLY_FUNCTIONAL)
 2. ★ **Squash the 12 daemon commits into one `Closes #1` commit** on `fork` (needs your commit authorization).
-3. ★ **Comment on / close issue #1** with the verification evidence (three criteria + E2E output) — in your voice (`github-voice`).
+~~3. ★ **Comment on / close issue #1** with the verification evidence (three criteria + E2E output) — in your voice (`github-voice`).~~ done — closed with evidence (2026-09-22 tracker-turnaround report)
 4. ★ **Consolidate the severity ladder** into one shared helper used by both `printer/sarif.go` and `printer/finding`.
-5. ★ **Durable templ↔gofumpt fix** — post-generate format hook in the build, a treefmt exclusion for `*_templ.go`, or upstream templ change; until then every `templ generate` re-breaks `nix flake check`.
-6. ★ **Prevent auto-configure from re-adding banned linters** — `skip_steps: golangci-lint-auto-configure` with rationale in `.buildflow.yml`, or fix upstream.
+~~5. ★ **Durable templ↔gofumpt fix** — post-generate format hook in the build, a treefmt exclusion for `*_templ.go`, or upstream templ change; until then every `templ generate` re-breaks `nix flake check`.~~ done — treefmt excludes *_templ.go in flake.nix
+~~6. ★ **Prevent auto-configure from re-adding banned linters** — `skip_steps: golangci-lint-auto-configure` with rationale in `.buildflow.yml`, or fix upstream.~~ done — .buildflow.yml skip_steps: golangci-lint-auto-configure
 7. ★ **Rebuild/reinstall BuildFlow** (`nix build . && nix run .#reinstall` in the BuildFlow repo) and re-test `nix-hash-fix` against this flake's two-phase gogenfilter shape.
 8. ★ **Investigate the fleet-provider bleed** (`cqrs-lint`, `govalid-generate`, `go-licenses` running in art-dupl's buildflow runs) — expected or misconfigured?
-9. ★ **HARVEST this report's section (f) into `TODO_LIST.md`/`ROADMAP.md`** (`docs-health` → HARVEST) so it isn't entombed here.
+~~9. ★ **HARVEST this report's section (f) into `TODO_LIST.md`/`ROADMAP.md`** (`docs-health` → HARVEST) so it isn't entombed here.~~ done — harvested into TODO_LIST (issue #2 test, dependabot, threshold knob)
 10. ★ **Integration test: art-dupl's real SARIF bytes → go-finding `FindingsFromSARIF`** — closes the "import side of CLI output" gap (b.3).
 11. ★ **BDD scenario** for the SARIF group id via `RunArtDuplOnDir` (bdd/ conventions).
-12. ★ **SDK findings conversion** — decide whether `pkg/artdupl` grows one (type-model question: SDK `CloneGroup` vs `domain.ProcessedCloneGroup`).
-13. ★ **Document the property + adapter in `HOW_TO_USE.md`** and README interoperability blurb.
+~~12. ★ **SDK findings conversion** — decide whether `pkg/artdupl` grows one (type-model question: SDK `CloneGroup` vs `domain.ProcessedCloneGroup`).~~ resolved by alternative — SDK-to-findings conversion lives in pkg/provider, not pkg/artdupl (ADR-0025)
+~~13. ★ **Document the property + adapter in `HOW_TO_USE.md`** and README interoperability blurb.~~ done — README GroupID/interop docs + HOW_TO_USE provider section
 14. ★ **Benchmark the adapter** on the BDD corpus — `Related` is O(N²) per group; measure before worrying, don't pre-optimize.
 15. ★ **Related-link policy for huge groups** — cap, flag (`--finding-related`), or measure-and-decline (after 14).
 16. ★ **Deterministic-ID collision test** — two occurrences, same file+line (different columns): same `GenerateID` today; decide if that's acceptable and pin it.

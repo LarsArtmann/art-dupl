@@ -33,7 +33,7 @@
 
 ## b) PARTIALLY DONE
 
-### b1. AGENTS.md gotcha: accept-directive placement (S)
+~~### b1. AGENTS.md gotcha: accept-directive placement (S)~~ done — AGENTS documents placement (in-range or ≤5 lines above LineStart)
 
 - **Works:** Diagnosis complete (see a2).
 - **Open:** The lesson is not yet recorded in the project's `//art-dupl:accept` AGENTS.md bullet: _directives on an enclosing FuncDecl do NOT cover statement-level clone roots deeper in the body — anchor within 5 lines of the actual clone root (post-ADR-0023 reality)_.
@@ -85,7 +85,7 @@
 
 1. **Anchor accept directives to clone roots, not enclosing declarations.** Pain: silently inert suppression (a2). Fix: AGENTS.md rule + dead-directive detector (c1).
 2. **Threshold-ladder regression after any tokenization/actionability change.** Pain: bugs survive weeks (directive staleness). Fix: add `-t 1` (and one mid threshold) self-scan to the corpus-validation checklist in AGENTS.md.
-3. **Stable group ordering for diffable reports.** Pain: before/after `-t 1` reports reorder run-to-run (parallel search output order), turning verification diffs into churn. Fix: tie-break equal-sort-key groups by content hash in the text printer. Small, self-hosting-specific UX win.
+~~3. **Stable group ordering for diffable reports.** Pain: before/after `-t 1` reports reorder run-to-run (parallel search output order), turning verification diffs into churn. Fix: tie-break equal-sort-key groups by content hash in the text printer. Small, self-hosting-specific UX win.~~ done — unified sort tie-breaks equal keys by hash (printer/sort_unified.go)
 4. **Lint every touched file before claiming done.** Turns 1–2 did, turn 3 skipped it until flagged here. Fix: keep buildflow on the pre-finish checklist (it already is in the global workflow — this session drifted).
 5. **Type-aware self-scan latency.** Observed ~15–17 s per run, dominated by go/packages type loading of ~380 files. Pain: dedup iteration at low thresholds is slow. Fix idea: session-local type-data cache keyed by content hashes (the AST cache already does this for parses).
 6. **Quote the threshold in every self-scan claim.** Cheap documentation discipline; prevents the (d)4 class of confusion.
@@ -98,18 +98,18 @@
 
 | #  | Task                                                                                                                                                                    | Impact   | Effort | Category      |
 | -- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ------ | ------------- |
-| 1  | Record accept-directive placement gotcha in AGENTS.md (anchor to clone root, ≤5 lines)                                                                                  | Critical | S      | Documentation |
+~~| 1  | Record accept-directive placement gotcha in AGENTS.md (anchor to clone root, ≤5 lines)                                                                                  | Critical | S      | Documentation |~~ done — AGENTS directive bullet
 | 2  | Re-run `-t 4` and `-t 5` self-scan after `hasMethodCall` extraction; confirm 0 shown                                                                                    | Critical | S      | Quality       |
 | 3  | `buildflow -s golangci-lint` on `printer/actionability/` (turn-3 file unlinted)                                                                                         | High     | S      | Quality       |
 | 4  | Rebuild/install the CLI binary the user runs (nix/buildflow) so terminal runs match the tree                                                                            | Critical | S      | Bug           |
-| 5  | Harvest this section into `TODO_LIST.md` + `ROADMAP.md` (docs-health HARVEST)                                                                                           | High     | S      | Documentation |
+~~| 5  | Harvest this section into `TODO_LIST.md` + `ROADMAP.md` (docs-health HARVEST)                                                                                           | High     | S      | Documentation |~~ done — TODO_LIST harvest cites this report
 | 6  | Dead-directive detector: flag `//art-dupl:accept` directives that matched zero groups this run                                                                          | High     | M      | Feature       |
 | 7  | File-level test: statement-level clone + directive 6 lines above ⇒ shown; ≤5 lines ⇒ suppressed                                                                         | High     | S      | Quality       |
 | 8  | Remove/consolidate the 4 inert FuncDecl directives in `cmd/filter_stats.go` (after #6 confirms)                                                                         | Medium   | S      | Cleanup       |
-| 9  | Stable tie-break (content hash) for equal sort keys in text output — diffable self-scan reports                                                                         | Medium   | S      | Feature       |
+~~| 9  | Stable tie-break (content hash) for equal sort keys in text output — diffable self-scan reports                                                                         | Medium   | S      | Feature       |~~ done — sort falls back to hash on equal keys (+ integration test)
 | 10 | Classify `-t 2` / `-t 3` self-scan thresholds like `-t 1` (inventory + judgment)                                                                                        | Medium   | S      | Quality       |
-| 11 | Re-run corpus validation (go-sse, go-cqrs-lite) after helper extraction; update AGENTS.md counts if shifted                                                             | Medium   | M      | Quality       |
-| 12 | Document the `-t 1` acceptance inventory (28 idiomatic groups + reasons) in AGENTS.md or a doc so future sessions start from it                                         | Medium   | S      | Documentation |
+~~| 11 | Re-run corpus validation (go-sse, go-cqrs-lite) after helper extraction; update AGENTS.md counts if shifted                                                             | Medium   | M      | Quality       |~~ done — corpus re-baseline 2026-09-23 (AGENTS numbers)
+~~| 12 | Document the `-t 1` acceptance inventory (28 idiomatic groups + reasons) in AGENTS.md or a doc so future sessions start from it                                         | Medium   | S      | Documentation |~~ done — SELF_CLEAN_LEDGER 2026-09-22 section records the inventory
 | 13 | Session-local type-aware data cache (content-hash keyed) to kill the ~15 s go/packages load per run                                                                     | High     | L      | Feature       |
 | 14 | Owner decision + optional extraction: `warnUnmatchedPatterns` helper for filter_stats warn loops (see g1)                                                               | Low      | S      | Cleanup       |
 | 15 | Consider printing "shown at threshold T" in the final summary line (threshold is load-bearing context)                                                                  | Low      | S      | Feature       |
@@ -121,7 +121,7 @@
 | 21 | Add the `-t 1` threshold-ladder self-scan step to the corpus-validation checklist in AGENTS.md                                                                          | Medium   | S      | Documentation |
 | 22 | Extract the shared `sendCtx`-style finalization note: confirm consumer-drain invariant for terminal stats sends is documented (verified safe this session: buffered(1)) | Low      | S      | Documentation |
 | 23 | Dogfood: run art-dupl ON the actionability package with `--explain` and record why each accepted pattern exists (feeds #12)                                             | Medium   | M      | Quality       |
-| 24 | Review whether `Find total N clone groups`-era printers still exist anywhere (stale binary shows old format; confirm no dead printer paths in tree)                     | Low      | S      | Cleanup       |
+~~| 24 | Review whether `Find total N clone groups`-era printers still exist anywhere (stale binary shows old format; confirm no dead printer paths in tree)                     | Low      | S      | Cleanup       |~~ done — single live site verified; no dead printer paths
 | 25 | After #4: capture a fresh `-t 1` / `-t 4` baseline pair into `docs/benchmarks/`-style reference so future dedup sessions diff against a pinned snapshot                 | Low      | S      | Documentation |
 
 ---
