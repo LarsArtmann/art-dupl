@@ -33,6 +33,8 @@ description: Complete reference for all art-dupl command-line flags.
 | `--all`         | `-a`  | `false`            | Generate all formats                                    |
 | `--output-dir`  | `-o`  | `reports/art-dupl` | Output directory (used with `--all`)                    |
 | `--diff`        |       |                    | Diff visualization: `side-by-side`, `inline`, or `true` |
+| `--diff-report`  |       | `false`            | Compare against a baseline file: show new/suppressed/resolved clones |
+| `--html-out`     |       |                    | Write the HTML report to this file (with `--html`); auto-writes `art-dupl-report.html` on a terminal |
 
 ## Filtering Flags
 
@@ -49,6 +51,9 @@ description: Complete reference for all art-dupl command-line flags.
 | `--test-threshold`       |       | `0`     | Separate threshold for test files (`0` = `max(30, threshold)`)                             |
 | `--suppress-test-low`    |       | `true`  | Suppress low-priority clones in test files                                                 |
 | `--min-lines`            |       | `0`     | Suppress clone groups spanning fewer than N source lines (`0` = disabled)                  |
+| `--min-tokens`           |       | `0`     | Suppress clone groups with fewer than N tokens (`0` = disabled)                            |
+| `--include-ignored`      |       | `false` | Include gitignored files (default: honor `.gitignore`)                                     |
+| `--include-examples`     |       | `false` | Include `examples/`, `demo/` directories (excluded by default)                             |
 
 ## Performance Flags
 
@@ -59,6 +64,8 @@ description: Complete reference for all art-dupl command-line flags.
 | `--cache-dir`         |       | `""`    | Cache directory (default: `.cache/art-dupl`)            |
 | `--clear-cache`       |       | `false` | Clear cache before running                              |
 | `--max-cache-entries` |       | `0`     | Max cached AST files to keep (`0` = unlimited)          |
+| `--memory-cache-entries` |    | `512`   | AST node slices kept in the in-memory cache layer (requires `--incremental`) |
+| `--search-workers`    |       | `0`     | Concurrent suffix-tree search workers (`0`/`1` = sequential, `>1` = parallel) |
 | `--timeout`           |       | `30m`   | Execution timeout (hidden in `--help`)                  |
 | `--profile`           |       | `false` | Emit pprof CPU and memory profiles (hidden in `--help`) |
 
@@ -66,7 +73,23 @@ description: Complete reference for all art-dupl command-line flags.
 
 | Flag            | Short | Default | Description                           |
 | --------------- | ----- | ------- | ------------------------------------- |
-| `--dump-tokens` |       | `false` | Dump serialized token stream and exit |
+| `--dump-tokens` |       | `false` | Dump serialized token stream (with `line:col` positions) and exit |
+| `--timing`      |       | `false` | Print per-stage timing and allocation statistics after the run |
+
+## Analysis & Actionability Flags
+
+| Flag | Short | Default | Description |
+| ---- | ----- | ------- | ----------- |
+| `--explain` | | `false` | Explain each clone group (type, actionability, category, extractability) |
+| `--no-actionability` | | `false` | Disable boilerplate suppression (show all clone groups) |
+| `--show-suppressed` | | `false` | Show suppressed groups for calibration |
+| `--disable-pattern` | | `[]` | Suppress a specific actionability pattern by label (repeatable) |
+| `--list-patterns` | | `false` | List all pattern labels and exit |
+| `--no-accept-directives` | | `false` | Ignore `//art-dupl:accept` directives in source |
+| `--recommend-threshold` | | `false` | Suggest a threshold from codebase size and exit |
+| `--type-aware` | | `false` | go/types-based detection (same-name methods on different types no longer match; 10-100x slower) |
+| `--suggest-generics` | | `false` | Annotate generics-extraction candidates (does NOT filter) |
+| `--suggest-generics-min-lines` | | `4` | Minimum lines per generics candidate (`0` disables) |
 
 ## Stats Subcommand
 
