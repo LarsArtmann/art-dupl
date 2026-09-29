@@ -174,17 +174,17 @@ func aggregateValues(values []int) int {
 			output, err := setup.RunArtDupl("--rich-text", "--threshold", "1")
 			Expect(err).ToNot(HaveOccurred())
 
-			var previewLine string
+			var preview string
 
 			for _, line := range strings.Split(string(output), "\n") {
-				if strings.HasPrefix(line, "  | ") {
-					previewLine = line
+				if idx := strings.Index(line, "  | "); idx >= 0 {
+					preview = line[idx+4:]
 					break
 				}
 			}
-			Expect(previewLine).ToNot(BeEmpty(), "expected a code preview line in text output")
-			Expect([]rune(previewLine)).To(HaveLen(3 + 60)) // "  | " prefix + maxPreviewRunes incl. ellipsis
-			Expect(strings.HasSuffix(previewLine, "…")).To(BeTrue(), "long first lines must end with the ellipsis")
+			Expect(preview).ToNot(BeEmpty(), "expected a code preview in the location line")
+			Expect([]rune(preview)).To(HaveLen(60)) // maxPreviewRunes incl. ellipsis
+			Expect(strings.HasSuffix(preview, "…")).To(BeTrue(), "long first lines must end with the ellipsis")
 		})
 	})
 })
