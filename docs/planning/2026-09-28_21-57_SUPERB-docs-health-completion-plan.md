@@ -1,7 +1,7 @@
 # SUPERB Plan — Docs-Health Completion: Close the Audit Pass, Make Truth Durable, Sweep the Backlog
 
 **Date:** 2026-09-28 21:57 CEST
-**Status:** Planning — awaiting execution
+**Status:** EXECUTED 2026-09-29 (M00–M20 + gated M17) — all tiers landed; M17 (legacy retrofit waves) remains gated on g1. Execution records: `docs/status/2026-09-28_23-50_superb-execution-m00-m11-landed.md` (first half) and `docs/status/2026-09-29_00-54_superb-complete-m12-m20-jsonutil-catch.md` (second half + the jsonutil incident). Per-item verdicts for all 50 source items: §10 verdict accounting below. Successor plan: `docs/planning/2026-09-29_01-10_SUPERB-v2-harden-harness-unblock-ship.md`.
 **Input:** `docs/status/2026-09-28_21-54_docs-health-full-audit-pass.md` section (f) — all 50 items, mapped 1:1 below (item #s in the M/F tables' `Src` columns).
 **Method:** Pareto tiers (1% → 51%, 4% → 64%, 20% → 80%, remainder → 100%), then every task granularized to ≤12 min. Nothing from the 50-item list is dropped — coverage matrix at the bottom proves it.
 
@@ -416,3 +416,64 @@ Critical path: **M00 → M03 → M08 → M13 → M20** (the gates chain). The an
 ## 9. Coverage Matrix — all 50 source items → plan IDs
 
 1→M01 · 2→M02 · 3→M07 · 4→M04 · 5→M06 · 6→M00 · 7→M13 · 8→M00 · 9→M05 · 10→M05 · 11→M03 · 12→M03 · 13→M08 · 14→M08 · 15→M14/M18 · 16→M05 · 17→M03 · 18→M14 · 19→M14 · 20→M16 · 21→M09 · 22→M11 · 23→M12 · 24→M10 · 25→M10 · 26→M16 · 27→M04/M17 · 28→M15 · 29→M10 · 30→M16 · 31→M04 · 32→M12 · 33→M00/M13 · 34→M13 · 35→M13 · 36→M13 · 37→M19 · 38→M20 · 39→M13 · 40→M13 · 41→M05 · 42→M18 · 43→M18 · 44→M18 · 45→M20 · 46→M01 · 47→M10 · 48→M19 · 49→M20 · 50→M02 — **50/50 covered.**
+
+---
+
+## 10. Verdict Accounting — all 50 source items (added 2026-09-29, F002)
+
+One row per item of the audit's (f) list. Verdicts: DONE (evidence), ROUTED (successor id), WON'T (reason), GATED (user question). Successor plan: `docs/planning/2026-09-29_01-10_SUPERB-v2-harden-harness-unblock-ship.md`; execution records: `docs/status/2026-09-28_23-50_superb-execution-m00-m11-landed.md` + `docs/status/2026-09-29_00-54_superb-complete-m12-m20-jsonutil-catch.md`.
+
+| # | Item (short) | Verdict | Evidence / Route |
+| --- | --- | --- | --- |
+| 1 | Annotate 09-25 full-arc report | DONE | M01: struck with per-item evidence (commit `0832359e`) |
+| 2 | Master-plan "24/26" auditable | DONE | M02: header documents 24 executed + 2 measured no-gos (T7, T14); TODO_LIST cites them |
+| 3 | Annotate `_13-13` + `_17-37` waves | DONE | M07 |
+| 4 | `docs/status/archived/README.md` | DONE | M04: regimes A/B + retrofit policy + gates |
+| 5 | GH-Action plan fate (0/20) | DONE | M06: WON'T-IMPLEMENT header; g2 confirm ask open (v2 M01) |
+| 6 | Persist annotator to scripts/ | DONE | M00: `scripts/annotate-status-items.py` (`124ac4dc`, `03d5370f`) |
+| 7 | check-rows over ALL annotated files | DONE | M13: 7/7 green, ledger-recorded |
+| 8 | Real commit messages, not daemon | DONE | M00: task-boundary `docs:` commits (pushed through `42ee0a72`) |
+| 9 | CHANGELOG link-definitions | DONE | M05: Keep-a-Changelog audit |
+| 10 | GH v0.7.2 notes from CHANGELOG | DONE | M05: backfilled |
+| 11 | "45+ flags"/"28 templ" verify | DONE | M03: 56/64 flags, 29 templ; CI-gated now |
+| 12 | Stale pattern-count greps | DONE | M03: swept repo-wide |
+| 13 | Standing count-gate test | DONE | M08: `cmd/docs_health_counts_test.go`, canary-verified |
+| 14 | FEATURES PARTIALLY_DONE rows | DONE | M03/M14: cross-checked; count rows CI-gated |
+| 15 | README badges/links | DONE | M14/M18: zero dead links (09-28 sweep) |
+| 16 | Keep-a-Changelog audit | DONE | M05 |
+| 17 | ACTIONABILITY_PATTERNS ↔ code | DONE | M03: `AllActionabilityPatterns()` identity (37=33+4, CI-gated) |
+| 18 | HOW_TO_USE flag sections | DONE | M14: stdin/--files, dump-tokens, --timing present |
+| 19 | Internal markdown links | DONE | M14: zero dead links |
+| 20 | docs/{api,quality,fuzz,…} deep-dive | DONE | M16: KEEP/ARCHIVE/BANNER verdicts executed |
+| 21 | July batch annotation | DONE | M09 (07-19→07-25) |
+| 22 | Aug batch annotation | DONE | M11 (08-10/15/16) |
+| 23 | Sept batch annotation | DONE | M12 (09-14/22/23) |
+| 24 | Reviews annotation | DONE | M10: three brutal-self-review files |
+| 25 | feedback/new 07-19 open items | DONE | M10: `Routed (2026-09-28)` headers |
+| 26 | boolblind analysis | DONE | M16: dispositioned |
+| 27 | Legacy archive retrofit program | GATED | g1: policy + disclaimer DONE (M04); waves await Lars (v2 M01) |
+| 28 | June batch annotation | DONE | M15 (30 files) |
+| 29 | Stale reviews renders | DONE | M10: triaged/banners; final retirement post-v0.8.0 |
+| 30 | Architecture-understanding assets | DONE | M16: directory staleness notice (2026-09-28) |
+| 31 | One archive scheme | DONE | M04: archived/README.md regimes |
+| 32 | SUPERB 07-24/26/28 tails | DONE | M12 |
+| 33 | Upstream annotator extensions | ROUTED | v2 M14 (skill-repo prep; push on go) |
+| 34 | Freshness gate script | DONE | M13: `scripts/check-docs-freshness.sh` (warn-only per its own guard) |
+| 35 | Empty-snapshot proposal | DONE | M13: `docs/planning/2026-09-28_23-59_empty-snapshot-prevention-proposal.md` |
+| 36 | Bench runner persistence | DONE | Verified: `scripts/bench-realworld.sh` already durable |
+| 37 | AGENTS rubric scoring | DONE | M19: ≈85 (00:54 report) |
+| 38 | Health-report format verbatim | DONE | M20: inline two-score report at close-out (standing rule) |
+| 39 | Docs-health cadence in AGENTS | DONE | M13: monthly, next due 2026-10-28 |
+| 40 | Grep-gate as scripted flag | DONE | M13: documented in archived/README.md checklist (line 47) |
+| 41 | [0.7.2] notes + tag annotation | DONE | M05; RELEASE.md walk → v2 M05 F030 |
+| 42 | CONTRIBUTING vs AGENTS | DONE | M18: nix-first + templ generate verified |
+| 43 | templates/ + pre-commit freshness | DONE | M18: real flags, verified against binary |
+| 44 | Website count-level sweep | DONE | M18: cli-flags.mdx = 56 flags; standing gate → v2 M13 |
+| 45 | Post-deletion `-race` reassurance | DONE | M20: 32 packages green, CGO_ENABLED=1 |
+| 46 | 09-25 item 50 close-the-loop | DONE | M01: struck |
+| 47 | Feedback stayers routed headers | DONE | M10: three `Routed (2026-09-28)` headers |
+| 48 | DOMAIN_LANGUAGE provider terms | DONE | M19 (commit `8a8e27a4`) |
+| 49 | Ledger append | DONE | M20 (commit `5cd7918e`) |
+| 50 | Master-plan claim style | DONE | M02: links the two no-go IDs |
+
+**Tally: 48 DONE · 1 ROUTED (→v2 M14) · 1 GATED (g1) — 50/50 dispositioned.**

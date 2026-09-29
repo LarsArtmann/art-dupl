@@ -1,5 +1,7 @@
 # Status Report — SUPERB Plan Execution: M00–M11 Landed, M12 In Flight, M13–M20 Remaining
 
+**Cross-links (added 2026-09-29):** plan status flipped to EXECUTED with the 50-item verdict accounting in `docs/planning/2026-09-28_21-57_SUPERB-docs-health-completion-plan.md` §10; second leg: `docs/status/2026-09-29_00-54_superb-complete-m12-m20-jsonutil-catch.md`; successor: `docs/planning/2026-09-29_01-10_SUPERB-v2-harden-harness-unblock-ship.md`.
+
 **Date:** 2026-09-28 23:50 CEST
 **Branch:** `fork` @ `03d5370f` (21 commits since the SUPERB plan `6e573c67`, 12 with real messages; the daemon buried 9 scopes in heuristic commits)
 **Executing:** `docs/planning/2026-09-28_21-57_SUPERB-docs-health-completion-plan.md` — 12 of 21 M-tasks complete, 1 in flight, 8 remaining (1 user-gated).

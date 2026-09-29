@@ -1,5 +1,7 @@
 # Status Report — SUPERB Execution Complete: M12–M20 Landed, jsonutil Regression Caught by the Close-Out Gates, All 21 Tasks Done
 
+**Cross-links (added 2026-09-29):** plan status flipped to EXECUTED with the 50-item verdict accounting in `docs/planning/2026-09-28_21-57_SUPERB-docs-health-completion-plan.md` §10; first leg: `docs/status/2026-09-28_23-50_superb-execution-m00-m11-landed.md`; successor: `docs/planning/2026-09-29_01-10_SUPERB-v2-harden-harness-unblock-ship.md`.
+
 **Date:** 2026-09-29 00:54 CEST
 **Branch:** `fork` @ `42ee0a72`, **pushed**; CI green on the pushed HEAD (Performance Tests 3m50s ✓, Architecture Lint ✓, verified via `gh run list`).
 **Executing:** `docs/planning/2026-09-28_21-57_SUPERB-docs-health-completion-plan.md` — this leg closed M12–M20. Combined with the previous leg, **all 21 tasks are complete or formally gated** (M17 on question g1).
