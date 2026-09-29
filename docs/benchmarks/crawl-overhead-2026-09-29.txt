@@ -1,0 +1,10 @@
+# Provider crawl overhead — BenchmarkCollectSourceFiles (pkg/provider)
+# 200-file fixture (20 dirs x 10 dup .go files), gogenfilter content-scan + gitignore per file.
+# Machine: AMD Ryzen AI MAX+ 395 (thermally noisy; allocs/op are the stable metric, see CPU_TOPOLOGY.md).
+# Date: 2026-09-29
+
+cpu: AMD RYZEN AI MAX+ 395 w/ Radeon 8060S          
+BenchmarkCollectSourceFiles-32    	    1377	   2201173 ns/op
+BenchmarkCollectSourceFiles-32    	    1532	   2318505 ns/op
+BenchmarkCollectSourceFiles-32    	    1826	   2157790 ns/op
+ok  	github.com/LarsArtmann/art-dupl/pkg/provider	11.315s
