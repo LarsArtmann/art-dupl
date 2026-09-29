@@ -288,8 +288,8 @@ func (t *transformer) trans(
 		t.inInterface = prev
 
 	case *ast.KeyValueExpr:
-		if keyIdent, ok := n.Key.(*ast.Ident); ok {
-			o.Type = encodeSemanticType(KeyValueExpr, keyIdent.Name, t.config.Mode.HashesIdentifiers())
+		if keyName, ok := structLiteralKeyName(n.Key); ok {
+			o.Type = encodeSemanticType(KeyValueExpr, keyName, t.config.Mode.HashesIdentifiers())
 		} else {
 			o.Type = KeyValueExpr
 		}
@@ -470,6 +470,26 @@ func (t *transformer) addIdentifierNames(o *syntax.Node, names []*ast.Ident) {
 // addKeyValue adds transformed key and value nodes as children.
 func (t *transformer) addKeyValue(o *syntax.Node, key, value ast.Expr) {
 	o.AddChildren(t.trans(key), t.trans(value))
+}
+
+// structLiteralKeyName extracts the field-identity string from a
+// composite-literal key: plain field names (ast.Ident) and — legal Go
+// syntax since 1.27 — nested field selectors for embedded/promoted fields
+// (ast.SelectorExpr, e.g. T{A.B: 1}, any depth). Field names are API
+// surface and must participate in the semantic encoding so that
+// T{A.B: 1} does not collapse into T{X.Y: 2}. Returns false for other
+// expressions, leaving the KeyValueExpr unencoded as before.
+func structLiteralKeyName(key ast.Expr) (string, bool) {
+	switch k := key.(type) {
+	case *ast.Ident:
+		return k.Name, true
+	case *ast.SelectorExpr:
+		if base, ok := structLiteralKeyName(k.X); ok {
+			return base + "." + k.Sel.Name, true
+		}
+	}
+
+	return "", false
 }
 
 // chanDirString returns a stable string for an ast.ChanDir so that
