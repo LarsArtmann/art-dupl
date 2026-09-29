@@ -110,7 +110,12 @@ func (cloneDetector) Detect(ctx context.Context) ([]gofinding.Finding, error) {
 		return []gofinding.Finding{}, nil
 	}
 
-	detector, err := artdupl.NewDetector(providerOptions())
+	opts := providerOptions()
+	if threshold, ok := thresholdFromContext(ctx); ok {
+		opts.Threshold = threshold
+	}
+
+	detector, err := artdupl.NewDetector(opts)
 	if err != nil {
 		return nil, fmt.Errorf("create art-dupl detector: %w", err)
 	}
@@ -134,12 +139,35 @@ func (cloneDetector) Detect(ctx context.Context) ([]gofinding.Finding, error) {
 // providerOptions configures the SDK for finding interchange: snippets are
 // required (they become Finding.Snippet) and per-group occurrence caps are
 // lifted (BuildFlow gates per finding, so truncation would hide instances).
+// The threshold option (if the consumer set one) is applied by Detect before
+// this is validated.
 func providerOptions() *artdupl.Options {
 	opts := artdupl.DefaultOptions()
 	opts.IncludeFragments = true
 	opts.MaxClonesPerGroup = 0
 
 	return opts
+}
+
+// thresholdFromContext reads the declared "threshold" option from the
+// per-run option values. The toolsdk kind-checks values against the Spec
+// declaration and the SDK validates the range (1-1000) with the domain
+// sentinels, so a non-int here only occurs for direct callers that bypassed
+// ValidateOptions; it is treated as unset rather than panicking.
+func thresholdFromContext(ctx context.Context) (int, bool) {
+	values, ok := toolsdk.OptionsFromContext(ctx)
+	if !ok {
+		return 0, false
+	}
+
+	v, ok := values[providerOptionThreshold]
+	if !ok {
+		return 0, false
+	}
+
+	n, ok := v.(int)
+
+	return n, ok
 }
 
 // findingsFromGroups converts SDK clone groups into go-finding findings via

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"cmp"
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -993,5 +994,67 @@ func BenchmarkDetectWorkspaceScale(b *testing.B) {
 		}
 
 		b.SetBytes(int64(len(findings)))
+	}
+}
+
+// TestDetectThresholdOption exercises the declared "threshold" knob end to
+// end: unset = default 5 (both small and large clones reported), raised = the
+// small clone group disappears while the large one survives, wrong kind = a
+// loud Spec.ValidateOptions error (consumer config typo), and out-of-range =
+// the SDK's domain sentinel.
+func TestDetectThresholdOption(t *testing.T) {
+	t.Parallel()
+
+	small := strings.Repeat("_ = 1\n", 8)
+	large := strings.Repeat("_ = 2\n", 30)
+	header := "package fixtures\n\nfunc f() {\n"
+
+	dir := t.TempDir()
+	writeFile(t, dir, "a.go", header+small+"}\n")
+	writeFile(t, dir, "b.go", header+small+"}\n")
+	writeFile(t, dir, "c.go", header+large+"}\n")
+	writeFile(t, dir, "d.go", header+large+"}\n")
+
+	count := func(t *testing.T, values toolsdk.OptionValues) int {
+		t.Helper()
+
+		ctx := dirContext(t, dir)
+		if values != nil {
+			if err := Provider.ValidateOptions(values); err != nil {
+				t.Fatalf("ValidateOptions: %v", err)
+			}
+
+			ctx = toolsdk.WithOptions(ctx, values)
+		}
+
+		findings, err := cloneDetector{}.Detect(ctx)
+		if err != nil {
+			t.Fatalf("Detect: %v", err)
+		}
+
+		return len(findings)
+	}
+
+	defaultFindings := count(t, nil)
+	if defaultFindings < 4 {
+		t.Fatalf("default threshold: %d findings, want >= 4 (two groups x two occurrences)", defaultFindings)
+	}
+
+	raised := count(t, toolsdk.OptionValues{providerOptionThreshold: 20})
+	if raised != 2 {
+		t.Fatalf("threshold=20: %d findings, want 2 (only the 30-statement group survives)", raised)
+	}
+
+	if err := Provider.ValidateOptions(toolsdk.OptionValues{"threashold": 20}); err == nil {
+		t.Fatal("typo'd option name must fail ValidateOptions")
+	}
+
+	badDir := t.TempDir()
+	writeFile(t, badDir, "a.go", header+small+"}\n")
+	writeFile(t, badDir, "b.go", header+small+"}\n")
+	badCtx := toolsdk.WithOptions(dirContext(t, badDir), toolsdk.OptionValues{providerOptionThreshold: 0})
+	detector := cloneDetector{}
+	if _, err := detector.Detect(badCtx); !errors.Is(err, artdupl.ErrInvalidThreshold) {
+		t.Fatalf("threshold=0 error = %v, want ErrInvalidThreshold", err)
 	}
 }
