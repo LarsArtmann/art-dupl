@@ -64,6 +64,21 @@ nix flake check    # reproducible CI (includes templ generate in preBuild)
 > free object`, `missing stackmap`, `fault`) across unrelated test binaries — binary-
 > identical runs flip between pass and crash, the codebase has zero unsafe, so the
 > experiment is scoped out of that lane until upstream is fixed.
+> **2026-09-29 corrections to this paragraph**: (1) in the Go 1.27.1 RELEASE
+> toolchain `encoding/json/v2` is importable and the v2 engine ships regardless of
+> `GOEXPERIMENT` (verified: `env -u GOEXPERIMENT go doc encoding/json/v2` works), so
+> the windows env-var scoping no longer meaningfully gates the engine — the lane's
+> env split is historical; the crash class is the real variable. (2) The 2026-09-29
+> "windows go/parser rejects the selector-key fixture with `exceeded max nesting
+> depth`" incident was MISATTRIBUTED: the failure is interleaved mid-goroutine-dump
+> of this same crash class (a corrupted `parser.nestLev` is the plausible mechanism),
+> and the identical fixture passed on windows in the healthy e2f42b6e run minutes
+> earlier — the fixture-scoped skip was removed. **Lesson: do not trust or
+> file upstream failures that appear while the test binary is printing a fatal-error
+> stack dump; cross-check a neighboring healthy run for the same commit family
+> first.** (3) The jsonutil v1-only invariant was clobbered a THIRD time in commit
+> ce716456 (restored in 9a97ec82) — same regression class as 2026-09-23/24; the
+> `internal/jsonv2gate` AST gate catches it, keep it green.
 > The project uses the v2 JSON ENGINE
 > through the stable **v1 API** (`encoding/json`) for all output-wire-format
 > paths. **`internal/jsonutil` is v1-only since 2026-09-23** (it briefly

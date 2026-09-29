@@ -3,7 +3,6 @@ package golang
 import (
 	"os"
 	"path/filepath"
-	"runtime"
 	"testing"
 
 	"github.com/LarsArtmann/art-dupl/syntax"
@@ -225,14 +224,11 @@ func main() {
 func TestKeyValueExpr_SelectorKeyRootNotNormalized(t *testing.T) {
 	t.Parallel()
 
-	if runtime.GOOS == "windows" {
-		// windows/amd64 go/parser rejects the fixture with "exceeded max
-		// nesting depth" at a shallow nesting level (ubuntu/macos parse the
-		// identical bytes fine). Same mitigation class as the scoped-out
-		// jsonv2 windows lane: the behavior contract is covered on unix
-		// until the upstream parser issue is understood.
-		t.Skip("windows go/parser internal nesting-depth error; covered on unix lanes")
-	}
+	// No windows skip: the "exceeded max nesting depth" failure once seen
+	// here (CI run 36503938960) was interleaved mid-goroutine-dump of the
+	// known windows Go 1.27.1 heap-corruption class, so a corrupted
+	// parser.nestLev is the plausible mechanism — the identical fixture
+	// passed on windows in the healthy e2f42b6e run minutes earlier.
 
 	src1 := `package test
 type Inner struct { B int }
