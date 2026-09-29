@@ -51,8 +51,11 @@ python3 ~/.config/crush/skills/docs-health/assets/check-rows.py <file...>
 ```
 
 Batch annotation tooling: `scripts/annotate-status-items.py` (atomic per file;
-spec grammar documented in its header). ALWAYS dry-run a new file shape on a
-/tmp copy first.
+spec grammar documented in its header; duplicate spec keys are a hard error).
+ALWAYS dry-run a new file shape on a /tmp copy first, generate keys with
+`--emit-keys <file> <lineno...>` (never from memory), and `--verify` before
+every real run — it prints `lineNo: matched line` per key and writes nothing.
+Fixture tests: `scripts/check-annotator.sh` (22 assertions).
 
 ## Relationship to `docs/archive/` (top-level)
 
