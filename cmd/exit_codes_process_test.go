@@ -4,16 +4,20 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"runtime"
 	"testing"
-	"time"
 )
 
 // buildTestBinary builds the art-dupl binary to a temp directory and returns its path.
+// The -o name carries an explicit .exe suffix: cmd/go writes the EXACT -o name (no
+// suffix appended on windows), and os/exec on windows only starts executables whose
+// name ends with a PATHEXT extension (findExecutable returns ErrNotFound for an
+// extension-less absolute path) — the extensionless name produced deterministic
+// "ProcessState is nil" failures on windows runners that four rounds of AV
+// hypotheses chased before the stdlib mechanism was proven.
 func buildTestBinary(t *testing.T) string {
 	t.Helper()
 
-	binaryPath := filepath.Join(t.TempDir(), "art-dupl-test")
+	binaryPath := filepath.Join(t.TempDir(), "art-dupl-test.exe")
 
 	buildCmd := exec.CommandContext(t.Context(), "go", "build", "-o", binaryPath, "./art-dupl")
 
@@ -27,48 +31,34 @@ func buildTestBinary(t *testing.T) string {
 	return binaryPath
 }
 
-// runBinaryExitCode runs the binary with given args and returns the process exit code.
+// runBinaryExitCode runs the binary with given args and returns the process
+// exit code. A failure to START the process is fatal (with the error text —
+// the discarded-start-error blind spot cost weeks of AV hypotheses); a
+// non-zero exit is a legitimate result the caller asserts on.
 func runBinaryExitCode(t *testing.T, binaryPath string, args ...string) int {
 	t.Helper()
 
-	// Windows runners intermittently fail to START a freshly written exe
-	// (antivirus scan lock); ProcessState stays nil in that case. Retry a
-	// few times with a short pause, and only treat a process that actually
-	// started as authoritative.
-	const attempts = 3
+	cmd := exec.CommandContext(t.Context(), binaryPath, args...)
+	cmd.Env = append(os.Environ(), "GOEXPERIMENT=jsonv2")
 
-	for i := range attempts {
-		if i > 0 {
-			time.Sleep(250 * time.Millisecond)
-		}
-
-		cmd := exec.CommandContext(t.Context(), binaryPath, args...)
-		cmd.Env = append(os.Environ(), "GOEXPERIMENT=jsonv2")
-
-		_ = cmd.Run()
-
-		if cmd.ProcessState != nil {
-			return cmd.ProcessState.ExitCode()
+	err := cmd.Run()
+	if err != nil {
+		var exitErr *exec.ExitError
+		if !errors.As(err, &exitErr) {
+			t.Fatalf("failed to start %s: %v", binaryPath, err)
 		}
 	}
 
-	t.Fatal("ProcessState is nil after Run")
-	return -1
+	return cmd.ProcessState.ExitCode()
 }
 
 // TestExitCodes_Process verifies that the actual process exit codes match
 // the documented ExitCode constants when running the real binary.
-// TestExitCodes_Process exercises the compiled binary end to end. It is
-// skipped on Windows runners: they intermittently refuse to start freshly
-// built executables (ProcessState nil on every attempt), a runner/AV artifact
-// unrelated to the exit-code logic, which TestExitCodeForError covers
-// in-process on every platform.
+// TestExitCodes_Process exercises the compiled binary end to end and verifies
+// the documented ExitCode constants on every platform. (It ran windows-skipped
+// for weeks under an antivirus hypothesis; the real cause was the extension-
+// less -o output name — see buildTestBinary.)
 func TestExitCodes_Process(t *testing.T) {
-	if runtime.GOOS == "windows" && os.Getenv("ARTDUPL_WINDOWS_PROCESS_TEST") != "1" {
-		t.Skip("windows runners intermittently refuse to start freshly built exes (ProcessState nil); " +
-			"set ARTDUPL_WINDOWS_PROCESS_TEST=1 to opt in — the CI probe job does this after adding the " +
-			"Defender path exclusion (hypothesis under test, continue-on-error; see TODO #4)")
-	}
 	if testing.Short() {
 		t.Skip("skipping subprocess test in short mode")
 	}
