@@ -29,6 +29,16 @@ golangci-lint run --timeout 5m ./...  # lint
 nix flake check    # reproducible CI (includes templ generate in preBuild)
 ```
 
+> **Task boundary == `scripts/check-boundary.sh` (2026-09-29)**: fast profile
+> (build + vet + `-count=1 -race` on `internal/`, `config/`, `cmd/`) after EVERY
+> task; close-outs run `scripts/check-boundary.sh --full` (the complete race
+> suite). `-count=1` is deliberate: the jsonutil regression (commit `b679c615`,
+> restored in `42ee0a72`) reached the remote because task boundaries ran scoped,
+> cacheable runs — a foreign edit rode a docs sweep into a pushed commit and
+> lived ~90 minutes; stale caches had masked the same class for days before
+> that. The gate's canary (a scratch `encoding/json/v2` Duration importer under
+> `internal/`) was verified failing before the gate was trusted.
+
 > **`-race` cadence (decided 2026-08-16)**: `go test -race ./...` runs on EVERY
 > `nix flake check` via the `race` check (full suite, CGO_ENABLED=1), not nightly.
 > Rationale: the cache metadata race shipped for weeks because race ran only
