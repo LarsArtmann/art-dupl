@@ -116,17 +116,17 @@ release). Gates and their `flake.nix` mirrors (one `Nix Flake Check` CI job runs
 the whole `checks` attrset, so the mirror column is belt-and-suspenders, not the
 only lane):
 
-| Gate (workflow → job)                 | Enforces                                            | Flake-check mirror |
-| ------------------------------------- | --------------------------------------------------- | ------------------ |
-| CI → Lint                             | golangci-lint (106 enabled, 0 findings at 2026-09-29) | `lint`             |
-| CI → Test                             | full suite, 3-OS matrix (windows w/o GOEXPERIMENT)  | `test`, `race`     |
-| CI → Coverage                         | coverage report artifact                            | —                  |
-| CI → Nix Flake Check                  | the entire `checks` attrset                         | (is the runner)    |
-| CI → Self-Analysis                    | art-dupl `-t 5` on itself (clone-free invariant)    | —                  |
-| Architecture Lint → Verify package boundaries | `.go-arch-lint.yml` dependency boundaries   | `arch-lint`        |
-| Clone Detection → Check for new clones | baseline check vs `.art-dupl-baseline.json`         | —                  |
-| Performance Tests → Performance Regression | benchmarks vs `docs/benchmarks/` (benchstat)   | `alloc-gate`       |
-| Lint Config Guard → Verify no forbidden linters | exhaustruct/tagliatelle stay banned       | `disabled-linters` |
+| Gate (workflow → job)                           | Enforces                                              | Flake-check mirror |
+| ----------------------------------------------- | ----------------------------------------------------- | ------------------ |
+| CI → Lint                                       | golangci-lint (106 enabled, 0 findings at 2026-09-29) | `lint`             |
+| CI → Test                                       | full suite, 3-OS matrix (windows w/o GOEXPERIMENT)    | `test`, `race`     |
+| CI → Coverage                                   | coverage report artifact                              | —                  |
+| CI → Nix Flake Check                            | the entire `checks` attrset                           | (is the runner)    |
+| CI → Self-Analysis                              | art-dupl `-t 5` on itself (clone-free invariant)      | —                  |
+| Architecture Lint → Verify package boundaries   | `.go-arch-lint.yml` dependency boundaries             | `arch-lint`        |
+| Clone Detection → Check for new clones          | baseline check vs `.art-dupl-baseline.json`           | —                  |
+| Performance Tests → Performance Regression      | benchmarks vs `docs/benchmarks/` (benchstat)          | `alloc-gate`       |
+| Lint Config Guard → Verify no forbidden linters | exhaustruct/tagliatelle stay banned                   | `disabled-linters` |
 
 Flake-only checks (no dedicated workflow lane): `format`/`fmt` (treefmt + gofmt),
 `build`, `vendor-hash`, `sarif-validate`, `self-test`. Branch-protection required
