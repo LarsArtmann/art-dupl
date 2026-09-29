@@ -1,8 +1,7 @@
 package config
 
 import (
-	"encoding/json/jsontext"
-	"encoding/json/v2"
+	"encoding/json"
 	"fmt"
 )
 
@@ -23,7 +22,7 @@ func (c *Config) UnmarshalJSON(data []byte) error {
 
 	*c = Config(a)
 
-	var raw map[string]jsontext.Value
+	var raw map[string]json.RawMessage
 	if err := json.Unmarshal(data, &raw); err != nil {
 		return fmt.Errorf("unmarshal config for migration scan: %w", err)
 	}
