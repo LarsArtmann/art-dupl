@@ -268,27 +268,26 @@ const sarifActionabilityDocAnchor = "https://github.com/LarsArtmann/art-dupl/blo
 // keep the single duplicate-code ruleId — the pattern travels in the result
 // property, not as pseudo-rules, so alert UIs don't fragment into 37 streams.
 func sarifRules() []SARIFRule {
-	rules := []SARIFRule{
-		{
-			ID:   "art-dupl/duplicate-code",
-			Name: "Duplicate Code Detection",
-			ShortDescription: SARIFTextContent{
-				Text: "Detects duplicate code fragments in source files",
-			},
-			FullDescription: SARIFTextContent{
-				Text: "This rule identifies code duplication by analyzing abstract syntax trees (ASTs) and finding structural similarities between code fragments. Duplicated code increases maintenance burden and can lead to inconsistent bug fixes.",
-			},
-			DefaultConfiguration: SARIFConfiguration{
-				Level: "warning",
-			},
-			HelpURI: "https://github.com/LarsArtmann/art-dupl#duplicate-code-detection",
-			Properties: SARIFRuleProperties{
-				Precision:       "high",
-				ProblemSeverity: "warning",
-				Tags:            []string{"maintainability", "duplicate-code", "design"},
-			},
+	rules := make([]SARIFRule, 0, 1+len(actionability.AllActionabilityPatterns()))
+	rules = append(rules, SARIFRule{
+		ID:   "art-dupl/duplicate-code",
+		Name: "Duplicate Code Detection",
+		ShortDescription: SARIFTextContent{
+			Text: "Detects duplicate code fragments in source files",
 		},
-	}
+		FullDescription: SARIFTextContent{
+			Text: "This rule identifies code duplication by analyzing abstract syntax trees (ASTs) and finding structural similarities between code fragments. Duplicated code increases maintenance burden and can lead to inconsistent bug fixes.",
+		},
+		DefaultConfiguration: SARIFConfiguration{
+			Level: "warning",
+		},
+		HelpURI: "https://github.com/LarsArtmann/art-dupl#duplicate-code-detection",
+		Properties: SARIFRuleProperties{
+			Precision:       "high",
+			ProblemSeverity: "warning",
+			Tags:            []string{"maintainability", "duplicate-code", "design"},
+		},
+	})
 
 	for _, label := range actionability.AllActionabilityPatterns() {
 		kind := "denylist"

@@ -46,7 +46,9 @@ func makeGroupComparator[T any](sortBy config.SortCriteria, m GroupMetrics[T]) f
 		return func(a, b T) int {
 			return cmp.Compare(m.Size(b)*m.Count(b), m.Size(a)*m.Count(a)) // descending
 		}
-	default: // SortBySize
+	case config.SortBySize:
+		return func(a, b T) int { return cmp.Compare(m.Size(b), m.Size(a)) } // descending
+	default: // future criteria keep size ordering rather than panicking
 		return func(a, b T) int { return cmp.Compare(m.Size(b), m.Size(a)) } // descending
 	}
 }
