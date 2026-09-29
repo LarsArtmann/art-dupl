@@ -146,6 +146,47 @@ func aggregateValues(values []int) int {
 			Expect(file).To(HaveKey("actionability"))
 		})
 	})
+
+	Context("When using --rich-text with a real clone group", func() {
+		var setup *testutil.BDDTestSetup
+
+		longParam := strings.Repeat("configOption", 8) // > 60-rune preview cap
+
+		BeforeEach(func() {
+			setup = CreateBDDTestSetup()
+
+			err := setup.CreateTestFiles(map[string]string{
+				"alpha.go": "package main\n\nimport \"fmt\"\n\nfunc Alpha(" + longParam + " string) string {\n\tcleaned := fmt.Sprint(" + longParam + ")\n\tif cleaned == \"\" {\n\t\treturn \"\"\n\t}\n\treturn cleaned\n}\n",
+				"beta.go":  "package main\n\nimport \"fmt\"\n\nfunc Beta(" + longParam + " string) string {\n\tcleaned := fmt.Sprint(" + longParam + ")\n\tif cleaned == \"\" {\n\t\treturn \"\"\n\t}\n\treturn cleaned\n}\n",
+			})
+			Expect(err).NotTo(HaveOccurred())
+		})
+
+		It("renders the rich header with priority and category badges", func() {
+			output, err := setup.RunArtDupl("--rich-text", "--threshold", "1")
+			Expect(err).ToNot(HaveOccurred())
+
+			out := string(output)
+			Expect(out).To(MatchRegexp(`found \d+ clones: \[\w+\] \[type-\d\] \w+.*suggestion:`))
+		})
+
+		It("shows a code preview line truncated to the 60-rune cap", func() {
+			output, err := setup.RunArtDupl("--rich-text", "--threshold", "1")
+			Expect(err).ToNot(HaveOccurred())
+
+			var previewLine string
+
+			for _, line := range strings.Split(string(output), "\n") {
+				if strings.HasPrefix(line, "  | ") {
+					previewLine = line
+					break
+				}
+			}
+			Expect(previewLine).ToNot(BeEmpty(), "expected a code preview line in text output")
+			Expect([]rune(previewLine)).To(HaveLen(3 + 60)) // "  | " prefix + maxPreviewRunes incl. ellipsis
+			Expect(strings.HasSuffix(previewLine, "…")).To(BeTrue(), "long first lines must end with the ellipsis")
+		})
+	})
 })
 
 var _ = Describe("--no-actionability flag", func() {
