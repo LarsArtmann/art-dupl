@@ -3,9 +3,11 @@ package printer
 import (
 	"bytes"
 	"encoding/json/v2"
+	"strings"
 	"testing"
 
 	"github.com/LarsArtmann/art-dupl/internal/testutil"
+	"github.com/LarsArtmann/art-dupl/printer/actionability"
 	"github.com/LarsArtmann/art-dupl/printer/finding"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
@@ -326,10 +328,10 @@ func TestSARIFOutput_Structure(t *testing.T) {
 
 	testutil.AssertFieldValue(t, tool.Version, "1.0.0", "Version")
 
-	// Check rules — only duplicate-code is a real rule; todo/legacy were
-	// declared but never produced in results, so they were removed.
-	if len(tool.Rules) != 1 {
-		t.Fatalf("Expected 1 rule, got %d", len(tool.Rules))
+	// Check rules — the firing duplicate-code rule plus one informational
+	// descriptor per actionability pattern (33 denylist + 4 property-engine).
+	if len(tool.Rules) != 1+len(actionability.AllActionabilityPatterns()) {
+		t.Fatalf("Expected %d rules, got %d", 1+len(actionability.AllActionabilityPatterns()), len(tool.Rules))
 	}
 
 	rule := tool.Rules[0]
@@ -369,6 +371,62 @@ func TestSARIFOutput_Structure(t *testing.T) {
 
 		if loc.Region.StartLine == 0 {
 			t.Error("Expected non-zero StartLine")
+		}
+	}
+}
+
+func TestSARIFRulesCarryActionabilityPatterns(t *testing.T) {
+	t.Parallel()
+
+	rules := sarifRules()
+
+	if len(rules) != 1+len(actionability.AllActionabilityPatterns()) {
+		t.Fatalf("rules = %d, want 1 base + %d patterns", len(rules), len(actionability.AllActionabilityPatterns()))
+	}
+	if rules[0].ID != "art-dupl/duplicate-code" {
+		t.Fatalf("first rule = %q, want the firing duplicate-code rule", rules[0].ID)
+	}
+
+	seen := map[string]bool{}
+	for _, r := range rules[1:] {
+		if seen[r.ID] {
+			t.Errorf("duplicate rule id %q", r.ID)
+		}
+		seen[r.ID] = true
+
+		if len(r.ID) <= len("art-dupl/pattern/") || r.ID[:len("art-dupl/pattern/")] != "art-dupl/pattern/" {
+			t.Errorf("pattern rule id %q lacks the art-dupl/pattern/ prefix", r.ID)
+		}
+		if r.HelpURI != sarifActionabilityDocAnchor {
+			t.Errorf("rule %q helpUri = %q, want the patterns doc anchor", r.ID, r.HelpURI)
+		}
+		if r.DefaultConfiguration.Level != "none" {
+			t.Errorf("informational rule %q must not fire (level none), got %q", r.ID, r.DefaultConfiguration.Level)
+		}
+	}
+
+	patternToRule := make(map[actionability.PatternLabel]SARIFRule)
+	for _, r := range rules[1:] {
+		patternToRule[actionability.PatternLabel(strings.TrimPrefix(r.ID, "art-dupl/pattern/"))] = r
+	}
+	for _, label := range actionability.AllActionabilityPatterns() {
+		if _, ok := patternToRule[label]; !ok {
+			t.Errorf("missing descriptor for pattern %q", label)
+		}
+	}
+
+	guard := patternToRule[actionability.PatternGuardClause]
+	if len(guard.Properties.Tags) == 0 || guard.Properties.Tags[1] != "denylist" {
+		t.Errorf("guard-clause descriptor tags = %v, want denylist kind", guard.Properties.Tags)
+	}
+	prop := patternToRule[actionability.PatternPropertyROI]
+	if len(prop.Properties.Tags) == 0 || prop.Properties.Tags[1] != "property-engine" {
+		t.Errorf("property-roi descriptor tags = %v, want property-engine kind", prop.Properties.Tags)
+	}
+
+	for _, label := range actionability.AllActionabilityPatterns() {
+		if actionability.IsPropertyEnginePattern(label) != (patternToRule[label].Properties.Tags[1] == "property-engine") {
+			t.Errorf("kind tag disagrees with IsPropertyEnginePattern for %q", label)
 		}
 	}
 }
