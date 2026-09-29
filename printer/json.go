@@ -42,6 +42,23 @@ type JSONClone struct {
 	Confidence           float64                   `json:"confidence"`
 	GenericsCandidate    bool                      `json:"generics_candidate"`
 	GenericsHint         string                    `json:"generics_hint,omitempty"`
+	Explanation          *Explanation              `json:"explanation,omitempty"`
+}
+
+// Explanation is the structured form of the text printer's `explain:` line.
+// Present on every clone only when --explain is set. Field-for-field it
+// mirrors TextPrinter.writeExplanation: clone type, actionability verdict
+// (with the boilerplate-pattern label when suppressed), category, token/line
+// counts, the extractability estimate, and the fix suggestion.
+type Explanation struct {
+	CloneType      domain.CloneType          `json:"clone_type"`
+	Actionability  domain.CloneActionability `json:"actionability"`
+	Pattern        string                    `json:"pattern,omitempty"`
+	Category       domain.CloneCategory      `json:"category"`
+	Tokens         int                       `json:"tokens"`
+	Lines          int                       `json:"lines"`
+	Extractability string                    `json:"extractability,omitempty"`
+	Suggestion     string                    `json:"suggestion,omitempty"`
 }
 
 type Summary struct {
@@ -74,6 +91,28 @@ func toJSONClone(cl domain.ProcessedClone) JSONClone {
 	return clone
 }
 
+// buildExplanation mirrors TextPrinter.writeExplanation field-for-field so
+// the JSON consumer gets the same "why" the text user sees, including the
+// extractability estimate phrasing.
+func buildExplanation(cl domain.ProcessedClone) *Explanation {
+	cls := cl.Classification
+	e := &Explanation{
+		CloneType:     cls.CloneType,
+		Actionability: cls.Actionability,
+		Pattern:       cls.NonActionablePattern,
+		Category:      cls.Category,
+		Tokens:        cls.Tokens,
+		Lines:         cls.Lines,
+		Suggestion:    cls.Suggestion,
+	}
+	if cls.Extractability.CanExtract {
+		e.Extractability = fmt.Sprintf("~%d lines saved across sites",
+			cls.Extractability.EstimatedLinesSaved)
+	}
+
+	return e
+}
+
 type simpleJSONClone struct {
 	domain.CloneRef
 
@@ -97,6 +136,14 @@ type JSONPrinter struct {
 	totalClones int
 	cloneGroups []CloneGroup
 	currentHash string
+	explain     bool
+}
+
+// SetExplain attaches a structured explanation object to every clone when
+// --explain is set (JSONPrinter satisfies printer.ExplainSetter; cmd wires
+// it via the same type assertion as the text printer).
+func (p *JSONPrinter) SetExplain(enabled bool) {
+	p.explain = enabled
 }
 
 func NewJSON(w io.Writer, fread ReadFile) Printer {
@@ -132,7 +179,11 @@ func (p *JSONPrinter) PrintClones(
 
 	jsonClones := make([]JSONClone, 0, len(clones))
 	for _, cl := range clones {
-		jsonClones = append(jsonClones, toJSONClone(cl))
+		jc := toJSONClone(cl)
+		if p.explain {
+			jc.Explanation = buildExplanation(cl)
+		}
+		jsonClones = append(jsonClones, jc)
 	}
 
 	sort.Slice(jsonClones, func(i, j int) bool {

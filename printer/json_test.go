@@ -432,3 +432,114 @@ func TestJSONPrinter_AnchorIDSerialized(t *testing.T) {
 		t.Errorf("empty-hash AnchorID = %q, want positional fallback %q", output.CloneGroups[1].AnchorID, want)
 	}
 }
+
+func TestJSONPrinter_ExplainObject(t *testing.T) {
+	t.Parallel()
+
+	var buf bytes.Buffer
+
+	jp := NewJSON(&buf, mockReadFile("")).(*JSONPrinter)
+	jp.SetExplain(true)
+	jp.cloneGroups = []CloneGroup{
+		{
+			Hash: "h",
+			Size: 10,
+			Clones: []JSONClone{
+				{
+					Filename: "a.go", LineStart: 1, LineEnd: 5,
+					NonActionablePattern: "guard-clause",
+					Actionability:        domain.NonActionable,
+				},
+			},
+		},
+	}
+	jp.totalClones = 1
+	jp.filesCount = 1
+
+	if err := jp.OutputJSON(5, "size", ""); err != nil {
+		t.Fatalf("OutputJSON: %v", err)
+	}
+
+	var output JSONOutput
+
+	if err := json.Unmarshal(buf.Bytes(), &output); err != nil {
+		t.Fatalf("parse output: %v", err)
+	}
+
+	clone := output.CloneGroups[0].Clones[0]
+	if clone.Explanation == nil {
+		t.Fatal("explanation object missing with --explain set")
+	}
+	if clone.Explanation.Pattern != "guard-clause" {
+		t.Errorf("explanation pattern = %q, want guard-clause", clone.Explanation.Pattern)
+	}
+	if clone.Explanation.Actionability != domain.NonActionable {
+		t.Errorf("explanation actionability = %v, want %v", clone.Explanation.Actionability, domain.NonActionable)
+	}
+	if clone.NonActionablePattern != "guard-clause" {
+		t.Error("non_actionable_pattern must stay for back-compat alongside the explanation object")
+	}
+}
+
+func TestJSONPrinter_NoExplainOmitsObject(t *testing.T) {
+	t.Parallel()
+
+	var buf bytes.Buffer
+
+	jp := NewJSON(&buf, mockReadFile("")).(*JSONPrinter)
+	jp.cloneGroups = []CloneGroup{
+		{
+			Hash: "h",
+			Size: 10,
+			Clones: []JSONClone{
+				{Filename: "a.go", LineStart: 1, LineEnd: 5},
+			},
+		},
+	}
+	jp.totalClones = 1
+	jp.filesCount = 1
+
+	if err := jp.OutputJSON(5, "size", ""); err != nil {
+		t.Fatalf("OutputJSON: %v", err)
+	}
+
+	if bytes.Contains(buf.Bytes(), []byte(`"explanation"`)) {
+		t.Error("explanation object must be absent without --explain")
+	}
+}
+
+func TestBuildExplanationMirrorsWriteExplanation(t *testing.T) {
+	t.Parallel()
+
+	cls := domain.CloneClassification{
+		CloneType:            domain.CloneType2,
+		Actionability:        domain.Actionable,
+		Category:             domain.CategoryCall,
+		Tokens:               42,
+		Lines:                7,
+		Suggestion:           "extract to helper",
+		Extractability:       domain.Extractability{CanExtract: true, EstimatedLinesSaved: 12},
+		NonActionablePattern: "",
+	}
+
+	e := buildExplanation(domain.ProcessedClone{Classification: cls})
+
+	if e.CloneType != domain.CloneType2 || e.Category != domain.CategoryCall {
+		t.Fatalf("clone_type/category mismatch: %v/%v", e.CloneType, e.Category)
+	}
+	if e.Tokens != 42 || e.Lines != 7 {
+		t.Fatalf("tokens/lines mismatch: %d/%d", e.Tokens, e.Lines)
+	}
+	if e.Extractability == "" {
+		t.Fatal("extractability estimate missing for extractable clone")
+	}
+	if e.Suggestion != "extract to helper" {
+		t.Errorf("suggestion = %q", e.Suggestion)
+	}
+
+	cls.Extractability.CanExtract = false
+	e = buildExplanation(domain.ProcessedClone{Classification: cls})
+	if e.Extractability != "" {
+		t.Errorf("extractability must be empty when not extractable, got %q", e.Extractability)
+	}
+}
