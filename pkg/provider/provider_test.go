@@ -57,16 +57,16 @@ const renamedFunction = `func processShipment(shipmentID string, boxes int) (int
 }
 `
 
-func writeFile(t testing.TB, dir, name, content string) {
-	t.Helper()
+func writeFile(tb testing.TB, dir, name, content string) {
+	tb.Helper()
 
 	path := filepath.Join(dir, name)
 	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
-		t.Fatalf("mkdir for %s: %v", path, err)
+		tb.Fatalf("mkdir for %s: %v", path, err)
 	}
 
 	if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
-		t.Fatalf("write %s: %v", path, err)
+		tb.Fatalf("write %s: %v", path, err)
 	}
 }
 
@@ -801,6 +801,7 @@ func TestDetectEquivalenceWithSharedAdapter(t *testing.T) {
 
 	detector := cloneDetector{}
 	providerFindings, err := detector.Detect(dirContext(t, dir))
+
 	if err != nil {
 		t.Fatalf("Detect: %v", err)
 	}
@@ -902,9 +903,12 @@ func BenchmarkCollectSourceFiles(b *testing.B) {
 	b.ResetTimer()
 
 	for range b.N {
-		if _, err := collectSourceFiles(dir, ignore); err != nil {
-			b.Fatalf("collectSourceFiles: %v", err)
+		files, loopErr := collectSourceFiles(dir, ignore)
+		if loopErr != nil {
+			b.Fatalf("collectSourceFiles: %v", loopErr)
 		}
+
+		_ = files
 	}
 }
 

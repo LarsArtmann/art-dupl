@@ -15,7 +15,7 @@
 
 | Language  | Extension | Status           | Notes                                        |
 | --------- | --------- | ---------------- | -------------------------------------------- |
-| **Go**    | `.go`     | FULLY_FUNCTIONAL | Full AST analysis, 49 node types             |
+| **Go**    | `.go`     | FULLY_FUNCTIONAL | Full AST analysis, 51 node types             |
 | **Templ** | `.templ`  | FULLY_FUNCTIONAL | Pure Go parser, semantic mode, ON by default |
 
 ### Detection Methods

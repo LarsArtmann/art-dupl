@@ -71,8 +71,8 @@ func TestCLIFlagCountMatchesDocs(t *testing.T) {
 
 func TestNodeTypesCountsMatchDocs(t *testing.T) {
 	goNodeTypes := countOccurrences(t, "syntax/golang/transform.go", "case *ast.")
-	if goNodeTypes != 49 {
-		t.Fatalf("syntax/golang/transform.go dispatches %d node types, want 49; update the docs with the real count", goNodeTypes)
+	if goNodeTypes != 51 {
+		t.Fatalf("syntax/golang/transform.go dispatches %d node types, want 51; update the docs with the real count", goNodeTypes)
 	}
 
 	templNodeTypes := 0

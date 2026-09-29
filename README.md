@@ -208,7 +208,7 @@ other languages.
 
 | Language | Extension | Notes                                                      |
 | -------- | --------- | ---------------------------------------------------------- |
-| Go       | `.go`     | Full AST analysis, 49 node types                           |
+| Go       | `.go`     | Full AST analysis, 51 node types                           |
 | Templ    | `.templ`  | Full AST analysis via official templ parser, 29 node types |
 
 `.templ` source files included by default. Templ-generated `*_templ.go` files filtered by default.
