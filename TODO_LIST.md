@@ -1,6 +1,6 @@
 # TODO List
 
-**Last Updated:** 2026-09-28
+**Last Updated:** 2026-09-29
 
 Actionable items for the next 2-4 weeks. Completed work lives in `CHANGELOG.md`.
 This file is OPEN work only — no completed, rejected, or resolved items.
@@ -14,6 +14,12 @@ stream-slice `sync.Pool`: measured ~0.03% of run allocations after the T13 arena
 `CHANGELOG.md` "Arena node serialization" + PARKED tier below). Nothing open.
 Remaining items below are from later plans.
 
+The 2026-09-28 docs-health harvest was EXECUTED 2026-09-29: the v0.8.0 release
+carries the dead-directive detector, the Go 1.27 selector-key fix, the go-line
+pin gate, the SARIF→go-finding integration test, the provider test-gap bundle,
+the Go-1.27 dogfood script, and all doc gaps. Remaining items are cross-repo
+or external by nature.
+
 ---
 
 ## MEDIUM Priority
@@ -22,60 +28,25 @@ Remaining items below are from later plans.
 
 **Source:** `docs/planning/2026-09-24_18-04_artdupl-core-lane-buildflow-inversion.md` phases 2–3 and
 `docs/status/2026-09-25_05-00_artdupl-core-lane-live-jscpd-demotion-ghost-purge.md` (BuildFlow side).
-Done in that arc (NOT re-listed): BuildFlow wiring (v0.7.2), jscpd Go-lane demotion, ghost purge,
-install hints, E2E + budget verification, provider .gitignore (B1), concurrency suite (B2),
-provider polish (B4), multi-module fixture (B6), self-scan + SDK dogfood (B7/C3), classification
-ADR (B5 = docs/adr/0025), json/v2 AST gate (C1 = internal/jsonv2gate), ln-evidence re-verify (C2),
-flipflop skip verify (C4).
 
 - [ ] **Provider threshold knob (D1)** — toolsdk upstream: options/config channel on `Spec` so BuildFlow users can raise/lower the fixed 5-statement threshold without a release; prototype + PR in go-finding.
 - [ ] **toolsdk Spec.Timeout mapping (D1)** — BuildFlow maps no timeout from Spec; measure art-dupl at BuildFlow workspace scale (33-module fixture benchmark, numbers into docs/benchmarks/) and decide whether a Spec-level timeout field is needed upstream.
 - [ ] **Warnings budget for art-dupl in BuildFlow's own .buildflow.yml (D2)** — BuildFlow's tree shows 1210+ findings at the default threshold; set a telemetry-derived ceiling (+20% headroom, gotcha #184 pattern) in BuildFlow, verify render collapse.
 - [ ] **Lane-overlap measurement (D3, post-soak)** — after the fleet picks up the BuildFlow release: query jscpd non-Go findings vs art-dupl Go findings per repo; verdict on whether the backup lane pulls weight.
-- [ ] **Provider version flake pin (D6 oddment)** — art-dupl is public + proxy-servable (gotcha #105 rule 1: no flake input needed), but BuildFlow's flake comment still lists art-dupl under "install manually" — update the comment to point at `go install github.com/LarsArtmann/art-dupl@v0.7.2` (fixed) or the tools buildEnv.
 - [ ] **Fleet rollout of the core-lane pattern** — the same blank-import + registration-test + jscpd-lane-split recipe applies to any other BuildFlow consumer repo with Go duplication needs.
 
-### Docs-health verified harvest (2026-09-28)
+### Cross-repo / external (remaining from earlier harvests)
 
-Every item below was re-verified against the code on 2026-09-28. Sources cite the
-status report + the code that proves the gap. Small bounded items first.
-
-- [ ] **Release the post-v0.7.2 hardening** (v0.8.0 candidate) — provider `.gitignore` (B1), concurrency suite (B2), ADR-0025 (B5), multi-module fixture (B6), `internal/jsonv2gate` (C1) are committed but UNRELEASED (git tag v0.7.2 = `502476ad`, severity cap only); BuildFlow pins v0.7.2, whose provider still documents ".gitignore patterns are NOT honored". Cut v0.8.0 via `scripts/pre-release-check.sh`, then bump BuildFlow and re-run its E2E. **Source:** `docs/status/2026-09-25_09-43` (f)#11; `git log v0.7.1..v0.7.2`.
-- [ ] **Issue #2: committed SARIF integration test** — feed real CLI `--sarif` bytes through go-finding's `FindingsFromSARIF` and assert the exact groups come back (today only `printer/finding/finding_test.go` uses go-finding's own `ToSARIF`). **Source:** `docs/status/2026-09-22_22-40_go-finding-integration-investigation` c2/f1; repeated in 09-22_23-01 and 09-23_01-34.
-- [ ] **Issue #4: give the integration-evaluation doc a live path** — it exists only as a referenced-by-nothing file; copy or summarize into `docs/`. **Source:** same report c3/f4 (3 reports).
-- [ ] **Dead-directive detector** — after a run, warn when an `//art-dupl:accept <hash>` directive matched zero current groups (stale hash after refactors). **Source:** `docs/status/2026-09-22_21-47` f6 + `docs/status/2026-07-25_19-37` f11.
-- [ ] **Provider Spec Description: document the `_test.go`-inclusive crawl policy** — the visible 60-vs-72 group delta vs the CLI default. **Source:** `docs/status/2026-09-25_09-43` (e)#7, (f)#10.
-- [ ] **Go-line pin test** — mechanical test asserting `go.mod` pins `go 1.27.1` (guards the BuildFlow flip-flop class without relying on the skip). **Source:** `docs/status/2026-09-24_13-30` c6/f9.
-- [ ] **Go-1.27 product-correctness cluster** — encode struct-literal selector keys (`T{A.B: 1}` ≠ `T{X.Y: 2}`) in `transform.go` KeyValueExpr + tests; generic-method fixtures through parse/serialize/normalizer/type-aware/suggest-generics; dogfood over GOROOT `src/math/rand/v2`; gotypesalias alias-heavy revalidation; `api/go1.27.txt` diff. **Source:** `docs/status/2026-09-14_03-55` f9-f17/f19/f21/f25/f32/f35 (verified untracked 2026-09-28).
-- [ ] **HTML goldens: one real clone group** — `printer/html_golden_test.go` renders header+footer only; add a fixture with an actual group so clone-group HTML changes break goldens. **Source:** `docs/status/2026-08-16_17-37` f21.
-- [ ] **HOW_TO_USE gaps** — (a) stdin section (`--files`, Ctrl+C cancellation behavior); (b) composite-statement fixture caveat for E2E writers (≥6 flat statements); **TESTING.md**: fixture-must-fire-in-core-tool-first rule. **Source:** `docs/status/2026-07-16_07-23` f4/f14 + `2026-09-25_09-43` (f)#33/#41.
-- [ ] **SDK_DESIGN.md: fold in ADR-0025 + the provider** — architecture diagram still pre-dates both. **Source:** `docs/status/2026-09-25_09-43` (f)#34.
-- [ ] **Provider test-gap bundle** — provider↔`printer/finding.ToFindings` equivalence test; GroupID-determinism pin; gogenfilter parity pin; `GOOS=windows` live-crawl compile check; plus the provider quality tail from `docs/status/2026-09-24_13-30` (f): ctx-cancellation, nilerr vanishing-file, `collectSourceFiles` error path, walk-error policy decision, BuildFlow `LanguageMatcher` verify, GOEXPERIMENT both-ways compile, crawl-overhead measure, SDKVersion/provider-golden/version tests, `metadataFor` move. **Source:** `docs/status/2026-09-24_13-30` f3/f15-f20/f24-f29 + `2026-09-24_17-00` f22-f24 + `2026-09-25_09-43` (f)#28.
-- [ ] **Dependabot: add `go-finding`** — verified absent from `.github/dependabot.yml` while `printer/finding` + `pkg/provider` depend on it. **Source:** `docs/status/2026-09-22_22-40` f12.
-
-### v0.7.0 release follow-ups (harvested 2026-09-19)
-
-**Source:** `docs/status/2026-09-19_06-41_v0.7.0-release-go1.27-coherence-ci-recovery.md` section (f);
-`(#N)` = that report's task number. Items already done during harvest (pkg.go.dev render, ADR-0024,
-FEATURES/AGENTS/HOW_TO_USE updates, jsonutil unit tests, gogenfilter CHANGELOG entry, performance.yml
-toolchain pins, Windows stdin-test skips) are NOT listed — they live in the CHANGELOG when released.
-
-**Done 2026-09-23 (removed per the no-completed-items rule; details: CHANGELOG [Unreleased]):**
-#12 self-clean ledger, #16 pre-release-check.sh, #19 auto-tag workflow, #22 corpus re-baseline,
-#24 stale-shell doctor, #29 separator tables, #30 exhaustruct noise, #31 monthly self-scan routine,
-#32 errors.AsType, #35 2026-08 VERIFY pass, #38 t.Chdir, #39 tagalign/nestif, #40 arch-lint in flake,
-#48 dump-tokens templ verification.
-
-- [ ] **Sweep gogenfilter consumers to v3.6.1** — DONE 2026-09-19 for all 14 clean consumers (8 direct + 6 indirect, incl. vendor sync in oxlint-auto-configure). **Follow-up:** 9 consumers were SKIPPED with pre-existing red baselines and still carry ≤v3.6.0 — branching-flow, BuildFlow, auto-deduplicate (build failures), erraudit, go-filewatcher, Cyberdom, overview, project-discovery-daemon (test failures). Fixing those baselines is its own task per repo; go-filewatcher's `TestFilterGeneratedCode_SingleFilters/SQLC` failure may be a stale gogenfilter-behavior assumption worth checking first.
-- [ ] **Fleet audit: `encoding/json/v2` imports / `format:` tags on Go 1.27** (#14) — same breakage class as art-dupl's blocker (go.dev/issue/71631); check every LarsArtmann repo on Go 1.27. **art-dupl in-repo slice (2026-09-23):** ~30 files still import `encoding/json/v2`/`jsontext` directly (mostly `_test.go` and enum/string-only payloads — tolerated per AGENTS.md); migrate any file that must marshal Duration-bearing types to the v1 API (the `internal/jsonutil` regression class). **In-repo reassessment (2026-09-28):** `baseline/baseline.go` + `config/config_migrate.go` remain allowlisted production v2 importers — baseline is a wire path; migrate if golden tests confirm byte-identity (**source:** `docs/status/2026-09-25_09-43` (f)#27).
-- [ ] **Fleet audit: `filepath.Separator` matching + `strings.Split(_, ":")` path parsing** (#15) — the Windows bug class that cost seven CI cycles; sweep test and product code.
+- [ ] **Sweep gogenfilter consumers to v3.6.1** — 9 consumers SKIPPED with pre-existing red baselines still carry ≤v3.6.0: branching-flow, BuildFlow, auto-deduplicate (build failures), erraudit, go-filewatcher, Cyberdom, overview, project-discovery-daemon (test failures). Fixing those baselines is its own task per repo; go-filewatcher's `TestFilterGeneratedCode_SingleFilters/SQLC` failure may be a stale gogenfilter-behavior assumption worth checking first.
+- [ ] **Fleet audit: `encoding/json/v2` imports / `format:` tags on Go 1.27** (#14) — art-dupl in-repo slice is DONE (v0.8.0: baseline + config_migrate migrated, jsonv2gate allowlist shrunk to enum/test-support). Check every OTHER LarsArtmann repo on Go 1.27 for the breakage class (go.dev/issue/71631).
+- [ ] **Fleet audit: `filepath.Separator` matching + `strings.Split(_, ":")` path parsing** (#15) — art-dupl in-repo sweep is DONE (2026-09-29: zero Separator-matching or colon-path-parsing sites; crawl slash-normalization invariant holds). Sweep the OTHER repos (the Windows bug class that cost seven CI cycles).
 - [ ] **Branch protection with required checks + failure notifications** (#18) — red CI sat unnoticed for 4 days; needs owner action on GitHub settings.
-- [ ] **Root-cause Windows exe-start `ProcessState nil`; un-skip `TestExitCodes_Process`** (#4) — 3-attempt retry insufficient, runner refuses freshly built exes; logic covered by `TestExitCodeForError` meanwhile.
+- [ ] **Root-cause Windows exe-start `ProcessState nil`; un-skip `TestExitCodes_Process`** (#4) — 3-attempt retry insufficient, runner refuses freshly built exes; logic covered by `TestExitCodeForError` meanwhile. Needs a Windows CI runner experiment.
 - [ ] **go-paperless: tag + release the findByName consolidation** (#20) — pushed 2026-09-19 (`04c32dc`), CI verifying; needs CHANGELOG + version decision via go-release.
 
 ### BuildFlow upstream (discovered 2026-09-23)
 
-- [ ] Align `go-version-auto-configure` (raises the go line to the toolchain on `go get -u`) with `go-mod-normalize` (canonicalizes patch pins away) — the two dispositions fought through repo go.mods 5x on 2026-09-19/23 (BuildFlow preflight `workspace/go-line-flipflop`). Worked around in art-dupl via `.buildflow.yml` `skip_steps`; fleet fix belongs upstream. **Skip verified effective 2026-09-25:** the pin survived every pipeline run this session (multiple `buildflow -s` + preflight) with `go 1.27.1` intact, and the normalize step is absent from matched tools.
+- [ ] Align `go-version-auto-configure` (raises the go line to the toolchain on `go get -u`) with `go-mod-normalize` (canonicalizes patch pins away) — the two dispositions fought through repo go.mods 5x on 2026-09-19/23 (BuildFlow preflight `workspace/go-line-flipflop`), and the flip recurred 2026-09-28 via auto-commit before the new pin gate caught the class. Worked around in art-dupl via `.buildflow.yml` `skip_steps`; fleet fix belongs upstream.
 - [ ] `golangci-lint-auto-configure` re-adds fleet-default linters that repos deliberately banned (exhaustruct, tagliatelle here) on every pipeline run, fighting per-repo guard scripts — the chronic nix `disabled-linters` red since 2026-09-19. Worked around via `skip_steps`; consider a "respect existing ban list" heuristic upstream.
 - [ ] Rebuild the BuildFlow binary (stale: built at `7e1fbfe`, repo at later HEAD) — `go-structure-linter` currently emits false "unknown field" errors because its analysis packages are go1.26 against a go1.27 `go list`.
 - [ ] Re-verify `nix-hash-fix` now that treefmt/disabled-linters are green — it failed 36/36 historically because unrelated red checks blocked the pipeline; confirm the vendorHash update for the 2026-09-22/23 go.sum bumps landed.
