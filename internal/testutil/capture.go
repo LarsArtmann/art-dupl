@@ -2,6 +2,7 @@ package testutil
 
 import (
 	"bytes"
+	"errors"
 	"os"
 	"sync"
 )
@@ -63,8 +64,8 @@ func CaptureStdoutStderr(fn func() error) (stdout, stderr []byte, err error) {
 		stderrBuf bytes.Buffer
 	)
 
-	stdoutDone := make(chan struct{})
-	stderrDone := make(chan struct{})
+	stdoutDone := make(chan error)
+	stderrDone := make(chan error)
 
 	CopyToBuffer(&stdoutBuf, stdoutR, stdoutDone)
 	CopyToBuffer(&stderrBuf, stderrR, stderrDone)
@@ -77,10 +78,10 @@ func CaptureStdoutStderr(fn func() error) (stdout, stderr []byte, err error) {
 	_ = stdoutW.Close()
 	_ = stderrW.Close()
 
-	<-stdoutDone
-	<-stderrDone
+	stdoutErr := <-stdoutDone
+	stderrErr := <-stderrDone
 
-	return stdoutBuf.Bytes(), stderrBuf.Bytes(), err
+	return stdoutBuf.Bytes(), stderrBuf.Bytes(), errors.Join(err, stdoutErr, stderrErr)
 }
 
 // CaptureCombinedOutput is like CaptureStdoutStderr but returns stdout and

@@ -336,11 +336,14 @@ func (s *BDDTestSetup) RunVendorTestWithOptions(
 	return s.RunArtDupl(args...)
 }
 
-// CopyToBuffer reads from src into dst in a goroutine, signaling completion on done.
-func CopyToBuffer(dst io.Writer, src io.Reader, done chan<- struct{}) {
+// CopyToBuffer reads from src into dst in a goroutine, signaling completion
+// on done. The channel carries the io.Copy error (nil on success) before the
+// close, so a failing/truncated capture surfaces instead of being eaten.
+func CopyToBuffer(dst io.Writer, src io.Reader, done chan<- error) {
 	go func() {
-		_, _ = io.Copy(dst, src)
+		_, copyErr := io.Copy(dst, src)
 
+		done <- copyErr
 		close(done)
 	}()
 }
