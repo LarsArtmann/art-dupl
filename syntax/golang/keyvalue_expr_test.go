@@ -109,13 +109,23 @@ func parseAndSerializeT(t *testing.T, src string, mode DetectionMode) []*syntax.
 	return syntax.Serialize(node)
 }
 
+// tokensEqualKV compares token streams the way the suffix tree consumes
+// them: statement tokens are distinguished by their composite Fingerprint
+// (Val()), non-statement tokens by their (possibly semantically encoded)
+// Type. Comparing Type alone would blind the tests to distinctions that
+// live inside statement fingerprints — exactly where composite-literal
+// keys differ.
 func tokensEqualKV(a, b []*syntax.Node) bool {
 	if len(a) != len(b) {
 		return false
 	}
 
 	for i := range a {
-		if a[i].Type != b[i].Type {
+		if a[i].Statement != b[i].Statement {
+			return false
+		}
+
+		if a[i].Val() != b[i].Val() {
 			return false
 		}
 	}
