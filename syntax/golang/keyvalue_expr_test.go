@@ -211,3 +211,38 @@ func main() {
 		t.Errorf("L1{L2.L3.C: x} and L1{L2.L3.Z: x} must NOT produce identical tokens")
 	}
 }
+
+// TestKeyValueExpr_SelectorKeyRootNotNormalized is the load-bearing
+// selector-key regression: when the selector ROOT shares its name with a
+// function parameter, alpha-normalization maps both roots to the same
+// canonical local, and without key encoding the KeyValueExpr tokens
+// collapse — K{A.B: 1} in func f(A int) becomes indistinguishable from
+// K{X.B: 1} in func g(X int) even though different fields are set.
+// The key name must come from the RAW AST (like the Ident-key path), not
+// from the normalized children.
+func TestKeyValueExpr_SelectorKeyRootNotNormalized(t *testing.T) {
+	t.Parallel()
+
+	src1 := `package test
+type Inner struct { B int }
+type K struct { Inner }
+func f(A int) {
+	_ = K{A.B: 1}
+}`
+
+	src2 := `package test
+type Inner struct { B int }
+type K struct { Inner }
+func g(X int) {
+	_ = K{X.B: 1}
+}`
+
+	tokens1 := parseAndSerializeT(t, src1, DetectionModeSemantic)
+	tokens2 := parseAndSerializeT(t, src2, DetectionModeSemantic)
+
+	if tokensEqualKV(tokens1, tokens2) {
+		t.Errorf(
+			"K{A.B: 1} (param A) and K{X.B: 1} (param X) must NOT collapse: the key root is a field name, not the normalized local",
+		)
+	}
+}
