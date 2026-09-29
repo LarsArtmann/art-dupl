@@ -78,6 +78,19 @@ var propertyLabels = []PatternLabel{ //nolint:gochecknoglobals // static list
 	PatternPropertyParameterizable,
 }
 
+// IsPropertyEnginePattern reports whether the label was assigned by the
+// extractability engine's property analysis (as opposed to the denylist
+// table). SARIF output uses it to tag rule descriptors by kind.
+func IsPropertyEnginePattern(label PatternLabel) bool {
+	for _, p := range propertyLabels {
+		if p == label {
+			return true
+		}
+	}
+
+	return false
+}
+
 // ListActionabilityPatterns writes all pattern labels to the writer, one per
 // line. Denylist patterns are listed first (in priority order), followed by
 // property-engine labels. All labels are valid --disable-pattern arguments.

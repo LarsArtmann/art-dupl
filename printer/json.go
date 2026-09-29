@@ -96,6 +96,7 @@ func toJSONClone(cl domain.ProcessedClone) JSONClone {
 // extractability estimate phrasing.
 func buildExplanation(cl domain.ProcessedClone) *Explanation {
 	cls := cl.Classification
+
 	e := &Explanation{
 		CloneType:     cls.CloneType,
 		Actionability: cls.Actionability,
@@ -183,6 +184,7 @@ func (p *JSONPrinter) PrintClones(
 		if p.explain {
 			jc.Explanation = buildExplanation(cl)
 		}
+
 		jsonClones = append(jsonClones, jc)
 	}
 

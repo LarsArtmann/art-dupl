@@ -22,7 +22,10 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 strict=0
-[ "${1:-}" = "--strict" ] || [ -z "${1:-}" ] || { echo "usage: check-intent.sh [--strict]" >&2; exit 2; }
+[ "${1:-}" = "--strict" ] || [ -z "${1:-}" ] || {
+	echo "usage: check-intent.sh [--strict]" >&2
+	exit 2
+}
 [ "${1:-}" = "--strict" ] && strict=1
 
 manifest="${CHECK_INTENT_FILE:-.check-intent}"
@@ -43,7 +46,8 @@ unexpected=0
 while IFS= read -r entry; do
 	[ -n "$entry" ] || continue
 	path=${entry:3}
-	path=${path#\"}; path=${path%\"}
+	path=${path#\"}
+	path=${path%\"}
 	path=${path//\"\\\"\"/\"}
 	matched=0
 	while IFS= read -r pat; do
@@ -51,14 +55,17 @@ while IFS= read -r entry; do
 		case "$pat" in \#*) continue ;; esac
 		# shellcheck disable=SC2254
 		case "$path" in
-			$pat) matched=1; break ;;
+		$pat)
+			matched=1
+			break
+			;;
 		esac
-	done < "$manifest"
+	done <"$manifest"
 	if [ "$matched" -eq 0 ]; then
 		echo "UNEXPECTED: $entry"
 		unexpected=$((unexpected + 1))
 	fi
-done <<< "$status"
+done <<<"$status"
 
 if [ "$unexpected" -eq 0 ]; then
 	echo "intent tripwire: every dirty file is covered by $manifest"

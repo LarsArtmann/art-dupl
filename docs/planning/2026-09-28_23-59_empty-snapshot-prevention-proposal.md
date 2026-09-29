@@ -6,6 +6,7 @@
 ## The failure modes
 
 **F1 — empty snapshots.**
+
 1. A session creates `docs/status/<timestamp>_<name>.md` intending to fill it.
 2. The session dies (user stop, crash, context switch) before content lands.
 3. The daemon's heuristic sweep commits the empty file with `chore: auto-commit N file(s)`.
@@ -14,6 +15,7 @@
 Ten instances predating 2026-09-28. Each converts a "what happened here?" into archaeology.
 
 **F2 — unnamed foreign edits.**
+
 1. Two sessions share the working tree (the norm here).
 2. Session A commits its task; the daemon sweep carries Session B's in-flight edits into A's commit under a heuristic message.
 3. The jsonutil class: a forbidden `encoding/json/v2` rewrite reached the REMOTE this way and survived ~90 minutes; the go.mod `go 1.27.1` pin has flipped this way repeatedly (caught live by the pin gate on 2026-09-29).

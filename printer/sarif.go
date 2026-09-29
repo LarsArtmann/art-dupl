@@ -9,6 +9,7 @@ import (
 	"github.com/LarsArtmann/art-dupl/domain"
 	errors "github.com/LarsArtmann/art-dupl/errors"
 	"github.com/LarsArtmann/art-dupl/internal/jsonutil"
+	"github.com/LarsArtmann/art-dupl/printer/actionability"
 	"github.com/LarsArtmann/art-dupl/printer/finding"
 )
 
@@ -255,6 +256,77 @@ func (p *sarifPrinter) PrintFooter() error {
 	return p.outputSARIF()
 }
 
+// sarifActionabilityDocAnchor is the human reference for every actionability
+// pattern: the table with examples, priority order, and suppression notes.
+const sarifActionabilityDocAnchor = "https://github.com/LarsArtmann/art-dupl/blob/main/docs/ACTIONABILITY_PATTERNS.md#pattern-priority-order"
+
+// sarifRules returns the SARIF rule descriptors: the firing detection rule
+// plus one informational descriptor per actionability pattern family, so
+// dashboards can interpret every result's non_actionable_pattern property
+// ("why did this fire / why is it marked boilerplate"). Unfired descriptors
+// are legal SARIF and ignored by consumers that don't need them. Results
+// keep the single duplicate-code ruleId — the pattern travels in the result
+// property, not as pseudo-rules, so alert UIs don't fragment into 37 streams.
+func sarifRules() []SARIFRule {
+	rules := []SARIFRule{
+		{
+			ID:   "art-dupl/duplicate-code",
+			Name: "Duplicate Code Detection",
+			ShortDescription: SARIFTextContent{
+				Text: "Detects duplicate code fragments in source files",
+			},
+			FullDescription: SARIFTextContent{
+				Text: "This rule identifies code duplication by analyzing abstract syntax trees (ASTs) and finding structural similarities between code fragments. Duplicated code increases maintenance burden and can lead to inconsistent bug fixes.",
+			},
+			DefaultConfiguration: SARIFConfiguration{
+				Level: "warning",
+			},
+			HelpURI: "https://github.com/LarsArtmann/art-dupl#duplicate-code-detection",
+			Properties: SARIFRuleProperties{
+				Precision:       "high",
+				ProblemSeverity: "warning",
+				Tags:            []string{"maintainability", "duplicate-code", "design"},
+			},
+		},
+	}
+
+	for _, label := range actionability.AllActionabilityPatterns() {
+		kind := "denylist"
+		if actionability.IsPropertyEnginePattern(label) {
+			kind = "property-engine"
+		}
+
+		rules = append(rules, SARIFRule{
+			ID:   sarifPatternRuleID(label),
+			Name: string(label),
+			ShortDescription: SARIFTextContent{
+				Text: fmt.Sprintf("Actionability pattern %q (%s) — marks matching clone groups as boilerplate",
+					label, kind),
+			},
+			FullDescription: SARIFTextContent{
+				Text: "Informational descriptor for the actionability classification carried on results in the " +
+					"non_actionable_pattern property. A group is suppressed only when EVERY clone matches the " +
+					"same pattern; --no-actionability disables suppression and --disable-pattern disables one pattern.",
+			},
+			DefaultConfiguration: SARIFConfiguration{
+				Level: "none",
+			},
+			HelpURI: sarifActionabilityDocAnchor,
+			Properties: SARIFRuleProperties{
+				Precision: "very-high",
+				Tags:      []string{"actionability", kind, "suppressible"},
+			},
+		})
+	}
+
+	return rules
+}
+
+// sarifPatternRuleID namespaces a pattern label into a rule descriptor id.
+func sarifPatternRuleID(label actionability.PatternLabel) string {
+	return "art-dupl/pattern/" + string(label)
+}
+
 // determineLevel maps clone size to SARIF level.
 func (p *sarifPrinter) determineLevel(size int) string {
 	switch {
@@ -284,27 +356,7 @@ func (p *sarifPrinter) outputSARIF() error {
 						Name:           "art-dupl",
 						Version:        p.version,
 						InformationURI: "https://github.com/LarsArtmann/art-dupl",
-						Rules: []SARIFRule{
-							{
-								ID:   "art-dupl/duplicate-code",
-								Name: "Duplicate Code Detection",
-								ShortDescription: SARIFTextContent{
-									Text: "Detects duplicate code fragments in source files",
-								},
-								FullDescription: SARIFTextContent{
-									Text: "This rule identifies code duplication by analyzing abstract syntax trees (ASTs) and finding structural similarities between code fragments. Duplicated code increases maintenance burden and can lead to inconsistent bug fixes.",
-								},
-								DefaultConfiguration: SARIFConfiguration{
-									Level: "warning",
-								},
-								HelpURI: "https://github.com/LarsArtmann/art-dupl#duplicate-code-detection",
-								Properties: SARIFRuleProperties{
-									Precision:       "high",
-									ProblemSeverity: "warning",
-									Tags:            []string{"maintainability", "duplicate-code", "design"},
-								},
-							},
-						},
+						Rules:          sarifRules(),
 					},
 				},
 				Results: p.results,

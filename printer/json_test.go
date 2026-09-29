@@ -447,9 +447,7 @@ func TestJSONPrinter_ExplainObject(t *testing.T) {
 		Clones: []domain.ProcessedClone{
 			{
 				TokenCount: 10,
-				CloneRef: domain.CloneRef{
-					Filename: "a.go", LineStart: 1, LineEnd: 5,
-				},
+				Filename:   "a.go", LineStart: 1, LineEnd: 5,
 				Classification: domain.CloneClassification{
 					NonActionablePattern: "guard-clause",
 					Actionability:        domain.NonActionable,
@@ -466,6 +464,7 @@ func TestJSONPrinter_ExplainObject(t *testing.T) {
 	if err := jp.PrintClones(group); err != nil {
 		t.Fatalf("PrintClones: %v", err)
 	}
+
 	if err := jp.OutputJSON(5, "size", ""); err != nil {
 		t.Fatalf("OutputJSON: %v", err)
 	}
@@ -480,21 +479,27 @@ func TestJSONPrinter_ExplainObject(t *testing.T) {
 	if clone.Explanation == nil {
 		t.Fatal("explanation object missing with --explain set")
 	}
+
 	if clone.Explanation.Pattern != "guard-clause" {
 		t.Errorf("explanation pattern = %q, want guard-clause", clone.Explanation.Pattern)
 	}
+
 	if clone.Explanation.Actionability != domain.NonActionable {
 		t.Errorf("explanation actionability = %v, want %v", clone.Explanation.Actionability, domain.NonActionable)
 	}
+
 	if clone.Explanation.Tokens != 10 || clone.Explanation.Lines != 5 {
 		t.Errorf("explanation tokens/lines = %d/%d, want 10/5", clone.Explanation.Tokens, clone.Explanation.Lines)
 	}
+
 	if clone.Explanation.CloneType != domain.CloneType2 || clone.Explanation.Category != domain.CategoryBlock {
 		t.Errorf("explanation clone_type/category = %v/%v", clone.Explanation.CloneType, clone.Explanation.Category)
 	}
+
 	if clone.Explanation.Suggestion == "" {
 		t.Error("explanation suggestion missing")
 	}
+
 	if clone.NonActionablePattern != "guard-clause" {
 		t.Error("non_actionable_pattern must stay for back-compat alongside the explanation object")
 	}
@@ -546,17 +551,21 @@ func TestBuildExplanationMirrorsWriteExplanation(t *testing.T) {
 	if e.CloneType != domain.CloneType2 || e.Category != domain.CategoryCall {
 		t.Fatalf("clone_type/category mismatch: %v/%v", e.CloneType, e.Category)
 	}
+
 	if e.Tokens != 42 || e.Lines != 7 {
 		t.Fatalf("tokens/lines mismatch: %d/%d", e.Tokens, e.Lines)
 	}
+
 	if e.Extractability == "" {
 		t.Fatal("extractability estimate missing for extractable clone")
 	}
+
 	if e.Suggestion != "extract to helper" {
 		t.Errorf("suggestion = %q", e.Suggestion)
 	}
 
 	cls.Extractability.CanExtract = false
+
 	e = buildExplanation(domain.ProcessedClone{Classification: cls})
 	if e.Extractability != "" {
 		t.Errorf("extractability must be empty when not extractable, got %q", e.Extractability)

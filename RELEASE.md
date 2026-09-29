@@ -81,4 +81,6 @@ the `## Changelog` stub with the CHANGELOG section's content, write back with
 - **Commit the CHANGELOG + version bump manually** as `chore(release): cut vX.Y.Z`. Do NOT rely on the daemon for release commits.
 - **Use `git push --follow-tags`** for atomic branch + tag push.
 - **Pre-commit hook**: if buildflow reinstalled the hook, re-apply the guard: `bash scripts/install-hooks.sh`
+
+```
 ```
