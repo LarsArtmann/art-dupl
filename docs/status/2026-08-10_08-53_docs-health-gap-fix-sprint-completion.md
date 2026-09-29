@@ -31,18 +31,18 @@ All 7 items are in committed history across commits `493eb006` and `cc01dffb`.
 
 ## b) PARTIALLY DONE (Staged but NOT committed)
 
-| #  | Task                                                              | File           | Status                                                                                                                                       |
-| -- | ----------------------------------------------------------------- | -------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-~~| 10 | Add `TypeAware` + `SuggestGenerics` rows to FEATURES.md SDK table | `FEATURES.md`  | **Staged** — 2 rows added after `Custom FileReader`                                                                                          |~~ done — both FEATURES SDK rows present
-~~| 11 | Remove tagliatelle item from TODO_LIST.md HIGH priority section   | `TODO_LIST.md` | **Staged** — entire subsection deleted                                                                                                       |~~ done — tagliatelle banned and gone from .golangci.yml
-| 12 | Build + test verification                                         | —              | **PASSED** — `go build ./...` clean, `go test ./...` 28/28 packages pass                                                                     |
-| 13 | Lint verification                                                 | —              | **PASSED** — golangci-lint has only 2 pre-existing warnings (nestif, varnamelen in untouched files). Tagliatelle's 50 violations eliminated. |
+| #  | Task                      | File                                                              | Status                                                                                                                                       |
+| -- | ------------------------- | ----------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| ~~ | 10                        | Add `TypeAware` + `SuggestGenerics` rows to FEATURES.md SDK table | `FEATURES.md`                                                                                                                                |
+| ~~ | 11                        | Remove tagliatelle item from TODO_LIST.md HIGH priority section   | `TODO_LIST.md`                                                                                                                               |
+| 12 | Build + test verification | —                                                                 | **PASSED** — `go build ./...` clean, `go test ./...` 28/28 packages pass                                                                     |
+| 13 | Lint verification         | —                                                                 | **PASSED** — golangci-lint has only 2 pre-existing warnings (nestif, varnamelen in untouched files). Tagliatelle's 50 violations eliminated. |
 
 ## c) NOT STARTED
 
-| Task     | Why                                                               |
-| -------- | ----------------------------------------------------------------- |
-~~| Git push | Commit hasn't happened yet; push is meaningless without a commit. |~~ done — all referenced changes present at HEAD; v0.7.x published
+| Task | Why      |
+| ---- | -------- |
+| ~~   | Git push |
 
 ## d) TOTALLY FUCKED UP
 

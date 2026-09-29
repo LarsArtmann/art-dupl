@@ -27,12 +27,12 @@ The biggest risk is **Verschlimmbesserung**: the daemon regression has burned ho
 
 **CI/infra hardening + correctness stops.** Four tasks, all ≤30min, that **stop bleeding permanently**:
 
-| #   | Task                                                               | Effort | Why it's 51%                                                                                                                                                                                                                |
-| --- | ------------------------------------------------------------------ | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-~~| T01 | CI self-test gate (`art-dupl -t 1 --plumbing .` == 0 lines)        | 30min  | Enforces the zero-duplication invariant forever. A regression here is currently invisible until a user hits it.                                                                                                             |~~ done — flake self-test check (plumbing gate)
-~~| T02 | GitHub workflow guarding `.golangci.yml` against forbidden linters | 45min  | The daemon has re-added `exhaustruct`/`tagliatelle` 7+ times. `nix flake check` catches it locally but the daemon's commit bypasses CI. A workflow that fails the check run on forbidden-linter commits is the durable fix. |~~ done — lint-config-guard.yml + scripts/check-disabled-linters.sh
-~~| T03 | Fix stale `Threshold: 15` in `examples/examples_sdk_demo.go:182`   | 10min  | Public-facing SDK example lies about the default (5). Users copy-paste it.                                                                                                                                                  |~~ done — examples use artdupl.DefaultThreshold
-~~| T04 | Repo-wide `errors.New("...")` sentinel dedup audit                 | 90min  | The `ErrInvalidDetectionMode` bug class: two sentinels with identical messages → `errors.Is` silently `false` across packages. Latent correctness bug.                                                                      |~~ done — cross_package_alias_test.go; bidirectional errors.Is for aliased sentinels
+| #  | Task | Effort                                                             | Why it's 51% |
+| -- | ---- | ------------------------------------------------------------------ | ------------ |
+| ~~ | T01  | CI self-test gate (`art-dupl -t 1 --plumbing .` == 0 lines)        | 30min        |
+| ~~ | T02  | GitHub workflow guarding `.golangci.yml` against forbidden linters | 45min        |
+| ~~ | T03  | Fix stale `Threshold: 15` in `examples/examples_sdk_demo.go:182`   | 10min        |
+| ~~ | T04  | Repo-wide `errors.New("...")` sentinel dedup audit                 | 90min        |
 
 **Subtotal: 175min.** Every future session benefits. This is the highest-leverage work in the entire backlog.
 
@@ -40,11 +40,11 @@ The biggest risk is **Verschlimmbesserung**: the daemon regression has burned ho
 
 **User-facing CI workflow features** that turn art-dupl from a report tool into an integrated workflow tool. Ranked #1 across three independent status reports:
 
-| #   | Task                                                                                       | Effort | Why it's 64%                                                                                                                                     |
-| --- | ------------------------------------------------------------------------------------------ | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-~~| T05 | `--diff-report <baseline>` mode (new/suppressed/resolved clones vs baseline)               | 100min | The extract-verify-improve loop-closer. Independently ranked #1 Pareto Tier 1 in `2026-07-25_07-47`, `2026-07-25_08-38`, and `2026-07-25_08-21`. |~~ done — --diff-report shipped
-~~| T06 | SARIF actionability metadata (`rule.tags` + clone type property)                           | 60min  | Closes the parity gap: JSON has `non_actionable_pattern`, SARIF (GitHub Advanced Security) does not.                                             |~~ done — SARIF rule tags/properties incl. go-finding/groupId
-~~| T07 | HTML report improvements (file output flag, TTY auto-detect, stable `id` for deep-linking) | 60min  | HTML is the primary human-readable format; deep-linking enables sharing specific clone groups in PR review.                                      |~~ done — stable anchor deep links + html_anchor_test.go
+| #  | Task | Effort                                                                                     | Why it's 64% |
+| -- | ---- | ------------------------------------------------------------------------------------------ | ------------ |
+| ~~ | T05  | `--diff-report <baseline>` mode (new/suppressed/resolved clones vs baseline)               | 100min       |
+| ~~ | T06  | SARIF actionability metadata (`rule.tags` + clone type property)                           | 60min        |
+| ~~ | T07  | HTML report improvements (file output flag, TTY auto-detect, stable `id` for deep-linking) | 60min        |
 
 **Subtotal: 220min.** These are the features users actually ask for.
 
@@ -52,18 +52,18 @@ The biggest risk is **Verschlimmbesserung**: the daemon regression has burned ho
 
 **Broader feature + quality set.** Real value, lower urgency:
 
-| #   | Task                                                                                              | Effort |
-| --- | ------------------------------------------------------------------------------------------------- | ------ |
-~~| T08 | Systematic ExprStmt-wrapping audit across all 18 actionability patterns + `unwrapExprStmt` helper | 90min  |~~ done — unwrapExprStmt helper applied across patterns
-~~| T09 | YAML config file support (`.artdupl.yml`)                                                         | 90min  |~~ done — YAML config shipped
-~~| T10 | `--recommend-threshold` (auto-suggest from codebase size)                                         | 60min  |~~ done — --recommend-threshold shipped
-~~| T11 | Interface-method-aware suppression (AST-pattern layer)                                            | 90min  |~~ done — interface_method.go + ADR-0018 + BDD
-~~| T12 | Templ Phase 3: expression normalization                                                           | 60min  |~~ done — templ expression normalization
-~~| T13 | Configurable actionability patterns (`--disable-pattern`, `--list-patterns`)                      | 90min  |~~ done — --disable-pattern/--list-patterns implemented
-~~| T14 | SARIF output validation against GitHub schema in CI                                               | 45min  |~~ done — flake sarif-validate check
-~~| T15 | Performance optimization guide (workers/incremental/cache tuning)                                 | 60min  |~~ done — docs/PERFORMANCE.md
-~~| T16 | `generatorIncludes` refactor (6 booleans → set/map)                                               | 45min  |~~ done — generatorIncludes keyed by gogenfilter.FilterReason
-~~| T17 | Convert 4 remaining `switch name` predicates to `slices.Contains`                                 | 30min  |~~ done — slices.Contains over name sets
+| #  | Task | Effort                                                                                            |
+| -- | ---- | ------------------------------------------------------------------------------------------------- |
+| ~~ | T08  | Systematic ExprStmt-wrapping audit across all 18 actionability patterns + `unwrapExprStmt` helper |
+| ~~ | T09  | YAML config file support (`.artdupl.yml`)                                                         |
+| ~~ | T10  | `--recommend-threshold` (auto-suggest from codebase size)                                         |
+| ~~ | T11  | Interface-method-aware suppression (AST-pattern layer)                                            |
+| ~~ | T12  | Templ Phase 3: expression normalization                                                           |
+| ~~ | T13  | Configurable actionability patterns (`--disable-pattern`, `--list-patterns`)                      |
+| ~~ | T14  | SARIF output validation against GitHub schema in CI                                               |
+| ~~ | T15  | Performance optimization guide (workers/incremental/cache tuning)                                 |
+| ~~ | T16  | `generatorIncludes` refactor (6 booleans → set/map)                                               |
+| ~~ | T17  | Convert 4 remaining `switch name` predicates to `slices.Contains`                                 |
 
 **Subtotal: 760min.**
 
@@ -151,31 +151,31 @@ graph TD
 
 Sorted by **Impact (desc) → Customer-value (desc) → Effort (asc)**. Status: `READY` = no blocker, `BLOCKED` = depends on upstream/architecture.
 
-| ID  | Task                                                                                           | Tier     | Impact   | Customer-value                          | Effort    | Status                 | Source                                 |
-| --- | ---------------------------------------------------------------------------------------------- | -------- | -------- | --------------------------------------- | --------- | ---------------------- | -------------------------------------- |
-| T01 | CI self-test gate: Nix check `art-dupl -t 1 --plumbing .` emits 0 lines                        | 1%       | CRITICAL | Prevents shipped regression             | 30min     | READY                  | TODO_LIST "CI self-test gate"          |
-| T02 | GitHub workflow `lint-config-guard.yml` rejecting forbidden linters in `.golangci.yml` commits | 1%       | CRITICAL | Stops 7x recurring daemon regression    | 45min     | READY                  | TODO_LIST "Pre-receive/CI gate"        |
-| T03 | Fix `examples/examples_sdk_demo.go:182` `Threshold: 15` → `DefaultThreshold`                   | 1%       | HIGH     | Public example correctness              | 10min     | READY                  | TODO_LIST "Fix stale Threshold"        |
-| T04 | Repo-wide `errors.New("...")` sentinel dedup audit + consolidation                             | 1%       | HIGH     | Correctness (`errors.Is` cross-package) | 90min     | READY                  | TODO_LIST "Repo-wide audit"            |
-| T05 | `--diff-report <baseline>` mode: new/suppressed/resolved clones vs baseline                    | 4%       | HIGH     | Loop-closer for CI workflow             | 100min    | READY                  | TODO_LIST "`--diff-report`"            |
-| T06 | SARIF actionability metadata: `rule.tags` + clone type property                                | 4%       | MEDIUM   | GitHub Advanced Security parity         | 60min     | READY                  | TODO_LIST "SARIF metadata"             |
-| T07 | HTML report improvements: `--html-out`, TTY detect, stable `id` deep-links                     | 4%       | MEDIUM   | PR review shareability                  | 60min     | READY                  | TODO_LIST "HTML report"                |
-| T08 | ExprStmt-wrapping audit across all 18 patterns + `unwrapExprStmt` helper                       | 20%      | MEDIUM   | Detection precision                     | 90min     | READY                  | TODO_LIST "ExprStmt audit"             |
-| T09 | YAML config support (`.artdupl.yml`, `go-faster/yaml`)                                         | 20%      | MEDIUM   | Config ergonomics                       | 90min     | READY                  | TODO_LIST "YAML config"                |
-| T10 | `--recommend-threshold` auto-suggest from codebase size                                        | 20%      | LOW-MED  | Onboarding                              | 60min     | READY                  | TODO_LIST "`--recommend-threshold`"    |
-| T11 | Interface-method-aware suppression (AST-pattern layer)                                         | 20%      | MEDIUM   | Fewer false positives                   | 90min     | READY                  | TODO_LIST "Interface-method-aware"     |
-| T12 | Templ Phase 3: expression normalization                                                        | 20%      | LOW      | Templ sensitivity                       | 60min     | READY                  | TODO_LIST "Templ Phase 3"              |
-| T13 | Configurable actionability patterns (`--disable-pattern`, `--list-patterns`)                   | 20%      | MEDIUM   | Team customization                      | 90min     | READY                  | ROADMAP "Configurable patterns"        |
-| T14 | SARIF output validation against GitHub schema in CI                                            | 20%      | LOW-MED  | CI confidence                           | 45min     | READY                  | ROADMAP "SARIF validation"             |
-| T15 | Performance optimization guide (workers/incremental/cache)                                     | 20%      | LOW-MED  | Adoption                                | 60min     | READY                  | ROADMAP "Perf guide"                   |
-| T16 | `generatorIncludes` refactor (6 booleans → `map[string]struct{}`)                              | 20%      | LOW      | Maintainability                         | 45min     | READY                  | TODO_LIST "Refactor generatorIncludes" |
-| T17 | Convert 4 `switch name` predicates → `slices.Contains`                                         | 20%      | LOW      | Consistency                             | 30min     | READY                  | TODO_LIST "switch to slices"           |
-| T18 | Push defense-in-depth content check into gogenfilter (upstream PR)                             | blocked  | MEDIUM   | Closes gap at source                    | 90min     | BLOCKED                | TODO_LIST "Push to gogenfilter"        |
-| T19 | Lazy content reading (avoid double-read)                                                       | blocked  | LOW      | Perf (90% case)                         | 60min     | BLOCKED by T18         | TODO_LIST "Lazy content reading"       |
-~~| T20 | Split `printer/` into sub-packages                                                             | deferred | HIGH     | Maintainability                         | LARGE     | BLOCKED (circular dep) | TODO_LIST "Split printer/"             |~~ done — printer subpackages exist
-~~| T21 | Branded `NodeType int32` per-package                                                           | deferred | MED      | Type safety                             | HIGH RISK | BLOCKED (gob cache)    | TODO_LIST "Branded NodeType"           |~~ parked — TODO_LIST parked tier (branded NodeType; breaking-change windows only)
-~~| T22 | Hide `syntax/golang` behind facade                                                             | deferred | MED      | Decoupling                              | LARGE     | BLOCKED (import cycle) | TODO_LIST "syntax/golang facade"       |~~ parked — TODO_LIST "Architecturally constrained (DEFERRED)" (facade; import cycle)
-~~| T23 | Hybrid slice/map transition storage                                                            | deferred | LOW      | Perf                                    | LOW-VALUE | DEFERRED               | TODO_LIST "Hybrid storage"             |~~ resolved by alternative — ADR-0001 map-based lookup kept (already O(1))
+| ID  | Task                                                                                           | Tier                                 | Impact   | Customer-value                          | Effort          | Status         | Source                                 |
+| --- | ---------------------------------------------------------------------------------------------- | ------------------------------------ | -------- | --------------------------------------- | --------------- | -------------- | -------------------------------------- |
+| T01 | CI self-test gate: Nix check `art-dupl -t 1 --plumbing .` emits 0 lines                        | 1%                                   | CRITICAL | Prevents shipped regression             | 30min           | READY          | TODO_LIST "CI self-test gate"          |
+| T02 | GitHub workflow `lint-config-guard.yml` rejecting forbidden linters in `.golangci.yml` commits | 1%                                   | CRITICAL | Stops 7x recurring daemon regression    | 45min           | READY          | TODO_LIST "Pre-receive/CI gate"        |
+| T03 | Fix `examples/examples_sdk_demo.go:182` `Threshold: 15` → `DefaultThreshold`                   | 1%                                   | HIGH     | Public example correctness              | 10min           | READY          | TODO_LIST "Fix stale Threshold"        |
+| T04 | Repo-wide `errors.New("...")` sentinel dedup audit + consolidation                             | 1%                                   | HIGH     | Correctness (`errors.Is` cross-package) | 90min           | READY          | TODO_LIST "Repo-wide audit"            |
+| T05 | `--diff-report <baseline>` mode: new/suppressed/resolved clones vs baseline                    | 4%                                   | HIGH     | Loop-closer for CI workflow             | 100min          | READY          | TODO_LIST "`--diff-report`"            |
+| T06 | SARIF actionability metadata: `rule.tags` + clone type property                                | 4%                                   | MEDIUM   | GitHub Advanced Security parity         | 60min           | READY          | TODO_LIST "SARIF metadata"             |
+| T07 | HTML report improvements: `--html-out`, TTY detect, stable `id` deep-links                     | 4%                                   | MEDIUM   | PR review shareability                  | 60min           | READY          | TODO_LIST "HTML report"                |
+| T08 | ExprStmt-wrapping audit across all 18 patterns + `unwrapExprStmt` helper                       | 20%                                  | MEDIUM   | Detection precision                     | 90min           | READY          | TODO_LIST "ExprStmt audit"             |
+| T09 | YAML config support (`.artdupl.yml`, `go-faster/yaml`)                                         | 20%                                  | MEDIUM   | Config ergonomics                       | 90min           | READY          | TODO_LIST "YAML config"                |
+| T10 | `--recommend-threshold` auto-suggest from codebase size                                        | 20%                                  | LOW-MED  | Onboarding                              | 60min           | READY          | TODO_LIST "`--recommend-threshold`"    |
+| T11 | Interface-method-aware suppression (AST-pattern layer)                                         | 20%                                  | MEDIUM   | Fewer false positives                   | 90min           | READY          | TODO_LIST "Interface-method-aware"     |
+| T12 | Templ Phase 3: expression normalization                                                        | 20%                                  | LOW      | Templ sensitivity                       | 60min           | READY          | TODO_LIST "Templ Phase 3"              |
+| T13 | Configurable actionability patterns (`--disable-pattern`, `--list-patterns`)                   | 20%                                  | MEDIUM   | Team customization                      | 90min           | READY          | ROADMAP "Configurable patterns"        |
+| T14 | SARIF output validation against GitHub schema in CI                                            | 20%                                  | LOW-MED  | CI confidence                           | 45min           | READY          | ROADMAP "SARIF validation"             |
+| T15 | Performance optimization guide (workers/incremental/cache)                                     | 20%                                  | LOW-MED  | Adoption                                | 60min           | READY          | ROADMAP "Perf guide"                   |
+| T16 | `generatorIncludes` refactor (6 booleans → `map[string]struct{}`)                              | 20%                                  | LOW      | Maintainability                         | 45min           | READY          | TODO_LIST "Refactor generatorIncludes" |
+| T17 | Convert 4 `switch name` predicates → `slices.Contains`                                         | 20%                                  | LOW      | Consistency                             | 30min           | READY          | TODO_LIST "switch to slices"           |
+| T18 | Push defense-in-depth content check into gogenfilter (upstream PR)                             | blocked                              | MEDIUM   | Closes gap at source                    | 90min           | BLOCKED        | TODO_LIST "Push to gogenfilter"        |
+| T19 | Lazy content reading (avoid double-read)                                                       | blocked                              | LOW      | Perf (90% case)                         | 60min           | BLOCKED by T18 | TODO_LIST "Lazy content reading"       |
+| ~~  | T20                                                                                            | Split `printer/` into sub-packages   | deferred | HIGH                                    | Maintainability | LARGE          | BLOCKED (circular dep)                 |
+| ~~  | T21                                                                                            | Branded `NodeType int32` per-package | deferred | MED                                     | Type safety     | HIGH RISK      | BLOCKED (gob cache)                    |
+| ~~  | T22                                                                                            | Hide `syntax/golang` behind facade   | deferred | MED                                     | Decoupling      | LARGE          | BLOCKED (import cycle)                 |
+| ~~  | T23                                                                                            | Hybrid slice/map transition storage  | deferred | LOW                                     | Perf            | LOW-VALUE      | DEFERRED                               |
 
 **Schedulable subtotal:** T01–T17 = **1,135min (~19h)**. Blocked/deferred T18–T23 stay parked.
 
@@ -392,6 +392,7 @@ Every schedulable task decomposed into atomic, verifiable steps. Sorted within e
 ~~- [ ] **After Tier 2 (T05–T07):** `--diff-report` BDD passes; SARIF output contains `rule.tags`; HTML groups have stable `id`.~~ done — diff_report/sarif_pattern/html_anchor tests
 ~~- [ ] **After Tier 3 (T08–T17):** All new unit tests pass; `golangci-lint run` = 0; self-scan stays 0 at `-t 1`.~~ done — docs-health count gate (2026-09-28) + SELF_CLEAN_LEDGER sweeps
 ~~- [ ] **Every task:** update `CHANGELOG.md` `[Unreleased]` (Added/Changed/Fixed) + remove the item from `TODO_LIST.md` when done.~~ done — CHANGELOG current through 0.7.2; TODO_LIST is open-work-only
+
 - [ ] **No Verschlimmbesserung:** each change must leave the codebase BETTER. If a refactor introduces duplication or breaks a test, revert and reconsider.
 
 ---

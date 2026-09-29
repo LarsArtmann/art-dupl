@@ -30,8 +30,8 @@ check_doc() {
 	fi
 	local ts age
 	ts="$(date -d "$stamp" +%s 2>/dev/null || date -j -f '%Y-%m-%d' "$stamp" +%s)"
-	age=$(( (head_ts - ts) / 86400 ))
-	if (( age > MAX_AGE_DAYS )); then
+	age=$(((head_ts - ts) / 86400))
+	if ((age > MAX_AGE_DAYS)); then
 		echo "STALE $file: Last Updated $stamp is $age days behind HEAD ($head_date)"
 		stale=$((stale + 1))
 	fi
@@ -45,8 +45,8 @@ done
 # (cmd/docs_health_counts_test.go) re-derives documented numbers from code
 # and fails CI on drift — run `go test -run 'Counts|CountGate' ./cmd/`.
 
-if (( stale > 0 )); then
-	if (( strict )); then
+if ((stale > 0)); then
+	if ((strict)); then
 		echo "FAIL: $stale stale living doc(s) (strict mode)" >&2
 		exit 1
 	fi

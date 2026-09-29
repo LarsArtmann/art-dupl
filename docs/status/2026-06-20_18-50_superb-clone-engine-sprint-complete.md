@@ -19,13 +19,13 @@
 
 ### Phase 1: Foundation (5/5 DONE)
 
-| Task                          | Commit       | Impact                                                            |
-| ----------------------------- | ------------ | ----------------------------------------------------------------- |
-| ~~**T3** BasicLit Value Hashing~~ | ~~`1e37fd2`~~    | ~~`return 42` ≠ `return 999` in semantic mode~~ |
-| ~~**T4** Non-Commutative Hash~~   | ~~`d8a90e6`~~    | ~~FNV multiply-pair replaces XOR; `(A,B)≠(B,A)`~~ |
-| ~~**T2** Alpha-Normalization~~    | ~~`91554e5`~~    | ~~Per-function symbol table canonicalizes locals → Type 2 detection~~ |
-| ~~**T5** Three-Mode System~~      | ~~`91554e5`~~    | ~~`--semantic` (default), `--exact`, `--structural`~~ |
-| ~~T1 Statement Tokenization~~ | ~~**Deferred**~~ done — ADR-0023 nested emission shipped (CacheVersion 4) | ~~High risk; `serial()` still inflates thresholds~~ shipped |
+| Task                              | Commit                                                                    | Impact                                                                |
+| --------------------------------- | ------------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| ~~**T3** BasicLit Value Hashing~~ | ~~`1e37fd2`~~                                                             | ~~`return 42` ≠ `return 999` in semantic mode~~                       |
+| ~~**T4** Non-Commutative Hash~~   | ~~`d8a90e6`~~                                                             | ~~FNV multiply-pair replaces XOR; `(A,B)≠(B,A)`~~                     |
+| ~~**T2** Alpha-Normalization~~    | ~~`91554e5`~~                                                             | ~~Per-function symbol table canonicalizes locals → Type 2 detection~~ |
+| ~~**T5** Three-Mode System~~      | ~~`91554e5`~~                                                             | ~~`--semantic` (default), `--exact`, `--structural`~~                 |
+| ~~T1 Statement Tokenization~~     | ~~**Deferred**~~ done — ADR-0023 nested emission shipped (CacheVersion 4) | ~~High risk; `serial()` still inflates thresholds~~ shipped           |
 
 ### Phase 2: Detection Quality (3/3 DONE)
 
@@ -45,31 +45,31 @@
 
 ### Phase 4: Architecture (1/5 DONE)
 
-| Task                        | Commit    | Impact                             |
-| --------------------------- | --------- | ---------------------------------- |
-| ~~**T12** ctx in run_crawl~~    | ~~`650a4b0`~~ | ~~Last goroutine leak eliminated~~ |
-| ~~T13 Printer Decoupling~~  | ~~Pending~~ done — printer decoupled 2026-07-26 | ~~13 prod files import `syntax.Node`~~ bridge-only today |
-| ~~T14 Clone Consolidation~~ | ~~Pending~~ done — domain.CloneRef embedded everywhere (ADR-0005) | ~~3 parallel Clone types~~ DTOs kept by design |
-| ~~T15 Printer Split~~       | ~~Pending~~ done — stats/, actionability/, finding/ extracted | ~~29 files in one package~~ split landed |
-| ~~T16 Fragment Unify~~      | ~~Pending~~ done — Fragment is string everywhere | ~~`[]byte` vs `string` mismatch~~ resolved |
+| Task                         | Commit                                                            | Impact                                                   |
+| ---------------------------- | ----------------------------------------------------------------- | -------------------------------------------------------- |
+| ~~**T12** ctx in run_crawl~~ | ~~`650a4b0`~~                                                     | ~~Last goroutine leak eliminated~~                       |
+| ~~T13 Printer Decoupling~~   | ~~Pending~~ done — printer decoupled 2026-07-26                   | ~~13 prod files import `syntax.Node`~~ bridge-only today |
+| ~~T14 Clone Consolidation~~  | ~~Pending~~ done — domain.CloneRef embedded everywhere (ADR-0005) | ~~3 parallel Clone types~~ DTOs kept by design           |
+| ~~T15 Printer Split~~        | ~~Pending~~ done — stats/, actionability/, finding/ extracted     | ~~29 files in one package~~ split landed                 |
+| ~~T16 Fragment Unify~~       | ~~Pending~~ done — Fragment is string everywhere                  | ~~`[]byte` vs `string` mismatch~~ resolved               |
 
 ### Phase 5: Testing (3/4 DONE)
 
-| Task                       | Commit    | Impact                            |
-| -------------------------- | --------- | --------------------------------- |
-| ~~**T17** Property Tests~~     | ~~`2dc1781`~~ | ~~6 suffix-tree invariants verified~~ |
-| ~~**T18** Detection Coverage~~ | ~~`9fecc7f`~~ | ~~61.8% → **92.7%**~~ |
-| ~~**T19** Domain Coverage~~    | ~~`692c587`~~ | ~~58.6% → **100%**~~ |
-| ~~T20 Benchmarks~~         | ~~Pending~~ done — performance.yml CI gate + docs/benchmarks baselines | ~~No regression risk currently~~ guarded by alloc budgets |
+| Task                           | Commit                                                                 | Impact                                                    |
+| ------------------------------ | ---------------------------------------------------------------------- | --------------------------------------------------------- |
+| ~~**T17** Property Tests~~     | ~~`2dc1781`~~                                                          | ~~6 suffix-tree invariants verified~~                     |
+| ~~**T18** Detection Coverage~~ | ~~`9fecc7f`~~                                                          | ~~61.8% → **92.7%**~~                                     |
+| ~~**T19** Domain Coverage~~    | ~~`692c587`~~                                                          | ~~58.6% → **100%**~~                                      |
+| ~~T20 Benchmarks~~             | ~~Pending~~ done — performance.yml CI gate + docs/benchmarks baselines | ~~No regression risk currently~~ guarded by alloc budgets |
 
 ### Phase 6: Ecosystem (2/4 DONE)
 
-| Task                     | Commit    | Impact                                 |
-| ------------------------ | --------- | -------------------------------------- |
-| ~~**T21** GitHub Actions~~   | ~~`5356d17`~~ | ~~`.github/workflows/art-dupl-check.yml`~~ |
-| ~~**T22** Pre-Commit Hook~~  | ~~`5356d17`~~ | ~~`.pre-commit-hooks.yaml`~~ |
-| ~~T23 json/v2~~          | ~~Pending~~ done — ADR-0024 shipped in v0.7.0 | ~~Go 1.26 stability TBD~~ superseded: Go 1.27 dropped the v2 tag grammar |
-| ~~T24 Rename Data→View~~ | ~~Pending~~ done — Data→View rename shipped (`b60aca6`) | ~~5 `*Data` types in printer/~~ now 5 `*View` types |
+| Task                        | Commit                                                  | Impact                                                                   |
+| --------------------------- | ------------------------------------------------------- | ------------------------------------------------------------------------ |
+| ~~**T21** GitHub Actions~~  | ~~`5356d17`~~                                           | ~~`.github/workflows/art-dupl-check.yml`~~                               |
+| ~~**T22** Pre-Commit Hook~~ | ~~`5356d17`~~                                           | ~~`.pre-commit-hooks.yaml`~~                                             |
+| ~~T23 json/v2~~             | ~~Pending~~ done — ADR-0024 shipped in v0.7.0           | ~~Go 1.26 stability TBD~~ superseded: Go 1.27 dropped the v2 tag grammar |
+| ~~T24 Rename Data→View~~    | ~~Pending~~ done — Data→View rename shipped (`b60aca6`) | ~~5 `*Data` types in printer/~~ now 5 `*View` types                      |
 
 ---
 

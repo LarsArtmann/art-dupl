@@ -88,13 +88,13 @@ From the project TODO (last updated 2026-05-23):
 
 - [ ] Refactor `syntax/golang/transform.go` (369L, 300L switch statement)
 - [ ] Fix remaining LSP hints: unused params, unnecessary type args in tests
-~~- [ ] Create `domain.HealthScore` typed enum (currently just a string 'A'-'F')~~ done — CHANGELOG "`domain.HealthScore` typed enum"
-~~- [ ] Write SDK documentation for `pkg/artdupl/`~~ done — pkg/artdupl/doc.go + SDK_DESIGN.md + HOW_TO_USE.md
-~~- [ ] Add BDD test for `art-dupl stats --only templ` and `--only go`~~ done — bdd/stats_command_test.go
-~~- [ ] Add BDD test for `--include-generic` end-to-end~~ done — BDD --only + --include-generic coverage
-~~- [ ] Add fuzz tests for templ parser edge cases~~ done — syntax/templ/fuzz_test.go FuzzParseBytes
-~~- [ ] Add ADR for semantic-as-default and reflection-based config merge~~ done — ADR-0002 + ADR-0003
-~~- [ ] Validate GoReleaser release config~~ done — releases v0.1.0 to v0.7.2 shipped via release.yml
+      ~~- [ ] Create `domain.HealthScore` typed enum (currently just a string 'A'-'F')~~ done — CHANGELOG "`domain.HealthScore` typed enum"
+      ~~- [ ] Write SDK documentation for `pkg/artdupl/`~~ done — pkg/artdupl/doc.go + SDK_DESIGN.md + HOW_TO_USE.md
+      ~~- [ ] Add BDD test for `art-dupl stats --only templ` and `--only go`~~ done — bdd/stats_command_test.go
+      ~~- [ ] Add BDD test for `--include-generic` end-to-end~~ done — BDD --only + --include-generic coverage
+      ~~- [ ] Add fuzz tests for templ parser edge cases~~ done — syntax/templ/fuzz_test.go FuzzParseBytes
+      ~~- [ ] Add ADR for semantic-as-default and reflection-based config merge~~ done — ADR-0002 + ADR-0003
+      ~~- [ ] Validate GoReleaser release config~~ done — releases v0.1.0 to v0.7.2 shipped via release.yml
 
 ### Known Architectural Debts (from `AGENTS.md`)
 
@@ -122,52 +122,52 @@ and the helpers were verified by the existing test suite.
 ### Code Health Observations
 
 ~~1. **The 3 remaining `printer/PrintClones` signatures at threshold 15** are~~ won't implement — signature fixed by the Printer interface
-   flagged as 6-clone group (`html.go:142-145`, `json.go:102-105`, etc.).
-   These are interface implementations — the function signature is fixed by
-   the `Printer` interface. **Cannot be deduplicated** without changing the
-   interface itself.
+flagged as 6-clone group (`html.go:142-145`, `json.go:102-105`, etc.).
+These are interface implementations — the function signature is fixed by
+the `Printer` interface. **Cannot be deduplicated** without changing the
+interface itself.
 
 ~~2. **The 3 remaining `if !cmd.Flags().Changed("X") { return nil }` clones at~~ won't implement — 1-line helper calls; report deems idiomatic
-   threshold 15** (`config_builder.go:209-209`, `:219-219`, `:239-239`) are
-   now actually 1-line calls to `flagStringReader`. They show as clones only
-   because art-dupl sees the same 1-line pattern repeated. The actual
-   surface is the helper, not the calls.
+threshold 15** (`config_builder.go:209-209`, `:219-219`, `:239-239`) are
+now actually 1-line calls to `flagStringReader`. They show as clones only
+because art-dupl sees the same 1-line pattern repeated. The actual
+surface is the helper, not the calls.
 
 ~~3. **The remaining 3-block `fmt.Errorf` in `run_output.go`** at threshold 15~~ won't implement — if-err-return is Go idiom (per report)
-   (`32-35`, `43-46`, `154-157`) are now 1-line `Errorf` calls. They show as
-   clones only because of the 3-line `if-err-return` shape, which is Go
-   idiom and cannot be reduced.
+(`32-35`, `43-46`, `154-157`) are now 1-line `Errorf` calls. They show as
+clones only because of the 3-line `if-err-return` shape, which is Go
+idiom and cannot be reduced.
 
 ~~4. **The 5-clone `printer/html.go:169-171` & `:174-176` & `html_diff.go:229-231` & `:245-247` & `:257-259` group at threshold 15** is the~~ won't implement — variadic unification cuts type safety; "not worth it" (per report)
-   `if-err-return-helper(...)` pattern. Different helpers (`cloneGroupErr`
-   vs `cloneLocationErr`) with different argument shapes. Could be unified
-   into one variadic helper, but that would _reduce_ type safety and
-   _increase_ coupling between unrelated call sites. **Not worth it.**
+`if-err-return-helper(...)` pattern. Different helpers (`cloneGroupErr`
+vs `cloneLocationErr`) with different argument shapes. Could be unified
+into one variadic helper, but that would _reduce_ type safety and
+_increase_ coupling between unrelated call sites. **Not worth it.**
 
 ### Process Improvements
 
 ~~1. **The project's own linting pipeline doesn't run art-dupl on CI.** There's~~ done — .github/workflows/art-dupl-check.yml baseline gate
-   a `performance.yml` and `ci.yml` but no deduplication regression check.
-   Suggestion: add a job that fails CI if `art-dupl -t 30 .` reports
-   non-zero clone groups. This would prevent future drift.
+a `performance.yml` and `ci.yml` but no deduplication regression check.
+Suggestion: add a job that fails CI if `art-dupl -t 30 .` reports
+non-zero clone groups. This would prevent future drift.
 
 ~~2. **No commit-time or pre-push hook** for `just check` (format + lint + test).~~ done — templates/pre-commit-hook.yaml + scripts/install-hooks.sh
-   A simple git hook would catch regressions before they reach the branch.
+A simple git hook would catch regressions before they reach the branch.
 
 ~~3. **The TODO_LIST.md is 12 days stale** (2026-05-23). The deduplication~~ done — TODO_LIST actively maintained through 2026-09-28
-   work this session should be added under "Recently Completed".
+work this session should be added under "Recently Completed".
 
 ### Architecture Observations
 
 ~~1. **The Printer abstraction is the bottleneck** for further refactoring~~ done — ProcessedClone DTO shipped; printers decoupled
-   (111 test call sites, 4 parallel Clone types, direct `syntax/golang`
-   import in `clone_classify.go`). The `ProcessedClone` DTO introduction
-   is the highest-leverage refactor in the project. Until it lands, the
-   printer package is the dominant source of structural coupling.
+(111 test call sites, 4 parallel Clone types, direct `syntax/golang`
+import in `clone_classify.go`). The `ProcessedClone` DTO introduction
+is the highest-leverage refactor in the project. Until it lands, the
+printer package is the dominant source of structural coupling.
 
 ~~2. **`printer/text.go` and `printer/json.go` are the two heaviest printers**~~ done — text tests split into focused files
-   but neither has a unit-test file split yet (unlike `printer/html*.go`
-   which is split into 4 files). They should follow the same pattern.
+but neither has a unit-test file split yet (unlike `printer/html*.go`
+which is split into 4 files). They should follow the same pattern.
 
 ---
 

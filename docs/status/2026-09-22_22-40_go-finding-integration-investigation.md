@@ -30,12 +30,12 @@
 
 ## b) PARTIALLY DONE (project-level work surfaced by this session — none of it authored this session)
 
-| # | Item                            | State                                                                                                                                                                                                                             |
-| - | ------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-~~| 1 | go-finding adoption overall     | Adapter shipped + tested (2026-09-19, issue #1, GAP-2), but library-only surface: no production code path calls `ToFindings`/`ToReport`. Consumers reach findings via art-dupl's SARIF output + go-finding's `FindingsFromSARIF`. |~~ resolved by alternative — provider Detector ships (pkg/provider); no longer library-only
-~~| 2 | GroupID identity                | One concept, three names: SARIF `go-finding/groupId`, JSON `clone_groups[].hash`, go-finding `Finding.GroupID`. Documented in AGENTS.md, pinned by tests; drift risk lives in docs, not code (status report's known-gap b.2).     |~~ done — AGENTS documents GroupID=hash + SARIF property contract; FEATURES adapter row
-| 3 | Evaluation-doc linkage          | The verdict doc lives only in the go-finding repo; art-dupl readers following its path hit a dead end (status item 24). Not fixed this session.                                                                                   |
-~~| 4 | Adoption decision formalization | Carried in AGENTS.md convention entry + status report; no ADR, no TODO_LIST tracking verified.                                                                                                                                    |~~ resolved by alternative — verdict in AGENTS; SDK surface decided in ADR-0025
+| #  | Item                   | State                                                                                                                                           |
+| -- | ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| ~~ | 1                      | go-finding adoption overall                                                                                                                     |
+| ~~ | 2                      | GroupID identity                                                                                                                                |
+| 3  | Evaluation-doc linkage | The verdict doc lives only in the go-finding repo; art-dupl readers following its path hit a dead end (status item 24). Not fixed this session. |
+| ~~ | 4                      | Adoption decision formalization                                                                                                                 |
 
 ## c) NOT STARTED (untouched this session; known-open from the 2026-09-19 report)
 
@@ -66,10 +66,10 @@ The honest worst-candidate is the self-critique item 1: I stated two unverified 
 **P0 — closes real verification/wiring gaps**
 
 1. Committed integration test: run the actual CLI with `--sarif` on a synthetic duplicate, pipe the emitted bytes through `FindingsFromSARIF`, assert GroupIDs restore (closes the import-side gap; converts the 2026-09-19 one-off live proof into a permanent gate).
-~~2. Decision + ADR: is the adapter's library-only surface final, or does a production path (SDK `Detector.Report()` / CLI flag) come? Record either way as an ADR (frees the stale "item 23").~~ resolved by alternative — production path shipped (pkg/provider toolsdk Detector); ADR-0025
-3. Run `go test ./printer/finding/...` this session's successor — confirm all 17 green on current HEAD (never executed this session).
-4. Copy or summarize the integration-evaluation doc into art-dupl docs; fix the dead path cited by issue #1.
-~~5. Verify the three known gaps exist in TODO_LIST.md; add any that are missing (HARVEST from this report).~~ done — TODO_LIST harvest tracks issues #2/#4, detector, dependabot
+   ~~2. Decision + ADR: is the adapter's library-only surface final, or does a production path (SDK `Detector.Report()` / CLI flag) come? Record either way as an ADR (frees the stale "item 23").~~ resolved by alternative — production path shipped (pkg/provider toolsdk Detector); ADR-0025
+2. Run `go test ./printer/finding/...` this session's successor — confirm all 17 green on current HEAD (never executed this session).
+3. Copy or summarize the integration-evaluation doc into art-dupl docs; fix the dead path cited by issue #1.
+   ~~5. Verify the three known gaps exist in TODO_LIST.md; add any that are missing (HARVEST from this report).~~ done — TODO_LIST harvest tracks issues #2/#4, detector, dependabot
 
 **P1 — reduces drift / duplication**
 ~~6. Three-names-one-concept: add a cross-reference table (SARIF property ↔ JSON field ↔ Finding field) to AGENTS.md or FEATURES.md.~~ done — AGENTS GroupID contract + FEATURES adapter row document the mappings

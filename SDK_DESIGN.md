@@ -79,22 +79,22 @@ for _, group := range result.CloneGroups {
 ## Downstream Consumers
 
 ```
-                    ┌─────────────────────────────┐
-                    │        pkg/artdupl          │
-                    │   Detector (this contract)  │
-                    └──────────┬──────────────────┘
-                               │
-              ┌────────────────┼───────────────────┐
-              │                │                   │
-    ┌─────────▼─────────┐ ┌────▼─────┐   ┌─────────▼──────────┐
-    │   cmd/ pipeline   │ │ pkg/     │   │ external SDK users │
-    │ (classification   │ │ provider │   └────────────────────┘
-    │  via actionability│ │ (toolsdk)│
-    │  + printer/       │ └────┬─────┘
-    │  finding adapter) │      │ blank import in BuildFlow
-    └───────────────────┘      │ toolsdk.Register at init
-                               ▼
-                        BuildFlow core lane
+                ┌─────────────────────────────┐
+                │        pkg/artdupl          │
+                │   Detector (this contract)  │
+                └──────────┬──────────────────┘
+                           │
+          ┌────────────────┼───────────────────┐
+          │                │                   │
+┌─────────▼─────────┐ ┌────▼─────┐   ┌─────────▼──────────┐
+│   cmd/ pipeline   │ │ pkg/     │   │ external SDK users │
+│ (classification   │ │ provider │   └────────────────────┘
+│  via actionability│ │ (toolsdk)│
+│  + printer/       │ └────┬─────┘
+│  finding adapter) │      │ blank import in BuildFlow
+└───────────────────┘      │ toolsdk.Register at init
+                           ▼
+                    BuildFlow core lane
 ```
 
 **`printer/finding` (CLI output adapter)**: converts

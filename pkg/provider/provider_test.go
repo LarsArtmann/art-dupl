@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
+	"runtime"
 	"runtime/debug"
 	"slices"
 	"strings"
@@ -746,6 +747,10 @@ func TestCollectSourceFilesVanishedFileSkipped(t *testing.T) {
 // the CLI's tolerance. If this test ever needs to flip to tolerance, change
 // the walk callback's `if err != nil { return err }` and this comment.
 func TestCollectSourceFilesWalkErrorPolicy(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("POSIX permission bits are not enforced on Windows; walk-error policy covered on unix")
+	}
+
 	if os.Geteuid() == 0 {
 		t.Skip("permission bits do not stop root")
 	}
@@ -800,8 +805,8 @@ func TestDetectEquivalenceWithSharedAdapter(t *testing.T) {
 	writeFile(t, dir, "beta.go", "package beta\n\n"+renamedFunction)
 
 	detector := cloneDetector{}
-	providerFindings, err := detector.Detect(dirContext(t, dir))
 
+	providerFindings, err := detector.Detect(dirContext(t, dir))
 	if err != nil {
 		t.Fatalf("Detect: %v", err)
 	}
@@ -859,6 +864,10 @@ func TestDetectEquivalenceWithSharedAdapter(t *testing.T) {
 // regressions break this golden instead of shipping to BuildFlow.
 func TestProviderFindingsGolden(t *testing.T) {
 	t.Parallel()
+
+	if runtime.GOOS == "windows" {
+		t.Skip("golden pins POSIX-normalized path shapes; classification drift covered on unix lanes")
+	}
 
 	dir := t.TempDir()
 	writeFile(t, dir, "one.go", "package one\n\n"+duplicatedFunction)

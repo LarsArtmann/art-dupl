@@ -41,11 +41,11 @@
 
 ## B) PARTIALLY DONE
 
-| Item                    | Status                 | What's Missing                                                                            |
-| ----------------------- | ---------------------- | ----------------------------------------------------------------------------------------- |
-| `nix build`             | `vendorHash` stale     | Need to update hash in flake.nix: set `vendorHash=""`, run `nix build`, copy correct hash |
-~~| Semantic mode for Templ | No encoding applied    | `syntax/templ/` matching is purely structural — no identifier/operator encoding           |~~ done — syntax/templ semantic mode encodes element/attribute/callee names
-| SDK docs                | `SDK_DESIGN.md` exists | No usage examples, no godoc rendering                                                     |
+| Item        | Status                  | What's Missing                                                                            |
+| ----------- | ----------------------- | ----------------------------------------------------------------------------------------- |
+| `nix build` | `vendorHash` stale      | Need to update hash in flake.nix: set `vendorHash=""`, run `nix build`, copy correct hash |
+| ~~          | Semantic mode for Templ | No encoding applied                                                                       |
+| SDK docs    | `SDK_DESIGN.md` exists  | No usage examples, no godoc rendering                                                     |
 
 ---
 
@@ -139,33 +139,33 @@ From feedback (2026-06-08-overview-dedup-session.md):
 
 Sorted by impact × effort (Pareto ordering):
 
-| #  | Task                                                               | Impact | Effort | Category       |
-| -- | ------------------------------------------------------------------ | ------ | ------ | -------------- |
-~~| 1  | **Fix nix vendorHash** — set `""`, build, copy hash                | HIGH   | 5min   | Tooling        |~~ done — vendorHash stable; nix build green in CI
-~~| 2  | **Suppress test-only low-priority clones** in output               | HIGH   | 30min  | False Positive |~~ done — actionability patterns + --test-threshold
-~~| 3  | **Add hashSeq unit tests** (currently zero)                        | HIGH   | 30min  | Testing        |~~ done — TestPerfRegressionHashSeq + BenchmarkHashSeq*
-~~| 4  | **Decouple clone_classify from syntax/golang** via interface       | HIGH   | 2h     | Architecture   |~~ done — CHANGELOG decoupling entry
-~~| 5  | **ProcessedClone DTO** — decouple printer from syntax.Node         | HIGH   | 4h     | Architecture   |~~ done — printer/printer.go ProcessedCloneGroup
-~~| 6  | **Consolidate three Clone types** into one                         | HIGH   | 3h     | Architecture   |~~ done — ADR-0005
-~~| 7  | **Implement TokenValue type with validation**                      | MED    | 1h     | Type Safety    |~~ done — suffixtree.TokenValue
-~~| 8  | **Test-table pattern detection** in classification                 | MED    | 1h     | False Positive |~~ done — table-driven-test pattern shipped
-~~| 9  | **Cross-reference with existing helpers** detection                | MED    | 4h     | Feature        |~~ done — extractability engine (ADR-0017) + --explain
-| 10 | **Semantic mode for Templ** — identifier/operator encoding         | MED    | 3h     | Feature        |
-~~| 11 | **Fix 3 godoclint warnings** — duplicate package docs              | LOW    | 10min  | Quality        |~~ done — godoclint fixed; 0 lint issues since
-~~| 12 | **Fix bufio scanner `sc.Err()` check** in run_crawl.go             | LOW    | 5min   | Quality        |~~ done — cmd/run_crawl.go checks sc.Err()
-| 13 | **Migrate fang v1 → fang/v2**                                      | LOW    | 1h     | Dependencies   |
-~~| 14 | **Replace SHA-1 in file_cache.go** with SHA-256                    | LOW    | 15min  | Security       |~~ done — SHA-256 migration (CHANGELOG)
-~~| 15 | **CSV output using encoding/csv**                                  | MED    | 2h     | Feature        |~~ done — CHANGELOG "CSV output with proper escaping"
-~~| 16 | **`--output-file` flag for stats subcommand**                      | LOW    | 30min  | Feature        |~~ done — cmd/stats.go
-~~| 17 | **Split printer/stats_test.go** (975L → 3 files)                   | LOW    | 30min  | Quality        |~~ done — printer/stats/ package
-| 18 | **Refactor syntax/golang/transform.go** (369L switch)              | LOW    | 2h     | Quality        |
-~~| 19 | **Create domain.HealthScore typed enum**                           | LOW    | 15min  | Type Safety    |~~ done — domain/types_health.go + CHANGELOG
-~~| 20 | **Unify enum patterns** across codebase                            | LOW    | 1h     | Quality        |~~ done — pkg/enum shared helpers
-~~| 21 | **Write SDK documentation** with examples                          | MED    | 2h     | Documentation  |~~ done — pkg/artdupl/doc.go + HOW_TO_USE.md + examples
-~~| 22 | **BDD tests for `--only templ`, `--only go`, `--include-generic`** | MED    | 1h     | Testing        |~~ done — BDD coverage
-~~| 23 | **Fuzz tests for templ parser**                                    | MED    | 2h     | Testing        |~~ done — syntax/templ/fuzz_test.go
-| 24 | **Watch mode** — re-run on file changes                            | HIGH   | 4h     | Feature        |
-~~| 25 | **Performance baseline benchmarks** — CI regression tracking       | MED    | 2h     | Performance    |~~ done — alloc budgets + perf regression tests + docs/benchmarks
+| #  | Task                                                       | Impact                                                             | Effort | Category     |
+| -- | ---------------------------------------------------------- | ------------------------------------------------------------------ | ------ | ------------ |
+| ~~ | 1                                                          | **Fix nix vendorHash** — set `""`, build, copy hash                | HIGH   | 5min         |
+| ~~ | 2                                                          | **Suppress test-only low-priority clones** in output               | HIGH   | 30min        |
+| ~~ | 3                                                          | **Add hashSeq unit tests** (currently zero)                        | HIGH   | 30min        |
+| ~~ | 4                                                          | **Decouple clone_classify from syntax/golang** via interface       | HIGH   | 2h           |
+| ~~ | 5                                                          | **ProcessedClone DTO** — decouple printer from syntax.Node         | HIGH   | 4h           |
+| ~~ | 6                                                          | **Consolidate three Clone types** into one                         | HIGH   | 3h           |
+| ~~ | 7                                                          | **Implement TokenValue type with validation**                      | MED    | 1h           |
+| ~~ | 8                                                          | **Test-table pattern detection** in classification                 | MED    | 1h           |
+| ~~ | 9                                                          | **Cross-reference with existing helpers** detection                | MED    | 4h           |
+| 10 | **Semantic mode for Templ** — identifier/operator encoding | MED                                                                | 3h     | Feature      |
+| ~~ | 11                                                         | **Fix 3 godoclint warnings** — duplicate package docs              | LOW    | 10min        |
+| ~~ | 12                                                         | **Fix bufio scanner `sc.Err()` check** in run_crawl.go             | LOW    | 5min         |
+| 13 | **Migrate fang v1 → fang/v2**                              | LOW                                                                | 1h     | Dependencies |
+| ~~ | 14                                                         | **Replace SHA-1 in file_cache.go** with SHA-256                    | LOW    | 15min        |
+| ~~ | 15                                                         | **CSV output using encoding/csv**                                  | MED    | 2h           |
+| ~~ | 16                                                         | **`--output-file` flag for stats subcommand**                      | LOW    | 30min        |
+| ~~ | 17                                                         | **Split printer/stats_test.go** (975L → 3 files)                   | LOW    | 30min        |
+| 18 | **Refactor syntax/golang/transform.go** (369L switch)      | LOW                                                                | 2h     | Quality      |
+| ~~ | 19                                                         | **Create domain.HealthScore typed enum**                           | LOW    | 15min        |
+| ~~ | 20                                                         | **Unify enum patterns** across codebase                            | LOW    | 1h           |
+| ~~ | 21                                                         | **Write SDK documentation** with examples                          | MED    | 2h           |
+| ~~ | 22                                                         | **BDD tests for `--only templ`, `--only go`, `--include-generic`** | MED    | 1h           |
+| ~~ | 23                                                         | **Fuzz tests for templ parser**                                    | MED    | 2h           |
+| 24 | **Watch mode** — re-run on file changes                    | HIGH                                                               | 4h     | Feature      |
+| ~~ | 25                                                         | **Performance baseline benchmarks** — CI regression tracking       | MED    | 2h           |
 
 ---
 

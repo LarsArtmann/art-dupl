@@ -78,18 +78,18 @@
 
 ## b) PARTIALLY DONE
 
-| Item                           | Done                                                               | Remaining                                                                    |
-| ------------------------------ | ------------------------------------------------------------------ | ---------------------------------------------------------------------------- |
-~~| Cache stats ghost integration  | `MemHits` in `Stats`, printed in verbose mode (`printCacheStats`)  | Not in `stats` subcommand; non-verbose users see nothing                     |~~ resolved — stats prints Hits/MemHits/Misses (cmd/run_analysis.go)
-~~| Suggest-generics output polish | Hint dedup (`divergenceKey`), path stripping (`shortenTypeString`) | Still prints `command-line-arguments.` prefix (go/packages artifact)         |~~ resolved — shortenTypeString strips import-path prefixes (printer/generics_candidate.go)
-~~| Sprint commit hygiene          | This session's 5 work commits are logical + detailed               | Prior session's 8 areas remain one daemon blob `9b4a4e5d` — unsplittable now |~~ won't implement — history rewrite off-limits per repo rules; blob unsplittable after the fact
-~~| Self-review HTML               | Written per skill spec (34KB, Bauhaus template)                    | Untracked by git (policy) — only the .md companion is versioned              |~~ won't implement — blanket *.html gitignore policy; tracked .md companion is the convention
+| Item | Done                           | Remaining                                                          |
+| ---- | ------------------------------ | ------------------------------------------------------------------ |
+| ~~   | Cache stats ghost integration  | `MemHits` in `Stats`, printed in verbose mode (`printCacheStats`)  |
+| ~~   | Suggest-generics output polish | Hint dedup (`divergenceKey`), path stripping (`shortenTypeString`) |
+| ~~   | Sprint commit hygiene          | This session's 5 work commits are logical + detailed               |
+| ~~   | Self-review HTML               | Written per skill spec (34KB, Bauhaus template)                    |
 
 ## c) NOT STARTED (known, deliberately deferred — from prior sprint scope)
 
 - TTY-aware HTML auto-write (`art-dupl-report.html` when TTY)
 - Stable display IDs in HTML output (deep-linkable `id` attributes)
-~~- 3 remaining feedback patterns: `//go:embed`, `TestMain`, `defer-cleanup-of-arbitrary-resource`~~ won't implement — covered by raii-defer/defer-call; over-suppression risk (documented in the corpus re-validation)
+  ~~- 3 remaining feedback patterns: `//go:embed`, `TestMain`, `defer-cleanup-of-arbitrary-resource`~~ won't implement — covered by raii-defer/defer-call; over-suppression risk (documented in the corpus re-validation)
 - `--exclude-pattern` zero-match warning
 - Coverage baseline
 - Fix-or-delete decision on 4 Pending BDD specs

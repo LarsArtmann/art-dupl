@@ -23,7 +23,7 @@ So the correct end state is not "coexist as peers" (my session's original recomm
    - No art-dupl provider has ever existed: `git log --all -- 'tools/providers/dupl*'` → empty; no factory anywhere.
    - The live duplication detector is **jscpd** (`tools/providers/jscpd_provider.go:77`): external CLI, JSON report parsed from a temp file, **hardcoded `--min-lines 10 --min-tokens 80`** (`:107`), severity warning→error at 50+ lines, 2min timeout, not fan-out (scans `.` once). The hardcoded 80-token bar means BuildFlow's current Go duplication detection is far weaker than art-dupl's default (5 statements, Type 1/2/3 semantic).
 2. **Ghost-wiring inventory** (config that validates, telemetrizes, and reaches no consumer):
-~~   - `ToolDuplCheck = "dupl-check"` (`domain/config/tool_name.go:127`) — orphaned constant + metadata row + build-mode blocklist case; no provider.~~ done — BuildFlow tool row updated in the 2026-09-25 arc
+   ~~ - `ToolDuplCheck = "dupl-check"` (`domain/config/tool_name.go:127`) — orphaned constant + metadata row + build-mode blocklist case; no provider.~~ done — BuildFlow tool row updated in the 2026-09-25 arc
    - `dupl_threshold` config key: min 10 / max 50 / default **30 tokens** (`domain/config/dupl_threshold.go`), materialized (`config/materialize.go:77`), validated (`internal/cli/config_cmd_validate.go:82`), sent to telemetry — **read by nobody**.
    - `DuplSemantic` / `--semantic` flag (`internal/cli/config_flags.go:34`) — read by nobody.
    - `language.ToolDupl = "dupl"` (`language/language_constants.go:34`) — a third distinct name.
@@ -69,8 +69,8 @@ So the correct end state is not "coexist as peers" (my session's original recomm
 2. **Verify-then-claim**: I wrote "MVS would pick v1.13.1 anyway" before checking the tag; it happened to be true (now verified), but the order was wrong. The `verify-external-claims` skill exists precisely for this and wasn't consulted for the BuildFlow-facing claims.
 3. **Ask about priority, don't assume parity**: when comparing two tools in one domain, the relative-priority question (core vs backup vs peer) is a user-decision I should have surfaced explicitly instead of defaulting to "coexist".
 4. **Sibling-repo hygiene check before recommending integration**: BuildFlow's go.mod needed `go mod tidy`; a 10-second preflight (per BuildFlow's own gotcha #181) would have flagged that before I tried `go run`.
-~~5. **Provider self-documentation**: make the HealthCheck explicit in the Spec (BuildFlow's NoOp fallback covers it, but explicit is self-documenting for the next SDK consumer), and state the fixed-threshold contract in the Spec description so BuildFlow users aren't surprised by the absent knob.~~ done — explicit Spec HealthCheck + Description; README states fixed threshold
-6. **Ghost-system audits on both sides**: art-dupl's provider (unwired) and BuildFlow's dupl config (unconsumed) are the same disease from opposite ends — a periodic "who consumes this?" pass would have caught both.
+   ~~5. **Provider self-documentation**: make the HealthCheck explicit in the Spec (BuildFlow's NoOp fallback covers it, but explicit is self-documenting for the next SDK consumer), and state the fixed-threshold contract in the Spec description so BuildFlow users aren't surprised by the absent knob.~~ done — explicit Spec HealthCheck + Description; README states fixed threshold
+5. **Ghost-system audits on both sides**: art-dupl's provider (unwired) and BuildFlow's dupl config (unconsumed) are the same disease from opposite ends — a periodic "who consumes this?" pass would have caught both.
 
 ## f) Up to 50 things we should get done next
 

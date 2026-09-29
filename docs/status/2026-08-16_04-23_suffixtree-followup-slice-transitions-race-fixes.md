@@ -155,10 +155,10 @@ Nothing catastrophic. Honest failures:
 ### What This Session Got Wrong / Should Do Better
 
 1. **The cache race fix is only verified by tests, not by reasoning about all callers.** I enumerated Get/Set/Clear/Stats/saveMetadata, but `Prune`→`Remove` paths were spot-checked, not systematically audited for the same atomic/lock-mixing pattern elsewhere in the codebase. A one-off audit script for `atomic.` fields also read without atomics would close this class.
-~~2. **No `nix flake check`.** The project's canonical gate includes templ generate + lint inside Nix; I verified with direct Go tooling only. Cheap to run, should have been part of the loop.~~ done — wave2 flake green (archived report)
-~~3. **`benchmarkFindTranMethod` may now be dead code** (benchmarks call `benchmarkFindTran` directly with `findTranFunc`). Noticed while editing, not cleaned up or verified.~~ done — retained as a used helper (suffixtree bench tests call it)
-~~4. **`b.N` vs `b.Loop()` modernization** surfaced by the linter in `parallel_bench_test.go:55` — pre-existing, untouched (not my change), but it's a 2-minute fix that keeps getting deferred.~~ done — b.Loop() in suffixtree bench files (wave-3 sweep; completed 2026-09-28)
-5. **The v3 notes' timing tables mix pre-v2 and v2 comparators.** The "cumulative ~2.5ms → ~1.0ms" claim spans three code states; fine as narrative, but a benchstat-grade comparison exists only for v2→v3 on allocations. If timing ever matters for a decision, re-run with pinned cores first.
+   ~~2. **No `nix flake check`.** The project's canonical gate includes templ generate + lint inside Nix; I verified with direct Go tooling only. Cheap to run, should have been part of the loop.~~ done — wave2 flake green (archived report)
+   ~~3. **`benchmarkFindTranMethod` may now be dead code** (benchmarks call `benchmarkFindTran` directly with `findTranFunc`). Noticed while editing, not cleaned up or verified.~~ done — retained as a used helper (suffixtree bench tests call it)
+   ~~4. **`b.N` vs `b.Loop()` modernization** surfaced by the linter in `parallel_bench_test.go:55` — pre-existing, untouched (not my change), but it's a 2-minute fix that keeps getting deferred.~~ done — b.Loop() in suffixtree bench files (wave-3 sweep; completed 2026-09-28)
+2. **The v3 notes' timing tables mix pre-v2 and v2 comparators.** The "cumulative ~2.5ms → ~1.0ms" claim spans three code states; fine as narrative, but a benchstat-grade comparison exists only for v2→v3 on allocations. If timing ever matters for a decision, re-run with pinned cores first.
 
 ---
 
@@ -192,9 +192,9 @@ Nothing catastrophic. Honest failures:
 ### Low Priority — Code Quality
 
 17. **Consider removing `maxStackKeys` fallback duplication** in `contextList.getAll` (stack vs heap path) now that it's the only remaining consumer — could become a tiny helper shared with future call sites.
-~~18. **`suffixtree` package doc**: mentions "Token (interface)" — refresh the type list to include `linearScanMax` semantics.~~ done — linearScanMax doc comment documents the semantics
-19. **Unexport or use `benchmarkMemoryUsage`'s magic numbers** (50/5000 unique) as named constants in comments for future tuners.
-~~20. **AGENTS.md**: the "Workers routing" bullet says "Never use `> 1`, that sends 0 to sequential instead of parallel" — verify still true after this session's parallel.go edits and fix the wording if stale.~~ done — AGENTS Workers bullet corrected (0 = auto, 1 = only sequential)
+    ~~18. **`suffixtree` package doc**: mentions "Token (interface)" — refresh the type list to include `linearScanMax` semantics.~~ done — linearScanMax doc comment documents the semantics
+18. **Unexport or use `benchmarkMemoryUsage`'s magic numbers** (50/5000 unique) as named constants in comments for future tuners.
+    ~~20. **AGENTS.md**: the "Workers routing" bullet says "Never use `> 1`, that sends 0 to sequential instead of parallel" — verify still true after this session's parallel.go edits and fix the wording if stale.~~ done — AGENTS Workers bullet corrected (0 = auto, 1 = only sequential)
 
 ### Low Priority — Exploration (only with profile evidence)
 

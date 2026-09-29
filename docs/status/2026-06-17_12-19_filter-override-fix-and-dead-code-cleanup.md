@@ -133,26 +133,26 @@ None. All changes compile, all 22 packages pass tests, no regressions introduced
 
 5. Unify position types: `syntax.Node.Pos` (`int32`), `domain.LineNumber` (`uint16`), `LineRangeMixin.StartLine` (`int`)
 6. Fix `duplications-checker` BuildFlow failure (1 clone group >30 tokens — pre-existing, may be inherent)
-~~7. Add `jscpd` timeout/skip config for this repo (OOM on large repos)~~ resolved by alternative — jscpd step removed from BuildFlow entirely
-~~8. Consolidate `domain.ProcessedClone`, `printer.CloneGroup`, `pkg/artdupl.Clone` into single DTO~~ resolved by alternative — CloneRef embedded in all clone types (ADR-0005)
-9. Refactor `DetectionMethods` from slice to set type (`map[DetectionMethod]struct{}`)
-10. Simplify `Printer` interface — evaluate if `StatsPrinter` extension can be a method on `Printer`
+   ~~7. Add `jscpd` timeout/skip config for this repo (OOM on large repos)~~ resolved by alternative — jscpd step removed from BuildFlow entirely
+   ~~8. Consolidate `domain.ProcessedClone`, `printer.CloneGroup`, `pkg/artdupl.Clone` into single DTO~~ resolved by alternative — CloneRef embedded in all clone types (ADR-0005)
+7. Refactor `DetectionMethods` from slice to set type (`map[DetectionMethod]struct{}`)
+8. Simplify `Printer` interface — evaluate if `StatsPrinter` extension can be a method on `Printer`
 
 ### High Impact / High Effort (Architecture)
 
 11. Thread content through pipeline (`chan FileContent` instead of `chan string`) — eliminate 4x disk reads
 12. Modularize into sub-modules (`go-modularize` skill) — split printer, syntax, suffixtree
 13. Extract `Position` type in `pkg/position` and use consistently across all packages
-~~14. Consolidate `config` and `pkg/artdupl` detection method enums~~ won't implement — SDK type independence is a documented design goal
-15. Remove `nolint:funlen` annotations by extracting smaller functions in `cmd/run_*.go`
+    ~~14. Consolidate `config` and `pkg/artdupl` detection method enums~~ won't implement — SDK type independence is a documented design goal
+14. Remove `nolint:funlen` annotations by extracting smaller functions in `cmd/run_*.go`
 
 ### Medium Impact / Low Effort
 
 16. Standardize test helper naming (`createTestNode` vs `setupXxx` vs `mustXxx`)
 17. Add `//go:build` integration test tags for slower BDD tests
-~~18. Update `SDK_DESIGN.md` if it references `Finding` or `PrintFindings`~~ done — SDK_DESIGN.md rewritten; zero Finding references remain
-19. Introduce `buildflow` allowlist for `duplications-checker` (art-dupl has legitimate structural duplication)
-20. Add `--method` flag simplification (only 2 valid methods now)
+    ~~18. Update `SDK_DESIGN.md` if it references `Finding` or `PrintFindings`~~ done — SDK_DESIGN.md rewritten; zero Finding references remain
+18. Introduce `buildflow` allowlist for `duplications-checker` (art-dupl has legitimate structural duplication)
+19. Add `--method` flag simplification (only 2 valid methods now)
 
 ### Medium Impact / Medium Effort
 

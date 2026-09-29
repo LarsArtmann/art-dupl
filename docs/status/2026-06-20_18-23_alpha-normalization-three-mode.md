@@ -79,14 +79,14 @@ The old `semantic bool` threaded through `job.Parse` is replaced by `golang.Dete
 
 ## Remaining Work
 
-| Task                        | Status   | Notes                                           |
-| --------------------------- | -------- | ----------------------------------------------- |
-~~| T10 — Baseline/CI Mode      | Next     | `baseline` + `check` subcommands                |~~ done — baseline+check subcommands shipped (cmd/baseline_cmd.go)
-~~| T11 — Extractability Score  | Pending  | Refactoring hints                               |~~ done — extractable+lines_saved in JSON (printer/json.go); extractability engine (ADR-0017)
-~~| T17 — Property Tests        | Pending  | Suffix tree correctness                         |~~ done — property tests shipped; suffixtree coverage high
-| T1 — Statement Tokenization | Deferred | High risk; `serial()` still inflates thresholds |
-~~| T12-T16 — Architecture      | Pending  | Printer decoupling, type consolidation          |~~ done/resolved — T12 ctx threaded; T13 printer decoupled 07-26; T14 CloneRef embed; T15 printer split; T16 Fragment string
-~~| T20-T24 — Ecosystem         | Pending  | Benchmarks, GitHub Actions, pre-commit          |~~ done — benchmarks (docs/benchmarks/, performance.yml), Actions+pre-commit templates, json v1-API (ADR-0024), Data→View split
+| Task                        | Status                     | Notes                                           |
+| --------------------------- | -------------------------- | ----------------------------------------------- |
+| ~~                          | T10 — Baseline/CI Mode     | Next                                            |
+| ~~                          | T11 — Extractability Score | Pending                                         |
+| ~~                          | T17 — Property Tests       | Pending                                         |
+| T1 — Statement Tokenization | Deferred                   | High risk; `serial()` still inflates thresholds |
+| ~~                          | T12-T16 — Architecture     | Pending                                         |
+| ~~                          | T20-T24 — Ecosystem        | Pending                                         |
 
 ---
 

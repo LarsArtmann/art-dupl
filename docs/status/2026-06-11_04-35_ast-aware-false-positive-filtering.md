@@ -127,53 +127,53 @@ All tests pass. All vet clean. Build green. No regressions.
 
 ### Tier 1: High Impact, Directly Related (False-Positive Elimination)
 
-| # | Task                                                                                                                                                   | Impact   | Effort |
-| - | ------------------------------------------------------------------------------------------------------------------------------------------------------ | -------- | ------ |
-~~| 1 | **Validate new patterns against real projects** — Run `art-dupl -t 45 --semantic --rich-text` on 5+ projects, compare before/after false-positive rate | Critical | 1hr    |~~ done — scripts/calibrate-confidence.sh + docs/calibration reports
-~~| 2 | **Add BDD end-to-end tests** — Parse real Go files with table-driven tests, Ginkgo patterns, testdata fixtures. Verify full pipeline                   | High     | 2hr    |~~ done — bdd/ suite + actionability pipeline integration tests
-~~| 3 | **CallExpr callee semantic hashing** — Hash `CallExpr.Fun` name in semantic mode. Eliminates cross-function test pattern matches                       | High     | 3hr    |~~ done — SelectorExpr encodes Sel.Name
-~~| 4 | **Extract assertion name registry** — Replace switch in `walkForTestScaffoldingSignals` with extensible map                                            | Medium   | 30min  |~~ done — map-based sets in actionability_test_patterns.go
-~~| 5 | **Add `--exclude-testdata` and `--exclude-tests` CLI flags** — Pre-detection filtering for users who want to skip test files entirely                  | Medium   | 1hr    |~~ resolved by alternative — --exclude-pattern globs + --test-threshold cover test/testdata filtering
-~~| 6 | **Config file support** (`.art-dupl.yaml`) — Project-specific exclusions, thresholds, pattern overrides                                                | High     | 4hr    |~~ done — YAML config (--config)
+| #  | Task | Impact                                                                                                                                                 | Effort   |
+| -- | ---- | ------------------------------------------------------------------------------------------------------------------------------------------------------ | -------- |
+| ~~ | 1    | **Validate new patterns against real projects** — Run `art-dupl -t 45 --semantic --rich-text` on 5+ projects, compare before/after false-positive rate | Critical |
+| ~~ | 2    | **Add BDD end-to-end tests** — Parse real Go files with table-driven tests, Ginkgo patterns, testdata fixtures. Verify full pipeline                   | High     |
+| ~~ | 3    | **CallExpr callee semantic hashing** — Hash `CallExpr.Fun` name in semantic mode. Eliminates cross-function test pattern matches                       | High     |
+| ~~ | 4    | **Extract assertion name registry** — Replace switch in `walkForTestScaffoldingSignals` with extensible map                                            | Medium   |
+| ~~ | 5    | **Add `--exclude-testdata` and `--exclude-tests` CLI flags** — Pre-detection filtering for users who want to skip test files entirely                  | Medium   |
+| ~~ | 6    | **Config file support** (`.art-dupl.yaml`) — Project-specific exclusions, thresholds, pattern overrides                                                | High     |
 
 ### Tier 2: Architecture Improvements
 
-| #  | Task                                                                                                                          | Impact    | Effort |
-| -- | ----------------------------------------------------------------------------------------------------------------------------- | --------- | ------ |
-~~| 7  | **ProcessedClone DTO migration** — Decouple printers from `syntax.Node`. 111 test call sites. #1 HIGH in TODO_LIST.md         | Very High | 8hr    |~~ done — DTO shipped; printer interface decoupled
-~~| 8  | **Clone type consolidation** — Merge `printer.clone`, `pkg/artdupl.Clone`, `printer.CloneGroup` into unified type             | High      | 4hr    |~~ done — ADR-0005
-~~| 9  | **Thread PatternLabel into ClassifyClone** — Make per-clone classification pattern-aware, not just group-level                | Medium    | 2hr    |~~ resolved by alternative — ApplyPatternLabel applies labels during processing
-~~| 10 | **Test threshold multiplier** — Auto-raise threshold for test-to-test clones at detection time                                | Medium    | 1hr    |~~ done — --test-threshold
-~~| 11 | **Refactoring suggestion classification** — Classify recommended fix type: extract helper, table-driven, acceptable, data-dup | Medium    | 2hr    |~~ done — category-specific suggestions (CHANGELOG)
+| #  | Task | Impact                                                                                                                        | Effort    |
+| -- | ---- | ----------------------------------------------------------------------------------------------------------------------------- | --------- |
+| ~~ | 7    | **ProcessedClone DTO migration** — Decouple printers from `syntax.Node`. 111 test call sites. #1 HIGH in TODO_LIST.md         | Very High |
+| ~~ | 8    | **Clone type consolidation** — Merge `printer.clone`, `pkg/artdupl.Clone`, `printer.CloneGroup` into unified type             | High      |
+| ~~ | 9    | **Thread PatternLabel into ClassifyClone** — Make per-clone classification pattern-aware, not just group-level                | Medium    |
+| ~~ | 10   | **Test threshold multiplier** — Auto-raise threshold for test-to-test clones at detection time                                | Medium    |
+| ~~ | 11   | **Refactoring suggestion classification** — Classify recommended fix type: extract helper, table-driven, acceptable, data-dup | Medium    |
 
 ### Tier 3: Quality & Observability
 
-| #  | Task                                                                                                            | Impact | Effort |
-| -- | --------------------------------------------------------------------------------------------------------------- | ------ | ------ |
-~~| 12 | **Pattern detection metrics** — Add stats counters for how many clones each pattern catches                     | Medium | 1hr    |~~ done — "Detected vs Actionable" summary + SuppressionStats (CHANGELOG)
-| 13 | **Printer coverage >85%** — Currently 76.7%. Add tests for new classification paths in HTML/JSON/SARIF printers | Medium | 2hr    |
-| 14 | **Fuzz tests for actionability detectors** — Random AST trees, ensure no panics on edge cases                   | Medium | 2hr    |
-~~| 15 | **Update FEATURES.md** — Add actionability pattern detection as a feature                                       | Low    | 30min  |~~ done — FEATURES.md actionability rows
-~~| 16 | **Update TODO_LIST.md** — Reflect completed work and new items from this session                                | Low    | 30min  |~~ done — TODO_LIST maintained through 2026-09-28
+| #  | Task                                                                                                            | Impact                                                                                      | Effort |
+| -- | --------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- | ------ |
+| ~~ | 12                                                                                                              | **Pattern detection metrics** — Add stats counters for how many clones each pattern catches | Medium |
+| 13 | **Printer coverage >85%** — Currently 76.7%. Add tests for new classification paths in HTML/JSON/SARIF printers | Medium                                                                                      | 2hr    |
+| 14 | **Fuzz tests for actionability detectors** — Random AST trees, ensure no panics on edge cases                   | Medium                                                                                      | 2hr    |
+| ~~ | 15                                                                                                              | **Update FEATURES.md** — Add actionability pattern detection as a feature                   | Low    |
+| ~~ | 16                                                                                                              | **Update TODO_LIST.md** — Reflect completed work and new items from this session            | Low    |
 
 ### Tier 4: Semantic Mode Improvements
 
-| #  | Task                                                                                                                                                     | Impact | Effort |
-| -- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ | ------ |
-~~| 17 | **BasicLit sub-categorization** — Separate string/int/char literals for better data-dominance detection                                                  | Medium | 3hr    |~~ done — BasicLit encodes Kind/value
-| 18 | **FuncLit semantic hashing** — Currently `FuncLit` is type-only. Hashing function literal signatures would reduce false positives in callback-heavy code | Medium | 2hr    |
-~~| 19 | **Interface method semantic dedup** — Methods declared in interfaces are currently hashed with `~interface~`. Consider per-method-name hashing           | Low    | 2hr    |~~ done — interface-method pattern + type-aware go/types check (ADR-0018)
-| 20 | **CompositeLit type hashing** — Hash the type name in composite literals to separate `types.Module{}` from `types.Dep{}`                                 | Medium | 1hr    |
+| #  | Task                                                                                                                                                     | Impact                                                                                                                                         | Effort |
+| -- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| ~~ | 17                                                                                                                                                       | **BasicLit sub-categorization** — Separate string/int/char literals for better data-dominance detection                                        | Medium |
+| 18 | **FuncLit semantic hashing** — Currently `FuncLit` is type-only. Hashing function literal signatures would reduce false positives in callback-heavy code | Medium                                                                                                                                         | 2hr    |
+| ~~ | 19                                                                                                                                                       | **Interface method semantic dedup** — Methods declared in interfaces are currently hashed with `~interface~`. Consider per-method-name hashing | Low    |
+| 20 | **CompositeLit type hashing** — Hash the type name in composite literals to separate `types.Module{}` from `types.Dep{}`                                 | Medium                                                                                                                                         | 1hr    |
 
 ### Tier 5: Infrastructure
 
-| #  | Task                                                                    | Impact | Effort |
-| -- | ----------------------------------------------------------------------- | ------ | ------ |
-~~| 21 | **CSV output using encoding/csv** — Replace manual formatting           | Low    | 1hr    |~~ done — encoding/csv in stats
-~~| 22 | **Enum unification** — Domain enums use config's generic helpers        | Low    | 2hr    |~~ done — pkg/enum shared by both layers
-~~| 23 | **TokenValue type validation** — Stronger typing for suffix tree tokens | Low    | 3hr    |~~ done — suffixtree.TokenValue int32 (ADR-0019)
-~~| 24 | **Split printer/stats_test.go** — 975L → 3 files                        | Low    | 1hr    |~~ done — printer/stats/ package
-~~| 25 | **Write SDK documentation for pkg/artdupl/**                            | Low    | 2hr    |~~ done — pkg/artdupl/doc.go + SDK_DESIGN.md
+| #  | Task | Impact                                                                  | Effort |
+| -- | ---- | ----------------------------------------------------------------------- | ------ |
+| ~~ | 21   | **CSV output using encoding/csv** — Replace manual formatting           | Low    |
+| ~~ | 22   | **Enum unification** — Domain enums use config's generic helpers        | Low    |
+| ~~ | 23   | **TokenValue type validation** — Stronger typing for suffix tree tokens | Low    |
+| ~~ | 24   | **Split printer/stats_test.go** — 975L → 3 files                        | Low    |
+| ~~ | 25   | **Write SDK documentation for pkg/artdupl/**                            | Low    |
 
 ---
 

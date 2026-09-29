@@ -79,19 +79,19 @@
 
 ## c) NOT STARTED ⬜
 
-| Task                                | Source    | Effort   | Notes                                                                                                                                 |
-| ----------------------------------- | --------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-~~| Actionability DTO decoupling        | TODO_LIST | 2-3 days | Replace 34 `syntax.Node` references in `printer/actionability.go` with a DTO. High-impact for decoupling but high risk of regression. |~~ done — printer/actionability extracted; decoupling executed 2026-07-26
-~~| Printer sub-package split           | TODO_LIST | 1-2 days | Split 29 files / 3500+ lines into `printer/stats/`, `printer/html/`, `printer/analyze/`.                                              |~~ done — printer subpackages extracted
-~~| `syntax/golang` facade              | TODO_LIST | Blocked  | Import cycle: `syntax/golang` imports `syntax` for `Node` type.                                                                       |~~ parked — TODO_LIST DEFERRED (import cycle; breaking-change window only)
-~~| `cmd/run_crawl.go` ctx threading    | TODO_LIST | Blocked  | `stdin` scanner + `filepath.Walk` inherently blocking.                                                                                |~~ done — ctx threaded through feeders
-~~| Watch mode                          | ROADMAP   | Weeks    | Continuous monitoring + incremental detection.                                                                                        |~~ parked — ROADMAP IDE/Tooling + TODO_LIST PARKED
-~~| TypeScript/JS language support      | ROADMAP   | Weeks    | New parser + AST transformer.                                                                                                         |~~ parked — ROADMAP Language Support + TODO_LIST PARKED
-~~| Python language support             | ROADMAP   | Weeks    | New parser + AST transformer.                                                                                                         |~~ parked — ROADMAP Language Support + TODO_LIST PARKED
-~~| Performance baseline benchmarks     | ROADMAP   | Hours    | Create reproducible benchmark suite.                                                                                                  |~~ done — docs/benchmarks baselines
-~~| Performance regression tests        | ROADMAP   | Hours    | CI-gated performance thresholds.                                                                                                      |~~ done — performance.yml
-~~| GitHub Actions workflow templates   | ROADMAP   | Hours    | User-facing CI templates.                                                                                                             |~~ done — templates/ shipped
-~~| Hybrid slice/map transition storage | TODO_LIST | Hours    | Optimization for small transition counts in suffix tree.                                                                              |~~ done — ADR-0022 slice transitions
+| Task | Source                              | Effort    | Notes    |
+| ---- | ----------------------------------- | --------- | -------- |
+| ~~   | Actionability DTO decoupling        | TODO_LIST | 2-3 days |
+| ~~   | Printer sub-package split           | TODO_LIST | 1-2 days |
+| ~~   | `syntax/golang` facade              | TODO_LIST | Blocked  |
+| ~~   | `cmd/run_crawl.go` ctx threading    | TODO_LIST | Blocked  |
+| ~~   | Watch mode                          | ROADMAP   | Weeks    |
+| ~~   | TypeScript/JS language support      | ROADMAP   | Weeks    |
+| ~~   | Python language support             | ROADMAP   | Weeks    |
+| ~~   | Performance baseline benchmarks     | ROADMAP   | Hours    |
+| ~~   | Performance regression tests        | ROADMAP   | Hours    |
+| ~~   | GitHub Actions workflow templates   | ROADMAP   | Hours    |
+| ~~   | Hybrid slice/map transition storage | TODO_LIST | Hours    |
 
 ---
 
@@ -145,33 +145,33 @@ Speed over rigor. Rushed through tier transitions without verifying claims. The 
 
 Sorted by `(impact × customer_value) / effort`, highest first.
 
-| #  | Task                                                             | Impact | Value | Effort   | Priority |
-| -- | ---------------------------------------------------------------- | ------ | ----- | -------- | -------- |
-~~| 1  | Fix AGENTS.md stale limitations (Fragment, Clone types sections) | 3      | 3     | 10m      | 0.90     |~~ done — done in docs-health sprints; count gate added
-~~| 2  | Fix 2 pre-existing gosec G115 warnings in syntax/syntax.go       | 2      | 2     | 15m      | 0.53     |~~ done — annotated/fixed
-~~| 3  | Create GitHub Actions workflow templates for users               | 3      | 5     | 1h       | 0.83     |~~ done — templates/ shipped
-~~| 4  | Add performance baseline benchmarks                              | 4      | 4     | 2h       | 0.67     |~~ done — docs/benchmarks baselines
-~~| 5  | Write "Getting Started" SDK quickstart guide                     | 3      | 5     | 1h       | 0.83     |~~ resolved by alternative — docs/api + SDK_DESIGN + examples cover onboarding
-~~| 6  | Extract shared `CloneLocation` struct in domain                  | 4      | 3     | 2h       | 0.50     |~~ done — realized as domain.CloneRef embedded across clone-bearing types
-| 7  | Add branded `Filename` type                                      | 3      | 2     | 2h       | 0.30     |
-| 8  | Split `config.Config` god struct into sub-configs                | 4      | 2     | 3h       | 0.27     |
-| 9  | Add `OutputWriter` interface for printers                        | 3      | 3     | 2h       | 0.45     |
-~~| 10 | Create performance regression test suite                         | 3      | 4     | 3h       | 0.40     |~~ done — performance.yml
-~~| 11 | Split `printer/` into sub-packages                               | 4      | 3     | 1-2 days | 0.15     |~~ done — subpackages extracted
-~~| 11 | Decouple actionability from `syntax.Node` (DTO)                  | 5      | 3     | 2-3 days | 0.13     |~~ done — printer/actionability (2026-07-26)
-| 13 | Normalize golden file tests (remove timestamps/paths)            | 2      | 3     | 3h       | 0.20     |
-| 14 | Speed up BDD tests (injected clocks)                             | 2      | 2     | 4h       | 0.10     |
-~~| 15 | Archive old status reports (200+ files)                          | 1      | 2     | 1h       | 0.17     |~~ done — docs/status/archived/
-~~| 16 | Implement hybrid slice/map transition storage                    | 2      | 1     | 4h       | 0.05     |~~ done — ADR-0022 slice-based transitions
-~~| 17 | Thread `context.Context` through file feeders                    | 3      | 2     | 1 day    | 0.06     |~~ done — run_crawl.go feeders ctx-aware
-~~| 18 | Add watch mode                                                   | 5      | 5     | Weeks    | Low      |~~ parked — ROADMAP + TODO_LIST PARKED
-~~| 19 | Add TypeScript/JS language support                               | 5      | 5     | Weeks    | Low      |~~ parked — ROADMAP + TODO_LIST PARKED
-~~| 20 | Add Python language support                                      | 5      | 5     | Weeks    | Low      |~~ parked — ROADMAP + TODO_LIST PARKED
-~~| 21 | Create `syntax/golang` facade                                    | 3      | 1     | Blocked  | —        |~~ parked — TODO_LIST DEFERRED (import cycle; major-version window)
-~~| 22 | Consolidate 5 clone types into fewer                             | 3      | 2     | 1 day    | 0.06     |~~ resolved by alternative — CloneRef embed; DTOs kept per AGENTS decision
-~~| 23 | Add SARIF rule metadata enrichment                               | 2      | 3     | 2h       | 0.30     |~~ done — SARIF properties carry clone_type/non_actionable_pattern/generics_*/groupId
-~~| 24 | Create SDK examples (CI/CD integration)                          | 3      | 4     | 2h       | 0.60     |~~ done — examples/ + templates/ + docs/api
-| 25 | Add `--dry-run` flag (show what would be analyzed)               | 2      | 3     | 2h       | 0.30     |
+| #  | Task                                                  | Impact                                                           | Value | Effort | Priority |
+| -- | ----------------------------------------------------- | ---------------------------------------------------------------- | ----- | ------ | -------- |
+| ~~ | 1                                                     | Fix AGENTS.md stale limitations (Fragment, Clone types sections) | 3     | 3      | 10m      |
+| ~~ | 2                                                     | Fix 2 pre-existing gosec G115 warnings in syntax/syntax.go       | 2     | 2      | 15m      |
+| ~~ | 3                                                     | Create GitHub Actions workflow templates for users               | 3     | 5      | 1h       |
+| ~~ | 4                                                     | Add performance baseline benchmarks                              | 4     | 4      | 2h       |
+| ~~ | 5                                                     | Write "Getting Started" SDK quickstart guide                     | 3     | 5      | 1h       |
+| ~~ | 6                                                     | Extract shared `CloneLocation` struct in domain                  | 4     | 3      | 2h       |
+| 7  | Add branded `Filename` type                           | 3                                                                | 2     | 2h     | 0.30     |
+| 8  | Split `config.Config` god struct into sub-configs     | 4                                                                | 2     | 3h     | 0.27     |
+| 9  | Add `OutputWriter` interface for printers             | 3                                                                | 3     | 2h     | 0.45     |
+| ~~ | 10                                                    | Create performance regression test suite                         | 3     | 4      | 3h       |
+| ~~ | 11                                                    | Split `printer/` into sub-packages                               | 4     | 3      | 1-2 days |
+| ~~ | 11                                                    | Decouple actionability from `syntax.Node` (DTO)                  | 5     | 3      | 2-3 days |
+| 13 | Normalize golden file tests (remove timestamps/paths) | 2                                                                | 3     | 3h     | 0.20     |
+| 14 | Speed up BDD tests (injected clocks)                  | 2                                                                | 2     | 4h     | 0.10     |
+| ~~ | 15                                                    | Archive old status reports (200+ files)                          | 1     | 2      | 1h       |
+| ~~ | 16                                                    | Implement hybrid slice/map transition storage                    | 2     | 1      | 4h       |
+| ~~ | 17                                                    | Thread `context.Context` through file feeders                    | 3     | 2      | 1 day    |
+| ~~ | 18                                                    | Add watch mode                                                   | 5     | 5      | Weeks    |
+| ~~ | 19                                                    | Add TypeScript/JS language support                               | 5     | 5      | Weeks    |
+| ~~ | 20                                                    | Add Python language support                                      | 5     | 5      | Weeks    |
+| ~~ | 21                                                    | Create `syntax/golang` facade                                    | 3     | 1      | Blocked  |
+| ~~ | 22                                                    | Consolidate 5 clone types into fewer                             | 3     | 2      | 1 day    |
+| ~~ | 23                                                    | Add SARIF rule metadata enrichment                               | 2     | 3      | 2h       |
+| ~~ | 24                                                    | Create SDK examples (CI/CD integration)                          | 3     | 4      | 2h       |
+| 25 | Add `--dry-run` flag (show what would be analyzed)    | 2                                                                | 3     | 2h     | 0.30     |
 
 ---
 

@@ -96,14 +96,14 @@
 
 ## b) PARTIALLY DONE ⚠️
 
-| Area                         | Current State               | What Remains                                                                                                                                                 |
-| ---------------------------- | --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Test Coverage**            | 74.3% average               | `detection` (61.8%) and `domain` (66.2%) below 80% target. Need integration tests for MultiDetector and enum MarshalJSON roundtrips                          |
-~~| **Concurrency**              | 14/17 goroutines fixed      | `cmd/run_crawl.go` file feeders (3 goroutines) still use blocking sends — stdin scanner and filepath.Walk are inherently blocking, needs full chain refactor |~~ done — ctx.Done() selects present in cmd/run_crawl.go
-| **Printer Package**          | ~3500 lines across 29 files | Splitting into sub-packages (stats, html, analyze) deferred — needs core extraction first                                                                    |
-| **Clone Type Consolidation** | Field names aligned         | 5 parallel Clone types exist with identical field names but separate type definitions. Consolidation needs DTO architecture design                           |
-| **Fragment Type**            | Works at boundaries         | `[]byte` in domain vs `string` in SDK — flips at every boundary. Needs unified type decision                                                                 |
-| **depguard**                 | Fixed and configured        | Allow-list covers all 16 direct deps but config wasn't verified to actually block unapproved imports in CI                                                   |
+| Area                         | Current State               | What Remains                                                                                                                        |
+| ---------------------------- | --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| **Test Coverage**            | 74.3% average               | `detection` (61.8%) and `domain` (66.2%) below 80% target. Need integration tests for MultiDetector and enum MarshalJSON roundtrips |
+| ~~                           | **Concurrency**             | 14/17 goroutines fixed                                                                                                              |
+| **Printer Package**          | ~3500 lines across 29 files | Splitting into sub-packages (stats, html, analyze) deferred — needs core extraction first                                           |
+| **Clone Type Consolidation** | Field names aligned         | 5 parallel Clone types exist with identical field names but separate type definitions. Consolidation needs DTO architecture design  |
+| **Fragment Type**            | Works at boundaries         | `[]byte` in domain vs `string` in SDK — flips at every boundary. Needs unified type decision                                        |
+| **depguard**                 | Fixed and configured        | Allow-list covers all 16 direct deps but config wasn't verified to actually block unapproved imports in CI                          |
 
 ---
 
@@ -173,33 +173,33 @@
 
 Sorted by **impact / effort ratio** (highest first).
 
-| #  | Task                                                                                               | Impact  | Effort | Sprint  |
-| -- | -------------------------------------------------------------------------------------------------- | ------- | ------ | ------- |
-~~| 1  | Add detection adapter tests (`suffixTreeAdapter`, `hashAdapter` FindDuplOver with real assertions) | 🔴 HIGH | 2h     | Next    |~~ done — TestSuffixTreeAdapter/TestHashAdapter in detection/coverage_test.go
-~~| 2  | Add `CloneCategory` + `CloneActionability` MarshalJSON/UnmarshalJSON tests                         | 🟡 MED  | 30m    | Next    |~~ done — domain/enums_test.go covers MarshalJSON/UnmarshalJSON
-~~| 3  | Run `go mod tidy` to fix go.sum drift                                                              | 🟢 LOW  | 1m     | Next    |~~ done — tidy idempotence gated by scripts/pre-release-check.sh
-~~| 4  | Fix wsl_v5 warnings in `health_test.go` (blank line separation)                                    | 🟢 LOW  | 5m     | Next    |~~ done — blank-line separation fixed
-| 5  | Thread `context.Context` through `cmd/run_crawl.go` file feeders                                   | 🔴 HIGH | 4h     | Next    |
-~~| 6  | Migrate `encoding/json` → `encoding/json/v2` in 6 production files                                 | 🟡 MED  | 3h     | Next    |~~ resolved by alternative — v2 abandoned; v1 API behind internal/jsonutil + jsonv2gate
-~~| 7  | Add `LineRange` value object (enforce `end >= start` at construction)                              | 🟡 MED  | 4h     | Next    |~~ resolved by alternative — CloneRef carries line fields + Validate/LineCount
-~~| 8  | Unify `Fragment` type (`[]byte` vs `string`) with branded `SourceFragment`                         | 🟡 MED  | 6h     | Later   |~~ resolved by alternative — unified on CloneRef.Fragment string
-| 9  | Add `CloneHash` branded type with `Partial()` method                                               | 🟡 MED  | 2h     | Later   |
-~~| 10 | Add real assertions to `detection/detection_test.go` (match count, hash, filenames)                | 🔴 HIGH | 3h     | Next    |~~ done — adapter tests assert real duplicates
-~~| 11 | Add domain `ProcessedClone.Validate()` roundtrip tests                                             | 🟡 MED  | 1h     | Next    |~~ done — domain_test.go ProcessedClone.Validate cases
-~~| 12 | Consolidate 5 Clone types into `CloneLocation` + format-specific extensions                        | 🔴 HIGH | 8h     | Later   |~~ resolved by alternative — CloneRef embedded in all clone types (ADR-0005)
-~~| 13 | Extract `NodeReader` interface to decouple printer from `syntax.Node`                              | 🟡 MED  | 6h     | Later   |~~ resolved by alternative — CloneNode serial DTO decouples actionability (ADR-0006)
-~~| 14 | Split `printer/` into sub-packages (stats, html, analyze)                                          | 🟡 MED  | 8h     | Later   |~~ done — printer subpackages extracted; full split deferred
-~~| 15 | Rename `…Data` view models to `…View` in printer (requires templ regen)                            | 🟢 LOW  | 3h     | Later   |~~ done — HTML view models in printer/html_views.go
-| 16 | Add `GeneratorFilter` bitmask to replace 6 `Include*` bools in config                              | 🟡 MED  | 4h     | Later   |
-~~| 17 | Add benchmarks for suffix tree construction + search                                               | 🟡 MED  | 3h     | Later   |~~ done — suffixtree benchmarks incl. BenchmarkMemoryUsage with alloc budget
-~~| 18 | Add CI performance regression detection                                                            | 🟢 LOW  | 4h     | Later   |~~ done — alloc budget gates + pinned protocol (0.7.1)
-| 19 | Wire `examples/` package or delete it (currently orphaned)                                         | 🟢 LOW  | 1h     | Next    |
-| 20 | Add `domain` coverage to reach 75%+ (currently 66.2%)                                              | 🟡 MED  | 3h     | Next    |
-| 21 | Add `detection` coverage to reach 75%+ (currently 61.8%)                                           | 🟡 MED  | 4h     | Next    |
-| 22 | Add `cmd/` coverage to reach 80%+ (currently 75.1%)                                                | 🟡 MED  | 3h     | Later   |
-| 23 | Evaluate `go-udiff` as replacement for `sergi/go-diff` (already a transitive dep)                  | 🟢 LOW  | 2h     | Later   |
-| 24 | Add OpenTelemetry spans to pipeline stages (parse → serialize → detect → print)                    | 🟢 LOW  | 6h     | Later   |
-| 25 | Hide `syntax/golang` behind facade (BLOCKED by import cycle)                                       | 🟢 LOW  | 8h     | Blocked |
+| #  | Task                                                                              | Impact                                                                                             | Effort  | Sprint  |
+| -- | --------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- | ------- | ------- |
+| ~~ | 1                                                                                 | Add detection adapter tests (`suffixTreeAdapter`, `hashAdapter` FindDuplOver with real assertions) | 🔴 HIGH | 2h      |
+| ~~ | 2                                                                                 | Add `CloneCategory` + `CloneActionability` MarshalJSON/UnmarshalJSON tests                         | 🟡 MED  | 30m     |
+| ~~ | 3                                                                                 | Run `go mod tidy` to fix go.sum drift                                                              | 🟢 LOW  | 1m      |
+| ~~ | 4                                                                                 | Fix wsl_v5 warnings in `health_test.go` (blank line separation)                                    | 🟢 LOW  | 5m      |
+| 5  | Thread `context.Context` through `cmd/run_crawl.go` file feeders                  | 🔴 HIGH                                                                                            | 4h      | Next    |
+| ~~ | 6                                                                                 | Migrate `encoding/json` → `encoding/json/v2` in 6 production files                                 | 🟡 MED  | 3h      |
+| ~~ | 7                                                                                 | Add `LineRange` value object (enforce `end >= start` at construction)                              | 🟡 MED  | 4h      |
+| ~~ | 8                                                                                 | Unify `Fragment` type (`[]byte` vs `string`) with branded `SourceFragment`                         | 🟡 MED  | 6h      |
+| 9  | Add `CloneHash` branded type with `Partial()` method                              | 🟡 MED                                                                                             | 2h      | Later   |
+| ~~ | 10                                                                                | Add real assertions to `detection/detection_test.go` (match count, hash, filenames)                | 🔴 HIGH | 3h      |
+| ~~ | 11                                                                                | Add domain `ProcessedClone.Validate()` roundtrip tests                                             | 🟡 MED  | 1h      |
+| ~~ | 12                                                                                | Consolidate 5 Clone types into `CloneLocation` + format-specific extensions                        | 🔴 HIGH | 8h      |
+| ~~ | 13                                                                                | Extract `NodeReader` interface to decouple printer from `syntax.Node`                              | 🟡 MED  | 6h      |
+| ~~ | 14                                                                                | Split `printer/` into sub-packages (stats, html, analyze)                                          | 🟡 MED  | 8h      |
+| ~~ | 15                                                                                | Rename `…Data` view models to `…View` in printer (requires templ regen)                            | 🟢 LOW  | 3h      |
+| 16 | Add `GeneratorFilter` bitmask to replace 6 `Include*` bools in config             | 🟡 MED                                                                                             | 4h      | Later   |
+| ~~ | 17                                                                                | Add benchmarks for suffix tree construction + search                                               | 🟡 MED  | 3h      |
+| ~~ | 18                                                                                | Add CI performance regression detection                                                            | 🟢 LOW  | 4h      |
+| 19 | Wire `examples/` package or delete it (currently orphaned)                        | 🟢 LOW                                                                                             | 1h      | Next    |
+| 20 | Add `domain` coverage to reach 75%+ (currently 66.2%)                             | 🟡 MED                                                                                             | 3h      | Next    |
+| 21 | Add `detection` coverage to reach 75%+ (currently 61.8%)                          | 🟡 MED                                                                                             | 4h      | Next    |
+| 22 | Add `cmd/` coverage to reach 80%+ (currently 75.1%)                               | 🟡 MED                                                                                             | 3h      | Later   |
+| 23 | Evaluate `go-udiff` as replacement for `sergi/go-diff` (already a transitive dep) | 🟢 LOW                                                                                             | 2h      | Later   |
+| 24 | Add OpenTelemetry spans to pipeline stages (parse → serialize → detect → print)   | 🟢 LOW                                                                                             | 6h      | Later   |
+| 25 | Hide `syntax/golang` behind facade (BLOCKED by import cycle)                      | 🟢 LOW                                                                                             | 8h      | Blocked |
 
 ---
 

@@ -10,6 +10,7 @@
 **The ask** (audit f27): convert the 272 pre-regime archived files (pre-2026-08-15) to inline-annotated regime-A form, verifying per item.
 
 **Options**
+
 - **(a) Fund it.** ~2–3 focused sessions (≈6–9h) of the same batch workflow that struck ~2,000 items in the last pass. Verdicts are mostly derivable from CHANGELOG eras, but every item needs a check — the June batch (30 files) alone was a full M-task.
 - **(b) Close it permanently.** The honesty gap is already covered: `docs/status/archived/README.md` documents the two regimes and the retrofit policy (line 28: consolidation commit `32f12cad` deliberately did NOT retrofit). Nothing false is claimed — the files are simply unannotated.
 
@@ -24,6 +25,7 @@
 **The ask:** the 0/20 GH-Action plan carries a unilateral WON'T-IMPLEMENT verdict (2026-09-28): superseded by the BuildFlow toolsdk provider lane (LIVE since 2026-09-25, core Go+templ detector).
 
 **Options**
+
 - **(a) Confirm won't-implement.** The plan file keeps its verdict header; the topic dies. Revisit trigger: a real consumer asks for marketplace distribution that BuildFlow cannot serve.
 - **(b) Keep it as a ROADMAP maybe.** Costs a TODO_LIST/ROADMAP row and re-litigating every pass; the provider lane already covers the only known consumer (BuildFlow).
 
@@ -36,6 +38,7 @@
 **The ask:** BuildFlow's `Build Gate` workflow on master is RED (fails in ~3s, config-shaped — not a code failure). art-dupl's provider lane lives in that repo.
 
 **Options**
+
 - **(a) Yours (owner action).** You open the failing run and fix the config (likely a `.buildflow.yml` or workflow-input change only you can validate).
 - **(b) Delegate to a session with BuildFlow checkout.** Any session can read the 3s log and propose the patch as a PR; you still merge.
 
@@ -48,6 +51,7 @@
 **The ask:** local `nix build`/`nix flake check` on this host still depends on the `/run/binfmt` stopgap (re-applied manually after the 2026-09-28 gap); the pending gogenfilter vendorHash cycle needs one real `nix build` to land the hash.
 
 **Options**
+
 - **(a) Do it now (needs root once).** Add the binfmt mount to the SystemNix/NixOS configuration so reboots keep it; then run `nix build` once to settle the vendorHash (≈10 min build + hash copy).
 - **(b) Leave as CI-only.** Heavier gates already run in CI (`nix flake check` green in CI lanes); local nix stays best-effort.
 
@@ -60,6 +64,7 @@
 **The facts:** the B1–B6 hardening + this week's additions are finished, curated under `## [0.8.0] - 2026-09-29` in CHANGELOG.md (link defs already updated), with ~15 user-facing entries incl. two real bug fixes (jsonv2 Duration crash class, Go 1.27 selector-key false positives). RELEASE.md exists; the remaining prep (rehearsal, tag draft) is this pass's M05 and stops one command short of execution.
 
 **Options**
+
 - **(a) GO after close-out.** When v2 M22 is green (full `-race` + CI on pushed HEAD), run the prepared tag + `git push --follow-tags`. The release reaches every BuildFlow fleet consumer.
 - **(b) Hold.** Everything stays on `fork`, unreleased; the [0.8.0] section keeps aging.
 
@@ -71,14 +76,14 @@
 
 ## Gated-item map — what unlocks per answer
 
-| Your answer | Items unlocked |
-| --- | --- |
-| g1 = (a) fund | M17 legacy retrofit waves (~3 sessions; scheduled after v2 pass) |
-| g1 = (b) close | M17 collapses to a one-line ledger note; topic permanently closed |
-| g2 = (a) confirm | GH-Action plan closed permanently; no revisit in future passes |
-| g2 = (b) keep | Plan routed to ROADMAP; one ROADMAP row added |
-| g3 = (a) yours | D1/D2/D3 wait for your BuildFlow session |
-| g3 = (b) delegate | Diagnosis memo prepared next pass; you merge the fix |
-| binfmt = (a) | Local `nix build` + vendorHash cycle; alloc-gate + race checks run locally |
-| v0.8.0 = (a) | M05 execution: tag + push on M22 green |
-| v0.8.0 = (b) | [0.8.0] stays parked; M05 prep archived as the standing release recipe |
+| Your answer       | Items unlocked                                                             |
+| ----------------- | -------------------------------------------------------------------------- |
+| g1 = (a) fund     | M17 legacy retrofit waves (~3 sessions; scheduled after v2 pass)           |
+| g1 = (b) close    | M17 collapses to a one-line ledger note; topic permanently closed          |
+| g2 = (a) confirm  | GH-Action plan closed permanently; no revisit in future passes             |
+| g2 = (b) keep     | Plan routed to ROADMAP; one ROADMAP row added                              |
+| g3 = (a) yours    | D1/D2/D3 wait for your BuildFlow session                                   |
+| g3 = (b) delegate | Diagnosis memo prepared next pass; you merge the fix                       |
+| binfmt = (a)      | Local `nix build` + vendorHash cycle; alloc-gate + race checks run locally |
+| v0.8.0 = (a)      | M05 execution: tag + push on M22 green                                     |
+| v0.8.0 = (b)      | [0.8.0] stays parked; M05 prep archived as the standing release recipe     |

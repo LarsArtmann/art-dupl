@@ -26,17 +26,17 @@ deferred — `Finding.Metadata` is the escape hatch. The integration now runs bo
 ways: art-dupl's `printer/finding` adapter converts `domain.ProcessedCloneGroup`s
 into findings, and go-finding's dedup passes consume art-dupl reports directly.
 
-| Gap | Status | art-dupl touchpoint |
-| --- | ------ | ------------------- |
-| GAP-1 `RelatedRef.Range` | Implemented | LSP round-trip |
-| GAP-2 `GroupID` | Implemented (2026-09-07) | `finding.GroupIDOf` = clone-group content hash; SARIF property `go-finding/groupId`; JSON `clone_groups[].hash` is the same id |
-| GAP-3 per-relationship metadata | Deferred | `Finding.Metadata` under the `art-dupl/` namespace (`MetadataKey*` constants) |
-| GAP-4 `LSPDiagnosticTag` | Implemented | `ToLSP`/`FromLSP` tag preservation |
-| GAP-5 snippet in SARIF | Implemented | `printer/finding.ToSARIF` |
-| GAP-6 `ToLSP` uses `RelatedRef.Range` | Implemented | real spans for related info |
-| GAP-7 strict `Category.IsValid()` | Resolved differently | `IsStandard()` vs `IsValid()` split, no global registry |
-| GAP-8 `FromLSP` preserves tags | Implemented | `Metadata[LSPDiagnosticTagsKey]` |
-| GAP-9 `iter.Seq` on `Report.All()` | Implemented | `report_query.go` |
+| Gap                                   | Status                   | art-dupl touchpoint                                                                                                            |
+| ------------------------------------- | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------ |
+| GAP-1 `RelatedRef.Range`              | Implemented              | LSP round-trip                                                                                                                 |
+| GAP-2 `GroupID`                       | Implemented (2026-09-07) | `finding.GroupIDOf` = clone-group content hash; SARIF property `go-finding/groupId`; JSON `clone_groups[].hash` is the same id |
+| GAP-3 per-relationship metadata       | Deferred                 | `Finding.Metadata` under the `art-dupl/` namespace (`MetadataKey*` constants)                                                  |
+| GAP-4 `LSPDiagnosticTag`              | Implemented              | `ToLSP`/`FromLSP` tag preservation                                                                                             |
+| GAP-5 snippet in SARIF                | Implemented              | `printer/finding.ToSARIF`                                                                                                      |
+| GAP-6 `ToLSP` uses `RelatedRef.Range` | Implemented              | real spans for related info                                                                                                    |
+| GAP-7 strict `Category.IsValid()`     | Resolved differently     | `IsStandard()` vs `IsValid()` split, no global registry                                                                        |
+| GAP-8 `FromLSP` preserves tags        | Implemented              | `Metadata[LSPDiagnosticTagsKey]`                                                                                               |
+| GAP-9 `iter.Seq` on `Report.All()`    | Implemented              | `report_query.go`                                                                                                              |
 
 ## What art-dupl ships on top (see `printer/finding/` + ADR-0025)
 

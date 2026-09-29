@@ -166,7 +166,7 @@
 37. Consider cross-package generics detection (currently only same-package type checking)
 38. Add support for `*T` vs `T` normalization in type comparison
 39. Consider channel/goroutine type divergence detection
-~~40. Add unit tests for `shortenTypeString` edge cases (nested generics, multi-path)~~ done — TestShortenTypeString covers multi-path, map/nested, pointer/slice cases
+    ~~40. Add unit tests for `shortenTypeString` edge cases (nested generics, multi-path)~~ done — TestShortenTypeString covers multi-path, map/nested, pointer/slice cases
 
 ### Polish
 

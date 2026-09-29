@@ -161,21 +161,23 @@ Nothing catastrophic. But there are serious concerns:
    - Appends one to the other
    - Releases the second
    - Verifies the first still has all positions
-~~   - This is the #1 thing I should have done~~ done — TestContextListPoolSliceSurvival (suffixtree/pool_test.go)
+     ~~ - This is the #1 thing I should have done~~ done — TestContextListPoolSliceSurvival (suffixtree/pool_test.go)
 
 ~~2. **I didn't consider the arena waste for small trees.** A 4096-state block is 64KB. The incremental parser creates a new tree per file. Most Go files produce 50-500 tokens, which means ~150-1500 states. That's well under 4096, so every small-file tree wastes ~48-60KB. For a codebase with 1000 files, that's ~50MB of wasted arena blocks. The prior approach (`&state{}` per state) allocated only what was needed. I should have either:~~ done — stateBlockSize 512 chosen from 256/512/1024/4096 benchmark data
-   - Used a smaller block size (256 or 512)
-   - Made the arena grow dynamically (start small, allocate bigger blocks)
-   - Or fallen back to `&state{}` for the first block
+
+- Used a smaller block size (256 or 512)
+- Made the arena grow dynamically (start small, allocate bigger blocks)
+- Or fallen back to `&state{}` for the first block
 
 ~~3. **I didn't run `-race` on the full test suite.** I only ran `-race` on `./suffixtree/`. The `walkTrans` signature change affects `detection/adapters.go` and `cmd/run_analysis.go`. While those callers just pass `t.data` (which is read-only during search), I should have verified with `go test -race ./...`.~~ done — full-suite -race green (04-23)
 
 ~~4. **I didn't profile with `pprof`.** The allocation reductions are real, but I have no CPU profile showing where the remaining time goes. Is it map lookups? Channel sends? `slices.Sort`? Without a profile, the next optimization target is a guess.~~ done — pprof before/after in ADR-0022
 
 ~~5. **The `ActEnd` signature change is exported and breaking.** I should have either:~~ done — unexported actEnd (suffixtree/suffixtree.go)
-   - Kept `ActEnd` as a method on `*tran` that takes `*STree` (less breaking but still needs tree access)
-   - Made it unexported (it's only used in tests)
-   - Or documented it as a breaking change
+
+- Kept `ActEnd` as a method on `*tran` that takes `*STree` (less breaking but still needs tree access)
+- Made it unexported (it's only used in tests)
+- Or documented it as a breaking change
 
 ~~6. **I didn't create ADR-0022.** Three sessions in a row have skipped this. The arena, pool, back-pointer removal, and posList elimination are all architectural decisions that deserve permanent documentation.~~ done — docs/adr/0022
 
@@ -263,12 +265,12 @@ Nothing catastrophic. But there are serious concerns:
 
 43. **Investigate whether `go/types` checker output can be cached more aggressively** — it's the 10-100x slowdown for `--type-aware`
 44. **Consider table-driven state machine for suffix tree construction** — potential for better branch prediction
-~~45. **Explore `runtime.GOMAXPROCS` pinning** for benchmark runs to reduce scheduling noise~~ done — GOMAXPROCS pinned/unpinned A/B
-46. **Consider a `BenchmarkWalkTransAllocs`** that directly measures allocations per `walkTrans` call (not per `FindDuplOver` call)
-47. **Add a `BenchmarkStackBufferFallback`** that specifically tests the >32 transitions path
-48. **Explore whether the arena could use `mmap` for large blocks** — avoids Go heap overhead for very large trees
-49. **Investigate whether `sync.Pool` could use `runtime.GOMAXPROCS`-sized per-P caches** — Go's sync.Pool already does this internally, but worth verifying
-50. **Consider a `BenchmarkContextListPool`** that directly measures pool hit rate and allocation count under various search patterns
+    ~~45. **Explore `runtime.GOMAXPROCS` pinning** for benchmark runs to reduce scheduling noise~~ done — GOMAXPROCS pinned/unpinned A/B
+45. **Consider a `BenchmarkWalkTransAllocs`** that directly measures allocations per `walkTrans` call (not per `FindDuplOver` call)
+46. **Add a `BenchmarkStackBufferFallback`** that specifically tests the >32 transitions path
+47. **Explore whether the arena could use `mmap` for large blocks** — avoids Go heap overhead for very large trees
+48. **Investigate whether `sync.Pool` could use `runtime.GOMAXPROCS`-sized per-P caches** — Go's sync.Pool already does this internally, but worth verifying
+49. **Consider a `BenchmarkContextListPool`** that directly measures pool hit rate and allocation count under various search patterns
 
 ---
 

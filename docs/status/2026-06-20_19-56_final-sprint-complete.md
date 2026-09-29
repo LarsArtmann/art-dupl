@@ -115,33 +115,33 @@ Nothing. No regressions, no broken builds, no reverted changes.
 
 ## f) Top #25 Things to Get Done Next
 
-| #  | Task                                                                | Impact   | Effort | Risk   |
-| -- | ------------------------------------------------------------------- | -------- | ------ | ------ |
-~~| 1  | **T1 Statement Tokenization** (feature branch)                      | Critical | 90min  | HIGH   |~~ done — ADR-0023
-~~| 2  | **BDD test: Type 2 clone detection**                                | High     | 30min  | Low    |~~ done — semantic precision tests shipped
-~~| 3  | **T13 Printer Decoupling** (ReadOnlyNode interface)                 | Medium   | 80min  | Medium |~~ done — decoupling executed 2026-07-26
-~~| 4  | **T14 Clone Consolidation** (CloneLocation shared type)             | Medium   | 90min  | Medium |~~ resolved by alternative — realized as domain.CloneRef embed
-~~| 5  | **go/types normalizer upgrade**                                     | Medium   | 60min  | Medium |~~ parked — ROADMAP nested-scope shadowing (type-aware shipped separately, ADR-0015/0018)
-~~| 6  | **T15 Printer Split** (stats/html/analyze sub-packages)             | Low-Med  | 80min  | Low    |~~ done — printer subpackages extracted
-~~| 7  | **T16 Fragment Unify** ([]byte vs string)                           | Low      | 40min  | Low    |~~ done — Fragment string everywhere
-~~| 8  | **T23 json/v2** (when stable)                                       | Low      | 40min  | Low    |~~ done — ADR-0024 (v0.7.0)
-~~| 9  | **Dogfood T9** against real noise patterns                          | High     | 20min  | Low    |~~ done — actionability grew to 33 patterns + property engine; SELF_CLEAN_LEDGER
-~~| 10 | **`.art-dupl-baseline.json` for art-dupl itself**                   | Medium   | 10min  | Low    |~~ resolved by alternative — //art-dupl:accept directives + SELF_CLEAN_LEDGER; CI baseline flow
-~~| 11 | **Coverage: printer 75.8%→80%**                                     | Medium   | 50min  | Low    |~~ done — printer above 80% (coverage-baseline.txt)
-| 12 | **Coverage: baseline 88.2%→95%**                                    | Low      | 20min  | Low    |
-~~| 13 | **End-to-end benchmark** (parse→detect→report)                      | Medium   | 30min  | Low    |~~ done — docs/benchmarks/realworld-cli.md + baselines + performance.yml
-~~| 14 | **`check --diff` flag** (show what changed since baseline)          | Medium   | 40min  | Low    |~~ parked — ROADMAP `--diff-baseline` mode
-~~| 15 | **HTML report: clone type badge**                                   | Low      | 20min  | Low    |~~ resolved by alternative — classification badges shipped (html_views.go)
-| 16 | **HTML report: extractability column**                              | Low      | 20min  | Low    |
-| 17 | **SDK: expose DetectionMode** (not just Semantic bool)              | Medium   | 30min  | Low    |
-| 18 | **Config: `--mode` flag** (alias for semantic/exact/structural)     | Low      | 15min  | Low    |
-~~| 19 | **Baseline: `--update` flag** (add new clones to existing baseline) | Medium   | 30min  | Low    |~~ resolved by alternative — re-run `art-dupl baseline .` documented as the update path
-| 20 | **SARIF: add extractability to properties**                         | Low      | 10min  | Low    |
-~~| 21 | **Templ semantic mode** (alpha-normalization for .templ)            | Medium   | 60min  | Medium |~~ done — syntax/templ semantic encoding + statement marking
-~~| 22 | **`art-dupl diff` subcommand** (compare two baselines)              | Low      | 30min  | Low    |~~ parked — ROADMAP `--diff-baseline` mode
-| 23 | **Performance: profile normalizer overhead**                        | Medium   | 20min  | Low    |
-~~| 24 | **README: add badges (CI, coverage, Go version)**                   | Low      | 10min  | Low    |~~ done — CI/License/pkg.go.dev/website badges (no coverage badge, deliberate)
-| 25 | **`art-dupl init` subcommand** (create config + baseline)           | Low      | 20min  | Low    |
+| #  | Task                                                            | Impact                                                              | Effort   | Risk  |
+| -- | --------------------------------------------------------------- | ------------------------------------------------------------------- | -------- | ----- |
+| ~~ | 1                                                               | **T1 Statement Tokenization** (feature branch)                      | Critical | 90min |
+| ~~ | 2                                                               | **BDD test: Type 2 clone detection**                                | High     | 30min |
+| ~~ | 3                                                               | **T13 Printer Decoupling** (ReadOnlyNode interface)                 | Medium   | 80min |
+| ~~ | 4                                                               | **T14 Clone Consolidation** (CloneLocation shared type)             | Medium   | 90min |
+| ~~ | 5                                                               | **go/types normalizer upgrade**                                     | Medium   | 60min |
+| ~~ | 6                                                               | **T15 Printer Split** (stats/html/analyze sub-packages)             | Low-Med  | 80min |
+| ~~ | 7                                                               | **T16 Fragment Unify** ([]byte vs string)                           | Low      | 40min |
+| ~~ | 8                                                               | **T23 json/v2** (when stable)                                       | Low      | 40min |
+| ~~ | 9                                                               | **Dogfood T9** against real noise patterns                          | High     | 20min |
+| ~~ | 10                                                              | **`.art-dupl-baseline.json` for art-dupl itself**                   | Medium   | 10min |
+| ~~ | 11                                                              | **Coverage: printer 75.8%→80%**                                     | Medium   | 50min |
+| 12 | **Coverage: baseline 88.2%→95%**                                | Low                                                                 | 20min    | Low   |
+| ~~ | 13                                                              | **End-to-end benchmark** (parse→detect→report)                      | Medium   | 30min |
+| ~~ | 14                                                              | **`check --diff` flag** (show what changed since baseline)          | Medium   | 40min |
+| ~~ | 15                                                              | **HTML report: clone type badge**                                   | Low      | 20min |
+| 16 | **HTML report: extractability column**                          | Low                                                                 | 20min    | Low   |
+| 17 | **SDK: expose DetectionMode** (not just Semantic bool)          | Medium                                                              | 30min    | Low   |
+| 18 | **Config: `--mode` flag** (alias for semantic/exact/structural) | Low                                                                 | 15min    | Low   |
+| ~~ | 19                                                              | **Baseline: `--update` flag** (add new clones to existing baseline) | Medium   | 30min |
+| 20 | **SARIF: add extractability to properties**                     | Low                                                                 | 10min    | Low   |
+| ~~ | 21                                                              | **Templ semantic mode** (alpha-normalization for .templ)            | Medium   | 60min |
+| ~~ | 22                                                              | **`art-dupl diff` subcommand** (compare two baselines)              | Low      | 30min |
+| 23 | **Performance: profile normalizer overhead**                    | Medium                                                              | 20min    | Low   |
+| ~~ | 24                                                              | **README: add badges (CI, coverage, Go version)**                   | Low      | 10min |
+| 25 | **`art-dupl init` subcommand** (create config + baseline)       | Low                                                                 | 20min    | Low   |
 
 ---
 

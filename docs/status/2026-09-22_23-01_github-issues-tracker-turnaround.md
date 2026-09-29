@@ -29,12 +29,12 @@
 
 ## b) PARTIALLY DONE
 
-| # | Item                                  | State                                                                                                                      |
-| - | ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| 1 | Issue **#2** (integration test)       | Filed with design checklist; not implemented. Converts the 2026-09-19 one-off live CLI proof into a permanent gate.        |
-~~| 2 | Issue **#3** (surface decision + ADR) | Filed; the decision itself is blocked on product intent (report №1's Q1/Q2, still unanswered — now embedded in the issue). |~~ resolved by alternative — provider shipped 2026-09-24; ADR-0025 records the surface decision
-| 3 | Issue **#4** (dead path)              | Filed; copy-vs-summary choice blocked on preference (report №1's Q3, still unanswered — embedded in the issue).            |
-~~| 4 | Report №1 → tracker linkage           | P0 items now have issue numbers, but the mapping is recorded nowhere durable (see self-critique 4/5).                      |~~ done — TODO_LIST harvest sections cite report items + issues #2/#4
+| #  | Item                            | State                                                                                                               |
+| -- | ------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| 1  | Issue **#2** (integration test) | Filed with design checklist; not implemented. Converts the 2026-09-19 one-off live CLI proof into a permanent gate. |
+| ~~ | 2                               | Issue **#3** (surface decision + ADR)                                                                               |
+| 3  | Issue **#4** (dead path)        | Filed; copy-vs-summary choice blocked on preference (report №1's Q3, still unanswered — embedded in the issue).     |
+| ~~ | 4                               | Report №1 → tracker linkage                                                                                         |
 
 ## c) NOT STARTED
 
@@ -63,11 +63,11 @@
 **P0 — blocks correctness/tracking hygiene**
 
 1. Implement **#2**: real CLI `--sarif` bytes → `FindingsFromSARIF`, assert GroupID + group reconstruction (BDD harness candidate: `internal/testutil`).
-~~2. Unblock + execute **#3**: answer the surface question (library-only vs wired), then write the adoption ADR (verdict + GroupID=hash contract + decision).~~ resolved by alternative — surface wired via pkg/provider; ADR-0025 decides SDK scope
-3. Execute **#4**: fix the evaluation-doc dead path (needs copy-vs-summary preference).
-~~4. **HARVEST** report №1's (f) into TODO_LIST.md, deduping #2/#3/#4 (docs-health HARVEST mode).~~ done — TODO_LIST harvest tracks #2/#4
-5. **ANNOTATE**: 2026-09-19 report (issue #1 closed, link comment) + report №1 (P0 items → issue numbers).
-6. Link the evidence comment + closure from AGENTS.md's go-finding entry? Only if #3's ADR doesn't supersede — fold into #3.
+   ~~2. Unblock + execute **#3**: answer the surface question (library-only vs wired), then write the adoption ADR (verdict + GroupID=hash contract + decision).~~ resolved by alternative — surface wired via pkg/provider; ADR-0025 decides SDK scope
+2. Execute **#4**: fix the evaluation-doc dead path (needs copy-vs-summary preference).
+   ~~4. **HARVEST** report №1's (f) into TODO_LIST.md, deduping #2/#3/#4 (docs-health HARVEST mode).~~ done — TODO_LIST harvest tracks #2/#4
+3. **ANNOTATE**: 2026-09-19 report (issue #1 closed, link comment) + report №1 (P0 items → issue numbers).
+4. Link the evidence comment + closure from AGENTS.md's go-finding entry? Only if #3's ADR doesn't supersede — fold into #3.
 
 **P1 — drift/duplication reduction (carry-overs, unchanged)**
 ~~7. Three-names-one-concept cross-reference table (SARIF property ↔ JSON field ↔ `Finding.GroupID`).~~ done — AGENTS GroupID contract + FEATURES adapter row

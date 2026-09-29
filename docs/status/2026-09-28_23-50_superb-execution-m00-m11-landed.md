@@ -61,6 +61,7 @@
 ## f) Up to 50 things we should get done next (ordered)
 
 **Immediate — in flight (minutes):**
+
 1. Apply the three in-hand M12 specs (September batch + 07-24/26 planning tails, ~180 verdicts incl. parked dispositions); check-rows; commit.
 2. M20's `-race` reassurance can run any time the tree is quiet — schedule it after M12 lands.
 
@@ -134,4 +135,4 @@
 
 ---
 
-*Point-in-time snapshot for the SUPERB-plan execution session. Evidence trail: 21 commits since `6e573c67` (12 with real messages); 515 strike lines across the touched set (computed via grep, not asserted); check-rows green on all 13 gate runs this session; the count gate canary-verified failing before trusted. Remaining plan work: M12 (apply in-hand specs) → M13/M14/M15/M16/M18/M19 → M20, with M17 user-gated.*
+_Point-in-time snapshot for the SUPERB-plan execution session. Evidence trail: 21 commits since `6e573c67` (12 with real messages); 515 strike lines across the touched set (computed via grep, not asserted); check-rows green on all 13 gate runs this session; the count gate canary-verified failing before trusted. Remaining plan work: M12 (apply in-hand specs) → M13/M14/M15/M16/M18/M19 → M20, with M17 user-gated._

@@ -171,7 +171,7 @@ No regressions, no broken tests, no data loss. All 29 test packages pass clean.
 42. Update `HOW_TO_USE.md` with `--memory-cache-entries` flag (once implemented)
 43. Update `TESTING.md` with cache test conventions (LRU testing patterns)
 44. Add `docs/CACHE_ARCHITECTURE.md` with diagrams (disk + LRU + singleflight interaction)
-~~45. Update `FEATURES.md` with "In-memory LRU cache layer" feature entry~~ done — FEATURES "In-Memory LRU Cache | FULLY_FUNCTIONAL" row
+    ~~45. Update `FEATURES.md` with "In-memory LRU cache layer" feature entry~~ done — FEATURES "In-Memory LRU Cache | FULLY_FUNCTIONAL" row
 
 ### Code Quality
 

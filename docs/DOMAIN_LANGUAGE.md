@@ -7,44 +7,44 @@ Every term below should mean the **same thing** to everyone who reads it.
 
 ## Glossary
 
-| Term              | Definition                                                                            | Context                                                                |
-| ----------------- | ------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
-| Clone             | A detected duplicate code fragment, defined by file and line range                    | Core detection output                                                  |
-| Clone Group       | Two or more Clones sharing the same structural or semantic pattern                    | All output formats                                                     |
-| Token             | A single AST node serialized into an integer type for matching                        | Suffix tree / hash input                                               |
-| Threshold         | Minimum number of consecutive duplicated statements to consider a Clone (default: 5)  | CLI `--threshold` flag                                                 |
-| Semantic Mode     | Matching by AST structure + identifier/operator names (default ON)                    | Detection method selection                                             |
-| Exact Mode        | Matching by identifier names verbatim, no alpha-normalization (Type 1 only)           | `--exact` flag                                                         |
-| Type-Aware Mode   | Semantic mode enhanced with go/types static type encoding per local variable          | `--type-aware` flag                                                    |
-| Structural Mode   | Matching by AST shape only, ignoring identifier/operator names                        | `--structural` flag                                                    |
-| Detection Method  | Algorithm used to find Clones: suffix tree, hash, or both                             | `--detection-methods` / `-m` flag                                      |
-| Suffix Tree       | Ukkonen's algorithm on serialized AST tokens, finds repeated substrings               | Core algorithm                                                         |
-| Hash Detection    | Rolling XXH3 hash on AST token sequences, content-addressed dedup                     | Alternative detection method                                           |
-| Multi-Detection   | Running both suffix tree and hash detection in parallel                               | `-m "hash,art-dupl"`                                                   |
-| Category          | Classification of clone code type: function, method, struct, etc.                     | `domain.CloneCategory`                                                 |
-| Priority          | How important a clone is to address: critical, high, medium, low                      | `domain.ClonePriority`                                                 |
-| Actionability     | Whether a clone can realistically be deduplicated                                     | `domain.CloneActionability`                                            |
-| Health Score      | A-F grade for codebase duplication health                                             | `domain.HealthScore`                                                   |
-| Severity          | Impact level of a clone, collapsed into `ClonePriority` (low, medium, high, critical) | `domain.ClonePriority`                                                 |
-| Non-Actionable    | Clone that follows idiomatic Go patterns, not worth deduplicating                     | Interface impls, test scaffolding                                      |
-| Smart Filtering   | Automatic exclusion of generated code (sqlc, templ, protobuf, etc.)                   | File selection pipeline                                                |
-| Output Format     | Presentation mode: text, HTML, JSON, CSV, plumbing, SARIF, simple-json                | `--html` / `--json` / `--plumbing` / `--sarif` / `--simple-json` flags |
-| Stats             | Aggregated duplication metrics subcommand                                             | `art-dupl stats`                                                       |
-| sendCtx           | Generic helper for context-aware channel sends, preventing goroutine leaks            | `job/sendctx.go`                                                       |
-| CloneNode         | Immutable recursive tree DTO bridging syntax.Node to actionability evaluation         | `domain.CloneNode`                                                     |
-| Test Threshold    | Separate minimum token count for `_test.go` files (default: max(30, threshold))       | `--test-threshold` flag                                                |
-| Min Lines         | Suppresses clone groups spanning fewer than N source lines (0 = disabled)             | `--min-lines` flag                                                     |
-| Dump Tokens       | Debug mode that outputs the serialized token stream without running detection         | `--dump-tokens` flag                                                   |
-| Include Generated | Override to analyze generated code by category (sqlc, templ, protobuf, mockgen, etc.) | `--include-generated` flag                                             |
-| ProcessedClone    | Decoupled DTO representing a clone fragment for printer output                        | `domain.ProcessedClone`                                                |
-| Incremental Mode  | Re-parse only files whose content hash changed                                        | `--incremental`                                                        |
-| Finding           | The go-finding interchange record for one tool result (clone occurrence, here)        | `printer/finding/` adapter, SARIF output                               |
-| GroupID           | Stable content-hash identifier of a Clone Group; identical across formats and runs    | `finding.GroupIDOf`, SARIF `go-finding/groupId`, JSON `clone_groups[].hash` |
-| toolsdk           | The go-finding Tool SDK: registration contract providers implement to expose a tool   | `pkg/provider/`, BuildFlow integration                                 |
-| Provider          | art-dupl's self-registering toolsdk provider; BuildFlow consumes it via blank import   | `pkg/provider/provider.go`                                             |
-| Advisory Cap      | Provider findings are severity-capped at warning so detector output never fails gates  | v0.7.2 `maxAdvisorySeverity`                                           |
-| Original Severity | The pre-cap severity preserved in an `original-severity-` metadata tag                 | `pkg/provider` metadata                                                |
-| Actionability Pattern | Named denylist rule suppressing idiomatic-Go clone groups (33 rules + 4 property labels) | `printer/actionability/`, `docs/ACTIONABILITY_PATTERNS.md`         |
+| Term                  | Definition                                                                               | Context                                                                     |
+| --------------------- | ---------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| Clone                 | A detected duplicate code fragment, defined by file and line range                       | Core detection output                                                       |
+| Clone Group           | Two or more Clones sharing the same structural or semantic pattern                       | All output formats                                                          |
+| Token                 | A single AST node serialized into an integer type for matching                           | Suffix tree / hash input                                                    |
+| Threshold             | Minimum number of consecutive duplicated statements to consider a Clone (default: 5)     | CLI `--threshold` flag                                                      |
+| Semantic Mode         | Matching by AST structure + identifier/operator names (default ON)                       | Detection method selection                                                  |
+| Exact Mode            | Matching by identifier names verbatim, no alpha-normalization (Type 1 only)              | `--exact` flag                                                              |
+| Type-Aware Mode       | Semantic mode enhanced with go/types static type encoding per local variable             | `--type-aware` flag                                                         |
+| Structural Mode       | Matching by AST shape only, ignoring identifier/operator names                           | `--structural` flag                                                         |
+| Detection Method      | Algorithm used to find Clones: suffix tree, hash, or both                                | `--detection-methods` / `-m` flag                                           |
+| Suffix Tree           | Ukkonen's algorithm on serialized AST tokens, finds repeated substrings                  | Core algorithm                                                              |
+| Hash Detection        | Rolling XXH3 hash on AST token sequences, content-addressed dedup                        | Alternative detection method                                                |
+| Multi-Detection       | Running both suffix tree and hash detection in parallel                                  | `-m "hash,art-dupl"`                                                        |
+| Category              | Classification of clone code type: function, method, struct, etc.                        | `domain.CloneCategory`                                                      |
+| Priority              | How important a clone is to address: critical, high, medium, low                         | `domain.ClonePriority`                                                      |
+| Actionability         | Whether a clone can realistically be deduplicated                                        | `domain.CloneActionability`                                                 |
+| Health Score          | A-F grade for codebase duplication health                                                | `domain.HealthScore`                                                        |
+| Severity              | Impact level of a clone, collapsed into `ClonePriority` (low, medium, high, critical)    | `domain.ClonePriority`                                                      |
+| Non-Actionable        | Clone that follows idiomatic Go patterns, not worth deduplicating                        | Interface impls, test scaffolding                                           |
+| Smart Filtering       | Automatic exclusion of generated code (sqlc, templ, protobuf, etc.)                      | File selection pipeline                                                     |
+| Output Format         | Presentation mode: text, HTML, JSON, CSV, plumbing, SARIF, simple-json                   | `--html` / `--json` / `--plumbing` / `--sarif` / `--simple-json` flags      |
+| Stats                 | Aggregated duplication metrics subcommand                                                | `art-dupl stats`                                                            |
+| sendCtx               | Generic helper for context-aware channel sends, preventing goroutine leaks               | `job/sendctx.go`                                                            |
+| CloneNode             | Immutable recursive tree DTO bridging syntax.Node to actionability evaluation            | `domain.CloneNode`                                                          |
+| Test Threshold        | Separate minimum token count for `_test.go` files (default: max(30, threshold))          | `--test-threshold` flag                                                     |
+| Min Lines             | Suppresses clone groups spanning fewer than N source lines (0 = disabled)                | `--min-lines` flag                                                          |
+| Dump Tokens           | Debug mode that outputs the serialized token stream without running detection            | `--dump-tokens` flag                                                        |
+| Include Generated     | Override to analyze generated code by category (sqlc, templ, protobuf, mockgen, etc.)    | `--include-generated` flag                                                  |
+| ProcessedClone        | Decoupled DTO representing a clone fragment for printer output                           | `domain.ProcessedClone`                                                     |
+| Incremental Mode      | Re-parse only files whose content hash changed                                           | `--incremental`                                                             |
+| Finding               | The go-finding interchange record for one tool result (clone occurrence, here)           | `printer/finding/` adapter, SARIF output                                    |
+| GroupID               | Stable content-hash identifier of a Clone Group; identical across formats and runs       | `finding.GroupIDOf`, SARIF `go-finding/groupId`, JSON `clone_groups[].hash` |
+| toolsdk               | The go-finding Tool SDK: registration contract providers implement to expose a tool      | `pkg/provider/`, BuildFlow integration                                      |
+| Provider              | art-dupl's self-registering toolsdk provider; BuildFlow consumes it via blank import     | `pkg/provider/provider.go`                                                  |
+| Advisory Cap          | Provider findings are severity-capped at warning so detector output never fails gates    | v0.7.2 `maxAdvisorySeverity`                                                |
+| Original Severity     | The pre-cap severity preserved in an `original-severity-` metadata tag                   | `pkg/provider` metadata                                                     |
+| Actionability Pattern | Named denylist rule suppressing idiomatic-Go clone groups (33 rules + 4 property labels) | `printer/actionability/`, `docs/ACTIONABILITY_PATTERNS.md`                  |
 
 ## Entities
 

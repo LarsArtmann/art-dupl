@@ -81,13 +81,10 @@ func TestHTMLOutputGoldenWithCloneGroup(t *testing.T) {
 		TokenCount: 42,
 		Clones: []domain.ProcessedClone{
 			{
-				//nolint:modernize,embedlit // AGENTS.md mandates nested CloneRef initialization
-				CloneRef: domain.CloneRef{
-					Filename:  "foo.go",
-					LineStart: 5,
-					LineEnd:   7,
-					Fragment:  "fmt.Println(\"hello\")",
-				},
+				Filename:   "foo.go",
+				LineStart:  5,
+				LineEnd:    7,
+				Fragment:   "fmt.Println(\"hello\")",
 				StartPos:   50,
 				EndPos:     120,
 				TokenCount: 21,
@@ -98,13 +95,10 @@ func TestHTMLOutputGoldenWithCloneGroup(t *testing.T) {
 				},
 			},
 			{
-				//nolint:modernize,embedlit // AGENTS.md mandates nested CloneRef initialization
-				CloneRef: domain.CloneRef{
-					Filename:  "bar.go",
-					LineStart: 10,
-					LineEnd:   12,
-					Fragment:  "fmt.Println(\"hello\")",
-				},
+				Filename:   "bar.go",
+				LineStart:  10,
+				LineEnd:    12,
+				Fragment:   "fmt.Println(\"hello\")",
 				StartPos:   95,
 				EndPos:     165,
 				TokenCount: 21,

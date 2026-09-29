@@ -39,15 +39,15 @@ var _ = Describe("Go 1.27 generic methods", func() {
 
 		renamed := genericMethodDup
 		for from, to := range map[string]string{
-			"func (s *Stack[T]) Drain()":  "func (r *Stack[T]) Empty()",
-			"func (s *Stack[T]) Peek()":   "func (r *Stack[T]) Top()",
-			"out := []T{}":                "result := []T{}",
-			"for _, it := range s.items":  "for _, item := range r.items",
-			"out = append(out, it)":       "result = append(result, item)",
-			"return out":                  "return result",
-			"range s.items":               "range r.items",
-			"len(s.items)":                "len(r.items)",
-			"s.items[len(s.items)-1]":     "r.items[len(r.items)-1]",
+			"func (s *Stack[T]) Drain()": "func (r *Stack[T]) Empty()",
+			"func (s *Stack[T]) Peek()":  "func (r *Stack[T]) Top()",
+			"out := []T{}":               "result := []T{}",
+			"for _, it := range s.items": "for _, item := range r.items",
+			"out = append(out, it)":      "result = append(result, item)",
+			"return out":                 "return result",
+			"range s.items":              "range r.items",
+			"len(s.items)":               "len(r.items)",
+			"s.items[len(s.items)-1]":    "r.items[len(r.items)-1]",
 		} {
 			renamed = strings.ReplaceAll(renamed, from, to)
 		}

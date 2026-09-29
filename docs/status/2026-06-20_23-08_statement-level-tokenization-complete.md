@@ -66,27 +66,27 @@ Statement-level tokenization (T1) is **complete and verified**. The core algorit
 
 ## b) PARTIALLY DONE 🟡
 
-| Area                         | What's Done                                                              | What Remains                                                                                                                                             |
-| ---------------------------- | ------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-~~| **Clone type consolidation** | Field names aligned (`LineStart`/`LineEnd` canonical across all 5 types) | 5 separate types still exist: `printer.CloneGroup`, `pkg/artdupl.Clone`, `pkg/artdupl.CloneGroup`, `domain.ProcessedClone`, `domain.ProcessedCloneGroup` |~~ resolved by alternative — domain.CloneRef embedded everywhere; format DTOs kept deliberately
-~~| **Printer package split**    | Actionability split into 4 files; view models renamed to `*View`         | ~29 source files / ~3500+ lines still in one package                                                                                                     |~~ done — printer/stats/, actionability/, finding/ extracted
-~~| **Context propagation**      | All detection goroutines + suffix tree respect ctx                       | `cmd/run_crawl.go` file feeders (stdin scanner, `filepath.Walk`) still blocking                                                                          |~~ done — ctx threaded through feeders
-~~| **Templ semantic mode**      | Templ detection works (structural mode)                                  | No statement-level tokenization for templ — `syntax/templ/` is purely structural                                                                         |~~ done — templ statement marking + semantic encoding shipped
-| **InternFilename**           | Wired into all 4 transformer construction sites                          | Type-safe RWMutex+map (could use further profiling)                                                                                                      |
-~~| **Performance benchmarks**   | Suffix tree benchmarks added (T20)                                       | No regression test suite; no performance baseline file                                                                                                   |~~ done — docs/benchmarks baselines + performance.yml
+| Area               | What's Done                                     | What Remains                                                             |
+| ------------------ | ----------------------------------------------- | ------------------------------------------------------------------------ |
+| ~~                 | **Clone type consolidation**                    | Field names aligned (`LineStart`/`LineEnd` canonical across all 5 types) |
+| ~~                 | **Printer package split**                       | Actionability split into 4 files; view models renamed to `*View`         |
+| ~~                 | **Context propagation**                         | All detection goroutines + suffix tree respect ctx                       |
+| ~~                 | **Templ semantic mode**                         | Templ detection works (structural mode)                                  |
+| **InternFilename** | Wired into all 4 transformer construction sites | Type-safe RWMutex+map (could use further profiling)                      |
+| ~~                 | **Performance benchmarks**                      | Suffix tree benchmarks added (T20)                                       |
 
 ---
 
 ## c) NOT STARTED ⬜
 
-| Item                                | Priority | Notes                                                      |
-| ----------------------------------- | -------- | ---------------------------------------------------------- |
-~~| TypeScript/JavaScript support       | Roadmap  | Would need new AST transformer in `syntax/`                |~~ parked — ROADMAP Language Support + TODO_LIST PARKED (explicit user pull)
-| Python support                      | Roadmap  | Would need new AST transformer in `syntax/`                |
-~~| Watch mode (incremental)            | Roadmap  | Continuous monitoring + incremental detection              |~~ parked — ROADMAP IDE/Tooling + TODO_LIST PARKED (explicit user pull)
-~~| Hybrid slice/map transition storage | Medium   | Map already O(1); deferred optimization                    |~~ done — ADR-0022 slice transitions with linearScanMax evidence
-~~| Performance regression suite        | Roadmap  | No automated perf regression detection                     |~~ done — performance.yml CI gate
-~~| More ADRs                           | Roadmap  | Only 4 exist; T1 statement-level tokenization deserves one |~~ done — ADR count grown past 20; T1 documented in ADR-0023
+| Item           | Priority                            | Notes                                       |
+| -------------- | ----------------------------------- | ------------------------------------------- |
+| ~~             | TypeScript/JavaScript support       | Roadmap                                     |
+| Python support | Roadmap                             | Would need new AST transformer in `syntax/` |
+| ~~             | Watch mode (incremental)            | Roadmap                                     |
+| ~~             | Hybrid slice/map transition storage | Medium                                      |
+| ~~             | Performance regression suite        | Roadmap                                     |
+| ~~             | More ADRs                           | Roadmap                                     |
 
 ---
 
@@ -166,48 +166,48 @@ The `fingerprintSubtree` function has 2 gosec G115 warnings (int32→uint32 over
 
 ### 🔴 Critical (Do First)
 
-| # | Task                                                                       | Impact                   | Effort |
-| - | -------------------------------------------------------------------------- | ------------------------ | ------ |
-~~| 1 | **Push commit to origin**                                                  | Unblocks CI              | 1 min  |~~ done — pushed; releases through v0.7.2 followed
-~~| 2 | **Annotate gosec G115 in `fingerprintSubtree`**                            | Clean lint               | 5 min  |~~ done — annotated
-~~| 3 | **Fix exhaustruct in `internal/testutil/node.go`** (add `Statement` field) | Clean lint               | 10 min |~~ done — Statement:false explicit
-~~| 4 | **Write ADR-0005: Statement-Level Tokenization**                           | Document critical design | 30 min |~~ resolved by alternative — ADR-0023 + ADR-0008
-~~| 5 | **Update HOW_TO_USE.md with new threshold semantics**                      | User-facing docs         | 20 min |~~ done — documented
+| #  | Task | Impact                                                                     | Effort                   |
+| -- | ---- | -------------------------------------------------------------------------- | ------------------------ |
+| ~~ | 1    | **Push commit to origin**                                                  | Unblocks CI              |
+| ~~ | 2    | **Annotate gosec G115 in `fingerprintSubtree`**                            | Clean lint               |
+| ~~ | 3    | **Fix exhaustruct in `internal/testutil/node.go`** (add `Statement` field) | Clean lint               |
+| ~~ | 4    | **Write ADR-0005: Statement-Level Tokenization**                           | Document critical design |
+| ~~ | 5    | **Update HOW_TO_USE.md with new threshold semantics**                      | User-facing docs         |
 
 ### 🟡 High Value
 
-| #  | Task                                                        | Impact                     | Effort   |
-| -- | ----------------------------------------------------------- | -------------------------- | -------- |
-~~| 6  | **Consolidate Clone types** (5 → 2: internal DTO + SDK DTO) | Eliminates conversion bugs | 2-3 days |~~ resolved by alternative — CloneRef embed + format DTOs kept
-~~| 7  | **Split `printer/` into sub-packages**                      | Maintainability            | 1 day    |~~ done — printer subpackages extracted
-~~| 8  | **Add templ statement-level tokenization**                  | Semantic mode for templ    | 1 day    |~~ done — shipped
-~~| 9  | **Thread context through `cmd/run_crawl.go`**               | Last cancellation gap      | 4 hours  |~~ done — ctx-aware feeders
-| 10 | **Increase job package coverage** (71.6% → 85%+)            | Test confidence            | 4 hours  |
-~~| 11 | **Add performance regression CI job**                       | Catch perf degradation     | 3 hours  |~~ done — performance.yml
-| 12 | **Rename/deprecate `Owns` field**                           | Clarity                    | 2 hours  |
+| #  | Task                                             | Impact                                                      | Effort                     |
+| -- | ------------------------------------------------ | ----------------------------------------------------------- | -------------------------- |
+| ~~ | 6                                                | **Consolidate Clone types** (5 → 2: internal DTO + SDK DTO) | Eliminates conversion bugs |
+| ~~ | 7                                                | **Split `printer/` into sub-packages**                      | Maintainability            |
+| ~~ | 8                                                | **Add templ statement-level tokenization**                  | Semantic mode for templ    |
+| ~~ | 9                                                | **Thread context through `cmd/run_crawl.go`**               | Last cancellation gap      |
+| 10 | **Increase job package coverage** (71.6% → 85%+) | Test confidence                                             | 4 hours                    |
+| ~~ | 11                                               | **Add performance regression CI job**                       | Catch perf degradation     |
+| 12 | **Rename/deprecate `Owns` field**                | Clarity                                                     | 2 hours                    |
 
 ### 🟢 Medium Value
 
-| #  | Task                                                                  | Impact                | Effort  |
-| -- | --------------------------------------------------------------------- | --------------------- | ------- |
-| 13 | **Add `--min-statements` alias for `--threshold`**                    | UX clarity            | 1 hour  |
-~~| 14 | **Create performance baseline JSON**                                  | Regression tracking   | 2 hours |~~ done — docs/benchmarks baselines
-~~| 15 | **Add TypeScript AST transformer (research spike)**                   | Language expansion    | 1 week  |~~ parked — ROADMAP Language Support
-~~| 16 | **Implement watch mode**                                              | Continuous monitoring | 3 days  |~~ parked — ROADMAP + TODO_LIST PARKED
-~~| 17 | **Add `--diff` support for all output formats** (currently HTML only) | Feature completeness  | 1 day   |~~ done — --diff + --diff-report shipped
-~~| 18 | **Cache invalidation strategy for incremental mode**                  | Performance           | 1 day   |~~ done — content-hash keyed cache hardened (2026-08 cache sprints)
-~~| 19 | **Add `--exclude-pattern` glob support**                              | Filtering flexibility | 3 hours |~~ done — globs + zero-match warnings
-~~| 20 | **Document SDK usage patterns with examples**                         | Adoption              | 4 hours |~~ done — docs/api + SDK_DESIGN + examples
+| #  | Task                                               | Impact                                                                | Effort                |
+| -- | -------------------------------------------------- | --------------------------------------------------------------------- | --------------------- |
+| 13 | **Add `--min-statements` alias for `--threshold`** | UX clarity                                                            | 1 hour                |
+| ~~ | 14                                                 | **Create performance baseline JSON**                                  | Regression tracking   |
+| ~~ | 15                                                 | **Add TypeScript AST transformer (research spike)**                   | Language expansion    |
+| ~~ | 16                                                 | **Implement watch mode**                                              | Continuous monitoring |
+| ~~ | 17                                                 | **Add `--diff` support for all output formats** (currently HTML only) | Feature completeness  |
+| ~~ | 18                                                 | **Cache invalidation strategy for incremental mode**                  | Performance           |
+| ~~ | 19                                                 | **Add `--exclude-pattern` glob support**                              | Filtering flexibility |
+| ~~ | 20                                                 | **Document SDK usage patterns with examples**                         | Adoption              |
 
 ### 🔵 Polish
 
-| #  | Task                                                 | Impact        | Effort  |
-| -- | ---------------------------------------------------- | ------------- | ------- |
-~~| 21 | **Add shell completion generation** (Cobra built-in) | CLI UX        | 1 hour  |~~ done — Cobra completion command present
-| 22 | **Add `art-dupl init` for config file scaffolding**  | Onboarding    | 2 hours |
-| 23 | **Add `--format table` interactive output**          | Terminal UX   | 4 hours |
-| 24 | **Internationalize error messages**                  | Accessibility | 1 day   |
-~~| 25 | **Add Homebrew formula**                             | Distribution  | 2 hours |~~ done — HomebrewFormula/art-dupl.rb
+| #  | Task                                                | Impact                                               | Effort       |
+| -- | --------------------------------------------------- | ---------------------------------------------------- | ------------ |
+| ~~ | 21                                                  | **Add shell completion generation** (Cobra built-in) | CLI UX       |
+| 22 | **Add `art-dupl init` for config file scaffolding** | Onboarding                                           | 2 hours      |
+| 23 | **Add `--format table` interactive output**         | Terminal UX                                          | 4 hours      |
+| 24 | **Internationalize error messages**                 | Accessibility                                        | 1 day        |
+| ~~ | 25                                                  | **Add Homebrew formula**                             | Distribution |
 
 ---
 

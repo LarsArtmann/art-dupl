@@ -160,33 +160,33 @@ All Tier S/A/B/C/D/E tasks from the comprehensive plan (`docs/planning/2026-06-2
 
 ## f) Top #25 Things to Get Done Next
 
-| #  | Task                                                                                    | Impact   | Effort | Risk   | Deps |
-| -- | --------------------------------------------------------------------------------------- | -------- | ------ | ------ | ---- |
-~~| 1  | **Fix remaining 67 BDD test failures** (threshold/fixture calibration)                  | Critical | 60min  | Low    | —    |~~ done — suite calibrated and green
-~~| 2  | **Commit T1 implementation** (core algorithm + threshold rescaling)                     | Critical | 5min   | Low    | #1   |~~ done — core committed
-~~| 3  | **Remove `syntax/golang/token_count_test.go`** (temporary debug file)                   | Low      | 2min   | Low    | —    |~~ done — temporary file removed
-~~| 4  | **Lint check + fix** any new issues from T1 changes                                     | Medium   | 10min  | Low    | #2   |~~ done — lint 0 issues; gosec annotated
-| 5  | **BDD test: Type 2 clone detection** (renamed functions detected as clones)             | High     | 30min  | Low    | #2   |
-~~| 6  | **Dogfood art-dupl on itself** at new default threshold                                 | High     | 20min  | Low    | #2   |~~ done — scripts/self-scan.sh monthly routine + SELF_CLEAN_LEDGER
-~~| 7  | **Create `.art-dupl-baseline.json`** for art-dupl's own source                          | Medium   | 10min  | Low    | #6   |~~ resolved by alternative — //art-dupl:accept directives + SELF_CLEAN_LEDGER replace a committed baseline
-~~| 8  | **Update AGENTS.md** with statement-level tokenization docs                             | Medium   | 10min  | Low    | #2   |~~ done — AGENTS current; docs-health count gate
-~~| 9  | **Update HOW_TO_USE.md** with new threshold semantics                                   | Medium   | 10min  | Low    | #2   |~~ done — statement threshold semantics documented
-~~| 10 | **Update FEATURES.md** with statement-level detection                                   | Medium   | 10min  | Low    | #2   |~~ done — FEATURES verified against code (count gate)
-| 11 | **Extract shared FNV helper** (deduplicate `fingerprintSubtree` + `hashIdentifierFast`) | Low      | 15min  | Low    | #2   |
-~~| 12 | **Templ statement marking** (port `Statement=true` to `syntax/templ/`)                  | Medium   | 40min  | Medium | #2   |~~ done — syntax/templ marks children Statement=true
-| 13 | **`--mode` flag** (alias for semantic/exact/structural)                                 | Medium   | 15min  | Low    | —    |
-| 14 | **SARIF: add extractability to properties**                                             | Low      | 10min  | Low    | —    |
-| 15 | **HTML: clone-type badge**                                                              | Medium   | 15min  | Low    | —    |
-| 16 | **HTML: extractability column**                                                         | Medium   | 15min  | Low    | —    |
-~~| 17 | **README: add badges** (CI, coverage, Go version)                                       | Low      | 10min  | Low    | —    |~~ done — CI/License/pkg.go.dev/website badges (no coverage badge, deliberate)
-~~| 18 | **Baseline edge-case tests** (empty/corrupt/missing/dup)                                | Medium   | 15min  | Low    | —    |~~ done — baseline_test.go edge cases + atomic save
-~~| 19 | **`check --diff` flag** (show what changed since baseline)                              | Medium   | 30min  | Low    | —    |~~ parked — ROADMAP `--diff-baseline`
-~~| 20 | **`baseline --update` flag** (merge new clones)                                         | Medium   | 30min  | Low    | —    |~~ resolved by alternative — documented re-run flow
-| 21 | **SDK: expose DetectionMode** (replace Semantic bool)                                   | Medium   | 30min  | Low    | —    |
-~~| 22 | **Printer decoupling** (ReadOnlyNode interface)                                         | Medium   | 80min  | Medium | —    |~~ done — printer decoupled 2026-07-26
-~~| 23 | **Clone type consolidation** (CloneLocation shared type)                                | Medium   | 90min  | Medium | #22  |~~ resolved by alternative — domain.CloneRef embedded; DTOs kept by design
-~~| 24 | **go/types normalizer upgrade** (precise scope resolution)                              | Medium   | 60min  | Medium | #2   |~~ parked — ROADMAP nested-scope shadowing
-| 25 | **Performance: profile normalizer overhead**                                            | Medium   | 20min  | Low    | #2   |
+| #  | Task                                                                                    | Impact                                                                 | Effort   | Risk  | Deps   |
+| -- | --------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- | -------- | ----- | ------ |
+| ~~ | 1                                                                                       | **Fix remaining 67 BDD test failures** (threshold/fixture calibration) | Critical | 60min | Low    |
+| ~~ | 2                                                                                       | **Commit T1 implementation** (core algorithm + threshold rescaling)    | Critical | 5min  | Low    |
+| ~~ | 3                                                                                       | **Remove `syntax/golang/token_count_test.go`** (temporary debug file)  | Low      | 2min  | Low    |
+| ~~ | 4                                                                                       | **Lint check + fix** any new issues from T1 changes                    | Medium   | 10min | Low    |
+| 5  | **BDD test: Type 2 clone detection** (renamed functions detected as clones)             | High                                                                   | 30min    | Low   | #2     |
+| ~~ | 6                                                                                       | **Dogfood art-dupl on itself** at new default threshold                | High     | 20min | Low    |
+| ~~ | 7                                                                                       | **Create `.art-dupl-baseline.json`** for art-dupl's own source         | Medium   | 10min | Low    |
+| ~~ | 8                                                                                       | **Update AGENTS.md** with statement-level tokenization docs            | Medium   | 10min | Low    |
+| ~~ | 9                                                                                       | **Update HOW_TO_USE.md** with new threshold semantics                  | Medium   | 10min | Low    |
+| ~~ | 10                                                                                      | **Update FEATURES.md** with statement-level detection                  | Medium   | 10min | Low    |
+| 11 | **Extract shared FNV helper** (deduplicate `fingerprintSubtree` + `hashIdentifierFast`) | Low                                                                    | 15min    | Low   | #2     |
+| ~~ | 12                                                                                      | **Templ statement marking** (port `Statement=true` to `syntax/templ/`) | Medium   | 40min | Medium |
+| 13 | **`--mode` flag** (alias for semantic/exact/structural)                                 | Medium                                                                 | 15min    | Low   | —      |
+| 14 | **SARIF: add extractability to properties**                                             | Low                                                                    | 10min    | Low   | —      |
+| 15 | **HTML: clone-type badge**                                                              | Medium                                                                 | 15min    | Low   | —      |
+| 16 | **HTML: extractability column**                                                         | Medium                                                                 | 15min    | Low   | —      |
+| ~~ | 17                                                                                      | **README: add badges** (CI, coverage, Go version)                      | Low      | 10min | Low    |
+| ~~ | 18                                                                                      | **Baseline edge-case tests** (empty/corrupt/missing/dup)               | Medium   | 15min | Low    |
+| ~~ | 19                                                                                      | **`check --diff` flag** (show what changed since baseline)             | Medium   | 30min | Low    |
+| ~~ | 20                                                                                      | **`baseline --update` flag** (merge new clones)                        | Medium   | 30min | Low    |
+| 21 | **SDK: expose DetectionMode** (replace Semantic bool)                                   | Medium                                                                 | 30min    | Low   | —      |
+| ~~ | 22                                                                                      | **Printer decoupling** (ReadOnlyNode interface)                        | Medium   | 80min | Medium |
+| ~~ | 23                                                                                      | **Clone type consolidation** (CloneLocation shared type)               | Medium   | 90min | Medium |
+| ~~ | 24                                                                                      | **go/types normalizer upgrade** (precise scope resolution)             | Medium   | 60min | Medium |
+| 25 | **Performance: profile normalizer overhead**                                            | Medium                                                                 | 20min    | Low   | #2     |
 
 ---
 

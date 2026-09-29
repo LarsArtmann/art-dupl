@@ -91,8 +91,9 @@ Nothing. All changes are clean, tested, and build successfully.
 ### Architecture / Design Issues Noticed
 
 ~~1. **`--suggest-generics` is a filter, not an enhancer** — This is the root cause of the user's confusion. `--suggest-generics` HIDES all non-generics clones. The user expected it to HIGHLIGHT generics candidates among all results. The current design means `--suggest-generics` and `--type-aware` produce fundamentally different output sets, not supersets/subsets. Consider:~~ done — redesigned as enhancer (docs/adr/0021); help says "does NOT filter"
-   - Making `--suggest-generics` an enhancer (show all clones, highlight generics candidates with the hint) rather than a filter
-   - Or at minimum, the help text should say "filter to only generics-extraction candidates" not "find generics-extraction candidates"
+
+- Making `--suggest-generics` an enhancer (show all clones, highlight generics candidates with the hint) rather than a filter
+- Or at minimum, the help text should say "filter to only generics-extraction candidates" not "find generics-extraction candidates"
 
 ~~2. **Three suppression branches with inconsistent `ShowSuppressed` handling** — The actionability branch (line 145-155), `shouldSuppressGroup` (line 170-176), and generics branch (line 178-182, now fixed) all follow the same pattern but the generics one was the only one missing `ShowSuppressed`. This is a code smell — the pattern should be extracted into a helper that always checks `ShowSuppressed`.~~ resolved by alternative — generics branch deleted; remaining branches guard ShowSuppressed only (cmd/run_output.go)
 
@@ -132,48 +133,48 @@ Nothing. All changes are clean, tested, and build successfully.
 9. Standardize progress output indentation across `run_analysis.go`, `progress.go`, `type_aware.go`
 10. Add line-length truncation for the `generics:` hint line
 11. Consider merging `generics:` hint into the `explain:` line when both are shown
-~~12. Add `--suggest-generics` coverage to BDD tests~~ done — bdd/suggest_generics_test.go "Suggest-Generics Enhancer" scenarios
-~~13. Add `--explain` coverage to BDD tests~~ done — bdd/actionability_test.go --explain scenarios assert explanation lines
-14. Audit all user-facing strings for pluralization issues (search for `%d.*s` patterns)
-15. Add golden file test for `--suggest-generics --explain` output combination
+    ~~12. Add `--suggest-generics` coverage to BDD tests~~ done — bdd/suggest_generics_test.go "Suggest-Generics Enhancer" scenarios
+    ~~13. Add `--explain` coverage to BDD tests~~ done — bdd/actionability_test.go --explain scenarios assert explanation lines
+12. Audit all user-facing strings for pluralization issues (search for `%d.*s` patterns)
+13. Add golden file test for `--suggest-generics --explain` output combination
 
 ### Lower Priority (General improvements noticed while reading code)
 
 16. `shortenTypeString` — consider `strings.LastIndex` approach instead of regex for clarity
 17. Consolidate suggestion computation in `clone_processor.go` — single pass instead of 3 overrides
 18. Add `--no-generics-hint` flag to suppress the `generics:` line (for machine consumers)
-~~19. JSON output: verify `generics_candidate` and `generics_hint` fields are present and correct~~ done — printer/json.go emits generics_candidate and generics_hint fields
-~~20. SARIF output: verify generics candidate info is included~~ done — printer/sarif.go sets generics_candidate/generics_hint properties (+ test)
-21. HTML output: verify generics candidate rendering
-22. SDK (`pkg/artdupl`): expose `GenericsCandidate` and `GenericsHint` on `Clone` type
-~~23. Review `formatGenericsHint` deduplication — `seen` map uses `TypeA | TypeB` key, but `TypeA vs TypeB` and `TypeB vs TypeA` would be different keys (order matters). Should normalize.~~ done — divergenceKey canonicalizes pair order (printer/generics_candidate.go) + test
-24. Consider showing type differences count without the full type names when there are many (e.g., "4 type differences" instead of listing all)
-25. Add `--max-generics-hint-types` flag to control how many type pairs are shown
-26. Progress output: consider `\r` carriage return for inline progress instead of multiple lines
-27. The `✅` status message on line 72 of `run_analysis.go` has a leading space — inconsistent with 4-space indentation of other messages
-28. `printBuildingStatus` and `printSearchStatus` should share an indentation constant
-29. Consider a `--compact` flag that shows just `file:line` without previews/hints/explanations
-30. The `writeExplanation` function builds parts as `[]string` then joins with `|` — consider structured formatting
-31. `cls.Suggestion` is shown as `fix:` for actionable and `why:` for non-actionable — consider `hint:` for generics candidates
-32. Add `--output-width` flag to control preview truncation and hint wrapping
-33. Golden file tests should cover singular and plural token/line counts
-34. `previewFirstLine` truncates at 60 runes — consider making this configurable
-35. The `generics:` hint always uses `same algorithm, different types:` prefix — redundant with the `generics:` label
-~~36. Consider adding the generics hint to the JSON output as `generics_hint` field (verify it's there)~~ done — generics_hint/generics_candidate JSON fields verified present (printer/json.go)
-37. Add integration test: `--type-aware` alone vs `--suggest-generics` — verify they produce different clone sets
-~~38. Document the `--suggest-generics` filtering behavior in HOW_TO_USE.md~~ resolved by alternative — documented as enhancer: HOW_TO_USE "Generics-Extraction Enhancer" section
-~~39. Add `--suggest-generics` to the SDK `Options` struct (verify it's there)~~ done — pkg/artdupl/types.go Options.SuggestGenerics with enhancer-semantics comment
-40. Consider `--highlight-generics` as an alternative flag name that enhances rather than filters
-41. The `formatGenericsHint` function limits to 3 unique pairs — consider making this configurable
-42. `TypeDivergence.Position` field is never shown to the user — consider including it for debugging
-43. Add `--debug-generics` flag that shows all type divergences, not just 3
-44. Consider grouping divergences by type pair count (most common first)
-45. The `flattenCloneNodes` function is O(n) but called for every clone instance — consider caching
-46. `ClassifyGenericsCandidate` compares against `seqs[0]` as base — consider pairwise comparison for better coverage
-47. Add test: generics hint with identical types from different packages (should still be a candidate)
-~~48. Add test: generics hint with empty VarType on some nodes (should skip, not crash)~~ done — TestClassifyGenericsCandidate_EmptyVarTypeSkipped (printer/generics_candidate_test.go)
-49. Review all `fmt.Fprintf` calls in `text.go` for consistent error wrapping patterns
-50. Consider extracting output formatting into a separate `formatter` package for testability
+    ~~19. JSON output: verify `generics_candidate` and `generics_hint` fields are present and correct~~ done — printer/json.go emits generics_candidate and generics_hint fields
+    ~~20. SARIF output: verify generics candidate info is included~~ done — printer/sarif.go sets generics_candidate/generics_hint properties (+ test)
+19. HTML output: verify generics candidate rendering
+20. SDK (`pkg/artdupl`): expose `GenericsCandidate` and `GenericsHint` on `Clone` type
+    ~~23. Review `formatGenericsHint` deduplication — `seen` map uses `TypeA | TypeB` key, but `TypeA vs TypeB` and `TypeB vs TypeA` would be different keys (order matters). Should normalize.~~ done — divergenceKey canonicalizes pair order (printer/generics_candidate.go) + test
+21. Consider showing type differences count without the full type names when there are many (e.g., "4 type differences" instead of listing all)
+22. Add `--max-generics-hint-types` flag to control how many type pairs are shown
+23. Progress output: consider `\r` carriage return for inline progress instead of multiple lines
+24. The `✅` status message on line 72 of `run_analysis.go` has a leading space — inconsistent with 4-space indentation of other messages
+25. `printBuildingStatus` and `printSearchStatus` should share an indentation constant
+26. Consider a `--compact` flag that shows just `file:line` without previews/hints/explanations
+27. The `writeExplanation` function builds parts as `[]string` then joins with `|` — consider structured formatting
+28. `cls.Suggestion` is shown as `fix:` for actionable and `why:` for non-actionable — consider `hint:` for generics candidates
+29. Add `--output-width` flag to control preview truncation and hint wrapping
+30. Golden file tests should cover singular and plural token/line counts
+31. `previewFirstLine` truncates at 60 runes — consider making this configurable
+32. The `generics:` hint always uses `same algorithm, different types:` prefix — redundant with the `generics:` label
+    ~~36. Consider adding the generics hint to the JSON output as `generics_hint` field (verify it's there)~~ done — generics_hint/generics_candidate JSON fields verified present (printer/json.go)
+33. Add integration test: `--type-aware` alone vs `--suggest-generics` — verify they produce different clone sets
+    ~~38. Document the `--suggest-generics` filtering behavior in HOW_TO_USE.md~~ resolved by alternative — documented as enhancer: HOW_TO_USE "Generics-Extraction Enhancer" section
+    ~~39. Add `--suggest-generics` to the SDK `Options` struct (verify it's there)~~ done — pkg/artdupl/types.go Options.SuggestGenerics with enhancer-semantics comment
+34. Consider `--highlight-generics` as an alternative flag name that enhances rather than filters
+35. The `formatGenericsHint` function limits to 3 unique pairs — consider making this configurable
+36. `TypeDivergence.Position` field is never shown to the user — consider including it for debugging
+37. Add `--debug-generics` flag that shows all type divergences, not just 3
+38. Consider grouping divergences by type pair count (most common first)
+39. The `flattenCloneNodes` function is O(n) but called for every clone instance — consider caching
+40. `ClassifyGenericsCandidate` compares against `seqs[0]` as base — consider pairwise comparison for better coverage
+41. Add test: generics hint with identical types from different packages (should still be a candidate)
+    ~~48. Add test: generics hint with empty VarType on some nodes (should skip, not crash)~~ done — TestClassifyGenericsCandidate_EmptyVarTypeSkipped (printer/generics_candidate_test.go)
+42. Review all `fmt.Fprintf` calls in `text.go` for consistent error wrapping patterns
+43. Consider extracting output formatting into a separate `formatter` package for testability
 
 ---
 

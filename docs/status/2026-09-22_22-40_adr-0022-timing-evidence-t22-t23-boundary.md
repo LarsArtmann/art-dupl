@@ -80,10 +80,10 @@ claim** (cache-misses −59.2%, references −67.8%, <3% round variance).
 
 1. Idle-window re-validation of the pinning reversal (a load<4 window never
    opened during 12+ min of polling; one DID open at 22:26 — see d1).
-~~2. Full `nix flake check` (canonical gate: full suite + race + alloc-gate);~~ done — full nix flake check passed 2026-09-23
+   ~~2. Full `nix flake check` (canonical gate: full suite + race + alloc-gate);~~ done — full nix flake check passed 2026-09-23
    I ran proportionate targeted checks instead (comments+benches+docs change).
-3. Committing the A/B runner scripts under `scripts/`.
-4. Fresh full-benchmark baseline generation (the new evidence is targeted, not
+2. Committing the A/B runner scripts under `scripts/`.
+3. Fresh full-benchmark baseline generation (the new evidence is targeted, not
    a new committed baseline file for the whole suite).
 
 ## d) TOTALLY FUCKED UP (honest)
@@ -148,20 +148,20 @@ claim** (cache-misses −59.2%, references −67.8%, <3% round variance).
    manual when load<4) to confirm the reversal magnitude without the asterisk.
 2. Same for threshold_10 ±CI comparison (pinned-tighter-CIs claim, n=30).
 3. Commit A/B runner scripts (`/tmp/artdupl-timing/*.sh`) into `scripts/bench/`.
-~~4. Run full `nix flake check` on the current tree (race + alloc-gate + arch-lint).~~ done — full check passed 2026-09-23
-5. Verify/soften the AMD event 0x64 umask semantics wording in the notes/ADR.
-6. Build the load-waiting wrapper (polls loadavg, fires suite when criterion
+   ~~4. Run full `nix flake check` on the current tree (race + alloc-gate + arch-lint).~~ done — full check passed 2026-09-23
+4. Verify/soften the AMD event 0x64 umask semantics wording in the notes/ADR.
+5. Build the load-waiting wrapper (polls loadavg, fires suite when criterion
    holds) so "parked on machine load" tasks never park again.
-~~7. Decide and record: bench protocol for future committed baselines stays~~ done — benchmarks README: pinned capture, pinned-vs-pinned compare
+   ~~7. Decide and record: bench protocol for future committed baselines stays~~ done — benchmarks README: pinned capture, pinned-vs-pinned compare
    pinned-only (stability) even though unpinned is faster — one sentence in
    benchmarks README already says this; confirm it's the standing rule.
-8. Cross-check `baseline-2026-09-14-nested-tokens.txt` provenance (pinned or
+6. Cross-check `baseline-2026-09-14-nested-tokens.txt` provenance (pinned or
    not?) — pinned-vs-unpinned baselines must not be benchstat-compared.
-9. Consider a fresh full-suite pinned baseline file (2026-09-22) since the
+7. Consider a fresh full-suite pinned baseline file (2026-09-22) since the
    search got measurably faster since the last committed baseline.
-10. Sanity-check that `parN` worker-count naming (`runtime.NumCPU()`) in
-    bench output doesn't confuse CI alloc-gate parsing across machines
-    (gate regex already excludes it — confirm no CI lane runs `-bench .`).
+8. Sanity-check that `parN` worker-count naming (`runtime.NumCPU()`) in
+   bench output doesn't confuse CI alloc-gate parsing across machines
+   (gate regex already excludes it — confirm no CI lane runs `-bench .`).
 
 **ADR-0022 / suffixtree follow-through:**
 11. Retune decision: `linearScanMax` 8→4 or 6 (crossover data exists now;

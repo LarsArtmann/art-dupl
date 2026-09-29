@@ -54,15 +54,15 @@
 
 From TODO_LIST.md (still open):
 
-| Priority  | Item                                                              | Effort                      | Impact                              |
-| --------- | ----------------------------------------------------------------- | --------------------------- | ----------------------------------- |
-| 🔴 HIGH   | Introduce ProcessedClone DTO to decouple Printer from syntax.Node | Large (111 test call sites) | High — enables printer independence |
-| 🔴 HIGH   | Consolidate three parallel Clone types                            | Large                       | High — reduces confusion            |
-~~| 🔴 HIGH   | Implement TokenValue type with validation                         | Medium                      | Medium — type safety                |~~ done — suffixtree.TokenValue (ADR-0019)
-| 🟡 MEDIUM | Unify enum patterns (domain ↔ config generic helpers)             | Medium                      | Medium — consistency                |
-| 🟢 LOW    | Refactor `syntax/golang/transform.go` (369L, 300L switch)         | Medium                      | Low — readability                   |
-| 🟢 LOW    | Fix remaining LSP hints (unused params, unnecessary type args)    | Low                         | Low — hygiene                       |
-~~| 🟢 LOW    | Add fuzz tests for templ parser edge cases                        | Medium                      | Medium — robustness                 |~~ done — syntax/templ/fuzz_test.go
+| Priority  | Item                                                              | Effort                                     | Impact                              |
+| --------- | ----------------------------------------------------------------- | ------------------------------------------ | ----------------------------------- |
+| 🔴 HIGH   | Introduce ProcessedClone DTO to decouple Printer from syntax.Node | Large (111 test call sites)                | High — enables printer independence |
+| 🔴 HIGH   | Consolidate three parallel Clone types                            | Large                                      | High — reduces confusion            |
+| ~~        | 🔴 HIGH                                                           | Implement TokenValue type with validation  | Medium                              |
+| 🟡 MEDIUM | Unify enum patterns (domain ↔ config generic helpers)             | Medium                                     | Medium — consistency                |
+| 🟢 LOW    | Refactor `syntax/golang/transform.go` (369L, 300L switch)         | Medium                                     | Low — readability                   |
+| 🟢 LOW    | Fix remaining LSP hints (unused params, unnecessary type args)    | Low                                        | Low — hygiene                       |
+| ~~        | 🟢 LOW                                                            | Add fuzz tests for templ parser edge cases | Medium                              |
 
 ---
 
@@ -111,48 +111,48 @@ Nothing is broken. But here's what's **misleading or wrong**:
 
 ### Tier 1: High Impact (Do First)
 
-| # | Task                                                                        | Impact | Effort           | Rationale                                                                           |
-| - | --------------------------------------------------------------------------- | ------ | ---------------- | ----------------------------------------------------------------------------------- |
-~~| 1 | **Wire ProcessedClone DTO through printer pipeline**                        | HIGH   | L (2-3 sessions) | Eliminates the deepest coupling in the codebase. Unblocks Clone type consolidation. |~~ done — Printer.PrintClones(domain.ProcessedCloneGroup, ...)
-~~| 2 | **Consolidate Clone types to use ProcessedClone/ProcessedCloneGroup**       | HIGH   | L                | 3→1 Clone type. Reduces confusion, enables future format changes.                   |~~ done — ADR-0005
-~~| 3 | **Add JSON marshaling to CloneCategory, ClonePriority, CloneActionability** | MEDIUM | S (30min)        | Pattern already exists for CloneSeverity/HealthScore. Trivial to add.               |~~ done — via pkg/enum helpers (CHANGELOG)
-~~| 4 | **Unify enum patterns: use config generic helpers in domain**               | MEDIUM | M (2h)           | Eliminates duplicate validation/marshal code across 5 enum types.                   |~~ done — pkg/enum shared helpers
-~~| 5 | **Wire TODO/Legacy detectors to CLI (`--method todos`)**                    | MEDIUM | S (1h)           | Already implemented + tested. Just needs flag wiring.                               |~~ won't implement — todo/legacy detectors deleted 2026-06-17
+| #  | Task | Impact                                                                      | Effort | Rationale        |
+| -- | ---- | --------------------------------------------------------------------------- | ------ | ---------------- |
+| ~~ | 1    | **Wire ProcessedClone DTO through printer pipeline**                        | HIGH   | L (2-3 sessions) |
+| ~~ | 2    | **Consolidate Clone types to use ProcessedClone/ProcessedCloneGroup**       | HIGH   | L                |
+| ~~ | 3    | **Add JSON marshaling to CloneCategory, ClonePriority, CloneActionability** | MEDIUM | S (30min)        |
+| ~~ | 4    | **Unify enum patterns: use config generic helpers in domain**               | MEDIUM | M (2h)           |
+| ~~ | 5    | **Wire TODO/Legacy detectors to CLI (`--method todos`)**                    | MEDIUM | S (1h)           |
 
 ### Tier 2: Quality & Safety
 
-| #  | Task                                                                  | Impact | Effort | Rationale                                                             |
-| -- | --------------------------------------------------------------------- | ------ | ------ | --------------------------------------------------------------------- |
-| 6  | **Implement TokenValue type with validation**                         | MEDIUM | M      | Type safety at suffix tree boundary.                                  |
-| 7  | **Add fuzz tests for templ parser edge cases**                        | MEDIUM | M      | Templ parser handles 28 node types, fuzz coverage would catch panics. |
-~~| 8  | **Refactor `syntax/golang/transform.go` to table-driven**             | LOW    | M      | 300L switch → map lookup. Same pattern as GetCategoryEmoji refactor.  |~~ won't implement — skip documented
-| 9  | **Generate stringer for domain enums**                                | LOW    | S      | Compile-time exhaustive switch enforcement.                           |
-~~| 10 | **Add integration test: end-to-end clone detection + stats + output** | MEDIUM | M      | Verify the full pipeline works, not just individual packages.         |~~ done — bdd/ suite + pipeline integration tests
-| 11 | **Fix remaining LSP hints: unused params, unnecessary type args**     | LOW    | S      | Hygiene.                                                              |
-~~| 12 | **Add `--method todos` CLI flag and BDD test**                        | MEDIUM | S      | Closes the TODO detector gap.                                         |~~ won't implement — detectors deleted 2026-06-17
+| #  | Task                                                              | Impact                                                                | Effort | Rationale                                                             |
+| -- | ----------------------------------------------------------------- | --------------------------------------------------------------------- | ------ | --------------------------------------------------------------------- |
+| 6  | **Implement TokenValue type with validation**                     | MEDIUM                                                                | M      | Type safety at suffix tree boundary.                                  |
+| 7  | **Add fuzz tests for templ parser edge cases**                    | MEDIUM                                                                | M      | Templ parser handles 28 node types, fuzz coverage would catch panics. |
+| ~~ | 8                                                                 | **Refactor `syntax/golang/transform.go` to table-driven**             | LOW    | M                                                                     |
+| 9  | **Generate stringer for domain enums**                            | LOW                                                                   | S      | Compile-time exhaustive switch enforcement.                           |
+| ~~ | 10                                                                | **Add integration test: end-to-end clone detection + stats + output** | MEDIUM | M                                                                     |
+| 11 | **Fix remaining LSP hints: unused params, unnecessary type args** | LOW                                                                   | S      | Hygiene.                                                              |
+| ~~ | 12                                                                | **Add `--method todos` CLI flag and BDD test**                        | MEDIUM | S                                                                     |
 
 ### Tier 3: Documentation & Process
 
-| #  | Task                                                  | Impact | Effort | Rationale                           |
-| -- | ----------------------------------------------------- | ------ | ------ | ----------------------------------- |
-~~| 13 | **Create ROADMAP.md** from scattered status reports   | LOW    | S      | Consolidate long-term ideas.        |~~ done — exists
-~~| 14 | **Add ADR for ProcessedClone DTO migration**          | LOW    | S      | Document the architecture decision. |~~ done — ADR-0005
-~~| 15 | **Write HOW_TO_USE.md examples for SDK**              | MEDIUM | M      | SDK has godoc but no usage guide.   |~~ done — HOW_TO_USE + SDK_DESIGN + examples
-~~| 16 | **Clean up `examples/` — add real runnable examples** | LOW    | S      | Currently 0% coverage.              |~~ done — runnable SDK demo with tests
-~~| 17 | **Archive completed status reports**                  | LOW    | S      | Keep docs/status/ lean.             |~~ done — docs/status/archived/
+| #  | Task | Impact                                                | Effort | Rationale |
+| -- | ---- | ----------------------------------------------------- | ------ | --------- |
+| ~~ | 13   | **Create ROADMAP.md** from scattered status reports   | LOW    | S         |
+| ~~ | 14   | **Add ADR for ProcessedClone DTO migration**          | LOW    | S         |
+| ~~ | 15   | **Write HOW_TO_USE.md examples for SDK**              | MEDIUM | M         |
+| ~~ | 16   | **Clean up `examples/` — add real runnable examples** | LOW    | S         |
+| ~~ | 17   | **Archive completed status reports**                  | LOW    | S         |
 
 ### Tier 4: Nice-to-Have
 
-| #  | Task                                                                        | Impact | Effort | Rationale                                                                 |
-| -- | --------------------------------------------------------------------------- | ------ | ------ | ------------------------------------------------------------------------- |
-~~| 18 | **Add `--version` JSON output format**                                      | LOW    | S      | Machine-readable version for CI scripts.                                  |~~ done — version subcommand text/JSON/short (CHANGELOG)
-~~| 19 | **Add git hook for pre-push lint check**                                    | LOW    | S      | Prevent lint regressions.                                                 |~~ resolved by alternative — pre-commit hook + CI lint + pre-release-check.sh
-| 20 | **Benchmark: suffix tree vs hash detection performance comparison**         | LOW    | M      | Data-driven method selection guidance.                                    |
-~~| 21 | **Add `--quiet` flag for CI mode**                                          | LOW    | S      | Suppress all output except errors and exit code.                          |~~ done — --quiet/-q flags (CHANGELOG)
-~~| 22 | **Templ semantic mode**                                                     | MEDIUM | L      | Currently structural-only. Would need identifier hashing for templ nodes. |~~ done — syntax/templ encodes element/attribute/callee names in semantic mode
-~~| 23 | **CSV output for clone groups (not just stats)**                            | LOW    | M      | `encoding/csv` now used for stats; extend to clone listing.               |~~ done — CSV full output format; stats --format csv
-~~| 24 | **Config validation: reject conflicting flag combinations**                 | LOW    | S      | e.g., `--semantic --structural` together.                                 |~~ done — validation errors for incompatible combos (CHANGELOG)
-~~| 25 | **Add `art-dupl check` subcommand (CI exit code: 0=clean, 1=clones found)** | MEDIUM | M      | Enable CI gating on duplication threshold.                                |~~ done — check + baseline cmds + art-dupl-check.yml
+| #  | Task                                                                | Impact                                                                      | Effort | Rationale                              |
+| -- | ------------------------------------------------------------------- | --------------------------------------------------------------------------- | ------ | -------------------------------------- |
+| ~~ | 18                                                                  | **Add `--version` JSON output format**                                      | LOW    | S                                      |
+| ~~ | 19                                                                  | **Add git hook for pre-push lint check**                                    | LOW    | S                                      |
+| 20 | **Benchmark: suffix tree vs hash detection performance comparison** | LOW                                                                         | M      | Data-driven method selection guidance. |
+| ~~ | 21                                                                  | **Add `--quiet` flag for CI mode**                                          | LOW    | S                                      |
+| ~~ | 22                                                                  | **Templ semantic mode**                                                     | MEDIUM | L                                      |
+| ~~ | 23                                                                  | **CSV output for clone groups (not just stats)**                            | LOW    | M                                      |
+| ~~ | 24                                                                  | **Config validation: reject conflicting flag combinations**                 | LOW    | S                                      |
+| ~~ | 25                                                                  | **Add `art-dupl check` subcommand (CI exit code: 0=clean, 1=clones found)** | MEDIUM | M                                      |
 
 ---
 

@@ -146,18 +146,18 @@ Nothing catastrophic, but see **e)** for serious concerns.
 
 37. Investigate whether `go/types` checker output can be cached more aggressively (it's the 10-100x slowdown for `--type-aware`)
 38. Consider `ragel` or table-driven state machine for the suffix tree construction (potential for better branch prediction)
-~~39. Explore whether the `STree.data []TokenValue` could be `[]int32` directly (alias type may add overhead)~~ resolved by alternative — TokenValue is already int32-backed
-40. Consider SIMD-accelerated `slices.Sort` for `TokenValue` (int32 sorting can use SIMD on modern CPUs)
-~~41. Explore `synced.Pool` for `[]TokenValue` buffers used in `parallelWalkRoot`~~ resolved by alternative — rootKeys heap allocation gone with slice transitions
-42. Consider lock-free `contextList.append` using atomic CAS instead of mutex (for the parallel search path)
-~~43. Investigate `runtime.GOMAXPROCS` pinning for benchmark runs to reduce scheduling noise~~ done — GOMAXPROCS pinned/unpinned A/B
-44. Consider a `BenchmarkWalkTransAllocs` that directly measures allocations per `walkTrans` call
-45. Add a `BenchmarkStackBufferFallback` that specifically tests the >32 transitions path
-~~46. Explore whether `map[TokenValue]*tran` could use a custom hasher with better cache behavior than Go's built-in map~~ resolved by alternative — transition maps replaced by sorted []tran slices
-~~47. Consider `swiss.Map` or `swiss.Table` (Go's new Swiss table map implementation) for transition lookup~~ resolved by alternative — map lookup replaced by sorted []tran slices
-~~48. Profile the `serial()` function's `&Node{}` allocation pattern — if nodes are allocated sequentially, they may already be cache-line aligned by the allocator~~ resolved by alternative — serial() rewritten to arena allocation (master-plan T13)
-~~49. Investigate whether `[]*Node` (slice of pointers) in `serial()` causes pointer chasing that could be eliminated by storing `[]Node` (slice of values) instead~~ done — serial() indexes into a []Node arena
-~~50. Run `go test -race ./...` to verify the field reordering doesn't introduce any data races in concurrent access patterns~~ done — full-suite -race green (04-23; ci.yml)
+    ~~39. Explore whether the `STree.data []TokenValue` could be `[]int32` directly (alias type may add overhead)~~ resolved by alternative — TokenValue is already int32-backed
+39. Consider SIMD-accelerated `slices.Sort` for `TokenValue` (int32 sorting can use SIMD on modern CPUs)
+    ~~41. Explore `synced.Pool` for `[]TokenValue` buffers used in `parallelWalkRoot`~~ resolved by alternative — rootKeys heap allocation gone with slice transitions
+40. Consider lock-free `contextList.append` using atomic CAS instead of mutex (for the parallel search path)
+    ~~43. Investigate `runtime.GOMAXPROCS` pinning for benchmark runs to reduce scheduling noise~~ done — GOMAXPROCS pinned/unpinned A/B
+41. Consider a `BenchmarkWalkTransAllocs` that directly measures allocations per `walkTrans` call
+42. Add a `BenchmarkStackBufferFallback` that specifically tests the >32 transitions path
+    ~~46. Explore whether `map[TokenValue]*tran` could use a custom hasher with better cache behavior than Go's built-in map~~ resolved by alternative — transition maps replaced by sorted []tran slices
+    ~~47. Consider `swiss.Map` or `swiss.Table` (Go's new Swiss table map implementation) for transition lookup~~ resolved by alternative — map lookup replaced by sorted []tran slices
+    ~~48. Profile the `serial()` function's `&Node{}` allocation pattern — if nodes are allocated sequentially, they may already be cache-line aligned by the allocator~~ resolved by alternative — serial() rewritten to arena allocation (master-plan T13)
+    ~~49. Investigate whether `[]*Node` (slice of pointers) in `serial()` causes pointer chasing that could be eliminated by storing `[]Node` (slice of values) instead~~ done — serial() indexes into a []Node arena
+    ~~50. Run `go test -race ./...` to verify the field reordering doesn't introduce any data races in concurrent access patterns~~ done — full-suite -race green (04-23; ci.yml)
 
 ---
 

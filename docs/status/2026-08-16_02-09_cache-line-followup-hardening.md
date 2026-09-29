@@ -61,8 +61,8 @@
    - Documents the decision that no CacheVersion bump is needed
 
 10. **Full test suite passes** — all 28+ packages (`go test ./... -count=1 -timeout=10m`)
-~~11. **Full build clean** — `go build ./...`~~ done — serial() arena allocation (syntax/syntax.go)
-~~12. **Lint clean** — 0 new issues in all touched packages (46 pre-existing tagliatelle in untouched files)~~ won't implement — NO-GO measured (~0.03% of run allocations; TODO_LIST parked tier)
+    ~~11. **Full build clean** — `go build ./...`~~ done — serial() arena allocation (syntax/syntax.go)
+    ~~12. **Lint clean** — 0 new issues in all touched packages (46 pre-existing tagliatelle in untouched files)~~ won't implement — NO-GO measured (~0.03% of run allocations; TODO_LIST parked tier)
 
 ### Benchmark Results (deterministic allocation data)
 
@@ -128,10 +128,11 @@ Nothing catastrophic. But there are serious concerns:
 ~~4. **I didn't optimize `parallelWalkRoot`.** It has the same allocation pattern as `walkTrans`. I dismissed it as "one-time call" in the prior session and didn't revisit. But the root state has the MOST transitions (one per distinct first token), so it's the one case where the heap fallback ALWAYS fires. The stack buffer would never help for the root — but a pre-allocated slice would. This is a missed optimization.~~ resolved by alternative — root key-slice allocation eliminated by slice transitions
 
 ~~5. **The benchmark methodology is still flawed.** I ran 10 samples (up from 3), which is better, but on a throttling laptop CPU, 10 samples of thermal noise is still thermal noise. I should have:~~ done — pinned/unpinned A/B protocol (docs/benchmarks/pinned-unpinned-2026-09-22.txt)
-   - Used `taskset -c 1` to pin to a single core
-   - Run benchmarks in a temperature-stable environment (idle between runs)
-   - Used `perflock` or similar to control CPU frequency
-   - Or just admitted that timing data from this CPU is unreliable and focused only on allocation counts
+
+- Used `taskset -c 1` to pin to a single core
+- Run benchmarks in a temperature-stable environment (idle between runs)
+- Used `perflock` or similar to control CPU frequency
+- Or just admitted that timing data from this CPU is unreliable and focused only on allocation counts
 
 ~~6. **The AGENTS.md entry is now even longer.** The prior session's self-critique said it was "too verbose" (item #11). I made it LONGER by adding test references, gob notes, and the shared constant name. I should have moved the detail to an ADR and left a one-liner in AGENTS.md.~~ done — cache bullets rewritten; detail in ADR-0022
 
