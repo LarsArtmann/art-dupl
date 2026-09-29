@@ -10,7 +10,7 @@ import (
 func TestCopyToBufferSurfacesCopyError(t *testing.T) {
 	t.Parallel()
 
- boom := errors.New("read exploded")
+	boom := errors.New("read exploded")
 	src := &errReader{err: boom, n: 3}
 	var dst strings.Builder
 

@@ -176,9 +176,9 @@ func aggregateValues(values []int) int {
 
 			var preview string
 
-			for _, line := range strings.Split(string(output), "\n") {
-				if idx := strings.Index(line, "  | "); idx >= 0 {
-					preview = line[idx+4:]
+			for line := range strings.SplitSeq(string(output), "\n") {
+				if _, after, ok := strings.Cut(line, "  | "); ok {
+					preview = after
 					break
 				}
 			}

@@ -2,6 +2,7 @@ package provider
 
 import (
 	"bytes"
+	"cmp"
 	"context"
 	"fmt"
 	"io"
@@ -788,7 +789,7 @@ func sortFindingsForTest(findings []gofinding.Finding) {
 			return c
 		}
 
-		return a.Position.Line - b.Position.Line
+		return cmp.Compare(a.Position.Line, b.Position.Line)
 	})
 }
 

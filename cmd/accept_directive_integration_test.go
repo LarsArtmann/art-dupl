@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"bytes"
-	"encoding/json"
+	"encoding/json/v2"
 	"os"
 	"path/filepath"
 	"strings"
@@ -163,7 +163,7 @@ func TestDeadDirectiveWarningEndToEnd(t *testing.T) {
 	}
 	// The combined output carries the stale-directive warning (stderr) after
 	// the JSON document; Decode stops after the first top-level value.
-	if err := json.NewDecoder(bytes.NewReader(jsonOutput)).Decode(&parsed); err != nil {
+	if err := json.UnmarshalRead(bytes.NewReader(jsonOutput), &parsed); err != nil {
 		t.Fatalf("decode json output: %v\nOutput: %s", err, jsonOutput)
 	}
 

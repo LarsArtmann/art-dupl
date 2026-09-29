@@ -293,6 +293,7 @@ theirs; their §4 sequence is the path when you give the go.
 ## f) Up to 50 Things To Get Done Next
 
 **Release (blocked on your go — the park's §4 is ready):**
+
 1. Give or withhold the `v0.8.0 = (a)` decision-sheet go.
 2. On go: flake.nix `version = "0.8.0"` bump → release commit → `git tag -s v0.8.0` → `git push --follow-tags origin fork`.
 3. `gh release create v0.8.0 --notes-file <[0.8.0] section verbatim>` (never `--notes-from-tag`).
@@ -371,7 +372,7 @@ theirs; their §4 sequence is the path when you give the go.
 
 ---
 
-*Session attribution: this report covers one Crush session (~00:30–03:00 on
+_Session attribution: this report covers one Crush session (~00:30–03:00 on
 2026-09-29). Concurrent sessions were active throughout (SUPERB v2 M05 release
 park, batch-annotator hardening, count-gate extension) — commits attributed
-`chore: auto-commit` on `fork` may bundle both sessions' files.*
+`chore: auto-commit` on `fork` may bundle both sessions' files._

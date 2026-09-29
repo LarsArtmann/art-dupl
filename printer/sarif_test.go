@@ -383,6 +383,7 @@ func TestSARIFRulesCarryActionabilityPatterns(t *testing.T) {
 	if len(rules) != 1+len(actionability.AllActionabilityPatterns()) {
 		t.Fatalf("rules = %d, want 1 base + %d patterns", len(rules), len(actionability.AllActionabilityPatterns()))
 	}
+
 	if rules[0].ID != "art-dupl/duplicate-code" {
 		t.Fatalf("first rule = %q, want the firing duplicate-code rule", rules[0].ID)
 	}
@@ -392,14 +393,17 @@ func TestSARIFRulesCarryActionabilityPatterns(t *testing.T) {
 		if seen[r.ID] {
 			t.Errorf("duplicate rule id %q", r.ID)
 		}
+
 		seen[r.ID] = true
 
 		if len(r.ID) <= len("art-dupl/pattern/") || r.ID[:len("art-dupl/pattern/")] != "art-dupl/pattern/" {
 			t.Errorf("pattern rule id %q lacks the art-dupl/pattern/ prefix", r.ID)
 		}
+
 		if r.HelpURI != sarifActionabilityDocAnchor {
 			t.Errorf("rule %q helpUri = %q, want the patterns doc anchor", r.ID, r.HelpURI)
 		}
+
 		if r.DefaultConfiguration.Level != "none" {
 			t.Errorf("informational rule %q must not fire (level none), got %q", r.ID, r.DefaultConfiguration.Level)
 		}
@@ -409,6 +413,7 @@ func TestSARIFRulesCarryActionabilityPatterns(t *testing.T) {
 	for _, r := range rules[1:] {
 		patternToRule[actionability.PatternLabel(strings.TrimPrefix(r.ID, "art-dupl/pattern/"))] = r
 	}
+
 	for _, label := range actionability.AllActionabilityPatterns() {
 		if _, ok := patternToRule[label]; !ok {
 			t.Errorf("missing descriptor for pattern %q", label)
@@ -419,13 +424,16 @@ func TestSARIFRulesCarryActionabilityPatterns(t *testing.T) {
 	if len(guard.Properties.Tags) == 0 || guard.Properties.Tags[1] != "denylist" {
 		t.Errorf("guard-clause descriptor tags = %v, want denylist kind", guard.Properties.Tags)
 	}
+
 	prop := patternToRule[actionability.PatternPropertyROI]
 	if len(prop.Properties.Tags) == 0 || prop.Properties.Tags[1] != "property-engine" {
 		t.Errorf("property-roi descriptor tags = %v, want property-engine kind", prop.Properties.Tags)
 	}
 
 	for _, label := range actionability.AllActionabilityPatterns() {
-		if actionability.IsPropertyEnginePattern(label) != (patternToRule[label].Properties.Tags[1] == "property-engine") {
+		if actionability.IsPropertyEnginePattern(
+			label,
+		) != (patternToRule[label].Properties.Tags[1] == "property-engine") {
 			t.Errorf("kind tag disagrees with IsPropertyEnginePattern for %q", label)
 		}
 	}

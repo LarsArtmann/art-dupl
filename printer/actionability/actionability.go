@@ -3,6 +3,7 @@ package actionability
 import (
 	"fmt"
 	"io"
+	"slices"
 	"strings"
 
 	"github.com/LarsArtmann/art-dupl/domain"
@@ -82,13 +83,7 @@ var propertyLabels = []PatternLabel{ //nolint:gochecknoglobals // static list
 // extractability engine's property analysis (as opposed to the denylist
 // table). SARIF output uses it to tag rule descriptors by kind.
 func IsPropertyEnginePattern(label PatternLabel) bool {
-	for _, p := range propertyLabels {
-		if p == label {
-			return true
-		}
-	}
-
-	return false
+	return slices.Contains(propertyLabels, label)
 }
 
 // ListActionabilityPatterns writes all pattern labels to the writer, one per

@@ -181,7 +181,7 @@ def emit_keys(path, linenos):
                 )
                 continue
         if tok is not None:
-            rest = line[m.end():].strip()
+            rest = line[m.end() :].strip()
         else:
             tok = None
             rest = mcb.group(2).strip()

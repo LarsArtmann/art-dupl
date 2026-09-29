@@ -73,7 +73,7 @@
 // LICENSE: MIT
 module github.com/LarsArtmann/art-dupl
 
-go 1.27.1
+go 1.27
 
 require (
 	charm.land/lipgloss/v2 v2.0.6
@@ -119,7 +119,7 @@ require (
 	github.com/google/pprof v0.0.0-20260926063103-aaccee046517 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/klauspost/cpuid/v2 v2.4.0 // indirect
-	github.com/larsartmann/go-error-family v0.10.3 // indirect
+	github.com/larsartmann/go-error-family v0.11.0 // indirect
 	github.com/lucasb-eyer/go-colorful v1.4.1 // indirect
 	github.com/mattn/go-runewidth v0.0.30 // indirect
 	github.com/muesli/cancelreader v0.2.2 // indirect
