@@ -24,6 +24,8 @@ or external by nature.
 
 ## MEDIUM Priority
 
+- [ ] **Cut v0.8.0 (owner-gated)** — CHANGELOG `## [0.8.0] - 2026-09-29` complete, worktree rehearsal green; execution recipe parked at `docs/planning/2026-09-29_02-45_v0.8.0-release-park.md` (tag message, notes extraction, sequence; STOP gate = full suite + CI green on pushed HEAD). Same batch: go-paperless v0.4.3 (#20) and the branch-protection settings (#18).
+
 ### BuildFlow core-lane follow-ups (harvested 2026-09-25)
 
 **Source:** `docs/planning/2026-09-24_18-04_artdupl-core-lane-buildflow-inversion.md` phases 2–3 and

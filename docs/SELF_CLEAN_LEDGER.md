@@ -119,3 +119,41 @@ monthly self-scan does not re-litigate them:
 - **Template flags fixed**: consumer templates referenced non-existent flags
   (`--output`, `--baseline`); corrected to `--plumbing` / `--baseline-path` and
   verified against the built binary end-to-end.
+
+## 2026-09-29 — SUPERB v2 harden-harness pass (M00–M22)
+
+Decisions from `docs/planning/2026-09-29_01-10_SUPERB-v2-harden-harness-unblock-ship.md`,
+recorded so the monthly self-scan does not re-litigate them:
+
+- **Count-gate 49→51 repair**: the concurrent session's Go 1.27 SelectorExpr-key
+  dispatch raised transformer node types 49→51; the docs count gate demanded the doc
+  change (README/FEATURES updated, gate test re-derived, canary verified failing
+  first). Regime held: doc follows derived number.
+- **go.mod pin flip, caught twice**: the boundary gate's first live catch (M02,
+  restored in 9eb2cfd6) and again after the 03:41 daemon clobber (this pass). The
+  `cmd/go_line_pin_test.go` gate + boundary gate both fire; keep both.
+- **jsonutil/config_migrate v2 re-clobber (3rd recurrence)**: daemon commit ce716456
+  re-migrated both files to `encoding/json/v2` — broke Duration marshaling
+  (SaveConfig) and empty-indent output, exactly the 2026-09-23/24 class. Boundary
+  gate caught all three files in one run; restored from canonical commits (42ee0a72,
+  3b6327d5); the go-error-family v0.11.0 bump in the same daemon commit was kept.
+  The gate's fast profile is now the proven tripwire for this class.
+- **Daemon-swept commits (ba2d5ce5, 9a97ec82 class)**: real-message commits were
+  twice pre-empted by the auto-daemon sweeping staged files under a heuristic
+  message (once mixing my count fix with its lint cleanups). Disposition: never
+  fight the daemon; verify content via `git log -- <file>` and move on.
+- **SDK_DESIGN ↔ ADR cross-refs (F081)**: forward refs 0 broken; 13 ADRs uncited
+  from SDK_DESIGN but their features are documented in it = not a defect, no action.
+- **Windows exe-start probe (M18)**: skip now env-gated
+  (`ARTDUPL_WINDOWS_PROCESS_TEST=1`) + continue-on-error CI probe after
+  `Set-MpPreference -ExclusionPath $env:RUNNER_TEMP`. Next pass reads the probe log:
+  green ⇒ delete the skip; red ⇒ exclusion hypothesis has evidence against it.
+- **Skills upstream home (M14)**: `skills/docs-health` resolves via symlink chain
+  crush-config → `~/.agents/skills` → `~/projects/SKILLS`; upstream edits go to the
+  SKILLS repo (committed 2514a55 there), NOT crush-config. Annotator hardening
+  (`--verify`, `--emit-keys`, dup-key refusal) lives there; push gated on Lars.
+- **v0.8.0 + go-paperless stay GATED on Lars**: release execution parked in
+  `docs/planning/2026-09-29_02-45_v0.8.0-release-park.md` and the go-paperless memo
+  (v0.4.3 recipe); TODO_LIST #18 branch-protection recipe written for owner action.
+- **Linter Pareto (F105)**: 106 enabled, 0 findings; keep all — noise is carried by
+  ~6 linters with bespoke settings, verdict recorded in AGENTS.md Lint config bullet.
