@@ -986,6 +986,7 @@ func BenchmarkDetectWorkspaceScale(b *testing.B) {
 
 	for range b.N {
 		ctx := gofinding.WithWorkingDir(toolsdk.EnsureContext(context.Background()), dir)
+
 		findings, err := detector.Detect(ctx)
 		if err != nil {
 			b.Fatalf("Detect: %v", err)
