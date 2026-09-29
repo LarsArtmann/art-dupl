@@ -103,6 +103,35 @@ nix flake check    # reproducible CI (includes templ generate in preBuild)
 > so the toolchain matches go.mod; `GOTOOLCHAIN=local` + an older local go fails
 > hard with `go.mod requires go >= 1.27.1` — `scripts/go-env-doctor.sh`
 > diagnoses this with an actionable message.
+> **LSP hygiene (2026-09-29)**: stale gopls state after toolchain/GOEXPERIMENT
+> churn or daemon commits is fixed by `direnv reload` + an editor LSP restart
+> (in agent sessions: restart the gopls client, don't trust pre-reload
+> diagnostics). The 4 "bloop" warnings from the 2026-09-28 pass (b.N bench
+> loops, unnamed benchmark sizes) are CLOSED; no open gopls findings.
+
+### CI Architecture
+
+Nine GitHub workflows; six are gates, three are automation (auto-tag, deploy-site,
+release). Gates and their `flake.nix` mirrors (one `Nix Flake Check` CI job runs
+the whole `checks` attrset, so the mirror column is belt-and-suspenders, not the
+only lane):
+
+| Gate (workflow → job)                 | Enforces                                            | Flake-check mirror |
+| ------------------------------------- | --------------------------------------------------- | ------------------ |
+| CI → Lint                             | golangci-lint (106 enabled, 0 findings at 2026-09-29) | `lint`             |
+| CI → Test                             | full suite, 3-OS matrix (windows w/o GOEXPERIMENT)  | `test`, `race`     |
+| CI → Coverage                         | coverage report artifact                            | —                  |
+| CI → Nix Flake Check                  | the entire `checks` attrset                         | (is the runner)    |
+| CI → Self-Analysis                    | art-dupl `-t 5` on itself (clone-free invariant)    | —                  |
+| Architecture Lint → Verify package boundaries | `.go-arch-lint.yml` dependency boundaries   | `arch-lint`        |
+| Clone Detection → Check for new clones | baseline check vs `.art-dupl-baseline.json`         | —                  |
+| Performance Tests → Performance Regression | benchmarks vs `docs/benchmarks/` (benchstat)   | `alloc-gate`       |
+| Lint Config Guard → Verify no forbidden linters | exhaustruct/tagliatelle stay banned       | `disabled-linters` |
+
+Flake-only checks (no dedicated workflow lane): `format`/`fmt` (treefmt + gofmt),
+`build`, `vendor-hash`, `sarif-validate`, `self-test`. Branch-protection required
+status checks use the job display names above (matrix jobs register as
+`Test (ubuntu-latest)` etc.); the pickup recipe is in TODO_LIST #18.
 
 ## Architecture
 
@@ -160,7 +189,7 @@ pkg/enum/   Shared enum helpers (MarshalJSON, UnmarshalJSON, Parse)
 - **`MethodDetector.Name()`**: Interface method returns a human-readable detection-method name. Replaces the former `detName` type switch, new detectors just implement `Name()`.
 - **FilterSource tracking** (`cmd/filter_stats.go`): `FilterStats.RecordWithSource(result, source)` tracks which filtering mechanism caught each file. `SourceBreakdown()` returns the per-source counts. `Record()` defaults to `FilterSourceGogenfilter`. All read methods (`TotalFiltered`/`FilteredBy`/`Breakdown`/`SourceBreakdown`/`Reasons`) are nil-receiver-safe; the value-returning reads delegate to the generic `withLock[T]` helper, which nil-checks `s` before locking. Map fields are read inside the closure (not as a bare argument) because evaluating `s.byReason`/`s.bySource` directly would panic on a nil receiver before the nil check runs. Marker matching for templ/sqlc/protobuf is centralized in `matchedGeneratedCategory` (`cmd/util.go`): `allowsContent` (include override path) delegates to it, so there is ONE switch over the markers. `categoryIncluded(reason)` maps a `FilterReason` to its `generatorIncludes` bool. The path fast-exits via `bytes.Contains(content, []byte("Code generated"))` before any `string(content)` conversion, so non-generated files never allocate a content copy; the constant-needle `[]byte` conversions are stack-allocated inside the inlined `bytes.Contains`.
 - **Exclude-pattern zero-match warning** (`cmd/filter_stats.go`): user-supplied `--exclude-pattern` globs are tracked (`TrackExcludePatterns` + `recordPatternCandidate` via `gogenfilter.MatchPattern`); after the run, `WarnUnmatchedExcludePatterns(stderr)` prints one warning per pattern that matched zero files (common cause: glob is matched against the full walk path AND basename, so `*_gen.go` works but a leading-slash anchored pattern may not). Merged-in defaults (`IgnoreFiles`, `*_test.go`) are NOT tracked — only patterns the user explicitly passed.
-- **Lint config**: `makezero: always: false` (the linter default) flags `append` to a slice created with a non-zero length (`make([]T, n)` then `append`). Create with `make([]T, 0, n)` + `append`, or add `//nolint:makezero` for genuine pre-sized targets that are also appended to (binary buffers, DP matrices, `copy()` targets). `wrapcheck` ignores `pkg/enum` via `ignore-package-globs`.
+- **Lint config**: `makezero: always: false` (the linter default) flags `append` to a slice created with a non-zero length (`make([]T, n)` then `append`). Create with `make([]T, 0, n)` + `append`, or add `//nolint:makezero` for genuine pre-sized targets that are also appended to (binary buffers, DP matrices, `copy()` targets). `wrapcheck` ignores `pkg/enum` via `ignore-package-globs`. **Linter Pareto (reviewed 2026-09-29)**: 106 linters enabled, 0 findings on the whole tree — all historical noise is concentrated in ~6 linters tamed by bespoke settings (makezero `always:false`, wrapcheck `ignore-package-globs`, and `_test.go`/`bdd/` exclusions for gochecknoglobals/mnd/varnamelen/goconst plus varnamelen's ignore-names and mnd's ignored-numbers); the only transient findings that pass surfaced in fresh code (exhaustive missing-case, prealloc) and were fixed same-day. Keep/kill verdict: KEEP all 106 — nothing is noisy enough post-settings to justify removal.
 - **Cache line + allocation optimizations**: (1) `syntax.Node` and `domain.CloneNode` field ordering groups pointer/string fields first (72B) and scalar fields last (32B), so `Val()`'s hot reads (`Type` @72, `Fingerprint` @88, `Statement` @96) and actionability's scalar reads (`BaseType` @72, `InterfaceMethod` @80, `IsAlias` @81) stay within a single 64-byte cache line instead of straddling two. Struct size unchanged (104B / 88B). When adding a field to `Node`, add it to the scalar block (after `IsAlias`) if it's a bool/int32, or the pointer block (before `Children`) if it's a string/slice. Update `serial()` and `Clone()` field order to match. Regression tests in `syntax/syntax_layout_test.go` and `domain/clone_node_layout_test.go` use `unsafe.Offsetof` to verify the layout invariant; update `TestNodeSizeConsistency`/`TestCloneNodeSizeConsistency` expected size when adding fields. **Gob compatibility**: field reordering is gob-safe (gob uses field names, not positions), so no `CacheVersion` bump is needed. (2) **`contextList` pooled via `sync.Pool`** (`suffixtree/dupl.go`): `acquireContextList()`/`releaseContextList(cl)`; OWNERSHIP CONTRACT documented on `releaseContextList` — after release, never touch the contextList again; `[]Pos` slices transferred via `append` survive release (slice headers were copied), guarded by `TestContextListPoolSliceSurvival`. `contextList.lists` is `map[TokenValue][]Pos` (posList wrapper eliminated). `contextList.getAll` uses a stack-allocated `[maxStackKeys]TokenValue` buffer (≤32 entries, the common case); its per-key position lists are disjoint by construction (each Pos has exactly one preceding token), so concatenation needs no dedup. The transition side no longer needs a stack buffer (sorted slices, see ADR-0022). Allocation budgets enforced by `suffixtree/alloc_budget_test.go` and `syntax/alloc_budget_test.go`; the CI gate `scripts/check-alloc-regression.sh` replays both against `scripts/alloc-budgets.txt`. Full history and numbers: ADR-0022.
 
 ## Nix Flake, Private Dependency Pattern
