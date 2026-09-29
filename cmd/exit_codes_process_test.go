@@ -64,8 +64,10 @@ func runBinaryExitCode(t *testing.T, binaryPath string, args ...string) int {
 // unrelated to the exit-code logic, which TestExitCodeForError covers
 // in-process on every platform.
 func TestExitCodes_Process(t *testing.T) {
-	if runtime.GOOS == "windows" {
-		t.Skip("windows runners cannot reliably start freshly built exes; logic covered by TestExitCodeForError")
+	if runtime.GOOS == "windows" && os.Getenv("ARTDUPL_WINDOWS_PROCESS_TEST") != "1" {
+		t.Skip("windows runners intermittently refuse to start freshly built exes (ProcessState nil); " +
+			"set ARTDUPL_WINDOWS_PROCESS_TEST=1 to opt in — the CI probe job does this after adding the " +
+			"Defender path exclusion (hypothesis under test, continue-on-error; see TODO #4)")
 	}
 	if testing.Short() {
 		t.Skip("skipping subprocess test in short mode")
