@@ -95,6 +95,15 @@ nix flake check    # reproducible CI (includes templ generate in preBuild)
 > `workspace/go-line-flipflop`). Resolution: `.buildflow.yml` skips
 > `go-mod-normalize` for this repo; do NOT "normalize" the go line by hand and
 > do NOT remove the skip until BuildFlow aligns the two dispositions upstream.
+> **2026-09-29: the flip war's SECOND rewriter found** — the FORMAT pipeline's
+> `go-version-auto-configure:repair` step also strips the patch
+> (`go 1.27.1` → `go 1.27`) even in fast build mode, so the flip-flop kept
+> happening through the original skip (that was the live flip source all
+> along: every `buildflow format` by any session rewrote the line, and the
+> auto-commit daemon packaged it). `go-version-auto-configure` is now skipped
+> in `.buildflow.yml` too; verified the pin survives a full format run. The
+> durable upstream fix is for the repair disposition to respect an existing
+> patch-level pin (only raise on a NEWER toolchain, never rewrite down).
 > The pre-2026-09-18 guidance ("do NOT bump to 1.27") is obsolete — Go 1.27.1
 > is stable and the bump also eliminates the old gopls `stdversion` false
 > positives (`json.Unmarshal requires go1.27 (file is go1.26)`), which were

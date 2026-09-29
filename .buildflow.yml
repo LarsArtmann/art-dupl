@@ -10,7 +10,13 @@ skip_steps:
   # the toolchain version — the go-line flip-flop BuildFlow's own preflight
   # warns about (workspace/go-line-flipflop). Skipped until the fleet aligns
   # the go-version-auto-configure and go-mod-update dispositions upstream.
+  # 2026-09-29: go-mod-normalize was NOT the only rewriter — observed live,
+  # the FORMAT pipeline's go-version-auto-configure:repair step also strips
+  # the patch (`go 1.27.1` → `go 1.27`) even in fast build mode, so the
+  # flip-flop survived this skip. Skipped too; same upstream-alignment
+  # condition.
   - go-mod-normalize
+  - go-version-auto-configure
   # This repo deliberately bans exhaustruct and tagliatelle (see AGENTS.md
   # "Lint config" and scripts/check-disabled-linters.sh). The auto-configurer
   # re-adds both from its fleet defaults on every pipeline run; the guard

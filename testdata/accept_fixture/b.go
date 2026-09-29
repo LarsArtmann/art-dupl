@@ -1,4 +1,4 @@
-package accept_fixture
+package acceptfixture
 
 import (
 	"fmt"
