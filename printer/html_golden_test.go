@@ -81,6 +81,7 @@ func TestHTMLOutputGoldenWithCloneGroup(t *testing.T) {
 		TokenCount: 42,
 		Clones: []domain.ProcessedClone{
 			{
+				//nolint:embedlit // AGENTS.md mandates nested CloneRef initialization
 				CloneRef: domain.CloneRef{
 					Filename:  "foo.go",
 					LineStart: 5,
@@ -97,6 +98,7 @@ func TestHTMLOutputGoldenWithCloneGroup(t *testing.T) {
 				},
 			},
 			{
+				//nolint:embedlit // AGENTS.md mandates nested CloneRef initialization
 				CloneRef: domain.CloneRef{
 					Filename:  "bar.go",
 					LineStart: 10,

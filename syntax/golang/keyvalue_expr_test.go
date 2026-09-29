@@ -185,7 +185,8 @@ func main() {
 func TestKeyValueExpr_SelectorKey_MultiLevel(t *testing.T) {
 	t.Parallel()
 
-	// T{A.B.C: 1} — the AST nests SelectorExpr{X: SelectorExpr{X: Ident(A), Sel: B}, Sel: C}.
+	// T{A.B.C: 1} — the AST nests the selector: an outer SelectorExpr whose
+	// X is another SelectorExpr wrapping the base Ident, one level per dot.
 	src1 := `package test
 type L3 struct { C int }
 type L2 struct { L3 }
