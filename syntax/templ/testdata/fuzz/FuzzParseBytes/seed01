@@ -1,2 +1,2 @@
 go test fuzz v1
-string("templ Foo() {\n\t<div></div>\n}")
+[]byte("templ Foo() {\n\t<div></div>\n}")
