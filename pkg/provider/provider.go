@@ -71,12 +71,21 @@ var Provider = toolsdk.Register(toolsdk.Spec{
 	Name: finding.ToolName,
 	Description: "Code duplication detection: suffix-tree + AST-hash clones " +
 		"(Type 1 exact, Type 2 renamed, Type 3 near-miss) across Go and templ files. " +
-		"Fixed contract: semantic mode, threshold 5 statements (not configurable via the SDK). " +
+		"Semantic mode; the minimum clone size is tunable per run via the \"threshold\" " +
+		"option (default 5 statements). " +
 		"Crawl includes *_test.go files (the CLI default-ignores them), so group counts " +
 		"are intentionally higher than a default CLI run on the same tree",
 	Trigger: toolsdk.OnFiles("go", "**/*.go", "**/*.templ"),
 	Inputs:  []string{"**/*.go", "**/*.templ"},
-	Detect:  cloneDetector{},
+	Options: []toolsdk.Option{
+		{
+			Name:        providerOptionThreshold,
+			Kind:        toolsdk.OptionKindInt,
+			Default:     artdupl.DefaultThreshold,
+			Description: "Minimum duplicated statements for a clone group to be reported (1-1000)",
+		},
+	},
+	Detect: cloneDetector{},
 	// Self-documenting no-op: the detector is pure-Go (suffix tree over
 	// parsed ASTs, no external binary, no network), so there is nothing to
 	// probe. Declared explicitly so consumers do not mistake the absent
@@ -87,6 +96,12 @@ var Provider = toolsdk.Register(toolsdk.Spec{
 // cloneDetector implements the go-finding Detector contract on top of the
 // art-dupl SDK.
 type cloneDetector struct{}
+
+// providerOptionThreshold is the declared knob name for the minimum clone
+// size. Consumers set it via toolsdk.WithOptions; the SDK kind-checks it
+// and the SDK Options validation (1-1000) rejects out-of-range values with
+// the domain sentinels.
+const providerOptionThreshold = "threshold"
 
 // Name implements gofinding.Detector.
 func (cloneDetector) Name() string { return finding.ToolName }
@@ -134,12 +149,18 @@ func (cloneDetector) Detect(ctx context.Context) ([]gofinding.Finding, error) {
 // providerOptions configures the SDK for finding interchange: snippets are
 // required (they become Finding.Snippet) and per-group occurrence caps are
 // lifted (BuildFlow gates per finding, so truncation would hide instances).
-func providerOptions() *artdupl.Options {
-	opts := artdupl.DefaultOptions()
-	opts.IncludeFragments = true
-	opts.MaxClonesPerGroup = 0
+// The threshold comes from the context option when the consumer set one
+// (kind-checked by the toolsdk; range-checked by the SDK's own validation).
+func providerOptions(opts ...contextApplier) *artdupl.Options {
+	o := artdupl.DefaultOptions()
+	o.IncludeFragments = true
+	o.MaxClonesPerGroup = 0
 
-	return opts
+	for _, apply := range opts {
+		apply(o)
+	}
+
+	return o
 }
 
 // findingsFromGroups converts SDK clone groups into go-finding findings via
