@@ -148,6 +148,17 @@ recorded so the monthly self-scan does not re-litigate them:
   (`ARTDUPL_WINDOWS_PROCESS_TEST=1`) + continue-on-error CI probe after
   `Set-MpPreference -ExclusionPath $env:RUNNER_TEMP`. Next pass reads the probe log:
   green ⇒ delete the skip; red ⇒ exclusion hypothesis has evidence against it.
+  **RESOLVED 2026-09-29**: probe log RED (run 36509027090) but the red is INVALID
+  as hypothesis evidence — the probe excluded `RUNNER_TEMP` (D:\a\_temp) while the
+  test binary lives under `%TMP%` (C:\Users\...\AppData\Local\Temp), and the real
+  cause was found in stdlib source: `go build -o art-dupl-test` writes an
+  extensionless file on windows (cmd/go appends `.exe` only when `-o` is empty,
+  work/build.go:477), and os/exec `findExecutable` refuses extension-less absolute
+  paths (tries PATHEXT suffixes, none exist → ErrNotFound) — the discarded
+  `_ = cmd.Run()` error hid "file not found" behind "ProcessState is nil". Not AV,
+  not the runner. Fix: `-o art-dupl-test.exe` + start-error surfaced via
+  `errors.AsType[*exec.ExitError]`; windows skip deleted; Defender probe job
+  deleted; pending windows-CI confirmation.
 - **Skills upstream home (M14)**: `skills/docs-health` resolves via symlink chain
   crush-config → `~/.agents/skills` → `~/projects/SKILLS`; upstream edits go to the
   SKILLS repo (committed 2514a55 there), NOT crush-config. Annotator hardening

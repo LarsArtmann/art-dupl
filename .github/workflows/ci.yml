@@ -82,22 +82,6 @@ jobs:
       - name: Build
         run: go build ./...
 
-      # Windows exe-start probe (TODO #4): hosted windows runners intermittently
-      # refuse to START freshly built exes (Defender real-time scan lock;
-      # ProcessState nil). The community fix is an admin Defender path
-      # exclusion, which hosted runners can apply. This probe runs the
-      # otherwise-skipped TestExitCodes_Process AFTER the exclusion, with
-      # continue-on-error so the hypothesis test can never fail the lane —
-      # the log is the evidence either way.
-      - name: Windows exe-start probe (Defender exclusion hypothesis)
-        if: runner.os == 'Windows'
-        continue-on-error: true
-        run: |
-          Set-MpPreference -ExclusionPath $env:RUNNER_TEMP
-          Set-MpPreference -ExclusionProcess "art-dupl-test.exe"
-          $env:ARTDUPL_WINDOWS_PROCESS_TEST = "1"
-          go test -run "TestExitCodes_Process" -v ./cmd/
-
   coverage:
     name: Coverage
     runs-on: ubuntu-latest

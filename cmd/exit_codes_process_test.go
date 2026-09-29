@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"errors"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -43,8 +44,7 @@ func runBinaryExitCode(t *testing.T, binaryPath string, args ...string) int {
 
 	err := cmd.Run()
 	if err != nil {
-		var exitErr *exec.ExitError
-		if !errors.As(err, &exitErr) {
+		if _, started := errors.AsType[*exec.ExitError](err); !started {
 			t.Fatalf("failed to start %s: %v", binaryPath, err)
 		}
 	}
