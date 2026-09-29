@@ -17,7 +17,6 @@ description: Complete reference for all art-dupl command-line flags.
 | `--verbose`           | `-v`  | `false`    | Verbose logging (repeat for more)                             |
 | `--quiet`             | `-q`  | `false`    | Suppress non-essential status output                          |
 | `--no-color`          |       | `false`    | Disable colored output                                        |
-| `--version`           |       |            | Show version                                                  |
 | `--files`             | `-f`  | `false`    | Read file paths from stdin, one per line                      |
 
 ## Output Flags
@@ -66,8 +65,6 @@ description: Complete reference for all art-dupl command-line flags.
 | `--max-cache-entries` |       | `0`     | Max cached AST files to keep (`0` = unlimited)          |
 | `--memory-cache-entries` |    | `512`   | AST node slices kept in the in-memory cache layer (requires `--incremental`) |
 | `--search-workers`    |       | `0`     | Concurrent suffix-tree search workers (`0`/`1` = sequential, `>1` = parallel) |
-| `--timeout`           |       | `30m`   | Execution timeout (hidden in `--help`)                  |
-| `--profile`           |       | `false` | Emit pprof CPU and memory profiles (hidden in `--help`) |
 
 ## Debugging Flags
 
@@ -110,6 +107,10 @@ art-dupl baseline [flags] [paths...]
 
 Records current clones to `.art-dupl-baseline.json`.
 
+| Flag             | Default | Description                                        |
+| ---------------- | ------- | -------------------------------------------------- |
+| `--baseline-path` | ``      | Baseline file path (default: `.art-dupl-baseline.json`) |
+
 ## Check Subcommand
 
 ```bash
@@ -118,10 +119,23 @@ art-dupl check [flags] [paths...]
 
 Reports only clones NOT in the baseline. Exits 1 if new clones found.
 
+Also honors `--baseline-path` (shared with the baseline subcommand).
+
+## Version Subcommand
+
+```bash
+art-dupl version [--short] [--json]
+```
+
+| Flag      | Description                                          |
+| --------- | ---------------------------------------------------- |
+| `--short` | Print only the version string                        |
+| `--json`  | Print structured version info (version/commit/date)  |
+
 ## Other Commands
 
 ```bash
 art-dupl completion [bash|zsh|fish|powershell]  # Shell completion
-art-dupl --version                              # Version info
+art-dupl version                                 # Version info (subcommand)
 art-dupl --help                                 # Help
 ```

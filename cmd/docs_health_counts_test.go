@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/LarsArtmann/art-dupl/config"
+	"github.com/LarsArtmann/art-dupl/domain"
 	"github.com/LarsArtmann/art-dupl/pkg/artdupl"
 	"github.com/LarsArtmann/art-dupl/printer/actionability"
 	"github.com/spf13/pflag"
@@ -114,4 +115,108 @@ func TestSDKDefaultThresholdMirrorsConfig(t *testing.T) {
 		t.Errorf("SDK DefaultThreshold = %d but config.DefaultThreshold = %d; keep the deliberate duplication in sync",
 			artdupl.DefaultThreshold, config.DefaultThreshold)
 	}
+}
+
+// websiteFlagNames extracts the flag names documented in the website's
+// cli-flags.mdx table rows (`| `--name` | ...`). The doc covers root AND
+// stats-subcommand flags in one reference.
+func websiteFlagNames(t *testing.T) map[string]bool {
+	t.Helper()
+
+	pattern := regexp.MustCompile(`(?m)^\|\s*` + "`" + `(--[a-z0-9-]+)` + "`")
+	matches := pattern.FindAllStringSubmatch(readRepoFile(t, "website/src/content/docs/cli-flags.mdx"), -1)
+	if len(matches) == 0 {
+		t.Fatal("no flag rows found in website/src/content/docs/cli-flags.mdx; the gate lost its anchor")
+	}
+
+	names := make(map[string]bool, len(matches))
+	for _, m := range matches {
+		names[m[1]] = true
+	}
+
+	return names
+}
+
+// binaryFlagNames collects every non-hidden flag name across the root command
+// and all subcommands. `--help` is excluded: cobra injects it everywhere and
+// the docs deliberately document usage instead.
+func binaryFlagNames(t *testing.T) map[string]bool {
+	t.Helper()
+
+	root := NewRootCommand()
+	AddFlags(root)
+	root.InitDefaultHelpFlag()
+
+	names := make(map[string]bool)
+	visit := func(c *pflag.FlagSet) {
+		c.VisitAll(func(f *pflag.Flag) {
+			if !f.Hidden && f.Name != "help" {
+				names["--"+f.Name] = true
+			}
+		})
+	}
+	visit(root.LocalFlags())
+	for _, sub := range root.Commands() {
+		sub.InitDefaultHelpFlag()
+		visit(sub.LocalFlags())
+	}
+
+	if len(names) == 0 {
+		t.Fatal("binary exposes zero non-hidden flags; the gate is measuring the wrong thing")
+	}
+
+	return names
+}
+
+// TestWebsiteFlagsMatchBinary closes the manual website-vs-CLI diff from the
+// 2026-09-28 pass: every documented flag must exist on the binary, and every
+// non-hidden binary flag must be documented (both directions).
+func TestWebsiteFlagsMatchBinary(t *testing.T) {
+	doc := websiteFlagNames(t)
+	bin := binaryFlagNames(t)
+
+	docOnly := []string{}
+
+	for name := range doc {
+		if !bin[name] {
+			docOnly = append(docOnly, name)
+		}
+	}
+	binOnly := []string{}
+
+	for name := range bin {
+		if !doc[name] {
+			binOnly = append(binOnly, name)
+		}
+	}
+
+	if len(docOnly) > 0 || len(binOnly) > 0 {
+		t.Fatalf("website flag table drifted from the binary:\n  doc-only (not on the binary): %v\n  binary-only (undocumented): %v\nfix the website/src/content/docs/cli-flags.mdx table — the binary is the truth source",
+			docOnly, binOnly)
+	}
+}
+
+// TestDetectionModeCountMatchesDocs derives the mode count from the enum and
+// holds the docs to it (the "three matching modes" claim).
+func TestDetectionModeCountMatchesDocs(t *testing.T) {
+	modes := domain.AllDetectionModes()
+	if len(modes) != 3 {
+		t.Fatalf("domain.AllDetectionModes() = %d, want 3 (semantic/exact/structural); update the docs with the real count", len(modes))
+	}
+
+	readme := readRepoFile(t, "README.md")
+	requireDocContains(t, readme, fmt.Sprintf("%d output formats", len(domain.AllOutputFormats())))
+	requireDocContains(t, readme, "three matching modes")
+}
+
+// TestOutputFormatCountMatchesDocs derives the format count from the enum and
+// holds the docs to it.
+func TestOutputFormatCountMatchesDocs(t *testing.T) {
+	formats := domain.AllOutputFormats()
+	if len(formats) != 7 {
+		t.Fatalf("domain.AllOutputFormats() = %d, want 7; update the docs with the real count", len(formats))
+	}
+
+	features := readRepoFile(t, "FEATURES.md")
+	requireDocContains(t, features, fmt.Sprintf("%d output formats", len(formats)))
 }
