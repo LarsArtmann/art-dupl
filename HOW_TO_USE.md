@@ -631,6 +631,31 @@ found 3 clones:
   file2.go:15-25  | func handle(input string) error {
 ```
 
+With `--format json`, `--explain` attaches the same information as a structured
+`explanation` object on every clone (added 2026-09-29):
+
+```json
+{
+  "filename": "file1.go",
+  "line_start": 10,
+  "line_end": 20,
+  "clone_type": "type-2",
+  "category": "function",
+  "explanation": {
+    "clone_type": "type-2",
+    "actionability": "actionable",
+    "category": "function",
+    "tokens": 25,
+    "lines": 5,
+    "extractability": "~15 lines saved across sites",
+    "suggestion": "Extract to shared helper"
+  }
+}
+```
+
+The flat `non_actionable_pattern` field stays for backward compatibility; prefer
+`explanation.pattern` in new consumers. Without `--explain`, the object is omitted.
+
 ### How It Works
 
 - Directives are scanned lazily: only files containing clones are read.

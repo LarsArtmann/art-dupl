@@ -440,22 +440,32 @@ func TestJSONPrinter_ExplainObject(t *testing.T) {
 
 	jp := NewJSON(&buf, mockReadFile("")).(*JSONPrinter)
 	jp.SetExplain(true)
-	jp.cloneGroups = []CloneGroup{
-		{
-			Hash: "h",
-			Size: 10,
-			Clones: []JSONClone{
-				{
+	jp.SetHash("h")
+	jp.SetFilesCount(1)
+
+	group := domain.ProcessedCloneGroup{
+		Clones: []domain.ProcessedClone{
+			{
+				TokenCount: 10,
+				CloneRef: domain.CloneRef{
 					Filename: "a.go", LineStart: 1, LineEnd: 5,
+				},
+				Classification: domain.CloneClassification{
 					NonActionablePattern: "guard-clause",
 					Actionability:        domain.NonActionable,
+					CloneType:            domain.CloneType2,
+					Category:             domain.CategoryBlock,
+					Tokens:               10,
+					Lines:                5,
+					Suggestion:           "why: guard clause boilerplate",
 				},
 			},
 		},
 	}
-	jp.totalClones = 1
-	jp.filesCount = 1
 
+	if err := jp.PrintClones(group); err != nil {
+		t.Fatalf("PrintClones: %v", err)
+	}
 	if err := jp.OutputJSON(5, "size", ""); err != nil {
 		t.Fatalf("OutputJSON: %v", err)
 	}
@@ -475,6 +485,15 @@ func TestJSONPrinter_ExplainObject(t *testing.T) {
 	}
 	if clone.Explanation.Actionability != domain.NonActionable {
 		t.Errorf("explanation actionability = %v, want %v", clone.Explanation.Actionability, domain.NonActionable)
+	}
+	if clone.Explanation.Tokens != 10 || clone.Explanation.Lines != 5 {
+		t.Errorf("explanation tokens/lines = %d/%d, want 10/5", clone.Explanation.Tokens, clone.Explanation.Lines)
+	}
+	if clone.Explanation.CloneType != domain.CloneType2 || clone.Explanation.Category != domain.CategoryBlock {
+		t.Errorf("explanation clone_type/category = %v/%v", clone.Explanation.CloneType, clone.Explanation.Category)
+	}
+	if clone.Explanation.Suggestion == "" {
+		t.Error("explanation suggestion missing")
 	}
 	if clone.NonActionablePattern != "guard-clause" {
 		t.Error("non_actionable_pattern must stay for back-compat alongside the explanation object")
