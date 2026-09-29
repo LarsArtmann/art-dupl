@@ -42,7 +42,7 @@ or external by nature.
 - [ ] **Fleet audit: `filepath.Separator` matching + `strings.Split(_, ":")` path parsing** (#15) — art-dupl in-repo sweep is DONE (2026-09-29: zero Separator-matching or colon-path-parsing sites; crawl slash-normalization invariant holds). Sweep the OTHER repos (the Windows bug class that cost seven CI cycles).
 - [ ] **Branch protection with required checks + failure notifications** (#18) — red CI sat unnoticed for 4 days; needs owner action on GitHub settings.
 - [ ] **Root-cause Windows exe-start `ProcessState nil`; un-skip `TestExitCodes_Process`** (#4) — 3-attempt retry insufficient, runner refuses freshly built exes; logic covered by `TestExitCodeForError` meanwhile. 2026-09-29 (M18, 4th round): the untried hypothesis is Defender real-time scan lock — the test now opt-ins via `ARTDUPL_WINDOWS_PROCESS_TEST=1` and a continue-on-error CI probe job runs it AFTER `Set-MpPreference -ExclusionPath $env:RUNNER_TEMP` (hosted runners are admin). Next pass: read the probe log — green ⇒ delete the skip; red ⇒ the exclusion hypothesis has evidence against it, park until a real Windows repro capability exists.
-- [ ] **go-paperless: tag + release the findByName consolidation** (#20) — pushed 2026-09-19 (`04c32dc`), CI verifying; needs CHANGELOG + version decision via go-release.
+- [ ] **go-paperless: tag + release the findByName consolidation** (#20) — pushed 2026-09-19 (`04c32dc`), CI verifying; v0.4.3 decided (two fixes, no API surface); follow-the-recipe memo: `docs/planning/2026-09-29_03-10_go-paperless-release-memo.md` (verify repo state first — memo reflects 2026-09-29 HEAD).
 
 ### BuildFlow upstream (discovered 2026-09-23)
 
