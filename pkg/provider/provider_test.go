@@ -962,3 +962,35 @@ func TestProviderVersionFromBuildInfo(t *testing.T) {
 		t.Errorf("consumer without art-dupl dep = %q, want %q", got, versionFallback)
 	}
 }
+
+// BenchmarkDetectWorkspaceScale measures a full provider Detect (crawl +
+// suffix-tree detection + finding conversion) against a real multi-module
+// workspace, at BuildFlow-workspace scale (33 Go modules):
+//
+//	ARTDUPL_WORKSPACE_DIR=$HOME/projects/BuildFlow \
+//	  go test -bench BenchmarkDetectWorkspaceScale -benchtime 1x -benchmem ./pkg/provider/
+//
+// Skipped without ARTDUPL_WORKSPACE_DIR so the default suite stays hermetic.
+// The numbers feed the Spec.Timeout decision (TODO D1): if Detect stays in the
+// seconds range and honors ctx cancellation, consumers can bound it with a
+// context deadline and no Spec-level timeout field is needed.
+func BenchmarkDetectWorkspaceScale(b *testing.B) {
+	dir := os.Getenv("ARTDUPL_WORKSPACE_DIR")
+	if dir == "" {
+		b.Skip("set ARTDUPL_WORKSPACE_DIR to a workspace root (e.g. BuildFlow's 33-module tree)")
+	}
+
+	detector := cloneDetector{}
+
+	b.ResetTimer()
+
+	for range b.N {
+		ctx := gofinding.WithWorkingDir(toolsdk.EnsureContext(context.Background()), dir)
+		findings, err := detector.Detect(ctx)
+		if err != nil {
+			b.Fatalf("Detect: %v", err)
+		}
+
+		b.SetBytes(int64(len(findings)))
+	}
+}

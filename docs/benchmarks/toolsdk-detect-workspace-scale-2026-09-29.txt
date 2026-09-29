@@ -1,0 +1,41 @@
+# toolsdk Detect at BuildFlow workspace scale (Spec.Timeout decision input)
+
+Date: 2026-09-29
+Machine: AMD Ryzen AI MAX+ 395 (32 threads), linux, Go 1.27.1, art-dupl fork @ 9a97ec82+
+Benchmark: `BenchmarkDetectWorkspaceScale` (pkg/provider/provider_test.go), full
+provider Detect path = gitignore crawl + art-dupl SDK suffix-tree detection +
+finding conversion (no actionability — provider is classification-free per ADR-0025).
+
+## Workspace
+
+- Target: `~/projects/BuildFlow` — 33 Go modules, 7,958 `*.go` files, 2 `*.templ` files
+- Findings returned: 1,217 (matches the D2 warnings-budget seed observed 2026-09-29)
+
+## Numbers
+
+```
+BenchmarkDetectWorkspaceScale-32     1    649,924,449 ns/op    294,630,216 B/op    3,715,040 allocs/op
+```
+
+- Wall time: ~650 ms for one full Detect (crawl + detect + convert)
+- Peak allocation: ~295 MB total allocated (3.7M allocs) across the run
+- CLI cross-check at default `-t 5` with actionability: 302 clone groups
+  (15 shown / 287 suppressed) over the same tree
+
+## Verdict on a Spec-level timeout field (TODO D1)
+
+**Not needed.** Detection at multi-module workspace scale sits ~100x under
+BuildFlow's 60 s performance budget, and the SDK path already honors
+`context.Context` cancellation end to end (`FindClones(ctx, ...)`; covered by
+the provider ctx-cancellation test). A consumer that needs a bound can wrap the
+Detect call in `context.WithTimeout` — the idiomatic Go mechanism — so a
+`Spec.Timeout` field would be redundant plumbing in the toolsdk contract.
+Re-evaluate only if a workspace 100x this size (or a pathological input class)
+measurably regresses.
+
+## Reproduction
+
+```bash
+ARTDUPL_WORKSPACE_DIR=$HOME/projects/BuildFlow \
+  go test -run xxx -bench BenchmarkDetectWorkspaceScale -benchtime 1x -benchmem ./pkg/provider/
+```
