@@ -26,7 +26,7 @@ nix flake check               # all 8 checks pass
 
 ## 3. Version Bump
 
-- Update `version` in `flake.nix` (the explicit string, NOT `self.rev`)
+- Update `version` in `flake.nix` (the explicit string, NOT `self.rev`). **Known stale-bump trap (found 2026-09-29):** the flake said `0.7.0` while v0.7.1/v0.7.2 were already tagged — the bump step was skipped twice. Verify the CURRENT flake version matches the LAST tag before bumping, or you cannot tell a stale flake from a fresh one.
 - Verify `art-dupl version` prints the correct version after `nix build`
 - **Do NOT commit via the daemon** — stage manually: `git add CHANGELOG.md flake.nix && git commit -m "chore(release): cut vX.Y.Z"`
 
@@ -48,13 +48,13 @@ nix build                     # produces versioned binary
 
 ```bash
 git push --follow-tags origin fork  # atomic branch + tag push
-gh release create vX.Y.0 --title "art-dupl vX.Y.0" --generate-notes
+gh release create vX.Y.0 --title "art-dupl vX.Y.0" --notes-file <notes-file>
 ```
 
-Use `--generate-notes` or `--notes-file <changelog-section>` for full release notes.
-Do NOT use `--notes-from-tag` (too terse).
+Draft the notes FILE from the CHANGELOG section BEFORE creating the release
+(preferred over `--generate-notes`, which produced the v0.7.2 generic-boilerplate
+body). Do NOT use `--notes-from-tag` (too terse).
 
-```
 **Verify the rendered body actually contains the changes** (v0.7.2 shipped with an
 empty `## Changelog` stub and pure install boilerplate — the gap was caught three
 days later). If the body is generic, backfill without clobbering the install
@@ -66,7 +66,7 @@ the `## Changelog` stub with the CHANGELOG section's content, write back with
 
 - Verify the GitHub Release page renders correctly
 - Verify the release assets are downloadable
-- Move the CHANGELOG section from "Unreleased" to the version heading
+- Reopen an empty `## [Unreleased]` section at the CHANGELOG top (with its compare link def `[Unreleased]: https://github.com/LarsArtmann/art-dupl/compare/vX.Y.Z...HEAD`)
 - Update `ROADMAP.md` if any items were completed
 - Announce in relevant channels
 
