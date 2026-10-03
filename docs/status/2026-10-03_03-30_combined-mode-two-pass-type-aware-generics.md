@@ -54,7 +54,7 @@
 1. **First attempt at the canonical constant violated arch-lint** — I put `MinDivergentPositions` in `domain/`, but `syntax` (where the helper lives) may not depend on `domain`. Caught on first build, deleted and relocated. Cost: one wasted write cycle. Root cause: I designed the dependency graph in my head instead of checking `.go-arch-lint.yml` first.
 2. **Two broken BDD fixture iterations before the third worked**:
    - Iteration 1 asserted on function NAMES in output — but clone previews show the first BODY line, never the signature. The assertion could never pass.
-   - Iteration 2's "receiver noise" fixture didn't USE the receiver in the cloned region, so the type-aware pass legitimately matched the common statements and the "suppressed" assertion failed. Also exposed that my mental model ("suppressed in combined") needed refinement: the correct contract is *full-body cross-type group dropped, same-type core still reported* — the final test pins exactly that with line ranges.
+   - Iteration 2's "receiver noise" fixture didn't USE the receiver in the cloned region, so the type-aware pass legitimately matched the common statements and the "suppressed" assertion failed. Also exposed that my mental model ("suppressed in combined") needed refinement: the correct contract is _full-body cross-type group dropped, same-type core still reported_ — the final test pins exactly that with line ranges.
    - Lesson: I wrote assertions against imagined output instead of running the thing first. Two full test cycles burned.
 3. **Undiagnosed root cause, worked around blindly**: stdlib imports in BDD tmp-dir fixtures fail go/packages type-checking (`invalid type` per ident, mixed resolution across files of the same adhoc package). I redesigned the fixture to same-package types instead of understanding WHY. It smells like module-less adhoc-package behavior of go/packages `file=` patterns in that execution context. Unit tests in `syntax/golang` with the same imports DO resolve — the difference (two files, same dir, same package, different imports) is unverified.
 4. **Shipped with known unwired flags** (see b1/b2): `--timing` loses a stage, `--profile` is a no-op in combined mode. I noticed both only during this self-review, not during implementation. This is the same class of "silently ignore what the user asked for" that motivated the whole feature — embarrassing specifically because of that.
@@ -68,15 +68,18 @@ Nothing is broken in the shipped path: all gates green, no regressions. The dama
 **What did I forget?** CHANGELOG, TESTING.md gotcha, `--timing`/`--profile` threading, the stale `Options.SuggestGenerics` comment, full-race-gate-at-closeout (running now, in background).
 
 **What is stupid that we do anyway?**
+
 - `job.sendCtx` is unexported, so `cmd` re-implements the context-aware send THREE times now (`spawnCloneDetection`, my `sendMatch`, the SDK closures). Export it or move a `cmd` helper.
 - The flatten walker now exists twice (`syntax.flattenNodes` for `*syntax.Node`, `printer.flattenCloneNodes` for `*domain.CloneNode`) with a parity test holding them together. A test-enforced duplicate is a split brain with a bodyguard — the guard works, but the duplication is structural debt.
 
 **What could I have done better?**
+
 - Read `.go-arch-lint.yml` BEFORE designing where the constant lives (dependency directions were one `view` away).
 - Run the CLI on a scratch fixture BEFORE writing output-format assertions (would have saved both broken BDD iterations).
 - Check which optional flags thread through `executeAnalysis` when adding a sibling path — a checklist ("timing? profile? stats? filter warnings?") would have caught b1/b2 in implementation instead of review.
 
 **What can still be improved?**
+
 - Combined-mode peak memory: both suffix trees + both node-slice sets are alive simultaneously (both detectors run). A large repo pays ~2x tree memory. Option: fully drain pass-1 search, free its tree, then build pass 2 (halves peak, adds wall-clock). Needs a benchmark first — no data, no decision.
 - Incremental combined creates one `IncrementalParser` per pass (fresh LRU each, cache stats printed per pass). One shared parser with `SetTypeAwareData` per pass (tag re-derives correctly — verified reading `SetTypeAwareData`) would share the LRU and print once.
 - The CLI note text references "ADR-0026" — an internal doc id in user-facing output. Users without the repo can't follow it; drop or soften.
@@ -92,6 +95,7 @@ Nothing is broken in the shipped path: all gates green, no regressions. The dama
 ## f) NEXT (prioritized, ≤50)
 
 **Immediate fixes from this session's misses:**
+
 1. Thread `--profile` through `executeCombinedAnalysis` (b2).
 2. Record `PhaseIngest` (plus per-pass stage tags) in combined mode so `--timing` is complete (b1).
 3. Add CHANGELOG.md Unreleased entry for combined mode.
@@ -146,4 +150,4 @@ Nothing is broken in the shipped path: all gates green, no regressions. The dama
 
 ---
 
-*Report written 2026-10-03 03:30 CEST. Format note: user explicitly requested `.md`; status-report skill default is HTML — override honored, flagged here. Waiting for instructions.*
+_Report written 2026-10-03 03:30 CEST. Format note: user explicitly requested `.md`; status-report skill default is HTML — override honored, flagged here. Waiting for instructions._

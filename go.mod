@@ -86,7 +86,7 @@ require (
 	github.com/dustin/go-humanize v1.1.0
 	github.com/go-faster/yaml v0.4.6
 	github.com/larsartmann/go-finding v1.13.0
-	github.com/larsartmann/go-finding/toolsdk v1.13.1
+	github.com/larsartmann/go-finding/toolsdk v1.14.0
 	github.com/onsi/ginkgo/v2 v2.33.0
 	github.com/onsi/gomega v1.43.0
 	github.com/sergi/go-diff v1.4.0
@@ -94,7 +94,7 @@ require (
 	github.com/spf13/pflag v1.0.10
 	github.com/zeebo/xxh3 v1.1.0
 	golang.org/x/sync v0.23.0
-	golang.org/x/tools v0.50.0
+	golang.org/x/tools v0.51.0
 )
 
 require (
@@ -103,7 +103,7 @@ require (
 	github.com/aymanbagabas/go-udiff v0.4.1 // indirect
 	github.com/bmatcuk/doublestar/v4 v4.10.2 // indirect
 	github.com/charmbracelet/colorprofile v0.4.3 // indirect
-	github.com/charmbracelet/ultraviolet v0.0.0-20260928045949-bbf040aedf25 // indirect
+	github.com/charmbracelet/ultraviolet v0.0.0-20261001125412-878653296cfd // indirect
 	github.com/charmbracelet/x/ansi v0.11.8 // indirect
 	github.com/charmbracelet/x/exp/charmtone v0.1.0 // indirect
 	github.com/charmbracelet/x/termios v0.1.1 // indirect
@@ -116,7 +116,7 @@ require (
 	github.com/go-logr/logr v1.4.4 // indirect
 	github.com/go-task/slim-sprig/v3 v3.0.0 // indirect
 	github.com/google/go-cmp v0.7.0 // indirect
-	github.com/google/pprof v0.0.0-20260926063103-aaccee046517 // indirect
+	github.com/google/pprof v0.0.0-20261002000307-77d3b59017a0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/klauspost/cpuid/v2 v2.4.0 // indirect
 	github.com/larsartmann/go-error-family v0.11.0 // indirect
