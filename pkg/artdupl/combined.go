@@ -21,7 +21,7 @@ func (d *detector) isCombinedMode() bool {
 // returns both hash dispositions. On load failure it falls back to syntax-only
 // (nil, nil), in which case both passes produce identical results and the
 // generics-pass filter drops everything, leaving the type-aware output.
-func (d *detector) loadCombinedTypeData(files []string) (typeAware, erased golang.TypeAwareData) {
+func (d *detector) loadCombinedTypeData(files []string) (golang.TypeAwareData, golang.TypeAwareData) {
 	goFiles := make([]string, 0, len(files))
 
 	for _, f := range files {
@@ -127,6 +127,42 @@ func (d *detector) runCombinedAnalysis(
 	d.reportProgress(90, "Processing results", "")
 
 	return allGroups, typeAwareResult, nil
+}
+
+// streamCombinedInto runs the combined two-pass analysis and forwards its
+// groups as StreamResults, emitting a terminal error result on failure.
+func (d *detector) streamCombinedInto(
+	ctx context.Context,
+	files []string,
+	resultChan chan<- StreamResult,
+) {
+	groupChan := make(chan *CloneGroup, 10)
+
+	go func() {
+		defer close(groupChan)
+
+		streamErr := d.streamCombinedResults(ctx, files, groupChan)
+		if streamErr != nil {
+			select {
+			case resultChan <- StreamResult{Group: nil, Err: streamErr}:
+			case <-ctx.Done():
+			}
+		}
+	}()
+
+	for group := range groupChan {
+		if group == nil {
+			continue
+		}
+
+		select {
+		case resultChan <- StreamResult{Group: group, Err: nil}:
+		case <-ctx.Done():
+			return
+		}
+	}
+
+	d.reportProgress(100, "Analysis complete", "")
 }
 
 // streamCombinedResults is the combined-mode entry for

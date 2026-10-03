@@ -157,31 +157,7 @@ func (d *detector) FindClonesStreamResult(
 		defer close(resultChan)
 
 		if d.isCombinedMode() {
-			groupChan := make(chan *CloneGroup, 10)
-
-			go func() {
-				defer close(groupChan)
-
-				streamErr := d.streamCombinedResults(ctx, files, groupChan)
-				if streamErr != nil {
-					select {
-					case resultChan <- StreamResult{Group: nil, Err: streamErr}:
-					case <-ctx.Done():
-					}
-				}
-			}()
-
-			for group := range groupChan {
-				if group != nil {
-					select {
-					case resultChan <- StreamResult{Group: group, Err: nil}:
-					case <-ctx.Done():
-						return
-					}
-				}
-			}
-
-			d.reportProgress(100, "Analysis complete", "")
+			d.streamCombinedInto(ctx, files, resultChan)
 
 			return
 		}

@@ -143,7 +143,7 @@ func TestFlattenNodesPreOrder(t *testing.T) {
 
 	got := flattenNodes([]*Node{tree})
 
-	var gotNames []string
+	gotNames := make([]string, 0, len(got))
 	for _, n := range got {
 		gotNames = append(gotNames, n.Name)
 	}

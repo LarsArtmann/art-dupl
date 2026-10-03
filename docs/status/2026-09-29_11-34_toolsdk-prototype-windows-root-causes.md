@@ -78,6 +78,7 @@
 ## f) NEXT (prioritized; ≤50)
 
 **This-repo blockers (do first):**
+
 1. Commit + push the `wsl_v5` fix in `pkg/provider/provider_test.go` (done locally, unpushed).
 2. Root-cause the nix `checks.test` sandbox failure (`nix log <drv>` with a timeout, or `nix build .#checks.x86_64-linux.test` locally) and fix.
 3. Fix PR #41 lint: static sentinel errors + `%w` in `toolsdk/options.go`, push to the branch.

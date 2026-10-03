@@ -178,7 +178,7 @@ func renderMeter(m Meter) string {
 }
 `
 
-	runMode := func(t *testing.T, combined bool) (groupCount int, divergentStmtFound bool) {
+	runMode := func(t *testing.T, combined bool) (int, bool) {
 		t.Helper()
 
 		dir := t.TempDir()
@@ -216,6 +216,9 @@ func renderMeter(m Meter) string {
 
 			t.Fatalf("FindClones: %v", err)
 		}
+
+		groupCount := 0
+		divergentStmtFound := false
 
 		for _, group := range result.CloneGroups {
 			groupCount++

@@ -197,7 +197,7 @@ func sendMatch(ctx context.Context, ch chan<- syntax.Match, match syntax.Match) 
 func loadCombinedTypeData(
 	stderr io.Writer,
 	allFiles []string,
-) (typeAware, erased golang.TypeAwareData) {
+) (golang.TypeAwareData, golang.TypeAwareData) {
 	goFiles := make([]string, 0, len(allFiles))
 
 	for _, f := range allFiles {
