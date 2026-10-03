@@ -13,40 +13,26 @@ import (
 // filtering and printed hints would disagree about which families are
 // generics candidates.
 func TestGenericsCandidacyParityWithSyntaxHelper(t *testing.T) {
+	node := func(name, varType string, children ...*syntax.Node) *syntax.Node {
+		return &syntax.Node{Name: name, VarType: varType, Children: children}
+	}
+
 	trees := [][][]*syntax.Node{
 		{
-			{Name: "v0", VarType: "int", Children: []*syntax.Node{
-				{Name: "v1", VarType: "string"},
-			}},
-			{Name: "v0", VarType: "int", Children: []*syntax.Node{
-				{Name: "v1", VarType: "string"},
-			}},
+			[]*syntax.Node{node("v0", "int", node("v1", "string"))},
+			[]*syntax.Node{node("v0", "int", node("v1", "string"))},
 		},
 		{
-			{Name: "v0", VarType: "int", Children: []*syntax.Node{
-				{Name: "v1", VarType: "string"},
-			}},
-			{Name: "v0", VarType: "int64", Children: []*syntax.Node{
-				{Name: "v1", VarType: "string"},
-			}},
+			[]*syntax.Node{node("v0", "int", node("v1", "string"))},
+			[]*syntax.Node{node("v0", "int64", node("v1", "string"))},
 		},
 		{
-			{Name: "v0", VarType: "int", Children: []*syntax.Node{
-				{Name: "v1", VarType: "string"},
-			}},
-			{Name: "v0", VarType: "int64", Children: []*syntax.Node{
-				{Name: "v1", VarType: "[]byte"},
-			}},
+			[]*syntax.Node{node("v0", "int", node("v1", "string"))},
+			[]*syntax.Node{node("v0", "int64", node("v1", "[]byte"))},
 		},
 		{
-			{Name: "v0", VarType: "main.First", Children: []*syntax.Node{
-				{Name: "v1", VarType: "main.First"},
-				{Name: "v2", VarType: "int"},
-			}},
-			{Name: "v0", VarType: "main.Second", Children: []*syntax.Node{
-				{Name: "v1", VarType: "main.Second"},
-				{Name: "v2", VarType: "int"},
-			}},
+			[]*syntax.Node{node("v0", "main.First", node("v1", "main.First"), node("v2", "int"))},
+			[]*syntax.Node{node("v0", "main.Second", node("v1", "main.Second"), node("v2", "int"))},
 		},
 	}
 

@@ -327,3 +327,56 @@ func findIdentHashForName(root *syntax.Node, name string) int32 {
 
 	return result
 }
+
+// TestWithEraseHash pins the combined-mode derivation: one go/packages load
+// yields both hash dispositions without re-type-checking, sharing the
+// underlying AST and TypeInfo pointers.
+func TestWithEraseHash(t *testing.T) {
+	t.Parallel()
+
+	file := filepath.Join(t.TempDir(), "a.go")
+	writeFile(t, file, "package p\n\nfunc f(x int) int { return x }\n")
+
+	typeData, err := LoadTypeAwareData([]string{file}, false)
+	if err != nil {
+		t.Fatalf("LoadTypeAwareData failed: %v", err)
+	}
+
+	erased := typeData.WithEraseHash(true)
+
+	preTa := typeData.LookupPreloaded(file)
+	preSg := erased.LookupPreloaded(file)
+
+	if preTa == nil || preSg == nil {
+		t.Fatal("LookupPreloaded returned nil")
+	}
+
+	if preTa.EraseHash {
+		t.Error("original data must keep EraseHash=false")
+	}
+
+	if !preSg.EraseHash {
+		t.Error("derived data must have EraseHash=true")
+	}
+
+	if preTa.File != preSg.File {
+		t.Error("derived data must share the underlying AST")
+	}
+
+	if preTa.TypeInfo != preSg.TypeInfo {
+		t.Error("derived data must share the underlying TypeInfo")
+	}
+
+	if preTa.Fset != preSg.Fset {
+		t.Error("derived data must share the underlying FileSet")
+	}
+
+	if len(typeData) != len(erased) {
+		t.Errorf("map sizes differ: %d vs %d", len(typeData), len(erased))
+	}
+
+	var nilMap TypeAwareData
+	if nilMap.WithEraseHash(true) != nil {
+		t.Error("nil receiver must stay nil")
+	}
+}

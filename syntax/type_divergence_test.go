@@ -6,6 +6,10 @@ import (
 )
 
 func TestCountTypeDivergencePositions(t *testing.T) {
+	node := func(name, varType string, children ...*Node) *Node {
+		return &Node{Name: name, VarType: varType, Children: children}
+	}
+
 	tests := []struct {
 		name  string
 		frags [][]*Node
@@ -13,55 +17,55 @@ func TestCountTypeDivergencePositions(t *testing.T) {
 	}{
 		{
 			name:  "fewer than two fragments",
-			frags: [][]*Node{{{VarType: "int"}}},
+			frags: [][]*Node{{node("v0", "int")}},
 			want:  0,
 		},
 		{
 			name: "zero divergence, identical types",
 			frags: [][]*Node{
-				{Name: "v0", VarType: "int", Children: []*Node{{Name: "v1", VarType: "string"}}},
-				{Name: "v0", VarType: "int", Children: []*Node{{Name: "v1", VarType: "string"}}},
+				{node("v0", "int", node("v1", "string"))},
+				{node("v0", "int", node("v1", "string"))},
 			},
 			want: 0,
 		},
 		{
 			name: "one divergent position",
 			frags: [][]*Node{
-				{Name: "v0", VarType: "int", Children: []*Node{{Name: "v1", VarType: "string"}}},
-				{Name: "v0", VarType: "int64", Children: []*Node{{Name: "v1", VarType: "string"}}},
+				{node("v0", "int", node("v1", "string"))},
+				{node("v0", "int64", node("v1", "string"))},
 			},
 			want: 1,
 		},
 		{
 			name: "two divergent positions",
 			frags: [][]*Node{
-				{Name: "v0", VarType: "int", Children: []*Node{{Name: "v1", VarType: "string"}}},
-				{Name: "v0", VarType: "int64", Children: []*Node{{Name: "v1", VarType: "[]byte"}}},
+				{node("v0", "int", node("v1", "string"))},
+				{node("v0", "int64", node("v1", "[]byte"))},
 			},
 			want: 2,
 		},
 		{
 			name: "empty VarType on either side is ignored",
 			frags: [][]*Node{
-				{Name: "v0", VarType: "int", Children: []*Node{{Name: "v1"}}},
-				{Name: "v0", Children: []*Node{{Name: "v1", VarType: "string"}}},
+				{node("v0", "int", node("v1", ""))},
+				{node("v0", "", node("v1", "string"))},
 			},
 			want: 0,
 		},
 		{
 			name: "three fragments, union of positions across all pairs",
 			frags: [][]*Node{
-				{Name: "v0", VarType: "int", Children: []*Node{{Name: "v1", VarType: "string"}, {Name: "v2", VarType: "bool"}}},
-				{Name: "v0", VarType: "int64", Children: []*Node{{Name: "v1", VarType: "string"}, {Name: "v2", VarType: "bool"}}},
-				{Name: "v0", VarType: "int64", Children: []*Node{{Name: "v1", VarType: "[]byte"}, {Name: "v2", VarType: "bool"}}},
+				{node("v0", "int", node("v1", "string"), node("v2", "bool"))},
+				{node("v0", "int64", node("v1", "string"), node("v2", "bool"))},
+				{node("v0", "int64", node("v1", "[]byte"), node("v2", "bool"))},
 			},
 			want: 2,
 		},
 		{
 			name: "length mismatch compares shared prefix only",
 			frags: [][]*Node{
-				{Name: "v0", VarType: "int", Children: []*Node{{Name: "v1", VarType: "string"}}},
-				{Name: "v0", VarType: "int64"},
+				{node("v0", "int", node("v1", "string"))},
+				{node("v0", "int64")},
 			},
 			want: 1,
 		},
@@ -77,11 +81,8 @@ func TestCountTypeDivergencePositions(t *testing.T) {
 }
 
 func TestIsGenericsCandidateStructure(t *testing.T) {
-	makeFrags := func(typeA, typeB string) [][]*Node {
-		return [][]*Node{
-			{Name: "v0", VarType: typeA, Children: []*Node{{Name: "v1", VarType: "string"}}},
-			{Name: "v0", VarType: typeB, Children: []*Node{{Name: "v1", VarType: "[]byte"}}},
-		}
+	node := func(name, varType string, children ...*Node) *Node {
+		return &Node{Name: name, VarType: varType, Children: children}
 	}
 
 	tests := []struct {
@@ -89,11 +90,30 @@ func TestIsGenericsCandidateStructure(t *testing.T) {
 		frags [][]*Node
 		want  bool
 	}{
-		{name: "zero divergence is not candidate structure", frags: makeFrags("int", "int"), want: false},
-		{name: "one divergence is not candidate structure", frags: [][]*Node{
-			{Name: "v0", VarType: "time.Time"}, {Name: "v0", VarType: "*big.Int"},
-		}, want: false},
-		{name: "two divergences is candidate structure", frags: makeFrags("int", "int64"), want: true},
+		{
+			name: "zero divergence is not candidate structure",
+			frags: [][]*Node{
+				{node("v0", "int", node("v1", "string"))},
+				{node("v0", "int", node("v1", "string"))},
+			},
+			want: false,
+		},
+		{
+			name: "single receiver-only divergence is not candidate structure",
+			frags: [][]*Node{
+				{node("v0", "time.Time")},
+				{node("v0", "*big.Int")},
+			},
+			want: false,
+		},
+		{
+			name: "two divergences is candidate structure",
+			frags: [][]*Node{
+				{node("v0", "int", node("v1", "string"))},
+				{node("v0", "int64", node("v1", "[]byte"))},
+			},
+			want: true,
+		},
 	}
 
 	for _, tt := range tests {
@@ -105,9 +125,9 @@ func TestIsGenericsCandidateStructure(t *testing.T) {
 	}
 }
 
-// TestMinDivergentPositionsMatchesPrinter pins the canonical constant against
-// the printer re-export so the two can never drift.
-func TestMinDivergentPositionsMatchesPrinter(t *testing.T) {
+// TestMinDivergentPositionsValue pins the canonical constant: the printer
+// re-export and the combined-mode gate both derive from it.
+func TestMinDivergentPositionsValue(t *testing.T) {
 	if MinDivergentPositions != 2 {
 		t.Errorf("MinDivergentPositions = %d, want 2", MinDivergentPositions)
 	}
@@ -122,14 +142,13 @@ func TestFlattenNodesPreOrder(t *testing.T) {
 	}}
 
 	got := flattenNodes([]*Node{tree})
-	want := []string{"a", "b", "d", "c"}
 
 	var gotNames []string
 	for _, n := range got {
 		gotNames = append(gotNames, n.Name)
 	}
 
-	if !slices.Equal(gotNames, want) {
-		t.Errorf("flattenNodes() = %v, want %v", gotNames, want)
+	if !slices.Equal(gotNames, []string{"a", "b", "d", "c"}) {
+		t.Errorf("flattenNodes() = %v, want [a b d c]", gotNames)
 	}
 }
