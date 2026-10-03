@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/LarsArtmann/art-dupl/domain"
+	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
 // TypeDivergence describes a single position where corresponding nodes across
@@ -22,7 +23,10 @@ type TypeDivergence struct {
 // qualifies as a generics-extraction candidate. Single-position differences
 // are dominated by shallow idiom noise (one differently-typed call result)
 // rather than genuine same-algorithm-different-types duplication.
-const MinDivergentPositions = 2
+//
+// Canonical definition: syntax.MinDivergentPositions (shared with the
+// combined type-aware + suggest-generics mode's structural gate).
+const MinDivergentPositions = syntax.MinDivergentPositions
 
 // ClassifyGenericsCandidate examines the VarType fields across corresponding
 // CloneNode positions in a clone group. When instances have different

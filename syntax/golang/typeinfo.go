@@ -29,6 +29,28 @@ type PreloadedAST struct {
 // TypeAwareData is a map from absolute file path to its pre-loaded AST and type info.
 type TypeAwareData map[string]*PreloadedAST
 
+// WithEraseHash returns a shallow copy of the map with every PreloadedAST's
+// EraseHash flag set to the given value. The underlying ASTs, file sets, and
+// type info are shared (read-only by the transformer), so this never
+// re-type-checks — it exists so the combined type-aware + suggest-generics
+// mode can derive both hash dispositions from a single go/packages load,
+// which is the expensive part (10-100x parsing).
+func (td TypeAwareData) WithEraseHash(eraseHash bool) TypeAwareData {
+	if td == nil {
+		return nil
+	}
+
+	result := make(TypeAwareData, len(td))
+
+	for path, pre := range td {
+		shallow := *pre
+		shallow.EraseHash = eraseHash
+		result[path] = &shallow
+	}
+
+	return result
+}
+
 // LookupPreloaded returns the pre-loaded data for the given file path, or nil
 // if type-aware data was not loaded for this file.
 func (td TypeAwareData) LookupPreloaded(file string) *PreloadedAST {
