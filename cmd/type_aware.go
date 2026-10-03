@@ -35,23 +35,30 @@ func replayFiles(files []string) chan string {
 	return newChan
 }
 
+// collectFiles drains a files channel into a slice, aborting early when the
+// context is canceled. The combined mode uses it to crawl once and replay the
+// file list for both detection passes.
+func collectFiles(ctx context.Context, filesChan chan string) []string {
+	var allFiles []string
+
+	for file := range filesChan {
+		if ctx.Err() != nil {
+			return allFiles
+		}
+
+		allFiles = append(allFiles, file)
+	}
+
+	return allFiles
+}
+
 func loadTypeAwareData(
 	ctx context.Context,
 	filesChan chan string,
 	stderr io.Writer,
 	eraseHash bool,
 ) (golang.TypeAwareData, chan string) {
-	var allFiles []string
-
-	for file := range filesChan {
-		select {
-		case <-ctx.Done():
-			return nil, nil
-		default:
-		}
-
-		allFiles = append(allFiles, file)
-	}
+	allFiles := collectFiles(ctx, filesChan)
 
 	goFiles := make([]string, 0, len(allFiles))
 

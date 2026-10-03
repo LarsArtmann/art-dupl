@@ -166,6 +166,19 @@ func buildSuffixTreeIncremental(params buildParams) treeBuildResult {
 		incParser.SetTypeAwareData(typeInfos)
 	}
 
+	return buildSuffixTreeIncrementalPass(params, incParser, filesChan, true)
+}
+
+// buildSuffixTreeIncrementalPass parses filesChan through the given incremental
+// parser and finalizes the tree build. Shared by single-mode and combined-mode
+// orchestration; printCacheStats controls the per-pass cache report so the
+// combined mode reports once (cumulatively, after the last pass).
+func buildSuffixTreeIncrementalPass(
+	params buildParams,
+	incParser *job.IncrementalParser,
+	filesChan chan string,
+	printCacheStatsReport bool,
+) treeBuildResult {
 	var (
 		schan        chan []*syntax.Node
 		incStatsChan chan job.IncrementalStats
@@ -181,7 +194,10 @@ func buildSuffixTreeIncremental(params buildParams) treeBuildResult {
 		incStats := <-incStatsChan
 
 		cacheStats := incParser.GetCacheStats()
-		printCacheStats(params.stderr, params.cfg, cacheStats)
+
+		if printCacheStatsReport {
+			printCacheStats(params.stderr, params.cfg, cacheStats)
+		}
 
 		return job.ParseStats{
 			FilesCount: incStats.FilesCount,
@@ -206,6 +222,16 @@ func buildSuffixTreeStandard(params buildParams) treeBuildResult {
 		typeInfos, filesChan = loadTypeAwareData(params.ctx, filesChan, params.stderr, params.cfg.SuggestGenerics)
 	}
 
+	return buildSuffixTreeStandardPass(params, filesChan, typeInfos)
+}
+
+// buildSuffixTreeStandardPass parses filesChan into a suffix tree with the
+// given type-aware data. Shared by single-mode and combined-mode orchestration.
+func buildSuffixTreeStandardPass(
+	params buildParams,
+	filesChan chan string,
+	typeInfos golang.TypeAwareData,
+) treeBuildResult {
 	var (
 		schan     chan []*syntax.Node
 		statsChan chan job.ParseStats
@@ -403,6 +429,10 @@ func executeAnalysis(
 		ch, ps, fs, err := executeHashOnlyAnalysis(ctx, cfg, paths, filterParam, filterStats, outputFormat, stderr)
 
 		return ch, ps, fs, err
+	}
+
+	if isCombinedTypeAndGenericsMode(cfg) {
+		return executeCombinedAnalysis(ctx, cfg, paths, filterParam, filterStats, outputFormat, stderr)
 	}
 
 	ingestStart := time.Now()

@@ -22,7 +22,7 @@ func BuildConfigFromFlags(cmd *cobra.Command, args []string) (*config.Config, er
 	warnStructural(cmd)
 	warnTypeAwareIncremental(cmd)
 	warnSemanticDeprecation(cmd)
-	warnTypeAwareSuggestGenerics(cmd)
+	noteCombinedMode(cmd)
 
 	appConfig, err := buildCLIConfig(cmd, args)
 	if err != nil {
@@ -317,17 +317,17 @@ func warnStructural(cmd *cobra.Command) {
 // incremental mode since M07 (IncrementalParser threads typeInfos via SetTypeAwareData).
 func warnTypeAwareIncremental(_ *cobra.Command) {}
 
-// warnTypeAwareSuggestGenerics warns when both --type-aware and
-// --suggest-generics are set: suggest-generics erases types from the hash
-// (EraseHash=true) and takes precedence, so the type-aware hashing the user
-// asked for is silently discarded.
-func warnTypeAwareSuggestGenerics(cmd *cobra.Command) {
+// noteCombinedMode informs the user when both --type-aware and
+// --suggest-generics are set: instead of one flag silently discarding the
+// other, the combined mode runs a type-aware pass plus a type-erased
+// generics pass over one shared type-check. See ADR-0026.
+func noteCombinedMode(cmd *cobra.Command) {
 	if cmd.Flags().Changed("type-aware") && cmd.Flags().Changed("suggest-generics") {
 		fmt.Fprintf(
 			cmd.ErrOrStderr(),
-			"Note: --suggest-generics takes precedence over --type-aware (types are erased from the "+
-				"hash so structurally-identical clones on different types still match). "+
-				"Drop --type-aware unless this is intentional.\n",
+			"Note: combined mode active — running a type-aware pass plus a type-erased "+
+				"generics pass over one shared type-check (same-type clones and generics "+
+				"candidates are both reported). See ADR-0026.\n",
 		)
 	}
 }
