@@ -130,5 +130,9 @@ is success, not an error.
 - The SDK supports `Options.SuggestGenerics = true` to find clones where the
   algorithm is identical but local variable types differ — candidates for Go
   generics extraction. Uses type-erased hashing, then classifies by comparing
-  types at corresponding positions. Takes precedence over `TypeAware` when both
-  are set. Same ~100x cost as `TypeAware`.
+  types at corresponding positions. Same ~100x cost as `TypeAware`.
+- Setting BOTH `TypeAware` and `SuggestGenerics` runs the combined two-pass
+  mode (ADR-0026): one shared type-check, a type-aware pass plus a type-erased
+  pass; the erased pass contributes only families with ≥2 divergent type
+  positions. Works for `FindClones` and `FindClonesStreamResult`
+  (`pkg/artdupl/combined.go`).

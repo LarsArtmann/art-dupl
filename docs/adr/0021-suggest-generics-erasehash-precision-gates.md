@@ -45,9 +45,10 @@ Cache isolation: the incremental cache key carries a `typeAwareTag`
 (`"ta"` = type-aware, `"sg"` = suggest-generics) so erased-hash ASTs are never
 reused for type-aware runs and vice versa (`job/incremental.go::cacheKey`).
 
-When both flags are passed, suggest-generics wins (eraseHash=true overrides
-type-aware hashing); the CLI prints a warning
-(`warnTypeAwareSuggestGenerics` in `cmd/config_builder.go`).
+When both flags are passed, the combined two-pass mode runs (one shared
+type-check, type-aware pass + type-erased pass, structural merge — see
+ADR-0026, which superseded the original "suggest-generics wins + warning"
+resolution of 2026-08-15).
 
 ### 2. Three precision gates on candidacy
 

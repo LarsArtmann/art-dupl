@@ -501,6 +501,28 @@ art-dupl --type-aware -t 30 ./src
 - Compatible with `--incremental` (type data is threaded through the incremental parser)
 - Falls back gracefully to syntax-only if type checking fails (missing dependencies, etc.)
 
+### Combined Mode (`--type-aware --suggest-generics`)
+
+Passing both flags runs the two analyses together over **one shared type-check**
+(ADR-0026): a type-aware pass reports exactly-duplicated code (identical types),
+and a type-erased pass reports cross-type families as generics candidates:
+
+```bash
+# Both analyses in one run: exact duplicates AND generics opportunities
+art-dupl --type-aware --suggest-generics -t 5 ./src
+```
+
+Semantics:
+
+- Type-erased families are kept only with ≥2 divergent type positions (the
+  generics-candidate structure). Zero-divergence families are exact duplicates
+  of type-aware groups (not reported twice); single-position divergence is the
+  receiver noise `--type-aware` exists to eliminate.
+- A family with a same-type pair plus a divergent member reports BOTH the pair
+  (actionable now) and the full family (extract to generic).
+- Actionability, line gates, and accept directives apply identically to both passes.
+- Cost: one type-check + two cheap parse/tree passes (NOT two type-checks).
+
 ### Generics-Extraction Enhancer (`--suggest-generics`)
 
 Highlights clones where the algorithm is identical but local variable types differ across instances — the class of duplication that Go generics can eliminate. Uses type-erased hashing so structurally-identical functions on different types still match, then classifies by comparing type information at corresponding positions.
@@ -521,7 +543,7 @@ art-dupl --suggest-generics -t 1 --json ./src
 **Tradeoffs:**
 
 - Same ~100x slower as `--type-aware` (full type checking required)
-- Takes precedence over `--type-aware` when both flags are set (a warning is printed)
+- Combine with `--type-aware` to run BOTH analyses in one pass over one shared type-check (see "Combined Mode" below)
 - INVALID with `--exact` or `--structural`: these modes make the type-divergent grouping the enhancer needs impossible, so the combination is rejected with a validation error instead of silently paying the slow parse for zero candidates
 - Candidates require ≥2 distinct positions with differing types and ≥4 lines per instance (tune or disable with `--suggest-generics-min-lines`, `0` disables the line gate)
 - Use `--min-tokens` to filter noise from small clone groups
