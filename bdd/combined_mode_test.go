@@ -31,18 +31,18 @@ func pairSumIntsAgain(x int, y int) int {
 }
 `
 
-// combinedReceiverNoiseClock/Meter are structurally identical with exactly ONE
-// divergent type position (the receiver: Clock vs Meter). This is the
-// shallow-noise class --type-aware exists to eliminate: the combined mode must
-// suppress it even though suggest-generics alone would show the group.
-// Same-package types only — the BDD sandbox has no go.mod, so stdlib imports
-// do not type-check there.
+// combinedReceiverNoiseClock/Meter differ in exactly ONE divergent type
+// position (the receiver `c Clock` vs `m Meter`, used once at line 6). This is
+// the shallow receiver-noise class --type-aware exists to eliminate. The
+// combined mode must drop the full-body cross-type match (lines 6-9) while
+// still reporting the same-type statement core (lines 7-9) from the
+// type-aware pass; suggest-generics alone shows the full 6-9 group.
 const combinedReceiverNoiseClock = `package main
 
-type Clock struct{ Sec int }
+type Clock struct{ Name string }
 
 func renderClock(c Clock) string {
-	parts := "t"
+	parts := c.Name
 	report := "ts:" + parts
 	width := len(report) + 1
 	return report[:width-1]
@@ -51,10 +51,10 @@ func renderClock(c Clock) string {
 
 const combinedReceiverNoiseMeter = `package main
 
-type Meter struct{ Sec int }
+type Meter struct{ Name string }
 
 func renderMeter(m Meter) string {
-	parts := "t"
+	parts := m.Name
 	report := "ts:" + parts
 	width := len(report) + 1
 	return report[:width-1]
@@ -100,11 +100,18 @@ var _ = Describe("Combined Type-Aware + Suggest-Generics Mode", func() {
 
 		combined, err := setup.RunArtDupl("--threshold", "1", "--type-aware", "--suggest-generics")
 		Expect(err).ToNot(HaveOccurred())
-		Expect(string(combined)).ToNot(ContainSubstring("combined_noise_a.go"))
 
+		// The full-body cross-type group (including the divergent receiver
+		// statement at line 6) is dropped; the same-type core (lines 7-9)
+		// survives via the type-aware pass.
+		Expect(string(combined)).ToNot(ContainSubstring("combined_noise_a.go:6-9"))
+		Expect(string(combined)).To(ContainSubstring("combined_noise_a.go:7-9"))
+
+		// Suggest-generics alone matches the full body across the divergent
+		// receiver types (single divergence: no generics hint).
 		genericsOnly, err := setup.RunArtDupl("--threshold", "1", "--suggest-generics")
 		Expect(err).ToNot(HaveOccurred())
-		Expect(string(genericsOnly)).To(ContainSubstring("combined_noise_a.go"))
+		Expect(string(genericsOnly)).To(ContainSubstring("combined_noise_a.go:6-9"))
 	})
 
 	It("falls back gracefully when type loading fails", func() {
