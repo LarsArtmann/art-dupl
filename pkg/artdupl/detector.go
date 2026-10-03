@@ -72,6 +72,10 @@ func (d *detector) FindClones(ctx context.Context, files []string) (*Result, err
 		return nil, err
 	}
 
+	if d.isCombinedMode() {
+		return d.findClonesCombined(ctx, files, startTime)
+	}
+
 	// Process files and build analysis pipeline
 	pipeline, err := d.buildAnalysisPipeline(ctx, files)
 	if err != nil {
@@ -107,6 +111,34 @@ func (d *detector) FindClones(ctx context.Context, files []string) (*Result, err
 	return result, nil
 }
 
+// findClonesCombined runs the two-pass combined mode and builds the result.
+func (d *detector) findClonesCombined(
+	ctx context.Context,
+	files []string,
+	startTime time.Time,
+) (*Result, error) {
+	cloneGroups, pipeline, err := d.runCombinedAnalysis(ctx, files)
+	if err != nil {
+		return nil, fmt.Errorf(
+			"combined analysis failed for %d files (methods=%v, threshold=%d): %w",
+			len(files),
+			d.cfg.DetectionMethods,
+			d.cfg.Threshold,
+			err,
+		)
+	}
+
+	result := d.buildResult(cloneGroups, pipeline.fileCount.FilesCount, pipeline.fileCount.LinesCount, startTime)
+
+	d.reportProgress(100, "Analysis complete", "")
+
+	if len(result.CloneGroups) == 0 {
+		return nil, ErrNoDuplicatesFound
+	}
+
+	return result, nil
+}
+
 // FindClonesStreamResult provides streaming results with error propagation.
 // The channel emits StreamResult values. A final StreamResult with Err != nil
 // indicates pipeline failure. The channel is always closed after all results.
@@ -123,6 +155,36 @@ func (d *detector) FindClonesStreamResult(
 
 	go func() {
 		defer close(resultChan)
+
+		if d.isCombinedMode() {
+			groupChan := make(chan *CloneGroup, 10)
+
+			go func() {
+				defer close(groupChan)
+
+				streamErr := d.streamCombinedResults(ctx, files, groupChan)
+				if streamErr != nil {
+					select {
+					case resultChan <- StreamResult{Group: nil, Err: streamErr}:
+					case <-ctx.Done():
+					}
+				}
+			}()
+
+			for group := range groupChan {
+				if group != nil {
+					select {
+					case resultChan <- StreamResult{Group: group, Err: nil}:
+					case <-ctx.Done():
+						return
+					}
+				}
+			}
+
+			d.reportProgress(100, "Analysis complete", "")
+
+			return
+		}
 
 		pipeline, err := d.buildAnalysisPipeline(ctx, files)
 		if err != nil {

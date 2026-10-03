@@ -25,6 +25,21 @@ func (d *detector) buildAnalysisPipeline(
 	ctx context.Context,
 	files []string,
 ) (*pipelineResult, error) {
+	// Load type-aware data if enabled (SDK has all files upfront, unlike CLI)
+	typeData := d.loadTypeAwareDataIfEnabled(files)
+
+	return d.buildPipelineWithTypeData(ctx, files, typeData)
+}
+
+// buildPipelineWithTypeData feeds the file channel, parses with the given type
+// data, and builds the suffix tree. Shared by single-mode and combined-mode
+// orchestration so the combined mode can reuse one go/packages load across
+// both passes.
+func (d *detector) buildPipelineWithTypeData(
+	ctx context.Context,
+	files []string,
+	typeData golang.TypeAwareData,
+) (*pipelineResult, error) {
 	d.reportProgress(0, "Starting file processing", "")
 
 	// Create file channel
@@ -58,9 +73,6 @@ func (d *detector) buildAnalysisPipeline(
 			d.reportProgress(progress, "Processing files", filename)
 		}
 	}()
-
-	// Load type-aware data if enabled (SDK has all files upfront, unlike CLI)
-	typeData := d.loadTypeAwareDataIfEnabled(files)
 
 	syntaxChan, fileCountChan := job.Parse(ctx, fileChan, d.cfg.toDetectionMode(), d.cfg.MaxChildrenSerial, typeData)
 	tree, data, done := job.BuildTree(ctx, syntaxChan)
@@ -175,10 +187,7 @@ func (d *detector) runDetection(
 ) ([]*CloneGroup, error) {
 	d.reportProgress(70, "Starting duplicate detection", "")
 
-	md := d.createMultiDetector(result.data, result.tree)
-	matchesChan := md.FindDuplOver(ctx, d.cfg.Threshold)
-
-	groups, err := collectMatchesIntoGroups(ctx, matchesChan)
+	groups, err := d.detectGroups(ctx, result)
 	if err != nil {
 		return nil, err
 	}
@@ -194,28 +203,47 @@ func (d *detector) runDetection(
 	return allGroups, nil
 }
 
+// detectGroups runs the detector over one pipeline and collects matches into
+// a hash-keyed group map. Shared by single-mode and combined-mode detection.
+func (d *detector) detectGroups(
+	ctx context.Context,
+	result *pipelineResult,
+) (map[string][][]*syntax.Node, error) {
+	md := d.createMultiDetector(result.data, result.tree)
+	matchesChan := md.FindDuplOver(ctx, d.cfg.Threshold)
+
+	return collectMatchesIntoGroups(ctx, matchesChan)
+}
+
 // streamDetectionResults streams detection results to the provided channel.
 func (d *detector) streamDetectionResults(
 	ctx context.Context,
 	result *pipelineResult,
 	resultChan chan<- *CloneGroup,
 ) error {
-	md := d.createMultiDetector(result.data, result.tree)
-	matchesChan := md.FindDuplOver(ctx, d.cfg.Threshold)
-
-	groups, err := collectMatchesIntoGroups(ctx, matchesChan)
+	groups, err := d.detectGroups(ctx, result)
 	if err != nil {
 		return err
 	}
 
+	d.streamCloneGroups(ctx, groups, resultChan)
+
+	return nil
+}
+
+// streamCloneGroups converts a hash-keyed group map into CloneGroups on the
+// channel in deterministic (hash-sorted) order.
+func (d *detector) streamCloneGroups(
+	ctx context.Context,
+	groups map[string][][]*syntax.Node,
+	resultChan chan<- *CloneGroup,
+) {
 	d.processCloneGroups(groups, func(group *CloneGroup) {
 		select {
 		case resultChan <- group:
 		case <-ctx.Done():
 		}
 	})
-
-	return nil
 }
 
 // collectMatchesIntoGroups collects matches from a channel and groups them by hash.
