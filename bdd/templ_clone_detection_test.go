@@ -265,8 +265,14 @@ templ Panel(user User) {
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
-			Expect(outputStr).NotTo(ContainSubstring("admin.templ"))
-			Expect(outputStr).NotTo(ContainSubstring("guest.templ"))
+			// The if-rooted clone is the false-positive class. With the fix,
+			// only the shared <p> body group survives (the div composite
+			// differs, so nothing subsumes it). A regression to
+			// expression-blind tokens would instead report the div-rooted
+			// group (lines 4-9) and subsume the body group away — so BOTH
+			// line-range pins below fire on a regression.
+			Expect(outputStr).To(ContainSubstring("admin.templ:6-7"))
+			Expect(outputStr).NotTo(ContainSubstring(".templ:4-9"))
 		})
 
 		It("should still report components whose only difference is the local name", func() {
