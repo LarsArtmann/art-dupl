@@ -134,13 +134,13 @@ func (t *transformer) transformDocType(dt *templparser.DocType) *syntax.Node {
 // statement-marked children, making `{{ }}` blocks individually detectable.
 // Sources go/parser rejects (hybrid templ markup) degrade to one opaque
 // token.
-func (t *transformer) transformGoCode(gc *templparser.GoCode) *syntax.Node {
-	if gc == nil {
+func (t *transformer) transformGoCode(goCode *templparser.GoCode) *syntax.Node {
+	if goCode == nil {
 		return nil
 	}
 
-	o := t.createNodeFromRange(RawGoBlock, gc.Expression.Range)
-	o.AddChildren(t.goExprNodes(golang.SnippetStatements, gc.Expression)...)
+	o := t.createNodeFromRange(RawGoBlock, goCode.Expression.Range)
+	o.AddChildren(t.goExprNodes(golang.SnippetStatements, goCode.Expression)...)
 
 	return o
 }

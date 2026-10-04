@@ -64,14 +64,14 @@ func (t *transformer) elseContainer(rng templparser.Range, children []templparse
 // clause (`i, item := range items`) is parsed as Go and emitted as a child
 // token before the body, so loop variables normalize (Type 2) while the
 // ranged expression's API surface (fields, package names) distinguishes.
-func (t *transformer) transformForExpression(fe *templparser.ForExpression) *syntax.Node {
-	if fe == nil {
+func (t *transformer) transformForExpression(forExpr *templparser.ForExpression) *syntax.Node {
+	if forExpr == nil {
 		return nil
 	}
 
-	o := t.createNodeFromRange(ComponentForStatement, fe.Range)
-	o.AddChildren(t.goExprNodes(golang.SnippetForClause, fe.Expression)...)
-	t.addChildren(o, fe.Children)
+	o := t.createNodeFromRange(ComponentForStatement, forExpr.Range)
+	o.AddChildren(t.goExprNodes(golang.SnippetForClause, forExpr.Expression)...)
+	t.addChildren(o, forExpr.Children)
 
 	return o
 }
@@ -101,20 +101,20 @@ func (t *transformer) transformSwitchExpression(se *templparser.SwitchExpression
 // expressions are parsed as Go (`case "admin":` strips the keyword and
 // colon); `default:` cases get their own node type so they no longer collapse
 // into ordinary cases.
-func (t *transformer) transformCaseExpression(ce templparser.CaseExpression) *syntax.Node {
-	value := ce.Expression.Value
+func (t *transformer) transformCaseExpression(caseExpr templparser.CaseExpression) *syntax.Node {
+	value := caseExpr.Expression.Value
 
-	o := t.createNodeFromRange(caseNodeType(value), ce.Expression.Range)
+	o := t.createNodeFromRange(caseNodeType(value), caseExpr.Expression.Range)
 
 	if !isDefaultCase(value) {
 		caseExpr := templparser.Expression{
 			Value: stripCaseSyntax(value),
-			Range: ce.Expression.Range,
+			Range: caseExpr.Expression.Range,
 		}
 		o.AddChildren(t.goExprNodes(golang.SnippetCaseList, caseExpr)...)
 	}
 
-	t.addChildren(o, ce.Children)
+	t.addChildren(o, caseExpr.Children)
 
 	return o
 }

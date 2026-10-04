@@ -7,7 +7,6 @@ import (
 )
 
 // transformNode converts a Node to a syntax.Node.
-//
 func (t *transformer) transformNode(node templparser.Node) *syntax.Node {
 	if node == nil {
 		return nil
@@ -140,26 +139,26 @@ func (t *transformer) transformAttribute(attr templparser.Attribute) *syntax.Nod
 // into a structured node: the condition is parsed as Go and both attribute
 // branches are traversed. Previously the condition and the branch bodies were
 // completely invisible to detection.
-func (t *transformer) transformConditionalAttribute(ca *templparser.ConditionalAttribute) *syntax.Node {
+func (t *transformer) transformConditionalAttribute(condAttr *templparser.ConditionalAttribute) *syntax.Node {
 	o := t.newFileNode()
 	o.Type = ConditionalAttributeIfStatement
-	t.setNodePosFromRange(o, ca.Range)
+	t.setNodePosFromRange(o, condAttr.Range)
 
-	o.AddChildren(t.goExprNodes(golang.SnippetIfCond, ca.Expression)...)
+	o.AddChildren(t.goExprNodes(golang.SnippetIfCond, condAttr.Expression)...)
 
-	for _, attr := range ca.Then {
+	for _, attr := range condAttr.Then {
 		attrNode := t.transformAttribute(attr)
 		if attrNode != nil {
 			o.AddChildren(attrNode)
 		}
 	}
 
-	if len(ca.Else) > 0 {
+	if len(condAttr.Else) > 0 {
 		elseNode := t.newFileNode()
 		elseNode.Type = ComponentElseStatement
-		t.setNodePosFromRange(elseNode, ca.Range)
+		t.setNodePosFromRange(elseNode, condAttr.Range)
 
-		for _, attr := range ca.Else {
+		for _, attr := range condAttr.Else {
 			attrNode := t.transformAttribute(attr)
 			if attrNode != nil {
 				elseNode.AddChildren(attrNode)

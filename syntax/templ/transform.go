@@ -26,16 +26,6 @@ func (t *transformer) createNodeFromRange(nodeType int, r templparser.Range) *sy
 	)
 }
 
-// wrapChildren creates a node for nodeType at the given range, appends the
-// transformed children, and returns it. Use this whenever a transformer
-// produces nothing but a span + a child slice.
-func (t *transformer) wrapChildren(nodeType int, r templparser.Range, children []templparser.Node) *syntax.Node {
-	o := t.createNodeFromRange(nodeType, r)
-	t.addChildren(o, children)
-
-	return o
-}
-
 // newFileNode builds a node with the transformer filename preset, ready for
 // the caller to fill in Type/Pos/End/etc. Used by every transformer that
 // starts with "create a node and stamp the filename".
@@ -162,6 +152,7 @@ func (t *transformer) transformCSSTemplate(css *templparser.CSSTemplate) *syntax
 
 	o := t.createNodeFromRange(CSSDeclaration, css.Range)
 	o.Statement = true
+
 	o.Name = css.Expression.Value
 	if t.mode.HashesIdentifiers() {
 		o.Type = syntax.EncodeSemanticType(CSSDeclaration, declarationName(css.Expression.Value), true)
@@ -186,6 +177,7 @@ func (t *transformer) transformScriptTemplate(script *templparser.ScriptTemplate
 	}
 
 	o := t.createNodeFromRange(ScriptDeclaration, script.Range)
+
 	o.Name = script.Name.Value
 	if t.mode.HashesIdentifiers() {
 		o.Type = syntax.EncodeSemanticType(ScriptDeclaration, script.Name.Value, true)
