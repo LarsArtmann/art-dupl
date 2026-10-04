@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"github.com/LarsArtmann/art-dupl/syntax"
+	"github.com/LarsArtmann/art-dupl/syntax/golang"
 	templparser "github.com/a-h/templ/parser/v2"
 )
 
@@ -22,10 +23,11 @@ func (t *transformer) createNodeWithAttributes(
 }
 
 // transformTemplElementExpression converts a TemplElementExpression to a syntax.Node.
-// In semantic mode, the callee name is encoded into the node Type so that
-// @demoSection(...) and @display.DataTable(...) produce distinct tokens.
-// Only the callee name is encoded (not arguments), so calls with the same
-// callee but different arguments still match (Type-2 clone detection).
+// The callee path is hashed verbatim (callee names are API surface, like
+// called functions in the Go pipeline), and the full call expression is
+// parsed as Go, so arguments participate in matching: `@Card(user.Name)` and
+// `@Card(person.Name)` still match (renamed local), while `@Card(a)` and
+// `@Card(a, b)` no longer collapse.
 func (t *transformer) transformTemplElementExpression(
 	tee *templparser.TemplElementExpression,
 ) *syntax.Node {
@@ -33,14 +35,11 @@ func (t *transformer) transformTemplElementExpression(
 		return nil
 	}
 
-	return t.buildComponentRender(tee.Expression.Value, tee.Range, tee.Children)
+	return t.buildComponentRender(tee.Expression, tee.Range, tee.Children)
 }
 
 // transformCallTemplateExpression converts a CallTemplateExpression to a syntax.Node.
-// In semantic mode, the callee name is encoded into the node Type so that
-// @demoSection(...) and @display.DataTable(...) produce distinct tokens.
-// Only the callee name is encoded (not arguments), so calls with the same
-// callee but different arguments still match (Type-2 clone detection).
+// Callee and argument handling mirrors transformTemplElementExpression.
 func (t *transformer) transformCallTemplateExpression(
 	cte *templparser.CallTemplateExpression,
 ) *syntax.Node {
@@ -48,25 +47,19 @@ func (t *transformer) transformCallTemplateExpression(
 		return nil
 	}
 
-	return t.buildComponentRender(cte.Expression.Value, cte.Range, nil)
+	return t.buildComponentRender(cte.Expression, cte.Range, nil)
 }
 
-// buildComponentRender constructs a ComponentRender node from a callee
-// expression value, its source range, and optional children. The callee name
-// is extracted and (in semantic mode) encoded into the node Type so that
-// distinct callees produce distinct tokens, while identical callees with
-// different arguments still match (Type-2 clone detection).
+// buildComponentRender constructs a ComponentRender node from a call
+// expression, its source range, and optional children. The callee path is
+// extracted verbatim and hashed; the full call expression is parsed as Go and
+// attached as argument tokens.
 func (t *transformer) buildComponentRender(
-	exprValue string,
+	expr templparser.Expression,
 	rng templparser.Range,
 	children []templparser.Node,
 ) *syntax.Node {
-	name := extractCalleeName(exprValue)
-
-	if t.mode.HashesIdentifiers() {
-		normalized := normalizeExprValue(exprValue, t.symbols)
-		name = extractCalleeName(normalized)
-	}
+	name := extractCalleeName(expr.Value)
 
 	node := t.createNodeFromRange(ComponentRender, rng)
 
@@ -74,6 +67,8 @@ func (t *transformer) buildComponentRender(
 	if t.mode.HashesIdentifiers() {
 		node.Type = syntax.EncodeSemanticType(ComponentRender, name, true)
 	}
+
+	node.AddChildren(t.goExprNodes(golang.SnippetExpression, expr)...)
 
 	t.addChildren(node, children)
 
@@ -101,13 +96,28 @@ func (t *transformer) transformChildrenExpression(ce *templparser.ChildrenExpres
 	return t.createNodeFromRange(ComponentChildrenExpression, ce.Range)
 }
 
-// transformScriptElement converts a ScriptElement to a syntax.Node.
+// transformScriptElement converts a ScriptElement to a syntax.Node, traversing
+// its attributes and its GoCode contents. Raw JavaScript text stays skipped
+// (JS is not parsed).
 func (t *transformer) transformScriptElement(se *templparser.ScriptElement) *syntax.Node {
 	if se == nil {
 		return nil
 	}
 
-	return t.createNodeWithAttributes(ScriptElement, se.Range, se.Attributes)
+	node := t.createNodeWithAttributes(ScriptElement, se.Range, se.Attributes)
+
+	for _, content := range se.Contents {
+		if content.GoCode == nil {
+			continue
+		}
+
+		codeNode := t.transformGoCode(content.GoCode)
+		if codeNode != nil {
+			node.AddChildren(codeNode)
+		}
+	}
+
+	return node
 }
 
 // transformDocType converts a DocType to a syntax.Node.
@@ -119,22 +129,34 @@ func (t *transformer) transformDocType(dt *templparser.DocType) *syntax.Node {
 	return t.createNodeFromRange(Doctype, dt.Range)
 }
 
-// transformGoCode converts a GoCode to a syntax.Node.
+// transformGoCode converts a GoCode block (`{{ ... }}`) to a syntax.Node.
+// The embedded Go source is parsed as statements and spliced as
+// statement-marked children, making `{{ }}` blocks individually detectable.
+// Sources go/parser rejects (hybrid templ markup) degrade to one opaque
+// token.
 func (t *transformer) transformGoCode(gc *templparser.GoCode) *syntax.Node {
 	if gc == nil {
 		return nil
 	}
 
-	return t.createNodeFromRange(RawGoBlock, gc.Expression.Range)
+	o := t.createNodeFromRange(RawGoBlock, gc.Expression.Range)
+	o.AddChildren(t.goExprNodes(golang.SnippetStatements, gc.Expression)...)
+
+	return o
 }
 
-// transformStringExpression converts a StringExpression to a syntax.Node.
+// transformStringExpression converts a StringExpression (`{ expr }`) to a
+// syntax.Node with the expression parsed as Go, so `{ item.Name }` and
+// `{ item.Title }` no longer collapse.
 func (t *transformer) transformStringExpression(se *templparser.StringExpression) *syntax.Node {
 	if se == nil {
 		return nil
 	}
 
-	return t.createNodeFromRange(Expression, se.Expression.Range)
+	o := t.createNodeFromRange(Expression, se.Expression.Range)
+	o.AddChildren(t.goExprNodes(golang.SnippetExpression, se.Expression)...)
+
+	return o
 }
 
 // transformRawElement converts a RawElement to a syntax.Node.
@@ -144,13 +166,4 @@ func (t *transformer) transformRawElement(re *templparser.RawElement) *syntax.No
 	}
 
 	return t.buildElementNode(re.Name, re.Range, re.Attributes, nil)
-}
-
-// transformFallthrough converts a Fallthrough to a syntax.Node.
-func (t *transformer) transformFallthrough(f *templparser.Fallthrough) *syntax.Node {
-	if f == nil {
-		return nil
-	}
-
-	return t.createNodeFromRange(ComponentSwitchExpressionCase, f.Range)
 }

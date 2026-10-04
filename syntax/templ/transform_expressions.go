@@ -3,6 +3,7 @@ package templ
 import (
 	"strings"
 
+	"github.com/LarsArtmann/art-dupl/syntax"
 	"github.com/LarsArtmann/art-dupl/syntax/golang"
 	templparser "github.com/a-h/templ/parser/v2"
 )
@@ -106,7 +107,11 @@ func (t *transformer) transformCaseExpression(ce templparser.CaseExpression) *sy
 	o := t.createNodeFromRange(caseNodeType(value), ce.Expression.Range)
 
 	if !isDefaultCase(value) {
-		o.AddChildren(t.goExprNodes(golang.SnippetCaseList, stripCaseSyntax(value))...)
+		caseExpr := templparser.Expression{
+			Value: stripCaseSyntax(value),
+			Range: ce.Expression.Range,
+		}
+		o.AddChildren(t.goExprNodes(golang.SnippetCaseList, caseExpr)...)
 	}
 
 	t.addChildren(o, ce.Children)

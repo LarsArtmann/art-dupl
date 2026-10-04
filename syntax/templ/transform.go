@@ -2,6 +2,7 @@ package templ
 
 import (
 	"github.com/LarsArtmann/art-dupl/syntax"
+	"github.com/LarsArtmann/art-dupl/syntax/golang"
 	templparser "github.com/a-h/templ/parser/v2"
 )
 
@@ -72,8 +73,7 @@ func (t *transformer) transformTemplateFile(tf *templparser.TemplateFile) *synta
 
 	// Process all top-level nodes
 	for _, node := range tf.Nodes {
-		child := t.transformTemplateFileNode(node)
-		if child != nil {
+		for _, child := range t.transformTemplateFileNode(node) {
 			root.AddChildren(child)
 		}
 	}
@@ -81,25 +81,52 @@ func (t *transformer) transformTemplateFile(tf *templparser.TemplateFile) *synta
 	return root
 }
 
-// transformTemplateFileNode converts a TemplateFileNode to a syntax.Node.
-func (t *transformer) transformTemplateFileNode(node templparser.TemplateFileNode) *syntax.Node {
+// transformTemplateFileNode converts a TemplateFileNode to syntax.Nodes.
+// Top-level Go expressions may contain multiple declarations, so the slice
+// can hold more than one node; imports are dropped by the Go bridge.
+func (t *transformer) transformTemplateFileNode(node templparser.TemplateFileNode) []*syntax.Node {
 	if node == nil {
 		return nil
 	}
 
 	switch n := node.(type) {
 	case *templparser.HTMLTemplate:
-		return t.transformHTMLTemplate(n)
+		templNode := t.transformHTMLTemplate(n)
+		if templNode == nil {
+			return nil
+		}
+
+		return []*syntax.Node{templNode}
 	case *templparser.CSSTemplate:
-		return t.transformCSSTemplate(n)
+		cssNode := t.transformCSSTemplate(n)
+		if cssNode == nil {
+			return nil
+		}
+
+		return []*syntax.Node{cssNode}
 	case *templparser.ScriptTemplate:
-		return t.transformScriptTemplate(n)
+		scriptNode := t.transformScriptTemplate(n)
+		if scriptNode == nil {
+			return nil
+		}
+
+		return []*syntax.Node{scriptNode}
 	case *templparser.TemplateFileGoExpression:
-		// Skip top-level Go expressions (imports, etc.)
-		return nil
+		// Top-level Go code (helper functions, vars): parse as declarations so
+		// duplicated helpers in templ files are detectable. Imports are
+		// boilerplate and dropped by the bridge.
+		return t.goExprNodes(golang.SnippetGoFile, n.Expression)
 	default:
 		return nil
 	}
+}
+
+// declarationName extracts the declared name from a templ signature
+// (`Panel(user User)` -> `Panel`), so the declaration token hashes the name
+// instead of the whole signature: renamed parameters across packages still
+// match (Type 2).
+func declarationName(signature string) string {
+	return extractCalleeName(signature)
 }
 
 // transformHTMLTemplate converts an HTMLTemplate to a syntax.Node.
@@ -110,9 +137,11 @@ func (t *transformer) transformHTMLTemplate(tmpl *templparser.HTMLTemplate) *syn
 
 	o := t.createNodeFromRange(ComponentDeclaration, tmpl.Range)
 
+	// Name keeps the full signature for display and clone-type
+	// classification; the hashed identifier is the declared name only.
 	o.Name = tmpl.Expression.Value
 	if t.mode.HashesIdentifiers() {
-		o.Type = syntax.EncodeSemanticType(ComponentDeclaration, tmpl.Expression.Value, true)
+		o.Type = syntax.EncodeSemanticType(ComponentDeclaration, declarationName(tmpl.Expression.Value), true)
 	}
 
 	t.addChildren(o, tmpl.Children)
@@ -120,13 +149,24 @@ func (t *transformer) transformHTMLTemplate(tmpl *templparser.HTMLTemplate) *syn
 	return o
 }
 
-// transformCSSTemplate converts a CSSTemplate to a syntax.Node.
+// transformCSSTemplate converts a CSSTemplate to a syntax.Node. The template
+// is marked as a statement so it forms ONE composite unit; its property
+// children (with encoded property names) refine the fingerprint. This also
+// fixes duplicate clone-group output: previously the declaration and its
+// children were separate non-statement units mapping to the same source
+// range, producing identical groups twice.
 func (t *transformer) transformCSSTemplate(css *templparser.CSSTemplate) *syntax.Node {
 	if css == nil {
 		return nil
 	}
 
 	o := t.createNodeFromRange(CSSDeclaration, css.Range)
+	o.Statement = true
+	o.Name = css.Expression.Value
+	if t.mode.HashesIdentifiers() {
+		o.Type = syntax.EncodeSemanticType(CSSDeclaration, declarationName(css.Expression.Value), true)
+	}
+
 	// Process CSS properties as children
 	for _, prop := range css.Properties {
 		propNode := t.transformCSSProperty(prop, css.Range)
@@ -138,16 +178,25 @@ func (t *transformer) transformCSSTemplate(css *templparser.CSSTemplate) *syntax
 	return o
 }
 
-// transformScriptTemplate converts a ScriptTemplate to a syntax.Node.
+// transformScriptTemplate converts a ScriptTemplate to a syntax.Node. The
+// script name is API surface and participates in the declaration token.
 func (t *transformer) transformScriptTemplate(script *templparser.ScriptTemplate) *syntax.Node {
 	if script == nil {
 		return nil
 	}
 
-	return t.createNodeFromRange(ScriptDeclaration, script.Range)
+	o := t.createNodeFromRange(ScriptDeclaration, script.Range)
+	o.Name = script.Name.Value
+	if t.mode.HashesIdentifiers() {
+		o.Type = syntax.EncodeSemanticType(ScriptDeclaration, script.Name.Value, true)
+	}
+
+	return o
 }
 
-// transformCSSProperty converts a CSSProperty to a syntax.Node.
+// transformCSSProperty converts a CSSProperty to a syntax.Node. The property
+// NAME is encoded (API surface, mirroring attribute keys), so `color: red`
+// and `background: blue` no longer collapse.
 // parentRange is the range of the containing CSSTemplate, used as
 // fallback position for ConstantCSSProperty (which has no Range in upstream).
 func (t *transformer) transformCSSProperty(
@@ -159,19 +208,20 @@ func (t *transformer) transformCSSProperty(
 	}
 
 	o := syntax.NewNode()
-	o.Type = Attribute
 	o.Filename = t.filename
-	o.Pos = 0
-	o.End = 0
 
 	switch p := prop.(type) {
 	case *templparser.ConstantCSSProperty:
+		t.setAttributeKey(o, p.Name)
 		// ConstantCSSProperty has no Range in upstream a-h/templ.
 		// Inherit parent CSSTemplate range as best available position.
 		t.setNodePosFromRange(o, parentRange)
 	case *templparser.ExpressionCSSProperty:
+		t.setAttributeKey(o, p.Name)
+
 		if p.Value != nil {
 			t.setNodePosFromRange(o, p.Value.Expression.Range)
+			o.AddChildren(t.goExprNodes(golang.SnippetExpression, p.Value.Expression)...)
 		} else {
 			t.setNodePosFromRange(o, parentRange)
 		}
