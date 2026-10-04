@@ -653,6 +653,9 @@ found 3 clones:
   file2.go:15-25  | func handle(input string) error {
 ```
 
+Clones in `.templ` files get templ-specific suggestions (component extraction
+and parameterization wording instead of Go helper phrasing).
+
 With `--format json`, `--explain` attaches the same information as a structured
 `explanation` object on every clone (added 2026-09-29):
 

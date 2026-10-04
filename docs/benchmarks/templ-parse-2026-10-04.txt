@@ -1,0 +1,24 @@
+goos: linux
+goarch: amd64
+pkg: github.com/LarsArtmann/art-dupl/syntax/templ
+cpu: AMD RYZEN AI MAX+ 395 w/ Radeon 8060S          
+BenchmarkTemplParse/semantic-32         	    4351	    263509 ns/op	  256253 B/op	    5794 allocs/op
+BenchmarkTemplParse/semantic-32         	    4741	    253655 ns/op	  256439 B/op	    5794 allocs/op
+BenchmarkTemplParse/semantic-32         	    4860	    256989 ns/op	  256458 B/op	    5794 allocs/op
+BenchmarkTemplParse/semantic-32         	    4736	    262102 ns/op	  256402 B/op	    5794 allocs/op
+BenchmarkTemplParse/semantic-32         	    4748	    262271 ns/op	  256669 B/op	    5794 allocs/op
+BenchmarkTemplParse/semantic-32         	    4538	    264498 ns/op	  256382 B/op	    5794 allocs/op
+BenchmarkTemplParse/exact-32            	    4730	    260079 ns/op	  249730 B/op	    5684 allocs/op
+BenchmarkTemplParse/exact-32            	    4504	    262910 ns/op	  249724 B/op	    5684 allocs/op
+BenchmarkTemplParse/exact-32            	    4448	    256103 ns/op	  249739 B/op	    5684 allocs/op
+BenchmarkTemplParse/exact-32            	    4704	    253313 ns/op	  250095 B/op	    5684 allocs/op
+BenchmarkTemplParse/exact-32            	    4438	    252448 ns/op	  249968 B/op	    5684 allocs/op
+BenchmarkTemplParse/exact-32            	    4892	    252439 ns/op	  249851 B/op	    5684 allocs/op
+BenchmarkTemplParse/structural-32       	    4344	    256855 ns/op	  250011 B/op	    5684 allocs/op
+BenchmarkTemplParse/structural-32       	    4621	    250230 ns/op	  249980 B/op	    5684 allocs/op
+BenchmarkTemplParse/structural-32       	    4950	    249393 ns/op	  250079 B/op	    5684 allocs/op
+BenchmarkTemplParse/structural-32       	    4891	    252586 ns/op	  249997 B/op	    5684 allocs/op
+BenchmarkTemplParse/structural-32       	    4689	    253105 ns/op	  249833 B/op	    5684 allocs/op
+BenchmarkTemplParse/structural-32       	    4706	    251764 ns/op	  249727 B/op	    5684 allocs/op
+PASS
+ok  	github.com/LarsArtmann/art-dupl/syntax/templ	21.511s
