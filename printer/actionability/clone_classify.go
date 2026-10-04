@@ -5,6 +5,7 @@ import (
 
 	"github.com/LarsArtmann/art-dupl/domain"
 	"github.com/LarsArtmann/art-dupl/syntax/golang"
+	templpkg "github.com/LarsArtmann/art-dupl/syntax/templ"
 )
 
 // productionSuggestions maps clone categories to specific refactoring
@@ -55,10 +56,14 @@ const (
 )
 
 func ClassifyClone(input domain.ClassificationInput) domain.CloneClassification {
-	category := nodeTypeToCategory(input.NodeType)
+	category := nodeTypeToCategory(input.NodeType, strings.HasSuffix(input.Filename, ".templ"))
 	isTest := strings.HasSuffix(input.Filename, "_test.go")
 	priority := calculatePriority(category, isTest, input.Tokens, input.Lines)
 	suggestion := getSuggestion(category, isTest, input.Tokens)
+
+	if strings.HasSuffix(input.Filename, ".templ") {
+		suggestion = templSuggestion(category, suggestion)
+	}
 
 	return domain.CloneClassification{
 		Category:      category,
@@ -71,7 +76,39 @@ func ClassifyClone(input domain.ClassificationInput) domain.CloneClassification 
 	}
 }
 
-func nodeTypeToCategory(nodeType int32) domain.CloneCategory {
+// templSuggestion tailors refactoring suggestions to templ markup: the Go
+// wording ("extract to utility function") does not transfer to components.
+// The fallback keeps Go suggestions for categories without a templ-specific
+// phrasing.
+func templSuggestion(category domain.CloneCategory, fallback string) string {
+	switch category {
+	case domain.CategoryFunction:
+		return "Extract to a shared templ component"
+	case domain.CategoryCall:
+		return "Parameterize the component or extract shared markup to a child component"
+	case domain.CategoryLoop, domain.CategoryConditional:
+		return "Extract the shared markup block to a child templ component"
+	case domain.CategoryBlock:
+		return "Extract the shared markup to a child templ component"
+	default:
+		return fallback
+	}
+}
+
+// nodeTypeToCategory maps a DECODED base node type to a display category.
+// The golang and templ raw enums overlap numerically (both start at 0 and
+// assign small values independently), so the file kind disambiguates: a
+// templ file's base types decode through the templ table, everything else
+// through the Go table.
+func nodeTypeToCategory(nodeType int32, isTempl bool) domain.CloneCategory {
+	if isTempl {
+		return templNodeTypeToCategory(nodeType)
+	}
+
+	return goNodeTypeToCategory(nodeType)
+}
+
+func goNodeTypeToCategory(nodeType int32) domain.CloneCategory {
 	switch nodeType {
 	case golang.FuncDecl:
 		return domain.CategoryFunction
@@ -102,6 +139,36 @@ func nodeTypeToCategory(nodeType int32) domain.CloneCategory {
 		golang.StarExpr, golang.ParenExpr, golang.SendStmt, golang.Ident, golang.BasicLit,
 		golang.MapType, golang.ChanType, golang.ArrayType:
 		return domain.CategoryExpression
+	default:
+		return domain.CategoryUnknown
+	}
+}
+
+// templNodeTypeToCategory maps templ base types: component declarations are
+// functions, flow controls mirror their Go counterparts, elements and
+// attributes are markup blocks and expressions. Without a dedicated table
+// templ clones decoded against the parallel golang enum and landed in
+// "unknown" (or, worse, in a colliding Go category).
+func templNodeTypeToCategory(nodeType int32) domain.CloneCategory {
+	switch nodeType {
+	case templpkg.ComponentDeclaration, templpkg.CSSDeclaration, templpkg.ScriptDeclaration:
+		return domain.CategoryFunction
+	case templpkg.ComponentIfStatement, templpkg.ComponentSwitchStatement,
+		templpkg.ComponentSwitchExpressionCase, templpkg.ComponentSwitchDefaultCase,
+		templpkg.ComponentFallthroughStatement, templpkg.ComponentElseStatement,
+		templpkg.ConditionalAttributeIfStatement:
+		return domain.CategoryConditional
+	case templpkg.ComponentForStatement:
+		return domain.CategoryLoop
+	case templpkg.ComponentRender:
+		return domain.CategoryCall
+	case templpkg.Attribute, templpkg.SpreadAttributes, templpkg.Expression,
+		templpkg.ComponentChildrenExpression, templpkg.RawGoBlock, templpkg.ComponentImport:
+		return domain.CategoryExpression
+	case templpkg.Element, templpkg.StyleElement, templpkg.ScriptElement,
+		templpkg.ComponentBlock, templpkg.Doctype, templpkg.TagStart, templpkg.TagEnd,
+		templpkg.SelfClosingTag:
+		return domain.CategoryBlock
 	default:
 		return domain.CategoryUnknown
 	}

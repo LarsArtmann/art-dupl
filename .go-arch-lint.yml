@@ -181,6 +181,7 @@ deps:
       - domain
       - syntax
       - syntax-golang
+      - syntax-templ
       - errors
       - pkg-utils
 
