@@ -24,7 +24,9 @@ func elementTokenTypes(t *testing.T, mode golang.DetectionMode, srcA, srcB strin
 	}
 
 	firstA := firstStatementToken(nodeA)
+
 	firstB := firstStatementToken(nodeB)
+
 	if firstA == nil || firstB == nil {
 		t.Fatalf("expected statement tokens in both trees (mode %s)", mode)
 	}
@@ -38,7 +40,8 @@ func firstStatementToken(root *syntax.Node) *syntax.Node {
 			return child
 		}
 
-		if found := firstStatementToken(child); found != nil {
+		found := firstStatementToken(child)
+		if found != nil {
 			return found
 		}
 	}
