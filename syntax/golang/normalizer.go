@@ -203,3 +203,80 @@ func (n *normalizer) declareFieldNames(field *ast.Field) {
 		n.declare(name.Name)
 	}
 }
+
+// collectSnippetLocals declares every free lowercase-initial identifier in a
+// templ-embedded snippet as a local binding, in source order. Snippets have no
+// parameter list of their own, so the templ scope's locals surface as free
+// identifiers; normalizing them mirrors how the Go pipeline normalizes
+// function parameters and keeps renamed-variable clones detectable.
+//
+// Kept verbatim (API surface): called functions (call Fun), field selectors
+// (SelectorExpr.Sel), composite-literal keys (KeyValueExpr.Key), and
+// predeclared identifiers (builtins, basic types, nil/true/false/iota).
+func (n *normalizer) collectSnippetLocals(node ast.Node) {
+	if !n.enabled || node == nil {
+		return
+	}
+
+	skip := make(map[*ast.Ident]bool)
+	var order []*ast.Ident
+
+	ast.Inspect(node, func(child ast.Node) bool {
+		switch d := child.(type) {
+		case *ast.CallExpr:
+			if ident, ok := d.Fun.(*ast.Ident); ok {
+				skip[ident] = true
+			}
+		case *ast.SelectorExpr:
+			skip[d.Sel] = true
+		case *ast.KeyValueExpr:
+			if ident, ok := d.Key.(*ast.Ident); ok {
+				skip[ident] = true
+			}
+		case *ast.Ident:
+			order = append(order, d)
+		}
+
+		return true
+	})
+
+	for _, ident := range order {
+		if skip[ident] {
+			continue
+		}
+
+		if isSnippetLocalName(ident.Name) {
+			n.declare(ident.Name)
+		}
+	}
+}
+
+// isSnippetLocalName reports whether a snippet identifier should be treated as
+// a local binding: lowercase-initial, non-blank, and not a predeclared
+// identifier.
+func isSnippetLocalName(name string) bool {
+	if name == "" || name == "_" {
+		return false
+	}
+
+	if name[0] < 'a' || name[0] > 'z' {
+		return false
+	}
+
+	return !predeclaredSnippetIdentifiers[name]
+}
+
+// predeclaredSnippetIdentifiers lists Go's universe-scope identifiers, which
+// never refer to templ-local bindings.
+var predeclaredSnippetIdentifiers = map[string]bool{ //nolint:gochecknoglobals // static universe-scope lookup
+	"append": true, "bool": true, "byte": true, "cap": true, "clear": true,
+	"close": true, "complex": true, "complex64": true, "complex128": true,
+	"copy": true, "delete": true, "error": true, "false": true,
+	"float32": true, "float64": true, "imag": true, "int": true,
+	"int8": true, "int16": true, "int32": true, "int64": true, "iota": true,
+	"len": true, "make": true, "max": true, "min": true, "new": true,
+	"nil": true, "panic": true, "print": true, "println": true, "real": true,
+	"recover": true, "rune": true, "string": true, "true": true,
+	"uint": true, "uint8": true, "uint16": true, "uint32": true,
+	"uint64": true, "uintptr": true, "any": true,
+}

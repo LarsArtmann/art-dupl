@@ -41,36 +41,49 @@ const (
 	SnippetGoFile
 )
 
-// snippetWrapper returns the synthetic Go file source for the given snippet
-// kind along with the wrapped body source. The returned prefix length is the
-// byte offset at which the snippet starts inside the synthetic source.
-func snippetWrapper(kind SnippetKind, src string) (synthetic string, snippetStart int) {
-	const header = "package p\n\nfunc __artduplSnippet() {\n\t"
+// snippetHeader is the fixed function wrapper preceding the padded snippet
+// body inside the synthetic Go file. Padding spaces after the opening brace
+// push the snippet body to its real byte offset in the templ file.
+const snippetHeader = "package p\n\nfunc __artduplSnippet() {"
 
+// snippetWrapper returns the synthetic Go file source for the given snippet
+// kind. Padding positions the snippet body at fileOffset when fileOffset
+// exceeds the header length, so transformed node positions address the real
+// templ file directly.
+func snippetWrapper(kind SnippetKind, src string, fileOffset int) (synthetic string) {
+	body := snippetBody(kind, src)
+	pad := fileOffset - len(snippetHeader)
+
+	if pad < 0 {
+		pad = 0
+	}
+
+	return snippetHeader + strings.Repeat(" ", pad) + body
+}
+
+func snippetBody(kind SnippetKind, src string) string {
 	switch kind {
-	case SnippetExpression, SnippetGoFile:
-		return src, 0
 	case SnippetIfCond:
-		body := "if " + src + " {\n}"
-		return header + body + "\n}", len(header)
+		return "if " + src + " {\n}"
 	case SnippetForClause:
-		body := "for " + src + " {\n}"
-		return header + body + "\n}", len(header)
+		return "for " + src + " {\n}"
 	case SnippetSwitchTag:
-		body := "switch " + src + " {\n}"
-		return header + body + "\n}", len(header)
+		return "switch " + src + " {\n}"
 	case SnippetCaseList:
-		body := "switch {\ncase " + src + ":\n}"
-		return header + body + "\n}", len(header)
+		return "switch {\ncase " + src + ":\n}"
 	case SnippetStatements:
-		return header + src + "\n}", len(header)
+		return "\n" + src + "\n"
+	case SnippetGoFile:
+		return src
+	case SnippetExpression:
+		return src
 	default:
-		return src, 0
+		return src
 	}
 }
 
 // snippetTargets extracts the AST nodes to transform from the parsed synthetic
-// file. For SnippetExpression the parse produced the expression directly.
+// file.
 func snippetTargets(kind SnippetKind, file *ast.File, expr ast.Expr, fset *token.FileSet) []ast.Node {
 	switch kind {
 	case SnippetExpression:
@@ -85,9 +98,10 @@ func snippetTargets(kind SnippetKind, file *ast.File, expr ast.Expr, fset *token
 			return nil
 		}
 
-		return extractSnippetNodes(kind, body, fset)
+		return extractSnippetNodes(kind, body)
 	case SnippetGoFile:
 		decls := make([]ast.Node, 0, len(file.Decls))
+
 		for _, decl := range file.Decls {
 			if gen, ok := decl.(*ast.GenDecl); ok && gen.Tok == token.IMPORT {
 				continue
@@ -105,52 +119,46 @@ func snippetTargets(kind SnippetKind, file *ast.File, expr ast.Expr, fset *token
 // extractSnippetNodes pulls the target nodes out of the synthetic function
 // body: the condition of the if statement, the whole range/for statement, the
 // switch statement, the case expression list, or the raw statement list.
-func extractSnippetNodes(kind SnippetKind, body *ast.BlockStmt, fset *token.FileSet) []ast.Node {
-	var target ast.Node
-
+func extractSnippetNodes(kind SnippetKind, body *ast.BlockStmt) []ast.Node {
 	for _, stmt := range body.List {
 		switch kind {
 		case SnippetIfCond:
 			if ifStmt, ok := stmt.(*ast.IfStmt); ok {
-				target = ifStmt.Cond
+				return []ast.Node{ifStmt.Cond}
 			}
 		case SnippetForClause:
 			switch s := stmt.(type) {
 			case *ast.RangeStmt:
-				target = s
+				return []ast.Node{s}
 			case *ast.ForStmt:
-				target = s
+				return []ast.Node{s}
 			}
 		case SnippetSwitchTag:
 			switch s := stmt.(type) {
 			case *ast.SwitchStmt:
-				target = s
+				return []ast.Node{s}
 			case *ast.TypeSwitchStmt:
-				target = s
+				return []ast.Node{s}
 			}
 		case SnippetCaseList:
 			if caseClause, ok := stmt.(*ast.CaseClause); ok {
-				nodes := make([]ast.Node, 0, len(caseClause.List))
-				for _, e := range caseClause.List {
-					nodes = append(nodes, e)
-				}
-
-				return nodes
+				return caseExprsAsNodes(caseClause.List)
 			}
 		case SnippetStatements:
 			return statementsAsNodes(body.List)
 		}
-
-		if target != nil {
-			break
-		}
 	}
 
-	if target == nil {
-		return nil
+	return nil
+}
+
+func caseExprsAsNodes(exprs []ast.Expr) []ast.Node {
+	nodes := make([]ast.Node, 0, len(exprs))
+	for _, e := range exprs {
+		nodes = append(nodes, e)
 	}
 
-	return []ast.Node{target}
+	return nodes
 }
 
 func statementsAsNodes(stmts []ast.Stmt) []ast.Node {
@@ -173,8 +181,8 @@ func firstFuncBody(file *ast.File) *ast.BlockStmt {
 }
 
 // ParseSnippet parses a Go fragment embedded in a templ file and returns its
-// unified syntax tree nodes. Positions are shifted so they address the
-// fragment's real byte offsets in the containing templ file (fileOffset).
+// unified syntax tree nodes. Positions address the fragment's real byte
+// offsets in the containing templ file (fileOffset).
 //
 // Identifiers that are free with respect to the snippet (the templ scope's
 // locals) are alpha-normalized in source order in semantic mode, mirroring
@@ -235,7 +243,7 @@ func parseSnippetWrapped(
 	src, filename string,
 	fileOffset int,
 ) ([]*syntax.Node, error) {
-	synthetic, snippetStart := snippetWrapper(kind, src)
+	synthetic := snippetWrapper(kind, src, fileOffset)
 
 	file, err := parser.ParseFile(fset, filename, synthetic, 0)
 	if err != nil {
@@ -266,14 +274,14 @@ func parseSnippetWrapped(
 		return nil, nil
 	}
 
-	// Shift positions so they address the real templ file: the first target
-	// starts at snippetStart inside the synthetic source.
-	delta := int32(fileOffset-snippetStart) + int32( // #nosec G115 -- templ file sizes bounded by int32 in practice
-		t.fileset.File(nodes[0].Pos). //nolint:gocritic // position arithmetic on synthetic file
-						Offset,//nolint:gocritic // placeholder, replaced below
-	)
-
-	_ = delta
+	// When the file was shorter than the wrapper header, the padding could not
+	// reach the real offset; shift by the remaining delta (clamped at 0).
+	delta := int32(fileOffset) - nodes[0].Pos // #nosec G115 -- templ file sizes bounded by int32 in practice
+	if delta != 0 {
+		for _, node := range nodes {
+			shiftTree(node, delta)
+		}
+	}
 
 	return nodes, nil
 }
@@ -299,16 +307,27 @@ func snippetKindName(kind SnippetKind) string {
 	}
 }
 
-// shiftTree shifts Pos/End of a node subtree by delta byte positions.
+// shiftTree shifts Pos/End of a node subtree by delta byte positions, clamped
+// so positions never go negative.
 func shiftTree(n *syntax.Node, delta int32) {
 	if n == nil {
 		return
 	}
 
-	n.Pos += delta
-	n.End += delta
+	n.Pos = clampPos(n.Pos, delta)
+	n.End = clampPos(n.End, delta)
 
 	for _, child := range n.Children {
 		shiftTree(child, delta)
 	}
+}
+
+func clampPos(pos, delta int32) int32 {
+	shifted := pos + delta
+
+	if shifted < 0 {
+		return 0
+	}
+
+	return shifted
 }
