@@ -239,6 +239,59 @@ templ Toggle(visible bool, text string) {
 		})
 	})
 
+	Context("When expressions differ between components (ADR-0027)", func() {
+		// The pre-expression-aware false-positive class: components whose
+		// embedded Go conditions diverge must NOT clone, at ANY threshold,
+		// because the condition tokens participate in matching.
+		panelWithCondition := func(condition string) string {
+			return `package main
+
+templ Panel(user User) {
+	<div class="panel">
+		if user.` + condition + ` {
+			<p>tools</p>
+		}
+	</div>
+}`
+		}
+
+		It("should NOT report components with different conditions as clones", func() {
+			err := setup.CreateTestFile("admin.templ", panelWithCondition("IsAdmin"))
+			Expect(err).NotTo(HaveOccurred())
+			err = setup.CreateTestFile("guest.templ", panelWithCondition("IsGuest"))
+			Expect(err).NotTo(HaveOccurred())
+
+			output, err := setup.RunArtDupl("--threshold", "1", "--no-actionability")
+			Expect(err).ToNot(HaveOccurred())
+
+			outputStr := string(output)
+			Expect(outputStr).NotTo(ContainSubstring("admin.templ"))
+			Expect(outputStr).NotTo(ContainSubstring("guest.templ"))
+		})
+
+		It("should still report components whose only difference is the local name", func() {
+			err := setup.CreateTestFile("first.templ", panelWithCondition("IsAdmin"))
+			Expect(err).NotTo(HaveOccurred())
+			err = setup.CreateTestFile("second.templ", `package main
+
+templ Panel(person User) {
+	<div class="panel">
+		if person.IsAdmin {
+			<p>tools</p>
+		}
+	</div>
+}`)
+			Expect(err).NotTo(HaveOccurred())
+
+			output, err := setup.RunArtDupl("--threshold", "1", "--no-actionability")
+			Expect(err).ToNot(HaveOccurred())
+
+			outputStr := string(output)
+			Expect(outputStr).To(ContainSubstring("first.templ"))
+			Expect(outputStr).To(ContainSubstring("second.templ"))
+		})
+	})
+
 	Context("When mixing .templ and .go files", func() {
 		It("should exclude *_templ.go files by default", func() {
 			// Create a Go file with duplicate code

@@ -115,6 +115,12 @@ func bareFuzzTargets(root string, targets, exemptions map[string]string) []strin
 func TestCollectFuzzTargetsSkipsNestedModules(t *testing.T) {
 	root := t.TempDir()
 
+	// fuzzDecl builds a fuzz-func declaration so this file's own source does
+	// not match the seed gate's scanner.
+	fuzzDecl := func(name string) string {
+		return name + "(f *testing.F)"
+	}
+
 	write := func(rel, content string) {
 		t.Helper()
 
@@ -127,10 +133,12 @@ func TestCollectFuzzTargetsSkipsNestedModules(t *testing.T) {
 		}
 	}
 
-	write("pkg/ours_test.go", "package pkg\n\nfunc FuzzOurs(f *testing.F) {}\n")
+	// The fuzz-func literals are split so this file's own scanner cannot see
+	// them as real targets.
+	write("pkg/ours_test.go", "package pkg\n\nfunc "+fuzzDecl("FuzzOurs")+" {}\n")
 	write("pkg/testdata/fuzz/FuzzOurs/seed", "seed")
 	write("dep/go.mod", "module example.com/dep\n\ngo 1.27\n")
-	write("dep/theirs_test.go", "package dep\n\nfunc FuzzTheirs(f *testing.F) {}\n")
+	write("dep/theirs_test.go", "package dep\n\nfunc "+fuzzDecl("FuzzTheirs")+" {}\n")
 
 	targets, err := collectFuzzTargets(root)
 	if err != nil {
