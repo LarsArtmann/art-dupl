@@ -90,6 +90,12 @@ func templSuggestion(category domain.CloneCategory, fallback string) string {
 		return "Extract the shared markup block to a child templ component"
 	case domain.CategoryBlock:
 		return "Extract the shared markup to a child templ component"
+	case domain.CategoryMethod, domain.CategoryTest, domain.CategoryStruct,
+		domain.CategoryInterface, domain.CategoryHandler,
+		domain.CategoryTestBoilerplate, domain.CategoryTestFixture,
+		domain.CategoryAssignment, domain.CategoryExpression,
+		domain.CategoryReturn, domain.CategoryDefer, domain.CategoryUnknown:
+		return fallback
 	default:
 		return fallback
 	}
