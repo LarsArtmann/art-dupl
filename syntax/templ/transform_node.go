@@ -2,12 +2,12 @@ package templ
 
 import (
 	"github.com/LarsArtmann/art-dupl/syntax"
+	"github.com/LarsArtmann/art-dupl/syntax/golang"
 	templparser "github.com/a-h/templ/parser/v2"
 )
 
 // transformNode converts a Node to a syntax.Node.
 //
-
 func (t *transformer) transformNode(node templparser.Node) *syntax.Node {
 	if node == nil {
 		return nil
@@ -51,7 +51,7 @@ func (t *transformer) transformNode(node templparser.Node) *syntax.Node {
 	case *templparser.RawElement:
 		return t.transformRawElement(n)
 	case *templparser.Fallthrough:
-		return t.transformFallthrough(n)
+		return t.transformFallthroughStatement(n)
 	default:
 		return nil
 	}
@@ -67,9 +67,9 @@ func (t *transformer) transformElement(el *templparser.Element) *syntax.Node {
 }
 
 // buildElementNode constructs an Element node with attributes and (optionally)
-// children. The element name is encoded into the node Type in semantic mode so
-// that distinct tag names produce distinct tokens, while elements with the same
-// name but different children still match (Type-2 clone detection).
+// children. The element name is encoded into the node Type so that distinct
+// tag names produce distinct tokens, while elements with the same name but
+// different children still match (Type-2 clone detection).
 func (t *transformer) buildElementNode(
 	name string,
 	rng templparser.Range,
@@ -89,9 +89,9 @@ func (t *transformer) buildElementNode(
 }
 
 // transformAttribute converts an Attribute to a syntax.Node.
-// setAttributeKey names the attribute node and, in semantic mode, encodes the
-// key into the node type so differently-named attributes do not collapse
-// (attribute names are API surface, mirroring the Go KeyValueExpr policy).
+// setAttributeKey names the attribute node and encodes the key into the node
+// type so differently-named attributes do not collapse (attribute names are
+// API surface, mirroring the Go KeyValueExpr policy).
 func (t *transformer) setAttributeKey(o *syntax.Node, key string) {
 	o.Type = Attribute
 	o.Name = key
@@ -115,20 +115,58 @@ func (t *transformer) transformAttribute(attr templparser.Attribute) *syntax.Nod
 	case *templparser.ExpressionAttribute:
 		t.setAttributeKey(o, a.Key.String())
 		t.setNodePosFromRange(o, a.Expression.Range)
+		o.AddChildren(t.goExprNodes(golang.SnippetExpression, a.Expression)...)
 	case *templparser.BoolConstantAttribute:
 		t.setAttributeKey(o, a.Key.String())
 		t.setNodePosFromRange(o, a.Range)
 	case *templparser.BoolExpressionAttribute:
 		t.setAttributeKey(o, a.Key.String())
 		t.setNodePosFromRange(o, a.Expression.Range)
+		o.AddChildren(t.goExprNodes(golang.SnippetExpression, a.Expression)...)
 	case *templparser.SpreadAttributes:
 		o.Type = SpreadAttributes
 		t.setNodePosFromRange(o, a.Expression.Range)
+		o.AddChildren(t.goExprNodes(golang.SnippetExpression, a.Expression)...)
 	case *templparser.ConditionalAttribute:
-		o.Type = ConditionalAttributeIfStatement
-		t.setNodePosFromRange(o, a.Expression.Range)
+		return t.transformConditionalAttribute(a)
 	default:
 		return nil
+	}
+
+	return o
+}
+
+// transformConditionalAttribute converts `if cond { attrs } else { attrs }`
+// into a structured node: the condition is parsed as Go and both attribute
+// branches are traversed. Previously the condition and the branch bodies were
+// completely invisible to detection.
+func (t *transformer) transformConditionalAttribute(ca *templparser.ConditionalAttribute) *syntax.Node {
+	o := t.newFileNode()
+	o.Type = ConditionalAttributeIfStatement
+	t.setNodePosFromRange(o, ca.Range)
+
+	o.AddChildren(t.goExprNodes(golang.SnippetIfCond, ca.Expression)...)
+
+	for _, attr := range ca.Then {
+		attrNode := t.transformAttribute(attr)
+		if attrNode != nil {
+			o.AddChildren(attrNode)
+		}
+	}
+
+	if len(ca.Else) > 0 {
+		elseNode := t.newFileNode()
+		elseNode.Type = ComponentElseStatement
+		t.setNodePosFromRange(elseNode, ca.Range)
+
+		for _, attr := range ca.Else {
+			attrNode := t.transformAttribute(attr)
+			if attrNode != nil {
+				elseNode.AddChildren(attrNode)
+			}
+		}
+
+		o.AddChildren(elseNode)
 	}
 
 	return o

@@ -65,9 +65,9 @@ const (
 	// from `if X { A; B }`. It is a statement CONTAINER (unmarked, like the
 	// Go BlockStmt): its statement children are emitted through the
 	// IsStatementContainer descent.
-	ComponentElseStatement int32 = 100
+	ComponentElseStatement = 100
 
 	// ComponentFallthroughStatement represents a fallthrough in a switch;
 	// previously typed as a case body, making it indistinguishable.
-	ComponentFallthroughStatement int32 = 101
+	ComponentFallthroughStatement = 101
 )
