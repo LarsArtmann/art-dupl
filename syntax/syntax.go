@@ -415,20 +415,27 @@ func countNestedStatementTokens(n *Node, maxChildren int) int {
 const (
 	genDeclNodeType   int32 = 24 // golang.GenDecl
 	blockStmtNodeType int32 = 6  // golang.BlockStmt
+
+	// templElseStatementNodeType pins syntax/templ.ComponentElseStatement
+	// (100, deliberately above the golang 0-53 node-type range so no Go type
+	// can collide with this check). Templ else branches are statement
+	// containers with the same serializer semantics as the Go BlockStmt.
+	templElseStatementNodeType int32 = 100
 )
 
 // IsStatementContainer reports whether a non-statement child node is a block
 // whose statement children the serializer emits as individual statement
 // tokens after the parent composite statement token.
 //
-// Only BlockStmt qualifies: every statement in the unified tree hangs either
-// directly off a statement atom (else-if chain links, GenDecl specs) or off a
-// BlockStmt (function/for/if/switch/select bodies, else blocks). CaseClause
-// and CommClause nodes are themselves marked as statement atoms by the Go
-// transformer, so their bodies are reached through the direct
+// BlockStmt qualifies for Go files and the templ else container for templ
+// files: every statement in the unified tree hangs either directly off a
+// statement atom (else-if chain links, GenDecl specs, templ GoCode blocks) or
+// off a statement container (function/for/if/switch/select bodies, else
+// blocks). CaseClause and CommClause nodes are themselves marked as statement
+// atoms by the Go transformer, so their bodies are reached through the direct
 // statement-child branch, not through this container check.
 func IsStatementContainer(nodeType int32) bool {
-	return nodeType == blockStmtNodeType
+	return nodeType == blockStmtNodeType || nodeType == templElseStatementNodeType
 }
 
 // fingerprintSubtree hashes the pre-order Type sequence of a node and all its

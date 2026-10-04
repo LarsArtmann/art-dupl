@@ -53,3 +53,21 @@ const (
 	//art-dupl:accept parallel iota enum: name overlaps with golang.File but different domain
 	File
 )
+
+// Structure types introduced with expression-aware detection (2026-10).
+//
+// Values sit ABOVE the golang node-type range (0-53) so the serializer's
+// IsStatementContainer check can match the else container without colliding
+// with any Go node type (golang.Ident is 26, for example).
+const (
+	// ComponentElseStatement wraps an else branch (if/else bodies and
+	// conditional-attribute else lists) so `if X { A } else { B }` differs
+	// from `if X { A; B }`. It is a statement CONTAINER (unmarked, like the
+	// Go BlockStmt): its statement children are emitted through the
+	// IsStatementContainer descent.
+	ComponentElseStatement int32 = 100
+
+	// ComponentFallthroughStatement represents a fallthrough in a switch;
+	// previously typed as a case body, making it indistinguishable.
+	ComponentFallthroughStatement int32 = 101
+)
