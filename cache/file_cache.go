@@ -53,7 +53,12 @@ const (
 	// stream (composite statements now additionally emit nested block
 	// statements as individual tokens), so v3 entries would reproduce the old
 	// masked token stream and stale detection results.
-	CacheVersion = 4
+	// v4 → v5: expression-aware templ detection changed the serialized stream
+	// for .templ files (embedded Go expressions now emit child tokens,
+	// else branches are structured, declaration names hash the declared name
+	// only, CSS declarations are statement composites). v4 entries would
+	// reproduce the old expression-blind streams for templ files.
+	CacheVersion = 5
 
 	// Directory permissions.
 	cacheDirPerms = 0o750
