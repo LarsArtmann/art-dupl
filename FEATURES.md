@@ -13,9 +13,9 @@
 
 ### Supported Languages
 
-| Language  | Extension | Status           | Notes                                        |
-| --------- | --------- | ---------------- | -------------------------------------------- |
-| **Go**    | `.go`     | FULLY_FUNCTIONAL | Full AST analysis, 51 node types             |
+| Language  | Extension | Status           | Notes                                                                                                                                                                                      |
+| --------- | --------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Go**    | `.go`     | FULLY_FUNCTIONAL | Full AST analysis, 51 node types                                                                                                                                                           |
 | **Templ** | `.templ`  | FULLY_FUNCTIONAL | Pure Go parser, all three modes, ON by default; expression-aware (conditions, string/attr expressions, `{{ goCode }}`, component-call args, top-level Go code all participate in matching) |
 
 ### Detection Methods
