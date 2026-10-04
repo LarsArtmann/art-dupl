@@ -25,6 +25,7 @@ func tokenStream(t *testing.T, src string, mode golang.DetectionMode) []suffixtr
 	}
 
 	tokens := syntax.Serialize(node)
+
 	stream := make([]suffixtree.TokenValue, 0, len(tokens))
 	for _, tok := range tokens {
 		stream = append(stream, tok.Val())
@@ -287,7 +288,10 @@ func TestTopLevelGoHelpersVisible(t *testing.T) {
 	helperBody := helperStream[1:] // drop the File token
 
 	if !containsInOrder(streamA, helperBody) || !containsInOrder(streamB, helperBody) {
-		t.Errorf("helper body statements must appear in both files' token streams\nA=%v\nB=%v\nhelper=%v", streamA, streamB, helperBody)
+		t.Errorf(
+			"helper body statements must appear in both files' token streams\nA=%v\nB=%v\nhelper=%v",
+			streamA, streamB, helperBody,
+		)
 	}
 }
 
@@ -315,7 +319,9 @@ func TestHybridGoCodeFallsBackToOpaqueToken(t *testing.T) {
 	// transformer must not fail the whole parse.
 	src := "{{ if user.Ok { <b>yes</b> } }}"
 
-	node, _, err := ParseBytesWithMode("test.templ", []byte("package main\n\ntempl X(user User) {\n\t"+src+"\n}\n"), golang.DetectionModeSemantic)
+	wrapped := fmt.Sprintf(wrapComponent, "\t"+src)
+
+	node, _, err := ParseBytesWithMode("test.templ", []byte(wrapped), golang.DetectionModeSemantic)
 	if err != nil {
 		t.Fatalf("hybrid GoCode must not fail the parse: %v", err)
 	}

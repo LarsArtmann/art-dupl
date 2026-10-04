@@ -50,23 +50,18 @@ const snippetHeader = "package p\n\nfunc __artduplSnippet() {"
 // kind. Padding positions the snippet body at fileOffset when fileOffset
 // exceeds the header length, so transformed node positions address the real
 // templ file directly.
-func snippetWrapper(kind SnippetKind, src string, fileOffset int) (synthetic string) {
+func snippetWrapper(kind SnippetKind, src string, fileOffset int) string {
 	if kind == SnippetGoFile {
 		// Top-level declarations need only the package clause.
 		return "package p\n" + src
 	}
 
-	body := snippetBody(kind, src)
-
 	if kind == SnippetExpression {
-		return body
+		return snippetBody(kind, src)
 	}
 
-	pad := fileOffset - len(snippetHeader)
-
-	if pad < 0 {
-		pad = 0
-	}
+	body := snippetBody(kind, src)
+	pad := max(fileOffset-len(snippetHeader), 0)
 
 	return snippetHeader + strings.Repeat(" ", pad) + body + "\n}"
 }
@@ -94,22 +89,21 @@ func snippetBody(kind SnippetKind, src string) string {
 
 // snippetTargets extracts the AST nodes to transform from the parsed synthetic
 // file.
-func snippetTargets(kind SnippetKind, file *ast.File, expr ast.Expr, fset *token.FileSet) []ast.Node {
+func snippetTargets(kind SnippetKind, file *ast.File, expr ast.Expr) []ast.Node {
 	switch kind {
-	case SnippetExpression:
-		if expr == nil {
+	case SnippetExpression, SnippetGoFile:
+		if kind == SnippetExpression {
+			if expr == nil {
+				return nil
+			}
+
+			return []ast.Node{expr}
+		}
+
+		if file == nil {
 			return nil
 		}
 
-		return []ast.Node{expr}
-	case SnippetIfCond, SnippetForClause, SnippetSwitchTag, SnippetCaseList, SnippetStatements:
-		body := firstFuncBody(file)
-		if body == nil {
-			return nil
-		}
-
-		return extractSnippetNodes(kind, body)
-	case SnippetGoFile:
 		decls := make([]ast.Node, 0, len(file.Decls))
 
 		for _, decl := range file.Decls {
@@ -121,6 +115,13 @@ func snippetTargets(kind SnippetKind, file *ast.File, expr ast.Expr, fset *token
 		}
 
 		return decls
+	case SnippetIfCond, SnippetForClause, SnippetSwitchTag, SnippetCaseList, SnippetStatements:
+		body := firstFuncBody(file)
+		if body == nil {
+			return nil
+		}
+
+		return extractSnippetNodes(kind, body)
 	default:
 		return nil
 	}
@@ -129,41 +130,55 @@ func snippetTargets(kind SnippetKind, file *ast.File, expr ast.Expr, fset *token
 // extractSnippetNodes pulls the target nodes out of the synthetic function
 // body: the condition of the if statement, the whole range/for statement, the
 // switch statement, the case expression list, or the raw statement list.
+// Only the function-wrapped kinds reach this function; SnippetExpression and
+// SnippetGoFile never go through a function wrapper.
 func extractSnippetNodes(kind SnippetKind, body *ast.BlockStmt) []ast.Node {
-	for _, stmt := range body.List {
-		switch kind {
-		case SnippetIfCond:
+	switch kind {
+	case SnippetIfCond:
+		for _, stmt := range body.List {
 			if ifStmt, ok := stmt.(*ast.IfStmt); ok {
 				return []ast.Node{ifStmt.Cond}
 			}
-		case SnippetForClause:
+		}
+	case SnippetForClause:
+		for _, stmt := range body.List {
 			switch s := stmt.(type) {
 			case *ast.RangeStmt:
 				return []ast.Node{s}
 			case *ast.ForStmt:
 				return []ast.Node{s}
 			}
-		case SnippetSwitchTag:
+		}
+	case SnippetSwitchTag:
+		for _, stmt := range body.List {
 			switch s := stmt.(type) {
 			case *ast.SwitchStmt:
 				return []ast.Node{s}
 			case *ast.TypeSwitchStmt:
 				return []ast.Node{s}
 			}
-		case SnippetCaseList:
-			// The synthetic wrapper is `switch { case <src>: }`, so the case
-			// clause hangs off the switch statement's body, not the function
-			// body itself.
-			if switchStmt, ok := stmt.(*ast.SwitchStmt); ok {
-				for _, caseStmt := range switchStmt.Body.List {
-					if caseClause, ok := caseStmt.(*ast.CaseClause); ok {
-						return caseExprsAsNodes(caseClause.List)
-					}
+		}
+	case SnippetCaseList:
+		// The synthetic wrapper is `switch { case <src>: }`, so the case
+		// clause hangs off the switch statement's body, not the function
+		// body itself.
+		for _, stmt := range body.List {
+			switchStmt, ok := stmt.(*ast.SwitchStmt)
+			if !ok {
+				continue
+			}
+
+			for _, caseStmt := range switchStmt.Body.List {
+				if caseClause, ok := caseStmt.(*ast.CaseClause); ok {
+					return caseExprsAsNodes(caseClause.List)
 				}
 			}
-		case SnippetStatements:
-			return statementsAsNodes(body.List)
 		}
+	case SnippetStatements:
+		return statementsAsNodes(body.List)
+	case SnippetExpression, SnippetGoFile:
+		// Not function-wrapped; never reach this function.
+		return nil
 	}
 
 	return nil
@@ -267,7 +282,7 @@ func parseSnippetWrapped(
 		return nil, fmt.Errorf("parse templ %s snippet %q: %w", snippetKindName(kind), src, err)
 	}
 
-	targets := snippetTargets(kind, file, nil, fset)
+	targets := snippetTargets(kind, file, nil)
 	if len(targets) == 0 {
 		return nil, nil
 	}

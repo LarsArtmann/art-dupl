@@ -144,8 +144,10 @@ func TestParseSnippetCaseList(t *testing.T) {
 func TestParseSnippetStatementsGoCode(t *testing.T) {
 	src := "x := user.Count; if x > 3 { render(x) }"
 
+	altSrc := "y := person.Count; if y > 3 { render(y) }"
+
 	a := mustSnippet(t, SnippetStatements, src, "a.templ", 500, DetectionModeSemantic)
-	b := mustSnippet(t, SnippetStatements, "y := person.Count; if y > 3 { render(y) }", "b.templ", 500, DetectionModeSemantic)
+	b := mustSnippet(t, SnippetStatements, altSrc, "b.templ", 500, DetectionModeSemantic)
 
 	if len(a) != len(b) {
 		t.Fatalf("statement snippets should produce matching statement counts: %d vs %d", len(a), len(b))
@@ -216,7 +218,7 @@ func TestParseSnippetInvalidGoErrors(t *testing.T) {
 }
 
 func TestParseSnippetGoFileSkipsImports(t *testing.T) {
-	src := "import \"strings\"\n\nfunc helper(x string) string {\n\treturn strings.ToUpper(x)\n}\n"
+	const src = "import \"strings\"\n\nfunc helper(x string) string {\n\treturn strings.ToUpper(x)\n}\n"
 
 	nodes := mustSnippet(t, SnippetGoFile, src, "a.templ", 0, DetectionModeSemantic)
 	if len(nodes) != 1 {

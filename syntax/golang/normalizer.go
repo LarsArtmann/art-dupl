@@ -219,6 +219,7 @@ func (n *normalizer) collectSnippetLocals(node ast.Node) {
 	}
 
 	skip := make(map[*ast.Ident]bool)
+
 	var order []*ast.Ident
 
 	ast.Inspect(node, func(child ast.Node) bool {
