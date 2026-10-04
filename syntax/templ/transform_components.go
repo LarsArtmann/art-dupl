@@ -63,7 +63,7 @@ func (t *transformer) buildComponentRender(
 ) *syntax.Node {
 	name := extractCalleeName(exprValue)
 
-	if t.semantic {
+	if t.mode.HashesIdentifiers() {
 		normalized := normalizeExprValue(exprValue, t.symbols)
 		name = extractCalleeName(normalized)
 	}
@@ -71,7 +71,7 @@ func (t *transformer) buildComponentRender(
 	node := t.createNodeFromRange(ComponentRender, rng)
 
 	node.Name = name
-	if t.semantic {
+	if t.mode.HashesIdentifiers() {
 		node.Type = syntax.EncodeSemanticType(ComponentRender, name, true)
 	}
 

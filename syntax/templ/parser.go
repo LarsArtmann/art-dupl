@@ -19,7 +19,7 @@ func Parse(filename string) (*syntax.Node, error) {
 
 // ParseWithLineCount parses the given templ file and returns the syntax tree along with the line count.
 func ParseWithLineCount(filepath string) (*syntax.Node, int, error) {
-	return ParseWithLineCountWithMode(filepath, golang.DefaultDetectionMode())
+	return ParseWithLineCountWithMode(filepath, golang.DetectionModeSemantic)
 }
 
 // ParseWithLineCountWithMode parses with the given detection mode.
@@ -36,7 +36,7 @@ func ParseWithLineCountWithMode(filepath string, mode golang.DetectionMode) (*sy
 
 // ParseBytes parses templ content and returns the syntax tree along with the line count.
 func ParseBytes(filename string, content []byte) (*syntax.Node, int, error) {
-	return ParseBytesWithMode(filename, content, golang.DefaultDetectionMode())
+	return ParseBytesWithMode(filename, content, golang.DetectionModeSemantic)
 }
 
 // ParseBytesWithMode parses templ content with the given detection mode.

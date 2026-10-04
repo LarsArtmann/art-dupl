@@ -79,7 +79,7 @@ func (t *transformer) buildElementNode(
 	node := t.createNodeWithAttributes(Element, rng, attrs)
 
 	node.Name = name
-	if t.semantic {
+	if t.mode.HashesIdentifiers() {
 		node.Type = syntax.EncodeSemanticType(Element, name, true)
 	}
 
@@ -96,7 +96,7 @@ func (t *transformer) setAttributeKey(o *syntax.Node, key string) {
 	o.Type = Attribute
 	o.Name = key
 
-	if t.semantic {
+	if t.mode.HashesIdentifiers() {
 		o.Type = syntax.EncodeSemanticType(Attribute, key, true)
 	}
 }

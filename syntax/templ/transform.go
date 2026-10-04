@@ -111,7 +111,7 @@ func (t *transformer) transformHTMLTemplate(tmpl *templparser.HTMLTemplate) *syn
 	o := t.createNodeFromRange(ComponentDeclaration, tmpl.Range)
 
 	o.Name = tmpl.Expression.Value
-	if t.semantic {
+	if t.mode.HashesIdentifiers() {
 		o.Type = syntax.EncodeSemanticType(ComponentDeclaration, tmpl.Expression.Value, true)
 	}
 

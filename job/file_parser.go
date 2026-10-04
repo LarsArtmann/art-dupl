@@ -25,10 +25,7 @@ func ParseFileByExtensionWithConfig(
 
 	switch filepath.Ext(file) {
 	case ".templ":
-		ast, lines, err = templ.ParseWithLineCountWithMode(
-			file,
-			mode == golang.DetectionModeSemantic,
-		)
+		ast, lines, err = templ.ParseWithLineCountWithMode(file, mode)
 	default:
 		cfg := golang.ParseConfig{Mode: mode, Preloaded: preloaded}
 		ast, lines, err = golang.ParseWithLineCountConfig(file, cfg)

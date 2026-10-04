@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/LarsArtmann/art-dupl/syntax"
+	"github.com/LarsArtmann/art-dupl/syntax/golang"
 )
 
 func TestExtractCalleeName(t *testing.T) {
@@ -39,7 +40,7 @@ templ ComponentA() {
 }
 `
 
-	node, _, err := ParseBytesWithMode("test.templ", []byte(src), true)
+	node, _, err := ParseBytesWithMode("test.templ", []byte(src), golang.DetectionModeSemantic)
 	if err != nil {
 		t.Fatalf("ParseBytesWithMode() error = %v", err)
 	}
@@ -132,12 +133,12 @@ func findComponentRenderNodes(root *syntax.Node) []*syntax.Node {
 func parseTwoComponentRenderers(t *testing.T, srcA, srcB string) ([]*syntax.Node, []*syntax.Node) {
 	t.Helper()
 
-	nodeA, _, err := ParseBytesWithMode("a.templ", []byte(srcA), true)
+	nodeA, _, err := ParseBytesWithMode("a.templ", []byte(srcA), golang.DetectionModeSemantic)
 	if err != nil {
 		t.Fatalf("ParseBytesWithMode(a) error = %v", err)
 	}
 
-	nodeB, _, err := ParseBytesWithMode("b.templ", []byte(srcB), true)
+	nodeB, _, err := ParseBytesWithMode("b.templ", []byte(srcB), golang.DetectionModeSemantic)
 	if err != nil {
 		t.Fatalf("ParseBytesWithMode(b) error = %v", err)
 	}
