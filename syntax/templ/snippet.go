@@ -24,10 +24,12 @@ func (t *transformer) goExprNodes(kind golang.SnippetKind, expr templparser.Expr
 		int(expr.Range.From.Index), // #nosec G115 -- templ file sizes bounded by int32 in practice
 		t.mode,
 	)
-	if err != nil || len(nodes) == 0 {
+	if err != nil {
 		return []*syntax.Node{t.opaqueExprNode(expr)}
 	}
 
+	// A successful parse may legitimately produce nothing (import-only
+	// top-level Go code); those are dropped rather than made opaque.
 	return nodes
 }
 

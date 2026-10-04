@@ -70,5 +70,4 @@ type transformer struct {
 	filename   string
 	contentLen int
 	mode       golang.DetectionMode
-	symbols    map[string]string // local-variable symbol table for expression normalization
 }
