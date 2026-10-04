@@ -166,6 +166,7 @@ deps:
   syntax-templ:
     mayDependOn:
       - syntax
+      - syntax-golang
       - errors
       - pkg-utils
 
