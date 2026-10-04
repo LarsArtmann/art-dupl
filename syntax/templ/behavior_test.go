@@ -114,6 +114,26 @@ func TestAttributeExpressionDifferencesPreventClone(t *testing.T) {
 	assertStreamsDiffer(t, a, b, golang.DetectionModeSemantic)
 }
 
+// --- Spread attributes: { expr... } ---
+
+func TestSpreadAttributeExpressionDifferencesPreventClone(t *testing.T) {
+	t.Parallel()
+
+	a := `<div { user.Attrs... }>x</div>`
+	b := `<div { user.Different... }>x</div>`
+
+	assertStreamsDiffer(t, a, b, golang.DetectionModeSemantic)
+}
+
+func TestRenamedSpreadReceiverStillClones(t *testing.T) {
+	t.Parallel()
+
+	a := `<div { user.Attrs... }>x</div>`
+	b := `<div { person.Attrs... }>x</div>`
+
+	assertStreamsEqual(t, a, b, golang.DetectionModeSemantic)
+}
+
 // --- If/else structure: the flattening class ---
 
 func TestElseStructureDiffersFromSequentialBodies(t *testing.T) {
