@@ -51,14 +51,24 @@ const snippetHeader = "package p\n\nfunc __artduplSnippet() {"
 // exceeds the header length, so transformed node positions address the real
 // templ file directly.
 func snippetWrapper(kind SnippetKind, src string, fileOffset int) (synthetic string) {
+	if kind == SnippetGoFile {
+		// Top-level declarations need only the package clause.
+		return "package p\n" + src
+	}
+
 	body := snippetBody(kind, src)
+
+	if kind == SnippetExpression {
+		return body
+	}
+
 	pad := fileOffset - len(snippetHeader)
 
 	if pad < 0 {
 		pad = 0
 	}
 
-	return snippetHeader + strings.Repeat(" ", pad) + body
+	return snippetHeader + strings.Repeat(" ", pad) + body + "\n}"
 }
 
 func snippetBody(kind SnippetKind, src string) string {
@@ -141,8 +151,15 @@ func extractSnippetNodes(kind SnippetKind, body *ast.BlockStmt) []ast.Node {
 				return []ast.Node{s}
 			}
 		case SnippetCaseList:
-			if caseClause, ok := stmt.(*ast.CaseClause); ok {
-				return caseExprsAsNodes(caseClause.List)
+			// The synthetic wrapper is `switch { case <src>: }`, so the case
+			// clause hangs off the switch statement's body, not the function
+			// body itself.
+			if switchStmt, ok := stmt.(*ast.SwitchStmt); ok {
+				for _, caseStmt := range switchStmt.Body.List {
+					if caseClause, ok := caseStmt.(*ast.CaseClause); ok {
+						return caseExprsAsNodes(caseClause.List)
+					}
+				}
 			}
 		case SnippetStatements:
 			return statementsAsNodes(body.List)
@@ -265,6 +282,12 @@ func parseSnippetWrapped(
 		node := t.trans(target)
 		if node == nil {
 			continue
+		}
+
+		if kind == SnippetStatements {
+			// GoCode statements become individually detectable statement units
+			// inside their templ parents (mirrors Go block statements).
+			node.Statement = true
 		}
 
 		nodes = append(nodes, node)

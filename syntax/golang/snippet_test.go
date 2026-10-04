@@ -3,6 +3,7 @@ package golang
 import (
 	"testing"
 
+	"github.com/LarsArtmann/art-dupl/suffixtree"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
@@ -17,18 +18,56 @@ func mustSnippet(t *testing.T, kind SnippetKind, src, filename string, offset in
 	return nodes
 }
 
+// flattenVals returns the Val() of every node in the subtree, pre-order.
+func flattenVals(n *syntax.Node) []suffixtree.TokenValue {
+	if n == nil {
+		return nil
+	}
+
+	vals := []suffixtree.TokenValue{n.Val()}
+
+	for _, child := range n.Children {
+		vals = append(vals, flattenVals(child)...)
+	}
+
+	return vals
+}
+
+func tokenSeqsEqual(a, b []*syntax.Node) bool {
+	if len(a) != len(b) {
+		return false
+	}
+
+	for i := range a {
+		x := flattenVals(a[i])
+		y := flattenVals(b[i])
+
+		if len(x) != len(y) {
+			return false
+		}
+
+		for j := range x {
+			if x[j] != y[j] {
+				return false
+			}
+		}
+	}
+
+	return true
+}
+
 func TestParseSnippetExpressionNormalizesLocals(t *testing.T) {
 	mode := DetectionModeSemantic
 
 	a := mustSnippet(t, SnippetExpression, "user.Name", "a.templ", 100, mode)
 	b := mustSnippet(t, SnippetExpression, "person.Name", "b.templ", 100, mode)
 
-	if a[0].Val() != b[0].Val() {
-		t.Errorf("renamed local in expression should match: %d vs %d", a[0].Val(), b[0].Val())
+	if !tokenSeqsEqual(a, b) {
+		t.Errorf("renamed local in expression should match: %v vs %v", flattenVals(a[0]), flattenVals(b[0]))
 	}
 
 	c := mustSnippet(t, SnippetExpression, "user.Email", "c.templ", 100, mode)
-	if a[0].Val() == c[0].Val() {
+	if tokenSeqsEqual(a, c) {
 		t.Error("different field selectors must not match (API surface)")
 	}
 }
@@ -37,12 +76,12 @@ func TestParseSnippetExpressionKeepsCalleeNames(t *testing.T) {
 	a := mustSnippet(t, SnippetExpression, "len(items)", "a.templ", 10, DetectionModeSemantic)
 	b := mustSnippet(t, SnippetExpression, "len(entries)", "b.templ", 10, DetectionModeSemantic)
 
-	if a[0].Val() != b[0].Val() {
-		t.Errorf("len() builtin must keep its name: %d vs %d", a[0].Val(), b[0].Val())
+	if !tokenSeqsEqual(a, b) {
+		t.Errorf("len() builtin must keep its name: %v vs %v", flattenVals(a[0]), flattenVals(b[0]))
 	}
 
 	c := mustSnippet(t, SnippetExpression, "count(items)", "c.templ", 10, DetectionModeSemantic)
-	if a[0].Val() == c[0].Val() {
+	if tokenSeqsEqual(a, c) {
 		t.Error("different called functions must not match")
 	}
 }
@@ -51,8 +90,8 @@ func TestParseSnippetExpressionStructuralModeDropsNames(t *testing.T) {
 	a := mustSnippet(t, SnippetExpression, "user.Name", "a.templ", 10, DetectionModeStructural)
 	b := mustSnippet(t, SnippetExpression, "other.Thing", "b.templ", 10, DetectionModeStructural)
 
-	if a[0].Val() != b[0].Val() {
-		t.Errorf("structural mode must drop identifier names: %d vs %d", a[0].Val(), b[0].Val())
+	if !tokenSeqsEqual(a, b) {
+		t.Errorf("structural mode must drop identifier names: %v vs %v", flattenVals(a[0]), flattenVals(b[0]))
 	}
 }
 
@@ -60,7 +99,7 @@ func TestParseSnippetExpressionExactModeKeepsVerbatimNames(t *testing.T) {
 	a := mustSnippet(t, SnippetExpression, "user.Name", "a.templ", 10, DetectionModeExact)
 	b := mustSnippet(t, SnippetExpression, "person.Name", "b.templ", 10, DetectionModeExact)
 
-	if a[0].Val() == b[0].Val() {
+	if tokenSeqsEqual(a, b) {
 		t.Error("exact mode must keep identifier names verbatim (no normalization)")
 	}
 }
@@ -69,12 +108,12 @@ func TestParseSnippetIfCond(t *testing.T) {
 	a := mustSnippet(t, SnippetIfCond, "user.IsAdmin && user.Active", "a.templ", 200, DetectionModeSemantic)
 	b := mustSnippet(t, SnippetIfCond, "person.IsAdmin && person.Active", "b.templ", 250, DetectionModeSemantic)
 
-	if a[0].Val() != b[0].Val() {
-		t.Errorf("renamed locals in if-condition should match: %d vs %d", a[0].Val(), b[0].Val())
+	if !tokenSeqsEqual(a, b) {
+		t.Errorf("renamed locals in if-condition should match: %v vs %v", flattenVals(a[0]), flattenVals(b[0]))
 	}
 
 	c := mustSnippet(t, SnippetIfCond, "user.IsGuest && user.Active", "c.templ", 200, DetectionModeSemantic)
-	if a[0].Val() == c[0].Val() {
+	if tokenSeqsEqual(a, c) {
 		t.Error("different conditions must not match")
 	}
 }
@@ -83,8 +122,8 @@ func TestParseSnippetForClause(t *testing.T) {
 	a := mustSnippet(t, SnippetForClause, "i, item := range items", "a.templ", 300, DetectionModeSemantic)
 	b := mustSnippet(t, SnippetForClause, "j, product := range products", "b.templ", 300, DetectionModeSemantic)
 
-	if a[0].Val() != b[0].Val() {
-		t.Errorf("renamed range loop locals should match: %d vs %d", a[0].Val(), b[0].Val())
+	if !tokenSeqsEqual(a, b) {
+		t.Errorf("renamed range loop locals should match: %v vs %v", flattenVals(a[0]), flattenVals(b[0]))
 	}
 }
 
@@ -92,8 +131,13 @@ func TestParseSnippetCaseList(t *testing.T) {
 	a := mustSnippet(t, SnippetCaseList, `"admin", "root"`, "a.templ", 400, DetectionModeSemantic)
 	b := mustSnippet(t, SnippetCaseList, `"guest"`, "b.templ", 400, DetectionModeSemantic)
 
-	if a[0].Val() != b[0].Val() {
-		t.Errorf("string literals normalize to kind in semantic mode: %d vs %d", a[0].Val(), b[0].Val())
+	if tokenSeqsEqual(a, b) {
+		t.Error("case lists with different cardinality must not match")
+	}
+
+	c := mustSnippet(t, SnippetCaseList, `"one", "two"`, "c.templ", 400, DetectionModeSemantic)
+	if !tokenSeqsEqual(a, c) {
+		t.Errorf("string literals normalize to kind in semantic mode: %v vs %v", flattenVals(a[0]), flattenVals(c[0]))
 	}
 }
 
@@ -108,8 +152,17 @@ func TestParseSnippetStatementsGoCode(t *testing.T) {
 	}
 
 	for i := range a {
-		if a[i].Val() != b[i].Val() {
-			t.Errorf("statement %d should match after renaming: %d vs %d", i, a[i].Val(), b[i].Val())
+		x := flattenVals(a[i])
+		y := flattenVals(b[i])
+
+		if len(x) != len(y) {
+			t.Fatalf("statement %d token count mismatch after renaming: %v vs %v", i, x, y)
+		}
+
+		for j := range x {
+			if x[j] != y[j] {
+				t.Errorf("statement %d token %d should match after renaming: %d vs %d", i, j, x[j], y[j])
+			}
 		}
 
 		if !a[i].Statement {
@@ -129,9 +182,8 @@ func TestParseSnippetPositionsAddressRealFile(t *testing.T) {
 		t.Errorf("root node Pos should equal real file offset: got %d, want 1000", nodes[0].Pos)
 	}
 
-	end := mustSnippet(t, SnippetIfCond, "user.IsAdmin", "real.templ", 1000, DetectionModeSemantic)[0]
-	if end.End <= end.Pos {
-		t.Errorf("node End (%d) must be greater than Pos (%d)", end.End, end.Pos)
+	if nodes[0].End <= nodes[0].Pos {
+		t.Errorf("node End (%d) must be greater than Pos (%d)", nodes[0].End, nodes[0].Pos)
 	}
 }
 
