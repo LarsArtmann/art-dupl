@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -21,16 +22,39 @@ var fuzzSeedExemptions = map[string]string{
 }
 
 func TestFuzzTargetsHaveSeedCorpora(t *testing.T) {
+	targets, err := collectFuzzTargets("..")
+	if err != nil {
+		t.Fatalf("walk repo: %v", err)
+	}
+	if len(targets) == 0 {
+		t.Fatal("found zero fuzz targets; the gate is measuring the wrong thing")
+	}
+
+	bare := bareFuzzTargets("..", targets, fuzzSeedExemptions)
+
+	if len(bare) > 0 {
+		t.Fatalf("fuzz targets with zero committed seeds: %v; add a seed (run the target briefly, commit a testdata/fuzz/<name>/ entry) or record a reasoned exemption in fuzzSeedExemptions", bare)
+	}
+}
+
+// collectFuzzTargets maps every fuzz target name in the tree under root to
+// its declaring file (root-relative). Nested Go modules are skipped: the nix
+// build materializes dependency sources inside the tree (gogenfilter-real/)
+// and their fuzz targets belong upstream, not to this repo's seed gate.
+func collectFuzzTargets(root string) (map[string]string, error) {
 	fuzzFuncRe := regexp.MustCompile(`func (Fuzz[A-Za-z0-9_]+)\(`)
 
-	targets := map[string]string{} // name -> declaring file (repo-relative)
-	err := filepath.Walk("..", func(path string, info os.FileInfo, err error) error {
+	targets := map[string]string{}
+	err := filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
 		if info.IsDir() {
 			name := info.Name()
 			if name == ".git" || name == "website" || name == "node_modules" || name == "vendor" || name == "testdata" {
+				return filepath.SkipDir
+			}
+			if path != root && isNestedGoModule(path) {
 				return filepath.SkipDir
 			}
 
@@ -44,7 +68,7 @@ func TestFuzzTargetsHaveSeedCorpora(t *testing.T) {
 		if readErr != nil {
 			return readErr
 		}
-		rel, relErr := filepath.Rel("..", path)
+		rel, relErr := filepath.Rel(root, path)
 		if relErr != nil {
 			return relErr
 		}
@@ -55,19 +79,26 @@ func TestFuzzTargetsHaveSeedCorpora(t *testing.T) {
 		return nil
 	})
 	if err != nil {
-		t.Fatalf("walk repo: %v", err)
-	}
-	if len(targets) == 0 {
-		t.Fatal("found zero fuzz targets; the gate is measuring the wrong thing")
+		return nil, fmt.Errorf("walk %s: %w", root, err)
 	}
 
+	return targets, nil
+}
+
+func isNestedGoModule(dir string) bool {
+	info, err := os.Stat(filepath.Join(dir, "go.mod"))
+
+	return err == nil && !info.IsDir()
+}
+
+func bareFuzzTargets(root string, targets, exemptions map[string]string) []string {
 	bare := []string{}
 	for name, file := range targets {
-		if _, exempt := fuzzSeedExemptions[name]; exempt {
+		if _, exempt := exemptions[name]; exempt {
 			continue
 		}
 
-		seedDir := filepath.Join("..", filepath.Dir(file), "testdata", "fuzz", name)
+		seedDir := filepath.Join(root, filepath.Dir(file), "testdata", "fuzz", name)
 		entries, readErr := os.ReadDir(seedDir)
 		if readErr != nil || len(entries) == 0 {
 			bare = append(bare, name+" ("+file+")")
@@ -75,7 +106,46 @@ func TestFuzzTargetsHaveSeedCorpora(t *testing.T) {
 	}
 	sort.Strings(bare)
 
-	if len(bare) > 0 {
-		t.Fatalf("fuzz targets with zero committed seeds: %v; add a seed (run the target briefly, commit a testdata/fuzz/<name>/ entry) or record a reasoned exemption in fuzzSeedExemptions", bare)
+	return bare
+}
+
+// TestCollectFuzzTargetsSkipsNestedModules pins the sandbox failure class:
+// the nix build copies dependency sources (gogenfilter-real/) into the repo
+// root before tests run, and their fuzz targets must not be gated as ours.
+func TestCollectFuzzTargetsSkipsNestedModules(t *testing.T) {
+	root := t.TempDir()
+
+	write := func(rel, content string) {
+		t.Helper()
+
+		path := filepath.Join(root, rel)
+		if err := os.MkdirAll(filepath.Dir(path), 0o750); err != nil {
+			t.Fatalf("mkdir %s: %v", rel, err)
+		}
+		if err := os.WriteFile(path, []byte(content), 0o600); err != nil {
+			t.Fatalf("write %s: %v", rel, err)
+		}
+	}
+
+	write("pkg/ours_test.go", "package pkg\n\nfunc FuzzOurs(f *testing.F) {}\n")
+	write("pkg/testdata/fuzz/FuzzOurs/seed", "seed")
+	write("dep/go.mod", "module example.com/dep\n\ngo 1.27\n")
+	write("dep/theirs_test.go", "package dep\n\nfunc FuzzTheirs(f *testing.F) {}\n")
+
+	targets, err := collectFuzzTargets(root)
+	if err != nil {
+		t.Fatalf("collectFuzzTargets: %v", err)
+	}
+
+	if _, found := targets["FuzzTheirs"]; found {
+		t.Errorf("nested-module fuzz target leaked into the gate: %v", targets)
+	}
+	if _, found := targets["FuzzOurs"]; !found {
+		t.Errorf("own fuzz target missed: %v", targets)
+	}
+
+	bare := bareFuzzTargets(root, targets, map[string]string{})
+	if len(bare) != 0 {
+		t.Errorf("seeded own target reported bare: %v", bare)
 	}
 }

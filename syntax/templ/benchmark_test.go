@@ -60,7 +60,7 @@ templ panel(user User) {
 		}
 		{{ fmt.Println(user.Name) }}
 		<input type="text" value={ user.Name } if user.Admin { disabled } else { readonly }/>
-	}
+	</div>
 }
 `
 
