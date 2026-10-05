@@ -3,6 +3,7 @@ package finding_test
 import (
 	"context"
 	"encoding/json/v2"
+	"path/filepath"
 	"slices"
 	"strconv"
 	"strings"
@@ -463,5 +464,38 @@ func TestFindingJSONCarriesGroupID(t *testing.T) {
 	want := `"groupId":"group0123456789a"`
 	if !strings.Contains(string(data), want) {
 		t.Errorf("finding JSON = %s, want it to contain %s", data, want)
+	}
+}
+
+// TestToFindingsTagsCarryCategoryAndCloneType pins the semantic tags: every
+// finding carries the tool's standard category tag, and classified clones add
+// their Bellon taxonomy type (type-1/type-2) in the validated
+// lowercase-hyphenated convention. go-finding validation is exercised through
+// MustBuild inside ToFindings — a malformed tag would panic the test.
+func TestToFindingsTagsCarryCategoryAndCloneType(t *testing.T) {
+	t.Parallel()
+
+	group := testGroup("tags0000000000001", 10)
+	findings := finding.ToFindings(group, finding.Options{Version: "test"})
+
+	wantPerFile := map[string]gofinding.Tag{
+		"a.go": "type-1",
+		"b.go": "type-2",
+	}
+
+	if len(findings) != len(wantPerFile) {
+		t.Fatalf("ToFindings emitted %d findings, want %d", len(findings), len(wantPerFile))
+	}
+
+	for _, f := range findings {
+		wantType, ok := wantPerFile[filepath.Base(string(f.Position.File))]
+		if !ok {
+			t.Fatalf("unexpected finding file %q", f.Position.File)
+		}
+
+		want := []gofinding.Tag{gofinding.Tag(gofinding.CategoryDuplication), wantType}
+		if !slices.Equal(f.Tags, want) {
+			t.Errorf("finding %q Tags = %v, want %v", f.ID, f.Tags, want)
+		}
 	}
 }
