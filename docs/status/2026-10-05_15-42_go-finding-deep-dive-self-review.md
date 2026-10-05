@@ -9,6 +9,14 @@ HTML audit. One artifact produced (report), zero production code touched, zero c
 **Deliverable:** `docs/research/2026-10-05_go-finding-deep-dive.html` (54 KB, self-contained,
 Bauhaus-light editorial template). **UNTRACKED** — see section d.
 
+> **Correction (2026-10-05, remediation plan T02):** record repair against the plan's
+> groundwork findings G1–G8. Beyond the one API lapse caught mid-flight (§2d1), **three more
+> falsified/unproven claims are corrected inline below**: (1) "green prototype branch
+> waiting" — the branch is RED on its own dependency pin (G3); (2) `ToReport().ToLSP()` —
+> fabricated API, `ToLSP()` is a per-`Finding` method (G6); (3) "populate
+> `Report.Summary.FilesScanned`" — impossible from the `Detect(ctx) ([]Finding, error)`
+> contract; upstream-gated (G8).
+
 ---
 
 ## 1. Executive Summary
@@ -109,6 +117,12 @@ despite documented precedent.
    active branch is `fork`), so the range was meaningless — but **I never checked**, and I
    reported the branch as containing the wiring without reconciling the contradiction. The
    claim is probably true; the *evidence trail* is dirty.
+   **[RESOLVED 2026-10-05, remediation plan T02]** `git branch -a` confirms **no `main`
+   exists** (`fork` is the default branch; `master` is stale) — the empty range was
+   meaningless. Verified state (G2): the branch is exactly **1 commit (`bb8b925e`) ahead
+   of `fork`**, touching only `pkg/provider/provider.go` (+44/−11) and
+   `provider_test.go` (+63); the fork↔branch delta in `provider.go` is exactly the options
+   block.
 3. **Left the deliverable untracked in a `*.html`-ignoring repo.** The repo has 8 tracked
    `.html` files, all force-added, so precedent says `git add -f`. I cited critical rule #6
    ("never commit unless asked") and stopped — a defensible call, but the practical result is
@@ -151,9 +165,16 @@ Ordered roughly by value; all derived from this session's findings and observati
 4. Convert `printer/finding` construction from `NewFinding` to `Builder`, or add a `Validate()` call before emit.
 5. Add `Position.Column` only after confirming a start column exists in `domain.ProcessedClone`.
 6. Add semantic `Tags` (`type-1`/`type-2`/`type-3`, `duplicate`) in the adapter.
-7. Add an `OutputFormatLSP` routed through `ToReport().ToLSP()`.
+7. Add an `OutputFormatLSP`. **[Corrected 2026-10-05]** The original recommendation
+   (`routed through ToReport().ToLSP()`) was a fabricated API: `ToLSP()` is a per-`Finding`
+   method (`func (f Finding) ToLSP() LSPDiagnostic`), not a `Report` method. The printer
+   must iterate findings (`Report.FindingsSnapshot()`) and call `f.ToLSP()` on each.
 8. Bump core `go-finding` v1.13.0 → v1.14.0.
-9. Populate `Report.Summary.FilesScanned` / `SkippedModules` on the SDK path.
+9. Populate `Report.Summary.FilesScanned` / `SkippedModules` on the SDK path —
+   **[corrected 2026-10-05]** IMPOSSIBLE from art-dupl today: the toolsdk `Detector`
+   contract is `Detect(ctx) ([]Finding, error)` — there is no channel for report summary
+   data (G8). Upstream-gated: go-finding must add a coverage channel (Spec field or
+   Detect-result extension) first.
 10. Surface `//art-dupl:accept` matches as `Finding.Suppression` (SARIF suppressions).
 11. Add a test cross-checking `printer/sarif.go` against `Report.ToSARIF()` for group identity + severity.
 12. Decide whether `printer/finding.ToReport` is a real public API or dead code; if dead, delete or document.
@@ -227,7 +248,11 @@ Session goal (answer the utilization question + produce an audit) is **achieved 
 evidence**, but the research was shallower than the skill prescribes, one API signature was
 fabricated and fixed mid-flight, the gating branch evidence was left contradictory, and the
 deliverable is untracked. The **top finding is solid and unblocked**: the toolsdk options
-channel is already in the pinned dependency, so the provider's fixed-threshold contract is a
-self-imposed limit with a green prototype branch waiting.
+channel is already in fork's pinned dependency, so the provider's fixed-threshold contract
+is a self-imposed limit — but **[corrected 2026-10-05]** the prototype branch is **RED, not
+green**: `feat/provider-threshold-knob` pins `toolsdk v1.13.1` (no options channel) while
+its tests use `Spec.ValidateOptions`/`OptionValues` (v1.14.0+), so it does not compile on
+its own pins (G3). Landing means cherry-pick onto `fork` (v1.14.0 pins) + re-gate, not
+fast-forward.
 
 **Awaiting instructions.**
