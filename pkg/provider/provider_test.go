@@ -1063,3 +1063,83 @@ func TestDetectThresholdOption(t *testing.T) {
 		t.Fatalf("threshold=1001 error = %v, want ErrThresholdTooLarge", err)
 	}
 }
+
+// TestDetectEmitSuppressedAcceptedOption exercises the declared
+// "emit-suppressed-accepted" knob end to end: a clone group covered by an
+// in-source //art-dupl:accept directive is emitted with in-source
+// suppression annotations when the option is on (every finding of the group
+// — acceptance is per group, not per occurrence), while the default (off)
+// output carries no suppressions at all, byte-identical to the pre-flag
+// behavior. Wrong-kind values fail the Spec's option validation loudly.
+func TestDetectEmitSuppressedAcceptedOption(t *testing.T) {
+	t.Parallel()
+
+	header := "package fixtures\n\n"
+
+	dir := t.TempDir()
+	writeFile(t, dir, "a.go", header+"// art-dupl:accept reviewed duplication\n"+duplicatedFunction)
+	writeFile(t, dir, "b.go", header+duplicatedFunction)
+
+	detect := func(t *testing.T, values toolsdk.OptionValues) []gofinding.Finding {
+		t.Helper()
+
+		ctx := dirContext(t, dir)
+		if values != nil {
+			if err := Provider.ValidateOptions(values); err != nil {
+				t.Fatalf("ValidateOptions: %v", err)
+			}
+
+			ctx = toolsdk.WithOptions(ctx, values)
+		}
+
+		findings, err := cloneDetector{}.Detect(ctx)
+		if err != nil {
+			t.Fatalf("Detect: %v", err)
+		}
+
+		return findings
+	}
+
+	if err := Provider.ValidateOptions(toolsdk.OptionValues{providerOptionEmitSuppressedAccepted: true}); err != nil {
+		t.Fatalf("ValidateOptions(bool): %v", err)
+	}
+
+	if err := Provider.ValidateOptions(toolsdk.OptionValues{providerOptionEmitSuppressedAccepted: "yes"}); err == nil {
+		t.Fatal("wrong-kind value must fail ValidateOptions")
+	}
+
+	defaultFindings := detect(t, nil)
+	if len(defaultFindings) < 2 {
+		t.Fatalf("default: %d findings, want >= 2 (one per occurrence)", len(defaultFindings))
+	}
+
+	for _, f := range defaultFindings {
+		if f.Suppression != nil {
+			t.Errorf("default run: finding %q carries suppression %q; the option must not change default output",
+				f.ID, f.Suppression.Kind)
+		}
+	}
+
+	emit := detect(t, toolsdk.OptionValues{providerOptionEmitSuppressedAccepted: true})
+	if len(emit) != len(defaultFindings) {
+		t.Fatalf("emit run: %d findings, want %d (same groups, now annotated)", len(emit), len(defaultFindings))
+	}
+
+	for _, f := range emit {
+		if f.Suppression == nil {
+			t.Errorf("emit run: finding %q is not suppressed; the directive accepts the whole group", f.ID)
+
+			continue
+		}
+
+		if f.Suppression.Kind != gofinding.SuppressionInSource {
+			t.Errorf("finding %q Suppression.Kind = %q, want %q",
+				f.ID, f.Suppression.Kind, gofinding.SuppressionInSource)
+		}
+
+		if f.Suppression.Rule != gofinding.RuleName(finding.RuleCloneDetected) {
+			t.Errorf("finding %q Suppression.Rule = %q, want %q",
+				f.ID, f.Suppression.Rule, finding.RuleCloneDetected)
+		}
+	}
+}

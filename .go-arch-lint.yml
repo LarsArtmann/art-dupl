@@ -72,6 +72,10 @@ components:
   gitignore:
     in: internal/gitignore/**
 
+  # //art-dupl:accept directive resolution (shared by cmd and the provider)
+  accept:
+    in: internal/accept/**
+
   # Public SDK
   sdk:
     in: pkg/artdupl/**
@@ -136,6 +140,7 @@ deps:
       - pkg-utils
       - jsonutil
       - gitignore
+      - accept
 
   detection:
     mayDependOn:
@@ -197,6 +202,11 @@ deps:
       - finding-output
       - domain
       - gitignore
+      - accept
+
+  accept:
+    mayDependOn:
+      - domain
 
   stats:
     mayDependOn:

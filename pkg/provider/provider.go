@@ -27,9 +27,11 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"os"
 	"runtime/debug"
 
 	"github.com/LarsArtmann/art-dupl/domain"
+	"github.com/LarsArtmann/art-dupl/internal/accept"
 	"github.com/LarsArtmann/art-dupl/internal/gitignore"
 	"github.com/LarsArtmann/art-dupl/pkg/artdupl"
 	"github.com/LarsArtmann/art-dupl/printer/finding"
@@ -68,6 +70,15 @@ const originalSeverityTagPrefix = "original-severity-"
 // the domain sentinels.
 const providerOptionThreshold = "threshold"
 
+// providerOptionEmitSuppressedAccepted is the declared knob that opts into
+// surfacing reviewed duplicates: when true, clone groups covered by an
+// in-source //art-dupl:accept directive are emitted with a go-finding
+// in-source Suppression annotation instead of plain findings, so consumers
+// can distinguish reviewed duplication (go-finding drops suppressed findings
+// from SARIF by default). Default false keeps the provider's output
+// byte-identical to the pre-flag behavior.
+const providerOptionEmitSuppressedAccepted = "emit-suppressed-accepted"
+
 // Provider is the registered toolsdk spec. The var initializer performs the
 // registration; keeping it as a package-level var (per the toolsdk contract)
 // makes the blank import in BuildFlow the entire wiring step.
@@ -89,6 +100,15 @@ var Provider = toolsdk.Register(toolsdk.Spec{
 			Kind:        toolsdk.OptionKindInt,
 			Default:     artdupl.DefaultThreshold,
 			Description: "Minimum duplicated statements for a clone group to be reported (1-1000)",
+		},
+		{
+			Name: providerOptionEmitSuppressedAccepted,
+			Kind: toolsdk.OptionKindBool,
+			// Default false is load-bearing: no source scanning happens and
+			// the output stays byte-identical to the pre-flag behavior.
+			Default: false,
+			Description: "Annotate clone groups covered by //art-dupl:accept directives " +
+				"with in-source suppressions instead of plain findings (reviewed duplication)",
 		},
 	},
 	Detect:  cloneDetector{},
@@ -130,6 +150,11 @@ func (cloneDetector) Detect(ctx context.Context) ([]gofinding.Finding, error) {
 		opts.Threshold = threshold
 	}
 
+	var acceptedSet *accept.AcceptedSet
+	if boolOptionFromContext(ctx, providerOptionEmitSuppressedAccepted) {
+		acceptedSet = accept.NewAcceptedSet(os.ReadFile)
+	}
+
 	detector, err := artdupl.NewDetector(opts)
 	if err != nil {
 		return nil, fmt.Errorf("create art-dupl detector: %w", err)
@@ -148,7 +173,7 @@ func (cloneDetector) Detect(ctx context.Context) ([]gofinding.Finding, error) {
 		return nil, fmt.Errorf("detect clones in %s: %w", dir, err)
 	}
 
-	return findingsFromGroups(result.CloneGroups), nil
+	return findingsFromGroups(result.CloneGroups, acceptedSet), nil
 }
 
 // providerOptions configures the SDK for finding interchange: snippets are
@@ -185,17 +210,45 @@ func thresholdFromContext(ctx context.Context) (int, bool) {
 	return n, ok
 }
 
+// boolOptionFromContext reads a declared bool option from the per-run
+// option values, mirroring thresholdFromContext. Values of the wrong Go
+// kind only occur for direct callers that bypassed ValidateOptions and are
+// treated as unset.
+func boolOptionFromContext(ctx context.Context, name string) bool {
+	values, ok := toolsdk.OptionsFromContext(ctx)
+	if !ok {
+		return false
+	}
+
+	v, ok := values[name]
+	if !ok {
+		return false
+	}
+
+	b, ok := v.(bool)
+
+	return ok && b
+}
+
 // findingsFromGroups converts SDK clone groups into go-finding findings via
 // the shared printer/finding adapter, keeping IDs, GroupIDs, and positions
 // identical to the CLI's finding output for the same group input. Severity
 // is advisory-capped (see capAdvisorySeverities). Classification metadata
 // keys are intentionally absent: the SDK pipeline never computes them (see
-// the package doc).
-func findingsFromGroups(groups []*artdupl.CloneGroup) []gofinding.Finding {
+// the package doc). A non-nil acceptedSet (the emit-suppressed-accepted
+// option) annotates groups covered by //art-dupl:accept directives with
+// in-source suppressions; the CLI-equivalent predicate semantics come from
+// internal/accept, the same package cmd aliases.
+func findingsFromGroups(groups []*artdupl.CloneGroup, acceptedSet *accept.AcceptedSet) []gofinding.Finding {
 	opts := finding.Options{
 		Version:         providerVersion(),
 		Threshold:       artdupl.DefaultThreshold,
 		DetectionMethod: semanticMode,
+	}
+
+	if acceptedSet != nil {
+		opts.EmitSuppressedAccepted = true
+		opts.Accepted = acceptedSet.IsAccepted
 	}
 
 	findings := make([]gofinding.Finding, 0, len(groups))

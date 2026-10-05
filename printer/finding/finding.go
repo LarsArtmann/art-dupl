@@ -66,6 +66,23 @@ type Options struct {
 	// DetectionMethod, when non-empty, is attached to every finding as
 	// MetadataKeyDetectionMethod.
 	DetectionMethod string
+
+	// EmitSuppressedAccepted opts into surfacing reviewed duplicates: when
+	// true, groups for which Accepted reports true are emitted with an
+	// in-source Suppression annotation on every finding instead of relying
+	// on the caller to drop them. Consumers decide whether suppressed
+	// findings count (go-finding drops them from SARIF by default; opt in
+	// via WithIncludeSuppressed). The zero value (false) never consults
+	// Accepted, so the default output is byte-identical to the historical
+	// behavior.
+	EmitSuppressedAccepted bool
+
+	// Accepted reports whether a clone group is covered by an in-source
+	// //art-dupl:accept directive. It is the CLI's AcceptedSet.IsAccepted
+	// (internal/accept) at the call site; declared as a plain predicate so
+	// this adapter stays decoupled from cmd and internal/accept. Only
+	// consulted when EmitSuppressedAccepted is true; nil accepts nothing.
+	Accepted func(domain.ProcessedCloneGroup) bool
 }
 
 // GroupIDOf returns the deterministic go-finding group id for a clone group:
@@ -86,9 +103,12 @@ func ToFindings(group domain.ProcessedCloneGroup, opts Options) []gofinding.Find
 
 	ids := findingIDs(group)
 
+	accepted := opts.EmitSuppressedAccepted &&
+		opts.Accepted != nil && opts.Accepted(group)
+
 	findings := make([]gofinding.Finding, 0, len(group.Clones))
 	for i, cl := range group.Clones {
-		findings = append(findings, toFinding(tmpl, group, cl, ids, i, opts))
+		findings = append(findings, toFinding(tmpl, group, cl, ids, i, accepted, opts))
 	}
 
 	return findings
@@ -129,6 +149,7 @@ func toFinding(
 	cl domain.ProcessedClone,
 	ids []gofinding.ID,
 	index int,
+	accepted bool,
 	opts Options,
 ) gofinding.Finding {
 	size := group.TotalTokenCount()
@@ -154,6 +175,14 @@ func toFinding(
 	if cl.Classification.Suggestion != "" {
 		b = b.WithFixStrategy(gofinding.FixStrategySuggest).
 			WithSuggestion(cl.Classification.Suggestion)
+	}
+
+	if accepted {
+		b = b.WithSuppression(gofinding.Suppression{
+			Kind:   gofinding.SuppressionInSource,
+			Rule:   gofinding.RuleName(RuleCloneDetected),
+			Reason: "//art-dupl:accept directive",
+		})
 	}
 
 	// MustBuild, not BuildOrDefault: every input is derived from validated
