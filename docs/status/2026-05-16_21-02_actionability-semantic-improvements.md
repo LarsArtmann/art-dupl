@@ -1,5 +1,9 @@
 # Status Report: Actionability & Semantic Detection Improvements
 
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 12 items verified resolved, 5 open (37 patterns shipped; HTML badges still absent).
+
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 12 items verified resolved, 5 open (37 patterns shipped; HTML badges still absent).
+
 **Date:** 2026-05-16\
 **Branch:** fork\
 **Author:** Parakletos (Crush AI)\
@@ -60,7 +64,7 @@ if semantic {
 ```
 
 - `--semantic` → suppresses non-actionable clones (lower noise)
-- `--structural` (default) → reports everything (raw power, unchanged)
+- ~~~~~~`--structural` (default) → reports everything (raw power, unchanged)~~ semantic is the default since ADR-0007; structural is opt-in.~~ semantic is the default since ADR-0007; structural is opt-in.~~ semantic is the default since ADR-0007; structural is opt-in.
 
 #### 4. Rich Text Output (`--rich-text` flag)
 

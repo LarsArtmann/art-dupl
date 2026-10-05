@@ -1,5 +1,9 @@
 # Status Report: Scanner Bug Fix + Regression Test Follow-up
 
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 26 items verified resolved, 16 open (scanner fixed + consolidated; focused-test tails open).
+
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 26 items verified resolved, 16 open (scanner fixed + consolidated; focused-test tails open).
+
 **Date:** 2026-07-25 19:37
 **Branch:** fork
 **Scope:** This session ONLY — the follow-up self-review + bug-fix pass after the dedup-to-zero run.

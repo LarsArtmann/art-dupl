@@ -1,5 +1,9 @@
 # Status Report — 2026-05-17 04:36
 
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 17 items verified resolved, 5 open (todos/legacy deleted; man page + SARIF schema open).
+
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 17 items verified resolved, 5 open (todos/legacy deleted; man page + SARIF schema open).
+
 > **Branch:** `fork` | **Status:** Clean, pushed | **Go:** 1.26.2 | **Packages:** 23/23 | **Lint:** 0 issues | **CI:** GREEN
 
 ---
@@ -63,7 +67,7 @@ All 23 packages pass. `just check` reports 0 issues. `just ci` is fully green. E
 ### CLI Quality
 
 - Removed `-o` short flag from `stats --format` (collided with root `--output-dir -o`)
-- Confirmed `-m todos` and `-m legacy` detection methods are already fully wired and functional
+- ~~~~~~Confirmed `-m todos` and `-m legacy` detection methods are already fully wired and functional~~ TodoDetector/LegacyDetector were later deleted; only suffix-tree and hash methods remain.~~ TodoDetector/LegacyDetector were later deleted; only suffix-tree and hash methods remain.~~ TodoDetector/LegacyDetector were later deleted; only suffix-tree and hash methods remain.
 
 ---
 

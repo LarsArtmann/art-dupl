@@ -1,5 +1,9 @@
 # Comprehensive Project Status Report — art-dupl
 
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 22 items verified resolved, 5 open (semantic flipped; multi-language/plugin/mutation-testing open).
+
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 22 items verified resolved, 5 open (semantic flipped; multi-language/plugin/mutation-testing open).
+
 **Generated:** 2026-05-14 09:48 UTC
 **Branch:** fork (up to date with origin/fork)
 **Go Version:** 1.26.2
@@ -54,7 +58,7 @@
 | **SIMD optimizations**   | `VectorSize()`, `Available()`, AVX-512 prep | 6 TODOs in `syntax/hash_simd.go` and `internal/simd/` — no actual SIMD paths active                                                   |
 | **SDK/API**              | `pkg/artdupl/` has `Detector` interface     | Streaming support partially implemented, documentation incomplete                                                                     |
 | **Nix flake**            | Builds successfully                         | Private `gogenfilter` dependency requires two-phase dummy/replace pattern — fragile when gogenfilter rev changes                      |
-| **Semantic default**     | Config default `Semantic: false`            | Flag description says "already the default" which is inconsistent                                                                     |
+| ~~~~~~**Semantic default**     | Config default `Semantic: false`~~ semantic is the default (true) since 2026-05-17 (ADR-0007).~~ semantic is the default (true) since 2026-05-17 (ADR-0007).~~ semantic is the default (true) since 2026-05-17 (ADR-0007).            | Flag description says "already the default" which is inconsistent                                                                     |
 | **Domain types**         | Cleaned 6 unused types                      | `Filepath`, `LineNumber`, `CloneSeverity` still in use but underutilized                                                              |
 | **Printer DTO refactor** | Documented in AGENTS.md                     | `Printer.PrintClones(dups [][]*syntax.Node)` forces all 6 implementations to couple to AST internals — 111 test call sites to migrate |
 

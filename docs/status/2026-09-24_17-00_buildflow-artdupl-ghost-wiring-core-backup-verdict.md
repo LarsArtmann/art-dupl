@@ -8,7 +8,7 @@
 
 ## Headline
 
-**BuildFlow has NO art-dupl implementation — only ghost wiring — and its only live duplication detector is jscpd.**
+~~**BuildFlow has NO art-dupl implementation — only ghost wiring — and its only live duplication detector is jscpd.**~~ BuildFlow has run art-dupl as its live Go+templ core detector since 2026-09-25; jscpd is the demoted non-Go backup.
 The user then delivered the architecture correction that reframes everything:
 
 > **art-dupl is the CORE duplication detector in BuildFlow; jscpd is the BACKUP for languages art-dupl does not support yet** (JS/TS, Python, Rust, Bash, YAML, ...).

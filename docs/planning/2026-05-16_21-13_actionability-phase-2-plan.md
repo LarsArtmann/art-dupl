@@ -1,5 +1,9 @@
 # Actionability Phase 2 — Execution Plan
 
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 10 items verified resolved, 2 open (phases 1-2 shipped; HTML badges (3.2) and plumbing annotation (3.3) never implemented).
+
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 10 items verified resolved, 2 open (phases 1-2 shipped; HTML badges (3.2) and plumbing annotation (3.3) never implemented).
+
 **Date:** 2026-05-16 21:13\
 **Context:** Previous session added `CloneActionability` type, `EvaluateActionability` analyzer, `--rich-text` flag, and wired semantic mode filtering. Critical bugs discovered in post-session review.
 

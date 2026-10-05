@@ -1,5 +1,9 @@
 # Status Report — 2026-05-20 23:39 (Session Final)
 
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 21 items verified resolved, 2 open (shipped; clone types open).
+
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 21 items verified resolved, 2 open (shipped; clone types open).
+
 **Session:** Bug report → root cause → deep audit → 6 position bugs fixed → AGENTS.md updated → all green\
 **Branch:** `fork` (up to date with `origin/fork`)\
 **Go:** 1.26.2 | **Tests:** 25/25 pass (255 BDD specs) | **Lint:** 0 issues

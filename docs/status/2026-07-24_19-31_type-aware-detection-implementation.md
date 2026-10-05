@@ -1,5 +1,9 @@
 # Status Report: `--type-aware` Mode Implementation
 
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 24 items verified resolved, 40 open (core shipped (ADR-0015/0026, incremental, SDK); P2-P4 research/speculative tails unrouted by design).
+
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 24 items verified resolved, 40 open (core shipped (ADR-0015/0026, incremental, SDK); P2-P4 research/speculative tails unrouted by design).
+
 > **Date:** 2026-07-24 19:31
 > **Branch:** `fork` (11 commits ahead of origin)
 > **Session Goal:** Implement go/types integration (`--type-aware` mode) — the highest-impact false-positive reduction feature

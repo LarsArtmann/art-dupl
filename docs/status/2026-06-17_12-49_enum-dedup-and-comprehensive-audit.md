@@ -1,5 +1,9 @@
 # Status Report — 2026-06-17 12:49
 
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 30 items verified resolved, 6 open (ADRs/pkg-enum shipped; TS/Python/watch parked; micro-tails speculative).
+
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 30 items verified resolved, 6 open (ADRs/pkg-enum shipped; TS/Python/watch parked; micro-tails speculative).
+
 **Session focus:** Self-deduplication pass (`art-dupl` scanning itself at `-t 20`) → enum helper extraction + comprehensive status audit.
 
 ---
@@ -8,7 +12,7 @@
 
 art-dupl is a **production-quality Go clone detector** with two detection methods, seven output formats, a typed SDK, BDD tests, and nix-packaged builds. The codebase is in strong shape: **22/22 test packages green**, zero golangci-lint issues, and a self-scan floor of 16 accepted clone groups (down from 17 today after the enum refactor).
 
-However, two **CI-breaking issues** exist: a stale nix `vendorHash` and a pre-existing `gosec G304` lint warning. The architectural debt is well-documented and bounded (three Clone types, monolithic `printer/` package, `actionability.go` coupling).
+~~~~~~However, two **CI-breaking issues** exist: a stale nix `vendorHash` and a pre-existing `gosec G304` lint warning.~~ both fixed since: the Nix Flake Check CI gate is green and lint reports 0 issues.~~ both fixed since: the Nix Flake Check CI gate is green and lint reports 0 issues.~~ both fixed since: the Nix Flake Check CI gate is green and lint reports 0 issues. The architectural debt is well-documented and bounded (three Clone types, monolithic `printer/` package, `actionability.go` coupling).
 
 ---
 

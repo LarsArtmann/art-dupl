@@ -1,5 +1,9 @@
 # Comprehensive Project Status Report
 
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 18 items verified resolved, 5 open (DTO/regression gates shipped; filtertest coverage unrouted).
+
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 18 items verified resolved, 5 open (DTO/regression gates shipped; filtertest coverage unrouted).
+
 **Date:** 2026-05-04 21:06\
 **Branch:** fork\
 **Last Commit:** cbb120c fix: properly wire IncludeNodeModules config to file crawling
@@ -13,7 +17,7 @@
 | **Build**      | ✅ PASSING                    |
 | **Lint**       | ✅ 0 issues                   |
 | **Tests**      | ✅ ALL PASSING (22 packages)  |
-| **Coverage**   | ~80-85% overall               |
+| ~~~~~~**Coverage**   | ~80-85% overall~~ coverage gated by scripts/check-coverage.sh baseline (75.2% at capture).~~ coverage gated by scripts/check-coverage.sh baseline (75.2% at capture).~~ coverage gated by scripts/check-coverage.sh baseline (75.2% at capture).               |
 | **Git Status** | Clean (pushed to origin/fork) |
 
 ---

@@ -1,5 +1,9 @@
 # Status: TODO-List Execution Sprint — 19/23 Done, Release Parked on Decision Sheet
 
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 23 items verified resolved, 6 open (19/23 done; v0.8.0 tag + nix-hash-fix + CI-green + Spec.Timeout-heavy (since done) open tails).
+
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 23 items verified resolved, 6 open (19/23 done; v0.8.0 tag + nix-hash-fix + CI-green + Spec.Timeout-heavy (since done) open tails).
+
 **Date:** 2026-09-29 03:01
 **Session scope:** execute the entire `TODO_LIST.md` (harvested 2026-09-28) end-to-end.
 **Branch:** `fork` at ~`0af47c1b` (concurrent sessions kept committing throughout — see §d).

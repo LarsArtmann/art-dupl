@@ -1,5 +1,9 @@
 # Status Report — 2026-05-21 18:14
 
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 18 items verified resolved, 3 open (os.Exit removed; suites green).
+
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 18 items verified resolved, 3 open (os.Exit removed; suites green).
+
 **Session Type:** Comprehensive Status Update\
 **Branch:** `fork`\
 **Working Tree:** 1 modified file (status report from previous session)\

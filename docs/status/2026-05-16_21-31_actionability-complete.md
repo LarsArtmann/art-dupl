@@ -1,5 +1,9 @@
 # Status Report: Actionability & Semantic Detection — Complete
 
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 14 items verified resolved, 4 open (badges/Node.Name shipped; HTML buttons + b1 HTML badges open).
+
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 14 items verified resolved, 4 open (badges/Node.Name shipped; HTML buttons + b1 HTML badges open).
+
 **Date:** 2026-05-16 21:31\
 **Branch:** fork\
 **Commits:** 5 ahead of origin/fork\

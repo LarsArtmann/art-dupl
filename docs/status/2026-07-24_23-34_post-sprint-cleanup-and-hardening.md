@@ -1,5 +1,9 @@
 # Status Report: Post-Sprint Cleanup & Hardening
 
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 40 items verified resolved, 22 open (core shipped; nolint/dead-directive classes closed; research tails unrouted).
+
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 40 items verified resolved, 22 open (core shipped; nolint/dead-directive classes closed; research tails unrouted).
+
 **Date:** 2026-07-24 23:34
 **Session:** Cleaning up the previous sprint's work (lint, stub flags, docs, SDK test)
 **Branch:** fork

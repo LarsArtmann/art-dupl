@@ -1,5 +1,9 @@
 # Status Report: Stats Output Improvements — 2026-05-21 16:06 CEST
 
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 8 items verified resolved, 6 open (stats mature; watch/JSON-schema/effort-estimate unrouted).
+
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 8 items verified resolved, 6 open (stats mature; watch/JSON-schema/effort-estimate unrouted).
+
 **Branch:** `fork` (tracking `origin/fork`)\
 **Session:** Stats output enhancement sprint\
 **Commits since last status:** 7\

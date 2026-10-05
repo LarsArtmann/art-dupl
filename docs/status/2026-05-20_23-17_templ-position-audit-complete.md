@@ -1,5 +1,9 @@
 # Status Report — 2026-05-20 23:17
 
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 21 items verified resolved, 2 open (shipped; clone types open).
+
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 21 items verified resolved, 2 open (shipped; clone types open).
+
 **Session Focus:** Bug report review → deep position audit → 5 bugs fixed → lint cleanup → all green\
 **Branch:** `fork` (up to date with `origin/fork`)\
 **Go Version:** 1.26.2 linux/amd64\

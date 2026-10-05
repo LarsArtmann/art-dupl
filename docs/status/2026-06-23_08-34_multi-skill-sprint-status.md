@@ -1,5 +1,9 @@
 # Comprehensive Status Report — 2026-06-23
 
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 9 items verified resolved, 6 open (Name() shipped; broad recover() + unsorted map iteration remain; micro-tails WONT).
+
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 9 items verified resolved, 6 open (Name() shipped; broad recover() + unsorted map iteration remain; micro-tails WONT).
+
 > **Session:** Multi-skill architecture sprint (14 skills requested)
 > **Branch:** `fork`
 > **Commits this session:** 7 (d25028f → cdd04bc)

@@ -42,7 +42,7 @@
 
 ### 3. FEATURES.md — updated for accuracy
 
-- Pattern count 23 → 29 (matching code: 34 PatternLabel constants = 29 denylist + 4 property + PatternNone)
+~~- Pattern count 23 → 29 (matching code: 34 PatternLabel constants = 29 denylist + 4 property + PatternNone)~~ Current: 33 denylist + 4 property = 37, auto-derived by cmd/docs_health_counts_test.go.
 - Added `Generics-Extraction Candidates` row (PARTIALLY_FUNCTIONAL — 12.5% precision)
 - Added `Token-Count Filtering` row (`--min-tokens`)
 - Added "Detected vs Actionable Summary" row

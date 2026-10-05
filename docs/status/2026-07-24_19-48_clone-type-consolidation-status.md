@@ -1,5 +1,9 @@
 # Status Report: Clone Type Consolidation Session
 
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 24 items verified resolved, 26 open (consolidation shipped via CloneRef (ADR-0005); SPLIT-BRAIN.html annotation + micro-hygiene open).
+
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 24 items verified resolved, 26 open (consolidation shipped via CloneRef (ADR-0005); SPLIT-BRAIN.html annotation + micro-hygiene open).
+
 > **Date:** 2026-07-24 19:48
 > **Session Goal:** Consolidate 7+ parallel Clone types by embedding `domain.CloneRef`
 > **Branch:** `fork`

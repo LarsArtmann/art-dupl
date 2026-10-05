@@ -476,4 +476,4 @@ One row per item of the audit's (f) list. Verdicts: DONE (evidence), ROUTED (suc
 | 49 | Ledger append                       | DONE    | M20 (commit `5cd7918e`)                                                               |
 | 50 | Master-plan claim style             | DONE    | M02: links the two no-go IDs                                                          |
 
-**Tally: 48 DONE · 1 ROUTED (→v2 M14) · 1 GATED (g1) — 50/50 dispositioned.**
+~~**Tally: 48 DONE · 1 ROUTED (→v2 M14) · 1 GATED (g1) — 50/50 dispositioned.**~~ 47 DONE · 2 OPEN (M10 07-25 review annotation, g1) · 1 ROUTED.

@@ -1,5 +1,9 @@
 # Status Report: Architecture Debt Resolution (5 Issues)
 
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 15 items verified resolved, 5 open (Changed() merge/interning shipped; merge tests unrouted).
+
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 15 items verified resolved, 5 open (Changed() merge/interning shipped; merge tests unrouted).
+
 **Date:** 2026-05-17 23:23\
 **Session:** 5 critical architecture fixes identified, 2.5 completed\
 **Branch:** fork\

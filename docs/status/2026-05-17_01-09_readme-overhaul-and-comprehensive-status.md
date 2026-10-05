@@ -1,5 +1,9 @@
 # Status Report — 2026-05-17 01:09
 
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 20 items verified resolved, 5 open (archived/ created; man page + coverage targets open).
+
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 20 items verified resolved, 5 open (archived/ created; man page + coverage targets open).
+
 > **Branch:** `fork` | **Go:** 1.26.2 | **Files:** 213 Go files (45,886 LOC) | **Packages:** 23 (all passing)
 
 ---
@@ -10,7 +14,7 @@ art-dupl is in **strong shape**. The project has evolved from a simple dupl fork
 
 The README was just overhauled — removing 10+ fabricated types, correcting 5+ factual errors, and restructuring for clarity. One pre-existing lint issue remains (`nestif` in `printer/text.go`).
 
-**Biggest concern:** The `docs/status/` directory has 304+ files (some dating to 2025). It needs archiving. The `printer/` package at 44 files is the largest and most complex — the `Printer ↔ syntax.Node` coupling remains the top architectural debt.
+**Biggest concern:** ~~~~~~The `docs/status/` directory has 304+ files (some dating to 2025). It needs archiving.~~ old reports live in docs/status/archived/; archive consolidation done 2026-09-28.~~ old reports live in docs/status/archived/; archive consolidation done 2026-09-28.~~ old reports live in docs/status/archived/; archive consolidation done 2026-09-28. The `printer/` package at 44 files is the largest and most complex — the `Printer ↔ syntax.Node` coupling remains the top architectural debt.
 
 ---
 

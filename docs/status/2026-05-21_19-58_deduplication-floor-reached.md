@@ -1,5 +1,9 @@
 # art-dupl Status Report
 
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 20 items verified resolved, 2 open (floor reached; bdd/cmd owner question).
+
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 20 items verified resolved, 2 open (floor reached; bdd/cmd owner question).
+
 **Date:** 2026-05-21 19:58
 **Branch:** fork
 **Version:** v0.1.0

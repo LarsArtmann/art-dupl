@@ -1,5 +1,9 @@
 # Status Report — 2026-06-11 12:28
 
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 12 items verified resolved, 4 open (DTO/TokenValue/enum/CloneRef shipped; branded NodeType deferred; micro-tails speculative).
+
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 12 items verified resolved, 4 open (DTO/TokenValue/enum/CloneRef shipped; branded NodeType deferred; micro-tails speculative).
+
 ## Session Summary
 
 Extended the AST-aware false-positive filter system and completed several TODO items. 6 commits, all tests green, clone count stable at 68.

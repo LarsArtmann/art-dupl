@@ -4,7 +4,7 @@
 
 **Date:** 2026-09-28 23:50 CEST
 **Branch:** `fork` @ `03d5370f` (21 commits since the SUPERB plan `6e573c67`, 12 with real messages; the daemon buried 9 scopes in heuristic commits)
-**Executing:** `docs/planning/2026-09-28_21-57_SUPERB-docs-health-completion-plan.md` — 12 of 21 M-tasks complete, 1 in flight, 8 remaining (1 user-gated).
+**Executing:** `docs/planning/2026-09-28_21-57_SUPERB-docs-health-completion-plan.md` — ~~12 of 21 M-tasks complete, 1 in flight, 8 remaining (1 user-gated)~~ all 21 M-tasks complete; M12-M20 closed 2026-09-29 (docs/status/2026-09-29_00-54)..
 **Session verdict:** 515 inline item-strikes landed across 25 historical reports with per-item evidence; three standing gates now exist (docs count gate, SDK threshold drift guard, archive regime docs); one standing guard caught ME once — and that is the best thing that happened all session.
 
 ---

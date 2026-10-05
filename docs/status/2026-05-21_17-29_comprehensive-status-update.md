@@ -1,5 +1,9 @@
 # Status Report — 2026-05-21 17:29
 
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 20 items verified resolved, 3 open (os.Exit removed; version fixed; clone types open).
+
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 20 items verified resolved, 3 open (os.Exit removed; version fixed; clone types open).
+
 **Session Type:** Comprehensive Status Update\
 **Branch:** `fork`\
 **Working Tree:** 1 modified file (version template fix) + 1 new file (this report)
@@ -8,7 +12,7 @@
 
 ## Executive Summary
 
-The project is in **strong shape** with 23/25 packages fully passing, 72% total test coverage, and the in-process BDD test migration complete. One pre-existing test failure remains in `cmd` (`os.Exit(1)` in `statError`). Additionally, a critical **flaky test** issue was discovered: `os.Exit(1)` in `statError()` causes random BDD suite death depending on Ginkgo's random seed — sometimes killing the entire test process after just 20-30 specs.
+The project is in **strong shape** with 23/25 packages fully passing, 72% total test coverage, and the in-process BDD test migration complete. ~~~~~~One pre-existing test failure remains in `cmd` (`os.Exit(1)` in `statError`).~~ statError's os.Exit is gone; cmd and bdd suites green today.~~ statError's os.Exit is gone; cmd and bdd suites green today.~~ statError's os.Exit is gone; cmd and bdd suites green today. Additionally, a critical **flaky test** issue was discovered: `os.Exit(1)` in `statError()` causes random BDD suite death depending on Ginkgo's random seed — sometimes killing the entire test process after just 20-30 specs.
 
 | Metric                        | Value          | Trend                               |
 | ----------------------------- | -------------- | ----------------------------------- |

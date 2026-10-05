@@ -1,5 +1,9 @@
 # Status Report — 2026-05-20 22:58
 
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 21 items verified resolved, 2 open (rebased same night; clone types open).
+
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 21 items verified resolved, 2 open (rebased same night; clone types open).
+
 **Session Focus:** Bug report review → templ package declaration false positive → root cause analysis → fix → tests\
 **Branch:** `fork` (3 commits ahead, 4 behind `origin/fork`)\
 **Go Version:** 1.26.2 linux/amd64\

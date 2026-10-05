@@ -1,5 +1,9 @@
 # Status Report — Alpha-Normalization & Three-Mode System
 
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 8 items verified resolved, 2 open (T1-T24 shipped (ADR-0023/0007); nested-scope shadowing open in ROADMAP).
+
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 8 items verified resolved, 2 open (T1-T24 shipped (ADR-0023/0007); nested-scope shadowing open in ROADMAP).
+
 **Date:** 2026-06-20 18:23
 **Branch:** fork
 **Head:** `b86e7de`

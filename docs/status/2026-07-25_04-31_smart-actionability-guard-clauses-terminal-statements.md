@@ -1,5 +1,9 @@
 # Status Report: Smart Actionability Filtering — Guard Clauses + Terminal Statements
 
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 30 items verified resolved, 30 open (guard-clause/test-helper patterns shipped; F4-F50 brainstorm tails speculative-unrouted).
+
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 30 items verified resolved, 30 open (guard-clause/test-helper patterns shipped; F4-F50 brainstorm tails speculative-unrouted).
+
 **Date:** 2026-07-25 04:31\
 **Session Focus:** Eliminate false positives from art-dupl's actionability filtering by adding two new non-actionable patterns\
 **Branch:** `fork`\

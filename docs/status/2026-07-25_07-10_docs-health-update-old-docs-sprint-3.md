@@ -1,5 +1,9 @@
 # Status Report: Docs Health + Update-Old-Docs Sprint (Session 3)
 
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 40 items verified resolved, 13 open (annotations+guards landed; 6000+ claim still in FEATURES:8; micro tails).
+
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 40 items verified resolved, 13 open (annotations+guards landed; 6000+ claim still in FEATURES:8; micro tails).
+
 **Date:** 2026-07-25 07:10
 **Session goal:** Read ALL `**/2026-07-2*` files, apply `update-old-docs` + `docs-health` skills, make TODO_LIST/ROADMAP/FEATURES/CHANGELOG superb.
 **Branch:** `fork` (HEAD: `2ef6b4cc`)

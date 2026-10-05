@@ -1,5 +1,9 @@
 # Status Report — 2026-06-20 23:08 CEST
 
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 8 items verified resolved, 6 open (ADR-0023 shipped; TS/Python/watch parked; Owns retained).
+
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 8 items verified resolved, 6 open (ADR-0023 shipped; TS/Python/watch parked; Owns retained).
+
 ~~**Branch:** `fork` (1 commit ahead of `origin/fork`)~~ resolved by alternative — format-specific DTOs kept deliberately; CloneRef embed landed
 **Head:** `807e373` — fix: calibrate BDD tests for statement-level tokenization and fix size sort
 **Working tree:** Clean

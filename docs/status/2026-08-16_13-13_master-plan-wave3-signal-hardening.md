@@ -1,5 +1,9 @@
 # Status Report — Master Plan Wave 3: Signal & Hardening
 
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 30 items verified resolved, 8 open (wave-3 landed; final gates + T2.2 A/B completed 2026-09-22; micro-tails open).
+
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 30 items verified resolved, 8 open (wave-3 landed; final gates + T2.2 A/B completed 2026-09-22; micro-tails open).
+
 **Date**: 2026-08-16 13:13 CEST
 **Branch**: `fork` @ `7f98ed10` (daemon commits ahead of session start `8c1f75cf`)
 **Plan**: `docs/planning/2026-08-16_04-27_measure-first-trust-and-signal-master-plan.md`

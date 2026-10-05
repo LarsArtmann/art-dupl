@@ -1,5 +1,9 @@
 # Status Report: Gap-Closure Sprint & Brutal Self-Review
 
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 34 items verified resolved, 24 open (explanation/SARIF/guards shipped; HTML micro-tails + fuzz tails open).
+
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 34 items verified resolved, 24 open (explanation/SARIF/guards shipped; HTML micro-tails + fuzz tails open).
+
 > **Date:** 2026-07-25 08:38
 > **Session scope:** Followed the "Exact Next Steps" from the prior session's handoff. Closed all 3 known gaps (JSON field, FEATURES.md, writeExplanation test), fixed the `.golangci.yml` daemon regression (4th time), answered the 3 open design questions, then self-critiqued hard.
 > **Branch:** `fork`

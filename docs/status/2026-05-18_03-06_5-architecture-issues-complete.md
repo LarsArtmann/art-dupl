@@ -1,5 +1,9 @@
 # Status Report: 5 Architecture Debt Issues — FULLY RESOLVED
 
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 12 items verified resolved, 5 open (intern/interface shipped; branded types rejected).
+
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 12 items verified resolved, 5 open (intern/interface shipped; branded types rejected).
+
 **Date:** 2026-05-18 03:06\
 **Session:** Complete resolution of 5 critical architecture issues\
 **Branch:** fork\

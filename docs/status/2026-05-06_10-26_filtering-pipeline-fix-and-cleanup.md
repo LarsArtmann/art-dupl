@@ -1,5 +1,9 @@
 # Status Report — 2026-05-06 10:26
 
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 18 items verified resolved, 3 open (gogenfilter v3 pinned; nil-filter shipped; clone types open).
+
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 18 items verified resolved, 3 open (gogenfilter v3 pinned; nil-filter shipped; clone types open).
+
 ## Session Focus
 
 Fix `*_templ.go` generated files passing through unfiltered, and clean up the filtering pipeline architecture.

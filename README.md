@@ -7,7 +7,7 @@
 [![Go Reference](https://pkg.go.dev/badge/github.com/LarsArtmann/art-dupl.svg)](https://pkg.go.dev/github.com/LarsArtmann/art-dupl)
 [![Website](https://img.shields.io/badge/website-art--dupl.lars.software-e8a020.svg)](https://art-dupl.lars.software)
 
-**Professional code clone detection for Go.** Analyzes source code at the AST level to find real, fixable duplication — ignoring variable names, literal values, and idiomatic boilerplate so every reported clone is actionable.
+**Professional code clone detection for Go.** Analyzes source code at the AST level to find real, fixable duplication - ignoring variable names, literal values, and idiomatic boilerplate so every reported clone is actionable.
 
 A fork of [mibk/dupl](https://github.com/mibk/dupl) (via [golangci/dupl](https://github.com/golangci/dupl)) with major enhancements: multi-method detection, three matching modes (semantic / exact / structural), 8 output formats, `.templ` support, generated-code filtering, incremental analysis, baseline CI gating, and a professional CLI.
 
@@ -36,20 +36,20 @@ Full documentation: **[art-dupl.lars.software](https://art-dupl.lars.software)**
 | Capability               | Original dupl         | art-dupl                                                                                                                                       |
 | ------------------------ | --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
 | Detection algorithm      | Suffix tree only      | Suffix tree + hash-based + multi-method                                                                                                        |
-| Semantic matching        | No                    | Yes — alpha-normalization finds renamed clones (Type 2)                                                                                        |
-| Statement-level matching | Whole statements only | Nested statements emitted too — clones sharing loop/if bodies with divergent tails are detected                                                |
-| Matching modes           | 1                     | 3 — semantic (default), exact, structural                                                                                                      |
+| Semantic matching        | No                    | Yes - alpha-normalization finds renamed clones (Type 2)                                                                                        |
+| Statement-level matching | Whole statements only | Nested statements emitted too - clones sharing loop/if bodies with divergent tails are detected                                                |
+| Matching modes           | 1                     | 3 - semantic (default), exact, structural                                                                                                      |
 | Output formats           | Text, HTML            | Text, Rich-text, HTML, JSON, Simple-JSON, SARIF, plumbing                                                                                      |
-| Stats subcommand         | No                    | Yes — health grades (A–F), CSV, JSON, recommendations                                                                                          |
+| Stats subcommand         | No                    | Yes - health grades (A–F), CSV, JSON, recommendations                                                                                          |
 | Templ support            | No                    | Full `.templ` AST analysis                                                                                                                     |
 | Generated code filtering | No                    | Auto-detects sqlc, protobuf, mockgen, stringer, templ, generic                                                                                 |
 | Incremental analysis     | No                    | AST caching with SHA-256 content hashing                                                                                                       |
 | CI baseline gating       | No                    | `baseline` + `check` subcommands                                                                                                               |
 | Diff visualization       | No                    | Side-by-side and inline diffs in HTML                                                                                                          |
 | Clone classification     | No                    | Type 1 / 2 / 3 labels + extractability scores                                                                                                  |
-| Actionability filtering  | No                    | Suppresses 33 boilerplate patterns + 4 property-engine labels (test scaffolding, error wrapping, Lock+Defer, etc.) — only in `--semantic` mode |
+| Actionability filtering  | No                    | Suppresses 33 boilerplate patterns + 4 property-engine labels (test scaffolding, error wrapping, Lock+Defer, etc.) - only in `--semantic` mode |
 | Parallel parsing         | No                    | Worker pool with auto-detect                                                                                                                   |
-| Programmatic SDK         | No                    | `pkg/artdupl` — Detector interface with streaming                                                                                              |
+| Programmatic SDK         | No                    | `pkg/artdupl` - Detector interface with streaming                                                                                              |
 
 ---
 
@@ -59,8 +59,8 @@ Controlled with `-m` / `--detection-methods`:
 
 | Method      | Flag                    | Description                                                      |
 | ----------- | ----------------------- | ---------------------------------------------------------------- |
-| Suffix tree | `-m art-dupl` (default) | Ukkonen's algorithm on serialized ASTs — finds structural clones |
-| Hash-based  | `-m hash`               | Rolling hash on file content — faster, different tradeoffs       |
+| Suffix tree | `-m art-dupl` (default) | Ukkonen's algorithm on serialized ASTs - finds structural clones |
+| Hash-based  | `-m hash`               | Rolling hash on file content - faster, different tradeoffs       |
 | Combined    | `-m "hash,art-dupl"`    | Runs both in parallel, deduplicates results                      |
 
 ### Three Matching Modes
@@ -179,7 +179,7 @@ detector, err := artdupl.New(artdupl.Options{
 result, err := detector.FindClones(ctx)
 ```
 
-The SDK has zero imports of `config/` or `errors/` — fully independent types. See [SDK Design](SDK_DESIGN.md) and [pkg.go.dev](https://pkg.go.dev/github.com/LarsArtmann/art-dupl/pkg/artdupl).
+The SDK has zero imports of `config/` or `errors/` - fully independent types. See [SDK Design](SDK_DESIGN.md) and [pkg.go.dev](https://pkg.go.dev/github.com/LarsArtmann/art-dupl/pkg/artdupl).
 
 ### toolsdk Provider (BuildFlow integration)
 
@@ -195,9 +195,9 @@ The provider runs the SDK in semantic mode at the fixed default threshold
 (5 statements) over Go + templ files, honors `.gitignore`, skips
 vendor/generated/dot-directories, and emits go-finding `Finding`s with a
 deterministic `GroupID` per clone group. `ErrNoDuplicatesFound` from the SDK
-maps to an empty finding list — a clean repo is success, not an error.
+maps to an empty finding list - a clean repo is success, not an error.
 Classification metadata (actionability, clone type) is intentionally
-CLI-only — see [ADR-0025](docs/adr/0025-sdk-findings-classification-free.md).
+CLI-only - see [ADR-0025](docs/adr/0025-sdk-findings-classification-free.md).
 Consumer #1 is [BuildFlow](https://github.com/larsartmann/BuildFlow), where
 art-dupl is the core Go+templ duplication detector and jscpd covers the
 other languages.
@@ -267,4 +267,4 @@ Tests use standard `testing` + Ginkgo/Gomega BDD. See [CONTRIBUTING.md](CONTRIBU
 
 ## License
 
-[MIT](LICENSE) — Based on [mibk/dupl](https://github.com/mibk/dupl) (via [golangci/dupl](https://github.com/golangci/dupl)).
+[MIT](LICENSE) - Based on [mibk/dupl](https://github.com/mibk/dupl) (via [golangci/dupl](https://github.com/golangci/dupl)).

@@ -9,11 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Nothing yet.
+- **Expression-aware templ detection** (2026-10-04): embedded Go fragments in `.templ` files (conditions, string/attribute expressions, `{{ goCode }}` statements, component-call arguments, conditional attributes, top-level Go declarations) are parsed through `golang.ParseSnippet` and emitted as child tokens, so they participate in matching; renamed locals still match Type-2 via snippet-scoped alpha-normalization while called functions, selector fields, and literal keys stay verbatim (kills the `if user.IsAdmin` vs `if user.IsGuest` false-positive class). Else branches, switch defaults, fallthrough, CSS declarations, and declaration/component-callee tokens got structural fixes riding the same change. CacheVersion bumped 4 -> 5 (v4 entries would reproduce expression-blind results).
+- **Combined type-aware + suggest-generics two-pass mode** (ADR-0026, 2026-10-03): `--type-aware --suggest-generics` runs ONE shared `go/packages` type-check feeding both hash dispositions; the type-erased pass contributes only families with >=2 divergent type positions. SDK mirrors the semantics; presentation gates apply identically to both passes.
+- **Provider threshold knob** (2026-10-05, D1 art-dupl side): the toolsdk `Spec` declares a `threshold` option (default `artdupl.DefaultThreshold`, range 1-1000) consumed via `toolsdk.WithOptions`/`OptionsFromContext`; unknown option names and out-of-range values fail validation. Lands with the upstream go-finding `toolsdk/v1.14.0` options channel (LarsArtmann/go-finding#41).
 
 ### Fixed
 
-- Nothing yet.
+- **jsonv2 recurrence #5** (2026-10-05): daemon auto-commits had again re-migrated `internal/jsonutil` + `config/config_migrate.go` to direct `encoding/json/v2` imports (Duration refusal + non-deterministic map-key ordering in the findings golden); restored to the v1-only implementations. Caught by `internal/jsonv2gate` + `TestProviderFindingsGolden`; recorded in AGENTS.md.
 
 ## [0.8.0] - 2026-09-29
 

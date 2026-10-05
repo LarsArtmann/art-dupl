@@ -1,5 +1,9 @@
 # Status Report: Code Hygiene Sprint — Self-Review
 
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 42 items verified resolved, 12 open (stats breakdown shipped; micro tails unrouted).
+
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 42 items verified resolved, 12 open (stats breakdown shipped; micro tails unrouted).
+
 **Date:** 2026-07-25 00:30
 **Session:** Executing all 11 Code Hygiene items from TODO_LIST.md
 **Branch:** fork
@@ -8,7 +12,7 @@
 > threshold, Task 11: `SourceBreakdown` dead code) were resolved in the gap-closure
 > session (`2026-07-25_02-49`). `SourceBreakdown()` is now wired into stats output via
 > `SetFilterSourceStats`. All `Threshold: 15` instances replaced with `DefaultThreshold`.
-> The remaining open item (`SetFilterSourceStats` unit test) is tracked in TODO_LIST.
+> ~~~~~~The remaining open item (`SetFilterSourceStats` unit test) is tracked in TODO_LIST.~~ no SetFilterSourceStats unit test exists and it is no longer tracked.~~ no SetFilterSourceStats unit test exists and it is no longer tracked.~~ no SetFilterSourceStats unit test exists and it is no longer tracked.
 
 ---
 

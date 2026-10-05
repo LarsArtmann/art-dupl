@@ -1,5 +1,9 @@
 # Semantic Clone Deduplication — Session Status Report
 
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 4 items verified resolved, 1 open (dedup floor reached 05-21 (ledger process); DTO shipped).
+
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 4 items verified resolved, 1 open (dedup floor reached 05-21 (ledger process); DTO shipped).
+
 **Date:** 2026-05-16 02:11\
 **Branch:** `fork`\
 **Base commit:** `fdf68d8` (rebased on `8f9f179`, pre-DTO)\

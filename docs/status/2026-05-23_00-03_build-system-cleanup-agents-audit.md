@@ -1,5 +1,9 @@
 # Comprehensive Status Report — 2026-05-23 00:03
 
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 22 items verified resolved, 3 open (flake checks in CI; Homebrew formula placeholders stale (0.2.0 vs released)).
+
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 22 items verified resolved, 3 open (flake checks in CI; Homebrew formula placeholders stale (0.2.0 vs released)).
+
 **Session focus:** Build system cleanup, CI consolidation, AGENTS.md accuracy audit
 
 ---

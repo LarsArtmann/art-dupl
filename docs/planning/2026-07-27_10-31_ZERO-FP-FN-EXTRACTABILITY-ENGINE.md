@@ -1,5 +1,9 @@
 # ZERO False-Positive / False-Negative Clone Detection — Pareto Execution Plan
 
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 24 items verified resolved, 2 open (extractability engine shipped (ADR-0017); M24 v1.0-readiness audit pending (no v1.0 released)).
+
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 24 items verified resolved, 2 open (extractability engine shipped (ADR-0017); M24 v1.0-readiness audit pending (no v1.0 released)).
+
 **Date:** 2026-07-27
 **Vision:** `art-dupl --type-aware` reports only clones that are genuinely harmful duplication — **zero false positives, zero false negatives**.
 **Trigger:** [DiscordSync feedback](../feedback/new/2026-07-27-discordsync-t1-82-groups-97pct-false-positives.md) — 82 groups at `-t 1`, only 2 harmful (97.5% noise).

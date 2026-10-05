@@ -1,5 +1,9 @@
 # Status Report — Filter Cluster Quick Wins + Self-Review
 
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 36 items verified resolved, 22 open (filter cluster shipped; infra tails (govulncheck/dependabot-class) partly open).
+
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 36 items verified resolved, 22 open (filter cluster shipped; infra tails (govulncheck/dependabot-class) partly open).
+
 **Date:** 2026-07-25 07:47
 **Session scope:** Filter code optimization, self-review, lint guard fix, planning
 **Branch:** fork

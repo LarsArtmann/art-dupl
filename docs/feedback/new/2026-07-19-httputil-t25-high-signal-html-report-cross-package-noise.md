@@ -1,5 +1,9 @@
 # Feedback: Excellent test-code dedup signal at `-t 25`; HTML report shine; cross-package helper duplication flagged as noise
 
+> **Resolution (2026-10-05):** routed: cross-package noise tuning — held for post-v0.8.0 corpus work (ROADMAP).
+
+> **Resolution (2026-10-05):** routed: cross-package noise tuning — held for post-v0.8.0 corpus work (ROADMAP).
+
 **Routed (2026-09-28):** helper-call-site detection (the cross-package noise class) → ROADMAP; the HTML-report praise needs no action.
 
 **Date:** 2026-07-19

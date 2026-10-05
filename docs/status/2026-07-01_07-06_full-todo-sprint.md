@@ -149,7 +149,7 @@ Nothing is half-finished. Every task that was started was completed and verified
 
 ### T25 — Split `printer/` into sub-packages
 
-**Status:** Assessed — requires interface inversion.
+~~**Status:** Assessed — requires interface inversion.~~ DONE 2026-07-26: printer/actionability + printer/stats sub-packages shipped in v0.5.0.
 
 The printer package (~33 source files, ~3500 lines) has clean conceptual boundaries
 (`stats/`, `html/`, `analyze/`), but splitting requires:
