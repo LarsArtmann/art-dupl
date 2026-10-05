@@ -35,7 +35,8 @@
 - 3 ADRs (map-based transition, semantic default, reflection-based config merge)
 - 7 output formats (text, HTML, JSON, plumbing, SARIF, stats, CSV)
 - 2 language support (Go, Templ)
-~~~~~~- 5 detection methods~~ - 2 detection methods (suffix tree + hash).~~ - 2 detection methods (suffix tree + hash).~~ - 2 detection methods (suffix tree + hash).
+
+```- 5 detection methods~~ - 2 detection methods (suffix tree + hash).~~ - 2 detection methods (suffix tree + hash).~~ - 2 detection methods (suffix tree + hash).
 - Smart filtering (sqlc, templ, protobuf, mockgen, stringer)
 - SDK/programmatic API in `pkg/artdupl/`
 - Actionability filtering (signature-only, defer RAII, error propagation)
@@ -216,3 +217,4 @@ The TODO_LIST.md has items for all three paths, but the next sprint should proba
 | nix build                  | BROKEN (vendorHash stale)   |
 | just build                 | PASS                        |
 | `dist/art-dupl` binary     | Built and functional        |
+```

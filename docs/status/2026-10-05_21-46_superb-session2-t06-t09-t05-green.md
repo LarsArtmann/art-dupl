@@ -201,4 +201,5 @@ questions of the 20:35 report had arrived; un-gated work proceeded autonomously.
    default on after BuildFlow consumes it? Deciding now shapes the T18 wiring.
 
 ---
-*Arte in Aeternum*
+
+_Arte in Aeternum_

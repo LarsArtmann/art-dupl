@@ -12,13 +12,13 @@
 
 ## Executive Summary
 
-| Metric         | Status                        |
-| -------------- | ----------------------------- |
-| **Build**      | ✅ PASSING                    |
-| **Lint**       | ✅ 0 issues                   |
-| **Tests**      | ✅ ALL PASSING (22 packages)  |
-| ~~~~~~**Coverage**   | ~80-85% overall~~ coverage gated by scripts/check-coverage.sh baseline (75.2% at capture).~~ coverage gated by scripts/check-coverage.sh baseline (75.2% at capture).~~ coverage gated by scripts/check-coverage.sh baseline (75.2% at capture).               |
-| **Git Status** | Clean (pushed to origin/fork) |
+| Metric             | Status                                                                                                                                                                                                                                           |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Build**          | ✅ PASSING                                                                                                                                                                                                                                       |
+| **Lint**           | ✅ 0 issues                                                                                                                                                                                                                                      |
+| **Tests**          | ✅ ALL PASSING (22 packages)                                                                                                                                                                                                                     |
+| ~~~~~~**Coverage** | ~80-85% overall~~ coverage gated by scripts/check-coverage.sh baseline (75.2% at capture).~~ coverage gated by scripts/check-coverage.sh baseline (75.2% at capture).~~ coverage gated by scripts/check-coverage.sh baseline (75.2% at capture). |
+| **Git Status**     | Clean (pushed to origin/fork)                                                                                                                                                                                                                    |
 
 ---
 

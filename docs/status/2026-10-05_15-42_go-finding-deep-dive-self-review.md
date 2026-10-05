@@ -23,7 +23,7 @@ Bauhaus-light editorial template). **UNTRACKED** — see section d.
 
 The session answered the question it was asked and produced a real, evidence-backed audit.
 The verdict — **~62/100 adoption, ~11/18 applicable capabilities leveraged** — is defensible,
-but the *process* behind it cut corners the skill explicitly prescribes (Context7 doc
+but the _process_ behind it cut corners the skill explicitly prescribes (Context7 doc
 resolution, community/changelog web research) and leaned on a **local sibling checkout** that
 may not reflect published versions. One process lapse (fabricating an API method in a code
 example) was caught and fixed mid-flight. The single highest-value finding — the toolsdk
@@ -48,7 +48,7 @@ despite documented precedent.
 - **Skill activation done correctly**: loaded `library-deep-dive/SKILL.md`,
   `references/research-methodology.md`, `references/output-guide.md`,
   `assets/html-report-kit/references/html-output-guide.md`, and the editorial template
-  *before* executing, per the mandatory activation flow.
+  _before_ executing, per the mandatory activation flow.
 - **Phase 1 (project discovery)**: enumerated every importing file
   (`printer/finding/finding.go`, `pkg/provider/provider.go`, 3 test files); read the adapter
   and provider in full; inventoried the touched API surface by grepping
@@ -66,7 +66,7 @@ despite documented precedent.
   tag balance verified, one inaccurate code snippet corrected.
 - **Verified the ONE claim that gates the top recommendation**: confirmed the installed
   `toolsdk v1.14.0` physically contains the options channel (`toolsdk/options.go` read from
-  the sibling checkout), so the threshold knob is *not* version-blocked.
+  the sibling checkout), so the threshold knob is _not_ version-blocked.
 
 ### b) PARTIALLY DONE
 
@@ -74,9 +74,9 @@ despite documented precedent.
   `pipeline/`, `cmd/go-finding` CLI, `registry.go`, `gotoken/`, `lockutil/`,
   `category_linter.go`, or `interval_index.go`. My "18 applicable capabilities" is a
   hand-picked subset, not a derived enumeration — the 62/100 and 11/18 numbers are
-  *judgment*, not arithmetic.
+  _judgment_, not arithmetic.
 - **Version currency is locally sourced only.** "Latest = v1.14.0 / toolsdk/v1.15.0" comes
-  from local `git tag` in `~/projects/go-finding`. I never confirmed those are the *published*
+  from local `git tag` in `~/projects/go-finding`. I never confirmed those are the _published_
   latest on the module proxy / pkg.go.dev. The sibling checkout may be ahead of, or diverge
   from, what consumers can `go get`.
 - **Merge/Diff/baseline overlap is asserted, not proven.** I claimed `baseline/` "reinvents"
@@ -116,7 +116,7 @@ despite documented precedent.
    working tree. The likely cause is that a local `main` branch does not exist (this repo's
    active branch is `fork`), so the range was meaningless — but **I never checked**, and I
    reported the branch as containing the wiring without reconciling the contradiction. The
-   claim is probably true; the *evidence trail* is dirty.
+   claim is probably true; the _evidence trail_ is dirty.
    **[RESOLVED 2026-10-05, remediation plan T02]** `git branch -a` confirms **no `main`
    exists** (`fork` is the default branch; `master` is stale) — the empty range was
    meaningless. Verified state (G2): the branch is exactly **1 commit (`bb8b925e`) ahead
@@ -131,14 +131,14 @@ despite documented precedent.
 4. **One speculative fix may be impossible.** Finding 9 ("set `Position.Column`") assumes the
    start column is available. art-dupl's `domain.ProcessedClone` carries positions/lines; I
    did not confirm a column exists to thread. I cited `--dump-tokens`'s `line:col` computation,
-   which is a *cmd-layer* source table, not a domain field. This may be advice that cannot be
+   which is a _cmd-layer_ source table, not a domain field. This may be advice that cannot be
    implemented as written.
 
 ### e) WHAT WE SHOULD IMPROVE
 
 1. **Follow the skill's prescribed toolset.** Context7 + `agentic_fetch` exist precisely to
    avoid training-data staleness. Skipping them makes the report a code-read, not a
-   *deep dive*.
+   _deep dive_.
 2. **Verify against the published artifact, not a sibling checkout.** Version currency must be
    confirmed via the module proxy / pkg.go.dev, not local tags.
 3. **Prove duplication findings.** "Reinvents X" needs a side-by-side of the two
@@ -159,6 +159,7 @@ despite documented precedent.
 Ordered roughly by value; all derived from this session's findings and observations.
 
 **Immediate (this repo):**
+
 1. `git add -f docs/research/2026-10-05_go-finding-deep-dive.html` (+ commit) or explicitly mark it report-only.
 2. Resolve the `feat/provider-threshold-knob` branch state: `git branch -a`, `git log fork..feat/provider-threshold-knob`; confirm the wiring diff.
 3. Land `feat/provider-threshold-knob` (options channel is available in the pinned toolsdk v1.14.0).

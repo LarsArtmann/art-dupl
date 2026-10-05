@@ -67,7 +67,9 @@ All 23 packages pass. `just check` reports 0 issues. `just ci` is fully green. E
 ### CLI Quality
 
 - Removed `-o` short flag from `stats --format` (collided with root `--output-dir -o`)
-- ~~~~~~Confirmed `-m todos` and `-m legacy` detection methods are already fully wired and functional~~ TodoDetector/LegacyDetector were later deleted; only suffix-tree and hash methods remain.~~ TodoDetector/LegacyDetector were later deleted; only suffix-tree and hash methods remain.~~ TodoDetector/LegacyDetector were later deleted; only suffix-tree and hash methods remain.
+- ```Confirmed `-m todos` and `-m legacy` detection methods are already fully wired and functional~~ TodoDetector/LegacyDetector were later deleted; only suffix-tree and hash methods remain.~~ TodoDetector/LegacyDetector were later deleted; only suffix-tree and hash methods remain.~~ TodoDetector/LegacyDetector were later deleted; only suffix-tree and hash methods remain.
+  ```
+  ```
 
 ---
 

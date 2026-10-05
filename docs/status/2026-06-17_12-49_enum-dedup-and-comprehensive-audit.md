@@ -12,9 +12,7 @@
 
 art-dupl is a **production-quality Go clone detector** with two detection methods, seven output formats, a typed SDK, BDD tests, and nix-packaged builds. The codebase is in strong shape: **22/22 test packages green**, zero golangci-lint issues, and a self-scan floor of 16 accepted clone groups (down from 17 today after the enum refactor).
 
-~~~~~~However, two **CI-breaking issues** exist: a stale nix `vendorHash` and a pre-existing `gosec G304` lint warning.~~ both fixed since: the Nix Flake Check CI gate is green and lint reports 0 issues.~~ both fixed since: the Nix Flake Check CI gate is green and lint reports 0 issues.~~ both fixed since: the Nix Flake Check CI gate is green and lint reports 0 issues. The architectural debt is well-documented and bounded (three Clone types, monolithic `printer/` package, `actionability.go` coupling).
-
----
+## ````However, two **CI-breaking issues** exist: a stale nix `vendorHash` and a pre-existing `gosec G304` lint warning.~~ both fixed since: the Nix Flake Check CI gate is green and lint reports 0 issues.~~ both fixed since: the Nix Flake Check CI gate is green and lint reports 0 issues.~~ both fixed since: the Nix Flake Check CI gate is green and lint reports 0 issues. The architectural debt is well-documented and bounded (three Clone types, monolithic `printer/` package, `actionability.go` coupling).
 
 ## a) FULLY DONE
 
@@ -202,3 +200,6 @@ The `vendorHash` in `flake.nix` is stale — it doesn't match the current `go.su
 This session's work (uncommitted, in working tree):
 
 - **`pkg/enum/enum.go`**: Extracted `validate[T]` helper, eliminating the one real clone from today's self-scan. Clone groups: 17 → 16. All 22 test packages still green.
+
+```
+```

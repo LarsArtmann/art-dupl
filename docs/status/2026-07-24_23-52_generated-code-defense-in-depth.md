@@ -12,8 +12,10 @@
 > defense-in-depth entry. The open follow-ups (race tests on new `cmd` tests, dead
 > `//nolint:exhaustruct` directives) were resolved in the code-hygiene sprint. BDD tests
 > for `--include-generated generic` content behavior are in `bdd/filter_features_test.go`.
-> ~~~~~~The upstream gogenfilter push remains a TODO_LIST item~~ superseded by in-repo matchedGeneratedCategory unification + gogenfilter drift tests.~~ superseded by in-repo matchedGeneratedCategory unification + gogenfilter drift tests.~~ superseded by in-repo matchedGeneratedCategory unification + gogenfilter drift tests. ("Push defense-in-depth into
+>
+> ```The upstream gogenfilter push remains a TODO_LIST item~~ superseded by in-repo matchedGeneratedCategory unification + gogenfilter drift tests.~~ superseded by in-repo matchedGeneratedCategory unification + gogenfilter drift tests.~~ superseded by in-repo matchedGeneratedCategory unification + gogenfilter drift tests. ("Push defense-in-depth into
 > gogenfilter").
+> ```
 
 ---
 

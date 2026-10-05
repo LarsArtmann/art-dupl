@@ -64,7 +64,9 @@ if semantic {
 ```
 
 - `--semantic` → suppresses non-actionable clones (lower noise)
-- ~~~~~~`--structural` (default) → reports everything (raw power, unchanged)~~ semantic is the default since ADR-0007; structural is opt-in.~~ semantic is the default since ADR-0007; structural is opt-in.~~ semantic is the default since ADR-0007; structural is opt-in.
+- ````--structural` (default) → reports everything (raw power, unchanged)~~ semantic is the default since ADR-0007; structural is opt-in.~~ semantic is the default since ADR-0007; structural is opt-in.~~ semantic is the default since ADR-0007; structural is opt-in.
+  ```
+  ```
 
 #### 4. Rich Text Output (`--rich-text` flag)
 

@@ -26,7 +26,8 @@ art-dupl is in **strong shape** for v0.1.0. Core detection engine works across 2
 - [x] Multi-detection mode (both methods in parallel via goroutines)
 - [x] Semantic-aware matching (FNV-1a, **default ON** since 2026-05-17)
 - [x] Structural-only mode (`--structural` flag)
-- [x] ~~~~~~SIMD-optimized hot paths in internal/simd/~~ internal/simd was deleted; xxh3 provides native SIMD.~~ internal/simd was deleted; xxh3 provides native SIMD.~~ internal/simd was deleted; xxh3 provides native SIMD.
+- ```SIMD-optimized hot paths in internal/simd/~~ internal/simd was deleted; xxh3 provides native SIMD.~~ internal/simd was deleted; xxh3 provides native SIMD.~~ internal/simd was deleted; xxh3 provides native SIMD.
+  ```
 
 ### Languages
 

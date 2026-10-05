@@ -155,6 +155,7 @@ fumbles in one micro-task.
 ### f) Up to 50 Things To Do Next
 
 **Finish T06 (in flight, design settled):**
+
 1. Rewrite `cmd/accept_directive.go` as aliases (`type AcceptedSet = accept.AcceptedSet` etc.) + keep `newAcceptSet(cfg)`.
 2. Register `accept` component in `.go-arch-lint.yml`; add to cmd + provider mayDependOn.
 3. `go build ./...` + move/alias the accept unit tests (keep them green through aliases).

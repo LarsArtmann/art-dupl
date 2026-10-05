@@ -10,6 +10,7 @@
 After comprehensive analysis, identified **23 potential panic sources** across production code:
 
 ~~- **P0 (Critical):** 5 items - Slice bounds violations that crash immediately~~ P0 sources fixed era-wide; broad recover() remains at syntax/golang/parse.go:106 (documented).
+
 - **P1 (High):** 7 items - Type assertions and map access that can panic
 - **P2 (Medium):** 6 items - Edge cases in sorting/printing logic
 - **P3 (Low):** 5 items - Test code improvements (optional)

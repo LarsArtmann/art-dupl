@@ -69,7 +69,9 @@ The project is in **excellent health**. All 23 packages compile clean, 0 lint is
 ### TODO/Legacy Detection Methods
 
 - **Implemented** in `detection/todos.go` (split into 3 files)
-- ~~~~~~**Wired** through `MultiDetector` and accessible via `-m` flag~~ TodoDetector/LegacyDetector were later deleted; only art-dupl and hash methods remain.~~ TodoDetector/LegacyDetector were later deleted; only art-dupl and hash methods remain.~~ TodoDetector/LegacyDetector were later deleted; only art-dupl and hash methods remain.
+- ```**Wired** through `MultiDetector` and accessible via `-m` flag~~ TodoDetector/LegacyDetector were later deleted; only art-dupl and hash methods remain.~~ TodoDetector/LegacyDetector were later deleted; only art-dupl and hash methods remain.~~ TodoDetector/LegacyDetector were later deleted; only art-dupl and hash methods remain.
+  ```
+  ```
 - **Not documented** as user-facing features in README or HOW_TO_USE
 - **Status in FEATURES.md:** `DEFINED_ONLY` — may need user docs or deliberate `EXPERIMENTAL` labeling
 

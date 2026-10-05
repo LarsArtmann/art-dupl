@@ -876,7 +876,7 @@ payloads — one entry per file, one diagnostic per clone occurrence:
 
 - `uri` - File the diagnostics belong to (documents are sorted by file)
 - `severity` - LSP severity mapped from the token-count ladder: 1 (error) at
-  >= 4x the threshold, 2 (warning) at >= 2x, 3 (info) otherwise
+  > = 4x the threshold, 2 (warning) at >= 2x, 3 (info) otherwise
 - `code`/`source` - Always `art-dupl/duplicate-code` / `art-dupl`
 - `relatedInformation` - Sibling occurrences of the same clone group
 - `data.group_id` - The clone-group hash — the same stable id as JSON's

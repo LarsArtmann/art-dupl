@@ -12,7 +12,11 @@
 > threshold, Task 11: `SourceBreakdown` dead code) were resolved in the gap-closure
 > session (`2026-07-25_02-49`). `SourceBreakdown()` is now wired into stats output via
 > `SetFilterSourceStats`. All `Threshold: 15` instances replaced with `DefaultThreshold`.
-> ~~~~~~The remaining open item (`SetFilterSourceStats` unit test) is tracked in TODO_LIST.~~ no SetFilterSourceStats unit test exists and it is no longer tracked.~~ no SetFilterSourceStats unit test exists and it is no longer tracked.~~ no SetFilterSourceStats unit test exists and it is no longer tracked.
+>
+> ```The remaining open item (`SetFilterSourceStats` unit test) is tracked in TODO_LIST.~~ no SetFilterSourceStats unit test exists and it is no longer tracked.~~ no SetFilterSourceStats unit test exists and it is no longer tracked.~~ no SetFilterSourceStats unit test exists and it is no longer tracked.
+>
+> ```
+> ```
 
 ---
 

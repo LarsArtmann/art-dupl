@@ -83,12 +83,12 @@ art-dupl is a **production-ready** Go code clone detection tool. All 26 packages
 
 ## B) PARTIALLY DONE 🟡
 
-| Area                                | What's Done                                                                                                | What's Missing                                                                                         |
-| ----------------------------------- | ---------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| **Printer sub-package split** (T25) | CloneNode DTO decouples actionability from `syntax.Node`; `CloneRef` eliminates field drift                | Full `printer/` package split into focused sub-packages deferred — high circular dep risk              |
-| **Actionability patterns**          | 14 non-actionable patterns detected (test scaffolding, RAII defer, error wrapping, assertion chains, etc.) | Pattern detection uses `CloneNode.BaseType` but some edge cases (deeply nested builders) may not match |
-| **Performance profiling**           | Hidden `--profile` flag exists                                                                             | Not documented, not productionized (EXPERIMENTAL)                                                      |
-| **TODO_LIST.md freshness**          | ~~155 items marked done, 10 pending~~ TODO_LIST rewritten open-work-only (2026-09-29); stale entries purged.                                                                          | 6 unique pending items (4 are duplicates); stale CloneRef entry (already done as T23)                  |
+| Area                                | What's Done                                                                                                  | What's Missing                                                                                         |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------ |
+| **Printer sub-package split** (T25) | CloneNode DTO decouples actionability from `syntax.Node`; `CloneRef` eliminates field drift                  | Full `printer/` package split into focused sub-packages deferred — high circular dep risk              |
+| **Actionability patterns**          | 14 non-actionable patterns detected (test scaffolding, RAII defer, error wrapping, assertion chains, etc.)   | Pattern detection uses `CloneNode.BaseType` but some edge cases (deeply nested builders) may not match |
+| **Performance profiling**           | Hidden `--profile` flag exists                                                                               | Not documented, not productionized (EXPERIMENTAL)                                                      |
+| **TODO_LIST.md freshness**          | ~~155 items marked done, 10 pending~~ TODO_LIST rewritten open-work-only (2026-09-29); stale entries purged. | 6 unique pending items (4 are duplicates); stale CloneRef entry (already done as T23)                  |
 
 ---
 
