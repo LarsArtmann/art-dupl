@@ -116,6 +116,12 @@ func ToFindings(group domain.ProcessedCloneGroup, opts Options) []gofinding.Find
 
 // ToReport converts clone groups into a go-finding Report ready for
 // ToSARIF/ToLSP consumption or JSON interchange.
+//
+// The CLI pipeline does NOT call this — it streams groups to its printers
+// (constant memory) — so ToReport exists for BATCH consumers (SDK callers,
+// tests): it is the interchange entry point whose output is byte-equivalent
+// to what the CLI's SARIF printer emits (pinned by the SARIF cross-check
+// test) and whose suppression/tag semantics round-trip through go-finding.
 func ToReport(groups []domain.ProcessedCloneGroup, opts Options) *gofinding.Report {
 	findings := make([]gofinding.Finding, 0, len(groups))
 	for _, group := range groups {
@@ -233,6 +239,7 @@ func positionOf(cl domain.ProcessedClone) gofinding.Position {
 	return gofinding.Position{
 		File:   gofinding.FilePath(cl.Filename),
 		Line:   cl.LineStart,
+		Column: int(cl.ColumnStart), // 0 = unknown (no source at extraction)
 		Offset: int(cl.StartPos),
 	}
 }
@@ -243,6 +250,7 @@ func rangeOf(cl domain.ProcessedClone) *gofinding.Range {
 		End: gofinding.Position{
 			File:   gofinding.FilePath(cl.Filename),
 			Line:   cl.LineEnd,
+			Column: int(cl.ColumnEnd), // exclusive end; 0 = unknown
 			Offset: int(cl.EndPos),
 		},
 	}

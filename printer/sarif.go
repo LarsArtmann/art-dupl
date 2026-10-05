@@ -115,6 +115,11 @@ type SARIFArtifactLocation struct {
 type SARIFRegion struct {
 	StartLine int `json:"startLine"`
 	EndLine   int `json:"endLine"`
+	// StartColumn/EndColumn are 1-based byte columns (go/token semantics;
+	// endColumn is one past the last content column). Omitted when unknown
+	// (0), which is the case only when no source was available at extraction.
+	StartColumn int `json:"startColumn,omitempty"`
+	EndColumn   int `json:"endColumn,omitempty"`
 }
 
 // SARIFFingerprints represents fingerprints for deduplication.
@@ -233,8 +238,10 @@ func (p *sarifPrinter) PrintClones(
 							URI: cl.Filename,
 						},
 						Region: SARIFRegion{
-							StartLine: cl.LineStart,
-							EndLine:   cl.LineEnd,
+							StartLine:   cl.LineStart,
+							EndLine:     cl.LineEnd,
+							StartColumn: int(cl.ColumnStart),
+							EndColumn:   int(cl.ColumnEnd),
 						},
 					},
 				},

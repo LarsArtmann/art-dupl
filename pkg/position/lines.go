@@ -54,6 +54,38 @@ func offsetToLine(content []byte, offset int) int {
 	return line
 }
 
+// OffsetToColumn returns the 1-based byte column of a byte offset within its
+// line. Column 1 is the first byte after the preceding newline. A newline AT
+// the offset belongs to the line it terminates, so exclusive end positions
+// pointing at a newline report one past the last content column. Offsets out
+// of bounds are clamped. Like go/token.Position.Column, the column counts
+// bytes, not runes or UTF-16 units.
+func OffsetToColumn(content []byte, offset int) int {
+	if len(content) == 0 {
+		return 1
+	}
+
+	if offset >= len(content) {
+		offset = len(content) - 1
+	}
+
+	if offset < 0 {
+		offset = 0
+	}
+
+	lineStart := 0
+
+	for i := offset; i > 0; i-- {
+		if content[i-1] == '\n' {
+			lineStart = i
+
+			break
+		}
+	}
+
+	return offset - lineStart + 1
+}
+
 // SplitLines splits content into lines by newline characters.
 func SplitLines(content []byte) []string {
 	if len(content) == 0 {

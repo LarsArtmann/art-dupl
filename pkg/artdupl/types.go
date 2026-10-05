@@ -86,6 +86,12 @@ type Clone struct {
 	StartPos int `json:"start_pos"` // Starting byte position
 	EndPos   int `json:"end_pos"`   // Ending byte position
 	Size     int `json:"size"`      // Size in bytes/tokens
+
+	// ColumnStart/ColumnEnd are the 1-based byte columns of StartPos/EndPos
+	// (go/token column semantics; EndPos is exclusive). Zero means unknown
+	// (no source available at conversion time).
+	ColumnStart int `json:"column_start"` // Column of StartPos
+	ColumnEnd   int `json:"column_end"`   // Column of EndPos (exclusive)
 }
 
 // ExtractabilityAnalysis mirrors domain.ExtractabilityAnalysis so SDK consumers

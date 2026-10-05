@@ -320,6 +320,14 @@ type ProcessedClone struct {
 	TokenCount     int
 	FileSize       int
 	Classification CloneClassification
+
+	// ColumnStart/ColumnEnd are the 1-based byte columns of StartPos/EndPos
+	// within their lines (go/token column semantics: bytes, not runes).
+	// EndPos is exclusive: when it points at a newline, ColumnEnd is one
+	// past the last content column. Zero means unknown (no source available
+	// at extraction time) and is skipped by position-consuming output.
+	ColumnStart int32
+	ColumnEnd   int32
 }
 
 // Validate checks that the clone's invariants hold.

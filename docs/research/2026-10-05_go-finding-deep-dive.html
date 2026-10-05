@@ -867,6 +867,7 @@
           <a href="#currency">Version currency</a>
           <a href="#opportunities">Top opportunities</a>
           <a href="#appendix">Appendix</a>
+          <a href="#ledger">Remediation ledger</a>
         </nav>
       </aside>
 
@@ -959,6 +960,15 @@
             (options channel), <em>LSP surface</em>, and <em>report algebra</em>
             (merge/diff/correlate) on the table. The threshold knob is the
             highest-impact, lowest-effort fix and is unblocked today.
+          </div>
+          <div class="callout callout-teal">
+            <strong>Post-remediation (2026-10-06, session ledger in &sect;05)</strong>
+            Written pre-remediation, this report's top findings have since
+            shipped on <code>fork</code>: threshold options channel (D1),
+            Builder-validated construction (T04), <code>--lsp</code> output
+            (T05), suppression surfacing (T06), semantic tags (T08), a SARIF
+            cross-check contract (T09), and position columns (§05.3).
+            &ldquo;Report algebra reinvented&rdquo; is retracted (§05.2).
           </div>
         </section>
 
@@ -1322,17 +1332,17 @@ for _, f := range report.FindingsSnapshot() {
         <section id="currency">
           <h2><span class="num">02</span>Version currency</h2>
           <p>
-            art-dupl pins <code>go-finding v1.13.0</code> and
-            <code>toolsdk v1.14.0</code>. Both are one minor behind the latest
-            tags. Notably, the toolsdk dependency is already new enough for the
-            options channel &mdash; that gap is not version-blocked.
+            <em>Re-reviewed 2026-10-06 against the module proxy.</em>
+            art-dupl pins <code>go-finding v1.14.0</code> (bumped 2026-10-05,
+            remediation T07a) &mdash; the newest published core tag
+            (2026-10-04T23:19:04Z). pkg.go.dev renders v1.14.0.
           </p>
           <table class="compare">
             <thead>
               <tr>
                 <th>Module</th>
                 <th>Installed</th>
-                <th>Latest</th>
+                <th>Latest published</th>
                 <th>Gap</th>
                 <th>Relevance to art-dupl</th>
               </tr>
@@ -1340,25 +1350,43 @@ for _, f := range report.FindingsSnapshot() {
             <tbody>
               <tr>
                 <td>go-finding (core)</td>
-                <td>v1.13.0</td>
                 <td>v1.14.0</td>
-                <td class="no">1 minor</td>
-                <td class="yes">High &mdash; adds <code>Summary.FilesScanned</code> / <code>SkippedModules</code> (Finding 6; upstream-gated)</td>
+                <td>v1.14.0</td>
+                <td class="yes">current</td>
+                <td class="yes">Adds <code>TextEdit</code>/<code>Finding.Edits</code> (N/A, detector-only) and always-serialized <code>Summary.FilesScanned</code> (still unsettable through <code>Detector</code> &mdash; upstream-gated, T07b)</td>
               </tr>
               <tr>
                 <td>go-finding/toolsdk</td>
                 <td>v1.14.0</td>
                 <td>v1.15.0</td>
                 <td class="no">1 minor</td>
-                <td class="no">Low &mdash; v1.15.0 adds <code>SwitchCases</code> (repair paths; N/A, art-dupl has no Repairer)</td>
+                <td class="no">Low &mdash; v1.15.0 adds <code>Spec.SwitchCases</code> (repair paths; N/A, art-dupl has no Repairer)</td>
+              </tr>
+              <tr>
+                <td>go-finding/analysis</td>
+                <td>&mdash;</td>
+                <td>v1.13.0</td>
+                <td class="yes">n/a</td>
+                <td class="no">go/analysis interop layer; art-dupl is not an analyzer (see ledger)</td>
+              </tr>
+              <tr>
+                <td>go-finding/pipeline</td>
+                <td>&mdash;</td>
+                <td>v1.13.0</td>
+                <td class="yes">n/a</td>
+                <td class="no">Consumer-side orchestration (fix engine, flight recorder); BuildFlow owns that role (see ledger)</td>
               </tr>
             </tbody>
           </table>
           <div class="callout callout-teal">
-            <strong>Already current where it counts</strong>
-            The threshold knob needs only <code>toolsdk v1.14.0</code>, which is
-            pinned. The core bump to v1.14.0 is a small, additive win for
-            coverage reporting.
+            <strong>Current where it counts</strong>
+            The threshold knob (D1) and suppression surfacing (T06) shipped on
+            the pinned v1.14.0. External reality check (2026-10-06): Context7
+            does not index go-finding; Sourcegraph and pkg.go.dev show zero
+            public importers outside the LarsArtmann ecosystem (&sim;25
+            internal consumers per upstream <code>docs/ecosystem.md</code>, which
+            still lists art-dupl as &ldquo;no integration yet&rdquo; &mdash; stale, live in
+            BuildFlow since 2026-09-25; doc fix folded into the T07b PR).
           </div>
         </section>
 
@@ -1490,12 +1518,136 @@ for _, f := range report.FindingsSnapshot() {
           </table>
         </section>
 
+        <!-- Remediation ledger (added 2026-10-06) -->
+        <section id="ledger">
+          <h2><span class="num">05</span>Remediation ledger (re-review 2026-10-06)</h2>
+          <p>
+            Session outcome of the SUPERB remediation plan (T01&ndash;T17),
+            recorded after execution. The appendix table above is the
+            pre-remediation snapshot; this section is the current truth.
+          </p>
+
+          <h3>05.1 Shipped (fork, all gated green)</h3>
+          <table class="compare">
+            <thead>
+              <tr><th>Bundle</th><th>Outcome</th><th>Pin</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>T01 threshold options channel (D1)</td><td class="yes">Shipped &mdash; provider declares <code>threshold</code> (int, 1&ndash;1000), applied via <code>toolsdk.WithOptions</code></td><td><code>TestDetectThresholdOption</code></td></tr>
+              <tr><td>T04 Builder-validated findings</td><td class="yes">Shipped &mdash; <code>toFinding</code> constructs via validated <code>Builder</code> + <code>Template</code></td><td>byte-parity + malformed-input tests</td></tr>
+              <tr><td>T05 <code>--lsp</code> format</td><td class="yes">Shipped &mdash; per-file publishDiagnostics JSON, <code>FromLSP</code> round-trip</td><td><code>TestLSPPrinterDocumentsAndRoundTrip</code>, BDD E2E</td></tr>
+              <tr><td>T06 suppression surfacing</td><td class="yes">Shipped &mdash; <code>emit-suppressed-accepted</code> provider option; accept directives &rarr; <code>Suppression{InSource}</code></td><td><code>TestDetectEmitSuppressedAcceptedOption</code>, SARIF round-trip</td></tr>
+              <tr><td>T07a core bump v1.14.0</td><td class="yes">Shipped &mdash; vendorHash refreshed</td><td>nix build green</td></tr>
+              <tr><td>T08 semantic tags</td><td class="yes">Shipped &mdash; <code>duplication</code> + <code>type-N</code> on every classified finding</td><td><code>TestToFindingsTagsCarryCategoryAndCloneType</code></td></tr>
+              <tr><td>T09 SARIF cross-check</td><td class="yes">Shipped &mdash; CLI vs <code>ToSARIF()</code> agree on ruleId/level/groupId across the ladder</td><td><code>TestSARIFCrossCheckCLIvsGoFinding</code></td></tr>
+              <tr><td>T13 columns</td><td class="yes">Shipped &mdash; <code>ColumnStart/End</code> end-to-end (§05.3); finding IDs gain column precision</td><td><code>TestColumnsDerivedFromByteOffsets</code></td></tr>
+            </tbody>
+          </table>
+
+          <h3>05.2 Verdicts (spikes &amp; analyses)</h3>
+          <table class="compare">
+            <thead>
+              <tr><th>Question</th><th>Verdict</th><th>Evidence</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Is <code>baseline/</code> a reinvention of go-finding's merge/diff/correlate? (Finding 8)</td>
+                <td class="yes">Retracted</td>
+                <td>Different keying: baseline keys accepted groups by <strong>group content hash</strong> (rename/move-stable), go-finding <code>Diff</code> keys per-occurrence finding IDs (a renamed file = added+removed). Baseline is also a versioned persistence format go-finding deliberately does not own. Justified parallel, not duplication.</td>
+              </tr>
+              <tr>
+                <td>Adopt <code>Report.GroupFindings()</code>/<code>Filter</code> in the CLI?</td>
+                <td class="yes">No &mdash; keep streaming</td>
+                <td>API works (spike passed); CLI/SDK stream groups for constant memory. Report queries are consumer-side; reconstruction already pinned by the interchange test.</td>
+              </tr>
+              <tr>
+                <td>Declare <code>ModuleFanOut</code>?</td>
+                <td class="yes">No &mdash; deliberately</td>
+                <td>Cross-module clone detection is art-dupl's value (a clone duplicated between workspace modules is exactly the finding BuildFlow wants); per-module fan-out would blind it. Provider already honors the WorkDir-from-context contract.</td>
+              </tr>
+              <tr>
+                <td>Adopt <code>Finding.Edits</code>?</td>
+                <td>&#9679; N/A</td>
+                <td>Detector-only tool; deleting a clone needs a human decision about which copy survives. Revisit only if auto-fix ever lands.</td>
+              </tr>
+              <tr>
+                <td>CLI consumer (<code>cmd/go-finding</code>) able to run art-dupl?</td>
+                <td class="no">No &mdash; upstream gap</td>
+                <td>The CLI resolves detectors through the named-constructor <code>DetectorRegistry</code> + config file, not toolsdk discovery; a self-registering toolsdk provider is invisible to it. Folded into the T07b PR scope.</td>
+              </tr>
+              <tr>
+                <td><code>ToReport</code> has zero production callers &mdash; delete?</td>
+                <td class="yes">Document, keep</td>
+                <td>It is the batch interchange entry point anchoring three contract tests (validation, suppression round-trip, SARIF cross-check). Doc comment now states the CLI streams and this is the consumer path.</td>
+              </tr>
+              <tr>
+                <td>Start column in <code>domain.ProcessedClone</code>?</td>
+                <td class="yes">Yes &mdash; implemented</td>
+                <td>Spike proved <code>StartPos/EndPos</code> are exact file byte offsets (<code>content[StartPos:EndPos]</code> = clone text); columns derived at extraction via <code>position.OffsetToColumn</code>.</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h3>05.3 SARIF producer divergence (quantified, post-column)</h3>
+          <p>
+            Same groups rendered through the CLI's hand-rolled printer and
+            go-finding <code>ToSARIF()</code> (2026-10-06 dump). Identical:
+            <code>ruleId</code>, <code>level</code>, <code>go-finding/groupId</code>,
+            artifact URI, and the region (<code>startLine/endLine/startColumn/endColumn</code>
+            &mdash; both producers now emit columns). Deltas:
+          </p>
+          <table class="compare">
+            <thead>
+              <tr><th>Field</th><th>CLI printer</th><th>ToSARIF()</th><th>Assessment</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><code>fingerprints</code></td><td class="yes">yes (full + partial group hash)</td><td>no</td><td>CLI wins &mdash; GitHub dedupe keys; keep hand-rolled</td></tr>
+              <tr><td><code>invocations</code></td><td class="yes">yes (timestamps)</td><td>no</td><td>CLI-only telemetry; harmless</td></tr>
+              <tr><td><code>relatedLocations</code></td><td>no</td><td class="yes">yes (sibling regions)</td><td>ToSARIF wins; candidate CLI addition</td></tr>
+              <tr><td>region <code>snippet</code></td><td>no</td><td class="yes">yes (fragment text)</td><td>ToSARIF wins; candidate CLI addition</td></tr>
+              <tr><td><code>rank</code>, rich <code>go-finding/*</code> props</td><td>no</td><td class="yes">yes (id, tags, offsets, meta/*)</td><td>Intentional: CLI emits the compact <code>art-dupl/*</code> set</td></tr>
+              <tr><td>empty <code>category</code> property</td><td class="no">emits <code>&quot;&quot;</code></td><td>no</td><td>Cosmetic CLI noise; noted, not churned (wire conservatism)</td></tr>
+            </tbody>
+          </table>
+
+          <h3>05.4 Module map (reading notes, v1.14.0 working copy)</h3>
+          <ul>
+            <li><strong>analysis/</strong> (v1.13.0 tag) &mdash; go/analysis interop: <code>FromDiagnostic(WithSource)</code>, <code>ToDiagnostic</code>, <code>AnalyzerDetector</code> (runs any analyzer as a <code>finding.Detector</code>), AST position helpers. Consumer/adapter layer; art-dupl is not an analyzer &mdash; N/A.</li>
+            <li><strong>pipeline/</strong> (v1.13.0 tag, Unreleased: <code>EditListProvider</code>) &mdash; detect&rarr;triage&rarr;apply&rarr;verify orchestration, fix engine with provider chain (edit-list &rarr; byte-offset &rarr; line-column &rarr; substring), path-traversal safety, backups, flight recorder (Go 1.25 runtime/trace). Consumer-side; BuildFlow owns this role for art-dupl findings.</li>
+            <li><strong>registry.go</strong> &mdash; instance-scoped named-constructor catalog (<code>DetectorRegistry</code>: Register/Build/BuildAll/Names/Has, error-returning, concurrency-safe). Separate mechanism from toolsdk's process-global <code>Register</code>; no code linkage. Used by <code>cmd/go-finding</code> config resolution.</li>
+            <li><strong>interval_index.go</strong> &mdash; sorted-slice half-open interval index (O(n+k) query) used only by <code>Correlate</code>'s overlap grouping. Detectors never call it; art-dupl <code>Range</code>s already participate via correlation.</li>
+            <li><strong>category_linter.go</strong> &mdash; linter-name&rarr;Category lookup registry (not a rule enforcer). The real constraint lives in <code>Finding.Validate()</code>: standard category + tags must agree. art-dupl satisfies it trivially (<code>duplication</code> &isin; tags since T08).</li>
+            <li><strong>Mechanical usage</strong> &mdash; art-dupl references 73 distinct go-finding/toolsdk identifiers across printer/finding, printer (LSP), and pkg/provider.</li>
+          </ul>
+
+          <h3>05.5 Re-scored capability table</h3>
+          <table class="compare">
+            <thead>
+              <tr><th>Capability</th><th>Pre (appendix)</th><th>Now</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>toolsdk Options channel</td><td class="no">Missed</td><td class="yes">Fully leveraged (threshold, emit-suppressed-accepted)</td></tr>
+              <tr><td>Finding validation</td><td class="no">Missed</td><td class="yes">Fully leveraged (Builder + Template)</td></tr>
+              <tr><td>LSP export</td><td class="no">Missed</td><td class="yes">Fully leveraged (<code>--lsp</code>, round-trip pinned)</td></tr>
+              <tr><td>Suppression model</td><td class="no">Missed</td><td class="yes">Fully leveraged (accept &rarr; InSource suppression)</td></tr>
+              <tr><td>Tags</td><td class="warn">Partially</td><td class="yes">Fully leveraged (category + type-N)</td></tr>
+              <tr><td>Position / Range</td><td class="warn">Partially</td><td class="yes">Fully leveraged (columns shipped 2026-10-06)</td></tr>
+              <tr><td>Finding construction</td><td class="warn">Partially</td><td class="yes">Fully leveraged (Builder)</td></tr>
+              <tr><td>SARIF export</td><td class="warn">Partially</td><td class="yes">Pinned-equivalent (cross-check contract; hand-rolled kept for fingerprints)</td></tr>
+              <tr><td>Merge / Diff / Correlate vs baseline</td><td class="no">Missed</td><td class="yes">Retracted &mdash; justified parallel (§05.2)</td></tr>
+              <tr><td>Report coverage evidence</td><td class="no">Missed</td><td class="warn">Still open &mdash; upstream <code>Detector</code> cannot set FilesScanned (T07b)</td></tr>
+              <tr><td>Report query APIs</td><td class="warn">Partially</td><td class="warn">Intentional &mdash; CLI streams; Report is consumer-side</td></tr>
+              <tr><td>Edits / fix engine / pipeline / SwitchCases / ModuleFanOut</td><td>&#9679; N/A</td><td>&#9679; N/A (verdicts §05.2)</td></tr>
+            </tbody>
+          </table>
+        </section>
+
         <!-- Footer -->
         <footer class="footer">
           <p>
-            Generated 2026-10-05 &middot; Reviewed against go-finding v1.13.0 and toolsdk
-            v1.14.0 &middot; Claims verified against art-dupl source and the
-            ~/projects/go-finding checkout where cited
+            Generated 2026-10-05 &middot; Re-reviewed 2026-10-06 against go-finding
+            v1.14.0 (module proxy + working copy) &middot; Claims verified against
+            art-dupl source and the ~/projects/go-finding checkout where cited
           </p>
         </footer>
       </main>

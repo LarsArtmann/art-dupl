@@ -303,10 +303,12 @@ func toProcessedGroup(group *artdupl.CloneGroup) domain.ProcessedCloneGroup {
 	clones := make([]domain.ProcessedClone, 0, len(group.Clones))
 	for _, cl := range group.Clones {
 		clones = append(clones, domain.ProcessedClone{
-			CloneRef:   cl.CloneRef,
-			StartPos:   int32(cl.StartPos),
-			EndPos:     int32(cl.EndPos),
-			TokenCount: cl.Size,
+			CloneRef:    cl.CloneRef,
+			StartPos:    int32(cl.StartPos),
+			EndPos:      int32(cl.EndPos),
+			ColumnStart: int32(cl.ColumnStart),
+			ColumnEnd:   int32(cl.ColumnEnd),
+			TokenCount:  cl.Size,
 		})
 	}
 

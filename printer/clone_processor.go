@@ -6,6 +6,7 @@ import (
 
 	"github.com/LarsArtmann/art-dupl/domain"
 	duplerrors "github.com/LarsArtmann/art-dupl/errors"
+	"github.com/LarsArtmann/art-dupl/pkg/position"
 	"github.com/LarsArtmann/art-dupl/printer/actionability"
 	"github.com/LarsArtmann/art-dupl/syntax"
 	"github.com/LarsArtmann/art-dupl/syntax/golang"
@@ -129,14 +130,16 @@ func ProcessClones(fread ReadFile, dups [][]*syntax.Node, opts ...ProcessOption)
 		lines := fileInfo.LineEnd - fileInfo.LineStart + 1
 
 		clones[i] = domain.ProcessedClone{
-			Filename:   fileInfo.Filename,
-			LineStart:  fileInfo.LineStart,
-			LineEnd:    fileInfo.LineEnd,
-			Fragment:   string(fragment),
-			StartPos:   nstart.Pos,
-			EndPos:     nend.End,
-			TokenCount: tokens,
-			FileSize:   len(fileInfo.Content),
+			Filename:    fileInfo.Filename,
+			LineStart:   fileInfo.LineStart,
+			LineEnd:     fileInfo.LineEnd,
+			Fragment:    string(fragment),
+			StartPos:    nstart.Pos,
+			EndPos:      nend.End,
+			ColumnStart: int32(position.OffsetToColumn(fileInfo.Content, int(nstart.Pos))),
+			ColumnEnd:   int32(position.OffsetToColumn(fileInfo.Content, int(nend.End))),
+			TokenCount:  tokens,
+			FileSize:    len(fileInfo.Content),
 			Classification: actionability.ClassifyClone(domain.ClassificationInput{
 				Filename: fileInfo.Filename,
 				NodeType: golang.DecodeBaseType(nstart.Type),

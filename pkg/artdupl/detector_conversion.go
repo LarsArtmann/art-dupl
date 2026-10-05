@@ -73,22 +73,23 @@ func (d *detector) convertFragmentToClone(frag []*syntax.Node) *Clone {
 	startPos := int(firstNode.Pos)
 	endPos := int(lastNode.End)
 
-	startLine, endLine := startPos, endPos
+	clone := &Clone{
+		Filename: firstNode.Filename,
+		// Historical no-reader fallback: lines degrade to the byte offsets.
+		LineStart: startPos,
+		LineEnd:   endPos,
+		StartPos:  startPos,
+		EndPos:    endPos,
+		Size:      len(frag),
+	}
 
 	if d.opts.FileReader != nil {
 		content, err := d.opts.FileReader(firstNode.Filename)
 		if err == nil && len(content) > 0 {
-			startLine, endLine = position.ByteRangeToLines(content, startPos, endPos)
+			clone.LineStart, clone.LineEnd = position.ByteRangeToLines(content, startPos, endPos)
+			clone.ColumnStart = position.OffsetToColumn(content, startPos)
+			clone.ColumnEnd = position.OffsetToColumn(content, endPos)
 		}
-	}
-
-	clone := &Clone{
-		Filename:  firstNode.Filename,
-		LineStart: startLine,
-		LineEnd:   endLine,
-		StartPos:  startPos,
-		EndPos:    endPos,
-		Size:      len(frag),
 	}
 
 	if d.opts.IncludeFragments {

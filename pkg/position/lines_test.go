@@ -327,3 +327,35 @@ func TestLineIndexProperty(t *testing.T) {
 		t.Errorf("Monotonicity property failed: %v", err)
 	}
 }
+
+func TestOffsetToColumn(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name    string
+		content string
+		offset  int
+		want    int
+	}{
+		{"empty content", "", 0, 1},
+		{"first byte", "hello", 0, 1},
+		{"mid line", "hello", 2, 3},
+		{"end of line", "hello", 4, 5},
+		{"first byte of line 2", "line1\nline2", 6, 1},
+		{"second byte of line 2", "line1\nline2", 7, 2},
+		{"newline itself belongs to its line", "ab\ncd", 2, 3},
+		{"negative offset clamps", "ab", -5, 1},
+		{"offset past end clamps", "ab", 99, 2},
+		{"tab indent counts one column", "\tprintln(1)", 1, 2},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+
+			if got := OffsetToColumn([]byte(tc.content), tc.offset); got != tc.want {
+				t.Errorf("OffsetToColumn(%q, %d) = %d, want %d", tc.content, tc.offset, got, tc.want)
+			}
+		})
+	}
+}
