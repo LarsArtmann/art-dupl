@@ -1,5 +1,9 @@
 # Status: BDD Fixture Repair — Honest Post-Mortem
 
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 32 items verified resolved, 14 open (--no-actionability shipped; fixture guidance landed; flakes owner-side).
+
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 32 items verified resolved, 14 open (--no-actionability shipped; fixture guidance landed; flakes owner-side).
+
 **Date:** 2026-07-25 05:11
 **Session goal:** Fix the 22 failing BDD specs reported by `buildflow -s test-race`.
 **Outcome:** Tests green, but the _process_ was messy and several things were forgotten or done poorly.

@@ -1,5 +1,9 @@
 # Status Report: Full TODO Sprint Completion — Architecture, Features, Safety
 
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 20 items verified resolved, 7 open (findings→provider shipped; facade/import-cycle deferred; micro-tails speculative).
+
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 20 items verified resolved, 7 open (findings→provider shipped; facade/import-cycle deferred; micro-tails speculative).
+
 > **Date:** 2026-06-16 13:58
 > **Branch:** fork
 > **Base:** b87d0cb (origin/fork)

@@ -1,5 +1,9 @@
 # Status Report — Code Deduplication Sprint
 
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 3 items verified resolved, 3 open (skip-reasons documented; a-h/templ upstream Pos=0 open (AGENTS Known Limitations)).
+
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 3 items verified resolved, 3 open (skip-reasons documented; a-h/templ upstream Pos=0 open (AGENTS Known Limitations)).
+
 **Date:** 2026-06-04 22:50 UTC
 **Branch:** `fork`
 **Session Focus:** Production code deduplication (art-dupl)

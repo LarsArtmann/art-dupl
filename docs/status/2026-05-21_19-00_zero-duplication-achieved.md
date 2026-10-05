@@ -1,5 +1,9 @@
 # art-dupl Status Report
 
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 20 items verified resolved, 2 open (lint zero; bdd/cmd owner question unanswered).
+
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 20 items verified resolved, 2 open (lint zero; bdd/cmd owner question unanswered).
+
 **Date:** 2026-05-21 19:00
 **Branch:** fork
 **Version:** v0.1.0
@@ -22,7 +26,7 @@ art-dupl is in **strong shape** for v0.1.0. Core detection engine works across 2
 - [x] Multi-detection mode (both methods in parallel via goroutines)
 - [x] Semantic-aware matching (FNV-1a, **default ON** since 2026-05-17)
 - [x] Structural-only mode (`--structural` flag)
-- [x] SIMD-optimized hot paths in internal/simd/
+- [x] ~~~~~~SIMD-optimized hot paths in internal/simd/~~ internal/simd was deleted; xxh3 provides native SIMD.~~ internal/simd was deleted; xxh3 provides native SIMD.~~ internal/simd was deleted; xxh3 provides native SIMD.
 
 ### Languages
 

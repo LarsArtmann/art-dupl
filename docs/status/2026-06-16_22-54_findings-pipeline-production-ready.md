@@ -1,5 +1,9 @@
 # Comprehensive Status Report — 2026-06-16 22:54
 
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 9 items verified resolved, 3 open (todos/legacy removed; facade deferred).
+
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 9 items verified resolved, 3 open (todos/legacy removed; facade deferred).
+
 **Branch:** `fork` (pushed to origin, up to date)
 **Go:** 1.26.3 linux/amd64
 **Codebase:** 236 Go files, ~49,994 LOC, 101 modules, 246 BDD specs
@@ -12,7 +16,7 @@
 
 ### Findings Pipeline — End to End (3 rounds of self-review)
 
-The critical bug that started this session: `FindFindings` was implemented but **never called from any CLI path**. Users running `art-dupl --detection-methods todos` got zero output. Now fully fixed through 3 self-review iterations:
+The critical bug that started this session: `FindFindings` was implemented but **never called from any CLI path**. ~~~~~~Users running `art-dupl --detection-methods todos` got zero output. Now fully fixed through 3 self-review iterations~~ todos/legacy removed 2026-06-17; findings ship via toolsdk provider.~~ todos/legacy removed 2026-06-17; findings ship via toolsdk provider.~~ todos/legacy removed 2026-06-17; findings ship via toolsdk provider.:
 
 **Round 1 — Core wiring:**
 

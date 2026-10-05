@@ -1,5 +1,9 @@
 # Dogfooding Report: Actionability & Semantic Detection
 
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 3 items verified resolved, 1 open (mergeConfig fixed; HTML report badges still absent).
+
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 3 items verified resolved, 1 open (mergeConfig fixed; HTML report badges still absent).
+
 **Date:** 2026-05-16 21:40\
 **Target:** github.com/LarsArtmann/go-cqrs-lite (228 files, ~10K LOC)\
 **Tool:** art-dupl built from fork branch (6 commits ahead)

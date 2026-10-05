@@ -1,5 +1,9 @@
 # Status Report — Continuation Session: Cache Leftovers, Dead Code, BDD, Docs Pass, ADR-0021, Self-Review
 
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 14 items verified resolved, 4 open (cache dead-code + ADR + docs landed; race/bench tails open).
+
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 14 items verified resolved, 4 open (cache dead-code + ADR + docs landed; race/bench tails open).
+
 **Date:** 2026-08-15 22:57
 **Branch:** `fork`
 **Session type:** Continuation of the 2026-08-15 Pareto improvement sprint (picks up after the 22:10 status report)

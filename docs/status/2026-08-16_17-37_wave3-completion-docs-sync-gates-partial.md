@@ -1,5 +1,9 @@
 # Status Report — Wave 3 Completion: T24/T25/T26 + Final Gates (partial)
 
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 20 items verified resolved, 6 open (b)-section gates completed by later CI lanes; T2.2 done 2026-09-22; residual lint micro-tails).
+
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 20 items verified resolved, 6 open (b)-section gates completed by later CI lanes; T2.2 done 2026-09-22; residual lint micro-tails).
+
 **Date:** 2026-08-16 17:37 CEST
 **Branch:** `fork` @ `7f98ed10`
 **Machine:** idle again — load 2.30/2.49/3.32 (foreign nixbld/govulncheck load from 12:38 is GONE; T2.2/T23 are now unblocked)

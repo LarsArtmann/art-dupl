@@ -1,5 +1,9 @@
 # art-dupl — Full Comprehensive Status Report
 
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 17 items verified resolved, 8 open (coverage 92.7%, leaks fixed, subpackages shipped; facade/consolidation deferred).
+
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 17 items verified resolved, 8 open (coverage 92.7%, leaks fixed, subpackages shipped; facade/consolidation deferred).
+
 > **Generated:** 2026-06-20 15:11 UTC
 > **Branch:** `fork` (1,502 total commits)
 > **Session Commits:** 25 (sprints 1–3)

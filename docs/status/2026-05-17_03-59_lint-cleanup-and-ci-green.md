@@ -1,5 +1,9 @@
 # Status Report — 2026-05-17 03:59
 
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 18 items verified resolved, 3 open (lint zero; man page open; -o removed).
+
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 18 items verified resolved, 3 open (lint zero; man page open; -o removed).
+
 > **Branch:** `fork` | **Commits ahead:** 5 | **Go:** 1.26.2 | **Packages:** 23/23 passing | **Lint:** 0 issues
 
 ---

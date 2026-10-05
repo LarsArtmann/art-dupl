@@ -1,5 +1,9 @@
 # Status: Accept-Directive UX Fix + Test-Helper-Delegate Pattern
 
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 32 items verified resolved, 24 open (test-helper-delegate shipped; scan-boundary micro-tails open).
+
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 32 items verified resolved, 24 open (test-helper-delegate shipped; scan-boundary micro-tails open).
+
 **Date:** 2026-07-25 06:28
 **Branch:** fork (5 commits ahead of origin, NOT pushed)
 **Task:** Execute `docs/planning/2026-07-25_05-14_SUPERB-accept-directive-ux-fix-and-test-helper-pattern.md`
@@ -8,7 +12,7 @@
 > **Resolution (2026-07-25):** Feature shipped. Commits `95547e7f`, `c30f683d`, `a057928e`
 > (HEAD of `fork`). `test-helper-delegate` is pattern #18 in the actionability system.
 > CHANGELOG `[Unreleased]`, FEATURES.md, and AGENTS.md updated in the subsequent
-> docs-health session. Accept-directive docs (`HOW_TO_USE.md`) remain a known gap.
+> docs-health session. ~~~~~~Accept-directive docs (`HOW_TO_USE.md`) remain a known gap.~~ HOW_TO_USE fully documents accept directives (placement, hash vs description, inline, stale warnings).~~ HOW_TO_USE fully documents accept directives (placement, hash vs description, inline, stale warnings).~~ HOW_TO_USE fully documents accept directives (placement, hash vs description, inline, stale warnings).
 > Verified: `art-dupl --semantic -t 2` reports 0 groups on the art-dupl codebase.
 
 ---

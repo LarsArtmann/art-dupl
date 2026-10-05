@@ -9,7 +9,7 @@
 
 This session answered the "are we using go-output or go-finding" question, then shipped the **toolsdk BuildFlow provider** (`pkg/provider/`, go-finding toolsdk v1.13.1) and delivered an **evidence-backed "no" on go-output** for art-dupl. While running the first full uncached test suite, it discovered and **restored a pre-existing test-suite breaker**: auto-commit `30d7c6ab` had re-migrated `internal/jsonutil` + `config/config_enum_test.go` to direct `encoding/json/v2` imports — the exact regression AGENTS.md documented as fixed the day before.
 
-Headline honesty: **the provider is shipped but not yet consumed end-to-end** — nothing in art-dupl or BuildFlow imports it yet (BuildFlow wiring is a separate-repo decision). Until that blank import lands, it is a well-tested ghost system.
+Headline honesty: ~~**the provider is shipped but not yet consumed end-to-end**~~ consumed end-to-end: BuildFlow blank-imports pkg/provider since 2026-09-25. — nothing in art-dupl or BuildFlow imports it yet (BuildFlow wiring is a separate-repo decision). Until that blank import lands, it is a well-tested ghost system.
 
 | Category                              | Count |
 | ------------------------------------- | ----- |

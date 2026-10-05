@@ -1,5 +1,9 @@
 # Status Report — Templ Default Inclusion Flip
 
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 12 items verified resolved, 4 open (revert shipped; flag matrix + clone types open).
+
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 12 items verified resolved, 4 open (revert shipped; flag matrix + clone types open).
+
 **Date:** 2026-05-02 22:11\
 **Author:** Crush (AI Assistant)\
 **Branch:** `fork`\
@@ -9,7 +13,7 @@
 
 ## Executive Summary
 
-Successfully flipped the default behavior so `.templ` files are **included** in detection by default. The old `--include-templ` flag has been replaced with `--exclude-templ` to opt-out. Two critical bugs were found and fixed in the flag propagation pipeline. All 240 BDD tests and all unit tests pass.
+Successfully flipped the default behavior so `.templ` files are **included** in detection by default. ~~~~~~The old `--include-templ` flag has been replaced with `--exclude-templ` to opt-out.~~ reverted 2026-05-06; --include-templ gates *_templ.go generated files (ADR-0027 era semantics).~~ reverted 2026-05-06; --include-templ gates *_templ.go generated files (ADR-0027 era semantics).~~ reverted 2026-05-06; --include-templ gates *_templ.go generated files (ADR-0027 era semantics). Two critical bugs were found and fixed in the flag propagation pipeline. All 240 BDD tests and all unit tests pass.
 
 ---
 

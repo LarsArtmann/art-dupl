@@ -11,7 +11,7 @@
 
 Issue #1 is implemented, tested, and verified end-to-end: art-dupl clone groups now carry a deterministic `GroupID` through the go-finding interchange model, and the CLI's SARIF output emits the reserved `go-finding/groupId` property on every result. All three of the issue's verification criteria pass as committed tests plus a live CLI proof. `nix flake check` is fully green (build, race suite, alloc budgets, treefmt, arch-lint, disabled-linters guard).
 
-The honest caveats: the adapter itself has **no production caller** (library API + tests only — a partial ghost system pending a product-surface decision), the severity ladder is now implemented in **two places** (test-pinned, but a real split brain), and the session raced the auto-commit daemon and a concurrent agent session badly enough that 12 heuristic commits carry the work and one of my fixes was clobbered and had to be re-applied.
+The honest caveats: ~~the adapter itself has **no production caller** (library API + tests only — a partial ghost system pending a product-surface decision)~~ pkg/provider calls the adapter since ADR-0025; the toolsdk provider is the production surface., the severity ladder is now implemented in **two places** (test-pinned, but a real split brain), and the session raced the auto-commit daemon and a concurrent agent session badly enough that 12 heuristic commits carry the work and one of my fixes was clobbered and had to be re-applied.
 
 | Category                                | Count |
 | --------------------------------------- | ----- |

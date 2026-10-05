@@ -1,5 +1,9 @@
 # Status Report: art-dupl — 2026-05-06 09:40
 
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 19 items verified resolved, 3 open (semantic interface shipped; SARIF schema validation open in ROADMAP).
+
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 19 items verified resolved, 3 open (semantic interface shipped; SARIF schema validation open in ROADMAP).
+
 ## Executive Summary
 
 **Date:** 2026-05-06 09:40 AM CEST\

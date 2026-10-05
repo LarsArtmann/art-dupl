@@ -1,5 +1,9 @@
 # Status Report: Semantic Detection Hardening
 
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 22 items verified resolved, 6 open (three-mode shipped; watch/TS/Python parked in ROADMAP).
+
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 22 items verified resolved, 6 open (three-mode shipped; watch/TS/Python parked in ROADMAP).
+
 **Date:** 2026-06-09 02:11
 **Branch:** fork (up to date with origin)
 **Commits this session:** 3 (48537b2, 8e170e8, 68d3d6e)
@@ -31,7 +35,7 @@
 - 3 ADRs (map-based transition, semantic default, reflection-based config merge)
 - 7 output formats (text, HTML, JSON, plumbing, SARIF, stats, CSV)
 - 2 language support (Go, Templ)
-- 5 detection methods
+~~~~~~- 5 detection methods~~ - 2 detection methods (suffix tree + hash).~~ - 2 detection methods (suffix tree + hash).~~ - 2 detection methods (suffix tree + hash).
 - Smart filtering (sqlc, templ, protobuf, mockgen, stringer)
 - SDK/programmatic API in `pkg/artdupl/`
 - Actionability filtering (signature-only, defer RAII, error propagation)

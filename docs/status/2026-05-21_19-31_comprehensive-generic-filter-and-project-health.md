@@ -1,5 +1,9 @@
 # art-dupl Status Report
 
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 20 items verified resolved, 4 open (generic filter wired; HTML a11y + SARIF schema open).
+
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 20 items verified resolved, 4 open (generic filter wired; HTML a11y + SARIF schema open).
+
 **Date:** 2026-05-21 19:31
 **Branch:** fork (8 commits ahead of origin/fork)
 **Version:** v0.1.0

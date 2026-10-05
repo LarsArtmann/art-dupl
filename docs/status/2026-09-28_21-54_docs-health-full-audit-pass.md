@@ -1,5 +1,9 @@
 # Status Report — Docs-Health Full Audit Pass: Living Docs Rebuilt, 26 Snapshots Annotated+Archived, Archive Split-Brain Killed
 
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 20 items verified resolved, 18 open (P0 leftovers closed by SUPERB passes; P1-P4 tails + g1-g3 owner questions open).
+
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 20 items verified resolved, 18 open (P0 leftovers closed by SUPERB passes; P1-P4 tails + g1-g3 owner questions open).
+
 **Date:** 2026-09-28 21:54 CEST
 **Branch:** `fork` (daemon-committed at `d172b914` + 3 modified files in tree)
 **Scope:** One session. Full docs-health AUDIT over every `**/2026-0*` file (~250 matches: status, planning, reviews, feedback, analysis, architecture-understanding), all six living docs, plus the small code surface the audit's on-sight fixes touched.

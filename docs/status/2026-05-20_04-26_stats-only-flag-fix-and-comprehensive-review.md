@@ -1,5 +1,9 @@
 # art-dupl — Comprehensive Status Report
 
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 24 items verified resolved, 3 open (simd deleted; releases cut; clone types open).
+
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 24 items verified resolved, 3 open (simd deleted; releases cut; clone types open).
+
 **Date:** 2026-05-20 04:26\
 **Branch:** fork\
 **Head:** a8f166c `refactor: modernize config merge, test helpers, and actionability constants`\
@@ -65,7 +69,7 @@ The project is in **excellent health**. All 23 packages compile clean, 0 lint is
 ### TODO/Legacy Detection Methods
 
 - **Implemented** in `detection/todos.go` (split into 3 files)
-- **Wired** through `MultiDetector` and accessible via `-m` flag
+- ~~~~~~**Wired** through `MultiDetector` and accessible via `-m` flag~~ TodoDetector/LegacyDetector were later deleted; only art-dupl and hash methods remain.~~ TodoDetector/LegacyDetector were later deleted; only art-dupl and hash methods remain.~~ TodoDetector/LegacyDetector were later deleted; only art-dupl and hash methods remain.
 - **Not documented** as user-facing features in README or HOW_TO_USE
 - **Status in FEATURES.md:** `DEFINED_ONLY` — may need user docs or deliberate `EXPERIMENTAL` labeling
 

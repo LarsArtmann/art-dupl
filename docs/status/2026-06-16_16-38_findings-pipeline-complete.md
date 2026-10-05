@@ -1,5 +1,9 @@
 # Comprehensive Status Report — 2026-06-16 16:38
 
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 9 items verified resolved, 4 open (todos/legacy removed; import-cycle deferred).
+
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 9 items verified resolved, 4 open (todos/legacy removed; import-cycle deferred).
+
 **Branch:** `fork` (pushed to origin)
 **Go:** 1.26.3 linux/amd64
 **Codebase:** 237 Go files, ~49,755 LOC, 101 modules
@@ -20,7 +24,7 @@
 
 ### Critical Feature — Findings Pipeline (was BROKEN, now FULLY FUNCTIONAL)
 
-The #1 critical bug in this codebase: `FindFindings` was implemented and tested but **never called from any CLI path**. Users running `art-dupl --detection-methods todos` got zero output. This is now fixed end-to-end:
+The #1 critical bug in this codebase: `FindFindings` was implemented and tested but **never called from any CLI path**. ~~~~~~Users running `art-dupl --detection-methods todos` got zero output. This is now fixed end-to-end:~~ todos/legacy methods were removed 2026-06-17; findings ship via the toolsdk provider (pkg/provider).~~ todos/legacy methods were removed 2026-06-17; findings ship via the toolsdk provider (pkg/provider).~~ todos/legacy methods were removed 2026-06-17; findings ship via the toolsdk provider (pkg/provider).
 
 - ✅ `Printer.PrintFindings([]domain.Finding)` added to Printer interface
 - ✅ Implemented in all 6 printers: Text, JSON, Plumbing, HTML, SARIF, Stats

@@ -1,7 +1,7 @@
 # SUPERB Plan v2 — Harden the Harness, Unblock the Gates, Ship v0.8.0: From a Truthful Repo to a Released One
 
 **Date:** 2026-09-29 01:10 CEST
-**Status:** Planning — awaiting execution
+~~**Status:** Planning — awaiting execution~~ EXECUTED 2026-09-29 through M22 (close-out docs/status/2026-09-29_05-40); gated residues remain.
 **Inputs:** `docs/status/2026-09-28_23-50_superb-execution-m00-m11-landed.md` + `docs/status/2026-09-29_00-54_superb-complete-m12-m20-jsonutil-catch.md` (both f-sections, ~100 items), `TODO_LIST.md`, the jsonutil incident (commit `b679c615` → restored `42ee0a72`), and the three unanswered questions (g1/g2/g3).
 **Method:** Pareto tiers (1% → 51%, 4% → 64%, 20% → 80%, remainder → 100%), every task granularized to ≤12 min. Nothing open is dropped — the coverage matrix at the bottom dispositions all ~100 source items (DONE-BY-PROXY, ROUTED, GATED, EXTERNAL, or planned below).
 

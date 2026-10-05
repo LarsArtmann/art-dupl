@@ -1,5 +1,9 @@
 # Feedback: Threshold 3 reports irreducible Go idioms as actionable clones
 
+> **Resolution (2026-10-05):** routed: irreducible Go idioms — held; idiom-warning territory per ROADMAP.
+
+> **Resolution (2026-10-05):** routed: irreducible Go idioms — held; idiom-warning territory per ROADMAP.
+
 **Routed (2026-09-28):** idiom suppression at low thresholds → ROADMAP (threshold-cliff entry criterion); no action at the default threshold.
 
 **Date:** 2026-07-26\

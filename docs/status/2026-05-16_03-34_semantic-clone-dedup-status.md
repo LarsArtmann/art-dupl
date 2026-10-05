@@ -1,5 +1,9 @@
 # Semantic Clone Dedup Status Report
 
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 2 items verified resolved, 1 open (dedup floor reached 05-21).
+
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 2 items verified resolved, 1 open (dedup floor reached 05-21).
+
 **Date:** 2026-05-16 03:34\
 **Branch:** `fork`\
 **Base commit:** `8f9f179` (pre-DTO)\

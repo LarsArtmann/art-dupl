@@ -8,7 +8,7 @@
 
 ## Headline
 
-**art-dupl is now the LIVE core duplication detector in BuildFlow, verified end-to-end; jscpd is the demoted non-Go backup lane; the entire `dupl-check`/`dupl_threshold`/`--semantic` ghost-config surface is deleted; the provider is production-hardened (.gitignore, concurrency, fixtures, gates); and a new AST gate caught and fixed a real latent Duration-in-v2 bug.** All gates that CAN run are green on both repos. The only red anywhere is environmental: `/run/binfmt` missing on this host blocks every sandboxed nix build (BuildFlow gotcha #190, needs one root command).
+**art-dupl is now the LIVE core duplication detector in BuildFlow, verified end-to-end; jscpd is the demoted non-Go backup lane; the entire `dupl-check`/`dupl_threshold`/`--semantic` ghost-config surface is deleted; the provider is production-hardened (.gitignore, concurrency, fixtures, gates); and a new AST gate caught and fixed a real latent Duration-in-v2 bug.** All gates that CAN run are green on both repos. ~~The only red anywhere is environmental: `/run/binfmt` missing on this host blocks every sandboxed nix build~~ binfmt stopgapped 2026-09-28; remaining reds are the nix checks.test sandbox failure and the windows GC-crash lane. (BuildFlow gotcha #190, needs one root command).
 
 ---
 

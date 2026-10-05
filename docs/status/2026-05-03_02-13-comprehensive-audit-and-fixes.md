@@ -1,5 +1,9 @@
 # Status Report — 2026-05-03 02:13
 
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 24 items verified resolved, 4 open (format/sort_type deleted; god-struct fixed; SARIF schema validator + SDK incremental open).
+
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 24 items verified resolved, 4 open (format/sort_type deleted; god-struct fixed; SARIF schema validator + SDK incremental open).
+
 ## Summary
 
 Comprehensive audit + critical bug fixes + dead code elimination + feature gap closure.

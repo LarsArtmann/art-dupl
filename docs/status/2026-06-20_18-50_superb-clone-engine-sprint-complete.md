@@ -1,5 +1,9 @@
 # Status Report — Superb Clone Detection Engine (Full Sprint)
 
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 9 items verified resolved, 2 open (T1/T13-T16/T20/T23-24 shipped; shadowing open).
+
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 9 items verified resolved, 2 open (T1/T13-T16/T20/T23-24 shipped; shadowing open).
+
 **Date:** 2026-06-20 18:50
 **Branch:** fork
 **Head:** `c60e58b`

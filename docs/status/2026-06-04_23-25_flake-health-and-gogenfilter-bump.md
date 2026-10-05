@@ -1,5 +1,9 @@
 # art-dupl — Full Status Report
 
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 18 items verified resolved, 4 open (DTO/enum/stats eras shipped; a-h/templ upstream open).
+
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 18 items verified resolved, 4 open (DTO/enum/stats eras shipped; a-h/templ upstream open).
+
 **Date:** 2026-06-04 23:25\
 **Branch:** fork\
 **HEAD:** `94db410` refactor(docs),chore(deps): rewrite AGENTS.md to concise enduring-context guide and bump gogenfilter v3.0.2 → v3.1.0
@@ -18,7 +22,7 @@ art-dupl is **healthy and fully functional**. All CI gates pass: build, test, li
 
 - **All 7 output formats**: text, HTML, JSON, simple-JSON, plumbing, SARIF, CSV (stats)
 - **Multi-method detection**: suffix tree (art-dupl), hash-based, both simultaneously
-- **2 languages**: Go (45 node types), Templ (28 node types) — both fully functional
+~~~~~~- **2 languages**: Go (45 node types), Templ (28 node types) — both fully functional~~ - **2 languages**: Go (51 node types), Templ (29 node types) — both fully functional.~~ - **2 languages**: Go (51 node types), Templ (29 node types) — both fully functional.~~ - **2 languages**: Go (51 node types), Templ (29 node types) — both fully functional.
 - **Smart filtering**: SQLC, templ, protobuf, mockgen, stringer, generic generated code
 - **Statistics subcommand**: text, JSON, CSV with health grade (A-F)
 - **SDK**: `pkg/artdupl/` with `Detector` interface, stream support, validation

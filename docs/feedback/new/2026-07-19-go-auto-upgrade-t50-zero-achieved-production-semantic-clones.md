@@ -1,5 +1,9 @@
 # Feedback: Drove to literal zero at every threshold from `-t 5` to `-t 50`; production semantic clones real and actionable; Ginkgo `DescribeTable` variadic gotcha forces helper shape
 
+> **Resolution (2026-10-05):** routed: DescribeTable skill recipe + fixture-driven test detection suggestions — pending owner decision (docs-health P2 #25).
+
+> **Resolution (2026-10-05):** routed: DescribeTable skill recipe + fixture-driven test detection suggestions — pending owner decision (docs-health P2 #25).
+
 **Routed (2026-09-28):** the DescribeTable variadic gotcha is covered by the bdd-testing skill docs (decided — no art-dupl change); the zero-at-every-threshold result is corpus-specific, no action.
 
 **Date:** 2026-07-19
