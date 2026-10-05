@@ -42,6 +42,10 @@ func legacyToFinding(
 
 	f.Category = gofinding.CategoryDuplication
 	f.GroupID = finding.GroupIDOf(group)
+	f.Tags = []gofinding.Tag{gofinding.Tag(gofinding.CategoryDuplication)}
+	if t := cl.Classification.CloneType; t != "" {
+		f.Tags = append(f.Tags, gofinding.Tag(t))
+	}
 	f.Range = rangeOfLegacy(cl)
 	f.Snippet = cl.Fragment
 	f.Metadata = metadataOfLegacy(group, cl, opts)

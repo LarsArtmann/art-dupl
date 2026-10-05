@@ -166,6 +166,7 @@ func toFinding(
 		positionOf(cl),
 	).
 		WithGroupID(GroupIDOf(group)).
+		WithTags(cloneTags(cl)...).
 		WithConfidence(confidenceOf(cl)).
 		WithRange(*rangeOf(cl)).
 		WithSnippet(cl.Fragment).
@@ -203,6 +204,21 @@ func severityFor(size, threshold int) gofinding.Severity {
 	default:
 		return gofinding.SeverityInfo
 	}
+}
+
+// cloneTags returns the semantic tags for a clone occurrence: the tool's
+// standard category (which also satisfies go-finding's category-in-tags
+// consistency rule when tags are set) plus, when the pipeline classified the
+// clone, its Bellon taxonomy type (type-1/2/3 — the domain enum's string
+// values already follow the validated lowercase-hyphenated tag convention).
+// Unclassified findings (the SDK/provider path) still get the category tag.
+func cloneTags(cl domain.ProcessedClone) []gofinding.Tag {
+	tags := []gofinding.Tag{gofinding.Tag(gofinding.CategoryDuplication)}
+	if t := cl.Classification.CloneType; t != "" {
+		tags = append(tags, gofinding.Tag(t))
+	}
+
+	return tags
 }
 
 func confidenceOf(cl domain.ProcessedClone) gofinding.Confidence {

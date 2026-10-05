@@ -11,6 +11,9 @@
       "offset": 77
     },
     "category": "duplication",
+    "tags": [
+      "duplication"
+    ],
     "fixStrategy": "none",
     "range": {
       "start": {
@@ -69,6 +72,9 @@
       "offset": 80
     },
     "category": "duplication",
+    "tags": [
+      "duplication"
+    ],
     "fixStrategy": "none",
     "range": {
       "start": {
