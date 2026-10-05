@@ -1057,4 +1057,9 @@ func TestDetectThresholdOption(t *testing.T) {
 	if _, err := detector.Detect(badCtx); !errors.Is(err, artdupl.ErrInvalidThreshold) {
 		t.Fatalf("threshold=0 error = %v, want ErrInvalidThreshold", err)
 	}
+
+	tooLargeCtx := toolsdk.WithOptions(dirContext(t, badDir), toolsdk.OptionValues{providerOptionThreshold: 1001})
+	if _, err := detector.Detect(tooLargeCtx); !errors.Is(err, artdupl.ErrThresholdTooLarge) {
+		t.Fatalf("threshold=1001 error = %v, want ErrThresholdTooLarge", err)
+	}
 }
