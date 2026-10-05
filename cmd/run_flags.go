@@ -57,6 +57,10 @@ func parseOutputFormat(cmd *cobra.Command) config.OutputFormat {
 		return config.OutputFormatSARIF
 	}
 
+	if v, _ := cmd.Flags().GetBool("lsp"); v {
+		return config.OutputFormatLSP
+	}
+
 	if v, _ := cmd.Flags().GetBool("simple-json"); v {
 		return config.OutputFormatSimpleJSON
 	}

@@ -837,6 +837,7 @@ func TestOutputFormat_IsValid(t *testing.T) {
 		{OutputFormatPlumbing, true},
 		{OutputFormatSimpleJSON, true},
 		{OutputFormatSARIF, true},
+		{OutputFormatLSP, true},
 		{OutputFormat("unknown"), false},
 	}
 
@@ -855,7 +856,7 @@ func TestOutputFormat_IsValid(t *testing.T) {
 func TestOutputFormat_MarshalUnmarshal(t *testing.T) {
 	t.Parallel()
 
-	for _, fmt := range []OutputFormat{OutputFormatText, OutputFormatHTML, OutputFormatJSON, OutputFormatCSV, OutputFormatPlumbing, OutputFormatSimpleJSON, OutputFormatSARIF} {
+	for _, fmt := range []OutputFormat{OutputFormatText, OutputFormatHTML, OutputFormatJSON, OutputFormatCSV, OutputFormatPlumbing, OutputFormatSimpleJSON, OutputFormatSARIF, OutputFormatLSP} {
 		data, err := fmt.MarshalJSON()
 		if err != nil {
 			t.Fatalf("MarshalJSON(%s) error: %v", fmt, err)
@@ -897,7 +898,7 @@ func TestAllOutputFormats(t *testing.T) {
 	t.Parallel()
 
 	formats := AllOutputFormats()
-	testutil.AssertLen(t, formats, 7, "AllOutputFormats")
+	testutil.AssertLen(t, formats, 8, "AllOutputFormats")
 
 	for _, fmt := range formats {
 		if !fmt.IsValid() {

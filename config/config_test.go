@@ -438,7 +438,7 @@ func TestOutputFormats(t *testing.T) {
 	t.Parallel()
 	// Test AllOutputFormats
 	formats := AllOutputFormats()
-	testutil.AssertLen(t, formats, 7, "output formats")
+	testutil.AssertLen(t, formats, 8, "output formats")
 	// Test AllSortCriteria
 	criteria := AllSortCriteria()
 	testutil.AssertLen(t, criteria, 4, "sort criteria")

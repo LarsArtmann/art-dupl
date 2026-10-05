@@ -49,6 +49,8 @@ func createPrinter(
 		}
 	case config.OutputFormatCSV:
 		return withThreshold(stats.NewStats, threshold)
+	case config.OutputFormatLSP:
+		return withThreshold(printer.NewLSP, threshold)
 	case config.OutputFormatText:
 		return printer.NewText
 	default:
