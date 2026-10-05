@@ -78,7 +78,9 @@ func TestColumnsDerivedFromByteOffsets(t *testing.T) {
 	group := domain.ProcessedCloneGroup{
 		Hash: "col0000000000001",
 		Clones: []domain.ProcessedClone{{
-			CloneRef:    domain.CloneRef{Filename: "a.go", LineStart: 4, LineEnd: 5},
+			Filename:    "a.go",
+			LineStart:   4,
+			LineEnd:     5,
 			StartPos:    26,
 			EndPos:      48,
 			ColumnStart: 2,

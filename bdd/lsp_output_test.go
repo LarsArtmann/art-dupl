@@ -26,8 +26,8 @@ var _ = Describe("LSP output format", func() {
 		Expect(err).ToNot(HaveOccurred())
 
 		var documents []struct {
-			URI         string                     `json:"uri"`
-			Diagnostics []gofinding.LSPDiagnostic  `json:"diagnostics"`
+			URI         string                    `json:"uri"`
+			Diagnostics []gofinding.LSPDiagnostic `json:"diagnostics"`
 		}
 		Expect(json.Unmarshal(lspBytes, &documents)).To(Succeed())
 		Expect(documents).NotTo(BeEmpty())
