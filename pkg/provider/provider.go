@@ -62,6 +62,12 @@ const maxAdvisorySeverity = gofinding.SeverityWarning
 // 2026-09-22 in branching-flow, the same pattern mirrored here).
 const originalSeverityTagPrefix = "original-severity-"
 
+// providerOptionThreshold is the declared knob name for the minimum clone
+// size. Consumers set it via toolsdk.WithOptions; the SDK kind-checks it
+// and the SDK Options validation (1-1000) rejects out-of-range values with
+// the domain sentinels.
+const providerOptionThreshold = "threshold"
+
 // Provider is the registered toolsdk spec. The var initializer performs the
 // registration; keeping it as a package-level var (per the toolsdk contract)
 // makes the blank import in BuildFlow the entire wiring step.
@@ -71,11 +77,20 @@ var Provider = toolsdk.Register(toolsdk.Spec{
 	Name: finding.ToolName,
 	Description: "Code duplication detection: suffix-tree + AST-hash clones " +
 		"(Type 1 exact, Type 2 renamed, Type 3 near-miss) across Go and templ files. " +
-		"Fixed contract: semantic mode, threshold 5 statements (not configurable via the SDK). " +
+		"Semantic mode; the minimum clone size is tunable per run via the \"threshold\" " +
+		"option (default 5 statements). " +
 		"Crawl includes *_test.go files (the CLI default-ignores them), so group counts " +
 		"are intentionally higher than a default CLI run on the same tree",
 	Trigger: toolsdk.OnFiles("go", "**/*.go", "**/*.templ"),
 	Inputs:  []string{"**/*.go", "**/*.templ"},
+	Options: []toolsdk.Option{
+		{
+			Name:        providerOptionThreshold,
+			Kind:        toolsdk.OptionKindInt,
+			Default:     artdupl.DefaultThreshold,
+			Description: "Minimum duplicated statements for a clone group to be reported (1-1000)",
+		},
+	},
 	Detect:  cloneDetector{},
 	// Self-documenting no-op: the detector is pure-Go (suffix tree over
 	// parsed ASTs, no external binary, no network), so there is nothing to
