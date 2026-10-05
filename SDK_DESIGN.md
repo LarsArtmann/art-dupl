@@ -98,16 +98,26 @@ for _, group := range result.CloneGroups {
 ```
 
 **`printer/finding` (CLI output adapter)**: converts
-`domain.ProcessedCloneGroup`s into go-finding `Finding`s. Carries the
+`domain.ProcessedCloneGroup`s into go-finding `Finding`s via the validated
+`Builder` + `Template`. Carries the
 `GroupID` contract (group content hash, 16-char lowercase hex — the same id
-as JSON `clone_groups[].hash` and the SARIF `go-finding/groupId` property)
-and the classification metadata under `art-dupl/*` metadata keys.
+as JSON `clone_groups[].hash`, the SARIF `go-finding/groupId` property, and
+the `--lsp` diagnostic `data.group_id`), semantic tags (`duplication` +
+`type-1/2/3`), byte-derived start/end columns, and the classification
+metadata under `art-dupl/*` metadata keys. Accept-directive groups can be
+surfaced as `Suppression{InSource}` findings (opt-in via `Options.EmitSuppressedAccepted`).
+CLI SARIF and `Report.ToSARIF()` are pinned equivalent by a cross-check test.
+See `docs/research/2026-10-05_go-finding-deep-dive.html` §05 for the full
+ledger (verdicts, SARIF divergence table, re-scored capabilities).
 
 **`pkg/provider` (BuildFlow toolsdk provider)**: self-registers via
 package-level `toolsdk.Register`; BuildFlow wires it with a single blank
-import. Detect runs the PUBLIC SDK (semantic mode, threshold 5, not
-configurable), so findings carry positions/snippets/GroupID/severity but no
-classification metadata (ADR-0025). Crawl mirrors CLI defaults (`.go` +
+import. Detect runs the PUBLIC SDK (semantic mode) on the working dir from
+context and returns one finding per clone occurrence with
+positions/snippets/GroupID/severity/columns but no classification metadata
+(ADR-0025). Declared options: `threshold` (int, 1–1000, default 5, applied
+via `toolsdk.WithOptions`) and `emit-suppressed-accepted` (bool, default
+false). Crawl mirrors CLI defaults (`.go` +
 `.templ`, vendor/generated/examples excluded, `.gitignore` honored via
 `gitignore.LoadTree`) EXCEPT `_test.go` files are included — CLI
 default-ignores them, so pipeline group counts run higher than a default

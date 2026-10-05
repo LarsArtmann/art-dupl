@@ -41,6 +41,24 @@ baseline: baseline {
   shape: package
 }
 
+finding_output: printer/finding
+go-finding Adapter {
+  shape: package
+}
+
+provider: pkg/provider
+BuildFlow toolsdk {
+  shape: package
+  style.fill: "#6eb5ff"
+  style.font-color: "#0e0e10"
+}
+
+gofinding: go-finding
+External Library {
+  shape: stored_data
+  style.fill: "#16161a"
+}
+
 domain: domain\nCore Types {
   shape: circle
   style.fill: "#6eb5ff"
@@ -82,6 +100,15 @@ printer -> domain
 printer -> syntax_engine
 printer -> golang
 printer -> errors
+printer -> finding_output: converts groups
+finding_output -> gofinding: Builder + Template
+finding_output -> domain
+
+provider -> sdk: runs Detect
+provider -> finding_output: adapter
+provider -> gofinding: toolsdk.Register
+provider -> domain
+provider -> foundation: gitignore
 
 job -> syntax_engine
 job -> golang
