@@ -269,8 +269,12 @@ func (a *AcceptedSet) WarnDeadDirectives(stderr io.Writer) {
 	}
 
 	for _, d := range dead {
-		fmt.Fprintf(stderr,
+		fmt.Fprintf(
+			stderr,
 			"warning: stale //art-dupl:accept %s at %s:%d — matched no clone groups this run; remove it or update the hash\n",
-			d.Hash, d.Filename, d.Line)
+			d.Hash,
+			d.Filename,
+			d.Line,
+		)
 	}
 }

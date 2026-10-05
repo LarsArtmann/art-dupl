@@ -81,7 +81,7 @@ func TestLSPPrinterDocumentsAndRoundTrip(t *testing.T) {
 		t.Fatalf("unmarshal LSP output: %v\noutput:\n%s", err, buf.String())
 	}
 
-	if len(documents) != 2 { //nolint:goconst // test fixture size
+	if len(documents) != 2 {
 		t.Fatalf("documents = %d, want 2 (a.go, b.go)", len(documents))
 	}
 

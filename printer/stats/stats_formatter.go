@@ -84,7 +84,7 @@ func (p *stats) printStats() {
 	case config.OutputFormatText:
 		p.printText()
 	case config.OutputFormatHTML, config.OutputFormatPlumbing,
-		config.OutputFormatSimpleJSON, config.OutputFormatSARIF:
+		config.OutputFormatSimpleJSON, config.OutputFormatSARIF, config.OutputFormatLSP:
 		p.printText()
 	}
 }

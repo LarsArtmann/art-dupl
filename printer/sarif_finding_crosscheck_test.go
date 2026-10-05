@@ -56,6 +56,7 @@ func TestSARIFCrossCheckCLIvsGoFinding(t *testing.T) {
 
 	for _, group := range groups {
 		cliPrinter.SetHash(group.Hash)
+
 		if err := cliPrinter.PrintClones(group); err != nil {
 			t.Fatalf("PrintClones(%s): %v", group.Hash, err)
 		}
@@ -108,8 +109,8 @@ func extractSARIFRows(tb testing.TB, data []byte, label string) map[[2]string]sa
 	var doc struct {
 		Runs []struct {
 			Results []struct {
-				RuleID     string `json:"ruleId"`
-				Level      string `json:"level"`
+				RuleID    string `json:"ruleId"`
+				Level     string `json:"level"`
 				Locations []struct {
 					PhysicalLocation struct {
 						ArtifactLocation struct {

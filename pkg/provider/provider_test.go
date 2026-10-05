@@ -1019,6 +1019,7 @@ func TestDetectThresholdOption(t *testing.T) {
 		t.Helper()
 
 		ctx := dirContext(t, dir)
+
 		if values != nil {
 			if err := Provider.ValidateOptions(values); err != nil {
 				t.Fatalf("ValidateOptions: %v", err)
@@ -1053,6 +1054,7 @@ func TestDetectThresholdOption(t *testing.T) {
 	writeFile(t, badDir, "a.go", header+small+"}\n")
 	writeFile(t, badDir, "b.go", header+small+"}\n")
 	badCtx := toolsdk.WithOptions(dirContext(t, badDir), toolsdk.OptionValues{providerOptionThreshold: 0})
+
 	detector := cloneDetector{}
 	if _, err := detector.Detect(badCtx); !errors.Is(err, artdupl.ErrInvalidThreshold) {
 		t.Fatalf("threshold=0 error = %v, want ErrInvalidThreshold", err)
@@ -1084,6 +1086,7 @@ func TestDetectEmitSuppressedAcceptedOption(t *testing.T) {
 		t.Helper()
 
 		ctx := dirContext(t, dir)
+
 		if values != nil {
 			if err := Provider.ValidateOptions(values); err != nil {
 				t.Fatalf("ValidateOptions: %v", err)

@@ -111,7 +111,7 @@ var Provider = toolsdk.Register(toolsdk.Spec{
 				"with in-source suppressions instead of plain findings (reviewed duplication)",
 		},
 	},
-	Detect:  cloneDetector{},
+	Detect: cloneDetector{},
 	// Self-documenting no-op: the detector is pure-Go (suffix tree over
 	// parsed ASTs, no external binary, no network), so there is nothing to
 	// probe. Declared explicitly so consumers do not mistake the absent
