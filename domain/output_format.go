@@ -24,6 +24,7 @@ const (
 	OutputFormatPlumbing   OutputFormat = "plumbing"
 	OutputFormatSimpleJSON OutputFormat = "simple-json"
 	OutputFormatSARIF      OutputFormat = "sarif"
+	OutputFormatLSP        OutputFormat = "lsp"
 )
 
 func (of OutputFormat) String() string { return string(of) }
@@ -31,7 +32,7 @@ func (of OutputFormat) String() string { return string(of) }
 func (of OutputFormat) IsValid() bool {
 	switch of {
 	case OutputFormatText, OutputFormatHTML, OutputFormatJSON, OutputFormatCSV,
-		OutputFormatPlumbing, OutputFormatSimpleJSON, OutputFormatSARIF:
+		OutputFormatPlumbing, OutputFormatSimpleJSON, OutputFormatSARIF, OutputFormatLSP:
 		return true
 	default:
 		return false
@@ -49,7 +50,7 @@ func (of *OutputFormat) UnmarshalJSON(data []byte) error {
 func AllOutputFormats() []OutputFormat {
 	return []OutputFormat{
 		OutputFormatText, OutputFormatHTML, OutputFormatJSON, OutputFormatCSV,
-		OutputFormatPlumbing, OutputFormatSimpleJSON, OutputFormatSARIF,
+		OutputFormatPlumbing, OutputFormatSimpleJSON, OutputFormatSARIF, OutputFormatLSP,
 	}
 }
 
@@ -63,6 +64,6 @@ func ParseOutputFormat(value string) (OutputFormat, error) {
 		return of, nil
 	}
 
-	return "", fmt.Errorf("%w: %q must be one of (text|html|json|csv|plumbing|simple-json|sarif)",
+	return "", fmt.Errorf("%w: %q must be one of (text|html|json|csv|plumbing|simple-json|sarif|lsp)",
 		ErrInvalidOutputFormat, value)
 }

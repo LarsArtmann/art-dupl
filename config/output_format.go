@@ -12,6 +12,7 @@ const (
 	OutputFormatPlumbing   = domain.OutputFormatPlumbing
 	OutputFormatSimpleJSON = domain.OutputFormatSimpleJSON
 	OutputFormatSARIF      = domain.OutputFormatSARIF
+	OutputFormatLSP        = domain.OutputFormatLSP
 )
 
 var (

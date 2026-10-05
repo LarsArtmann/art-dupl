@@ -213,8 +213,8 @@ func TestDetectionModeCountMatchesDocs(t *testing.T) {
 // holds the docs to it.
 func TestOutputFormatCountMatchesDocs(t *testing.T) {
 	formats := domain.AllOutputFormats()
-	if len(formats) != 7 {
-		t.Fatalf("domain.AllOutputFormats() = %d, want 7; update the docs with the real count", len(formats))
+	if len(formats) != 8 {
+		t.Fatalf("domain.AllOutputFormats() = %d, want 8; update the docs with the real count", len(formats))
 	}
 
 	features := readRepoFile(t, "FEATURES.md")

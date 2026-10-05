@@ -5,7 +5,7 @@
 
 ## Overview
 
-**art-dupl** is a Go tool for finding code clones using suffix tree algorithms and hash-based detection. It analyzes abstract syntax trees (ASTs) to find structural code clones while ignoring literal values. Supports multi-method detection, professional CLI (Fang/Cobra), 7 output formats, and 33 actionability patterns (plus 4 property-engine labels). Tuned on real-world Go projects (6,000+ Go files, 320+ templ files) to minimize false positives at the default threshold.
+**art-dupl** is a Go tool for finding code clones using suffix tree algorithms and hash-based detection. It analyzes abstract syntax trees (ASTs) to find structural code clones while ignoring literal values. Supports multi-method detection, professional CLI (Fang/Cobra), 8 output formats, and 33 actionability patterns (plus 4 property-engine labels). Tuned on real-world Go projects (6,000+ Go files, 320+ templ files) to minimize false positives at the default threshold.
 
 ---
 
@@ -212,7 +212,7 @@
 
 | Feature                      | Status           | Description                                                                          |
 | ---------------------------- | ---------------- | ------------------------------------------------------------------------------------ |
-| **Command-Line Flags**       | FULLY_FUNCTIONAL | 56 flags for full control                                                            |
+| **Command-Line Flags**       | FULLY_FUNCTIONAL | 57 flags for full control                                                            |
 | **JSON Configuration Files** | FULLY_FUNCTIONAL | `--config` / `-c` flag, JSON-tagged Config struct                                    |
 | **Configuration Merging**    | FULLY_FUNCTIONAL | CLI flags override file config, file overrides defaults                              |
 | **Threshold Control**        | FULLY_FUNCTIONAL | Adjustable minimum duplicated statement count (default: 5)                           |
@@ -259,7 +259,7 @@
 | **suffixtree/**  | FULLY_FUNCTIONAL | Core Ukkonen's suffix tree, O(1) map transitions, memory-compact `[]TokenValue` storage, parallel search |
 | **syntax/**      | FULLY_FUNCTIONAL | AST handling, Go + Templ parsers, serialization                                                          |
 | **job/**         | FULLY_FUNCTIONAL | Parsing pipeline, parallel workers, incremental                                                          |
-| **printer/**     | FULLY_FUNCTIONAL | 7 output formats, sorting, classification, templ-based HTML                                              |
+| **printer/**     | FULLY_FUNCTIONAL | 8 output formats, sorting, classification, templ-based HTML                                              |
 | **hash/**        | FULLY_FUNCTIONAL | XXH3 streaming hash detection                                                                            |
 | **config/**      | FULLY_FUNCTIONAL | Multi-source config with validation                                                                      |
 | **detection/**   | FULLY_FUNCTIONAL | Multi-detector coordination via goroutines                                                               |

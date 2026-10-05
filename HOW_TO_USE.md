@@ -616,7 +616,7 @@ warning: stale //art-dupl:accept a1b2c3d4e5f6 at src/order.go:42 — matched no 
 That almost always means the accepted code was edited since the directive was
 written: the group's content hash changed under it, so the directive has been
 silently dead ever since. Fix it by copying the fresh hash from a new report
-or removing the directive. Machine formats (JSON, SARIF, plumbing, CSV) keep
+or removing the directive. Machine formats (JSON, SARIF, LSP, plumbing, CSV) keep
 a diagnostics-free stderr and never print this warning.
 
 ### Disabling Accept Directives
@@ -849,6 +849,44 @@ internal/handlers/user.go:89-117
 - `total_clone_groups` - Total number of clone groups found
 - `total_clones` - Total number of individual clones
 - `complexity_score` - Duplication complexity metric
+
+### Understanding LSP Output
+
+`--lsp` emits clone groups as a JSON array of publishDiagnostics-style
+payloads — one entry per file, one diagnostic per clone occurrence:
+
+```json
+[
+  {
+    "uri": "internal/handlers/auth.go",
+    "diagnostics": [
+      {
+        "range": { "start": { "line": 44, "character": 0 }, "end": { "line": 72, "character": 1 } },
+        "severity": 1,
+        "code": "art-dupl/duplicate-code",
+        "source": "art-dupl",
+        "message": "Duplicate code: 40 tokens in 2 instances",
+        "relatedInformation": [ ...sibling occurrences... ],
+        "data": { "group_id": "5e8f50b6f5a83448" }
+      }
+    ]
+  }
+]
+```
+
+- `uri` - File the diagnostics belong to (documents are sorted by file)
+- `severity` - LSP severity mapped from the token-count ladder: 1 (error) at
+  >= 4x the threshold, 2 (warning) at >= 2x, 3 (info) otherwise
+- `code`/`source` - Always `art-dupl/duplicate-code` / `art-dupl`
+- `relatedInformation` - Sibling occurrences of the same clone group
+- `data.group_id` - The clone-group hash — the same stable id as JSON's
+  `clone_groups[].hash` and SARIF's `go-finding/groupId` property
+- An empty run emits `[]` (never null), so parsers see one stable shape
+
+Each diagnostic round-trips through go-finding's `FromLSP(uri, diag)`, which
+restores the finding including its group id — the same adapter path the
+BuildFlow toolsdk provider uses, so editor integrations and CI see identical
+results.
 
 ### Understanding HTML Report
 

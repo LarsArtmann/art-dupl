@@ -9,7 +9,7 @@
 
 **Professional code clone detection for Go.** Analyzes source code at the AST level to find real, fixable duplication — ignoring variable names, literal values, and idiomatic boilerplate so every reported clone is actionable.
 
-A fork of [mibk/dupl](https://github.com/mibk/dupl) (via [golangci/dupl](https://github.com/golangci/dupl)) with major enhancements: multi-method detection, three matching modes (semantic / exact / structural), 7 output formats, `.templ` support, generated-code filtering, incremental analysis, baseline CI gating, and a professional CLI.
+A fork of [mibk/dupl](https://github.com/mibk/dupl) (via [golangci/dupl](https://github.com/golangci/dupl)) with major enhancements: multi-method detection, three matching modes (semantic / exact / structural), 8 output formats, `.templ` support, generated-code filtering, incremental analysis, baseline CI gating, and a professional CLI.
 
 ---
 
@@ -240,7 +240,7 @@ Output Formatting (text, HTML, JSON, SARIF, plumbing, rich-text)
 | `detection/`    | Multi-method detection coordination via goroutines      |
 | `hash/`         | XXH3 rolling hash-based detection                       |
 | `job/`          | File parsing pipeline with parallel workers             |
-| `printer/`      | 7 output formats with sorting and classification        |
+| `printer/`      | 8 output formats with sorting and classification        |
 | `domain/`       | Domain types: `ProcessedClone`, enums, `Extractability` |
 | `config/`       | Multi-source configuration with typed enums             |
 | `baseline/`     | Baseline recording + CI check file format               |
