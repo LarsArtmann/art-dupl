@@ -1,0 +1,4244 @@
+FILE docs/status/2026-09-13_15-45_gopaperless-false-negative-investigation.md
+CLASS KEEP
+ITEMS:
+b1	DONE	ADR-0023 nested emission shipped default-on
+b2	SUPERSEDED	fetchAllPages[T] extracted at source (09-19)
+b3	DONE	docs/adr/0023-nested-statement-token-emission.md
+b4	DONE	cmd/timing.go stage durations; CHANGELOG 0.7.0
+b5	DONE	09-14 a14 harvest executed
+c1	DONE	syntax/syntax.go:313 serialNestedStatements
+c2	DONE	ADR-0023
+c3	DONE	syntax/nested_statement_serial_test.go + bdd spec
+c4	DONE	09-14 a1 five masking classes proven
+c5	DONE	ADR-0023 records rejected alternatives
+c6	DONE	09-19 go-paperless consolidations landed
+c7	DONE	09-14 a8 self-scan -t 5: 0 shown
+c8	DONE	CHANGELOG 0.7.0 dump-tokens line:col
+c9	OPEN	ROADMAP cross-repo recall survey
+c10	DONE	CHANGELOG 0.7.0 templ NO-GO
+f1	DONE	09-14 a1 five classes proven
+f2	DONE	ADR-0023 approach A
+f3	DONE	ADR-0023
+f4	DONE	syntax/syntax.go:313
+f5	DONE	nested_statement_serial_test.go
+f6	DONE	bdd/nested_block_clone_test.go
+f7	DONE	scripts/check-alloc-regression.sh
+f8	DONE	docs/benchmarks/baseline-2026-09-14-nested-tokens.txt
+f9	DONE	AGENTS corpus re-validated 2026-09-14
+f10	DONE	CacheVersion 3→4 (now 5)
+f11	DONE	ADR-0023 default-on decided
+f12	DONE	09-14 a8 corpus runs
+f13	DONE	AGENTS RESOLVED masking entry
+f14	DONE	09-14 a13 docs updated
+f15	DONE	09-19 fetchAllPages extracted
+f16	DONE	09-19 accepts applied
+f17	DONE	09-19 findByName[T]
+f18	DONE	09-19 type-aware ≡ semantic
+f19	DONE	09-19 newNoRequestServer(t)
+f20	DONE	09-19 example_test accepted
+f21	DONE	CHANGELOG 0.7.0 dump-tokens positions
+f22	DONE	CHANGELOG 0.7.0 <1ms timing
+f23	DONE	09-14 a13 TESTING.md recipe
+f24	DONE	09-14 a13 caveat documented
+f25	OPEN	ROADMAP high-similarity warning
+f26	WONT	obsolete post-fix; dropped
+f27	DONE	09-19 wording + validation error
+f28	DONE	ADR-0023 alternatives considered
+f29	DONE	09-14 a11 flake green
+f30	DONE	AGENTS: 106 linters 0 findings
+f31	SUPERSEDED	covered in-suite by bdd spec
+f32	DONE	CHANGELOG 0.7.0 templ NO-GO
+f33	OPEN	ROADMAP GenDecl spec sharing
+f34	OPEN	ROADMAP head-sharing probe
+f35	OPEN	ROADMAP maxChildren truncation
+f36	DONE	AGENTS lockstep invariant
+f37	DONE	TestSerializePreservesAllFields guard
+f38	DONE	09-14 a10 budgets/layout tests
+f39	OPEN	ROADMAP
+f40	OPEN	ROADMAP suggest-generics seeding
+f41	OPEN	ROADMAP type-aware heuristic
+f42	OPEN	ROADMAP golden-corpus harness
+f43	OPEN	ROADMAP
+f44	WONT	moot; default-on shipped
+f45	OPEN	ROADMAP
+f46	DONE	CHANGELOG migration note; v0.7.0 cut
+f47	DONE	CHANGELOG 0.7.1 ADR-0022 evidence
+f48	DONE	verified by suite
+f49	DONE	09-14 a14
+f50	DONE	09-14 a14 daemon verified
+g1	SUPERSEDED	ADR-0023 decided default-on
+g2	SUPERSEDED	clone extracted at source; moot
+g3	SUPERSEDED	ADR-0023 decided all-blocks
+FILE docs/status/2026-09-14_03-55_go-1.27-support-gap-analysis-session-review.md
+CLASS KEEP
+FIX **The repo is already broken against Go 1.27, today.** ||= Fixed since v0.7.0 (2026-09-18): toolchain aligned on 1.27.1, builds and tests green.
+ITEMS:
+b1	OPEN	go1.27 API diff never produced
+b2	DONE	09-19 workflow pins verified
+b3	SUPERSEDED	toolchain aligned 0.7.0
+b4	SUPERSEDED	ADR-0024 keeps jsonv2 engine
+b5	DONE	AGENTS Go-1.27 block
+f1@go.mod	DONE	go.mod pins go 1.27.1
+f2@GOEXPERIMENT	WONT	ADR-0024 keeps jsonv2
+f3@ci.yml	DONE	env blocks clean
+f4@flake.lock	DONE	flake pkgs.go_1_27
+f5	DONE	flake green since 09-14
+f6	DONE	v2 engine importable w/o experiment
+f7	DONE	CHANGELOG 0.7.0 documents breakage
+f8	DONE	two-phase pattern intact
+f9	DONE	CHANGELOG 0.8.0 selector-key fix
+f10	DONE	TestKeyValueExpr_SelectorKeyRootNotNormalized
+f11	OPEN	generic-method fixtures unrouted
+f12	OPEN	generic-method round-trip unrouted
+f13	DONE	scripts/dogfood-goroot.sh math/rand/v2
+f14	OPEN	unrouted
+f15	DONE	AGENTS two-path interface-method
+f16	DONE	dogfood script covers go/types
+f17	DONE	alias-heavy dogfood green
+f18	DONE	suite green; goldens synced
+f19	DONE	selector-key tests green
+f20	DONE	CHANGELOG 0.7.1 re-baseline
+f21	OPEN	x/tools bump unverified
+f22	DONE	flake preBuild templ generate
+f23	DONE	AGENTS -count=1 gate
+f24	DONE	-cache gate recorded
+f25	DONE	docs/benchmarks 2026-09-22
+f26	DONE	AGENTS boundary note
+f27	WONT	ADR-0024 keeps export deliberate
+f28	OPEN	HOW_TO_USE lacks 1.27 note
+f29	DONE	README states Go 1.27
+f30	DONE	CHANGELOG 0.7.0
+f31	DONE	v0.7.0 released 2026-09-18
+f32	OPEN	no sync.OnceValue migration
+f33	DONE	CI Self-Analysis gate
+f34	DONE	v0.7.0 built via CI
+f35	OPEN	unrouted
+g1	SUPERSEDED	clean jump shipped in 0.7.0
+g2	SUPERSEDED	flake pkgs.go_1_27
+g3	DONE	released as 0.7.0
+FILE docs/status/2026-09-14_15-51_adr0023-nested-emission-shipped.md
+CLASS KEEP
+ITEMS:
+b1	OPEN	ROADMAP FuncLit emission deferred
+b2	DONE	CHANGELOG 0.7.0 templ NO-GO
+b3	DONE	docs/SELF_CLEAN_LEDGER.md; AGENTS cadence
+b4	DONE	pinned/unpinned A/B 2026-09-22
+b5	DONE	09-19 drift resolved
+c1	DONE	09-19 findByName[T]
+c2	DONE	09-19 accepts + fixtures
+c3	DONE	CHANGELOG 0.7.0 dump-tokens positions
+c4	DONE	v0.7.0 released
+c5	OPEN	ROADMAP scope cuts
+c6	OPEN	ROADMAP
+c7	DONE	CHANGELOG 0.7.0 validation entries
+f1	DONE	AGENTS cadence + ledger
+f2	DONE	v0.7.0 released
+f3	DONE	CHANGELOG 0.7.0 extracted printers
+f4	DONE	CHANGELOG 0.7.0
+f5	OPEN	ADR-0023 wall-time never re-measured
+f6	DONE	CHANGELOG 0.7.0 templ NO-GO
+f7	OPEN	go-sse group unverified (external)
+f8	DONE	09-19
+f9	DONE	09-19
+f10	OPEN	ROADMAP
+f11	OPEN	ROADMAP
+f12	OPEN	ROADMAP
+f13	OPEN	ROADMAP
+f14	OPEN	ROADMAP
+f15	OPEN	ROADMAP
+f16	OPEN	ROADMAP
+f17	DONE	CHANGELOG 0.7.1 pinned/unpinned
+f18	OPEN	ROADMAP
+f19	OPEN	ROADMAP
+f20	OPEN	ROADMAP
+f21	DONE	CHANGELOG 0.7.0 Added block
+f22	DONE	09-19
+f23	DONE	09-19
+f24	OPEN	unrouted (09-23 f14 same)
+g1	SUPERSEDED	cadence decided 2026-09-22
+g2	OPEN	owner git-history call
+g3	DONE	CHANGELOG 0.7.0 templ NO-GO
+FILE docs/status/2026-09-19_06-41_v0.7.0-release-go1.27-coherence-ci-recovery.md
+CLASS KEEP
+ITEMS:
+b1	DONE	pkg.go.dev verified 09-19
+b2	DONE	docs/SELF_CLEAN_LEDGER.md
+b3	OPEN	TODO_LIST #4 windows confirm pending
+b4	DONE	09-19-0950 a#8
+b5	OPEN	TODO_LIST pma bullet
+b6	OPEN	TODO_LIST gogenfilter sweep
+b7	DONE	09-19-0950 a#6/a#7
+c1	DONE	CHANGELOG 0.7.1 ADR-0022 evidence
+c2	OPEN	unrouted
+c3	DONE	09-19-0950 a#5
+c4	OPEN	ROADMAP platform gate
+c5	OPEN	TODO_LIST #14
+c6	DONE	CHANGELOG 0.7.1 re-baseline
+f1	DONE	09-19-0950 a#4
+f2	OPEN	TODO_LIST gogenfilter sweep
+f3	DONE	09-19-0950 a#5
+f6	DONE	docs/adr/0024
+f7	DONE	09-19-0950 a#7
+f8	DONE	09-19-0950 a#8
+f9	DONE	09-19-0950 a#9
+f10	DONE	CHANGELOG 0.7.1 timing evidence
+f11	DONE	check-alloc-regression -count=3
+f12	DONE	SELF_CLEAN_LEDGER
+f13	DONE	09-19-0950 a#13 true count 40
+f14	OPEN	TODO_LIST #14
+f15	OPEN	TODO_LIST #15
+f16	DONE	scripts/pre-release-check.sh
+f17	DONE	.gitattributes eol=lf
+f18	OPEN	TODO_LIST #18 owner-gated
+f19	DONE	auto-tag.yml dispatch-only
+f20	OPEN	TODO_LIST #20 owner-gated
+f21	DONE	09-19-0950 a#12
+f22	DONE	CHANGELOG 0.7.1
+f23	DONE	struck in earlier pass
+f24	DONE	scripts/go-env-doctor.sh
+f25	DONE	09-19-0950 a#9
+f26	DONE	09-19-0950 a#10
+f27	OPEN	unrouted
+f28	OPEN	unrouted
+f29	DONE	struck in earlier pass
+f30	DONE	struck in earlier pass
+f31	DONE	struck; AGENTS cadence
+f32	DONE	CHANGELOG 0.7.1 errors.AsType
+f33	OPEN	ROADMAP treefmt wrappers
+f34	DONE	struck in earlier pass
+f35	DONE	struck; 09-28 audit
+f37	OPEN	TODO_LIST #4
+f38	DONE	CHANGELOG 0.7.1 t.Chdir sweep
+f39	DONE	struck in earlier pass
+f40	DONE	CHANGELOG 0.7.1 arch-lint check
+f41	DONE	09-19-0950 a#11
+f42	OPEN	unrouted
+f43	OPEN	ROADMAP
+f44	OPEN	ROADMAP owner sign-off
+f45	DONE	struck; 09-19-0950 a#15
+f46	OPEN	ROADMAP
+f47	DONE	09-19-0950 a#5 triggers live
+f48	DONE	CHANGELOG 0.7.1 templ verification
+f49	DONE	struck in earlier pass
+f50	OPEN	ROADMAP
+g1	OPEN	owner tag-author question
+g2	OPEN	owner windows-platform policy
+g3	OPEN	owner fleet-budget policy
+FILE docs/status/2026-09-19_08-33_go-finding-gap2-adapter-status.md
+CLASS KEEP
+FIX the adapter itself has **no production caller** (library API + tests only — a partial ghost system pending a product-surface decision) ||= pkg/provider calls the adapter since ADR-0025; the toolsdk provider is the production surface.
+ITEMS:
+b1	DONE	provider.go:203 calls finding adapter
+b2	DONE	AGENTS GroupID contract
+b3	DONE	bdd/sarif_gofinding_integration_test.go
+b4	DONE	TODO_LIST rebuilt 2026-09-23
+c1	WONT	YAGNI; ADR-0025 classification-free
+c2	SUPERSEDED	ADR-0025; pkg/provider conversion
+c3	DONE	bdd/sarif_gofinding_integration_test.go
+c4	DONE	AGENTS GroupID contract
+c5	DONE	09-22-2301 a1 closed with evidence
+c6	DONE	09-28 harvest
+c7	DONE	flake.nix excludes *_templ.go
+f1	SUPERSEDED	toolsdk provider shipped (ADR-0025)
+f2	OPEN	owner commit authorization pending
+f3	DONE	09-22-2301 a1
+f4	OPEN	sarif.go/finding.go duplication remains
+f5	DONE	struck in earlier pass
+f6	DONE	.buildflow.yml skip
+f7	OPEN	unrouted
+f8	OPEN	unrouted
+f9	DONE	09-28 harvest
+f10	DONE	bdd SARIF integration test
+f11	DONE	same BDD spec
+f12	SUPERSEDED	ADR-0025
+f13	DONE	struck in earlier pass
+f14	OPEN	unrouted
+f15	OPEN	unrouted
+f16	OPEN	unrouted
+f17	OPEN	unrouted
+f18	OPEN	unrouted
+f19	OPEN	unrouted
+f20	OPEN	unrouted
+f21	OPEN	ROADMAP
+f22	DONE	TODO_LIST rebuilt 2026-09-23
+f23	SUPERSEDED	ADR-0025 records decision
+f24	DONE	docs/research evaluation summary
+f25	OPEN	unrouted
+f26	OPEN	unrouted
+f27	OPEN	unrouted
+f28	OPEN	AGENTS workaround documented only
+f29	OPEN	unrouted
+f30	OPEN	unrouted
+f31	OPEN	unrouted
+f32	DONE	gomod ecosystem covers go-finding (09-29 verify)
+f33	DONE	gomod covers transitive deps (09-29)
+f34	OPEN	unrouted
+f35	OPEN	unrouted
+f36	OPEN	unrouted
+f37	OPEN	unrouted
+f38	OPEN	Finding lacks Summary wiring (upstream)
+f39	OPEN	unrouted
+f40	DONE	CHANGELOG 0.8.0 findings golden
+f41	OPEN	unrouted
+f42	OPEN	unrouted
+f43	OPEN	unrouted
+f44	DONE	AGENTS pins duplication
+f45	DONE	SDK_DESIGN diagram covers provider
+f46	OPEN	unrouted
+f47	OPEN	unrouted
+f48	DONE	scripts/pre-release-check.sh
+f49	OPEN	unrouted
+f50	DONE	09-19-0950 a#4
+g1	SUPERSEDED	ADR-0025 answers surface
+g2	OPEN	owner commit-policy question
+g3	OPEN	BuildFlow upstream bullet
+FILE docs/status/2026-09-19_09-50_ci-recovery-harvest-alloc-gate-fleet-sweep.md
+CLASS KEEP
+ITEMS:
+b1	OPEN	TODO_LIST #4 confirm pending
+b2	OPEN	TODO_LIST gogenfilter sweep
+b3	DONE	CHANGELOG 0.7.1
+b4	OPEN	TODO_LIST pma bullet
+b5	OPEN	go-auto-upgrade CI unverified
+b6	DONE	09-23 executions
+c1	DONE	CHANGELOG 0.7.1
+c2	OPEN	TODO_LIST #14
+c3	OPEN	TODO_LIST #15
+c4	DONE	scripts/pre-release-check.sh
+c5	OPEN	TODO_LIST #18 owner-gated
+c6	DONE	auto-tag.yml dispatch-only
+c7	OPEN	TODO_LIST #20 owner-gated
+c8	DONE	CHANGELOG 0.7.1
+c9	DONE	SELF_CLEAN_LEDGER
+c10	DONE	scripts/go-env-doctor.sh
+c11	DONE	CHANGELOG 0.7.1 dump-tokens
+c12	DONE	CHANGELOG 0.7.1 arch-lint
+c13	DONE	09-28 audit
+c14	DONE	CHANGELOG 0.7.1
+c15	OPEN	ROADMAP
+f1	OPEN	TODO_LIST gogenfilter sweep
+f2	OPEN	TODO_LIST #4 watch
+f3	OPEN	TODO_LIST #14
+f4	DONE	scripts/pre-release-check.sh
+f5	OPEN	TODO_LIST #18 owner-gated
+f6	OPEN	TODO_LIST #20
+f7	OPEN	erraudit in sweep list
+f8	DONE	CHANGELOG 0.7.1
+f9	DONE	SELF_CLEAN_LEDGER
+f10	DONE	CHANGELOG 0.7.1
+f11	OPEN	TODO_LIST #4 confirm
+f12	DONE	scripts/go-env-doctor.sh
+f13	OPEN	unrouted
+f14	DONE	CHANGELOG 0.7.1
+f15	DONE	CHANGELOG 0.7.1 arch-lint
+f16	OPEN	TODO_LIST #15
+f17	DONE	auto-tag dispatch-only
+f18	DONE	09-28 audit supersession
+f19	OPEN	unrouted
+f20	OPEN	unrouted
+f21	OPEN	TODO_LIST BuildFlow bullets
+f22	OPEN	in sweep list
+f23	DONE	CHANGELOG 0.7.1
+f24	OPEN	unrouted
+f25	OPEN	ROADMAP
+f26	DONE	T2.2/T23 executed
+g1	OPEN	owner windows-mitigation call
+g2	OPEN	owner fleet-hygiene budget
+g3	OPEN	owner release coordination
+FILE docs/status/2026-09-22_21-47_dedup-sprint-self-scan-t4-t1.md
+CLASS KEEP
+ITEMS:
+b1	DONE	AGENTS placement rule
+b2	DONE	SELF_CLEAN_LEDGER records 1059/28
+b3	DONE	AGENTS 0 findings
+b4	OPEN	owner-gated install channel (g3)
+any:dead-directive detector	DONE	CHANGELOG 0.8.0 dead-directive detector
+any:4 inert FuncDecl	WONT	kept deliberately as documentation
+any:HARVEST	DONE	2026-09-28 harvest executed
+any:-t 2 / -t 3	OPEN	unrouted sweep
+any:End-to-end test pinning	DONE	cmd/accept_directive_test.go window cases
+any:Update AGENTS corpus	DONE	CHANGELOG 0.7.1 re-baseline
+any:warnUnmatchedPatterns	WONT	conflicts owner-recorded accept
+f1	DONE	AGENTS placement rule
+f2	DONE	ledger + -t 5 gate
+f3	DONE	AGENTS 0 findings
+f4	OPEN	owner-gated channel (g3)
+f5	DONE	09-28 harvest
+f6	DONE	CHANGELOG 0.8.0 detector
+f7	DONE	cmd/accept_directive_test.go:58
+f8	WONT	directives kept
+f9	DONE	printer/sort_unified.go unified sort
+f10	OPEN	unrouted
+f11	DONE	CHANGELOG 0.7.1
+f12	DONE	SELF_CLEAN_LEDGER
+f13	OPEN	ROADMAP
+f14	OPEN	owner-gated (g1)
+f15	OPEN	unrouted
+f16	OPEN	unrouted; gated g3
+f17	WONT	item records YAGNI
+f18	OPEN	unrouted conditional
+f19	OPEN	unrouted
+f20	DONE	AGENTS Known Limitations current
+f21	DONE	AGENTS monthly -t 1
+f22	DONE	AGENTS buffered(1) documented
+f23	OPEN	unrouted
+f24	DONE	struck in earlier pass
+f25	OPEN	unrouted
+g1	OPEN	owner filter_stats call
+g2	OPEN	owner low-threshold contract
+g3	OPEN	owner binary channel
+FILE docs/status/2026-09-22_22-40_adr-0022-timing-evidence-t22-t23-boundary.md
+CLASS KEEP
+ITEMS:
+b1	OPEN	g1 owner confirmation unanswered
+b2	OPEN	unrouted
+b3	OPEN	ROADMAP scripts/bench
+c1	OPEN	idle-window run never happened
+c2	DONE	flake green 09-23
+c3	OPEN	unrouted
+f1	OPEN	owner-gated (g1)
+f2	OPEN	unrouted
+f3	OPEN	ROADMAP scripts/bench
+f4	DONE	struck in earlier pass
+f5	OPEN	unrouted wording
+f6	OPEN	ROADMAP wrapper
+f7	DONE	benchmarks README
+f8	OPEN	unrouted
+f9	OPEN	unrouted
+f10	OPEN	unrouted
+f11	OPEN	owner-gated (g2)
+f12	OPEN	unrouted
+f13	OPEN	unrouted
+f14	OPEN	TODO_LIST PARKED arena criterion
+f15	OPEN	unrouted
+f16	OPEN	unrouted
+f17	DONE	duplicate block removed
+f18	DONE	09-28 audit annotations
+f19	DONE	TODO_LIST audited 2026-09-28
+f20	DONE	CHANGELOG 0.7.1
+f21	OPEN	TODO_LIST #14
+f22	DONE	scripts/pre-release-check.sh
+f23	OPEN	TODO_LIST #18
+f24	OPEN	TODO_LIST #4
+f25	DONE	CHANGELOG 0.7.1
+f26	DONE	CHANGELOG 0.7.1
+f27	DONE	scripts/go-env-doctor.sh
+f28	DONE	SELF_CLEAN_LEDGER
+f29	DONE	CHANGELOG 0.7.1
+f30	OPEN	TODO_LIST gogenfilter sweep
+f31	OPEN	unrouted
+f32	OPEN	unrouted
+f33	OPEN	unrouted
+f34	OPEN	unrouted
+f35	OPEN	unrouted
+f36	OPEN	unrouted
+f37	OPEN	unrouted
+f38	DONE	ADR-0022 addendum
+f39	OPEN	unrouted
+f40	OPEN	unrouted
+f41	OPEN	unrouted
+f43	OPEN	unrouted
+f44	OPEN	unrouted
+f45	OPEN	unrouted
+f46	OPEN	unrouted
+f47	OPEN	unrouted
+f48	OPEN	unrouted
+f49	OPEN	unrouted
+f50	SUPERSEDED	actionable core is f6 watcher
+g1	OPEN	owner evidence-sufficiency call
+g2	OPEN	owner retune call
+g3	OPEN	owner standing protocol
+FILE docs/status/2026-09-22_22-40_go-finding-integration-investigation.md
+CLASS KEEP
+ITEMS:
+b1	SUPERSEDED	ADR-0025 + pkg/provider shipped
+b2	DONE	AGENTS GroupID contract
+b3	DONE	docs/research evaluation summary
+b4	SUPERSEDED	ADR-0025
+c1	SUPERSEDED	ADR-0025 (struck earlier)
+c2	DONE	bdd/sarif_gofinding_integration_test.go
+c3	DONE	evaluation summary landed
+c4	WONT	YAGNI; ADR-0025
+f1	DONE	bdd/sarif_gofinding_integration_test.go
+f2@Decision	SUPERSEDED	ADR-0025; provider shipped
+f2@Run go test	DONE	09-22-2301 a2 executed green
+f3	DONE	evaluation summary landed
+f5	DONE	09-28 harvest
+f6	DONE	AGENTS GroupID contract
+f7	OPEN	unrouted
+f8	OPEN	unrouted
+f9	OPEN	Finding lacks Summary (upstream)
+f10	OPEN	unrouted
+f11	DONE	SDK_DESIGN diagram covers provider
+f12	DONE	gomod ecosystem covers go-finding (09-29)
+f13	DONE	gomod covers transitive deps (09-29)
+f14	DONE	FEATURES documents adapter + provider
+f15	DONE	struck in earlier pass
+f16	OPEN	AGENTS workaround documented only
+f17	DONE	TODO_LIST rebuilt 2026-09-23
+f18	OPEN	watch
+f19	OPEN	watch
+f20	WONT	YAGNI
+f21	SUPERSEDED	pkg/provider Detect ships
+f22	OPEN	unrouted
+f23	OPEN	unrouted
+f24	OPEN	unrouted
+f25	WONT	rejected in evaluation
+g1	SUPERSEDED	ADR-0025
+g2	SUPERSEDED	BuildFlow consumes provider live
+g3	DONE	summary+link chosen
+FILE docs/status/2026-09-22_23-01_github-issues-tracker-turnaround.md
+CLASS KEEP
+ITEMS:
+b1	DONE	CHANGELOG 0.8.0 issue-#2 BDD spec
+b2	SUPERSEDED	ADR-0025 + provider
+b3	DONE	evaluation summary
+b4	DONE	struck in earlier pass
+c1	DONE	struck in earlier pass
+c2	DONE	09-19 report carries done-annotations
+c3	DONE	#2 spec; #3 ADR-0025; #4 summary doc
+c4	OPEN	Template/Tags/Summary remain
+c5	DONE	struck in earlier pass
+f1	DONE	bdd/sarif_gofinding_integration_test.go
+f2	SUPERSEDED	ADR-0025
+f3	DONE	docs/research summary
+f4	DONE	struck in earlier pass
+f5	DONE	09-19 report annotated
+f6	SUPERSEDED	ADR-0025 supersedes
+f7	DONE	AGENTS GroupID; FEATURES row
+f8	OPEN	unrouted
+f9	OPEN	unrouted
+f10	OPEN	unrouted
+f11	OPEN	unrouted
+f12	DONE	SDK_DESIGN diagram (0.8.0)
+f13	DONE	gomod ecosystem covers go-finding (09-29)
+f14	OPEN	unrouted
+f15	DONE	FEATURES documents surface
+f16	DONE	struck in earlier pass
+f17	OPEN	AGENTS workaround documented only
+f18	DONE	TODO_LIST rebuilt 2026-09-23
+f19	OPEN	unrouted
+f20	OPEN	watch
+f21	OPEN	watch
+f22	WONT	YAGNI
+f23	SUPERSEDED	pkg/provider ships
+f24	OPEN	unrouted
+f25	OPEN	unrouted
+f26	DONE	struck in earlier pass
+g1	SUPERSEDED	ADR-0025
+g2	DONE	summary doc chosen
+g3	OPEN	owner process question
+FILE docs/status/2026-09-23_01-34_todo-sweep-jsonutil-fix-flake-recovery-self-review.md
+CLASS KEEP
+ITEMS:
+b1	OPEN	TODO_LIST #14 other repos
+b2	OPEN	unrouted erraudit pass
+b3	DONE	AGENTS skip; pin survives format
+b4	DONE	09-28 audit
+b5	OPEN	unrouted
+b6	OPEN	TODO_LIST pma bullet
+b7	DONE	later full flake greens
+b8	DONE	TODO_LIST binary rebuilt 2026-09-29
+any:gogenfilter consumer sweep	OPEN	TODO_LIST sweep checklist
+any:#15 fleet audit	OPEN	TODO_LIST #15
+any:#18 branch protection	OPEN	TODO_LIST #18 owner-gated
+any:#4 Windows	OPEN	TODO_LIST #4 confirm pending
+any:#20 go-paperless	OPEN	TODO_LIST #20 owner-gated
+any:5 BuildFlow upstream	OPEN	TODO_LIST upstream bullets
+any:PARKED/DEFERRED	OPEN	TODO_LIST PARKED by design
+f1	DONE	AGENTS pin survives format run
+f2	DONE	TODO_LIST binary rebuilt
+f3	OPEN	TODO_LIST cut v0.8.0 owner-gated
+f4	OPEN	unrouted
+f5	OPEN	unrouted
+f6	DONE	CHANGELOG 0.8.0 production v2 migrated
+f7	WONT	tolerated by convention (AGENTS)
+f8@guard	DONE	AGENTS -count=1 rule
+f8@gogenfilter sweep	OPEN	TODO_LIST sweep
+f9	OPEN	TODO_LIST #20 owner-gated
+f10	OPEN	TODO_LIST #18 owner-gated
+f11	OPEN	unrouted
+f12	OPEN	unrouted
+f13	OPEN	TODO_LIST pma bullet
+f14	OPEN	unrouted
+f15	DONE	AGENTS cache-parity why
+f16	OPEN	unrouted
+f17	OPEN	unrouted
+f18	DONE	bdd/sarif_gofinding_integration_test.go
+f19	DONE	docs/research summary
+f20@ADR	SUPERSEDED	ADR-0025
+f20@golden	OPEN	unrouted
+f21	DONE	CHANGELOG 0.8.0 jsonv2gate
+f22	OPEN	unrouted
+f23	OPEN	unrouted
+f24	OPEN	ROADMAP
+f25@sortedStageNames	DONE	deleted; zero code hits
+f25@dry-run	OPEN	unrouted
+f26	OPEN	unrouted
+f27	OPEN	unrouted
+f28	OPEN	unrouted
+f29	OPEN	unrouted
+f30	OPEN	unrouted
+f31	DONE	root-caused 2026-09-29 (TODO #4)
+f32	OPEN	TODO_LIST #15
+f33	OPEN	unrouted
+f34	OPEN	unrouted
+f35	OPEN	unrouted
+f36	OPEN	unrouted
+f37	OPEN	unrouted
+f38@ADR-0025	DONE	docs/adr/0025
+f38@pma	OPEN	TODO_LIST pma bullet
+f39@gogenfilter changelog	DONE	pushed 09-19
+f39@cache-key	OPEN	unrouted
+f40	OPEN	unrouted
+f41	OPEN	unrouted
+f42	OPEN	unrouted
+f43	OPEN	unrouted
+f44	OPEN	unrouted (TODO #36)
+f50	DONE	09-28 harvest
+g1	DONE	AGENTS pin DELIBERATE; go-line gate
+g2	OPEN	owner fleet-rollout call
+g3	OPEN	owner triage call
+FILE docs/status/2026-08-10_06-59_docs-health-audit-rebuild.md
+CLASS KEEP
+FIX - Pattern count 23 → 29 (matching code: 34 PatternLabel constants = 29 denylist + 4 property + PatternNone) ||= Current: 33 denylist + 4 property = 37, auto-derived by cmd/docs_health_counts_test.go.
+ITEMS:
+b1	DONE	AGENTS shortened; links ACTIONABILITY_PATTERNS
+b2	WONT	regime-B retrofit policy (archived/README)
+b3	DONE	CHANGELOG grouped; Unreleased managed
+c1	DONE	ACTIONABILITY_PATTERNS 33 checks
+c2	DONE	HOW_TO_USE enhancer + min-tokens sections
+c3	DONE	SDK_DESIGN SuggestGenerics
+c4	DONE	FEATURES SDK row
+c5	DONE	docs/adr/0021
+c6	DONE	wave2 flake green
+c7	OPEN	feedback/new 3 stayers unrouted
+c8	WONT	regime-B retrofit declined
+d2	DONE	wrong ADR-0020 ref removed
+d3	DONE	AGENTS concise list + link
+d4	DONE	tagliatelle banned + guard
+e5	DONE	HOW_TO_USE/SDK_DESIGN/ACTIONABILITY updated
+e7	DONE	AGENTS links ACTIONABILITY_PATTERNS
+f1	DONE	ACTIONABILITY_PATTERNS current
+f2	DONE	HOW_TO_USE sections present
+f3	DONE	SDK_DESIGN documented
+f4	DONE	ADR-0021 created
+f5	DONE	FEATURES SDK row
+f6	DONE	AGENTS bullet + link
+f7	DONE	tagliatelle banned; loop closed
+f8	DONE	wave2 flake green
+f9	WONT	regime B; retrofit declined
+f10	WONT	retrofit not scheduled
+f11	WONT	retrofit not scheduled
+f12	WONT	retrofit not scheduled
+f13	WONT	retrofit not scheduled
+f14	WONT	retrofit not scheduled
+f15	WONT	retrofit not scheduled
+f16	WONT	retrofit not scheduled
+f17	WONT	retrofit not scheduled
+f18	WONT	retrofit not scheduled
+f19	WONT	retrofit not scheduled
+f20	WONT	retrofit not scheduled
+f21	WONT	retrofit not scheduled
+f22	WONT	retrofit not scheduled
+f23	WONT	retrofit not scheduled
+f24	WONT	retrofit not scheduled
+f25	WONT	retrofit not scheduled
+f26	WONT	regime B; retrofit declined
+f27	WONT	retrofit not scheduled
+f28	WONT	retrofit not scheduled
+f29	WONT	retrofit not scheduled
+f30	WONT	retrofit not scheduled
+f31	OPEN	feedback/new 2026-07-19 pair unannotated
+f32	OPEN	feedback/new 2026-07-26 unannotated
+f33	DONE	done/2026-07-27 annotated
+f34	DONE	done/2026-07-29 annotated
+f35	DONE	--suggest-generics-min-lines flag
+f36	DONE	bdd/min_tokens_test.go
+f37	DONE	ADR-0021 is the EraseHash ADR
+f38	DONE	sarif.go generics properties
+f39	DONE	bdd/suggest_generics_test.go
+f40	DONE	BDD runs real CLI pipeline
+f41	DONE	CacheVersion 5 ≥ 3
+f42	DONE	cache/lru.go; AGENTS LRU layer
+f43	DONE	hysteresis 110%/90%
+f44	DONE	HTML summary row shipped
+f45	DONE	TTY auto-write resolution
+f46	DONE	CHANGELOG grouped sections
+f47	OPEN	no flag examples in --help audit
+f48	DONE	FEATURES recommend-threshold row
+f49	DONE	.gitignore global.out.css
+f50	WONT	superseded by g1 policy
+g1	WONT	archived/README answers: no retrofit
+g2	DONE	tagliatelle banned with guard
+g3	DONE	ADR-0021 documents EraseHash
+FILE docs/status/2026-08-10_07-27_cache-improvements-sprint.md
+CLASS KEEP
+ITEMS:
+a1	DONE	CacheVersion 5
+a2	DONE	cache/lru.go; AGENTS LRU layer
+a3	DONE	hysteresis pruning 110%/90%
+a4	DONE	TestIncrementalParserCacheKeyFormat
+a5	DONE	AGENTS cache bullets current
+a6	DONE	stampFilename ownership comment
+e1	WONT	shared Get documented UNSAFE
+e2	DONE	Stats.MemHits
+e3	DONE	--memory-cache-entries flag
+e4	DONE	lock-ordering comment
+e5	DONE	OWNERSHIP CONTRACT comment
+e6	DONE	BenchmarkFileCacheGet
+e7	WONT	self-retracted; correct as-is
+e8	OPEN	no entries-inspection test
+e9	WONT	Clone() copies; correct
+e10	DONE	SetTypeAwareData typed
+f1	DONE	Stats.MemHits + verbose stats
+f2	DONE	--memory-cache-entries wired
+f3	DONE	lock-ordering comment
+f4	DONE	ownership contract
+f5	DONE	BenchmarkFileCacheGet
+f6	OPEN	no cold-disk-miss benchmark
+f7	OPEN	no lru.len() in Stats
+f8	OPEN	no LRU-eviction inspection test
+f9	WONT	GetShared UNSAFE (AGENTS)
+f10	OPEN	byte-budget eviction unrouted
+f11	OPEN	MemSize/MemCapacity absent
+f12	OPEN	sync.Map LRU never tried
+f13	OPEN	no eviction callback hook
+f14	OPEN	2Q/ARC never evaluated
+f15	OPEN	no LRU warmup
+f16	OPEN	no FileCache.Close
+f17	OPEN	mmap never tried
+f18	OPEN	no FileCache.Compact
+f19	OPEN	no startup integrity sampling
+f20	OPEN	content-addressed storage untried
+f21	DONE	HitRatePct in stats subcommand
+f22	OPEN	per-file-type buckets untried
+f23	OPEN	no cache subcommand
+f24	OPEN	no MaxCacheBytes config
+f25	OPEN	gob still used; no migration
+f26	DONE	SetTypeAwareData typed
+f27	OPEN	no parseFile hit/miss benchmark
+f28	OPEN	singleflight keyed by content hash
+f29	OPEN	no parse-time metrics
+f30	DONE	clone invariant comment
+f31	DONE	ci.yml -race ./...
+f32	OPEN	no cacheKey fuzz target
+f33	OPEN	no KeyWithParams fuzz target
+f34	OPEN	no LRU-capacity property test
+f35	OPEN	no Get-after-Set property test
+f36	DONE	TestClearConcurrentWithGets
+f37	OPEN	no Prune maxEntries=1 test
+f38	OPEN	no MRU-promotion test
+f39	DONE	TestFileCache_Clear
+f40	OPEN	no same-key-replace test
+f41	OPEN	no cache ADR
+f42	OPEN	HOW_TO_USE lacks --memory-cache-entries
+f43	OPEN	TESTING.md lacks LRU conventions
+f44	OPEN	no CACHE_ARCHITECTURE.md
+f45	DONE	FEATURES LRU row
+f46	DONE	syntax.CloneNodes canonical
+f47	OPEN	lru concrete type, no interface
+f48	OPEN	no forcetypeassert nolint
+f49	OPEN	no bytes.Buffer pool
+f50	OPEN	no WriterTo/ReaderFrom
+g1	DONE	--memory-cache-entries default 512
+g2	DONE	ownership contract chosen
+g3	WONT	GetShared rejected UNSAFE
+FILE docs/status/2026-08-10_08-53_docs-health-gap-fix-sprint-completion.md
+CLASS KEEP
+FIX The pattern count chain is fragile — 29 patterns must stay in sync across ACTIONABILITY_PATTERNS.md, FEATURES.md, CHANGELOG.md, and AGENTS.md. ||= Count is 33 denylist + 4 property = 37, re-derived by cmd/docs_health_counts_test.go in the default suite.
+ITEMS:
+a1-2	DONE	ACTIONABILITY_PATTERNS 33 checks
+a3	DONE	AGENTS bullet + link
+a4	DONE	no wrong ADR-0020 reference
+a6	DONE	.gitignore global.out.css
+a7	DONE	HOW_TO_USE enhancer section
+a8	DONE	HOW_TO_USE min-tokens section
+a9	DONE	SDK_DESIGN SuggestGenerics
+b10	DONE	FEATURES SDK rows
+b11	DONE	no tagliatelle TODO item
+b12	DONE	superseded by later green gates
+b13	DONE	lint 0 findings tree-wide
+c	DONE	pushed; releases tagged
+d1	DONE	skip_steps for auto-configurer
+d2	DONE	BuildFlow rebuilt 2026-09-24
+d3	WONT	moot; hook rebuilt
+e6	DONE	FEATURES SDK rows
+e7	DONE	docs_health count gate shipped
+f1	DONE	skip_steps landed
+f2	DONE	BuildFlow rebuilt minimal
+f3	DONE	same rebuild
+f4	WONT	moot; hook rebuilt
+f5	DONE	lint config landed
+f6	DONE	docs_health count gate
+f7	DONE	AGENTS 106/0
+f8	DONE	ban documented
+f9	DONE	skip_steps configured
+f10	DONE	09-28 audit rebuilt living docs
+f11	DONE	shortenTypeString strips paths
+f12	DONE	TestMinCloneTokenCount
+f13	DONE	bdd/min_tokens_test.go
+f14	DONE	workflows SHA-pinned
+f15	DONE	accept_fixture packages renamed
+f16	DONE	separate require blocks
+f17	DONE	.gitignore dist/
+f18	OPEN	vendorHash still inline (flake.nix)
+f19	DONE	GOEXPERIMENT check dropped per ADR-0024
+f20	DONE	CGO_ENABLED=1 configured
+f21	DONE	go-licenses in devShell
+f22	DONE	count gate in default suite
+f23	DONE	ritual gone after rebuild
+f24	WONT	retrofit policy archived
+f25	DONE	tagliatelle banned outright
+g1	WONT	moot; rebuilt minimal
+g2	DONE	skip_steps identified
+g3	WONT	moot; rebuilt
+FILE docs/status/2026-08-10_13-45_output-quality-fixes.md
+CLASS KEEP
+ITEMS:
+c1	SUPERSEDED	generics filter deleted (ADR-0021 enhancer)
+c2	OPEN	no suggestion-override test
+c3	OPEN	no singular tokenLineSummary test
+c4	OPEN	same-package shortening never implemented
+c5	OPEN	plural() still printer-private
+e1	DONE	enhancer shipped per ADR-0021
+e2	DONE	generics branch deleted
+e3	OPEN	suggestion set in multiple layers
+e4	OPEN	shortenTypeString still regex
+e5	DONE	bdd/suggest_generics_test.go
+e6	DONE	writeSuppressionSummary extracted
+e7	OPEN	progress indentation inconsistent
+e8	OPEN	no hint truncation
+e9	OPEN	generics: precedes explain:
+f1	DONE	all-clones-shown test
+f2	OPEN	no generics Suggestion regression test
+f3	OPEN	no singular tokenLineSummary test
+f4	OPEN	no --suggest-generics --explain BDD
+f5	DONE	writeSuppressionSummary extracted
+f6	DONE	ADR-0021 shipped
+f7	DONE	help says does NOT filter
+f8	DONE	generics filter branch deleted
+f9	OPEN	indentation never standardized
+f10	OPEN	no hint truncation
+f11	OPEN	lines still separate
+f12@BDD	DONE	bdd/suggest_generics_test.go
+f13@explain	DONE	bdd actionability --explain specs
+f12@audit	OPEN	pluralization audit never done
+f13@golden	OPEN	no suggest+explain golden
+f16	OPEN	still regex-based
+f17	OPEN	layered suggestion overrides
+f18	OPEN	no --no-generics-hint flag
+f19@JSON	DONE	JSON emits generics fields
+f20@SARIF	DONE	sarif.go generics properties
+f19@HTML	OPEN	no generics HTML rendering
+f20@SDK	WONT	ADR-0025 classification-free
+f21	OPEN	unrouted; never implemented
+f22	OPEN	no --max-generics-hint-types
+f23@dedup	DONE	divergenceKey canonical
+f23@progress	OPEN	multi-line progress remains
+f24	OPEN	unrouted cosmetic
+f25	OPEN	no shared indentation constant
+f26	OPEN	no --compact flag
+f27	OPEN	writeExplanation joins strings
+f28	OPEN	fix:/why: labels unchanged
+f29	OPEN	no --output-width flag
+f30	OPEN	no singular/plural goldens
+f31	OPEN	preview truncation fixed 60
+f32	OPEN	prefix unchanged
+f33	SUPERSEDED	enhancer shows all clones
+f36@jsonhint	DONE	JSON emits generics_hint
+f38@HOWTO	DONE	HOW_TO_USE enhancer documented
+f39@SDK	DONE	pkg/artdupl/types.go SuggestGenerics
+f34	OPEN	no --highlight-generics flag
+f35	OPEN	3-pair limit hardcoded
+f36@Position	OPEN	Position still unused
+f37	OPEN	no --debug-generics flag
+f38@grouping	OPEN	unrouted
+f39	OPEN	flattenCloneNodes uncached
+f40	OPEN	compares against seqs[0]
+f41	OPEN	no such test found
+f48@VarType	DONE	EmptyVarTypeSkipped test
+f42	OPEN	unrouted
+f43	OPEN	no formatter package
+g1	DONE	enhancer shipped (ADR-0021)
+g2	OPEN	merge never implemented
+g3	OPEN	no line-length convention
+FILE docs/status/2026-08-10_14-49_suggest-generics-enhancer-redesign.md
+CLASS KEEP
+ITEMS:
+b1	DONE	SDK_DESIGN documents enhancer
+b2	DONE	bdd/suggest_generics_test.go
+b3	DONE	writeSuppressionSummary extracted
+c1	DONE	bdd/suggest_generics_test.go
+c2	DONE	zero SuppressedGenerics refs
+c3	DONE	bdd/combined_mode_test.go (ADR-0026)
+c4	DONE	divergenceKey canonicalization
+c5	OPEN	indentation inconsistent
+c6	OPEN	no hint truncation
+e1	DONE	writeSuppressionSummary
+e2	WONT	gated via PatternNone+line gate
+e3	OPEN	no asymmetry note
+e4	OPEN	no precision telemetry
+e5	OPEN	lines separate
+f1	DONE	bdd/suggest_generics_test.go
+f2	OPEN	no suggest+explain BDD
+f3	DONE	bdd/type_aware_test.go
+f4	DONE	bdd/combined_mode_test.go
+f5	DONE	divergenceKey + test
+f6	DONE	zero SuppressedGenerics refs
+f7	DONE	BDD real CLI generics fixtures
+f8	OPEN	no singular tokenLineSummary test
+f9	OPEN	no suggestion-override test
+f10	DONE	nestif cleared
+f11	OPEN	asymmetry comment absent
+f12	OPEN	indentation never standardized
+f13	OPEN	no truncation
+f14	OPEN	lines separate
+f15	WONT	gated at clone_processor
+f16	OPEN	help text still long
+f17	DONE	real vendorHash
+f18	DONE	tagliatelle banned + guard
+f19	DONE	ultraviolet tracked in go.mod
+f20	DONE	no generics refs in patterns doc
+f21	DONE	SDK_DESIGN enhancer semantics
+f22	DONE	DOMAIN_LANGUAGE unchanged
+f23	DONE	TODO_LIST rebuilt 2026-09-29
+f24	DONE	ROADMAP generics follow-up
+f25	DONE	ADR-0021 cited
+f26	OPEN	no [generics] badge
+f27	OPEN	no candidates-first sort
+f28	OPEN	no footer candidates count
+f29	OPEN	no --only-generics flag
+f30	OPEN	no generics count in stats
+f31	OPEN	version list lacks it
+f32	OPEN	no JSON streaming for candidates
+f33	OPEN	no gopls integration
+f34	OPEN	no classification benchmark
+f35	OPEN	no classification caching
+f36	OPEN	no --generics-threshold flag
+f37	OPEN	cross-package detection unimplemented
+f38	OPEN	no *T vs T normalization
+f39	OPEN	no channel/goroutine divergence
+f40	DONE	TestShortenTypeString
+f41	DONE	enhancer terminology settled
+f42	OPEN	GenericsCandidate name unchanged
+f43	OPEN	SuggestGenerics name unchanged
+f44	OPEN	README lacks suggest-generics example
+f45	OPEN	no --generics-only alias
+f46	OPEN	no rich-text highlight
+f47	OPEN	plumbing lacks generics fields
+f48	DONE	sarif.go generics properties
+f49	OPEN	no candidate baseline tracking
+f50	OPEN	no new-candidate CI check
+g1	OPEN	--only-generics owner call
+g2	OPEN	merge never implemented
+g3	DONE	resolved via f17-f19
+FILE docs/status/2026-08-16_01-32_cache-line-optimizations.md
+CLASS KEEP
+ITEMS:
+a1	DONE	AGENTS Node field ordering
+a2	DONE	AGENTS CloneNode ordering
+a3	DONE	shared maxStackKeys buffers
+c1	DONE	TestStateLayout
+c2	SUPERSEDED	[]tran value slices (04-23)
+c3	DONE	sorted []tran slices
+c4	DONE	contextListPool
+c5	OPEN	fingerprintSubtree still recursive
+c6	DONE	arena allocation
+c7	OPEN	no syntaxToCloneNode bridge test
+e1	DONE	baselines committed
+e2	DONE	pinned/unpinned A/B 2026-09-22
+e3	DONE	ADR-0022 distribution
+e4	DONE	stackbuffer_test.go
+e5	DONE	gob name-based; no bump
+e6	DONE	named-field init verified
+e7	DONE	slice transitions removed alloc
+e8	DONE	syntax_layout_test.go
+e9	DONE	back-pointer removed
+e10	DONE	contextListPool; []Pos direct
+e11	DONE	AGENTS concise + ADR-0022 link
+e12	DONE	docs/adr/0022
+e13	DONE	shared maxStackKeys const
+f1	DONE	benchstat baselines committed
+f2	DONE	pinned A/B (0.7.1)
+f3	DONE	ADR-0022 distribution
+f4	DONE	cache-line layout test
+f5	DONE	clone_node_layout_test.go
+f6	DONE	stackbuffer threshold tests
+f7	DONE	gob decision recorded
+f8	SUPERSEDED	named-field init verified
+f9	DONE	shared maxStackKeys const
+f10	DONE	ADR-0022 exists
+f11	DONE	back-pointer removed
+f12	DONE	layout_test pins offsets
+f13	WONT	int32 indices rejected in ADR-0022
+f14	DONE	TestTranLayout
+f15	DONE	pprof in ADR-0022
+f16	DONE	cpuprofile in ADR-0022
+f17	DONE	contextListPool
+f18	SUPERSEDED	posList deleted
+f19	DONE	stateArena
+f20	DONE	serial() arena (T13)
+f21	WONT	T14 NO-GO ~0.03% allocs
+f22	DONE	releaseContextList retains capacity
+f23	DONE	sorted []tran slices
+f24	DONE	compact []tran per state
+f25	SUPERSEDED	sorted-on-insert addTran
+f26	WONT	sort required for determinism
+f27	DONE	AGENTS cache bullets + ADR link
+f28	OPEN	no //go:noinline
+f29	OPEN	still recursive
+f30	OPEN	still FNV-1a; no xxHash
+f31	SUPERSEDED	standalone sort eliminated
+f32	DONE	realworld-cli.md + bench script
+f33	DONE	memprofiles in ADR-0022
+f34	OPEN	no MemStats benchmarks
+f35	DONE	performance.yml + alloc gate
+f36	DONE	alloc_budget_test.go
+f37	OPEN	ROADMAP tracked, unstarted
+f38	OPEN	ragel idea unrouted
+f39@data	SUPERSEDED	TokenValue already int32
+f39@SIMD	OPEN	unrouted
+f40	OPEN	lock-free append untried
+f41@WalkTransAllocs	OPEN	ROADMAP, never built
+f42	OPEN	ROADMAP, never built
+f43@GOMAXPROCS	DONE	pinned/unpinned A/B
+f46@hasher	SUPERSEDED	[]tran replaced maps
+f47@swiss	SUPERSEDED	[]tran replaced maps
+f48@serial	SUPERSEDED	serial() rewritten to arena
+f49@values	DONE	arena-indexed serialization
+f50@race	DONE	ci.yml full-suite race
+g1	DONE	gob name-based; no bump
+g2	DONE	sort required for determinism
+g3	DONE	distribution in ADR-0022
+FILE docs/status/2026-08-16_02-09_cache-line-followup-hardening.md
+CLASS KEEP
+ITEMS:
+a1	DONE	shared maxStackKeys
+a2	DONE	both layout tests
+a3	DONE	clone_node_layout_test
+a4	DONE	stackbuffer tests
+a5	DONE	named-field init verified
+a6	DONE	no-bump decision; now v5
+a7	DONE	sort-necessity documented
+a8	DONE	baselines committed
+a9	DONE	AGENTS bullets current
+a10	DONE	full suite green
+a11	DONE	serial() arena
+a12	WONT	T14 NO-GO
+c1	DONE	ADR-0022
+c2	DONE	distribution in ADR-0022
+c3	SUPERSEDED	slice transitions shipped
+c4	DONE	back-pointer removed
+c5	DONE	contextListPool; posList gone
+c6	DONE	race fixed + regression test
+e1	DONE	ADR-0022
+e2	DONE	ADR-0022 distribution
+e3	DONE	full-suite race green
+e4	SUPERSEDED	root walks tran slice
+e5	DONE	pinned protocol
+e6	DONE	AGENTS rewritten
+e7	OPEN	no syntaxToCloneNode bridge test
+e8	OPEN	by-value audit never done
+e9	WONT	size test acceptable
+e10	OPEN	ROADMAP, never built
+f1	DONE	race suite in CI
+f2	DONE	ADR-0022
+f3	DONE	ADR-0022
+f4	OPEN	no bridge test
+f5	DONE	pinned A/B
+f6	OPEN	ROADMAP
+f7	DONE	contextListPool
+f8	SUPERSEDED	posList deleted
+f9	DONE	stateArena 512
+f10	SUPERSEDED	trans as values
+f11	DONE	syntax.go arena
+f12	WONT	T14 NO-GO
+f13	DONE	parallelWalkRoot
+f14	DONE	alloc_budget tests
+f15	DONE	profiles in ADR-0022
+f16	OPEN	no MemStats benchmarks
+f17	DONE	performance.yml + gate
+f18	DONE	realworld-cli.md
+f19	DONE	sorted []tran
+f20	DONE	back-pointer removed
+f21	WONT	int32 rejected
+f22	DONE	TestStateLayout pins offsets
+f23	DONE	pprof in ADR-0022
+f24	SUPERSEDED	sorted-on-insert
+f25	DONE	AGENTS + ADR-0022
+f26	OPEN	no //go:noinline
+f27	OPEN	still recursive
+f28	OPEN	no xxHash
+f29	OPEN	comparison audit never done
+f30	OPEN	ROADMAP
+f31	DONE	benchmarks README
+f32	DONE	v3_notes.md
+f33	WONT	performance-only; CHANGELOG covers
+f34	DONE	CHANGELOG entries
+f35	SUPERSEDED	[]tran slices
+f36	OPEN	unrouted
+f37	DONE	GOMAXPROCS A/B
+f38	SUPERSEDED	rootKeys gone
+f39	OPEN	unrouted
+f40	OPEN	unrouted
+f41	SUPERSEDED	arena shipped
+f42	DONE	[]Node arena
+f43	OPEN	ROADMAP, unstarted
+f44	OPEN	no --cache-version flag
+f45	OPEN	no ReportMetric
+f46	DONE	perf stat A/B
+f47	DONE	alloc budgets
+f48	OPEN	no Alignof assertions
+f49	OPEN	unrouted
+f50	OPEN	unrouted
+g1	DONE	pinned protocol + topology note
+g2	DONE	ADR-0022 created
+g3	DONE	pool + back-pointer removal
+FILE docs/status/2026-08-16_03-34_data-layout-allocation-optimization-sprint.md
+CLASS KEEP
+ITEMS:
+a1	DONE	[]Pos stored directly
+a2	DONE	contextListPool
+a3	DONE	back-pointer removed
+a4	DONE	stateArena
+a5	DONE	layout tests
+a6	DONE	callers updated (04-23)
+a7	DONE	gates green
+a8	DONE	baselines committed
+a9	DONE	AGENTS bullet
+c1	DONE	ADR-0022
+c2	WONT	[]Pos pool rejected
+c3	DONE	serial() arena (T13)
+c4	WONT	T14 NO-GO
+c5	DONE	sorted []tran slices
+c6	WONT	int32 rejected
+c7	SUPERSEDED	root walks tran slice
+c8	DONE	pinned A/B
+c9	DONE	race green
+c10	DONE	distribution in ADR-0022
+d1	DONE	TestContextListPoolSliceSurvival
+d2	DONE	stateBlockSize=512
+d3	DONE	gctrace verdict in ADR-0022
+d4	DONE	actEnd unexported
+d5	DONE	addTran on *STree
+d9	OPEN	clear() efficiency unverified
+d12	OPEN	100k benchmark never run
+e1	DONE	pool guards
+e2	DONE	512 from benchmark data
+e3	DONE	race green
+e4	DONE	pprof in ADR-0022
+e5	DONE	actEnd unexported
+e6	DONE	ADR-0022
+e7	DONE	perf stat A/B
+e8	DONE	capacity validated
+e9	OPEN	micro-assumption unverified
+e10	WONT	ownership contract replaced it
+e11	DONE	rationale in ADR-0022
+e12	OPEN	100k combined benchmark absent
+e13	DONE	ownership guards
+f1	DONE	pool tests
+f2	DONE	race in CI
+f3	DONE	512 chosen
+f4	DONE	ADR-0022
+f5	DONE	actEnd unexported
+f6	DONE	pprof in ADR-0022
+f7	DONE	gctrace non-issue
+f8	DONE	sorted []tran
+f9	WONT	int32 rejected
+f10	WONT	[]Pos pool rejected
+f11	DONE	syntax.go arena
+f12	WONT	T14 NO-GO
+f13	SUPERSEDED	root walks tran slice
+f14	SUPERSEDED	trans as values
+f15	OPEN	layout pinned in tests only
+f16	DONE	pinned A/B
+f17	DONE	alloc budgets
+f18	DONE	alloc_budget_test.go
+f19	OPEN	no MemStats benchmarks
+f20	DONE	performance.yml + gate
+f21	DONE	realworld-cli.md
+f22	DONE	perf stat A/B
+f23	DONE	512 benchmarked choice
+f24	DONE	addTran method
+f25	OPEN	no stateArena Reset
+f26	DONE	stateArena doc comment
+f27	OPEN	maxStackKeys package const
+f28	DONE	OWNERSHIP CONTRACT
+f29	OPEN	no //go:noinline
+f30	OPEN	still recursive
+f31	SUPERSEDED	sorted-on-insert
+f32	OPEN	no xxHash
+f33	OPEN	no SIMD sort
+f34	OPEN	lock-free untried
+f35	SUPERSEDED	[]tran slices
+f36	OPEN	no Match pool
+f37	SUPERSEDED	TokenValue int32
+f38	DONE	AGENTS + ADR-0022
+f39	DONE	v3_notes.md
+f40	DONE	CHANGELOG overhaul entry
+f41	WONT	not warranted
+f42	DONE	data-threading rationale
+f43	OPEN	ROADMAP, unstarted
+f44	OPEN	unrouted
+f45@GOMAXPROCS	DONE	pinned A/B
+f45@WalkTransAllocs	OPEN	ROADMAP
+f46	OPEN	ROADMAP
+f47	OPEN	unrouted
+f48	WONT	sync.Pool already per-P
+f49	OPEN	ROADMAP
+g1	DONE	512 chosen with data
+g2	DONE	actEnd unexported
+g3	DONE	gctrace non-issue
+FILE docs/status/2026-08-16_04-23_suffixtree-followup-slice-transitions-race-fixes.md
+CLASS KEEP
+ITEMS:
+a1	DONE	pool tests
+a2	DONE	race fixed + clear_race_test
+a3	DONE	actEnd unexported; addTran method
+a4	DONE	distribution in ADR-0022
+a5	DONE	pprof in ADR-0022
+a6	DONE	sorted []tran slices
+a7	DONE	512 chosen
+a8	DONE	alloc budgets
+a9	DONE	gctrace verdict
+a10	DONE	ADR/CHANGELOG/AGENTS swept
+a11	DONE	gates green
+a12	DONE	v3 baselines committed
+c1	DONE	serial() arena (T13)
+c2	WONT	T14 NO-GO
+c3	DONE	pinned A/B
+c4	DONE	performance.yml + gate
+c5	DONE	realworld-cli.md
+c6	DONE	perf stat A/B
+c7	DONE	wave2 flake green
+c8	WONT	not warranted
+c9	OPEN	xxHash/SIMD/pool unrouted
+d1	DONE	test race fixed
+d2	DONE	ADR-0022 corrected to 44
+d3	DONE	process lesson
+d4	DONE	process lesson
+d5	DONE	process lesson
+e1	DONE	master-plan T3 audit
+e2@flake	DONE	wave2 flake green
+e3@benchhelper	DONE	retained as used helper
+e4@bLoop	DONE	b.Loop() sweep
+f1	DONE	wave2 flake green
+f2	DONE	T3 audit executed
+f3	DONE	retained as bench helper
+f4	DONE	b.Loop() done 2026-09-28
+f5	DONE	bench-realworld.sh
+f6	DONE	syntax.go arena
+f7	WONT	T14 NO-GO
+f8	DONE	pinned protocol in README
+f9	DONE	benchstat gate + budgets
+f10	DONE	perf stat A/B
+f11	DONE	coverage baseline + script
+f12	DONE	linear_scan_boundary_test
+f13	DONE	high-fanout seeds
+f14	DONE	tran_parity + property tests
+f15	DONE	race every run
+f16	DONE	clear_race_test.go
+f17	OPEN	getAll fallback duplication
+f18@doc	DONE	findtran.go comment
+f18@magic	DONE	named constants
+f20	DONE	AGENTS Workers bullet corrected
+f21	WONT	int32 rejected
+f22	OPEN	no Match pool; unrouted
+f23	OPEN	ROADMAP, unstarted
+f24	OPEN	unrouted
+f25	OPEN	unrouted
+g1	WONT	history settled
+g2	DONE	race every run
+g3	DONE	perf stat A/B
+FILE docs/planning/2026-08-16_04-27_measure-first-trust-and-signal-master-plan.md
+CLASS ARCHIVE
+MOVE archived
+BANNER Master plan fully resolved 2026-09-28 audit: 24 of 26 tasks executed, T7 and T14 no-go-verified by measurement (TODO_LIST header records both); nothing open.
+ITEMS:
+T1	DONE	docs/benchmarks/realworld-cli.md verdict
+T2	DONE	pinned/unpinned A/B 2026-09-22
+T3	DONE	TESTING.md:117 documents audit
+T4	DONE	cache/clear_race_test.go
+T5	DONE	flake gate + ci.yml race
+T6	DONE	scripts/check-alloc-regression.sh
+T7	WONT	covered by raii-defer/defer-call; zero benefit
+T8	DONE	executed per 09-28 audit
+T9	DONE	executed per 09-28 audit
+T10	DONE	corpus re-validation 2026-09-23
+T11	DONE	stats cache metrics (cmd/stats.go)
+T12	DONE	exclude-pattern zero-match warning
+T13	DONE	serial() arena
+T14	WONT	NO-GO ~0.03% of run allocs
+T15	DONE	syntax/alloc_budget_test.go
+T16	DONE	docs/benchmarks/coverage-baseline.txt
+T17	DONE	TTY auto-write resolution
+T18	DONE	stable anchor IDs
+T19	DONE	b.Loop() sweep
+T20	DONE	tran_parity + property tests
+T21	DONE	high-fanout fuzz seeds
+T22	DONE	linear_scan_boundary_test + baseline
+T23	DONE	perf stat A/B
+T24	DONE	findtran comment + named constants
+T25	DONE	TODO_LIST/CHANGELOG rebuilt 09-29
+T26	DONE	PARKED tier with triggers
+s5#1	WONT	parked; trigger unmet
+s5#2	WONT	parked; trigger unmet
+s5#3	WONT	parked; trigger unmet
+s5#4	WONT	parked; trigger unmet
+s5#5	WONT	parked; trigger unmet
+s5#6	WONT	parked; trigger unmet
+s5#7	WONT	parked; trigger unmet
+FILE docs/planning/2026-09-24_18-04_artdupl-core-lane-buildflow-inversion.md
+CLASS KEEP
+FIX **BuildFlow has NO art-dupl provider — never existed** ||= art-dupl provider LIVE in BuildFlow core lane since 2026-09-25 (docs/status/2026-09-25_09-43).
+ITEMS:
+1@release-tag	DONE	v0.7.1 tagged 2026-09-24
+2@blank-import	DONE	core lane live 2026-09-25
+3@jscpd	DONE	jscpd demoted 2026-09-25
+4@Ghost	DONE	ghost purge 2026-09-25
+5@E2E	DONE	executed 09-25
+6@Core-lane	DONE	09-43 B-track executed
+7@Quality	DONE	09-43 C1-C6 executed
+8@BuildFlow	DONE	A1-A8 executed
+9@Upstream + fleet	OPEN	D3 post-soak; D6 fleet open
+10@Process closure	DONE	TODO_LIST harvested; lessons 9960540
+A2	DONE	v0.7.1 tagged
+A1	DONE	preflight 2026-09-25
+A3	DONE	blank import live
+A4	DONE	TestArtDuplProviderRegistered
+A5	DONE	jscpd demoted
+A6	DONE	ghost purge
+A7	DONE	E2E verified
+A8	DONE	A1-A8 executed
+B6	DONE	multi-module fixture
+B2	DONE	concurrency tests
+B1	DONE	internal/gitignore B1
+C1	DONE	jsonv2gate; CHANGELOG 0.8.0
+B7	DONE	SDK dogfood + ledger
+B5	DONE	ADR-0025
+B3	DONE	650ms benchmark; no Timeout field
+C3	DONE	self-scan.sh + CI job
+C5	DONE	TODO_LIST harvested
+D1	DONE	PR #41 merged; v1.14.0; 2026-10-05
+B4	DONE	HealthCheck + parity tests
+C2	DONE	no corrupted claims persist
+C4	DONE	both steps skipped; pin survives
+C6	DONE	lessons 9960540
+D2	DONE	budget 1460 verified
+D4	DONE	README toolsdk section
+D3	OPEN	post-soak open
+D6	OPEN	#4/#18/#20 owner-gated
+D5	DONE	in-repo slice DONE v0.8.0
+g1@BuildFlow-auth	DONE	executed 2026-09-25
+g2@threshold-knob	DONE	toolsdk v1.14.0 shipped
+g3@tag-first	DONE	v0.7.1/v0.7.2 tagged
+FILE docs/planning/2026-09-28_21-57_SUPERB-docs-health-completion-plan.md
+CLASS KEEP
+FIX **Tally: 48 DONE · 1 ROUTED (→v2 M14) · 1 GATED (g1) — 50/50 dispositioned.** ||= 47 DONE · 2 OPEN (M10 07-25 review annotation, g1) · 1 ROUTED.
+ITEMS:
+M00	DONE	scripts/annotate-status-items.py persisted
+M01	DONE	09-25 report struck
+M02	DONE	TODO_LIST cites T7/T14 no-gos
+M03	DONE	56/64 flags; counts gated
+M04	DONE	archived/README regimes+policy
+M05	DONE	CHANGELOG sections + link defs
+M06	DONE	WON'T-IMPLEMENT header verified
+M07	DONE	wave reports annotated/archived
+M08	DONE	count gate canary-verified
+M09	DONE	July batch annotated
+M10	OPEN	07-25 review lacks annotation
+M11	DONE	August batch annotated
+M12	DONE	September batch annotated
+M13	DONE	freshness script + AGENTS cadence
+M14	DONE	zero dead links
+M15	DONE	June batch annotated
+M16	DONE	subdirectory banners
+M17	OPEN	gated on unanswered g1
+M18	DONE	website flag counts fixed
+M19	DONE	rubric ≈85; DOMAIN_LANGUAGE terms
+M20	DONE	ledger + race green
+5@g2-confirm	OPEN	owner confirmation unanswered
+27@g1	OPEN	retrofit waves await Lars
+33@push	OPEN	SKILLS push owner-gated
+29@renders	OPEN	renders retirement deferred
+FILE docs/planning/2026-09-28_23-59_empty-snapshot-prevention-proposal.md
+CLASS KEEP
+ITEMS:
+A@daemon-guard	OPEN	daemon config outside repo
+B@AGENTS-convention	OPEN	no skeleton convention in AGENTS
+C@snapshot-gate	OPEN	no H1 gate in freshness script
+D@tripwire	DONE	scripts/check-intent.sh canary-verified
+F024@enforcement	OPEN	placement is Lars's call
+FILE docs/planning/2026-09-29_01-10_SUPERB-v2-harden-harness-unblock-ship.md
+CLASS KEEP
+FIX **Status:** Planning — awaiting execution ||= EXECUTED 2026-09-29 through M22 (close-out docs/status/2026-09-29_05-40); gated residues remain.
+ITEMS:
+M00	DONE	header flipped; accounting exists
+M01	DONE	decision-sheet exists
+M02	DONE	scripts/check-boundary.sh
+M03	DONE	annotator hardened; 22 assertions
+M04	DONE	check-intent.sh canary-verified
+F024@enforcement	OPEN	placement undecided
+M05	OPEN	tag+push owner-gated
+M06	DONE	equivalence pin tests
+M07	DONE	cancellation/vanished/walk-error tests
+M08	DONE	TestHTMLOutputGoldenWithCloneGroup
+M09	DONE	Explanation struct in JSON
+M10	DONE	SARIF rules carry patterns
+M11	DONE	CopyToBuffer error surfaced
+M12	DONE	rich-text BDD scenario
+M13	DONE	count-gate extensions
+M14	OPEN	SKILLS 2514a55 push owner-gated
+M15	DONE	SDK_DESIGN ADR-0025 refresh
+M16	DONE	fuzz seed gate
+M17	OPEN	9-consumer sweep external
+M18	OPEN	windows confirm pending (TODO #4)
+M19	DONE	memo file exists
+M20	DONE	branch-protection recipe complete
+M21	DONE	AGENTS Pareto + CI table + LSP note
+M22	OPEN	two red CI lanes pending
+FILE docs/planning/2026-09-29_02-30_decision-sheet.md
+CLASS KEEP
+ITEMS:
+g1	OPEN	question unanswered by owner
+g2	OPEN	question unanswered by owner
+g3	OPEN	question unanswered by owner
+binfmt	OPEN	question unanswered by owner
+v080	OPEN	question unanswered by owner
+FILE docs/planning/2026-09-29_02-45_v0.8.0-release-park.md
+CLASS KEEP
+ITEMS:
+2.1@flake bump	OPEN	awaits owner go
+2.2@release commit	OPEN	awaits owner go
+4@tag+push	OPEN	owner-gated; no tag exists
+FILE docs/planning/2026-09-29_03-10_go-paperless-release-memo.md
+CLASS KEEP
+ITEMS:
+release@v0.4.3	OPEN	untagged; owner-gated (#20)
+6@verify rendered	OPEN	part of unexecuted sequence
+FILE docs/reviews/2026-08-15_22-44_brutal-self-review.md
+CLASS ARCHIVE
+MOVE reviews
+ITEMS:
+1@pre-commit	DONE	skip_steps; flipflop documented
+2@cache stats	DONE	T11 stats subcommand
+3@coverage baseline	DONE	coverage-baseline.txt + script
+4@generics prefix	DONE	zero command-line-arguments hits
+5@Pending specs	DONE	no Pending: in features
+FILE docs/reviews/2026-07-25_17-35_brutal-self-review.md
+CLASS KEEP
+ITEMS:
+1@switch predicates	DONE	slices.Contains conversions
+2@withLock/diffStatTable	OPEN	diffStatTable accessors untested
+3@CI self-test gate	DONE	clone + self-analysis CI jobs
+4@sentinel audit	DONE	TestNoDuplicateErrorNewMessages
+Q4@type-models	WONT	deliberate low-ROI skip
+FILE docs/reviews/2026-06-20_06-50_brutal-self-review.md
+CLASS KEEP
+ITEMS:
+any:Fragment unification	DONE	no []byte Fragment in code
+any:Clone type consolidation	OPEN	ROADMAP 7→2-3 tracked
+any:Data→View rename	OPEN	unrouted
+Q4@coverage	DONE	coverage script + baseline
+Q7@ghost deletions	DONE	ghosts deleted
+Q10@duplicate sentinels	WONT	accepted decoupling pattern
+Q10@noOpLogger	WONT	accepted decoupling pattern
+FILE docs/status/2026-09-24_13-30_toolsdk-provider-go-output-verdict-jsonutil-restore.md
+CLASS KEEP
+FIX **the provider is shipped but not yet consumed end-to-end** ||= consumed end-to-end: BuildFlow blank-imports pkg/provider since 2026-09-25.
+ITEMS:
+2@parity	DONE	TestDetectEquivalenceWithSharedAdapter
+2@go-output	OPEN	owner verdict pending
+3@ghost	DONE	BuildFlow blank import live
+f3	DONE	equivalence pin test
+f9	DONE	TestGoModPinsPatchVersion
+f12	OPEN	daemon root-cause never done
+f13	OPEN	commit-time guard owner decision
+f15	WONT	metadataFor move rejected
+f16	DONE	ctx-cancellation test
+f17	DONE	vanished-file test
+f18	DONE	nonexistent-root test
+f19	DONE	walk-error policy test
+f20	DONE	multi-module fixture
+f24	DONE	green in both GOEXPERIMENT modes
+f25	DONE	SlashVariantsIgnored test
+f26	DONE	crawl-overhead benchmark
+f27	WONT	SDKVersion() rejected
+f28	DONE	findings golden test
+f29	DONE	version seam table test
+f33	SUPERSEDED	options channel shipped
+f34	OPEN	go-output verdict never verified
+f35	OPEN	conditional on f34
+f36	OPEN	owner ratification pending
+f37	OPEN	no finding output format
+f39	OPEN	no GOMAXPROCS; fixed workers
+f40	DONE	GeneratedContentFiltered test
+f41	OPEN	no version-alignment policy
+f42	OPEN	no provider BDD test
+f43	OPEN	absent from ROADMAP
+f44	DONE	M21 lint Pareto KEEP-all
+f45	DONE	pin gates green
+f46	DONE	workspace-scale benchmark
+f47	OPEN	DetectionMethod free string
+f48	OPEN	no naming conventions doc
+f50	OPEN	BuildFlow P7 ping untracked
+g3	OPEN	owner call unanswered
+FILE docs/status/2026-09-24_17-00_buildflow-artdupl-ghost-wiring-core-backup-verdict.md
+CLASS KEEP
+FIX **BuildFlow has NO art-dupl implementation — only ghost wiring — and its only live duplication detector is jscpd.** ||= BuildFlow has run art-dupl as its live Go+templ core detector since 2026-09-25; jscpd is the demoted non-Go backup.
+ITEMS:
+3@production	DONE	gitignore B1; ADR-0025; benchmark B3
+6@g3	OPEN	owner ratification pending
+f9	DONE	ghost purge landed
+f17	DONE	650ms; no Timeout field
+f19	DONE	audit ratchets green
+f20	OPEN	binaryHash invalidation unverified
+f22	DONE	SlashVariantsIgnored test
+f23	DONE	GeneratedContentFiltered test
+f25	DONE	StripEmptyMetadata test
+f30	OPEN	fleet json/v2 audit (#14)
+f32	DONE	13-30 annotated 09-28
+f34	DONE	lessons 9960540
+f35	DONE	A1 preflight executed
+f36	DONE	gotcha #73 addendum
+f37	DONE	budget 1460 live
+f41	DONE	docs --check green
+f42	OPEN	gotcha #73 re-run unevidenced
+f43	OPEN	jscpd config note absent
+f44	OPEN	owner
+f45	DONE	PR #41 merged
+f46	DONE	Timeout verdict + HealthCheck
+f49	OPEN	SkipDirNames parity undocumented
+f50	OPEN	D3 fleet query post-soak
+g2	DONE	superseded — knob merged v1.14.0
+FILE docs/status/2026-09-25_09-43_core-lane-live-phase2-hardening-full-arc.md
+CLASS KEEP
+FIX The only red anywhere is environmental: `/run/binfmt` missing on this host blocks every sandboxed nix build ||= binfmt stopgapped 2026-09-28; remaining reds are the nix checks.test sandbox failure and the windows GC-crash lane.
+ITEMS:
+2@push	DONE	BuildFlow pushed 2026-09-28
+3@binary	OPEN	PATH binary stale; switch pending
+4@phase3	DONE	D1/D2 closed in TODO_LIST
+5@D5	OPEN	v2 test importers tolerated (#14)
+6@B3	DONE	650ms / 295MB measured
+1@D1	DONE	PR #41 merged; v1.14.0
+2@D2	DONE	budget 1460 live
+3@D3	OPEN	post-soak open
+4@D6	OPEN	fleet items open
+5@fleet	OPEN	no second consumer
+6@README	OPEN	lane-split note absent
+f2	DONE	vendorHash resolved
+f4	OPEN	PATH binary old
+f5	OPEN	BuildGate red (owner)
+f6	DONE	D2 budget live
+f7	DONE	PR #41 merged
+f8	DONE	650ms; no Timeout field
+f9	OPEN	HealthCheck helper unfiled
+f10	DONE	Description documents policy
+f13	OPEN	gotcha #73 re-baseline
+f14	DONE	consistency checks green
+f15	OPEN	result-cache invalidation
+f16	OPEN	rollout recipe unwritten
+f17	OPEN	D3 post-soak
+f18	OPEN	9 consumers unswept
+f19	OPEN	fleet Separator sweep
+f20	OPEN	owner (#18)
+f21	OPEN	owner (#20)
+f22	OPEN	#4 confirm pending
+f23	OPEN	threshold sweep unevidenced
+f24	OPEN	lane-split announcement absent
+f25	OPEN	alias decision unevidenced
+f26	OPEN	v2 importers tolerated
+f27	DONE	baseline+config_migrate migrated
+f29	DONE	workspace benchmark
+f32	OPEN	no overlap pin test
+f33	DONE	E2E fixture recipes
+f34	DONE	SDK_DESIGN ADR-0025
+f37	SUPERSEDED	env-gated benchmark instead
+f38	OPEN	filtered-count idea unshipped
+f39	OPEN	AST-ratchet idea
+f40	OPEN	symbol pre-write check
+f41	DONE	TESTING.md fixture rule
+f43	OPEN	home-manager activation
+f44	WONT	guards held
+f45	OPEN	binfmt PR owner-gated
+f46	DONE	TODO_LIST rewritten 09-29
+f47	OPEN	verify-config idea
+f48	OPEN	Description lacks CHANGELOG link
+1@pushg	DONE	pushed 2026-09-28
+2@binfmt	OPEN	owner decision pending
+3@policy	OPEN	owner crawl policy call
+FILE docs/status/2026-09-28_23-50_superb-execution-m00-m11-landed.md
+CLASS KEEP
+FIX 12 of 21 M-tasks complete, 1 in flight, 8 remaining (1 user-gated) ||= all 21 M-tasks complete; M12-M20 closed 2026-09-29 (docs/status/2026-09-29_00-54).
+ITEMS:
+1@M12	DONE	186 verdicts applied
+3@M13	DONE	M13-M20 closed 09-29
+1@cM13	DONE	freshness script + cadence
+2@cM14	DONE	zero dead links
+3@cM15	DONE	June batch ~630 verdicts
+4@cM16	DONE	nine subdirectories bannered
+5@cM18	DONE	website flags 43→56
+6@cM19	DONE	rubric ≈85; 8 terms
+7@cM20	DONE	ledger + race + push
+f1	DONE	M12 applied
+f2	DONE	race green
+f3	DONE	freshness script exists
+f4	DONE	AGENTS cadence bullet
+f5	DONE	empty-snapshot proposal landed
+f6	DONE	annotator refuses open verdicts
+f7	OPEN	spec-builder mode unbuilt
+f8	DONE	count gates added
+f9	OPEN	SKILLS push owner-gated
+f10	DONE	zero dead links
+f11	DONE	--timing documented
+f12	OPEN	website count-gate unwired
+f13	DONE	M15 June batch
+f14	DONE	M16 bannered
+f15	DONE	staleness README
+f16	DONE	boolblind settled
+f17	OPEN	M17 gated on g1
+f18	DONE	CONTRIBUTING nix-first
+f19	DONE	templates fixed
+f20	DONE	website flags 56
+f21	DONE	rubric ≈85
+f22	DONE	8 DOMAIN_LANGUAGE terms
+f23	DONE	full race green
+f24	DONE	ledger appended
+f25	DONE	two-score health report
+f26	DONE	pushed; CI verified
+f27	DONE	HTML clone-group golden
+f28	OPEN	--explain structured JSON
+f29	OPEN	SARIF rule metadata
+f30	DONE	YAML config shipped
+f31	OPEN	CopyToBuffer io.Copy
+f32	OPEN	binfmt + binary + BuildGate
+f33	OPEN	BuildGate owner-gated
+f34	OPEN	gogenfilter sweep
+f35	OPEN	#4 windows confirm
+f36	OPEN	go-paperless owner-gated
+f37	OPEN	branch protection owner-gated
+f38	OPEN	rich-text preview E2E
+f39	OPEN	previewFromFile early-exit
+f40	DONE	D1 knob merged 2026-10-05
+f41	WONT	unconditional-warnings documented
+f42	OPEN	coverage floors decision
+f43	OPEN	corpus cadence entry absent
+f44	DONE	SDK_DESIGN refreshed
+f45	OPEN	CHANGELOG ADR cross-ref
+f46	DONE	M21 Pareto KEEP-all
+f47	OPEN	macOS test-guards audit
+f48	DONE	M21 CI table
+f49	OPEN	count-gate mention absent
+f50	OPEN	post-v0.8.0 refresh gate
+1@g1	OPEN	owner
+2@g2	OPEN	owner confirmation pending
+3@g3	OPEN	owner
+FILE docs/status/2026-09-29_00-54_superb-complete-m12-m20-jsonutil-catch.md
+CLASS KEEP
+ITEMS:
+1@50	DONE	plan §10 accounting
+2@header	DONE	plan flipped EXECUTED
+3@M06	WONT	deviation documented
+4@CI	DONE	per-job green verified
+1@cM17	OPEN	g1 owner-gated
+2@cupstream	OPEN	SKILLS push owner-gated
+3@cfuzz	DONE	fuzz seed gate
+4@cwebsite	OPEN	website count-gate
+f1	DONE	plan header flipped
+f2	DONE	§10 accounting
+f3	OPEN	dup-key loader check
+f4	OPEN	--verify unevidenced
+f5	DONE	check-intent.sh exists
+f6	DONE	check-boundary.sh exists
+f7	OPEN	website flag gate
+f8	DONE	count gates exist
+f9	DONE	fuzz seed gate
+f10	OPEN	still warn-only
+f11	OPEN	SKILLS push owner-gated
+f12	OPEN	spec-builder unbuilt
+f13	OPEN	g1 owner
+f14	OPEN	g2 confirm owner
+f15	OPEN	g3 BuildGate owner
+f16	OPEN	binfmt owner (hash done)
+f17	OPEN	crawl policy decision
+f18	OPEN	v0.8.0 owner-gated
+f19	DONE	knob merged 2026-10-05
+f20	DONE	D2 budget live
+f21	OPEN	D3 post-soak
+f22	DONE	test-gap bundle landed
+f23	DONE	HTML clone-group golden
+f24	OPEN	--explain
+f25	OPEN	SARIF metadata
+f26	DONE	YAML shipped
+f27	OPEN	CopyToBuffer
+f28	OPEN	rich-text preview E2E
+f29	OPEN	previewFromFile scanner
+f30	OPEN	#4 confirm run
+f31	OPEN	go-paperless owner
+f32	OPEN	branch protection owner
+f33	OPEN	gogenfilter sweep
+f34	OPEN	Separator fleet
+f35	OPEN	ROADMAP watch mode
+f36	OPEN	ROADMAP init scaffolder
+f37	OPEN	ROADMAP --diff-baseline
+f38	OPEN	ROADMAP normalizer scoping
+f39	WONT	major-version window only
+f40	OPEN	i18n low
+f41	OPEN	--format table low
+f42	WONT	ADR-0025 demand-gated
+f43	OPEN	coverage floors
+f44	DONE	SDK_DESIGN refreshed
+f45	OPEN	CHANGELOG ADR cross-ref
+f46	DONE	M21 Pareto KEEP-all
+f47	DONE	M21 CI table
+f48	DONE	M21 LSP hygiene
+f49	OPEN	refresh after next release
+f50	OPEN	scheduled 2026-10-28
+1@tripwire	OPEN	owner (g2 open)
+2@g1third	OPEN	owner third ask
+3@g2g3	OPEN	owner
+FILE docs/status/2026-09-29_11-34_toolsdk-prototype-windows-root-causes.md
+CLASS KEEP
+ITEMS:
+1@Lint	DONE	fix committed; pushed
+1@Nix	OPEN	checks.test sandbox failure open
+2@PR41	DONE	PR #41 merged; v1.14.0
+3@ledger	OPEN	ledger lacks #4/#5 entries
+4@push	DONE	in pushed history
+1@v080	OPEN	owner-gated
+2@gopaperless	OPEN	owner-gated (#20)
+3@branch	OPEN	owner-gated (#18)
+4@gogenfilter	OPEN	9 consumers unswept
+5@fleetjson	OPEN	TODO_LIST #14
+6@separator	OPEN	TODO_LIST #15
+7@D3	OPEN	post-soak
+8@rollout	OPEN	no second consumer
+9@train	OPEN	BuildFlow mapping open
+10@BFdisp	OPEN	BuildFlow dispositions open
+11@TESTING	OPEN	no windows checklist
+12@skips	DONE	skips removed; 2 justified
+f1	DONE	wsl fix in tree
+f2	OPEN	checks.test open (M68)
+f3	DONE	merged
+f4	DONE	v1.14.0 tagged
+f5	DONE	cherry-picked + tests
+f6	OPEN	ledger entry missing
+f7	OPEN	no pre-push script
+f8	OPEN	#4 confirm pending
+f9	OPEN	commit guard decision
+f10	OPEN	TODO #16/#17 loose
+f11	OPEN	owner
+f12	OPEN	owner
+f13	OPEN	gated on v0.8.0
+f14	OPEN	BuildFlow local-ahead
+f15	OPEN	profile swap pending
+f16	OPEN	telemetry max post-soak
+f17	OPEN	go-filewatcher first
+f18	OPEN	fleet jsonv2
+f19	OPEN	fleet Separator
+f20	OPEN	post-soak
+f21	OPEN	next consumer
+f22	OPEN	owner
+f23	OPEN	T18 mapping
+f24	OPEN	doc.go example unevidenced
+f25	WONT	YAGNI deliberate
+f26	OPEN	stale html in go-finding
+f27	OPEN	stash re-check
+f28	OPEN	branches unpruned
+f29	OPEN	tied to sandbox red
+f30	WONT	cosmetic; guard is the fix
+1@g1	OPEN	owner
+2@g2	OPEN	owner
+3@g3	OPEN	owner
+FILE docs/status/2026-07-01_01-34_post-execution-sprint.md
+CLASS KEEP
+FIX Items still genuinely open: T25 (printer split), T24 (branded NodeType), T32 (watch mode), T38/T39 (TypeScript/Python). ||= T25 shipped in v0.5.0 (printer split); open: T24, T32, T38/T39.
+ITEMS:
+b@T19	WONT	Inline select equally correct
+b@T28	DONE	printer/sort_unified.go factory
+b@Lint	DONE	106 linters 0 findings
+c@T22	DONE	domain/clone_node.go
+c@T23	DONE	domain/clone_ref.go
+c@T25	DONE	CHANGELOG 0.5.0 printer split
+c@T16	WONT	templ-generated HTML; split moot
+c@T24	OPEN	TODO_LIST DEFERRED
+c@T26	WONT	fang v1.0.0 retained
+c@T29	DONE	94b5205 parallel+singleflight
+c@T31	DONE	ADR-0022 slice layout
+c@T17	WONT	coherent switch; splitting adds dispatch
+c@T32	OPEN	ROADMAP watch mode
+c@T38	OPEN	ROADMAP TypeScript
+c@T39	OPEN	ROADMAP Python
+d1	OPEN	ROADMAP clone-type consolidation
+d2	DONE	actionability on CloneNode
+d3	DONE	ADR-0024 v1 API
+e1	DONE	T22 shipped
+e2	DONE	T23 CloneRef embedded
+e3	DONE	ctx-aware walk
+e4	DONE	9 race tests
+e5	DONE	perf_regression_test + workflow
+e6	DONE	version-mismatch warning
+e7	DONE	config_migrate shim
+f1	DONE	CloneNode DTO
+f2	DONE	perf gates
+f3	DONE	race tests + CI
+f4	OPEN	TODO_LIST DEFERRED
+f5	DONE	clone_ref.go
+f6	OPEN	ROADMAP watch mode
+f7	DONE	config_migrate.go
+f8	DONE	0.5.0 printer split
+f9	DONE	sort_unified factory
+f10	WONT	fang v1.0.0
+f11	DONE	ADR-0010/0024
+f12	DONE	singleflight
+f13	DONE	ADR-0022
+f14	OPEN	ROADMAP TS
+f15	OPEN	ROADMAP Python
+f16	DONE	ctx checks
+f17	OPEN	TODO_LIST facade
+f18	DONE	version-mismatch warning
+f19	DONE	shared groupByHash
+f20	WONT	cohesive registry; superseded
+f21	WONT	single switch; skip rationale
+f22	DONE	pre-commit template
+f23	WONT	inline select fine
+f24	DONE	106/0
+f25	DONE	workflow template fixed
+g	OPEN	owner platform question
+FILE docs/status/2026-07-01_04-59_post-dto-decoupling.md
+CLASS KEEP
+FIX T25 (printer split) and T24 (branded NodeType) remain deferred ||= T25 shipped in v0.5.0; only T24 remains deferred.
+ITEMS:
+b@T25	DONE	0.5.0 printer split
+c@T25	DONE	0.5.0 printer split
+c@T36	DONE	perf_regression_test
+c@T23	DONE	clone_ref.go
+c@T28	DONE	sort_unified factory
+c@T18	DONE	shared groupByHash
+c@T41	DONE	ctx-aware walk
+c@T24	OPEN	TODO_LIST DEFERRED
+c@T32	OPEN	ROADMAP watch mode
+c@T38T39	OPEN	ROADMAP TS/Python
+e1	DONE	printer split shipped
+e2	DONE	perf gates + alloc-gate
+e3	DONE	CloneRef embedded
+e4	DONE	templates validated; deploy live
+f1	DONE	printer split
+f2	DONE	perf_regression_test
+f3	DONE	clone_ref.go
+f4	DONE	sort_unified.go
+f5	DONE	groupByHash helpers
+f6	DONE	ctx walk
+f7	OPEN	TODO_LIST DEFERRED
+f8	DONE	deploy-site live
+f9	DONE	pre-commit + install script
+f10	WONT	inline select fine
+f11	DONE	version-mismatch warning
+f12	DONE	config_migrate
+f13	DONE	ADR-0008
+f14	DONE	website detection guide
+f15	DONE	dependabot gomod weekly
+f16	DONE	collapse buttons
+f17	OPEN	ROADMAP watch mode
+f18	OPEN	ROADMAP TS
+f19	OPEN	ROADMAP Python
+f20	DONE	sendCtx streaming
+f21	DONE	SARIF rule properties
+f22	DONE	0.7.0 LRU + hysteresis
+f23	WONT	fang v1.0.0
+f24	DONE	ADR-0010/0024
+f25	OPEN	TODO_LIST facade
+g	OPEN	owner platform question
+FILE docs/status/2026-07-01_07-06_full-todo-sprint.md
+CLASS KEEP
+FIX **Status:** Assessed — requires interface inversion. ||= DONE 2026-07-26: printer/actionability + printer/stats sub-packages shipped in v0.5.0.
+ITEMS:
+e1	DONE	printer split shipped
+e2	SUPERSEDED	alloc-gate budgets shipped
+e3	OPEN	collapse state unpersisted
+e4	WONT	printer-internal; low value
+e5	DONE	6 edge-case tests
+f1	DONE	0.5.0 printer split
+f2	OPEN	ROADMAP watch mode
+f3	OPEN	ROADMAP TS
+f4	OPEN	ROADMAP Python
+f5	OPEN	TODO_LIST branded NodeType
+f6	DONE	sendCtx shipped
+f7	DONE	0.7.0 hysteresis
+f8	WONT	low value
+f9	DONE	config shim tests
+f10	OPEN	collapse state unpersisted
+f11	DONE	website guide
+f12	SUPERSEDED	alloc-gate budgets
+f13	WONT	fang v1.0.0
+f14	DONE	ADR-0010/0024
+f15	OPEN	TODO_LIST facade
+f16	OPEN	TODO_LIST facade
+f17	OPEN	windows stdin cancellation (done; confirm pending)
+f18	DONE	ADR-0022
+f19	DONE	per-pattern SARIF rules
+f20	DONE	--diff-report shipped
+f21	WONT	--since removed; diff-report supersedes
+f22	DONE	setup-go caching
+f23	DONE	ADR-0027
+f24	DONE	SDK demo example
+f25	WONT	--timing + baselines suffice
+g	OPEN	owner platform question
+FILE docs/status/2026-07-03_03-25_post-deep-review.md
+CLASS KEEP
+FIX 155 items marked done, 10 pending ||= TODO_LIST rewritten open-work-only (2026-09-29); stale entries purged.
+ITEMS:
+B@T25	DONE	0.5.0 printer split
+B@patterns	DONE	37 patterns corpus-tuned
+B@profile	WONT	hidden experimental; --timing instead
+B@TODO	DONE	TODO_LIST rewritten 09-29
+C@T25	DONE	0.5.0 split
+C@T24	OPEN	TODO_LIST DEFERRED
+C@facade	OPEN	TODO_LIST import-cycle
+C@git-diff	SUPERSEDED	--diff-report shipped
+C@SIMD	WONT	xxh3 already SIMD
+C@hybrid	DONE	ADR-0022
+D@jscpd	DONE	art-dupl core lane live
+D@FEATURES	DONE	fixed 07-13 audit
+D@TODO	DONE	fixed 07-13 audit
+D@uncommitted	DONE	committed; 0.5.0 cut
+D@7types	OPEN	ROADMAP consolidation
+e1	DONE	0.5.0 split
+e2	OPEN	ROADMAP consolidation
+e3	OPEN	8 sort.Slice sites remain
+e4	OPEN	TODO_LIST facade
+e5	OPEN	TODO_LIST DEFERRED
+e6	OPEN	unrouted; string enum
+e7	DONE	sarif-validate + go-finding test
+e8	DONE	edge-case tests
+e9	DONE	0.8.0 HTML golden
+e10	DONE	bdd filter features
+e11	WONT	alloc-gate methodology
+e12	OPEN	unrouted; HTML in-memory
+e13	WONT	arena shipped; pooling no-go
+e14	DONE	07-13 audit fix
+e15	DONE	TODO_LIST rewritten
+e16	DONE	DOMAIN_LANGUAGE documents override
+f1	DONE	07-13 audit
+f2	DONE	TODO_LIST rewritten
+f3	DONE	committed; releases cut
+f4	DONE	sarif-validate check
+f5	DONE	0.8.0 golden test
+f6	OPEN	sort.Slice 8 sites
+f7	DONE	tests shipped
+f8	OPEN	unrouted
+f9	DONE	bdd filter features
+f10	WONT	alloc-gate methodology
+f11	DONE	0.5.0 split
+f12	OPEN	ROADMAP consolidation
+f13	OPEN	TODO_LIST facade
+f14	WONT	migration never adopted
+f15	DONE	SHA-256 test
+f16	WONT	arena superseded
+f17	DONE	sarif-validate + integration
+f18	SUPERSEDED	--diff-report shipped
+f19	OPEN	TODO_LIST DEFERRED
+f20	OPEN	unrouted
+f21	OPEN	ROADMAP TS/Python
+f22	OPEN	ROADMAP web UI
+f23	WONT	factory keys deterministic
+f24	DONE	ADR-0022
+f25	OPEN	ROADMAP suffix array
+G	OPEN	ROADMAP consolidation
+FILE docs/status/2026-07-09_15-10_semantic-noise-fixes.md
+CLASS KEEP
+ITEMS:
+B1	DONE	feedback marked IMPLEMENTED
+B2	DONE	CI green; releases cut
+C1	OPEN	ROADMAP floor never decided
+C2	OPEN	ROADMAP buildMatch
+C3	DONE	--min-lines; ADR-0011
+C4	DONE	HOW_TO_USE default 5
+E1	DONE	ADR-0010
+E2	DONE	flake GOEXPERIMENT
+E3	DONE	ADR-0024 optional
+E4	OPEN	ROADMAP buildMatch
+E5	OPEN	still linear scan
+E6	DONE	priority order documented
+E7	WONT	superseded by emission pins
+E8	DONE	e2e actionability tests
+E9	DONE	TempDir fixtures
+E10	DONE	HOW_TO_USE default 5
+E11	DONE	feedback IMPLEMENTED
+F1	DONE	ADR-0010 + SemanticError
+F2	DONE	devShell GOEXPERIMENT
+F3	DONE	releases cut
+F4	OPEN	ROADMAP undecided
+F5	OPEN	ROADMAP
+F6	WONT	superseded by pins
+F7	DONE	actionability tests
+F8	DONE	HOW_TO_USE
+F9	DONE	feedback IMPLEMENTED
+F10	DONE	106/0
+F11	DONE	--min-lines flag
+F12	OPEN	still linear
+F13	DONE	priority order
+F14	WONT	superseded by pins
+F15	DONE	hand-curated config
+F16	DONE	dependabot gomod
+F17	WONT	isTestFile removed
+F18	DONE	fixture-based tests
+F19	DONE	15-project validation
+F20	DONE	same validation
+F21	DONE	flake 7/7 green
+F22	DONE	nix build green
+F23	DONE	committed; releases cut
+F24	OPEN	ROADMAP floor undecided
+F25	OPEN	ROADMAP presets
+F26	DONE	ordering documented
+F27	DONE	descriptors shipped
+F28	DONE	descriptors shipped
+F29	WONT	alpha-normalization covers
+F30	DONE	ADR-0027
+F31	DONE	baselines committed
+F32	OPEN	unrouted collision analysis
+F33	DONE	per-pattern SARIF rules
+F34	DONE	shipped
+F35	DONE	--no-actionability shipped
+F36	DONE	--explain shipped
+F37	WONT	function removed
+F38	DONE	ADR-0027
+F39	OPEN	unrouted dedup idea
+F40	OPEN	ROADMAP buildMatch
+F41	OPEN	unrouted flag idea
+F42	OPEN	unrouted flag idea
+F43	DONE	corpus tuning
+F44	DONE	perf bench test
+F45	OPEN	ROADMAP threshold cliff
+F46	OPEN	unrouted flag idea
+F47	OPEN	unrouted review
+F48	DONE	--disable-pattern shipped
+F49	OPEN	ROADMAP ML
+F50	DONE	ADR-0009
+G1	DONE	migration completed
+G2	OPEN	owner decision
+FILE docs/status/2026-07-09_15-51_semantic-noise-and-jsonv2-complete.md
+CLASS KEEP
+ITEMS:
+B1	DONE	AGENTS jsonv2 block
+B2	DONE	feedback IMPLEMENTED
+B3	DONE	HOW_TO_USE default 5
+B4	DONE	wire rules documented
+C1	OPEN	ROADMAP undecided
+C2	OPEN	ROADMAP buildMatch
+C3	DONE	--min-lines; ADR-0011
+C4	WONT	superseded by pins
+C5	DONE	bdd actionability
+C6	DONE	flake 7/7
+C7	DONE	nix build green
+C8	DONE	committed; releases cut
+E1	DONE	AGENTS conventions
+E2	DONE	feedback IMPLEMENTED
+E3	DONE	HOW_TO_USE updated
+E4	WONT	superseded by pins
+E5	DONE	e2e tests
+E6	DONE	wire rules verified
+E7	DONE	fixture tests
+E8	SUPERSEDED	ADR-0024 preserves zeros
+E9	DONE	0.7.1 88→0
+E10	DONE	ADR-0024
+E11	WONT	isTestFile removed
+E12	DONE	errors.AsType migration
+F1	DONE	AGENTS jsonv2 block
+F2	DONE	7/7 green
+F3	DONE	nix build green
+F4	DONE	committed
+F5	DONE	wire rules verified
+F6	WONT	superseded by pins
+F7	DONE	bdd actionability
+F8	OPEN	ROADMAP
+F9	OPEN	ROADMAP
+F10	DONE	feedback IMPLEMENTED
+F11	DONE	HOW_TO_USE updated
+F12	WONT	function removed
+F13	DONE	--min-lines shipped
+F14	WONT	function removed
+F15	OPEN	still linear
+F16	DONE	priority order
+F17	WONT	superseded by pins
+F18	DONE	hand-curated
+F19	DONE	dependabot gomod
+F20	DONE	wire rules
+F21	DONE	omitzero convention
+F22	DONE	per-pattern rules
+F23	DONE	race every flake
+F24	WONT	history settled
+F25	WONT	message accurate
+F26	DONE	baselines
+F27	OPEN	unrouted collision analysis
+F28	DONE	--explain shipped
+F29	DONE	--no-actionability shipped
+F30	OPEN	ROADMAP presets
+F31	OPEN	ROADMAP partial-match
+F32	OPEN	unrouted flag idea
+F33	DONE	15-project validation
+F34	DONE	perf bench
+F35	DONE	ADR-0010
+F36	DONE	ADR-0009
+F37	WONT	tags removed in 1.27
+F38	DONE	errors.AsType
+F39	OPEN	ROADMAP adjacent
+F40	OPEN	unrouted review
+F41	DONE	cross-file BDD
+F42	OPEN	ROADMAP ML
+F43	OPEN	unrouted flag idea
+F44	DONE	ADR-0016 + field
+F45	DONE	ADR-0027 + tests
+F46	WONT	lint clean
+F47	DONE	flake+CI set it
+F48	DONE	byte-compatible wire
+F49	DONE	ROADMAP watch item
+F50	WONT	reports carry resolutions
+G1	DONE	committed
+G2	WONT	function removed
+FILE docs/status/2026-07-11_14-27_post-buildflow-recovery.md
+CLASS KEEP
+ITEMS:
+b@AGENTS	DONE	banner updated AGENTS
+b@commit	DONE	committed 43362f9
+c@meta	DONE	flake meta.description
+c@LSP	WONT	AGENTS LSP hygiene
+c@steps	SUPERSEDED	core-lane inversion
+d1	DONE	flip-flop root-caused
+d2	DONE	guard documented
+e1	WONT	process note; nix mirror
+e2	DONE	AGENTS build commands
+e3	OPEN	nix-hash-fix re-verify
+e4	DONE	skip_steps
+e5	WONT	pragmatic micro
+e6	DONE	package-level table
+f1	DONE	43362f9
+f2	DONE	e007d62
+f3	DONE	meta.description
+f4	DONE	core lane live
+f5	DONE	update lane runs
+f6	WONT	disabled with rationale
+f7	WONT	disabled
+f8	WONT	disabled
+f9	DONE	gocyclo refactored
+f10	DONE	flake-managed lint
+f11	DONE	hand-curated
+f12	DONE	package-level table
+f13	WONT	centralized; micro
+f14	DONE	self-clean zero groups
+f15	WONT	unrouted micro
+f16	SUPERSEDED	jscpd demoted
+f17	SUPERSEDED	inversion restructured
+f18	SUPERSEDED	inversion
+f19	DONE	suite green
+f20	DONE	suite covers applyPatternLabel
+f21	DONE	behavior-preserving
+f22	DONE	race every flake
+f23	DONE	coverage gate + baseline
+f24	DONE	vendorHash notes
+f25	OPEN	nix-hash-fix
+f26	WONT	OOM machine-specific
+f27	DONE	meta.description
+f28	DONE	lint check exists
+f29	DONE	preBuild templ generate
+f30	DONE	07-13 audit
+f31	DONE	TODO_LIST current
+f32	DONE	ADR-0004 + patterns doc
+f33	DONE	TESTING GOEXPERIMENT documented
+f34	DONE	07-13 audit
+f35	DONE	dependabot gomod
+f36	DONE	gogenfilter v3.6.1
+f37	DONE	1.27.1 pinned
+f38	DONE	flake.lock updated
+f39	DONE	37 patterns tuned
+f40	OPEN	ROADMAP plugin architecture
+f41	DONE	leaf package
+f42	OPEN	unrouted typing idea
+f43	WONT	AGENTS LSP hygiene
+f44	OPEN	unrouted
+f45	DONE	arch-lint check
+f46	DONE	self-clean
+f47	DONE	budgets + baselines
+f48	DONE	errors.AsType
+f49	DONE	audits 07-24/09-28
+f50	DONE	justfile refs purged
+g1	WONT	decided: disabled + guard
+g2	DONE	root-caused; skip_steps
+FILE docs/status/2026-07-13_21-18_public-presence-overhaul.md
+CLASS KEEP
+ITEMS:
+b1	DONE	site rebuilt 08-10
+b2	DONE	badge removed
+b3	DONE	workflow upgraded
+b4	DONE	rebuilt
+b5	DONE	og/home.png + tag
+b6	WONT	website/.gitignore handles
+c1	DONE	2d3bc35
+c2	DONE	deployed
+c3	SUPERSEDED	pnpm workspace
+c4	DONE	html-validate in workflow
+c5	DONE	astro check in workflow
+c6	OPEN	ROADMAP Lighthouse CI
+c7	OPEN	ROADMAP budgets
+c8	DONE	rebuilt + deployed
+c9	OPEN	unrouted
+c10	DONE	count gate
+c11	WONT	superseded by migration
+c12	DONE	og image
+c13	DONE	stale docs archived
+d1	DONE	2d3bc35
+d2	SUPERSEDED	pnpm workspace
+d3	DONE	domain live
+d4	DONE	rebuilt + deployed
+d5	WONT	illustrative by design
+d6	WONT	website/.gitignore
+d7	WONT	intentional firebase.json
+e1	WONT	process note
+e2	DONE	OG image exists
+e3	DONE	count gate
+e4@stale-docs	DONE	archived
+e4@search	OPEN	ROADMAP sitemap/GSC
+e5	DONE	CONTRIBUTING just-free
+e6	WONT	micro
+e7	WONT	micro
+e8	WONT	micro
+e9	OPEN	unrouted
+e10	DONE	docs/archive/
+f1	DONE	2d3bc35
+f2	DONE	deployed
+f3	DONE	pnpm workspace
+f4	DONE	astro check in CI
+f5	DONE	rebuilt
+f6	DONE	rebuilt
+f7	DONE	rebuilt
+f8	DONE	deployed
+f9	DONE	domain live
+f10	DONE	og/home.png
+f11	DONE	og:image tag
+f12	DONE	html-validate in workflow
+f13	DONE	validation runs
+f14	OPEN	ROADMAP Lighthouse
+f15	OPEN	ROADMAP budgets
+f16	DONE	rebuilt
+f17	DONE	rebuilt
+f18	WONT	micro
+f19	DONE	rebuilt
+f20	WONT	superseded by rebuild
+f21	WONT	micro
+f22	DONE	count gate
+f23	WONT	badge pruned
+f24	DONE	removed
+f25	DONE	docs/archive/
+f26	WONT	micro
+f27	WONT	micro
+f28	DONE	count gate
+f29	DONE	count gate
+f30	DONE	golden/all-format tests
+f31	DONE	sarif-validate + integration
+f32	WONT	micro
+f33	DONE	examples_test compiles SDK
+f34	WONT	TROUBLESHOOTING canonical
+f35	OPEN	ROADMAP sitemap
+f36	OPEN	ROADMAP GSC
+f37	OPEN	unrouted
+f38	DONE	related-tools.mdx
+f39	DONE	GitHub metadata set
+f40	OPEN	ROADMAP awesome-go
+f41	DONE	USAGE archived
+f42	DONE	kept at root
+f43	DONE	docs/archive/
+f44	DONE	docs/archive/
+f45	DONE	replaced by PERFORMANCE.md
+f46	WONT	resolution banners exist
+f47	OPEN	ROADMAP website flake
+f48	DONE	html-validate in workflow
+f49	OPEN	ROADMAP preview channels
+f50	OPEN	ROADMAP website-dev
+g1	DONE	committed
+g2	DONE	archived
+FILE docs/status/2026-07-13_22-14_public-presence-complete-session.md
+CLASS KEEP
+ITEMS:
+b1	DONE	rebuilt 08-10
+b2	DONE	credentials migration complete
+b3	DONE	domain live
+b4	DONE	rebuilt
+b5	DONE	validation in CI
+b6	DONE	count gate
+c1	DONE	2d3bc35
+c2	DONE	deployed
+c3	DONE	domain configured
+c4	DONE	terraform applied
+c5	DONE	SSL provisioned
+c6	DONE	auth works
+c6@visual	DONE	rebuilt + deployed
+c7	DONE	rebuilt
+c8	OPEN	unrouted
+c9	OPEN	ROADMAP Lighthouse
+c10	DONE	og image
+c11	DONE	docs/archive/
+c12	DONE	CONTRIBUTING just-free
+c13	OPEN	ROADMAP preview channels
+c14	OPEN	ROADMAP website flake
+d1	DONE	committed
+d2	DONE	deployed
+d3	DONE	secret migration done
+d4	DONE	terraform applied
+d5	DONE	domain added
+d6	WONT	illustrative by design
+d7	DONE	examples_test.go
+e1	WONT	process note
+e2	DONE	rebuilt + deployed
+e3	DONE	examples_test.go
+e4	DONE	OG image + tags
+e5	DONE	count gate
+e6	DONE	docs/archive/
+e7	OPEN	continue-on-error still true (deploy-site.yml:52)
+e8	DONE	CONTRIBUTING just-free
+e9	OPEN	ROADMAP website flake
+e10	OPEN	owner decision
+f1	DONE	committed
+f2	DONE	committed
+f3	DONE	auth live
+f4	DONE	migration complete
+f5	DONE	pushed
+f6	DONE	site live
+f7	DONE	rebuilt
+f8	DONE	rebuilt
+f9	DONE	domain configured
+f10	DONE	applied
+f11	DONE	provisioned
+f12	DONE	domain live
+f13	OPEN	unrouted redirect config
+f14	DONE	og image
+f15	DONE	og:image tag
+f16	DONE	in workflow
+f17	DONE	in workflow
+f18	OPEN	continue-on-error still true
+f19	OPEN	ROADMAP Lighthouse
+f20	OPEN	ROADMAP budgets
+f21	DONE	rebuilt
+f22	DONE	rebuilt
+f23	WONT	superseded
+f24	WONT	micro
+f25	WONT	micro
+f26	DONE	count gate
+f27	WONT	badge pruned
+f28	DONE	removed
+f29	DONE	CONTRIBUTING just-free
+f30	DONE	docs/archive/
+f31	DONE	archived appropriately
+f32	WONT	banners exist
+f33	DONE	module path matches
+f34	DONE	count gate
+f35	DONE	count gate
+f36	DONE	goldens
+f37	DONE	sarif-validate + test
+f38	DONE	examples_test
+f39	WONT	TROUBLESHOOTING canonical
+f40	WONT	illustrative
+f41	OPEN	ROADMAP sitemap
+f42	OPEN	unrouted
+f43	OPEN	ROADMAP awesome-go
+f44	OPEN	ROADMAP sitemap
+f45	OPEN	ROADMAP preview channels
+f46	OPEN	ROADMAP website-dev
+f47	OPEN	ROADMAP Lighthouse
+f48	DONE	dependabot npm
+f49	OPEN	owner-gated
+f50	OPEN	ROADMAP Lighthouse
+g1	OPEN	owner Firebase decision
+g2	DONE	committed and deployed
+FILE docs/status/2026-07-13_22-27_docs-health-audit.md
+CLASS KEEP
+FIX The remaining `just` references ... are still open ||= RESOLVED: CONTRIBUTING just-free, MIGRATION_QUICK_START archived, stale SIMD docs removed.
+ITEMS:
+B1	DONE	CONTRIBUTING just-free
+B2	DONE	MIGRATION archived
+B3	DONE	go-version fixed
+B4	DONE	feedback IMPLEMENTED
+B5	DONE	both say 7
+B6	DONE	SIMD docs removed
+C1	DONE	just-free
+C2	DONE	archived
+C3	DONE	go-version
+C4	DONE	IMPLEMENTED
+C5	DONE	both say 7
+C6	DONE	archived + removals
+C7	DONE	HOW_TO_USE table
+C8	DONE	USAGE/PARTS archived
+C9	DONE	CI green
+D1	DONE	gates enforce now
+D2	DONE	07-24 + 09-28 audits
+D3	DONE	count gate
+D4	DONE	feedback/done lifecycle
+E1	DONE	09-28 harvest executed
+E2	DONE	count gate
+E3	DONE	subsequent audits
+E4	DONE	test-verified counts
+E5	DONE	feedback/done
+E6	DONE	archive + annotations
+E7	DONE	just refs purged
+E8	DONE	both say 7
+E9	DONE	HOW_TO_USE table
+F1	DONE	just-free
+F2	DONE	archived
+F3	DONE	go-version
+F4	DONE	IMPLEMENTED
+F5	DONE	CI green
+F6	DONE	both say 7
+F7	DONE	count gate (51 Go)
+F8	DONE	count gate (29 templ)
+F9	DONE	56/64 flags gated
+F10	DONE	count-verified
+F11	DONE	17 categories
+F12	DONE	HOW_TO_USE table
+F13	WONT	deep-audit examples
+F14	DONE	SDK_DESIGN rewritten
+F15	OPEN	unrouted audit
+F16	DONE	SIMD docs removed
+F17	DONE	removed
+F18	DONE	archived
+F19	DONE	archived
+F20	DONE	kept at root
+F21	DONE	TROUBLESHOOTING exists
+F22	DONE	removed
+F23	DONE	removed
+F24	DONE	removed
+F25	DONE	removed
+F26	DONE	no stale Stack note
+F27	DONE	priority count gated
+F28	WONT	dated historical
+F29	DONE	DOMAIN_LANGUAGE
+F30	DONE	DOMAIN_LANGUAGE
+F31	DONE	DOMAIN_LANGUAGE
+F32	OPEN	unrouted
+F33	DONE	--explain shipped
+F34	DONE	--min-lines; ADR-0011
+F35	DONE	--no-actionability shipped
+F36	OPEN	ROADMAP presets
+F37	DONE	ADR-0018
+F38	OPEN	unrouted idea
+F39	OPEN	unrouted idea
+F40	DONE	archived
+F41	DONE	archived
+F42	DONE	ClonePriority row
+F43	DONE	flake canonical; archived
+F44	DONE	no stale note
+F45	OPEN	ROADMAP presets
+F46	OPEN	ROADMAP
+F47	WONT	superseded by pins
+F48	DONE	ADR-0009
+F49	DONE	ADR-0010
+F50	DONE	harvest + freshness script
+G1	DONE	docs/archive created
+G2	DONE	both say 7
+FILE docs/status/2026-07-16_01-32_semantic-precision-hardening-status.md
+CLASS KEEP
+FIX The `--test-threshold` flag remains the top pending feedback request. ||= `--test-threshold` shipped (cmd/flags.go:139).
+ITEMS:
+any:Run against the 25 projects	DONE	15-project validation 100%
+any:go/types integration (opt-in	DONE	--type-aware; ADR-0015
+any:minimum threshold floor of 3	OPEN	ROADMAP floor undecided
+e1	OPEN	ROADMAP Type/Fingerprint unification
+e2	OPEN	TODO_LIST facade
+e3	DONE	ADR-0015
+e4	OPEN	ROADMAP FuncLit
+e5	DONE	type-aware kills FP class
+e6	DONE	structLiteralKeyName
+e7	DONE	flags.go:139
+e8	DONE	FuzzParseBytes/FuzzSerialize
+e9	DONE	mode benchmark exists
+e10	DONE	15-project validation
+e11	OPEN	no lazy conversion
+e12	DONE	structural rewrite
+1	DONE	validation report
+2	DONE	flags.go:139
+3	DONE	field-name encoding
+4	DONE	fuzz targets
+5	DONE	106/0
+6	DONE	structural rewrite
+7	DONE	trailing newline verified
+8	DONE	race standing gate
+9	DONE	ADR-0015
+10	DONE	flag wired
+11	DONE	interface-method pattern
+12	DONE	Ginkgo patterns
+13	DONE	test-data-pair pattern
+14	DONE	--min-lines
+15	DONE	hasTestingReceiver
+16	DONE	hasCommandReceiver
+17	OPEN	no array-literal detection
+18	DONE	Lock+Defer covered
+19	DONE	generics_normalization_test
+20	DONE	literal cases
+21	OPEN	website docs unverified
+22	OPEN	website examples unverified
+23	DONE	dump_tokens + flag
+24	DONE	benchmark
+25	OPEN	ROADMAP unification
+26	DONE	2-stmt wrapping
+27	DONE	builder threshold 2
+28	DONE	rich category set
+29	OPEN	ROADMAP .art-duplignore
+30	DONE	ADR-0017
+31	DONE	templSuggestion hints
+32	DONE	sarifRules
+33	SUPERSEDED	ADR-0017 replaced heuristic
+34	OPEN	normalizer.go:24 flat table
+35	OPEN	constraint normalization
+36	OPEN	chanDir tests absent
+37	OPEN	ROADMAP --json-schema
+38	OPEN	ROADMAP --ci-gate
+39	OPEN	HTML grouping unverified
+40	OPEN	stats FP estimate unbuilt
+41	DONE	gob carries Fingerprint
+42	DONE	CacheVersion 5
+43	DONE	templ-rendering-idiom
+44	OPEN	ROADMAP WASM
+45	OPEN	ROADMAP LSP
+46	DONE	ADR-0019/0022
+47	DONE	parallel search + fuzz
+48	OPEN	--since absent
+49	OPEN	ROADMAP --diff-baseline
+50	OPEN	ROADMAP ML
+g-Q1	SUPERSEDED	semantic default stands
+g-Q2	SUPERSEDED	moot
+FILE docs/status/2026-07-16_03-06_full-session-semantic-templ-status.md
+CLASS KEEP
+FIX **Status:** All session work COMPLETE. All todos resolved. Awaiting user input on Q1-Q3. ||= Superseded: Q1-Q3 resolved later; templ Phase 3 shipped (ADR-0027); v0.5.0-0.8.0 cut.
+ITEMS:
+any:Phase 3 (expression normalization)	DONE	ADR-0027 shipped 2026-10-04
+any:Default threshold question	DONE	ADR-0009 default 5
+1	DONE	ADR-0015
+2	DONE	flags.go:139
+3	OPEN	ROADMAP consolidation
+4	WONT	user rejected deletion
+5	DONE	dump_tokens
+e1	OPEN	ROADMAP unification
+e2	OPEN	ROADMAP consolidation
+e3	WONT	user kept docs
+e4	DONE	type-aware
+e5	DONE	--test-threshold
+e6	DONE	ADR-0027
+e7	DONE	structLiteralKeyName
+e8	OPEN	tiny-fixture caveat persists
+e9	SUPERSEDED	process norm adopted
+e10	WONT	user kept
+e11	SUPERSEDED	process norm adopted
+1	WONT	REJECTED by user
+2	DONE	15-project validation
+3	DONE	flags.go:139
+4	DONE	nolint-approved
+5	DONE	structural rewrite
+6	DONE	structLiteralKeyName
+7	DONE	race gate
+8	OPEN	website templ docs unverified
+9	DONE	AGENTS templ bullets
+10	DONE	dump_tokens
+11	DONE	ADR-0015
+12	DONE	flag wired
+13	DONE	ADR-0027
+14	DONE	templ BDD shipped
+15	OPEN	ROADMAP consolidation
+16	DONE	--min-lines
+17	DONE	hasTestingReceiver
+18	DONE	hasCommandReceiver
+19	DONE	benchmark
+20	OPEN	ROADMAP unification
+21	OPEN	TODO_LIST facade
+22	DONE	fuzz targets
+23	DONE	benchmark exists
+24	OPEN	ROADMAP
+25	DONE	ADR-0017
+26	DONE	2-stmt wrapping
+27	DONE	threshold 2
+28	DONE	suggestion output
+29	DONE	sarifRules
+30	SUPERSEDED	ADR-0017 replaced heuristic
+31	OPEN	HTML grouping unverified
+32	DONE	CacheVersion mechanism
+33	OPEN	--since absent
+34	OPEN	normalizer.go:24
+35	OPEN	not implemented
+36	DONE	templ actionability
+37	OPEN	ROADMAP LSP
+38	OPEN	ROADMAP WASM
+39	DONE	parallel search
+40	OPEN	ROADMAP ML
+41	OPEN	ROADMAP --diff-baseline
+42	OPEN	ROADMAP --json-schema
+43	DONE	ADR-0019/0022
+44	OPEN	ROADMAP --ci-gate
+45	OPEN	stats FP estimate
+46	OPEN	website guide unverified
+47	OPEN	ROADMAP performance guide
+48	OPEN	templ CI guide
+49	DONE	templ-rendering-idiom
+50	OPEN	array detection absent
+g-Q1	SUPERSEDED	ADR-0007 three modes
+g-Q2	SUPERSEDED	arena shipped
+g-Q3	SUPERSEDED	ADR-0027 instead
+FILE docs/status/2026-07-16_04-03_templ-call-expression-fp-fix-status.md
+CLASS KEEP
+ITEMS:
+1	DONE	committed 3858132
+2	DONE	badge removed
+1	DONE	flags.go:139
+2	DONE	ADR-0015
+3	OPEN	ROADMAP consolidation
+4	DONE	structLiteralKeyName
+5	DONE	dump_tokens
+e1	DONE	dump-tokens shipped
+e2	DONE	AGENTS templ gotcha
+e3	DONE	real-parser tests
+e4	OPEN	no CallTemplate test
+e5	DONE	ADR-0027
+e6	SUPERSEDED	norm adopted
+e7	SUPERSEDED	norm adopted
+e8	SUPERSEDED	plan committed
+1	DONE	committed
+2	OPEN	no synthetic CallTemplate test
+3	DONE	flags.go:139
+4	DONE	nolint-approved
+5	DONE	no map allocation
+6	DONE	structLiteralKeyName
+7	DONE	race gate
+8	DONE	AGENTS conventions
+9	DONE	dump_tokens
+10	DONE	AGENTS gotcha
+11	DONE	ADR-0015
+12	DONE	flag wired
+13	DONE	ADR-0027
+14	DONE	templ tests
+15	OPEN	ROADMAP consolidation
+16	DONE	--min-lines
+17	DONE	hasTestingReceiver
+18	DONE	hasCommandReceiver
+19	OPEN	no templ integration test
+20	SUPERSEDED	ADR-0027 era
+21	DONE	benchmark
+22	OPEN	ROADMAP unification
+23	OPEN	TODO_LIST facade
+24	DONE	fuzz targets
+25	OPEN	no callee micro-benchmark
+26	OPEN	ROADMAP
+27	DONE	ADR-0017
+28	DONE	TestExtractCalleeName
+29	OPEN	no @{expr} test
+30	OPEN	no block-children test
+31	DONE	2-stmt wrapping
+32	DONE	threshold 2
+33	DONE	suggestions
+34	DONE	sarifRules
+35	SUPERSEDED	ADR-0017
+36	OPEN	HTML grouping
+37	DONE	CacheVersion 5
+38	OPEN	--since absent
+39	OPEN	website docs
+40	OPEN	templ CI guide
+41	OPEN	normalizer.go:24
+42	OPEN	not implemented
+43	DONE	templ-rendering-idiom
+44	OPEN	ROADMAP LSP
+45	OPEN	ROADMAP WASM
+46	DONE	parallel search
+47	OPEN	ROADMAP ML
+48	OPEN	ROADMAP --diff-baseline
+49	DONE	htmx shapes covered
+50	OPEN	array detection
+g-Q1	DONE	badge removed
+g-Q2	DONE	kept defensive
+g-Q3	DONE	plan committed
+FILE docs/status/2026-07-16_05-30_pareto-p0-p2-execution-status.md
+CLASS KEEP
+ITEMS:
+any:HOW_TO_USE.md threshold table	DONE	HOW_TO_USE rewritten later
+any:DOMAIN_LANGUAGE.md	DONE	drift fixed
+any:Benchmark	DONE	real-tree benchmarks shipped
+T4	DONE	templ BDD shipped
+T5	DONE	fuzz targets
+T6	OPEN	no templ integration test
+W1	SUPERSEDED	site rebuilt 08-10
+W2	OPEN	ROADMAP OG image
+W3	OPEN	ROADMAP og: tags
+W4	OPEN	astro check unevidenced
+CQ9	OPEN	ROADMAP unification ADR
+I10	DONE	CacheVersion mechanism
+I11	DONE	gob full Node
+any:CQ5-CQ16	DONE	P3/P4 same day
+any:T7-T17	DONE	05-49 backfilled 86 tests
+any:I3-I14	OPEN	website items open
+any:W11-W14	OPEN	ROADMAP website items
+any:DQ8-DQ12	OPEN	partially open
+any:DX3-DX5	OPEN	.art-duplignore open
+any:go/types integration, clone type consolidation	OPEN	consolidation open
+2	DONE	minCloneLineCount
+3	OPEN	non-Ident test
+1	SUPERSEDED	norm adopted
+2	DONE	min-lines tests
+3	DONE	dump_tokens_test
+4	DONE	actionability integration
+5	DONE	commandReceiver tests
+6	DONE	testingReceiver tests
+7	DONE	backfill session
+8	SUPERSEDED	lint clean
+9	DONE	106/0
+10	DONE	HOW_TO_USE rewritten
+11	SUPERSEDED	release-managed
+1	DONE	min-lines covered
+2	DONE	dump_tokens_test
+3	DONE	switch/tree tests
+4	DONE	hasCommandReceiver
+5	DONE	hasTestingReceiver
+6	DONE	assertion coverage
+7	DONE	wrapping coverage
+8	DONE	logging coverage
+9	DONE	builder tested
+10	OPEN	non-Ident edge
+11	DONE	templ BDD
+12	DONE	fuzz targets
+13	OPEN	no integration test
+14	OPEN	ROADMAP ADR
+15	DONE	CacheVersion 5
+16	DONE	gob full Node
+17	OPEN	ROADMAP OG
+18	OPEN	ROADMAP og:
+19	OPEN	ROADMAP og:
+20	OPEN	astro check
+21	OPEN	html validation
+22	OPEN	continue-on-error
+23	OPEN	ROADMAP Lighthouse
+24	OPEN	mobile QA
+25	OPEN	edit-links
+26	OPEN	sidebar links
+27	OPEN	schema.org
+28	OPEN	ROADMAP sitemap
+29	OPEN	ROADMAP canonical
+30	DONE	flag count gate
+31	OPEN	SDK examples
+32	OPEN	website docs
+33	DONE	count gate
+34	OPEN	SDK_DESIGN stale
+35	SUPERSEDED	removed
+36	SUPERSEDED	removed
+37	DONE	51+29 gated
+38	DONE	56/64 gated
+39	SUPERSEDED	removed
+40	DONE	AGENTS links doc
+41	DONE	package-level table
+42	OPEN	extraction unevidenced
+43	DONE	dedup sprints
+44	DONE	typed constants
+45	OPEN	TODO_LIST facade
+46	DONE	106/0
+47	DONE	flake-pinned lint
+48	OPEN	statix not run
+49	OPEN	arch-lint review
+50	OPEN	ROADMAP dependabot
+g-Q1	DONE	minimum across clones
+g-Q2	DONE	tests written
+FILE docs/status/2026-07-16_05-49_missing-test-coverage-bugfix.md
+CLASS KEEP
+ITEMS:
+any:tree-based pattern matchers	DONE	integration tests
+any:dumpTokensOutput test coverage	DONE	dump_tokens_test
+any:actionability patterns	DONE	integration tests
+1	DONE	committed
+2	DONE	ErrorWrapping test
+3	DONE	CobraCommand test
+4	DONE	BuilderCallback test
+5	DONE	TableDrivenTest test
+6	DONE	min-lines verified
+7	DONE	dump-tokens verified
+8	DONE	exit_codes.go
+9	DONE	validation hints
+10	OPEN	no --help audit
+11	DONE	version --json
+12	OPEN	stdin docs unverified
+13	OPEN	YAML unsupported (since shipped)
+14	DONE	progress.go
+15	DONE	--quiet
+16	DONE	--no-color
+17	DONE	completion + BDD
+18	DONE	HOW_TO_USE sections
+19	DONE	CHANGELOG entries
+20	DONE	TODO_LIST maintained
+21	DONE	ADR-0011
+22	DONE	ADR-0012
+23	DONE	patterns doc exists
+24	DONE	dispatchAnalysis extraction
+25	DONE	lint exclusions
+26	DONE	0 findings
+27	DONE	recvcheck resolved
+28	DONE	SuppressionConfig
+29	DONE	exhaustruct excluded
+30	DONE	functions under threshold
+31	DONE	ADR-0015
+32	OPEN	ROADMAP consolidation
+33	DONE	ADR-0005
+34	OPEN	mutation audit
+35	DONE	prune race tests
+36	DONE	ADR-0019/0022
+37	DONE	ADR-0027
+38	DONE	cache key isolation
+39	OPEN	wrapping audit
+40	DONE	DetectionMode centralized
+41	OPEN	ROADMAP LSP
+42	OPEN	ROADMAP TS/Python
+43	OPEN	ROADMAP bench scripts
+44	DONE	fuzz + seed gate
+45	OPEN	ROADMAP SARIF validation
+46	OPEN	GH Action unbuilt
+47	OPEN	VS Code extension
+48	OPEN	clone history
+49	OPEN	ROADMAP ML
+50	OPEN	ROADMAP --diff-baseline
+g-Q1	DONE	kept internal
+g-Q2	DONE	minimum semantics
+FILE docs/status/2026-07-16_06-35_p3-code-quality-tests-ux.md
+CLASS KEEP
+ITEMS:
+any:Shell completion	DONE	BDD completion specs
+any:Config file support	DONE	JSON --config; YAML since shipped
+any:--help text audit	OPEN	no systematic audit
+any:recvcheck	DONE	resolved
+1	DONE	progress.go
+2	DONE	YAML since shipped
+3	OPEN	--help audit
+4	DONE	recvcheck resolved
+5	DONE	constructor
+6	OPEN	stdin docs
+1	DONE	committed
+2	DONE	quiet e2e
+3	DONE	no-color e2e
+4	DONE	printBuildingStatus tests
+5	DONE	version tests
+6	DONE	dispatchAnalysis
+7	DONE	bdd exit codes
+8	DONE	bdd version specs
+9	DONE	recvcheck
+10	DONE	constructor
+11	DONE	exhaustruct exclude
+12	DONE	progress.go
+13	DONE	YAML shipped
+14	OPEN	--help audit
+15	DONE	workers validation
+16	DONE	min-lines validation
+17	DONE	cache-entries validation
+18	DONE	parseOutputFormat tests
+19	DONE	covered
+20	DONE	cancel cases
+21	OPEN	no --verbose
+22	DONE	version --short
+23	OPEN	no progress bar
+24	OPEN	no-color rich-text test
+25	OPEN	structure validation
+26	DONE	YAML shipped
+27	OPEN	no deprecation warning
+28	DONE	exit table
+29	DONE	completion specs
+30	DONE	integration tests
+31	DONE	integration tests
+32	DONE	empty-dir exit 0
+33	DONE	AGENTS links
+34	DONE	ADR-0013
+35	DONE	ADR-0014
+36	OPEN	PGO never run
+37	OPEN	memory test
+38	DONE	auto-detection test
+39	DONE	mismatch test
+40	DONE	templ idiom + categories
+41	OPEN	goconst docs
+42	DONE	nix gate
+43	DONE	BuildFlow live
+44	OPEN	ROADMAP SDK exit codes
+45	OPEN	ROADMAP SDK VersionInfo
+46	OPEN	benchmark
+47	DONE	NO_COLOR documented
+48	OPEN	no-color rich-text
+49	OPEN	quiet+json test
+50	DONE	FEATURES maintained
+g-Q1	DONE	option B shipped
+g-Q2	DONE	os.Setenv kept
+FILE docs/status/2026-07-16_06-57_p4-tests-quality-polish.md
+CLASS KEEP
+ITEMS:
+b1	DONE	progress.go
+b2	OPEN	--help audit
+b3	OPEN	stdin docs
+b4	DONE	AGENTS links
+b5	DONE	exclusion convention
+1	DONE	progress.go
+2	DONE	YAML shipped
+3	DONE	completion specs
+4	DONE	auto-detection test
+5	DONE	mismatch test
+6	OPEN	ROADMAP SDK
+7	DONE	templ idiom
+8	OPEN	no --verbose
+9	OPEN	no progress bar
+10	OPEN	structure validation
+11	OPEN	PGO
+12	OPEN	memory test
+13	OPEN	no deprecation warning
+14	OPEN	benchmark
+e6	DONE	constructor simple
+e12	OPEN	generic message
+1	DONE	committed
+2	DONE	domain_test
+3	OPEN	-- prefix
+4	DONE	AGENTS
+5	DONE	progress.go
+6	DONE	exit codes process test
+7	OPEN	--help audit
+8	DONE	auto-detection
+9	OPEN	NO_COLOR prominence
+10	OPEN	ROADMAP SDK
+11	OPEN	validation-free
+12	OPEN	flag-reading
+13	OPEN	quiet+json
+14	OPEN	no-color rich-text
+15	OPEN	no --verbose
+16	DONE	YAML shipped
+17	OPEN	structure validation
+18	OPEN	no progress bar
+19	OPEN	deprecation
+20	DONE	completion specs
+21	OPEN	PGO
+22	OPEN	memory test
+23	DONE	mismatch test
+24	DONE	templ actionability
+25	OPEN	benchmark
+26	DONE	injectable writer
+27	OPEN	Config.NoColor
+28	DONE	cancel cases
+29	OPEN	goconst docs
+30	DONE	nix gate
+31	OPEN	no --verbose
+32	DONE	fang help
+33	DONE	completion shells
+34	DONE	completion shells
+35	DONE	completion shells
+36	OPEN	ROADMAP VersionInfo
+37	OPEN	no --dry-run
+38	OPEN	no --progress
+39	OPEN	HTML exit info
+40	OPEN	SARIF exit metadata
+41	OPEN	Config.NoColor
+42	DONE	enum ADR-0007
+43	DONE	validation tests
+44	OPEN	no CLI_FLAGS.md
+45	OPEN	README exit codes
+46	OPEN	StatusPrinter
+47	OPEN	concurrent test
+48	OPEN	testifylint
+49	DONE	wrapcheck active
+50	OPEN	no ADR
+g-Q1	OPEN	owner question
+g-Q2	OPEN	owner question
+FILE docs/status/2026-07-16_07-23_stdin-context-cancellation.md
+CLASS KEEP
+ITEMS:
+any:Stderr suppression test	DONE	TestStdinFeed_StderrSuppressedOnCancel
+any:RunArtDuplWithStdin	DONE	bdd_runners.go:121
+any:nix flake check	DONE	standing CI gate
+any:integration test	DONE	BDD real pipe
+any:filter/include test	DONE	TestStdinFeed_FiltersGeneratedCode
+e1	OPEN	close(done) asymmetry
+e2	DONE	filter test
+e3	DONE	real stdin BDD
+e4	OPEN	--stdin docs
+e5	OPEN	goroutine note
+e6	DONE	go1.27
+e7	DONE	0 findings
+e8	DONE	0 findings
+e9	DONE	0 findings
+1	DONE	filter test
+2	DONE	stderr suppression
+3	OPEN	no ./ prefix test
+4	DONE	bdd_runners.go
+5	OPEN	--stdin docs
+6	SUPERSEDED	CI builds gate
+7	DONE	flake gate
+8	OPEN	asymmetry remains
+9	DONE	BDD stdin tests
+10	OPEN	no CRLF test
+11	DONE	0 findings
+12	DONE	0 findings
+13	DONE	go1.27
+14	DONE	0 findings
+15	DONE	0 findings
+16	DONE	sendCtx documented
+17	OPEN	fang-delegated
+18	OPEN	SDK ctx option
+19	DONE	BDD stdin
+20	OPEN	no empty-input test
+21	OPEN	no whitespace test
+22	OPEN	no long-path test
+23	DONE	race gates
+24	DONE	timeout unblocks test
+25	OPEN	no concurrent test
+26	OPEN	FEATURES stdin
+27	OPEN	no close-on-cancel ADR
+28	DONE	AGENTS mechanism
+29	OPEN	SDK docs
+30	OPEN	DOMAIN_LANGUAGE stdin
+31	OPEN	no stdin benchmark
+32	OPEN	buffered channel
+33	OPEN	scanner buffer
+34	OPEN	no drain logging
+35	OPEN	retry policy
+36	OPEN	globals audit
+37	OPEN	crawl testability
+38	OPEN	no split
+39	OPEN	no FileFilter
+40	OPEN	FilterStats safety
+41	OPEN	generatorIncludes location
+42	OPEN	no stdin fuzz
+43	OPEN	null-delimited
+44	OPEN	WalkDir migration
+45	OPEN	ctx in suffix tree
+46	DONE	sendCtx audit
+47	OPEN	BuildTree comparison
+48	OPEN	no Reader interface
+49	OPEN	no property tests
+50	OPEN	cache ctx
+g-Q1	OPEN	owner question
+g-Q2	DONE	real-stdin shipped
+FILE docs/status/2026-07-16_17-16_test-coverage-sprint-and-workers-bugfix.md
+CLASS KEEP
+ITEMS:
+any:Progress Output	DONE	wired run_hash.go:63
+any:Hybrid Slice/Map	WONT	ADR-0001 map; deferred
+e7	OPEN	no exit-130 test
+1	DONE	progress_test
+2	DONE	run_hash.go
+3	OPEN	no SIGINT test
+4	DONE	negative workers test
+5	OPEN	no templ stdin test
+6	OPEN	no parallel stdin test
+7	OPEN	no stderr/stdout test
+8	DONE	env suppression
+9	OPEN	no workers benchmark
+10	OPEN	no dumpTokens workers
+11	OPEN	--help audit
+12	DONE	completion specs
+13	DONE	YAML shipped
+14	OPEN	ROADMAP SDK
+15	OPEN	no deprecation warning
+16	DONE	AGENTS
+17	DONE	configuration BDD
+18	OPEN	no CI baseline test
+19	DONE	all-format BDD
+20	OPEN	ROADMAP SARIF validation
+21	DONE	run_hash.go
+22	OPEN	os.Stdin swap
+23	DONE	0 findings
+24	WONT	deferred; map O(1)
+25	OPEN	sub-packages unplanned
+26	OPEN	PGO
+27	OPEN	memory test
+28	OPEN	stderr audit
+29	OPEN	no interval flag
+30	OPEN	hash-only ctx
+31	OPEN	no injection
+32	OPEN	no progress interface
+33	OPEN	no Spinner
+34	OPEN	cmd-local
+35	OPEN	no lines-count
+36	OPEN	dump_tokens progress
+37	OPEN	gates not unified
+38	OPEN	no --no-progress
+39	OPEN	env undocumented
+40	OPEN	no stats progress
+41	OPEN	HOW_TO_USE examples
+42	OPEN	FEATURES progress
+43	OPEN	no workers ADR
+44	OPEN	env undocumented
+45	DONE	CHANGELOG workers fix
+46	OPEN	no past-bugs section
+47	DONE	AGENTS stdin convention
+48	OPEN	subprocess pattern
+49	OPEN	stdin matrix
+50	OPEN	no conventions doc
+g-Q1	OPEN	owner; 5s
+g-Q2	DONE	CHANGELOG documents
+FILE docs/status/2026-07-16_17-32_buildflow-revert-recovery-and-cleanup.md
+CLASS KEEP
+ITEMS:
+b-any:hash-only	DONE	run_hash.go
+b-any:unit tests	DONE	progress_test
+b-any:interval	OPEN	5s hardcoded
+c-any:Hybrid	WONT	deferred
+c-any:Unit tests	DONE	progress_test
+c-any:Exit 130	OPEN	no SIGINT test
+c-any:dumpTokens	OPEN	no test
+e4	DONE	progress tests
+e5	OPEN	os.Stdin swap
+1	OPEN	owner g1
+2	DONE	progress_test
+3	DONE	run_hash
+4	OPEN	no interval flag
+5	OPEN	no 130 test
+6	OPEN	no dumpTokens test
+7	OPEN	no templ stdin
+8	OPEN	no injection
+9	OPEN	env undocumented
+10	OPEN	FEATURES progress
+11	DONE	CHANGELOG
+12	OPEN	no --no-progress
+13	DONE	0 findings
+14	OPEN	PGO
+15	OPEN	memory test
+16	OPEN	--help audit
+17	DONE	YAML shipped
+18	DONE	completion specs
+19	OPEN	ROADMAP SDK
+20	OPEN	deprecation
+21	DONE	AGENTS
+22	OPEN	no verbose progress
+23	OPEN	file-count only
+24	OPEN	no stderr test
+25	DONE	env suppression
+26	OPEN	no benchmark
+27	DONE	configuration BDD
+28	OPEN	no baseline test
+29	OPEN	ROADMAP SARIF
+30	OPEN	no interval
+31	OPEN	cmd-local
+32	OPEN	no interface
+33	OPEN	no conventions doc
+34	OPEN	stdin matrix
+35	OPEN	no Spinner
+36	OPEN	gates
+37	OPEN	dump_tokens progress
+38	OPEN	no streaming
+39	OPEN	hash-only ctx
+40	OPEN	stderr audit
+41	OPEN	no workers ADR
+42	DONE	CHANGELOG fix
+43	OPEN	no conventions
+44	OPEN	no mixed templ test
+45	DONE	negative workers test
+46	OPEN	no auto alias
+47	OPEN	no JSON suppression
+48	OPEN	no stats progress
+49	OPEN	no baseline progress
+50	OPEN	feedback/new open
+g-Q1	OPEN	owner
+g-Q2	OPEN	feedback/new open
+FILE docs/status/2026-07-16_semantic-validation-15-projects.md
+CLASS ARCHIVE
+MOVE archived
+ITEMS:
+any:--test-threshold feature would let users	DONE	shipped flags.go:139
+any:--test-threshold / --min-lines improvement area	DONE	both shipped
+any:--test-threshold feature would help	DONE	shipped; --show-suppressed aids calibration
+FILE docs/status/2026-07-19_02-56_test-dedup-sprint.md
+CLASS KEEP
+ITEMS:
+b-any:Acceptance rationale	DONE	accept directives shipped
+b-any:AGENTS.md update	DONE	AGENTS shared-var bullet
+c-any:lower thresholds	DONE	-t validations in AGENTS
+c-any:production code only	DONE	--ignore-tests shipped
+c-any:--include-generated	DONE	flag shipped
+c-any:regression test in CI	DONE	budget + CI clone gate
+e-any:skill-vs-rule	DONE	resolved
+e-any:Run -race	DONE	standing gates
+e-any:Update AGENTS.md	DONE	AGENTS:255
+e-any:SortCloneGroups test	DONE	sort_unified_test.go
+e-any:accepted clones mechanism	DONE	accept_directive.go
+e-any:No CI gate	DONE	CI clone gate
+e-any:go1.27	DONE	go1.27
+e-any:180 lint issues	DONE	106/0
+1	DONE	accept comments
+2	DONE	race green
+3	DONE	AGENTS:255
+4	DONE	public test
+5	OPEN	assertCanonicalized
+6	OPEN	named returns
+7	OPEN	helper conditional
+8	DONE	AGENTS validations
+9	DONE	AGENTS validations
+10	DONE	AGENTS validations
+11	DONE	--ignore-tests
+12	DONE	--include-generated
+13	OPEN	--vendor unevidenced
+14	DONE	sweeps covered cmd
+15	DONE	sweeps covered printer
+16	DONE	sweeps covered syntax
+17	DONE	sweeps covered job
+18	DONE	sweeps covered errors
+19	DONE	sweeps covered cache
+20	OPEN	shared var unevidenced
+21	DONE	accept directives
+22	DONE	budget + CI gate
+23	OPEN	no PR HTML artifact
+24	OPEN	ROADMAP --diff-baseline
+25	OPEN	--since absent
+26	SUPERSEDED	ledger + directives
+27	OPEN	HOW_TO_USE dedup section
+28	DONE	106/0
+29	DONE	go1.27
+30	DONE	TODO_LIST maintained
+31	DONE	ADR-0015
+32	DONE	templ semantic
+33	DONE	parent-range mitigation
+34	OPEN	TODO_LIST facade
+35	OPEN	ROADMAP consolidation
+36	DONE	CloneRef everywhere
+37	OPEN	gogenfilter sweep
+38	DONE	resolved by asking
+39	DONE	race gates
+40	DONE	protocol followed
+41	SUPERSEDED	process note
+42	SUPERSEDED	process note
+43	DONE	public test
+44	DONE	shared var
+45	DONE	public test
+46	DONE	fresh slice verified
+47	OPEN	no benchmark
+48	DONE	8→3 groups
+49	SUPERSEDED	process note
+50	WONT	concluded no
+g-Q1	DONE	user verdict keep
+g-Q2	DONE	committed
+g-Q3	DONE	validations done
+FILE docs/status/2026-07-19_04-13_feedback-sprint-session2-self-critique.md
+CLASS KEEP
+ITEMS:
+b1	DONE	em-dashes fixed
+b2	DONE	resolutions 8-10
+b3	DONE	nix build succeeded
+b3-install	WONT	user chose NixOS-managed
+c-rich-text	DONE	verified d.6
+c-nix	DONE	build succeeded
+c-golden	DONE	text_golden_test.go
+c-benchmark	OPEN	still ReadFile-based
+c-dedup-decisions	SUPERSEDED	directives + ledger
+e1	DONE	rewritten
+e2	DONE	SplitSeq + gci
+e3	DONE	verified
+e4	DONE	DetectionMode refactor
+e5	DONE	verdict recorded
+e6-e10	SUPERSEDED	norms adopted
+e11	OPEN	preview layout open
+e12	OPEN	no binary filter
+e13	OPEN	still ReadFile
+1-7	DONE	resolutions confirm
+8	DONE	FEATURES row
+9	DONE	TODO_LIST updated
+10	DONE	CHANGELOG entries
+11	DONE	nix green
+12	WONT	user skipped install
+13	DONE	goldens shipped
+14	DONE	accept_directive.go
+15	DONE	scanner in pipeline
+16	DONE	directive tests
+17	OPEN	no same-function category
+18	OPEN	not implemented
+19	DONE	--show-suppressed
+20	DONE	--html-out
+21	DONE	stable anchors
+22	OPEN	no --recommend-threshold (since shipped)
+23	DONE	internal/gitignore
+24	OPEN	ROADMAP --diff-baseline
+25	OPEN	unevidenced
+26	OPEN	unevidenced
+27	OPEN	unevidenced
+28	OPEN	still ReadFile
+29	OPEN	no binary filter
+30	OPEN	no size guard
+31	OPEN	no preview benchmark
+32	SUPERSEDED	norm adopted
+33	OPEN	ask-policy
+34	DONE	CI Lint job
+35	DONE	CI clone job
+36	DONE	golden tests
+37	OPEN	HOW_TO_USE preview example
+38	OPEN	patterns preview note
+39	SUPERSEDED	directives instead
+40	WONT	source-code-only rule
+41	DONE	ldflags documented
+42	DONE	public test
+43	OPEN	signature unchanged
+44	OPEN	truncation not extracted
+45	OPEN	no --preview-width
+46	OPEN	no --no-preview
+47	OPEN	audit open
+48	DONE	ADR-0015
+49	DONE	templ semantic
+50	OPEN	TODO_LIST facade
+g-Q1	DONE	traced
+g-Q2	DONE	keep
+g-Q3	DONE	committed
+FILE docs/status/2026-07-19_04-50_docs-health-and-update-old-docs-self-critique.md
+CLASS KEEP
+ITEMS:
+b1	OPEN	SDK_DESIGN fate undecided
+b2	DONE	09-28 audit verified
+b3	SUPERSEDED	later audits covered
+c-lint/race/flake	DONE	standing gates
+c--all	DONE	09-28 audit
+c-regression-test	OPEN	no md-command check
+c-root.go audit	DONE	count gate
+c-counts	DONE	count gate
+c-golden-docstring	DONE	fixed at text_golden_test.go:17
+d1	DONE	command corrected
+d2	DONE	standing gates
+d3	DONE	09-28 audit
+d4	OPEN	no AGENTS convention
+d5	WONT	cosmetic
+d6	SUPERSEDED	moot
+d7	SUPERSEDED	moot
+e1	DONE	command correct
+e2	OPEN	convention absent
+e3	DONE	standing gates
+e4	DONE	09-28 audit
+e5	OPEN	SDK_DESIGN stale
+e6	OPEN	ADR cross-check
+e7	SUPERSEDED	later audits
+e8	DONE	flake mandated
+e9	SUPERSEDED	counts precise
+e10	SUPERSEDED	moot
+1	DONE	text_golden_test.go:17
+2	OPEN	convention absent
+3	DONE	race gates
+4	DONE	flake gate
+5	DONE	106 linters
+6	OPEN	SDK_DESIGN fate
+7	WONT	appendix kept
+8	SUPERSEDED	USAGE removed
+9	DONE	CONTRIBUTING commands
+10	SUPERSEDED	removed
+11	SUPERSEDED	removed
+12	SUPERSEDED	removed
+13	SUPERSEDED	removed
+14	SUPERSEDED	removed
+15	SUPERSEDED	moved to archive
+16	SUPERSEDED	removed
+17	DONE	patterns doc current
+18	SUPERSEDED	removed
+19	SUPERSEDED	removed
+20	OPEN	api audit
+21	OPEN	arch-understanding audit
+22	OPEN	modularization audit
+23	DONE	master-plan audited
+24	OPEN	quality audit
+25	OPEN	research audit
+26	OPEN	brainstorming audit
+27	OPEN	reviews audit
+28	OPEN	no md check
+29	OPEN	no verify-docs
+30	DONE	flag gate
+31	OPEN	CHANGELOG ADR check
+32	DONE	37 gated
+33	DONE	51+29 gated
+34	OPEN	no features.yaml
+35	OPEN	no _index.md
+36	OPEN	no frontmatter
+37	OPEN	no frontmatter CI
+38	OPEN	rename entry unverified
+39	OPEN	no migration note
+40	DONE	ldflags documented
+41	OPEN	no flag ADR
+42	DONE	feedback lifecycle
+43	SUPERSEDED	removed
+44	WONT	cosmetic
+45	SUPERSEDED	later gates
+46	SUPERSEDED	later gates
+47	SUPERSEDED	lists exist
+48	DONE	not-verified sections
+49	DONE	directive shipped
+50	DONE	archived/ exists
+g-Q1	OPEN	SDK_DESIGN undecided
+g-Q2	DONE	convention shipped
+g-Q3	DONE	committed
+FILE docs/status/2026-07-24_23-11_full-todo-execution-sprint.md
+CLASS ARCHIVE
+MOVE archived
+ITEMS:
+M04	DONE	validateMutualExclusion
+M05	SUPERSEDED	combination fully supported
+M06	DONE	releases live
+M09	DONE	zero linter refs
+M11	DONE	TESTING/AGENTS document
+M12	DONE	CONTRIBUTING nix-only
+M13	DONE	CI race lane
+M07	DONE	RELEASE.md exists
+M08	DONE	guard + flake check
+M10	DONE	verified later passes
+M01	DONE	accept directives shipped
+M02	DONE	internal/gitignore
+M03	DONE	FilterTempl + gitignore
+M14	DONE	bdd/type_aware_test
+M15	DONE	completed
+M16	DONE	completed
+M17	DONE	SDK_DESIGN rewritten
+M18	DONE	ADR-0015
+M19	DONE	annotations present
+M20	DONE	progress_test
+M21	DONE	progressFilesChan
+M22	DONE	ADR-0016
+M23	DONE	warnSemanticDeprecation
+M24	DONE	detector_type_aware_test
+M26:yaml	DONE	YAML config shipped (--config)
+M27	DONE	--diff-report
+M28	DONE	--explain + engine
+M29	DONE	--html-out + anchors
+M30	DONE	--recommend-threshold
+E1	DONE	per-task commits
+E2	DONE	lint standing gate
+E3	DONE	flake is CI gate
+E4	DONE	stubs removed
+E5	DONE	AGENTS domain model
+E6	DONE	em-dashes stripped 2026-10-05
+E7	WONT	process norm
+E8	WONT	gitignore lib kept
+E9	WONT	documented limitation
+E10	WONT	struct kept
+E11	WONT	speculative, no demand
+F1-4	DONE	commit/lint/nix/todo
+F5	DONE	shipped properly
+F6-9	DONE	docs
+F10	DONE	type-aware SDK test
+F11	DONE	--explain
+F12	DONE	--html-out
+F13	DONE	recommend-threshold
+F14	WONT	speculative, no demand
+F15	DONE	--diff-report
+F16	DONE	stable anchors
+F17	DONE	TTY auto-write
+F18	WONT	speculative, no demand
+F19	DONE	nested gitignore loaders
+F20	WONT	speculative, no demand
+F21	WONT	speculative, no demand
+F22	WONT	parser kept
+F23	WONT	documented limitation
+F24	SUPERSEDED	provider suppression lane
+F25	WONT	speculative, no demand
+F26	DONE	cost documented
+F27	WONT	speculative, no demand
+F28	WONT	parked — TODO_LIST PARKED tier
+F29	DONE	sarif-validate check
+F30	OPEN	ROADMAP awesome-go
+F31	DONE	race lane
+F32-33	DONE	race covers
+F34	DONE	race-green suite
+F35	DONE	suppression guard test
+F36	DONE	HOW_TO_USE include-ignored
+F37	DONE	HOW_TO_USE no-accept
+F38	DONE	cli_commands_test
+F39	WONT	speculative, no demand
+F40	DONE	em-dashes stripped 2026-10-05
+F41	DONE	HOW_TO_USE gitignore
+F42	DONE	HOW_TO_USE include-ignored
+F43	DONE	AGENTS entries
+F44	WONT	ADR-0017 covers docs
+F45	WONT	ADR-0018 taken
+F46	DONE	TESTING guidance
+F47	DONE	SDK_DESIGN rewritten
+F48	DONE	FEATURES current
+F49	DONE	ADR-0018 + pattern
+F50	WONT	speculative, no demand
+G1	DONE	stubs removed
+G2	DONE	committed
+G3	WONT	parser kept
+FILE docs/status/2026-07-25_04-08_actionability-exprstmt-gap-fix.md
+CLASS ARCHIVE
+MOVE archived
+ITEMS:
+b1:docs	DONE	AGENTS + patterns doc
+b2:audit	DONE	unwrapExprStmt shared
+c1:lint	DONE	lint gate green
+c2:templ	DONE	ADR-0027
+c3	DONE	AGENTS updated
+c4	DONE	patterns doc
+c5:nix	DONE	nix lane
+e1:e2e3	DONE	retro done
+e4	DONE	single-simple-statement
+e5	DONE	fixtures fixed
+e6	DONE	daemon tamed
+e7	DONE	unwrapExprStmt
+e8	DONE	dual-documented
+F1	DONE	AGENTS
+F2	DONE	pattern table
+F3	DONE	CI lint
+F4	DONE	CI nix
+F5	DONE	adopted
+F6	DONE	shipped
+F7	DONE	covers ReturnStmt
+F8	DONE	covers AssignStmt
+F9	DONE	bdd specs
+F10	DONE	ADR-0027
+F11	DONE	regression suites
+F12	DONE	adoption
+F13	DONE	SendStmt covered
+F14-15	DONE	fixed 05-11
+F16	DONE	reference updated
+F17	DONE	AGENTS principle
+F18	DONE	HOW_TO_USE FP sections
+F19	DONE	FEATURES lists 33
+F22	WONT	speculative, no demand
+F23	WONT	speculative, no demand
+F24	WONT	speculative, no demand
+F26	WONT	speculative, no demand
+F27	WONT	speculative, no demand
+F28	DONE	printer/actionability pkg
+F29	DONE	config maintained
+F30-31	DONE	dup of F7/F8
+F32	DONE	DeclStmt covered
+F33	DONE	SendStmt covered
+F34	WONT	speculative, no demand
+F35	WONT	speculative, no demand
+F36	WONT	speculative, no demand
+F37	WONT	speculative, no demand
+F38	DONE	--disable-pattern
+F39	DONE	--list-patterns
+F40	WONT	speculative, no demand
+g1	DONE	systemic patterns
+g2	DONE	BDD fixed
+g3	DONE	docs updated
+FILE docs/status/2026-07-25_05-19_buildflow-failure-diagnosis-and-concurrent-agent-revert.md
+CLASS ARCHIVE
+MOVE archived
+FIX `nix flake check` is **STILL BROKEN**. ||= nix flake check green in CI since; guard auto-removes banned linters and BuildFlow skips re-adding them.
+ITEMS:
+a-section	DONE	verified green then and since
+b:linters	DONE	zero refs in config
+b:nix-build	DONE	nix lane green
+b:lint-state	DONE	0 issues
+c:two-findings	DONE	godoclint fixed
+c:oom	DONE	CI nix lane green
+c:govalid	WONT	moot
+c:templ	DONE	ci.yml templ generate
+d1	DONE	CI flake gate
+d2-d3	DONE	root-caused; skip_steps
+d4	WONT	process call
+e1	DONE	CI gate
+e2-e3	DONE	practices documented
+e4:cgo	DONE	CGO_ENABLED=1
+e5	DONE	CI verification
+e6	DONE	zero refs + auto-remove
+e7	DONE	godoclint fixed
+e8	DONE	lint 0
+e9	DONE	nix lane green
+e10	DONE	skip_steps
+e11	SUPERSEDED	CI workflow replaces
+e12	DONE	AGENTS lint section
+F1	DONE	guards + skip_steps
+F2	DONE	config clean
+F3	DONE	CI flake green
+F4	SUPERSEDED	CI workflow
+F5	DONE	lint green
+F6	DONE	directive relocated
+F7	DONE	0 issues
+F8-9	DONE	CI green since
+F10	SUPERSEDED	= F4
+F11	DONE	CGO in ci.yml
+F12	DONE	flake is verify target
+F13	WONT	moot
+F14	DONE	race lane
+F15	DONE	nix build in CI
+F16	DONE	disabled-linters check
+F17	DONE	AGENTS current
+F18	DONE	gotcha recorded
+F19	DONE	CGO documented
+F20	DONE	plans annotated
+F21	WONT	history immutable
+F22	WONT	moot
+F23	DONE	godoclint fixed
+F24	DONE	bdd excluded
+F25	WONT	linter disabled
+F26	DONE	lint green
+F27	DONE	GOEXPERIMENT env
+F28	DONE	1.27.1 pin
+F29	WONT	speculative, no demand
+F30	DONE	SHA-pinned action
+F31	DONE	cross-read
+F32	WONT	moot
+F33	DONE	CI generates templ
+F34	WONT	no pre-commit gate by design
+F35	WONT	speculative, no demand
+F36	WONT	speculative, no demand
+F37	DONE	CI clean checkouts
+F38	DONE	CONTRIBUTING exists
+g1	DONE	root-caused
+g2	DONE	fixed
+g3	DONE	nix lane green
+FILE docs/status/2026-07-25_08-21_no-actionability-and-explain-flags.md
+CLASS ARCHIVE
+MOVE archived
+ITEMS:
+A1	DONE	--no-actionability wired
+A2	DONE	--explain + labels
+A3	DONE	filter fuzz test
+A4	DONE	zero linter refs
+A5	DONE	docs updated
+A6	DONE	CI green
+B:textonly	DONE	text-only documented
+B:json-pattern	DONE	non_actionable_pattern field
+B:root-only	DONE	resolved in H
+C1	DONE	--diff-report
+C2	DONE	HTML shipped
+C3	WONT	speculative, no demand
+C4	DONE	recommend-threshold
+C5	DONE	ADR-0018
+C6	DONE	ADR-0027
+C7	DONE	printer split
+C8	WONT	upstream untracked
+C9	WONT	parked — TODO_LIST tier
+C10	WONT	parked — TODO_LIST tier
+C11	DONE	JSONClone serializes
+C12	DONE	explanation tests
+C13	DONE	FEATURES rows
+D1	DONE	json.go mapping
+D2	DONE	race lane
+D3	DONE	FEATURES updated
+D4	DONE	unit tests
+D5	DONE	skip_steps
+E1	DONE	toJSONClone
+E2	DONE	race
+E3	DONE	FEATURES
+E4	DONE	tests
+E5	WONT	string per Q1
+E6	DONE	structured field
+E7	DONE	guard test
+E8	DONE	goldens
+E9	WONT	speculative, no demand
+F1	DONE	json.go
+F2:simplejson	WONT	minimal by design
+F3	DONE	tests
+F4	DONE	FEATURES
+F5	DONE	sarif field
+F6	DONE	text-only documented
+F7-9	DONE	diff-report
+F10	WONT	Q1 decision
+F11-13	DONE	html
+F14	WONT	speculative, no demand
+F15	WONT	speculative, no demand
+F16	DONE	--config flag
+F17	DONE	comma-separated
+F18	DONE	ADR-0018
+F19	DONE	recommend-threshold
+F20	DONE	ADR-0027
+F21	WONT	speculative, no demand
+F22	DONE	typeAwareTag isolation
+F23	OPEN	ROADMAP
+F24	WONT	speculative, no demand
+F25	DONE	type encoding
+F26	DONE	printer split
+F27-31	WONT	split done differently
+F32	DONE	leaf decoupled
+F33	WONT	minimal by design
+F34	WONT	speculative, no demand
+F35	DONE	goldens
+F36	WONT	speculative, no demand
+F37	DONE	skip_steps
+F38	WONT	govulncheck not adopted
+F39	WONT	speculative, no demand
+F40	DONE	dependabot.yml exists
+F41	DONE	release.yml
+F42	WONT	unrouted
+F43	WONT	AGENTS documents
+F44	WONT	speculative, no demand
+F45	WONT	speculative, no demand
+F46	WONT	ADR-0013 codes
+F47	WONT	parked — TODO_LIST tier
+F48	DONE	Explanation object
+F49	DONE	SARIF tags
+F50	DONE	ADR-0017
+G1-G3	DONE	resolutions in H
+FILE docs/status/2026-07-24_19-31_type-aware-detection-implementation.md
+CLASS KEEP
+AUDIT 24 40 core shipped (ADR-0015/0026, incremental, SDK); P2-P4 research/speculative tails unrouted by design
+FILE docs/status/2026-07-24_19-48_clone-type-consolidation-status.md
+CLASS KEEP
+AUDIT 24 26 consolidation shipped via CloneRef (ADR-0005); SPLIT-BRAIN.html annotation + micro-hygiene open
+FILE docs/status/2026-07-24_21-56_docs-health-update-old-docs-sprint-2.md
+CLASS KEEP
+FIX Em-dashes cleaned across TODO_LIST, ROADMAP, CHANGELOG, HOW_TO_USE, FEATURES, DOMAIN_LANGUAGE (Sprint 3, 69 removed). ||= Em-dashes persisted in TODO_LIST/ROADMAP; stripped 2026-10-05 (CHANGELOG history untouched).
+AUDIT 44 12 counts gate-shipped; em-dash now closed; link/audit tails unrouted
+FILE docs/status/2026-07-24_23-34_post-sprint-cleanup-and-hardening.md
+CLASS KEEP
+AUDIT 40 22 core shipped; nolint/dead-directive classes closed; research tails unrouted
+FILE docs/status/2026-07-24_23-52_generated-code-defense-in-depth.md
+CLASS KEEP
+FIX The upstream gogenfilter push remains a TODO_LIST item ||= superseded by in-repo matchedGeneratedCategory unification + gogenfilter drift tests.
+AUDIT 38 20 matchedGeneratedCategory shipped; doc/filter tails unrouted
+FILE docs/status/2026-07-25_00-30_code-hygiene-sprint-self-review.md
+CLASS KEEP
+FIX The remaining open item (`SetFilterSourceStats` unit test) is tracked in TODO_LIST. ||= no SetFilterSourceStats unit test exists and it is no longer tracked.
+AUDIT 42 12 stats breakdown shipped; micro tails unrouted
+FILE docs/status/2026-07-25_02-49_code-hygiene-gap-closure.md
+CLASS KEEP
+FIX The remaining open items (`SetFilterSourceStats` unit test, SDK/CLI drift-detection test) are tracked in TODO_LIST. ||= drift test shipped (cmd/docs_health_counts_test.go); SetFilterSourceStats test still absent.
+AUDIT 42 14 drift gate shipped; B1-class test tails open
+FILE docs/status/2026-07-25_04-31_smart-actionability-guard-clauses-terminal-statements.md
+CLASS KEEP
+AUDIT 30 30 guard-clause/test-helper patterns shipped; F4-F50 brainstorm tails speculative-unrouted
+FILE docs/status/2026-07-25_05-11_bdd-fixture-actionability-fix-postmortem.md
+CLASS KEEP
+AUDIT 32 14 --no-actionability shipped; fixture guidance landed; flakes owner-side
+FILE docs/status/2026-07-25_06-28_accept-directive-fix-and-test-helper-delegate-status.md
+CLASS KEEP
+FIX Accept-directive docs (`HOW_TO_USE.md`) remain a known gap. ||= HOW_TO_USE fully documents accept directives (placement, hash vs description, inline, stale warnings).
+AUDIT 32 24 test-helper-delegate shipped; scan-boundary micro-tails open
+FILE docs/status/2026-07-25_07-10_docs-health-update-old-docs-sprint-3.md
+CLASS KEEP
+AUDIT 40 13 annotations+guards landed; 6000+ claim still in FEATURES:8; micro tails
+FILE docs/status/2026-07-25_07-47_filter-cluster-quick-wins-and-self-review.md
+CLASS KEEP
+AUDIT 36 22 filter cluster shipped; infra tails (govulncheck/dependabot-class) partly open
+FILE docs/status/2026-07-25_08-38_gap-closure-and-self-review.md
+CLASS KEEP
+AUDIT 34 24 explanation/SARIF/guards shipped; HTML micro-tails + fuzz tails open
+FILE docs/status/2026-07-25_19-37_scanner-bug-followup.md
+CLASS KEEP
+AUDIT 26 16 scanner fixed + consolidated; focused-test tails open
+FILE docs/status/2026-07-21_14-39_ci-fix-sprint.md
+CLASS KEEP
+AUDIT 20 6 ADR-0016 + guard shipped; branch protection owner-gated; nolint micro-tails
+FILE docs/status/2026-07-22_11-21_ci-fix-sprint.md
+CLASS KEEP
+AUDIT 16 4 CI green across releases; daemon pushes as Lars; history-immutability WONTs
+FILE docs/status/2026-07-24_23-11_full-todo-execution-sprint.md
+CLASS SKIP
+FILE docs/status/2026-06-04_22-50_deduplication-sprint-status.md
+CLASS KEEP
+AUDIT 3 3 skip-reasons documented; a-h/templ upstream Pos=0 open (AGENTS Known Limitations)
+FILE docs/status/2026-06-04_23-25_flake-health-and-gogenfilter-bump.md
+CLASS KEEP
+FIX - **2 languages**: Go (45 node types), Templ (28 node types) — both fully functional ||= - **2 languages**: Go (51 node types), Templ (29 node types) — both fully functional.
+AUDIT 18 4 DTO/enum/stats eras shipped; a-h/templ upstream open
+FILE docs/status/2026-06-09_02-11_semantic-detection-hardening-status.md
+CLASS KEEP
+FIX - 5 detection methods ||= - 2 detection methods (suffix tree + hash).
+AUDIT 22 6 three-mode shipped; watch/TS/Python parked in ROADMAP
+FILE docs/status/2026-06-11_04-35_ast-aware-false-positive-filtering.md
+CLASS ARCHIVE
+MOVE archived
+ITEMS:
+any:isTestScaffolding	WONT	conservative list intentional
+any:isDataDominated	WONT	threshold-calibration note
+any:isTableDrivenTestBody	WONT	coverage-limitation note
+5@Cross-file test	WONT	speculative, no demand
+2@assertion list	WONT	manual list intentional
+3@No end-to-end	DONE	bdd/actionability pipeline coverage
+3@Make data dominance	WONT	speculative, no demand
+13@Printer coverage	WONT	aspirational
+14@Fuzz tests	WONT	speculative, no demand
+18@FuncLit	WONT	speculative, untracked
+19@interface method	DONE	ADR-0018 type-aware methods
+20@CompositeLit	DONE	--type-aware static types
+FILE docs/status/2026-06-11_12-28_comprehensive-review-and-planning.md
+CLASS KEEP
+AUDIT 12 4 DTO/TokenValue/enum/CloneRef shipped; branded NodeType deferred; micro-tails speculative
+FILE docs/status/2026-06-11_13-57_comprehensive-status-and-planning.md
+CLASS ARCHIVE
+MOVE archived
+ITEMS:
+7@Restart LSP	DONE	cleared 06-12
+10@BuildCloneGroups	WONT	untracked idea
+11@Threshold validation	WONT	untracked idea
+12@isTestFile	WONT	function no longer exists
+13@golang.org/x/exp	WONT	indirect only
+14@pkg/format/hash.go	WONT	untracked idea
+12@--output-file support	WONT	stats-only
+17@x/exp/slices	WONT	indirect
+19@Consolidate `pkg/format/hash.go	WONT	untracked
+21@Move isTestFile	WONT	gone; moot
+22@Deduplicate `BuildCloneGroups()	WONT	untracked
+23@--verbose	WONT	speculative, no demand
+24@fang	WONT	v1.0.0 retained
+25@clone CSV	WONT	stats-only
+any:BEFORE or AFTER	SUPERSEDED	DTO shipped; ADR-0005
+FILE docs/status/2026-06-12_01-31_housekeeping-and-enum-hardening.md
+CLASS ARCHIVE
+MOVE archived
+ITEMS:
+any:Unify enum patterns	DONE	pkg/enum shipped
+any:Memory optimization	DONE	ADR-0022 + interning
+any:TODO/Legacy detectors	WONT	removed 06-17
+any:ProcessedClone DTO	DONE	shipped
+any:Consolidate three	DONE	ADR-0005 CloneRef
+any:Unify enum patterns (domain	DONE	pkg/enum
+any:Refactor `syntax/golang/transform.go`	WONT	skip documented
+any:Fix remaining LSP	WONT	speculative, no demand
+5@stringer	WONT	speculative, untracked
+6@TokenValue	DONE	suffixtree.TokenValue
+7@fuzz	DONE	templ fuzz_test
+9@Generate stringer	WONT	speculative, untracked
+10@integration test	DONE	integration green
+11@LSP hints	WONT	speculative, no demand
+12@--method todos	WONT	removed 06-17
+20@suffix tree vs hash	WONT	untracked
+any:big-bang	SUPERSEDED	ADR-0005 migration shipped
+FILE docs/status/2026-06-16_13-58_full-sprint-completion.md
+CLASS KEEP
+AUDIT 20 7 findings→provider shipped; facade/import-cycle deferred; micro-tails speculative
+FILE docs/status/2026-06-16_16-38_findings-pipeline-complete.md
+CLASS KEEP
+FIX Users running `art-dupl --detection-methods todos` got zero output. This is now fixed end-to-end: ||= todos/legacy methods were removed 2026-06-17; findings ship via the toolsdk provider (pkg/provider).
+AUDIT 9 4 todos/legacy removed; import-cycle deferred
+FILE docs/status/2026-06-16_22-54_findings-pipeline-production-ready.md
+CLASS KEEP
+FIX Users running `art-dupl --detection-methods todos` got zero output. Now fully fixed through 3 self-review iterations ||= todos/legacy removed 2026-06-17; findings ship via toolsdk provider.
+AUDIT 9 3 todos/legacy removed; facade deferred
+FILE docs/status/2026-06-17_10-44_remove-todo-legacy-focus-duplicates.md
+CLASS ARCHIVE
+MOVE archived
+ITEMS:
+- [ ] `duplications-checker` fails	WONT	BuildFlow-side; lane reworked
+- [ ] `jscpd` fails	DONE	step removed
+- [ ] 8 BDD failures	DONE	fixed 06-17; 264/264
+- [ ] `config.DetectionMethods`	WONT	speculative, untracked
+- [ ] `syntax.Match.Frags`	WONT	arena addressed allocs
+- [ ] `domain.ProcessedCloneGroup` vs	DONE	CloneRef everywhere
+- [ ] `domain.LineNumber`	DONE	branded types deleted
+- [ ] `--method` flag	WONT	speculative UX
+- [ ] `go.mod`	DONE	bump intentional
+1@Consolidate Clone DTOs	DONE	CloneRef (ADR-0005)
+2@BDD filtering tests	DONE	root-caused; fixed
+3@position types	DONE	CloneRef unified
+4@DetectionMethods	WONT	speculative
+5@dead code printer	DONE	zero Finding refs
+6@executeAnalysis	WONT	untracked idea
+7@go.mod bump	DONE	intentional
+8@findingCount	DONE	deleted
+1@findingCount	DONE	deleted 06-17
+2@go.mod	DONE	intentional
+3@finding refs docs	DONE	cleaned
+4@FEATURES	DONE	rows removed
+5@AGENTS	DONE	paragraph removed
+6@BDD filtering	DONE	264/264
+7@Unify DTO	DONE	CloneRef
+8@position types	DONE	unified
+9@Printer interface	WONT	StatsPrinter remains; untracked
+10@DetectionMethods	WONT	speculative
+11@Modularize	WONT	skipped with rationale
+12@Position type	WONT	syntax.Node int32 by design
+13@Consolidate enums	WONT	SDK independence goal
+14@nolint:funlen	WONT	one remains; cosmetic
+15@Result[T]	WONT	speculative
+16@html.go audit	DONE	zero refs
+17@hardcoded count	DONE	assertion removed
+18@build tags	WONT	speculative
+19@helper naming	WONT	speculative
+20@go vet	DONE	zero warnings
+21@buildflow allowlist	WONT	lane reworked
+22@jscpd	DONE	removed
+23@AGENTS Finding	DONE	removed
+24@SDK_DESIGN	DONE	rewritten
+25@gofumpt	DONE	clean
+any:BDD filtering tests (8 failures)	DONE	root-caused; fixed
+FILE docs/status/2026-06-17_12-19_filter-override-fix-and-dead-code-cleanup.md
+CLASS ARCHIVE
+MOVE archived
+ITEMS:
+any:three parallel position	DONE	CloneRef consolidated
+any:config.DetectionMethods	WONT	speculative
+any:Three parallel Clone DTOs	DONE	CloneRef (ADR-0005)
+any:Multi-Read Content	DONE	ReadFile injection
+2@Unify position types	DONE	CloneRef
+4@DetectionMethods	WONT	speculative
+7@executeAnalysis	WONT	untracked
+2@TestDetectionMethods	DONE	assertion removed
+5@Unify position	DONE	unified
+6@duplications-checker	WONT	lane reworked
+7@DetectionMethods set	WONT	speculative
+8@Printer interface	WONT	untracked
+11@chan FileContent	DONE	injection
+12@Modularize	WONT	skipped with rationale
+13@Position type	WONT	by design
+14@nolint:funlen	WONT	one remains
+16@test helper naming	WONT	speculative
+17@go:build	WONT	speculative
+18@buildflow allowlist	WONT	lane reworked
+19@--method	WONT	speculative UX
+22@StreamResult	WONT	untracked
+24@error wrapping	WONT	speculative
+25@filter override benchmarks	DONE	filter_bench_test
+any:which one wins	SUPERSEDED	CloneRef landed
+FILE docs/status/2026-06-17_12-49_enum-dedup-and-comprehensive-audit.md
+CLASS KEEP
+FIX However, two **CI-breaking issues** exist: a stale nix `vendorHash` and a pre-existing `gosec G304` lint warning. ||= both fixed since: the Nix Flake Check CI gate is green and lint reports 0 issues.
+AUDIT 30 6 ADRs/pkg-enum shipped; TS/Python/watch parked; micro-tails speculative
+FILE docs/status/2026-06-20_15-11_comprehensive-status.md
+CLASS KEEP
+AUDIT 17 8 coverage 92.7%, leaks fixed, subpackages shipped; facade/consolidation deferred
+FILE docs/status/2026-06-20_18-23_alpha-normalization-three-mode.md
+CLASS KEEP
+AUDIT 8 2 T1-T24 shipped (ADR-0023/0007); nested-scope shadowing open in ROADMAP
+FILE docs/status/2026-06-20_18-50_superb-clone-engine-sprint-complete.md
+CLASS KEEP
+AUDIT 9 2 T1/T13-T16/T20/T23-24 shipped; shadowing open
+FILE docs/status/2026-06-20_19-56_final-sprint-complete.md
+CLASS ARCHIVE
+MOVE archived
+ITEMS:
+T1	DONE	ADR-0023 shipped
+T13	DONE	decoupled 07-26
+T14	DONE	CloneRef (ADR-0005)
+T15/T16	DONE	subpackages; Fragment string
+T23	DONE	ADR-0024/0010
+4@No BDD test for Type 2	DONE	bdd/generic_method_test
+12@baseline 88.2	WONT	aspirational target
+16@HTML report: extractability	WONT	untracked
+17@SDK: expose DetectionMode	WONT	by design
+18@--mode flag	WONT	explicit flags (ADR-0007)
+20@SARIF: add extractability	WONT	untracked
+23@profile normalizer	WONT	speculative
+25@art-dupl init	WONT	untracked
+any:T1 (statement-level tokenization) be attempted	DONE	GO taken; ADR-0023 + ADR-0009
+FILE docs/status/2026-06-20_22-10_t1-statement-tokenization-in-progress.md
+CLASS ARCHIVE
+MOVE archived
+ITEMS:
+any:BDD Test Threshold Calibration	DONE	calibrated 23:08
+5@Reuse existing hash	WONT	untracked micro
+6@NodeRole	WONT	speculative
+5@BDD test: Type 2	DONE	generic_method_test
+11@shared FNV helper	WONT	untracked
+13@--mode flag	WONT	ADR-0007
+14@SARIF: add extractability	WONT	untracked
+15@HTML: clone-type badge	WONT	untracked
+16@HTML: extractability column	WONT	untracked
+21@SDK: expose DetectionMode	WONT	by design
+25@profile normalizer	WONT	speculative
+any:default threshold be 1 or 3	DONE	ADR-0009 settled 5
+FILE docs/status/2026-06-20_23-08_statement-level-tokenization-complete.md
+CLASS KEEP
+AUDIT 8 6 ADR-0023 shipped; TS/Python/watch parked; Owns retained
+FILE docs/status/2026-06-22_19-44_split-brain-resolution-complete.md
+CLASS ARCHIVE
+MOVE archived
+ITEMS:
+3@OutputWriter	WONT	speculative
+5@branded types for paths	WONT	deleted as dead
+6@config.Config	WONT	speculative
+8@BDD tests are slow	WONT	speculative
+9@Golden file tests	WONT	speculative
+7@Add branded `Filename`	WONT	rejected as dead
+8@Split `config.Config`	WONT	speculative
+9@OutputWriter	WONT	speculative
+13@Normalize golden	WONT	speculative
+14@Speed up BDD	WONT	speculative
+25@--dry-run	WONT	untracked
+any:consolidated into fewer types	SUPERSEDED	CloneRef; DTO split intentional
+FILE docs/status/2026-06-23_08-34_multi-skill-sprint-status.md
+CLASS KEEP
+AUDIT 9 6 Name() shipped; broad recover() + unsorted map iteration remain; micro-tails WONT
+FILE docs/status/2026-05-01_00-33_comprehensive-architecture-status.md
+CLASS KEEP
+FIX `Nix build` | **Fails** (dependency issue) ||= nix build green at HEAD (flake CI gate green across releases).
+AUDIT 30 4 cmd split/printer DTO/arch-lint shipped; coverage 80% target + clone consolidation open
+FILE docs/status/2026-05-02_22-11_templ-default-inclusion-flip.md
+CLASS KEEP
+FIX The old `--include-templ` flag has been replaced with `--exclude-templ` to opt-out. ||= reverted 2026-05-06; --include-templ gates *_templ.go generated files (ADR-0027 era semantics).
+AUDIT 12 4 revert shipped; flag matrix + clone types open
+FILE docs/status/2026-05-03_02-13-comprehensive-audit-and-fixes.md
+CLASS KEEP
+AUDIT 24 4 format/sort_type deleted; god-struct fixed; SARIF schema validator + SDK incremental open
+FILE docs/status/2026-05-04_21-06_comprehensive-status-report.md
+CLASS KEEP
+FIX **Coverage**   | ~80-85% overall ||= coverage gated by scripts/check-coverage.sh baseline (75.2% at capture).
+AUDIT 18 5 DTO/regression gates shipped; filtertest coverage unrouted
+FILE docs/status/2026-05-06_09-40_sarif-fix-semantic-interface-status.md
+CLASS KEEP
+AUDIT 19 3 semantic interface shipped; SARIF schema validation open in ROADMAP
+FILE docs/status/2026-05-06_10-17_semantic-interface-fix-comprehensive-status.md
+CLASS KEEP
+FIX Structural-only mode (`--structural`) — Default behavior, AST shape matching ||= semantic is the default (ADR-0007); --structural is opt-in.
+AUDIT 20 6 lint zero; token/enum shipped; consolidation + TS/Python open
+FILE docs/status/2026-05-06_10-26_filtering-pipeline-fix-and-cleanup.md
+CLASS KEEP
+AUDIT 18 3 gogenfilter v3 pinned; nil-filter shipped; clone types open
+FILE docs/status/2026-05-14_09-48_COMPREHENSIVE-STATUS-REPORT.md
+CLASS KEEP
+FIX **Semantic default**     | Config default `Semantic: false` ||= semantic is the default (true) since 2026-05-17 (ADR-0007).
+AUDIT 22 5 semantic flipped; multi-language/plugin/mutation-testing open
+FILE docs/status/2026-05-16_02-11_semantic-clone-dedup-status.md
+CLASS KEEP
+AUDIT 4 1 dedup floor reached 05-21 (ledger process); DTO shipped
+FILE docs/status/2026-05-16_03-34_semantic-clone-dedup-status.md
+CLASS KEEP
+AUDIT 2 1 dedup floor reached 05-21
+FILE docs/status/2026-05-16_21-02_actionability-semantic-improvements.md
+CLASS KEEP
+FIX `--structural` (default) → reports everything (raw power, unchanged) ||= semantic is the default since ADR-0007; structural is opt-in.
+AUDIT 12 5 37 patterns shipped; HTML badges still absent
+FILE docs/status/2026-05-16_21-31_actionability-complete.md
+CLASS KEEP
+AUDIT 14 4 badges/Node.Name shipped; HTML buttons + b1 HTML badges open
+FILE docs/status/2026-05-16_21-40_dogfooding-validation.md
+CLASS KEEP
+AUDIT 3 1 mergeConfig fixed; HTML report badges still absent
+FILE docs/status/2026-05-17_01-09_readme-overhaul-and-comprehensive-status.md
+CLASS KEEP
+FIX The `docs/status/` directory has 304+ files (some dating to 2025). It needs archiving. ||= old reports live in docs/status/archived/; archive consolidation done 2026-09-28.
+AUDIT 20 5 archived/ created; man page + coverage targets open
+FILE docs/status/2026-05-17_03-59_lint-cleanup-and-ci-green.md
+CLASS KEEP
+AUDIT 18 3 lint zero; man page open; -o removed
+FILE docs/status/2026-05-17_04-36_session-complete-all-green.md
+CLASS KEEP
+FIX Confirmed `-m todos` and `-m legacy` detection methods are already fully wired and functional ||= TodoDetector/LegacyDetector were later deleted; only suffix-tree and hash methods remain.
+AUDIT 17 5 todos/legacy deleted; man page + SARIF schema open
+FILE docs/status/2026-05-17_23-23_architecture-debt-resolution.md
+CLASS KEEP
+AUDIT 15 5 Changed() merge/interning shipped; merge tests unrouted
+FILE docs/status/2026-05-18_03-06_5-architecture-issues-complete.md
+CLASS KEEP
+AUDIT 12 5 intern/interface shipped; branded types rejected
+FILE docs/status/2026-05-20_04-26_stats-only-flag-fix-and-comprehensive-review.md
+CLASS KEEP
+FIX **Wired** through `MultiDetector` and accessible via `-m` flag ||= TodoDetector/LegacyDetector were later deleted; only art-dupl and hash methods remain.
+AUDIT 24 3 simd deleted; releases cut; clone types open
+FILE docs/status/2026-05-20_22-58_templ-false-positive-fix.md
+CLASS KEEP
+AUDIT 21 2 rebased same night; clone types open
+FILE docs/status/2026-05-20_23-17_templ-position-audit-complete.md
+CLASS KEEP
+AUDIT 21 2 shipped; clone types open
+FILE docs/status/2026-05-20_23-39_session-final-all-green.md
+CLASS KEEP
+AUDIT 21 2 shipped; clone types open
+FILE docs/status/2026-05-21_16-06_stats-output-improvements.md
+CLASS KEEP
+AUDIT 8 6 stats mature; watch/JSON-schema/effort-estimate unrouted
+FILE docs/status/2026-05-21_17-29_comprehensive-status-update.md
+CLASS KEEP
+FIX One pre-existing test failure remains in `cmd` (`os.Exit(1)` in `statError`). ||= statError's os.Exit is gone; cmd and bdd suites green today.
+AUDIT 20 3 os.Exit removed; version fixed; clone types open
+FILE docs/status/2026-05-21_18-14_comprehensive-status-update.md
+CLASS KEEP
+AUDIT 18 3 os.Exit removed; suites green
+FILE docs/status/2026-05-21_19-00_zero-duplication-achieved.md
+CLASS KEEP
+FIX SIMD-optimized hot paths in internal/simd/ ||= internal/simd was deleted; xxh3 provides native SIMD.
+AUDIT 20 2 lint zero; bdd/cmd owner question unanswered
+FILE docs/status/2026-05-21_19-31_comprehensive-generic-filter-and-project-health.md
+CLASS KEEP
+AUDIT 20 4 generic filter wired; HTML a11y + SARIF schema open
+FILE docs/status/2026-05-21_19-41_t20-deduplication-4-inherent-clones.md
+CLASS KEEP
+AUDIT 20 2 inherent clones accepted; bdd/cmd owner question
+FILE docs/status/2026-05-21_19-44_comprehensive-session-review-generic-filter.md
+CLASS KEEP
+FIX BuildFlow pre-commit hook fails with **5 pre-existing issues** that block ALL commits ||= unblocked via .buildflow.yml skip_steps + linter guard; 0 lint findings today.
+AUDIT 20 3 skip_steps landed; fang v2 + non-Go open
+FILE docs/status/2026-05-21_19-58_deduplication-floor-reached.md
+CLASS KEEP
+AUDIT 20 2 floor reached; bdd/cmd owner question
+FILE docs/status/2026-05-23_00-03_build-system-cleanup-agents-audit.md
+CLASS KEEP
+AUDIT 22 3 flake checks in CI; Homebrew formula placeholders stale (0.2.0 vs released)
+FILE docs/planning/2026-01-02_10-37-PARETO-OPTIMAL-EXECUTION-PLAN.md
+CLASS ARCHIVE
+MOVE archived
+BANNER Executed/superseded: T1-T3 eras shipped (lint zero, cmd split, coverage); T3.1-3.4 superseded by detector removal (2026-06-17); T2.7 fallback unneeded.
+FILE docs/planning/2026-01-07_01_48-PARETO-OPTIMIZATION-PLAN.md
+CLASS ARCHIVE
+MOVE archived
+FIX **Status:** Planning Phase ||= Executed/superseded; all tiers shipped or resolved by v0.5.0+.
+FILE docs/planning/2026-02-14_06_07-PARETO-OPTIMAL-EXECUTION-PLAN.md
+CLASS ARCHIVE
+MOVE archived
+BANNER Executed: coverage/benchmark/split/gitignore/error eras shipped; performance.yml guards regressions.
+FILE docs/planning/2026-02-14_09_19-PARETO-PHASES-2-3-EXECUTION-PLAN.md
+CLASS ARCHIVE
+MOVE archived
+BANNER Executed: phases 2-3 shipped through the v0.5.x polish eras.
+FILE docs/planning/2026-02-20_04-01_PARETO_EXECUTION_PLAN.md
+CLASS ARCHIVE
+MOVE archived
+BANNER Executed: test splits, parallel workers, HTML modernization, templates shipped; .github/ISSUE_TEMPLATE never created (WONT).
+FILE docs/planning/2026-02-20_06-55_PARETO_EXECUTION_PLAN_v2.md
+CLASS ARCHIVE
+MOVE archived
+FIX This plan addresses the **52 files exceeding 250 lines** and **68 TODO/FIXME comments** that block full HOW_TO_GOLANG compliance. ||= HOW_TO_GOLANG.md was later removed; the 250-line standard is no longer enforced.
+FILE docs/planning/2026-02-20_FILE_SIZES_BASELINE.md
+CLASS ARCHIVE
+MOVE archived
+FIX **Status**: 52 files exceed 250 lines (HOW_TO_GOLANG.md limit) ||= HOW_TO_GOLANG.md no longer exists; the 250-line limit was dropped; baseline stale.
+FILE docs/planning/2026-02-27_09-14-PARETO-LINT-OPTIMIZATION-PLAN.md
+CLASS ARCHIVE
+MOVE archived
+BANNER Executed: P0-P5 lint eras shipped (106 linters, 0 findings today); P6 structural classes handled via .golangci.yml scoping instead.
+FILE docs/planning/2026-02-27_18-30-REMAINING_LINT_EXECUTION_PLAN.md
+CLASS ARCHIVE
+MOVE archived
+BANNER Executed: P2-P5 phases shipped; P6 via config exclusions (mnd/tagliatelle/varnamelen/exhaustruct).
+FILE docs/planning/2026-03-03_0450-PARETO_EXECUTION_MASTERPLAN.md
+CLASS ARCHIVE
+MOVE archived
+BANNER Executed: TokenValue, docs, property/fuzz tests, progress/errors/config, memory ADRs (0020/0022) all shipped.
+FILE docs/planning/2026-03-15_15-08_PANIC_PREVENTION_PLAN.md
+CLASS ARCHIVE
+MOVE archived
+FIX - **P0 (Critical):** 5 items - Slice bounds violations that crash immediately ||= P0 sources fixed era-wide; broad recover() remains at syntax/golang/parse.go:106 (documented).
+FILE docs/planning/2026-03-20_08_05-PARETO_DRIVEN_ERROR_CONTEXT_IMPROVEMENT.md
+CLASS ARCHIVE
+MOVE archived
+BANNER Executed: typed sentinels + Tier 2/3 context wrapping shipped across pkg/artdupl, printers, domain.
+FILE docs/planning/2026-03-20_11-30-TASK_TABLES.md
+CLASS ARCHIVE
+MOVE archived
+BANNER Executed: lib/cli deleted, todos/legacy removed, ADR-0005 unification, testutil, flags/ADR eras all shipped.
+FILE docs/planning/2026-03-20_11_44-ARCHITECTURAL_AUDIT_AND_MODERNIZATION.md
+CLASS ARCHIVE
+MOVE archived
+BANNER Executed: go-diff pin, lib/ removal, modernization (range-int/min/AsType), DI, ADR-0003 all shipped.
+FILE docs/planning/2026-03-20_21-50_SUPERB_ACTION_PLAN.md
+CLASS ARCHIVE
+MOVE archived
+BANNER Executed: exhaustive switches (94ed84f), unused code, dynamic errors, prealloc eras shipped; Tier-4 nolint strategy replaced by .golangci.yml scoping.
+FILE docs/planning/2026-03-20_22-41-BRUTAL_ANALYSIS_AND_COMPREHENSIVE_PLAN.md
+CLASS ARCHIVE
+MOVE archived
+FIX `--profile` flag exists but implementation incomplete ||= --profile implemented (job.StartProfile, cmd/flags.go).
+FILE docs/planning/2026-04-15_19-31-remove-filter-wrapper-direct-gogenfilter.md
+CLASS ARCHIVE
+MOVE archived
+BANNER Executed: pkg/filter deleted; direct gogenfilter imports; --include-* flags; AGENTS/lint/replace-directive all done.
+FILE docs/planning/2026-04-15_22-36-ghost-cleanup-architecture-hardening.md
+CLASS ARCHIVE
+MOVE archived
+BANNER Executed: six ghost packages deleted; flag dedup; docs; BDD fixed. justfile-specific items moot (justfile later removed entirely).
+FILE docs/planning/2026-04-30_21-39_codebase-quality-type-safety-sprint.md
+CLASS ARCHIVE
+MOVE archived
+BANNER Executed: errors.AsType, typed fields, html split files, CONTRIBUTING, nix checks all shipped.
+FILE docs/planning/2026-04-30_22-45-ghost-integration-type-unification.md
+CLASS ARCHIVE
+MOVE archived
+BANNER Executed: ghosts removed, ADR-0005 unification, SDK isolation, DTO decoupling, nolint/arch-lint eras all shipped.
+FILE docs/planning/2026-05-03_01-58-comprehensive-execution-plan.md
+CLASS ARCHIVE
+MOVE archived
+BANNER Executed: sorting unified, flags, --simple-json, format/sort_type deleted, detection.Config + registry shipped; --todos/--legacy removed instead of wired.
+FILE docs/planning/2026-05-16_clone-elimination-plan.md
+CLASS ARCHIVE
+MOVE archived
+BANNER Executed: zero-duplication floor reached 2026-05-21; SELF_CLEAN_LEDGER tracks adjudication; groups 50-51 accepted inherently immobile.
+FILE docs/planning/2026-06-09_01-36-semantic-detection-hardening.md
+CLASS ARCHIVE
+MOVE archived
+BANNER Executed: DecodeBaseType, operator semantic encoding, hash_seq, BDD suites, benchmarks, docs all shipped; CategoryIdiom dropped in favor of actionability patterns.
+FILE docs/planning/2026-06-15_17-30_full-code-review.md
+CLASS ARCHIVE
+MOVE archived
+BANNER Executed: all numbered findings resolved in-file (Done marks) or superseded by the 2026-06-17 detector removal; facade WONT (import cycle, ADR-documented).
+FILE docs/planning/2026-06-15_23-05_SUPERB-FULL-TODO-EXECUTION.md
+CLASS ARCHIVE
+MOVE archived
+BANNER Executed: IsValid/sentinel/Options-copy, ctx, enums, aliases, DTO, interning, findtran, describe-table eras all shipped; legacy detector removed not rewritten; facade WONT.
+FILE docs/planning/2026-06-20_05-30_SUPERB-ARCHITECTURE-HARDENING.md
+CLASS ARCHIVE
+MOVE archived
+BANNER Executed: M01-M15 shipped (--since removal, hash_seq, actionability split, SDK sentinels, arch-lint); facade WONT; hybrid superseded by findtran.go.
+FILE docs/planning/2026-06-20_06-15_SUPERB-CORRECTNESS-CLEANUP.md
+CLASS ARCHIVE
+MOVE archived
+BANNER Executed: M01-M10 shipped (dead config, sentinels, LinesAnalyzed, SDK decoupling, docs); printer split stays blocked (cycle).
+FILE docs/planning/2026-06-20_16-05_SUPERB-CLONE-DETECTION-ENGINE.md
+CLASS ARCHIVE
+MOVE archived
+BANNER Executed: T1-T24 shipped (ADR-0023 statement tokenization, ADR-0007 modes, patterns, baseline/check, extractability, jsonv2gate, View types).
+FILE docs/planning/2026-06-20_20-30_comprehensive-remaining-todo-plan.md
+CLASS ARCHIVE
+MOVE archived
+FIX **Do not start T1 sub-tasks without explicit approval.** ||= T1 approved and completed 2026-06-20 (ADR-0023 statement tokenization).
+FILE docs/planning/2026-07-16_04-29_comprehensive-pareto-roadmap.md
+CLASS ARCHIVE
+MOVE archived
+FIX **What remains:** 120 deduplicated tasks across 8 categories, prioritized by Pareto leverage. ||= P0-P4 executed across July-Sept sprints; only P5 research items remain parked in ROADMAP.md.
+FILE docs/planning/2026-07-24_22-31_SUPERB-pareto-execution-plan.md
+CLASS ARCHIVE
+MOVE archived
+BANNER Executed: M01-M25 shipped (accept directives, gitignore, type-aware validation, v0.4.0, RELEASE.md, lint guard, ADR-0015/0016, SDK TypeAware); M23 WONT retained deliberately.
+FILE docs/planning/2026-07-26_06-58_SUPERB-pareto-execution-plan.md
+CLASS ARCHIVE
+MOVE archived
+BANNER Executed: T01-T17 shipped (struck in-file); T18-T22 WONT/parked with documented blockers; T23 superseded by findtran.go hybrid.
+FILE docs/planning/2026-07-27_10-31_ZERO-FP-FN-EXTRACTABILITY-ENGINE.md
+CLASS KEEP
+AUDIT 24 2 extractability engine shipped (ADR-0017); M24 v1.0-readiness audit pending (no v1.0 released)
+FILE docs/planning/2026-07-28_10-30-github-actions-distribution-plan.md
+CLASS ARCHIVE
+MOVE archived
+FIX **Goal:** Make art-dupl available in GitHub Actions as a one-line, fast, pinned, verified `uses: LarsArtmann/art-dupl@v1`. ||= WON'T-IMPLEMENT 2026-09-28: superseded by the BuildFlow toolsdk provider lane (decision-sheet g2).
+FILE docs/planning/2026-05-16_21-13_actionability-phase-2-plan.md
+CLASS KEEP
+AUDIT 10 2 phases 1-2 shipped; HTML badges (3.2) and plumbing annotation (3.3) never implemented
+FILE docs/planning/2026-03-20_11-30-COMPREHENSIVE_ARCHITECTURAL_REFACTORING_PLAN.md
+CLASS EMPTY
+MOVE archived
+FILE docs/planning/2026-03-20_11-57-ARCHITECTURAL_RETROSPECTIVE_AND_EXECUTION_PLAN.md
+CLASS EMPTY
+MOVE archived
+FILE docs/status/2026-07-24_18-14_docs-health-and-update-old-docs-sprint.md
+CLASS EMPTY
+MOVE archived
+FILE docs/status/2026-08-15_22-57_continuation-session-cache-deadcode-bdd-docs-adr.md
+CLASS KEEP
+AUDIT 14 4 cache dead-code + ADR + docs landed; race/bench tails open
+FILE docs/status/2026-08-16_13-13_master-plan-wave3-signal-hardening.md
+CLASS KEEP
+AUDIT 30 8 wave-3 landed; final gates + T2.2 A/B completed 2026-09-22; micro-tails open
+FILE docs/status/2026-08-16_17-37_wave3-completion-docs-sync-gates-partial.md
+CLASS KEEP
+AUDIT 20 6 b)-section gates completed by later CI lanes; T2.2 done 2026-09-22; residual lint micro-tails
+FILE docs/status/2026-09-28_21-54_docs-health-full-audit-pass.md
+CLASS KEEP
+AUDIT 20 18 P0 leftovers closed by SUPERB passes; P1-P4 tails + g1-g3 owner questions open
+FILE docs/status/2026-09-29_03-01_todo-list-execution-sprint.md
+CLASS KEEP
+AUDIT 23 6 19/23 done; v0.8.0 tag + nix-hash-fix + CI-green + Spec.Timeout-heavy (since done) open tails
+FILE docs/status/2026-09-29_05-40_superb-v2-close-out-m19-m22.md
+CLASS KEEP
+AUDIT 9 8 M19-M22 done; two red CI lanes + owner-gated releases/pushes open
+FILE docs/feedback/2026-06-04-suppress-test-only-low-priority-clones.md
+CLASS ARCHIVE
+MOVE done
+BANNER Implemented: --suppress-test-low and --test-threshold shipped (cmd/flags.go); documented in HOW_TO_USE.
+FILE docs/feedback/2026-06-08-overview-dedup-session.md
+CLASS ARCHIVE
+MOVE done
+BANNER Implemented: overview dedup session findings landed via the 2026-06 dedup sprints; SELF_CLEAN_LEDGER tracks dispositions.
+FILE docs/feedback/2026-07-06-aggressive-threshold-t2-interface-heavy-monorepo.md
+CLASS ARCHIVE
+MOVE done
+BANNER Addressed: threshold guidance + --recommend-threshold shipped; interface-heavy false positives reduced via type-aware mode (ADR-0015).
+FILE docs/feedback/2026-07-06-oxlint-auto-configure-zero-actionable.md
+CLASS ARCHIVE
+MOVE done
+BANNER Addressed: BuildFlow auto-configure fight resolved via skip_steps + linter guard (CHANGELOG 0.7.1).
+FILE docs/feedback/2026-07-09-semantic-noise-declaration-files.md
+CLASS ARCHIVE
+MOVE done
+BANNER Implemented: semantic-noise fixes landed 2026-07-09 (same-day status reports; alpha-normalization + patterns).
+FILE docs/feedback/2026-07-15_upd_t1_language_idioms_false_positives.md
+CLASS ARCHIVE
+MOVE done
+BANNER Addressed: language-idiom false positives covered by the 37-pattern denylist (guard-clause, error-guard, bool-guard families) at -t 1.
+FILE docs/feedback/2026-07-19_critical_evaluation_of_feedback.md
+CLASS ARCHIVE
+MOVE done
+BANNER Meta-evaluation consumed by the 2026-07-19 feedback sprints; resolutions recorded in the same-day status reports.
+FILE docs/feedback/new/2026-07-19-go-auto-upgrade-t50-zero-achieved-production-semantic-clones.md
+CLASS KEEP
+BANNER routed: DescribeTable skill recipe + fixture-driven test detection suggestions — pending owner decision (docs-health P2 #25).
+FILE docs/feedback/new/2026-07-19-httputil-t25-high-signal-html-report-cross-package-noise.md
+CLASS KEEP
+BANNER routed: cross-package noise tuning — held for post-v0.8.0 corpus work (ROADMAP).
+FILE docs/feedback/new/2026-07-26-go-output-t3-irreducible-go-idioms.md
+CLASS KEEP
+BANNER routed: irreducible Go idioms — held; idiom-warning territory per ROADMAP.
+FILE docs/analysis/2026-03-25_boolblind-analysis.md
+CLASS SKIP
+FILE docs/research/2026-06-05_go-finding-integration-evaluation-summary.md
+CLASS SKIP
