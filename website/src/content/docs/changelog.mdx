@@ -5,6 +5,10 @@ description: Release history and notable changes for art-dupl.
 
 ## Recent Highlights
 
+### v0.9.0 — go-finding integration, expression-aware templ, LSP output
+
+The provider's clone threshold is now a per-run BuildFlow option (`tool_options: {art-dupl: {threshold: N}}`), accept-directive groups can surface as reviewed suppressions, findings carry `duplication` + `type-1/2/3` tags and precise start/end columns, `--lsp` emits publishDiagnostics JSON, and embedded Go fragments in `.templ` files (conditions, expressions, component arguments) now participate in matching.
+
 ### Semantic Detection (Type 2 Clones)
 
 Alpha-normalization now detects renamed-variable clones by default. Local identifiers (params, receiver, body variables, closures) are canonicalized to `v0/v1/...` before hashing, so functions with identical structure but different variable names are detected.
