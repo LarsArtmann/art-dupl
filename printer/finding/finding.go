@@ -66,6 +66,23 @@ type Options struct {
 	// DetectionMethod, when non-empty, is attached to every finding as
 	// MetadataKeyDetectionMethod.
 	DetectionMethod string
+
+	// EmitSuppressedAccepted opts into surfacing reviewed duplicates: when
+	// true, groups for which Accepted reports true are emitted with an
+	// in-source Suppression annotation on every finding instead of relying
+	// on the caller to drop them. Consumers decide whether suppressed
+	// findings count (go-finding drops them from SARIF by default; opt in
+	// via WithIncludeSuppressed). The zero value (false) never consults
+	// Accepted, so the default output is byte-identical to the historical
+	// behavior.
+	EmitSuppressedAccepted bool
+
+	// Accepted reports whether a clone group is covered by an in-source
+	// //art-dupl:accept directive. It is the CLI's AcceptedSet.IsAccepted
+	// (internal/accept) at the call site; declared as a plain predicate so
+	// this adapter stays decoupled from cmd and internal/accept. Only
+	// consulted when EmitSuppressedAccepted is true; nil accepts nothing.
+	Accepted func(domain.ProcessedCloneGroup) bool
 }
 
 // GroupIDOf returns the deterministic go-finding group id for a clone group:
@@ -81,11 +98,17 @@ func GroupIDOf(group domain.ProcessedCloneGroup) gofinding.GroupID {
 // one clone occurrence with its full source range, snippet, and classification
 // metadata, and links its siblings via RelationCloneOf.
 func ToFindings(group domain.ProcessedCloneGroup, opts Options) []gofinding.Finding {
+	tmpl := gofinding.NewTemplate(gofinding.ToolName(ToolName)).
+		WithCategory(gofinding.CategoryDuplication)
+
 	ids := findingIDs(group)
+
+	accepted := opts.EmitSuppressedAccepted &&
+		opts.Accepted != nil && opts.Accepted(group)
 
 	findings := make([]gofinding.Finding, 0, len(group.Clones))
 	for i, cl := range group.Clones {
-		findings = append(findings, toFinding(group, cl, ids, i, opts))
+		findings = append(findings, toFinding(tmpl, group, cl, ids, i, accepted, opts))
 	}
 
 	return findings
@@ -121,10 +144,12 @@ func findingIDs(group domain.ProcessedCloneGroup) []gofinding.ID {
 }
 
 func toFinding(
+	tmpl *gofinding.Template,
 	group domain.ProcessedCloneGroup,
 	cl domain.ProcessedClone,
 	ids []gofinding.ID,
 	index int,
+	accepted bool,
 	opts Options,
 ) gofinding.Finding {
 	size := group.TotalTokenCount()
@@ -134,28 +159,37 @@ func toFinding(
 		threshold = config.DefaultThreshold
 	}
 
-	f := gofinding.NewFinding(
+	b := tmpl.Builder(
 		gofinding.RuleName(RuleCloneDetected),
-		gofinding.ToolName(ToolName),
 		fmt.Sprintf("Duplicate code: %d tokens in %d instances", size, len(group.Clones)),
 		severityFor(size, threshold),
 		positionOf(cl),
-		confidenceOf(cl),
-	)
-
-	f.Category = gofinding.CategoryDuplication
-	f.GroupID = GroupIDOf(group)
-	f.Range = rangeOf(cl)
-	f.Snippet = cl.Fragment
-	f.Metadata = metadataFor(group, cl, opts)
-	f.Related = relatedOf(group, ids, index)
+	).
+		WithGroupID(GroupIDOf(group)).
+		WithConfidence(confidenceOf(cl)).
+		WithRange(*rangeOf(cl)).
+		WithSnippet(cl.Fragment).
+		WithMetadata(metadataFor(group, cl, opts)).
+		WithRelated(relatedOf(group, ids, index)...)
 
 	if cl.Classification.Suggestion != "" {
-		f.FixStrategy = gofinding.FixStrategySuggest
-		f.Suggestion = cl.Classification.Suggestion
+		b = b.WithFixStrategy(gofinding.FixStrategySuggest).
+			WithSuggestion(cl.Classification.Suggestion)
 	}
 
-	return f
+	if accepted {
+		b = b.WithSuppression(gofinding.Suppression{
+			Kind:   gofinding.SuppressionInSource,
+			Rule:   gofinding.RuleName(RuleCloneDetected),
+			Reason: "//art-dupl:accept directive",
+		})
+	}
+
+	// MustBuild, not BuildOrDefault: every input is derived from validated
+	// domain data, so a construction-time validation failure is a programmer
+	// error that must fail loudly (the wire goldens pin the bytes) rather than
+	// silently emit a malformed finding.
+	return b.MustBuild()
 }
 
 // severityFor mirrors the SARIF printer's level ladder so both output paths
