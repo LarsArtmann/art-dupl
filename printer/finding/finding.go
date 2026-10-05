@@ -81,11 +81,14 @@ func GroupIDOf(group domain.ProcessedCloneGroup) gofinding.GroupID {
 // one clone occurrence with its full source range, snippet, and classification
 // metadata, and links its siblings via RelationCloneOf.
 func ToFindings(group domain.ProcessedCloneGroup, opts Options) []gofinding.Finding {
+	tmpl := gofinding.NewTemplate(gofinding.ToolName(ToolName)).
+		WithCategory(gofinding.CategoryDuplication)
+
 	ids := findingIDs(group)
 
 	findings := make([]gofinding.Finding, 0, len(group.Clones))
 	for i, cl := range group.Clones {
-		findings = append(findings, toFinding(group, cl, ids, i, opts))
+		findings = append(findings, toFinding(tmpl, group, cl, ids, i, opts))
 	}
 
 	return findings
@@ -121,6 +124,7 @@ func findingIDs(group domain.ProcessedCloneGroup) []gofinding.ID {
 }
 
 func toFinding(
+	tmpl *gofinding.Template,
 	group domain.ProcessedCloneGroup,
 	cl domain.ProcessedClone,
 	ids []gofinding.ID,
@@ -134,28 +138,29 @@ func toFinding(
 		threshold = config.DefaultThreshold
 	}
 
-	f := gofinding.NewFinding(
+	b := tmpl.Builder(
 		gofinding.RuleName(RuleCloneDetected),
-		gofinding.ToolName(ToolName),
 		fmt.Sprintf("Duplicate code: %d tokens in %d instances", size, len(group.Clones)),
 		severityFor(size, threshold),
 		positionOf(cl),
-		confidenceOf(cl),
-	)
-
-	f.Category = gofinding.CategoryDuplication
-	f.GroupID = GroupIDOf(group)
-	f.Range = rangeOf(cl)
-	f.Snippet = cl.Fragment
-	f.Metadata = metadataFor(group, cl, opts)
-	f.Related = relatedOf(group, ids, index)
+	).
+		WithGroupID(GroupIDOf(group)).
+		WithConfidence(confidenceOf(cl)).
+		WithRange(*rangeOf(cl)).
+		WithSnippet(cl.Fragment).
+		WithMetadata(metadataFor(group, cl, opts)).
+		WithRelated(relatedOf(group, ids, index)...)
 
 	if cl.Classification.Suggestion != "" {
-		f.FixStrategy = gofinding.FixStrategySuggest
-		f.Suggestion = cl.Classification.Suggestion
+		b = b.WithFixStrategy(gofinding.FixStrategySuggest).
+			WithSuggestion(cl.Classification.Suggestion)
 	}
 
-	return f
+	// MustBuild, not BuildOrDefault: every input is derived from validated
+	// domain data, so a construction-time validation failure is a programmer
+	// error that must fail loudly (the wire goldens pin the bytes) rather than
+	// silently emit a malformed finding.
+	return b.MustBuild()
 }
 
 // severityFor mirrors the SARIF printer's level ladder so both output paths
