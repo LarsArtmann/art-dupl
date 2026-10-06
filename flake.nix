@@ -28,9 +28,19 @@
     let
       inherit (nixpkgs) lib;
 
-      # Bump this for each release (see RELEASE.md step 3).
+      # DERIVED from CHANGELOG.md's newest `## [X.Y.Z]` header - do NOT
+      # hand-bump (the explicit string drifted through v0.7.1, v0.7.2, AND
+      # v0.9.0 despite RELEASE.md's stale-bump warning; derivation is the
+      # same anti-drift rule as the docs count gate). A malformed CHANGELOG
+      # fails eval loudly instead of shipping a wrong version silently.
       # go build without ldflags still reports "dev"; nix build injects this.
-      version = "0.7.0";
+      version = let
+        headers = builtins.filter (l: builtins.match "## [[]([0-9]+[.][0-9]+[.][0-9]+)[]].*" l != null) (
+          lib.splitString "\n" (builtins.readFile ./CHANGELOG.md)
+        );
+      in assert headers != [ ]; builtins.head (
+        builtins.match "## [[]([0-9]+[.][0-9]+[.][0-9]+)[]].*" (builtins.head headers)
+      );
 
       gogenfilterGoMod = builtins.readFile "${gogenfilter}/go.mod";
       gogenfilterGoSum = builtins.readFile "${gogenfilter}/go.sum";

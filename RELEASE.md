@@ -26,7 +26,11 @@ nix flake check               # all 8 checks pass
 
 ## 3. Version Bump
 
-- Update `version` in `flake.nix` (the explicit string, NOT `self.rev`). **Known stale-bump trap (found 2026-09-29):** the flake said `0.7.0` while v0.7.1/v0.7.2 were already tagged — the bump step was skipped twice. Verify the CURRENT flake version matches the LAST tag before bumping, or you cannot tell a stale flake from a fresh one.
+- **Nothing to bump by hand anymore (2026-10-06):** `flake.nix` derives
+  `version` from CHANGELOG.md's newest `## [X.Y.Z]` header. The explicit
+  string version drifted through v0.7.1, v0.7.2, AND v0.9.0 (the
+  stale-bump trap recurred despite the 2026-09-29 warning), so the value is
+  now derived. A malformed CHANGELOG fails eval loudly.
 - Verify `art-dupl version` prints the correct version after `nix build`
 - **Do NOT commit via the daemon** — stage manually: `git add CHANGELOG.md flake.nix && git commit -m "chore(release): cut vX.Y.Z"`
 
