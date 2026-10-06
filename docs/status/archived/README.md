@@ -4,7 +4,17 @@ Point-in-time snapshots (status reports, plans) whose items are fully resolved
 or explicitly routed. Archived ≠ deleted: every file here is a historical
 record; nothing in it is re-litigated.
 
-**Last counted: 2026-09-28 — 329 files, 35 in regime A, 294 in regime B.**
+**Last counted: 2026-10-05 (post-pass recount) — 376 snapshots: 57 regime A,
+23 regime A-lite, 296 regime B.** Counts are computed, never asserted:
+
+```bash
+cd docs/status/archived
+STRUCK=$(grep -l '~~' *.md | sort); BANNER=$(grep -l 'Resolution (2026-10-05)' *.md | sort)
+# A = |STRUCK|, A-lite = |BANNER \ STRUCK|, B = snapshots − A − A-lite
+```
+
+`README.md` (this file) and `MANIFEST-*.md` are excluded from the snapshot
+count by design — a manifest lives inside the dir it documents.
 
 ## The two regimes
 
@@ -21,13 +31,33 @@ Variants: `done at <hash/date — evidence>`, `Won't implement — <reason>`,
 "open" signal. Files qualify for archiving only when EVERY item is resolved
 or routed; the annotation happens BEFORE the `git mv`.
 
-### Regime B — legacy (pre-2026-09-28, 294 files)
+### Regime A-lite — dated banner, grouped verdict (2026-10-05 pass)
+
+Files archived by the 2026-10-05 pass whose per-item strike specs failed the
+annotator's key grammar (agent-derived keys vs the files' bare `1.`/`2.`
+numbering; the atomicity guard correctly refused them all). They carry a dated
+`> **Resolution (2026-10-05):** ...` banner stating the grouped verdict
+("N items verified resolved, M open — routed ...") instead of per-item
+strikes. **Honesty statement:** the per-item evidence exists in the pass
+record (`docs/status/2026-10-05_pass-verdicts/`), not on the lines
+themselves — a reader must trust the banner's count. Converting A-lite to
+full A is mechanical re-keying (`--emit-keys`), not re-verification; that
+follow-up is tracked in the docs-health report's P0 list.
+
+### Regime B — legacy (pre-2026-09-28)
 
 Files archived before the strikethrough regime existed. Their items carry NO
 verdicts; a reader cannot tell from the file whether it shipped. The pass
 that consolidated them (commit `32f12cad`) deliberately did NOT retrofit
 annotations — striking items without per-item verification would fabricate
 evidence, which is worse than silence.
+
+### Sibling archive dirs
+
+The same lifecycle applies outside `docs/status/`: `docs/reviews/archived/`
+(9 self-reviews, fully resolved) and `docs/feedback/done/` (21 implemented
+feedback files; moved there only when the feedback shipped). These dirs have
+no README of their own — this section is their convention record.
 
 ## Retrofit policy (the g1 decision, current state)
 
@@ -56,6 +86,11 @@ ALWAYS dry-run a new file shape on a /tmp copy first, generate keys with
 `--emit-keys <file> <lineno...>` (never from memory), and `--verify` before
 every real run — it prints `lineNo: matched line` per key and writes nothing.
 Fixture tests: `scripts/check-annotator.sh` (22 assertions).
+
+Batch driver (banner/FIX/AUDIT modes + annotator fallback):
+`scripts/docs-health-driver.py`; its 2026-10-05 verdict corpus (~2,500
+per-item verdicts with evidence) is committed at
+`docs/status/2026-10-05_pass-verdicts/`.
 
 ## Relationship to `docs/archive/` (top-level)
 

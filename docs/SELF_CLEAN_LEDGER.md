@@ -168,3 +168,13 @@ recorded so the monthly self-scan does not re-litigate them:
   (v0.4.3 recipe); TODO_LIST #18 branch-protection recipe written for owner action.
 - **Linter Pareto (F105)**: 106 enabled, 0 findings; keep all — noise is carried by
   ~6 linters with bespoke settings, verdict recorded in AGENTS.md Lint config bullet.
+- **Docs-health 2026-10-05 early pass (key-grammar fall)**: per-item strikes
+  landed on ZERO of ~185 files because spec keys were transcribed from agent
+  verdicts (`b@T19`, `M26:yaml`, `1-15` ranges) instead of generated with
+  `--emit-keys`; the annotator's atomicity refused every file (correctly).
+  Fallback: dated banners (regime A-lite, now defined in
+  `docs/status/archived/README.md`). Verdict corpus + driver rescued from
+  /tmp into `docs/status/2026-10-05_pass-verdicts/` + `scripts/docs-health-driver.py`
+  (2026-10-06) — the /tmp-vanish class the 09-28 pass already swore off.
+  Rule: keys are MECHANICAL (`--emit-keys <file> <lineno...>`) — verdict
+  agents quote evidence, the driver resolves keys against the file.

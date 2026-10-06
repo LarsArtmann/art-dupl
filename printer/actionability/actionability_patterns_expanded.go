@@ -10,8 +10,6 @@ import (
 // calleeErrorf is the AST callee name for error-formatting methods (fmt.Errorf, log.Errorf, etc.).
 const calleeErrorf = "Errorf"
 
-// isAssertionMethod reports whether a method name belongs to a test assertion
-// framework (Ginkgo/testify/testify). These indicate non-actionable test
 // assertionMethodNames are test assertion method names (Ginkgo/Gomega, testify, etc.).
 var assertionMethodNames = []string{ //nolint:gochecknoglobals // static name set
 	"Expect", "Assert", "Require", "Should", "Must", "So",
