@@ -888,6 +888,16 @@ restores the finding including its group id — the same adapter path the
 BuildFlow toolsdk provider uses, so editor integrations and CI see identical
 results.
 
+**Column semantics:** `character` values are **byte offsets into the line**
+(go/token columns, 0-based via `toZeroBased`), NOT UTF-16 code units — the
+LSP spec's default. Editors position non-ASCII text by UTF-16 offsets, so on
+lines containing multi-byte runes the diagnostic may highlight a few
+characters off. ASCII-only lines (the overwhelming majority in Go and templ
+source) are unaffected. The same byte-column convention applies to the
+`column_start`/`column_end` fields in `--json` output and the
+`startColumn`/`endColumn` of SARIF regions (SARIF also specifies these as
+byte offsets, so SARIF consumers are exact).
+
 ### Understanding HTML Report
 
 The HTML report provides:
