@@ -34,13 +34,14 @@
       # same anti-drift rule as the docs count gate). A malformed CHANGELOG
       # fails eval loudly instead of shipping a wrong version silently.
       # go build without ldflags still reports "dev"; nix build injects this.
-      version = let
-        headers = builtins.filter (l: builtins.match "## [[]([0-9]+[.][0-9]+[.][0-9]+)[]].*" l != null) (
-          lib.splitString "\n" (builtins.readFile ./CHANGELOG.md)
-        );
-      in assert headers != [ ]; builtins.head (
-        builtins.match "## [[]([0-9]+[.][0-9]+[.][0-9]+)[]].*" (builtins.head headers)
-      );
+      version =
+        let
+          headers = builtins.filter (l: builtins.match "## [[]([0-9]+[.][0-9]+[.][0-9]+)[]].*" l != null) (
+            lib.splitString "\n" (builtins.readFile ./CHANGELOG.md)
+          );
+        in
+        assert headers != [ ];
+        builtins.head (builtins.match "## [[]([0-9]+[.][0-9]+[.][0-9]+)[]].*" (builtins.head headers));
 
       gogenfilterGoMod = builtins.readFile "${gogenfilter}/go.mod";
       gogenfilterGoSum = builtins.readFile "${gogenfilter}/go.sum";
