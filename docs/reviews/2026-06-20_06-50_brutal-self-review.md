@@ -29,9 +29,10 @@ Found and fixed 10 categories of issues across the codebase: ghost systems, dead
 ### 4. What could you still improve?
 
 ~~- Fragment type unification ([]byte vs string split brain)~~ done — Fragment is string everywhere (AGENTS shared-types bullet, ADR-0005)
+
 - Clone type consolidation (5-7 parallel types)
 - Data→View rename in printer
-~~- Test coverage for detection (61.8%) and domain (63.5%)~~ done at coverage baseline + trend script (docs-health 2026-10-05 re-verified; §11 row also resolved)
+  ~~- Test coverage for detection (61.8%) and domain (63.5%)~~ done at coverage baseline + trend script (docs-health 2026-10-05 re-verified; §11 row also resolved)
 
 ### 5. Did you lie?
 
