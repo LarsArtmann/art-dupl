@@ -1,1 +1,1 @@
-> ~~Empty snapshot~~ — this file was created but never written (auto-commit daemon artifact); the session's actual record lives in the adjacent same-day reports. Closed 2026-09-28 (docs-health pass).
+> ~~Empty snapshot~~ — this file was created but never written (auto-commit daemon artifact); the session's actual record lives in the adjacent same-day reports. Closed 2026-09-28 (docs-health pass). Verified 2026-10-06: 8 same-day records (e.g. `19-00_zero-duplication-achieved`, `19-31_comprehensive-generic-filter`).

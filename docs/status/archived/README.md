@@ -59,6 +59,19 @@ The same lifecycle applies outside `docs/status/`: `docs/reviews/archived/`
 feedback files; moved there only when the feedback shipped). These dirs have
 no README of their own — this section is their convention record.
 
+### Non-md artifacts (decided 2026-10-06, third-pass deferral closed)
+
+- **Renders with an `.md` sibling** (`.html`/`.svg`/`.d2`/`.mmd` generated
+  from it): companion artifacts, not claims — never banner them; they move
+  beside their `.md` when it archives.
+- **Solo HTML reports** (9 in `docs/status/`, June–Aug 2026; no `.md`
+  exists — the HTML IS the record): same ANNOTATE-then-move protocol as
+  `.md`; they archive only when their items are verified resolved. Not
+  blanket-movable without that verification.
+- **`docs/research/*.html` deep-dives + architecture diagrams**: living
+  documents under the AGENTS HTML-report tracking policy (dated ledger
+  sections, never rewrite) — docs-health leaves them alone.
+
 ## Retrofit policy (the g1 decision, current state)
 
 Retrofitting regime B is **not scheduled**. It would cost roughly 2–3 focused
