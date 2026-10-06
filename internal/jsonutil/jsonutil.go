@@ -19,8 +19,7 @@ package jsonutil
 
 import (
 	"bytes"
-	"encoding/json/jsontext"
-	"encoding/json/v2"
+	"encoding/json"
 	"fmt"
 )
 
@@ -31,17 +30,14 @@ import (
 func MarshalIndent(v any, prefix, indent string) ([]byte, error) {
 	var buf bytes.Buffer
 
-	enc := jsontext.NewEncoder(
-		&buf,
-		jsontext.EscapeForHTML(false),
-		jsontext.WithIndentPrefix(prefix),
-		jsontext.WithIndent(indent),
-	)
+	enc := json.NewEncoder(&buf)
+	enc.SetEscapeHTML(false)
 
 	if indent != "" || prefix != "" {
+		enc.SetIndent(prefix, indent)
 	}
 
-	if err := json.MarshalEncode(enc, v); err != nil {
+	if err := enc.Encode(v); err != nil {
 		return nil, fmt.Errorf("encode json: %w", err)
 	}
 
