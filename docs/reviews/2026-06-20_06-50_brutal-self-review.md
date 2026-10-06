@@ -1,5 +1,7 @@
 # Brutal Self-Review — 2026-06-20
 
+> **Resolution (2026-10-05):** Audited by the docs-health pass: §4 improvements — 2 resolved (Fragment unification, coverage tooling), 2 open (Clone type consolidation tracked in ROADMAP 7→2-3; Data→View rename unrouted). §10 decoupling acceptances re-affirmed. The 10-commit "Completed Work" list is a historical record, not open work.
+
 ## Summary
 
 Found and fixed 10 categories of issues across the codebase: ghost systems, dead code, lying documentation, deprecated API, and type naming issues. 10 commits, 300+ lines of dead code removed.
@@ -26,10 +28,10 @@ Found and fixed 10 categories of issues across the codebase: ghost systems, dead
 
 ### 4. What could you still improve?
 
-- Fragment type unification ([]byte vs string split brain)
+~~- Fragment type unification ([]byte vs string split brain)~~ done — Fragment is string everywhere (AGENTS shared-types bullet, ADR-0005)
 - Clone type consolidation (5-7 parallel types)
 - Data→View rename in printer
-- Test coverage for detection (61.8%) and domain (63.5%)
+~~- Test coverage for detection (61.8%) and domain (63.5%)~~ done at coverage baseline + trend script (docs-health 2026-10-05 re-verified; §11 row also resolved)
 
 ### 5. Did you lie?
 
@@ -64,8 +66,8 @@ Found and fixed 10 categories of issues across the codebase: ghost systems, dead
 
 ~~- Fragment []byte vs string — real split brain, deferred (works at boundaries)~~ done — Fragment is string everywhere (AGENTS shared-types bullet)
 
-- Duplicate sentinels — ACCEPTED (expected decoupling pattern)
-- Duplicate noOpLogger — ACCEPTED (expected decoupling pattern)
+~~- Duplicate sentinels — ACCEPTED (expected decoupling pattern)~~ Won't implement — accepted decoupling pattern, re-affirmed 2026-10-05
+~~- Duplicate noOpLogger — ACCEPTED (expected decoupling pattern)~~ Won't implement — accepted decoupling pattern, re-affirmed 2026-10-05
 
 ### 11. Tests?
 

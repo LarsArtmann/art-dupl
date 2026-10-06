@@ -1,5 +1,7 @@
 # Brutal Self-Review: Dedup Session Follow-up
 
+> **Resolution (2026-10-05):** Audited by the docs-health pass: of the 4 remaining-work items, 3 verified resolved (switch-predicate conversions, CI Self-Analysis gate, sentinel audit), 1 open (focused `withLock`/`diffStatTable` unit tests — transitive coverage stands). The §4 type-model bullet was self-resolved in the original text (deliberate low-ROI skip).
+
 **Date:** 2026-07-25 17:35
 **Scope:** Follow-up to the dedup-to-zero session — fixing the bugs I left behind.
 **Reviewer:** The agent, on itself.
@@ -89,10 +91,10 @@ The name-set predicates (`isAcquireMethod`, `isTestingVarName`) were converted t
 
 ## Remaining work (honest priority order)
 
-1. **[LOW EFFORT, MEDIUM IMPACT]** Convert remaining 3 `switch name` predicates to `slices.Contains` for consistency.
+~~1. **[LOW EFFORT, MEDIUM IMPACT]** Convert remaining 3 `switch name` predicates to `slices.Contains` for consistency.~~ done at predicate rewrites shipped (slices.Contains era; switch-form names gone)
 2. **[LOW EFFORT, LOW IMPACT]** Add focused unit tests for `withLock[T]` and `diffStatTable` (transitive coverage exists).
-3. **[MEDIUM EFFORT, MEDIUM IMPACT]** Add a CI self-test gate: `art-dupl -t 1 --plumbing` on its own repo must emit zero lines.
-4. **[MEDIUM EFFORT, MEDIUM IMPACT]** Audit repo-wide for other duplicated `errors.New("...")` sentinels (same message, different pointers) — the class of bug fixed in `ErrInvalidDetectionMode`.
+~~3. **[MEDIUM EFFORT, MEDIUM IMPACT]** Add a CI self-test gate: `art-dupl -t 1 --plumbing` on its own repo must emit zero lines.~~ done at CI Self-Analysis workflow (.github/workflows/ci.yml, clone-free invariant)
+~~4. **[MEDIUM EFFORT, MEDIUM IMPACT]** Audit repo-wide for other duplicated `errors.New("...")` sentinels (same message, different pointers) — the class of bug fixed in `ErrInvalidDetectionMode`.~~ done at TestNoDuplicateErrorNewMessages (domain/cross_package_alias_test.go:76, self-maintaining AST scanner)
 
 ---
 
