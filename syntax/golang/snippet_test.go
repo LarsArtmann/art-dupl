@@ -225,3 +225,61 @@ func TestParseSnippetGoFileSkipsImports(t *testing.T) {
 		t.Fatalf("expected only the non-import declaration, got %d nodes", len(nodes))
 	}
 }
+
+func TestParseSnippetGoFileWithImportsPositionsAddressRealFile(t *testing.T) {
+	// A templ top-level Go chunk whose imports precede the declarations:
+	// snippetTargets skips the import, so the first TARGET node is not at
+	// src[0]. The synthetic-to-file shift must anchor on the wrapper
+	// geometry, or the whole tree maps onto the import block (garbage ranges
+	// that crash go-finding's range validation downstream).
+	decl1 := "func helper() int {\n\treturn 7\n}"
+	decl2 := "func other() string {\n\treturn \"x\"\n}"
+	realFile := "package api\n\nimport \"fmt\"\n\n" + decl1 + "\n\n" + decl2 + "\n"
+	chunkOffset := len("package api\n\n")
+	src := realFile[chunkOffset:]
+
+	nodes := mustSnippet(t, SnippetGoFile, src, "real.templ", chunkOffset, DetectionModeSemantic)
+
+	if len(nodes) != 2 {
+		t.Fatalf("expected both non-import declarations, got %d nodes", len(nodes))
+	}
+
+	for i, want := range []string{decl1, decl2} {
+		if int(nodes[i].Pos) < chunkOffset || int(nodes[i].End) > len(realFile) {
+			t.Fatalf("decl %d range [%d,%d) escapes the real file", i, nodes[i].Pos, nodes[i].End)
+		}
+
+		if got := realFile[nodes[i].Pos:nodes[i].End]; got != want {
+			t.Errorf("decl %d slices %q, want %q", i, got, want)
+		}
+	}
+}
+
+func TestParseSnippetLeadingWhitespacePositionsAddressRealFile(t *testing.T) {
+	// templ GoCode chunks typically start with "\n\t" after the opening
+	// fence: fileOffset addresses the raw chunk start while parsing uses the
+	// trimmed src. Positions must address the trimmed-away bytes too.
+	src := "\n\tx := user.Count\n\ty := user.Total"
+	chunkOffset := 500
+	firstByte := chunkOffset + len("\n\t")
+
+	nodes := mustSnippet(t, SnippetStatements, src, "ws.templ", chunkOffset, DetectionModeSemantic)
+
+	if len(nodes) != 2 {
+		t.Fatalf("expected 2 statement nodes, got %d", len(nodes))
+	}
+
+	type rng struct {
+		pos, end int32
+		text     string
+	}
+
+	for i, want := range []rng{
+		{pos: int32(firstByte), end: int32(firstByte + len("x := user.Count")), text: "x := user.Count"},
+		{pos: int32(firstByte + len("x := user.Count\n\t")), end: int32(firstByte + len("x := user.Count\n\ty := user.Total")), text: "y := user.Total"},
+	} {
+		if nodes[i].Pos != want.pos || nodes[i].End != want.end {
+			t.Errorf("statement %d range = [%d,%d), want [%d,%d)", i, nodes[i].Pos, nodes[i].End, want.pos, want.end)
+		}
+	}
+}

@@ -6,6 +6,7 @@ import (
 	"go/parser"
 	"go/token"
 	"strings"
+	"unicode"
 
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
@@ -225,7 +226,12 @@ func firstFuncBody(file *ast.File) *ast.BlockStmt {
 // spliced under templ structural nodes so their tokens refine the enclosing
 // composite fingerprints.
 func ParseSnippet(kind SnippetKind, src, filename string, fileOffset int, mode DetectionMode) ([]*syntax.Node, error) {
-	src = strings.TrimSpace(src)
+	// templ's Expression ranges address the raw source chunk (leading
+	// whitespace included), while parsing needs the trimmed form; advance
+	// fileOffset by the trimmed bytes so it keeps addressing src[0].
+	trimmedLeft := strings.TrimLeftFunc(src, unicode.IsSpace)
+	fileOffset += len(src) - len(trimmedLeft)
+	src = strings.TrimRightFunc(trimmedLeft, unicode.IsSpace)
 	if src == "" {
 		return nil, nil
 	}
@@ -312,9 +318,16 @@ func parseSnippetWrapped(
 		return nil, nil
 	}
 
-	// When the file was shorter than the wrapper header, the padding could not
-	// reach the real offset; shift by the remaining delta (clamped at 0).
-	delta := int32(fileOffset) - nodes[0].Pos // #nosec G115 -- templ file sizes bounded by int32 in practice
+	// Shift nodes from synthetic coordinates to real file coordinates: the
+	// wrapper places src at a known synthetic offset (snippetSrcStart), and
+	// fileOffset addresses src[0] in the real file (ParseSnippet adjusted it
+	// for trimmed whitespace). Anchoring on the wrapper geometry — not on the
+	// first target node — preserves every node's relative offset even when
+	// snippetTargets skips a prefix of src: SnippetGoFile drops imports, so
+	// the first declaration is NOT at src[0], and a first-node anchor mapped
+	// the whole tree onto the import block (garbage ranges that crashed
+	// consumers' finding validation).
+	delta := int32(fileOffset - snippetSrcStart(kind, fileOffset)) // #nosec G115 -- templ file sizes bounded by int32 in practice
 	if delta != 0 {
 		for _, node := range nodes {
 			shiftTree(node, delta)
@@ -322,6 +335,38 @@ func parseSnippetWrapped(
 	}
 
 	return nodes, nil
+}
+
+// snippetSrcStart returns the synthetic-source byte offset at which the
+// caller's src begins. snippetWrapper places src after a fixed prefix per
+// kind: the package clause for SnippetGoFile, the padded function header
+// plus the body's opening syntax for the function-wrapped kinds.
+func snippetSrcStart(kind SnippetKind, fileOffset int) int {
+	if kind == SnippetGoFile {
+		return len("package p\n")
+	}
+
+	pad := max(fileOffset-len(snippetHeader), 0)
+
+	return len(snippetHeader) + pad + len(snippetBodyPrefix(kind))
+}
+
+// snippetBodyPrefix returns the wrapper syntax snippetBody emits before src.
+func snippetBodyPrefix(kind SnippetKind) string {
+	switch kind {
+	case SnippetIfCond:
+		return "if "
+	case SnippetForClause:
+		return "for "
+	case SnippetSwitchTag:
+		return "switch "
+	case SnippetCaseList:
+		return "switch {\ncase "
+	case SnippetStatements:
+		return "\n"
+	default:
+		return ""
+	}
 }
 
 func snippetKindName(kind SnippetKind) string {
