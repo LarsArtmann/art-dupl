@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/LarsArtmann/art-dupl/job"
+	"github.com/dustin/go-humanize"
 )
 
 // runTiming wraps one analysis run's stage collector with wall-clock phase
@@ -118,23 +119,8 @@ func printStageTimingReport(w io.Writer, stages map[string]time.Duration, before
 	_, _ = fmt.Fprintf(
 		w,
 		"  allocations: %d objects, %s total, %d GC cycles, %s GC pause\n",
-		objects, humanBytes(bytes), gcCycles, pause.Round(time.Microsecond),
+		objects, humanize.IBytes(bytes), gcCycles, pause.Round(time.Microsecond),
 	)
 }
 
-// humanBytes renders a byte count with an SI suffix for compact display.
-func humanBytes(b uint64) string {
-	const unit = 1024
-
-	if b < unit {
-		return fmt.Sprintf("%d B", b)
-	}
-
-	div, exp := uint64(unit), 0
-	for n := b / unit; n >= unit && exp < 5; n /= unit {
-		div *= unit
-		exp++
-	}
-
-	return fmt.Sprintf("%.1f %cB", float64(b)/float64(div), "KMGTPE"[exp])
-}
+// allocations/gc report line renders above.

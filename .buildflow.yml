@@ -2,6 +2,17 @@
 # Unknown keys warn at every load; see the BuildFlow skill's canonical key list.
 env:
   CGO_ENABLED: "1" # test-race requires CGO; mirrors the flake's race check
+
+# go-version-auto-configure UNSKIPPED 2026-10-07: gvac v0.2.5's
+# respect_patch_floor honors the deliberate `go 1.27.1` pin (aligns
+# .golangci.yml run.go, flake.nix go_1_27, CI matrix) — at or below the
+# installed toolchain it is reported by no rule and never stripped, so
+# this side of the flip-flop is gone. go-mod-normalize stays skipped
+# until its disposition aligns upstream.
+tool_options:
+  go-version-auto-configure:
+    respect_patch_floor: true
+
 skip_steps:
   # go.mod deliberately pins the patch version (`go 1.27.1`): it aligns with
   # .golangci.yml run.go, flake.nix go_1_27, and the CI matrix, and keeps the
@@ -16,7 +27,6 @@ skip_steps:
   # flip-flop survived this skip. Skipped too; same upstream-alignment
   # condition.
   - go-mod-normalize
-  - go-version-auto-configure
   # This repo deliberately bans exhaustruct and tagliatelle (see AGENTS.md
   # "Lint config" and scripts/check-disabled-linters.sh). The auto-configurer
   # re-adds both from its fleet defaults on every pipeline run; the guard
