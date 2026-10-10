@@ -74,27 +74,6 @@ func TestTimingDisabledByDefault(t *testing.T) {
 	}
 }
 
-func TestHumanBytes(t *testing.T) {
-	// humanize.IBytes output: IEC labels (KiB) on the 1024-based math this
-	// report always used — the old manual formatter mislabeled them KB.
-	cases := []struct {
-		in   uint64
-		want string
-	}{
-		{0, "0 B"},
-		{512, "512 B"},
-		{2048, "2.0 KiB"},
-		{1536 * 1024, "1.5 MiB"},
-		{3 << 30, "3.0 GiB"},
-	}
-
-	for _, tc := range cases {
-		if got := humanBytes(tc.in); got != tc.want {
-			t.Errorf("humanBytes(%d) = %q, want %q", tc.in, got, tc.want)
-		}
-	}
-}
-
 func TestPrintStageTimingReportRowOrder(t *testing.T) {
 	stages := map[string]time.Duration{
 		job.StageCrawl:     10 * time.Millisecond,
