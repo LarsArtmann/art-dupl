@@ -231,6 +231,7 @@ func ParseSnippet(kind SnippetKind, src, filename string, fileOffset int, mode D
 	// fileOffset by the trimmed bytes so it keeps addressing src[0].
 	trimmedLeft := strings.TrimLeftFunc(src, unicode.IsSpace)
 	fileOffset += len(src) - len(trimmedLeft)
+
 	src = strings.TrimRightFunc(trimmedLeft, unicode.IsSpace)
 	if src == "" {
 		return nil, nil
@@ -327,7 +328,9 @@ func parseSnippetWrapped(
 	// the first declaration is NOT at src[0], and a first-node anchor mapped
 	// the whole tree onto the import block (garbage ranges that crashed
 	// consumers' finding validation).
-	delta := int32(fileOffset - snippetSrcStart(kind, fileOffset)) // #nosec G115 -- templ file sizes bounded by int32 in practice
+	delta := int32(
+		fileOffset - snippetSrcStart(kind, fileOffset),
+	) // #nosec G115 -- templ file sizes bounded by int32 in practice
 	if delta != 0 {
 		for _, node := range nodes {
 			shiftTree(node, delta)
