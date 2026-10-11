@@ -5,6 +5,8 @@ import (
 	"testing"
 
 	"github.com/LarsArtmann/art-dupl/domain"
+	"github.com/LarsArtmann/art-dupl/syntax"
+	"github.com/LarsArtmann/art-dupl/syntax/golang"
 )
 
 // reuseIndex mirrors a run that declared pkg.Box[T any] (one type param) and
@@ -168,5 +170,65 @@ func TestGenericsSuggestion_ReuseVsExtract(t *testing.T) {
 	got = genericsSuggestion(processConfig{}, reuseSeqs)
 	if got != "Extract to generic function" {
 		t.Errorf("missing index must keep the extraction suggestion, got %q", got)
+	}
+}
+
+// TestProcessClones_ReuseSuggestionNotDoubled (plan T10) pins the no-double-
+// suggest contract at the pipeline level: a group whose divergences are all
+// instantiations of one indexed generic carries the REUSE suggestion only —
+// never the extraction suggestion alongside it, and never an extractability
+// verdict that contradicts reuse. Precedence lives in genericsSuggestion:
+// reuse wins, extraction is suppressed.
+func TestProcessClones_ReuseSuggestionNotDoubled(t *testing.T) {
+	t.Parallel()
+
+	instantiationNodes := func(filename, inst string) []*syntax.Node {
+		return []*syntax.Node{
+			{
+				Type:     golang.Ident,
+				Name:     "b",
+				VarType:  inst,
+				Filename: filename,
+				Pos:      3,
+				End:      13,
+			},
+			{
+				Type:     golang.Ident,
+				Name:     "v",
+				VarType:  strings.TrimSuffix(strings.TrimSuffix(inst, "int]"), "int") + "x",
+				Filename: filename,
+				Pos:      6,
+				End:      13,
+			},
+		}
+	}
+
+	dups := [][]*syntax.Node{
+		instantiationNodes("test_a.go", "github.com/x/pkg.Box[int]"),
+		instantiationNodes("test_b.go", "github.com/x/pkg.Box[string]"),
+	}
+
+	clones, err := ProcessClones(
+		multiLineReadFile, dups,
+		WithGenericsMinLines(0), WithGenericDecls(reuseIndex),
+	)
+	if err != nil {
+		t.Fatalf("ProcessClones failed: %v", err)
+	}
+
+	for i, c := range clones {
+		suggestion := c.Classification.Suggestion
+
+		if !strings.HasPrefix(suggestion, "Reuse existing generic ") {
+			t.Errorf("clone %d: expected reuse suggestion, got %q", i, suggestion)
+		}
+
+		if strings.Contains(suggestion, "Extract to generic") {
+			t.Errorf("clone %d: double suggestion — reuse and extract both present: %q", i, suggestion)
+		}
+
+		if c.Classification.Extractability == domain.ExtractabilityVetoed {
+			t.Errorf("clone %d: reuse-suggested group carries an extraction veto", i)
+		}
 	}
 }

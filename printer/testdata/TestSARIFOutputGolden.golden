@@ -803,6 +803,28 @@
               }
             },
             {
+              "id": "art-dupl/pattern/nil-guard-after-helper",
+              "name": "nil-guard-after-helper",
+              "shortDescription": {
+                "text": "Actionability pattern \"nil-guard-after-helper\" (denylist) — marks matching clone groups as boilerplate"
+              },
+              "fullDescription": {
+                "text": "Informational descriptor for the actionability classification carried on results in the non_actionable_pattern property. A group is suppressed only when EVERY clone matches the same pattern; --no-actionability disables suppression and --disable-pattern disables one pattern."
+              },
+              "defaultConfiguration": {
+                "level": "none"
+              },
+              "helpUri": "https://github.com/LarsArtmann/art-dupl/blob/main/docs/ACTIONABILITY_PATTERNS.md#pattern-priority-order",
+              "properties": {
+                "precision": "very-high",
+                "tags": [
+                  "actionability",
+                  "denylist",
+                  "suppressible"
+                ]
+              }
+            },
+            {
               "id": "art-dupl/pattern/property-engine",
               "name": "property-engine",
               "shortDescription": {

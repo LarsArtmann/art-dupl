@@ -26,21 +26,21 @@ type node struct{ name string }
 func indexIdentOf(n *node) *node { return n }
 
 func isIndexBounded(idx *node) bool {
-ident := indexIdentOf(idx)
-if ident == nil {
-	return false
-}
-return ident.name != ""
+	ident := indexIdentOf(idx)
+	if ident == nil {
+		return false
+	}
+	return true
 }
 `,
 			"guard_name.go": `package main
 
 func isNameValid(target *node) bool {
-ident := indexIdentOf(target)
-if ident == nil {
-	return false
-}
-return len(ident.name) > 0
+	ident := indexIdentOf(target)
+	if ident == nil {
+		return false
+	}
+	return true
 }
 `,
 		})
