@@ -357,7 +357,6 @@ func TestSARIFOutput_RelatedLocationsAndSnippet(t *testing.T) {
 				len(result.RelatedLocations),
 			)
 		}
-
 		wantRelated := map[string]bool{}
 
 		for key := range allOccurrences {
@@ -385,9 +384,11 @@ func TestSARIFOutput_RelatedLocationsAndSnippet(t *testing.T) {
 			)
 			gotRelated[relKey] = true
 
-			if rel.PhysicalLocation.Region.Snippet == nil ||
-				rel.PhysicalLocation.Region.Snippet.Text == "" {
-				t.Errorf("%s: related %s missing snippet", selfKey, relKey)
+			// Upstream parity (M5, go-finding sarifRelatedLocs): related
+			// regions carry NO snippet — upstream emits none and drops any
+			// on import, so sibling copies are pure wire bloat.
+			if rel.PhysicalLocation.Region.Snippet != nil {
+				t.Errorf("%s: related %s must not carry a snippet", selfKey, relKey)
 			}
 		}
 

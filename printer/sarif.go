@@ -226,10 +226,7 @@ func (p *sarifPrinter) PrintClones(
 
 	siblingLocations := make([]SARIFRelatedLocation, len(group.Clones))
 	for i, cl := range group.Clones {
-		siblingLocations[i] = SARIFRelatedLocation{
-			PhysicalLocation: sarifPhysicalLocation(cl),
-			Message:          SARIFMessage{Text: string(gofinding.RelationCloneOf)},
-		}
+		siblingLocations[i] = sarifSiblingLocation(cl, string(gofinding.RelationCloneOf))
 	}
 
 	for idx, cl := range group.Clones {
@@ -239,8 +236,11 @@ func (p *sarifPrinter) PrintClones(
 
 		properties := map[string]string{
 			"clone_type":             string(cl.Classification.CloneType),
-			"category":               string(cl.Classification.Category),
 			finding.SARIFPropGroupID: hash,
+		}
+
+		if cl.Classification.Category != "" {
+			properties["category"] = string(cl.Classification.Category)
 		}
 
 		if cl.Classification.NonActionablePattern != "" {
@@ -307,6 +307,29 @@ func sarifPhysicalLocation(cl domain.ProcessedClone) SARIFPhysicalLocation {
 			URI: cl.Filename,
 		},
 		Region: region,
+	}
+}
+
+// sarifSiblingLocation builds a related location WITHOUT a region snippet,
+// mirroring go-finding's sarifRelatedLocs exactly: upstream emits no snippet
+// on related regions and drops any on import, so sibling copies are pure
+// wire bloat (measured 2026-10-11: 9.1% of SARIF bytes at -t 1 on
+// go-cqrs-lite, 1.27MB of duplicated fragment text). The primary result
+// region keeps its snippet via sarifPhysicalLocation.
+func sarifSiblingLocation(cl domain.ProcessedClone, relation string) SARIFRelatedLocation {
+	return SARIFRelatedLocation{
+		PhysicalLocation: SARIFPhysicalLocation{
+			ArtifactLocation: SARIFArtifactLocation{
+				URI: cl.Filename,
+			},
+			Region: SARIFRegion{
+				StartLine:   cl.LineStart,
+				EndLine:     cl.LineEnd,
+				StartColumn: int(cl.ColumnStart),
+				EndColumn:   int(cl.ColumnEnd),
+			},
+		},
+		Message: SARIFMessage{Text: relation},
 	}
 }
 
