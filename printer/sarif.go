@@ -11,6 +11,7 @@ import (
 	"github.com/LarsArtmann/art-dupl/internal/jsonutil"
 	"github.com/LarsArtmann/art-dupl/printer/actionability"
 	"github.com/LarsArtmann/art-dupl/printer/finding"
+	gofinding "github.com/larsartmann/go-finding"
 )
 
 // SARIF level constants.
@@ -80,12 +81,22 @@ type SARIFConfiguration struct {
 
 // SARIFResult represents a single result (finding).
 type SARIFResult struct {
-	RuleID       string            `json:"ruleId"`
-	Level        string            `json:"level"`
-	Message      SARIFMessage      `json:"message"`
-	Locations    []SARIFLocation   `json:"locations"`
-	Fingerprints SARIFFingerprints `json:"fingerprints"`
-	Properties   map[string]string `json:"properties,omitempty"`
+	RuleID       string                 `json:"ruleId"`
+	Level        string                 `json:"level"`
+	Message      SARIFMessage           `json:"message"`
+	Locations    []SARIFLocation        `json:"locations"`
+	RelatedLocations []SARIFRelatedLocation `json:"relatedLocations,omitempty"`
+	Fingerprints SARIFFingerprints      `json:"fingerprints"`
+	Properties   map[string]string      `json:"properties,omitempty"`
+}
+
+// SARIFRelatedLocation represents one sibling occurrence of the same clone
+// group in result.relatedLocations (SARIF 2.1.0 §3.32.8), mirroring the shape
+// go-finding's ToSARIF emits for a multi-occurrence finding: the sibling's
+// physical location plus a message naming the relation.
+type SARIFRelatedLocation struct {
+	PhysicalLocation SARIFPhysicalLocation `json:"physicalLocation"`
+	Message          SARIFMessage          `json:"message"`
 }
 
 // SARIFMessage represents a message in a result.
@@ -120,6 +131,17 @@ type SARIFRegion struct {
 	// (0), which is the case only when no source was available at extraction.
 	StartColumn int `json:"startColumn,omitempty"`
 	EndColumn   int `json:"endColumn,omitempty"`
+	// Snippet carries the clone's source text per SARIF 2.1.0 §3.30.13,
+	// matching what go-finding's ToSARIF emits. Omitted when no fragment
+	// was extracted (no file-reading fallback, so output stays
+	// environment-independent).
+	Snippet *SARIFArtifactContent `json:"snippet,omitempty"`
+}
+
+// SARIFArtifactContent represents the SARIF artifactContent object used for
+// region.snippet (SARIF 2.1.0 §3.30.13).
+type SARIFArtifactContent struct {
+	Text string `json:"text,omitempty"`
 }
 
 // SARIFFingerprints represents fingerprints for deduplication.
@@ -202,7 +224,15 @@ func (p *sarifPrinter) PrintClones(
 
 	size := group.TotalTokenCount()
 
-	for _, cl := range group.Clones {
+	siblingLocations := make([]SARIFRelatedLocation, len(group.Clones))
+	for i, cl := range group.Clones {
+		siblingLocations[i] = SARIFRelatedLocation{
+			PhysicalLocation: sarifPhysicalLocation(cl),
+			Message:          SARIFMessage{Text: string(gofinding.RelationCloneOf)},
+		}
+	}
+
+	for idx, cl := range group.Clones {
 		level := p.determineLevel(size)
 		msg := fmt.Sprintf("Duplicate code: %d tokens in %d instances",
 			size, len(group.Clones))
@@ -225,6 +255,14 @@ func (p *sarifPrinter) PrintClones(
 			}
 		}
 
+		related := make([]SARIFRelatedLocation, 0, len(group.Clones)-1)
+		for i := range group.Clones {
+			if i == idx {
+				continue
+			}
+			related = append(related, siblingLocations[i])
+		}
+
 		result := SARIFResult{
 			RuleID: "art-dupl/duplicate-code",
 			Level:  level,
@@ -233,19 +271,10 @@ func (p *sarifPrinter) PrintClones(
 			},
 			Locations: []SARIFLocation{
 				{
-					PhysicalLocation: SARIFPhysicalLocation{
-						ArtifactLocation: SARIFArtifactLocation{
-							URI: cl.Filename,
-						},
-						Region: SARIFRegion{
-							StartLine:   cl.LineStart,
-							EndLine:     cl.LineEnd,
-							StartColumn: int(cl.ColumnStart),
-							EndColumn:   int(cl.ColumnEnd),
-						},
-					},
+					PhysicalLocation: sarifPhysicalLocation(cl),
 				},
 			},
+			RelatedLocations: related,
 			Fingerprints: SARIFFingerprints{
 				ContentFingerprint: hash,
 				PartialFingerprint: hash[:min(8, len(hash))],
@@ -257,6 +286,27 @@ func (p *sarifPrinter) PrintClones(
 	}
 
 	return nil
+}
+
+// sarifPhysicalLocation builds the physical location for a clone occurrence,
+// including the region snippet when the clone carries its source fragment.
+func sarifPhysicalLocation(cl domain.ProcessedClone) SARIFPhysicalLocation {
+	region := SARIFRegion{
+		StartLine:   cl.LineStart,
+		EndLine:     cl.LineEnd,
+		StartColumn: int(cl.ColumnStart),
+		EndColumn:   int(cl.ColumnEnd),
+	}
+	if cl.Fragment != "" {
+		region.Snippet = &SARIFArtifactContent{Text: cl.Fragment}
+	}
+
+	return SARIFPhysicalLocation{
+		ArtifactLocation: SARIFArtifactLocation{
+			URI: cl.Filename,
+		},
+		Region: region,
+	}
 }
 
 func (p *sarifPrinter) PrintFooter() error {

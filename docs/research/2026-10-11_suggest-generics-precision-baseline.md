@@ -55,3 +55,9 @@ Field recall is ~zero: 5/6 repos produce 0 candidates even with `--suggest-gener
 - T7/T8 (`Instances` wiring, type-args on erased pass) are the recall levers: they are what can make the feature fire on real code. Their priority relative to T4 rises.
 - T12/T13 (actionability waves): consider adding `append-collector-tail` — it would have suppressed 3 of 4 false families (75% of observed FPs). Slot it into wave 2 alongside nil-guard.
 - Precision re-measurement should repeat THIS method after T7/T8 land; n=4 is too small for confidence, and the population will change.
+
+## Ledger
+
+| Date | Task | Outcome |
+|---|---|---|
+| 2026-10-11 | T4 (alias FP fix) | Shipped as population-time `types.Unalias` in `identTypeString` (not the planned printer-side comparator — single seam, same precision). Alias vs direct now produce identical VarType; import-alias spelling was ALREADY path-canonical (pinned by test). Corpus candidates unchanged (0/0/0/9) as predicted; static-fixture output byte-stable; CacheVersion 5→6 (ta/sg streams changed). Corpus repos drift under their own daemons — future before/after comparisons must pin corpus commits or use static fixtures. |
