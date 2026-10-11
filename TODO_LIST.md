@@ -31,16 +31,16 @@ or external by nature.
 
 ### go-finding leverage follow-ups (2026-10-11 deep-dive §06, plan `docs/planning/2026-10-11_08-29_superb-open-work-pareto-plan.md`)
 
-- [ ] **G1 - SARIF snippet-parity pin/delta**: verify whether go-finding `ToSARIF()` sets `region.snippet` on RELATED locations; pin parity in the cross-check or document the CLI delta (today's claim "mirrors ToSARIF's shape" is verified for location+message, unverified for snippets).
-- [ ] **G2 - SARIF snippet-bloat policy**: measure output-size growth from snippet duplication (primary + N-1 related copies) on a real corpus; decide everywhere vs primary-only; record in deep-dive §06.
-- [ ] **G3 - Byte-level SARIF golden** with siblings (relatedLocations + snippet) to freeze the 24h-old wire shape before consumers calcify.
+- [x] ~~**G1 - SARIF snippet-parity pin/delta**~~ DONE 2026-10-11 PM (M5): **the CLI was a DELTA, not parity** — go-finding `sarifRelatedLocs` emits NO snippet on related regions (and its import type has no snippet field, so CLI sibling snippets were dropped by every go-finding consumer). CLI trimmed to match (`sarifSiblingLocation`); cross-check comment records exact parity. Verdict recorded in deep-dive §06.4.
+- [x] ~~**G2 - SARIF snippet-bloat policy**~~ DONE 2026-10-11 PM (M6): measured on go-cqrs-lite @ `cd7b50c61` — related snippets were 9.1% of SARIF bytes at `-t 1` (1.27MB; 20.5% file-size reduction after trim) and 12% at default; policy = **primary-only**, numbers + method in `docs/benchmarks/sarif-snippet-share-2026-10-11.md`, verdict in §06.4.
+- [ ] **G3 - Byte-level SARIF golden** with siblings (relatedLocations, primary snippet, NO sibling snippets) to freeze the corrected wire shape before consumers calcify.
 - [ ] **G4 - BDD multi-clone reconstruction**: CLI SARIF (siblings) → `FindingsFromSARIF` → `Report.GroupFindings()` must reconstruct the exact partition.
 - [ ] **G5 - Daemon gate-safety hook (Q1)**: PROTOTYPE DONE 2026-10-11 — `scripts/daemon-gate/` static Go binary (fail-open on infra, fail-closed on verdicts; 8 unit tests + E2E refuse/green proof; flake `.#daemon-gate`; arch-lint component). Decision doc: `docs/status/2026-10-11_12-07_daemon-gate-q1-decision.md` (recommendation: SystemNix hooksPath flip NOW, pma-native StatusSkipped gate upstream later). OWNER ANSWER STILL PENDING (asked 2026-10-05) — deployment (§f checklist in the doc) must not start without it.
 - [ ] **G6 - AGENTS.md deep-dive pointer §05 → "§05–§06"** so future sessions read the 10-11 verdicts (Option.Validate dissolved; SwitchCases/Trigger re-confirmed N/A; SARIF fully leveraged).
 
 Harvest tails from status-report §f (2026-10-11 06:37, second pass 2026-10-11):
 
-- [ ] **G7 - Empty `category` property in CLI SARIF**: fix when SARIF is next touched (M5–M8 ARE that touch — decide BEFORE the byte-level golden freezes it, else the golden pins the empty field); documented non-churn until then.
+- [x] ~~**G7 - Empty `category` property in CLI SARIF**~~ DONE 2026-10-11 PM: NOT reproducible on Go corpora (0 empty categories across 37,779 results incl. `--no-actionability --show-suppressed`, and on art-dupl itself — the §f#14 premise never manifested). `category` is now emitted only when non-empty as defense against future category-less node types; zero wire churn on real outputs.
 - [ ] **G8 - go-finding upstream: release the pipeline Unreleased section** (EditListProvider et al.) as `pipeline/v1.14.0` so consumers stop pinning Unreleased semantics.
 - [ ] **G9 - Windows Test lane: retire the historical GOEXPERIMENT env split** — the crash class may be gone; verify one windows lane without the split, then simplify ci.yml.
 - [ ] **G10 - Provider: document why `Spec.Trigger.Requires` is deliberately empty** (Spec comment note; M59 §f#24).

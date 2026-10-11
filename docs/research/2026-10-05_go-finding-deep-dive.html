@@ -1720,6 +1720,36 @@ for _, f := range report.FindingsSnapshot() {
             What remains is exactly one upstream item (coverage evidence,
             T07b) and one deferred product decision (suppression default).
           </div>
+
+          <h3>06.4 Same-day wire correction (2026-10-11 PM, plan M5/M6/G7)</h3>
+          <p>
+            Execution pass against TODO G1&ndash;G3. The &sect;06.1 &ldquo;shipped&rdquo;
+            row's snippet claim is <strong>superseded</strong>: sibling snippets
+            were measured as pure waste and trimmed. Recorded here, history
+            above left intact.
+          </p>
+          <table class="compare">
+            <thead>
+              <tr><th>Question</th><th>Verdict</th><th>Evidence</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Does <code>ToSARIF()</code> set <code>region.snippet</code> on RELATED locations (G1)?</td>
+                <td class="no">No &mdash; the CLI was a delta, not parity</td>
+                <td>go-finding <code>sarifRelatedLocs</code> (sarif_export.go:360&ndash;392) builds related regions with uri + line/col + relation message + optional <code>properties[id]</code>, never a snippet; only the primary region gets one via <code>findingRegion</code>. Upstream's import type (<code>sarifRelatedLoc</code>) has no snippet field, so CLI sibling snippets were dropped by every go-finding consumer. CLI trimmed to match (<code>sarifSiblingLocation</code>); cross-check comment records exact parity. Status-report d4 honesty gap closed.</td>
+              </tr>
+              <tr>
+                <td>Keep snippet-everywhere or go primary-only (G2)?</td>
+                <td class="yes">Primary-only &mdash; measured, then trimmed</td>
+                <td>go-cqrs-lite @ cd7b50c61: related snippets were 1,268,255 of 13,883,532 SARIF bytes at <code>-t 1</code> (9.1% raw; 20.5% file-size reduction after the trim, escaping multiplies), 12% at the default threshold; 17,904/17,904 related locations carried duplicated fragment text. Numbers + method in <code>docs/benchmarks/sarif-snippet-share-2026-10-11.md</code>.</td>
+              </tr>
+              <tr>
+                <td>Empty <code>category</code> property (G7)?</td>
+                <td class="no">Not reproducible &mdash; conditional emission landed anyway</td>
+                <td>0 empty categories across 37,779 results (go-cqrs-lite <code>-t 1 --no-actionability --show-suppressed</code>) and on art-dupl itself; the &sect;06.3 premise did not manifest on Go corpora. <code>properties["category"]</code> is now emitted only when non-empty (defense against future category-less node types); no wire churn observed on real outputs.</td>
+              </tr>
+            </tbody>
+          </table>
         </section>
 
         <!-- Footer -->

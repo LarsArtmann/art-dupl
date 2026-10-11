@@ -9,11 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **SARIF related locations + region snippets** (2026-10-11): CLI SARIF results in a multi-occurrence group now carry `relatedLocations` — one entry per sibling occurrence with its physical location and a `clone-of` message, matching what go-finding `Report.ToSARIF()` emits — and every region carries the clone's source text as `region.snippet` (omitted when no fragment was extracted). Single-clone results emit no `relatedLocations` (`omitempty`). The T09 cross-check contract now also pins related-location parity between the CLI printer and `ToSARIF()`.
+- **SARIF related locations + region snippets** (2026-10-11): CLI SARIF results in a multi-occurrence group now carry `relatedLocations` — one entry per sibling occurrence with its physical location and a `clone-of` message, matching what go-finding `Report.ToSARIF()` emits. The **primary** region carries the clone's source text as `region.snippet` (omitted when no fragment was extracted); related regions carry location data only, byte-parity with upstream (sibling snippets measured at 9.1% of SARIF bytes at `-t 1` and dropped by every go-finding consumer's import path — see `docs/benchmarks/sarif-snippet-share-2026-10-11.md`). Single-clone results emit no `relatedLocations` (`omitempty`). The T09 cross-check contract now also pins related-location parity between the CLI printer and `ToSARIF()`.
+- **`daemon-gate` flake package** (2026-10-11): `nix build .#daemon-gate` produces the static pre-commit gate binary for the auto-commit daemon (see `docs/status/2026-10-11_12-07_daemon-gate-q1-decision.md`); deployment pending the Q1 owner answer.
 
 ### Fixed
 
-- Nothing yet.
+- **SARIF `category` property emitted only when non-empty** (2026-10-11): defensive; no empty categories observed on real corpora (0 of 37,779 results).
 
 ## [0.9.0] - 2026-10-06
 
