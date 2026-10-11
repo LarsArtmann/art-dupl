@@ -48,6 +48,110 @@ func lspTestGroup(hash string, tokens int) domain.ProcessedCloneGroup {
 // the severity ladder converted to LSP severities, the go-finding GroupID in
 // the diagnostic data, and FromLSP(fileURI, diag) restoring a Finding that
 // keeps the GroupID (G6).
+// TestLSPPrinterRelatedInformationParity pins the G13 parity verdict: the
+// LSP channel surfaces every sibling occurrence as relatedInformation
+// (uri + range + "clone-of" message) exactly like the corrected SARIF wire —
+// and, like SARIF's relatedLocations, carries no source snippet, because
+// go-finding's RelatedRef has no snippet field.
+func TestLSPPrinterRelatedInformationParity(t *testing.T) {
+	t.Parallel()
+
+	group := domain.ProcessedCloneGroup{
+		Hash: "g13pin00000000001",
+		Clones: []domain.ProcessedClone{
+			{
+				Filename:   "alpha.go",
+				LineStart:  10,
+				LineEnd:    14,
+				Fragment:   "func alpha() {}",
+				TokenCount: 40,
+				Classification: domain.CloneClassification{
+					CloneType: domain.CloneType1,
+				},
+			},
+			{
+				Filename:   "beta.go",
+				LineStart:  20,
+				LineEnd:    24,
+				Fragment:   "func beta() {}",
+				TokenCount: 40,
+				Classification: domain.CloneClassification{
+					CloneType: domain.CloneType1,
+				},
+			},
+			{
+				Filename:   "gamma.go",
+				LineStart:  30,
+				LineEnd:    34,
+				Fragment:   "func gamma() {}",
+				TokenCount: 40,
+				Classification: domain.CloneClassification{
+					CloneType: domain.CloneType1,
+				},
+			},
+		},
+	}
+
+	var buf bytes.Buffer
+
+	p := NewLSP(&buf, mockSARIFReadFile, 5)
+
+	if err := p.PrintHeader(); err != nil {
+		t.Fatalf("PrintHeader: %v", err)
+	}
+
+	if err := p.PrintClones(group); err != nil {
+		t.Fatalf("PrintClones: %v", err)
+	}
+
+	if err := p.PrintFooter(); err != nil {
+		t.Fatalf("PrintFooter: %v", err)
+	}
+
+	var documents []LSPDocument
+
+	if err := json.Unmarshal(buf.Bytes(), &documents); err != nil {
+		t.Fatalf("unmarshal LSP output: %v\noutput:\n%s", err, buf.String())
+	}
+
+	diagnostics := 0
+
+	for _, doc := range documents {
+		for _, diag := range doc.Diagnostics {
+			diagnostics++
+
+			if len(diag.Related) != 2 {
+				t.Errorf("%s: relatedInformation = %d entries, want 2 siblings", doc.URI, len(diag.Related))
+
+				continue
+			}
+
+			for _, rel := range diag.Related {
+				if rel.Message != string(gofinding.RelationCloneOf) {
+					t.Errorf(
+						"%s: related message = %q, want %q",
+						doc.URI,
+						rel.Message,
+						string(gofinding.RelationCloneOf),
+					)
+				}
+
+				if rel.Location.URI == doc.URI {
+					t.Errorf("%s: related location points at the diagnostic's own file", doc.URI)
+				}
+
+				if rel.Location.URI != "alpha.go" && rel.Location.URI != "beta.go" && rel.Location.URI != "gamma.go" {
+					t.Errorf("%s: related location URI = %q, want a sibling occurrence", doc.URI, rel.Location.URI)
+				}
+			}
+		}
+	}
+
+	if diagnostics != 3 {
+		t.Errorf("emitted %d diagnostics, want one per clone occurrence", diagnostics)
+	}
+}
+
 func TestLSPPrinterDocumentsAndRoundTrip(t *testing.T) {
 	t.Parallel()
 
