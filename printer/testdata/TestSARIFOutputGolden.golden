@@ -759,6 +759,50 @@
               }
             },
             {
+              "id": "art-dupl/pattern/append-collector-tail",
+              "name": "append-collector-tail",
+              "shortDescription": {
+                "text": "Actionability pattern \"append-collector-tail\" (denylist) — marks matching clone groups as boilerplate"
+              },
+              "fullDescription": {
+                "text": "Informational descriptor for the actionability classification carried on results in the non_actionable_pattern property. A group is suppressed only when EVERY clone matches the same pattern; --no-actionability disables suppression and --disable-pattern disables one pattern."
+              },
+              "defaultConfiguration": {
+                "level": "none"
+              },
+              "helpUri": "https://github.com/LarsArtmann/art-dupl/blob/main/docs/ACTIONABILITY_PATTERNS.md#pattern-priority-order",
+              "properties": {
+                "precision": "very-high",
+                "tags": [
+                  "actionability",
+                  "denylist",
+                  "suppressible"
+                ]
+              }
+            },
+            {
+              "id": "art-dupl/pattern/option-apply-loop",
+              "name": "option-apply-loop",
+              "shortDescription": {
+                "text": "Actionability pattern \"option-apply-loop\" (denylist) — marks matching clone groups as boilerplate"
+              },
+              "fullDescription": {
+                "text": "Informational descriptor for the actionability classification carried on results in the non_actionable_pattern property. A group is suppressed only when EVERY clone matches the same pattern; --no-actionability disables suppression and --disable-pattern disables one pattern."
+              },
+              "defaultConfiguration": {
+                "level": "none"
+              },
+              "helpUri": "https://github.com/LarsArtmann/art-dupl/blob/main/docs/ACTIONABILITY_PATTERNS.md#pattern-priority-order",
+              "properties": {
+                "precision": "very-high",
+                "tags": [
+                  "actionability",
+                  "denylist",
+                  "suppressible"
+                ]
+              }
+            },
+            {
               "id": "art-dupl/pattern/property-engine",
               "name": "property-engine",
               "shortDescription": {
@@ -1072,8 +1116,8 @@
       "invocations": [
         {
           "executionSuccessful": true,
-          "startTimeUtc": "2026-10-11T10:34:30Z",
-          "endTimeUtc": "2026-10-11T10:34:30Z"
+          "startTimeUtc": "2026-10-11T16:33:49Z",
+          "endTimeUtc": "2026-10-11T16:33:49Z"
         }
       ]
     }

@@ -107,7 +107,7 @@ func allInstantiationPairs(divs []TypeDivergence) bool {
 // splitInstantiation splits a type string into its pre-bracket base and type
 // arguments ("[]list[int]" → "list", "int"; qualifier prefixes are stripped
 // first). Returns ("", "") when the string carries no type arguments.
-func splitInstantiation(typeStr string) (base, args string) {
+func splitInstantiation(typeStr string) (string, string) {
 	qualified := golang.StripQualifierPrefixes(typeStr)
 
 	cut := strings.Index(qualified, "[")
@@ -174,7 +174,7 @@ func formatInstantiationOnlyHint(divs []TypeDivergence) string {
 func ClassifyReuseExistingGeneric(
 	seqs [][]*domain.CloneNode,
 	index map[string]int,
-) (declKey string, typeParamCount int, reuse bool) {
+) (string, int, bool) {
 	if len(index) == 0 || len(seqs) < 2 {
 		return "", 0, false
 	}
