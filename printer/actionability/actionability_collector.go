@@ -89,7 +89,7 @@ func seqIsCollectorTail(seq []*domain.CloneNode) bool {
 // collectorStatementAccumulates classifies one statement root of a
 // collector tail and reports whether it performs an accumulation
 // (append/make assignment) at itself or any nesting depth.
-func collectorStatementAccumulates(n *domain.CloneNode) (accumulates bool, ok bool) {
+func collectorStatementAccumulates(n *domain.CloneNode) (bool, bool) {
 	switch n.BaseType {
 	case golang.RangeStmt, golang.ForStmt:
 		return loopAccumulates(n)
@@ -117,7 +117,7 @@ func collectorStatementAccumulates(n *domain.CloneNode) (accumulates bool, ok bo
 // loopAccumulates validates a collector loop: exactly one body block, a
 // header free of real logic, and a body consisting solely of collector
 // statements.
-func loopAccumulates(n *domain.CloneNode) (accumulates bool, ok bool) {
+func loopAccumulates(n *domain.CloneNode) (bool, bool) {
 	body := soleBlockChild(n)
 	if body == nil {
 		return false, false
@@ -132,7 +132,7 @@ func loopAccumulates(n *domain.CloneNode) (accumulates bool, ok bool) {
 
 // ifAccumulates validates an in-loop filter guard: collector-only branches
 // with a plumbing condition.
-func ifAccumulates(n *domain.CloneNode) (accumulates bool, ok bool) {
+func ifAccumulates(n *domain.CloneNode) (bool, bool) {
 	if !ifIsCollectorFilter(n) {
 		return false, false
 	}
@@ -164,7 +164,7 @@ func blockAccumulates(n *domain.CloneNode) bool {
 // make-preallocation, deep-copy plumbing (`copied := src`, `copied := *src`,
 // `copied.Field = src.Field`, `copied.Field = slices.Clone(src.Field)`),
 // and scalar conversions onto an identifier or field target.
-func collectorAssign(n *domain.CloneNode) (accumulates bool, ok bool) {
+func collectorAssign(n *domain.CloneNode) (bool, bool) {
 	if len(n.Children) != 2 {
 		return false, false
 	}
@@ -191,7 +191,7 @@ func collectorAssign(n *domain.CloneNode) (accumulates bool, ok bool) {
 
 // callIsCollectorPlumbing classifies a call-RHS assignment against its
 // target: append/make accumulate, clone/conversion calls are copy plumbing.
-func callIsCollectorPlumbing(call, target *domain.CloneNode) (accumulates bool, ok bool) {
+func callIsCollectorPlumbing(call, target *domain.CloneNode) (bool, bool) {
 	if len(call.Children) == 0 {
 		return false, false
 	}
@@ -218,7 +218,7 @@ func callIsCollectorPlumbing(call, target *domain.CloneNode) (accumulates bool, 
 
 // appendAccumulates matches `x = append(x, ...)` — the first append argument
 // is the same identifier as the assignment target.
-func appendAccumulates(call, target *domain.CloneNode) (accumulates bool, ok bool) {
+func appendAccumulates(call, target *domain.CloneNode) (bool, bool) {
 	if target.BaseType != golang.Ident || len(call.Children) < 2 {
 		return false, false
 	}
