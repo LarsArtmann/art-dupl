@@ -1,0 +1,136 @@
+# Pareto Plan Execution (M2–M16) + What I Got Wrong — Status Report
+
+**Created:** 2026-10-11 18:23 CEST
+**Session scope:** Full Execution Mode against `docs/planning/2026-10-11_08-29_superb-open-work-pareto-plan.md` (M1–M27), plus the honesty review the header asks for (forgotten / could-be-better / still-improvable).
+**End state:** art-dupl `fork` clean at `1b570cc2`, **18 commits ahead of `origin/fork` (unpushed, your call)**; go-finding on branch `feat/detector-v2-coverage` at `a275b57` (unpushed, your call); working tree green on the fast boundary profile.
+
+---
+
+## a) FULLY DONE (verified, gates green)
+
+| # | Item | Proof |
+|---|------|-------|
+| A1 | **M2 daemon gate-safety prototype**: static Go binary `scripts/daemon-gate/` (stdlib-only, fail-OPEN on infra errors, fail-CLOSED on verdicts, 10-min CommandContext timeout, `PMA_GATE_GO` toolchain pin, `PMA_GATE_DISABLE` kill switch); 8 unit tests; **end-to-end proof** under the daemon's exact env (`GIT_CONFIG_COUNT`/`core.hooksPath`): broken tree → commit refused exit 1 with compiler evidence, green tree → commits | fast boundary + `golangci-lint` 0 findings + arch-lint component `daemon-gate` + `nix build .#daemon-gate` all green |
+| A2 | **Q1 decision doc** filed: `docs/status/2026-10-11_12-07_daemon-gate-q1-decision.md` — 8-incident damage ledger, `8afa9803` reproduced at exit 1 in a temp worktree (then cleaned up), options A–D costed, recommendation (SystemNix hooksPath flip now; pma-native `StatusSkipped` gate as upstream follow-up), rollout checklist + rollback | deliberate commit `30b08dd6` |
+| A3 | **M5 snippet parity (G1)**: upstream `sarifRelatedLocs` emits NO snippet on related regions (and its import type drops them) — the CLI's sibling snippets were a **delta, not parity**. CLI trimmed to exact parity (`sarifSiblingLocation`); cross-check contract comment records it; status-report d4 honesty gap closed | `TestSARIFOutput_RelatedLocationsAndSnippet` inverted assertion green |
+| A4 | **M6 bloat measurement + policy (G2)**: go-cqrs-lite @ `cd7b50c61` — sibling snippets were 9.1% of SARIF bytes at `-t 1` (1,268,255 of 13,883,532; 17,904/17,904 related locations), 12% at default; post-trim file shrank **20.5%**. Policy: **primary-only**. `docs/benchmarks/sarif-snippet-share-2026-10-11.md` | jq before/after measurement in the note |
+| A5 | **G7 empty `category`**: NOT reproducible (0 empty of 37,779 results incl. `--no-actionability --show-suppressed`, and on art-dupl itself). Conditional emission landed anyway as future-proofing; zero wire churn on real outputs | jq counts in session |
+| A6 | **M7 (G4) BDD multi-clone reconstruction**: 3 distinct groups × 3 occurrences → CLI `--sarif` → `FindingsFromSARIF` → `Report.GroupFindings()` reconstructs the EXACT partition (group set == JSON channel, occurrence file sets equal, every finding links N-1 siblings pointing at group members) | full bdd suite green (340 specs) |
+| A7 | **M8 (G3) byte-level SARIF golden**: `printer/testdata/TestSARIFOutputGolden.golden` freezes the corrected wire (3-occurrence group + single-clone group: primary snippets present, sibling regions sans snippet, category only when non-empty); deterministic across runs | double `go test` run green |
+| A8 | **M9 hygiene**: AGENTS deep-dive pointer `§05` → `§05–§06` with the §06 verdicts summary; TODO harvest second pass added tails **G7–G13** (status-report §f items 14/15/23/24/25/27/28 were missed by the first pass) | committed |
+| A9 | **M10 vendorHash**: `nix build .#art-dupl` green with the pinned hash (full vendor step exercised; same module as the daemon-gate build) — the 09-29 ultraviolet staleness concern resolved by the passing hermetic build, no hash change | TODO line closed with evidence |
+| A10 | **M1 T07b upstream prototype**: `DetectResult{Findings, FilesScanned, SkippedModules}` + optional `DetectorV2` (embeds `Detector`, source-compatible) + `RunDetect` (v2 preferred, v1 falls back with documented zeroed coverage, errors pass through unwrapped) + `Report.AddDetectResult` (FilesScanned accumulates, SkippedModules unions first-seen, survives `ComputeSummary`). ctx-channel alternative REJECTED with reasons in the commit body. **All 4 go-finding modules test green (core under `-race`), scoped lint clean** | branch `feat/detector-v2-coverage`, commit `a275b57`; CHANGELOG + AGENTS Key-Files updated upstream |
+| A11 | **M15 Q2 decision doc**: `docs/status/2026-10-11_12-45_emit-suppressed-accepted-q2-decision.md` — options costed; the key insight a flip needs TWO coordinated consumers (go-finding drops suppressed findings from SARIF by default, so a naive flip makes directive-covered clones VANISH from SARIF lanes — the opposite of intent); recommendation **Option B** (BuildFlow per-repo `tool_options` opt-in, default stays `false`) | TODO default-flip line updated with pointer |
+| A12 | **M16 SDK_DESIGN.md fate**: the "stale since 2026-07-19" claim is OBSOLETE — the doc was already refreshed post-ADR-0025/0026 and every claim verified against code (interface at `pkg/artdupl/detector.go:66/145`, Options fields, DefaultThreshold mirror, provider contract incl. the `_test.go` inclusion note). Kept at root (README:182 links it); TODO closed with evidence | no churn — the honest verdict was "no change needed" |
+| A13 | **M9-adjacent hygiene**: M10 + M16 + default-flip TODO lines closed/updated; CHANGELOG gained the corrected SARIF entry + `daemon-gate` package entry | in tree |
+
+## b) PARTIALLY DONE
+
+| # | Item | What's missing |
+|---|------|----------------|
+| B1 | **M1 finish line** | push → PR → CI watch → tag on go-finding; then M3 (provider `DetectorV2` impl) unblocks. Pipeline adoption of `RunDetect` inside go-finding's own detect stages (sequential/parallel/retry/verify still consume `[]Finding`) was a **deliberate scope cut** documented in the commit body |
+| B2 | **Close-out gates (plan §5)** | `scripts/check-boundary.sh --full` NOT run this session; `nix flake check` (which carries `sarif-validate`, the `race` lane, `alloc-gate`) NOT run after the SARIF wire change — unit/bdd/golden gates covered behavior, but the flake-only checks weren't re-verified on the new wire |
+| B3 | **M2 deployment** | everything up to the owner answer done; §f checklist (nixos-rebuild, scratch-repo proof, env pinning `PMA_GATE_GO`/`GOCACHE`) intentionally not executed — it is system-level and Q1-gated |
+| B4 | **M15 execution** | doc + recommendation done; the actual BuildFlow config line (art-dupl's own consumer `tool_options`) and renderer check are gated on Q2. Also unverified: whether BuildFlow's `tool_options` mapping carries **bool** values end-to-end (I proved `int` via the threshold knob; the bool is inferred, not demonstrated) |
+| B5 | **The `-f sarif` observation** | my first SARIF runs used `-f sarif`, which exited 0, printed the TEXT footer, and found 0 groups. Working hypothesis: `-f` is a hidden alias (probably `--files`), so "sarif" was consumed as a file argument and the positional target was ignored. **Never root-caused** — flagged here so it doesn't get re-misdiagnosed as a SARIF-printer bug (it was my flag error; the printer was fine) |
+| B6 | **G12 benchstat** | the M5–M8 wire changes are per-group allocations; harvested as G12 (zero hot-path churn to confirm) but not measured this session |
+| B7 | **AGENTS memory for the wire change** | no convention line yet saying "SARIF related regions carry NO snippet (upstream parity, 2026-10-11, §06.4)" — a future session could re-add sibling snippets believing it's an improvement (the exact re-litigation the ledger exists to prevent) |
+| B8 | **FEATURES row for `daemon-gate`** | CHANGELOG has it; FEATURES' inventory does not (bundle with the next FEATURES touch — the file was mid-flight by the concurrent session at cut time) |
+| B9 | **Q1 doc cooldown number** | the decision doc says red-tree cost is "bounded by the existing cooldown" without citing the actual cooldown value from pma's config — the mechanism is cited, the number isn't |
+
+## c) NOT STARTED
+
+- **M3/M4** (T07b consumption + BuildFlow surfacing) — hard-gated on M1 push+tag.
+- **M11** go-paperless v0.4.3 tag+release (memo exists; needs push sanction).
+- **M12** deploy-site.yml `continue-on-error` flip (other repo).
+- **M13** windows-lane `TestExitCodes_Process` confirmation (needs a CI cycle).
+- **M14** branch protection + failure notifications (owner GitHub settings).
+- **M17/M18** gogenfilter v3.6.1 fleet sweep (9 consumers on a known-bad version; go-line-first per F11) — requires per-repo pushes.
+- **M19/M20** fleet audits (`encoding/json/v2` on Go 1.27; `filepath.Separator` matching) across the other repos.
+- **M21** in-repo sweep of ~30 direct `encoding/json/v2` imports (Duration/wire-bearing only; jsonv2gate allowlist shrinks with it).
+- **M22** lane-overlap D3 (jscpd vs art-dupl verdict; post-soak). **M23** next core-lane consumer rollout (gated on M11 recipe re-proof).
+- **M24** BuildFlow BF2 `RespectPatchFloor` (ends the go-line flip war fleet-wide); **M25** ban-list heuristic in `golangci-lint-auto-configure` (then drop art-dupl's two `skip_steps`).
+- **M26** monthly self-scan (due ~2026-10-22) + SELF_CLEAN_LEDGER append.
+- **M27** monthly docs-health pass (due 2026-10-28) incl. A-lite→A re-keying of 55 archived snapshots.
+- **G8–G13 executed work** (harvested only): pipeline Unreleased release upstream, windows GOEXPERIMENT split retirement, `Spec.Trigger.Requires` doc note, toolsdk per-value validation hook (upstream-gated), benchstat G12, `--lsp` `relatedInformation` parity.
+
+## d) TOTALLY FUCKED UP
+
+Nothing destructive: **no data loss, no broken push, no foreign file damaged, no reverted foreign work, no state left red by me.** The honest damage list:
+
+1. **False alarm I raised on myself**: believed the SARIF printer was broken ("SARIF sees 0 groups while text sees 8701") — the real cause was MY invalid `-f sarif` flag. Burned ~6 calls on a phantom bug before the od-dump showed the text footer. `--help` first would have made it zero. Correct instinct: I did NOT file or document the phantom as a bug.
+2. **Daemon-race packaging**: 5 of my units (gate source, SARIF fix, bench note, ledger, TODO closures) landed inside generic `chore: auto-commit` messages because I batched and the daemon's 2-minute window closed first. Content is intact and truthful; **history quality is worse than it should be**. Only one centerpiece (M2 decision doc `30b08dd6`) got the detailed message it deserved. Lesson applied too late: commit each verified unit immediately.
+3. **golines cascade**: on `scripts/daemon-gate` I hand-fixed golines findings one at a time while the linter revealed them one at a time (~5 round trips). Running `golines -w` FIRST was the fix I eventually used.
+4. **One multiedit glued two lines** (`wd, err := os.Getwd()` + `if err != nil {`), producing a syntax error that cost two more cycles — a self-inflicted exact-match editing failure.
+5. **Stale LSP never restarted**: golangci-lint LSP served pre-rewrite diagnostics for most of the session; I worked around it via the CLI but violated the documented hygiene rule (AGENTS 2026-09-29: restart the client, don't trust pre-reload diagnostics).
+6. **Started the `-f` experiments without knowing the flag surface** — same root cause as (1); the docs-health count gate tracks 57 user-visible flags and I consulted none of them.
+
+## e) WHAT WE SHOULD IMPROVE
+
+1. **Commit-per-verified-unit** — beat the daemon; never let a wire change ride a `chore:` message.
+2. **Formatter-first** — run `golines`/`gofmt` on new files before touching linter findings manually.
+3. **`--help` before experiments** — check the flag surface before any CLI behavior test.
+4. **LSP hygiene reflex** — stale diagnostics → restart the client immediately (documented rule, I paid the tax anyway).
+5. **Self-defending goldens** — `TestSARIFOutputGolden` can silently regenerate an EMPTY-results golden under `-update` if the `SetHash` wiring breaks again; add a `len(results) > 0` guard before `RequireGolden`.
+6. **Close-out checklist discipline** — plan §5 names `--full` + flake checks for close-outs; wire changes deserve the complete set (B2).
+7. **Memory-write completeness at task end** — every shipped convention (B7's no-snippet rule, B8's FEATURES row) should land in AGENTS/FEATURES in the same session that ships the change.
+8. **Cost numbers in decision docs** — cite the concrete value (cooldown seconds), not just the mechanism (B9).
+9. **Parallelize gates earlier** — background `nix build`/bdd suite while writing docs worked well when I did it (twice); should be the default, not the exception.
+10. **Hypothesis hygiene** — when a diagnosis is inferred (not demonstrated), mark it as such in the moment (the Q2 doc's bool-mapping claim should have been tagged "inferred" inline).
+
+## f) NEXT (ranked by impact; brainstorm, not commitment — HARVEST routing applies)
+
+| # | Task | Impact | Effort | Category |
+|---|------|--------|--------|----------|
+| 1 | **Push + PR + CI-watch + tag the go-finding `feat/detector-v2-coverage` branch** (sanction-gated) — unblocks M3/M4, the coverage channel end-to-end | High | S | Release (upstream) |
+| 2 | **Q1 execution**: SystemNix hooksPath flip per the M2 doc §f checklist (owner-gated) | Critical | M | Infra |
+| 3 | **Q2 execution**: BuildFlow art-dupl `tool_options.emit-suppressed-accepted: true` + verify the SARIF render shows suppression annotations (owner-gated) | Medium | S | Config |
+| 4 | **Push `fork`** (18 commits ahead, includes the SARIF wire correction) — consumer-visible fix | High | S | Release |
+| 5 | **Root-cause the `-f` flag silent-accept** (B5): is it `--files`' shorthand? Does an unknown-but-prefixed flag really exit 0? File the finding — a CLI that accepts garbage flags and analyzes nothing while exiting 0 is a UX bug class | Medium | S | Quality |
+| 6 | **Close-out gates**: `scripts/check-boundary.sh --full` + `nix flake check` on the healed tree (B2) | Medium | M | Quality |
+| 7 | **Self-defend the SARIF golden** (improvement 5): non-empty results assertion before `RequireGolden` | Low | S | Testing |
+| 8 | **M3** — provider implements `DetectorV2`: FilesScanned/SkippedModules from the crawl (incl. nested-go.mod skips), provider tests assert the numbers | High | M | Feature |
+| 9 | **M4** — BuildFlow renders real coverage from provider findings ("did we see every file" becomes answerable) | High | M | Feature (BuildFlow) |
+| 10 | **go-finding pipeline adopts RunDetect** (the M1 scope cut): `runOneDetector`/`convenience.Detect`/`verify.go`/`retry.go` honor DetectorV2 and surface coverage in `Report` | Medium | M | Feature (upstream) |
+| 11 | **toolsdk dry-run honors DetectorV2** — check whether `dryrun.go`'s detect wrapping should pass through v2 results | Low | S | Feature (upstream) |
+| 12 | **M11** go-paperless v0.4.3: follow the release memo, verify HEAD drift, tag + release | High | M | Release |
+| 13 | **M12** deploy-site flip: remove `continue-on-error`, `astro check` locally first | High | S | Infra |
+| 14 | **M13** windows-lane confirmation of `TestExitCodes_Process`, close TODO #4 | Medium | S | Infra (CI) |
+| 15 | **M14** branch protection + failed-workflow notifications (recipe ready, owner settings) | High | M | Infra (owner) |
+| 16 | **M17** gogenfilter sweep A — branching-flow, BuildFlow, auto-deduplicate (build-red repos FIRST, go-line 1.27 then bump then vendor then test) | High | L | Fleet |
+| 17 | **M18** gogenfilter sweep B — the remaining 6 consumers | Medium | L | Fleet |
+| 18 | **M19** fleet audit `encoding/json/v2` / `format:` tags on Go 1.27 | Medium | L | Fleet |
+| 19 | **M20** fleet audit `filepath.Separator` matching + colon-path parsing | Medium | L | Fleet |
+| 20 | **M21** in-repo v2-import sweep (~30 files, Duration/wire-bearing only), shrink the jsonv2gate allowlist | Medium | M | Quality |
+| 21 | **AGENTS convention line**: SARIF related regions carry no snippet (upstream parity; §06.4) — prevent re-litigation (B7) | Low | S | Docs |
+| 22 | **FEATURES row for `daemon-gate`** + the SARIF related-locations correction, bundled into the next FEATURES touch (B8; file was mid-flight) | Low | S | Docs |
+| 23 | **Q1 doc cooldown number** (B9): read pma's cooldown config, cite the value | Low | S | Docs |
+| 24 | **G12** benchstat: confirm the SARIF additions cause zero alloc churn on hot paths | Low | S | Quality |
+| 25 | **G13** `--lsp` `relatedInformation` parity with the new SARIF shape | Low | S | Quality |
+| 26 | **G8** go-finding upstream: release the pipeline Unreleased section as `pipeline/v1.14.0` (consumers stop pinning Unreleased semantics) | Low | S | Release (upstream) |
+| 27 | **G9** windows lane: retire the historical GOEXPERIMENT env split if the crash class is gone | Low | S | Infra (CI) |
+| 28 | **G10** document why `Spec.Trigger.Requires` is deliberately empty | Low | S | Docs |
+| 29 | **G11** toolsdk per-value validation hook (upstream, optional) | Low | M | Feature (upstream) |
+| 30 | **B4 verification**: prove BuildFlow `tool_options` carries BOOL values end-to-end (mirror of the D1 int proof) before Q2 lands | Medium | S | Feature (BuildFlow) |
+| 31 | **M16 follow-through**: SDK_DESIGN.md "Downstream Consumers" diagram gains the daemon-gate arrow (pkg/provider → BuildFlow already there; add the SystemNix hook path when Q1 lands) | Low | S | Docs |
+| 32 | **M22** lane-overlap D3 verdict (post-soak) | Low | S | Fleet |
+| 33 | **M23** next core-lane consumer rollout | Low | M | Fleet |
+| 34 | **M24** BuildFlow BF2 `RespectPatchFloor` (+ provider-config channel), then remove art-dupl's `skip_steps` | High | L | Infra (BuildFlow) |
+| 35 | **M25** BuildFlow ban-list heuristic, then remove art-dupl's second `skip_steps` | Medium | M | Infra (BuildFlow) |
+| 36 | **M26** monthly self-scan `-t 1 --type-aware` + SELF_CLEAN_LEDGER (due ~10-22) | Medium | M | Cadence |
+| 37 | **M27** monthly docs-health pass (due 10-28): HARVEST this report's §f, annotate, archive; A-lite→A re-keying | Medium | L | Cadence |
+| 38 | **`--search-workers 1` determinism twin** for the new BDD multi-clone spec (the convention previous determinism claims followed) | Low | S | Testing |
+| 39 | **AGENTS process rule** (from this session): "formatter before hand-fixes; `--help` before CLI experiments; commit-per-unit under the daemon" — the three lessons that cost real calls | Low | S | Docs |
+| 40 | **Weekly `gh run list --limit 20` sweep** (the M14 interim until required checks exist) | Low | S | Infra |
+
+*(Stopped at 40 rather than padding to 50 — the remaining plan slots are the M3/M4-chain and cadence items already listed; filler would be fabricated.)*
+
+## g) QUESTIONS I CANNOT ANSWER MYSELF
+
+1. **Push/PR/tag sanction and sequencing**: may I push `feat/detector-v2-coverage` to go-finding and open the PR (your repo, PR #41/#42 convention), and should the `core` tag follow the merge or wait for a batch with the pipeline RunDetect adoption? Same session question for `fork` (18 commits ahead, contains the SARIF wire correction consumers may already be consuming in the other direction).
+2. **Q1 (restated from the decision doc)**: deploy the daemon gate via SystemNix now (`nixos-rebuild` + scratch-repo proof), or hold until the generics session on `fork` lands? Either answer is executable from the doc §f.
+3. **Priority for the next execution block**: fleet hygiene (M17/M18 gogenfilter sweep — 9 repos on a known-bad detector version, but it means pushes across 9 repos) or the release train (M11 go-paperless + M12 deploy-site + M14 branch protection — fewer repos, more owner-visible)? I can start either; the ordering is a product call.
+
+---
+
+*Report ends. WAITING FOR INSTRUCTIONS.*
