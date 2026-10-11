@@ -48,6 +48,12 @@
 
       mkPackage =
         pkgs:
+        {
+          # Sub-packages to build from the module. The default builds the CLI;
+          # `daemon-gate` builds the fleet pre-commit gate binary (scripts/
+          # daemon-gate, Q1) consumed by the SystemNix pma daemon module.
+          subPackages ? [ "cmd/art-dupl" ],
+        }:
         let
           # buildGoModule must run the SAME go the module requires
           # (go.mod pins go 1.27.1; see .buildflow.yml for why the pin is
@@ -104,7 +110,7 @@
             GOEXPERIMENT = "jsonv2";
           };
 
-          subPackages = [ "cmd/art-dupl" ];
+          inherit subPackages;
 
           doCheck = false;
 
@@ -346,8 +352,18 @@
           };
 
           packages = {
-            default = mkPackage pkgs;
-            art-dupl = mkPackage pkgs;
+            default = mkPackage pkgs { };
+            art-dupl = mkPackage pkgs { };
+
+            # The fleet daemon pre-commit gate (Q1): a static, stdlib-only
+            # binary installed as the pma daemon's pre-commit hook by the
+            # SystemNix module. Same module/vendor dance as the CLI (the
+            # gate itself imports nothing outside the stdlib by design).
+            daemon-gate = (mkPackage pkgs { subPackages = [ "scripts/daemon-gate" ]; }).overrideAttrs (old: {
+              meta = (old.meta or { }) // {
+                description = "Pre-commit gate that refuses to commit a broken tree (pma daemon hook)";
+              };
+            });
           };
 
           apps = {
