@@ -30,7 +30,7 @@
 
 ## b) PARTIALLY DONE
 
-1. **T20 close-out**: full boundary gate GREEN (94s, full profile incl. lint); CHANGELOG audit done; foreign SARIF report resolved (the daemon already committed it — repo policy satisfied). `nix flake check` was still running when this report was written (background job; the race/lint gates inside it ran green locally all session — remaining risk is packaging-level only). **Check its result before tagging anything.**
+1. **T20 close-out**: CLOSED during report finalization — full boundary gate GREEN (94s, full profile incl. lint); **`nix flake check` GREEN** (after two fix rounds the gate itself caught: a treefmt struct-alignment drift fixed via `buildflow format`, a godox hit on the word "bug" in a test comment, and a gocyclo-16 `ProcessClones` fixed by extracting `annotateAlreadyGeneric` — the gate doing exactly its job); CHANGELOG audit done; foreign SARIF report resolved (the daemon already committed it — repo policy satisfied). The pre-existing go-structure-linter error (AGENTS.md 302 lines > 220 max; was already 283 before this session) is NOT fixed — backlog, see §f.
 
 ## c) NOT STARTED (deliberately queued, not plan tasks)
 
@@ -55,7 +55,7 @@ See §f — the queued list from sessions 2–3 (DiscordSync 0-candidate cause, 
 
 ## f) NEXT THINGS (ranked, ~30 items)
 
-1. Verify `nix flake check` result (job was live at report time).
+1. AGENTS.md slim-down (pre-existing go-structure-linter error: 302 lines > 220 max, was 283 before this session — extract detail blocks to referenced docs).
 2. Decide the ROADMAP gate criterion (s2 vs strict) — owner call, gates all further precision work.
 3. Stdlib-answerable hint surface ("use maps.Keys / slices.Collect") — ROADMAP candidate, now with the collateral quantified (map-collect class ≈ 4–6 families).
 4. Tail-only fragment filtering (3 surviving families: `5ac0a07b 887684d2 894dff88` — matched fragment is a 1–2 statement tail of different loops).
