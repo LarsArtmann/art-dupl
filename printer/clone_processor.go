@@ -202,6 +202,18 @@ func ProcessClones(fread ReadFile, dups [][]*syntax.Node, opts ...ProcessOption)
 
 	if label == actionability.PatternNone && passesGenericsLineGate(conf, clones) {
 		genericsCandidate, genericsHint = ClassifyGenericsCandidate(toCloneNodeSeqs(dups))
+
+		// Already-generic annotation (plan T6): the clones instantiate shared
+		// generics but are not pure reuse candidates — name the
+		// over-engineering risk instead of pushing another abstraction.
+		if genericsCandidate && conf.genericDecls != nil &&
+			usesIndexedGenericInstantiation(toCloneNodeSeqs(dups), conf.genericDecls) {
+			_, _, reuses := ClassifyReuseExistingGeneric(toCloneNodeSeqs(dups), conf.genericDecls)
+
+			if !reuses {
+				genericsHint += alreadyGenericNote
+			}
+		}
 	}
 
 	for i := range clones {

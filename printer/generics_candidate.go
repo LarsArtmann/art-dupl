@@ -147,6 +147,48 @@ func formatInstantiationOnlyHint(divs []TypeDivergence) string {
 	return "differs only in generic instantiation: " + strings.Join(parts, "; ")
 }
 
+// usesIndexedGenericInstantiation reports whether any type carried by the
+// sequences instantiates a generic declared in the run-wide index (plan T6).
+// Clones that already sit on shared generics (the per-exporter
+// `type Option = catalog.Option[Exporter]` wrapper class) do not need a NEW
+// abstraction — suggesting one risks over-engineering, so the hint carries a
+// note instead. Reuse-classified groups (every divergence is an
+// instantiation of one indexed generic) are excluded by the caller: they get
+// the stronger "Reuse existing generic" suggestion.
+func usesIndexedGenericInstantiation(seqs [][]*domain.CloneNode, index map[string]int) bool {
+	if len(index) == 0 {
+		return false
+	}
+
+	for _, seq := range seqs {
+		for _, n := range seq {
+			if nodeInstantiatesIndexed(n, index) {
+				return true
+			}
+		}
+	}
+
+	return false
+}
+
+func nodeInstantiatesIndexed(n *domain.CloneNode, index map[string]int) bool {
+	if n.VarType != "" && golang.LookupGenericDecl(n.VarType, index) != "" {
+		return true
+	}
+
+	for _, child := range n.Children {
+		if nodeInstantiatesIndexed(child, index) {
+			return true
+		}
+	}
+
+	return false
+}
+
+// alreadyGenericNote is appended to the generics hint when the clones already
+// instantiate shared generics but are not pure reuse candidates.
+const alreadyGenericNote = "; already instantiates shared generics — further extraction may be over-engineering"
+
 // ClassifyReuseExistingGeneric reports whether a generics candidate's type
 // divergences are dominated by instantiations of one already-declared generic.
 // When they are, the user should reuse that generic instead of extracting a

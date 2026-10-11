@@ -227,8 +227,81 @@ func TestProcessClones_ReuseSuggestionNotDoubled(t *testing.T) {
 			t.Errorf("clone %d: double suggestion — reuse and extract both present: %q", i, suggestion)
 		}
 
-		if c.Classification.Extractability == domain.ExtractabilityVetoed {
-			t.Errorf("clone %d: reuse-suggested group carries an extraction veto", i)
+		if strings.Contains(c.Classification.GenericsHint, "Extract to generic") {
+			t.Errorf("clone %d: hint carries extraction advice on a reuse group: %q", i, c.Classification.GenericsHint)
+		}
+	}
+}
+
+// TestProcessClones_AlreadyGenericAnnotation (plan T6) pins the
+// over-engineering note: candidates that instantiate an indexed shared
+// generic but diverge at plain-type positions too (the per-exporter Option
+// wrapper class) carry the note in their hint; pure reuse groups and
+// plain-type groups do not.
+func TestProcessClones_AlreadyGenericAnnotation(t *testing.T) {
+	t.Parallel()
+
+	nodes := func(filename, boxInst, exporterType string) []*syntax.Node {
+		return []*syntax.Node{
+			{
+				Type:     golang.Ident,
+				Name:     "opt",
+				VarType:  boxInst,
+				Filename: filename,
+				Pos:      3,
+				End:      13,
+			},
+			{
+				Type:     golang.Ident,
+				Name:     "e",
+				VarType:  exporterType,
+				Filename: filename,
+				Pos:      6,
+				End:      13,
+			},
+		}
+	}
+
+	dups := [][]*syntax.Node{
+		nodes("test_a.go", "github.com/x/pkg.Box[int]", "*d2.Exporter"),
+		nodes("test_b.go", "github.com/x/pkg.Box[string]", "*openapi.Exporter"),
+	}
+
+	clones, err := ProcessClones(
+		multiLineReadFile, dups,
+		WithGenericsMinLines(0), WithGenericDecls(reuseIndex),
+	)
+	if err != nil {
+		t.Fatalf("ProcessClones failed: %v", err)
+	}
+
+	for i, c := range clones {
+		if !strings.Contains(c.Classification.GenericsHint, "over-engineering") {
+			t.Errorf("clone %d: expected already-generic note in hint, got %q", i, c.Classification.GenericsHint)
+		}
+
+		if strings.HasPrefix(c.Classification.Suggestion, "Reuse existing generic ") {
+			t.Errorf("clone %d: mixed divergence must not get the reuse suggestion", i)
+		}
+	}
+
+	// Pure reuse groups keep the clean instantiation hint without the note.
+	reuseDups := [][]*syntax.Node{
+		nodes("test_a.go", "github.com/x/pkg.Box[int]", "int"),
+		nodes("test_b.go", "github.com/x/pkg.Box[string]", "string"),
+	}
+
+	reuseClones, err := ProcessClones(
+		multiLineReadFile, reuseDups,
+		WithGenericsMinLines(0), WithGenericDecls(reuseIndex),
+	)
+	if err != nil {
+		t.Fatalf("ProcessClones (reuse) failed: %v", err)
+	}
+
+	for i, c := range reuseClones {
+		if strings.Contains(c.Classification.GenericsHint, "over-engineering") {
+			t.Errorf("reuse clone %d: hint must not carry the note, got %q", i, c.Classification.GenericsHint)
 		}
 	}
 }
