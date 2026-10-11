@@ -281,6 +281,13 @@ deps:
     mayDependOn:
       - errors
 
+  # Daemon pre-commit gate binary (Q1: scripts/daemon-gate). Stdlib-only by
+  # design: it is built as a static hook binary for the pma daemon service
+  # environment, which carries no bash/nix — the fewer deps, the smaller the
+  # supply-chain surface of a binary that gates every fleet commit.
+  daemon-gate:
+    in: scripts/daemon-gate/**
+
   testutil:
     anyProjectDeps: true
 

@@ -157,7 +157,8 @@ func runCheck(goBin string, check check, stdout, stderr io.Writer) error {
 
 	args := strings.Join(check.args, " ")
 
-	cmd := exec.CommandContext(ctx, goBin, check.args...) // #nosec G204 -- goBin comes from the pinned env var or LookPath, args are static
+	// #nosec G204 -- goBin comes from the pinned env var or LookPath, args are static
+	cmd := exec.CommandContext(ctx, goBin, check.args...)
 	cmd.Stdout = stdout
 	cmd.Stderr = stderr
 	cmd.Env = gateEnv(os.Environ())
@@ -168,7 +169,12 @@ func runCheck(goBin string, check check, stdout, stderr io.Writer) error {
 
 	if err := cmd.Wait(); err != nil {
 		if errors.Is(ctx.Err(), context.DeadlineExceeded) {
-			return fmt.Errorf("%w: go %s exceeded %s — a gate that hangs must not hang the daemon", errCheckTimeout, args, checkTimeout)
+			return fmt.Errorf(
+				"%w: go %s exceeded %s — a gate that hangs must not hang the daemon",
+				errCheckTimeout,
+				args,
+				checkTimeout,
+			)
 		}
 
 		return fmt.Errorf("go %s failed (exit): %w", args, err)
