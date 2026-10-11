@@ -50,49 +50,92 @@ func isAppendCollectorTail(nodeSeqs [][]*domain.CloneNode) bool {
 			return false
 		}
 
+		sawAccumulation := false
+
 		for _, root := range seq {
-			if !isCollectorStatement(root) {
+			acc, ok := collectorStatementAccumulates(root)
+			if !ok {
 				return false
 			}
+
+			sawAccumulation = sawAccumulation || acc
 		}
 
-		return true
+		// Without an append/make accumulation somewhere this is just a guard
+		// or control-flow fragment, not a collector tail.
+		return sawAccumulation
 	})
 }
 
-// isCollectorStatement classifies one statement root of a collector tail.
-func isCollectorStatement(n *domain.CloneNode) bool {
+// collectorStatementAccumulates classifies one statement root of a
+// collector tail and reports whether it performs an accumulation
+// (append/make assignment) at itself or any nesting depth.
+func collectorStatementAccumulates(n *domain.CloneNode) (accumulates bool, ok bool) {
 	switch n.BaseType {
 	case golang.RangeStmt, golang.ForStmt:
 		body := soleBlockChild(n)
 		if body == nil {
-			return false
+			return false, false
 		}
 
 		if !blockIsCollectorOnly(n) {
-			return false
+			return false, false
 		}
 
-		return !headerHasRealLogic(n, body)
+		if headerHasRealLogic(n, body) {
+			return false, false
+		}
+
+		return blockAccumulates(body), true
 
 	case golang.IfStmt:
-		return ifIsCollectorFilter(n)
+		if !ifIsCollectorFilter(n) {
+			return false, false
+		}
+
+		for _, child := range n.Children {
+			if child.BaseType == golang.BlockStmt {
+				return blockAccumulates(child), true
+			}
+		}
+
+		return false, true
 
 	case golang.AssignStmt:
-		return isAppendAssign(n) || isMakePrealloc(n)
+		if isAppendAssign(n) || isMakePrealloc(n) {
+			return true, true
+		}
+
+		return false, false
 
 	case golang.DeclStmt:
-		return !subtreeHasRealLogic(n)
+		return false, !subtreeHasRealLogic(n)
 
 	case golang.ReturnStmt:
-		return returnsIdentsOnly(n)
+		return false, returnsIdentsOnly(n)
 
 	case golang.BranchStmt:
-		return true
+		return false, true
 
 	default:
-		return false
+		return false, false
 	}
+}
+
+// blockAccumulates reports whether a block subtree contains an accumulation
+// statement at any depth.
+func blockAccumulates(n *domain.CloneNode) bool {
+	if n.BaseType == golang.AssignStmt && (isAppendAssign(n) || isMakePrealloc(n)) {
+		return true
+	}
+
+	for _, child := range n.Children {
+		if blockAccumulates(child) {
+			return true
+		}
+	}
+
+	return false
 }
 
 // ifIsCollectorFilter matches `if <plumbing cond> { <collector-only body> }`
@@ -130,7 +173,7 @@ func blockIsCollectorOnly(n *domain.CloneNode) bool {
 		}
 
 		for _, stmt := range child.Children {
-			if !isCollectorStatement(stmt) {
+			if _, ok := collectorStatementAccumulates(stmt); !ok {
 				return false
 			}
 		}

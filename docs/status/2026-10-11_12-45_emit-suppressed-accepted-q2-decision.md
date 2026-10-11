@@ -1,0 +1,30 @@
+# `emit-suppressed-accepted` Default-Flip (Q2) — Decision Doc
+
+**Created:** 2026-10-11 (plan M15)
+**Status:** PREPARATION COMPLETE — owner answer (Q2) required; do NOT flip without it (TODO_LIST guard)
+**Question (Q2, asked 2026-10-05 status report §g):** Should the provider's `emit-suppressed-accepted` option flip from `false` to `true`, or should BuildFlow opt in per-repo via its `tool_options` mapping (M70)?
+
+## Background
+
+`emit-suppressed-accepted` (shipped 2026-10-05, plan T06): when `true`, clone groups covered by an `//art-dupl:accept` directive are emitted as findings carrying go-finding in-source `Suppression` annotations (kind `in-source`, rule `RuleCloneDetected`) instead of plain findings — consumers decide whether reviewed duplication counts. Default `false` is load-bearing: no source scanning happens and output is byte-identical to the pre-flag behavior (pinned by `TestEmitSuppressedAcceptedOffIsByteIdentical`; suppression round-trips SARIF via `WithIncludeSuppressed()`, pinned by `TestSuppressionRoundTripsViaSARIFIncludeSuppressed`).
+
+## Options costed
+
+| Option | Mechanism | Wire impact | Config surface | Risk |
+|--------|-----------|-------------|----------------|------|
+| **A. Flip provider default to `true`** | One-line change in `pkg/provider` Spec.Options + golden refresh | Every consumer's output changes wherever a repo carries accept directives (art-dupl itself has ~40): findings gain `Suppression` annotations. go-finding's SARIF drops suppressed findings **by default** (`WithIncludeSuppressed()` to keep them), so downstream SARIF lanes would see directive-covered clones DISAPPEAR unless consumers also flip their include-suppressed switch — a two-consumer coordinated flip | Zero per-repo config; behavior becomes implicit | Breaks the byte-identity pin's spirit (the pin documents false-as-default as the decided contract of ADR-0025's classification-freedom); silent behavior change for every future consumer repo, including ones with no accept directives (no-op there) and ones WITH directives (surprise disappearance from SARIF lanes) |
+| **B. Keep `false`; BuildFlow opts in per-repo via `tool_options` (M70)** | BuildFlow's `art-dupl.tool_options.emit-suppressed-accepted: true` mapping already works end-to-end (the D1 `threshold` knob proves the channel: `tool_options` → `toolsdk.WithOptions` → `ValidateOptions` → Detect) | No change for anyone who doesn't opt in; byte-identity pin untouched | One line per repo that WANTS counted suppression; visible, greppable, reversible | Config noise only for the repos that care; the default stays honest (scanning costs nothing unless asked) |
+
+## Recommendation
+
+**Option B.** The D1 threshold knob already established the pattern: per-run consumer choice via `tool_options`, provider default conservative. A default flip couples two codebases' release trains (provider golden + BuildFlow expectations) to solve a problem per-repo config solves locally, and the suppression-visibility interaction (go-finding drops suppressed findings from SARIF by default) means a flip without coordinated consumer changes produces the OPPOSITE of the intent — the counted findings would vanish from SARIF lanes rather than become visible. Option B gets the intended behavior exactly where wanted, verifiably, with the existing channel.
+
+## Cost of B (the work, for when Q2 lands)
+
+1. BuildFlow `.buildflow.yml` (art-dupl's own consumer config): add `emit-suppressed-accepted: true` to the art-dupl `tool_options` block; verify lane render shows the suppressed annotations.
+2. Optional: BuildFlow report rendering of `Suppression` findings (does the renderer distinguish them today? — verify when executing; if not, a small BuildFlow-side label is the follow-up).
+3. Fleet repos with accept directives opt in one by one.
+
+## The question
+
+**Q2 (owner):** Confirm Option B (BuildFlow opts in per-repo via `tool_options`, provider default stays `false`)? If yes, the only actionable line is BuildFlow's art-dupl config + the M70 note in TODO_LIST; if A, plan the two-consumer coordinated flip (provider golden, `TestEmitSuppressedAcceptedOffIsByteIdentical` removal, BuildFlow include-suppressed switch) as one release train.
