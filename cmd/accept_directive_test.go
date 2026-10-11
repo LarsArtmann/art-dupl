@@ -556,3 +556,77 @@ func TestAcceptedSetProseMentionIsNotDirective(t *testing.T) {
 		t.Errorf("prose mention must not be reported as a dead directive, got %+v", dead)
 	}
 }
+
+// TestAcceptedSetNearMissDirectives (plan T15) pins the placement near-miss
+// detector at the set level: a directive 6-10 lines above a group start is
+// remembered (with the nearest group start), one within the 5-line window is
+// not (it accepts), and one far away is not.
+func TestAcceptedSetNearMissDirectives(t *testing.T) {
+	t.Parallel()
+
+	set := NewAcceptedSet(func(name string) ([]byte, error) {
+		switch name {
+		case "near.go":
+			return []byte("package a\n\n// art-dupl:accept too far above\n// one\n// two\n// three\n// four\n// five\n// six\n// seven\nfunc f() {}\n"), nil
+		case "far.go":
+			return []byte("package b\n\n// art-dupl:accept way too far above\n// one\n// two\n// three\n// four\n// five\n// six\n// seven\n// eight\n// nine\n// ten\n// eleven\nfunc f() {}\n"), nil
+		default:
+			return nil, &osPathError{name: name}
+		}
+	})
+
+	// near.go: directive line 3, group starts line 11 — 8 lines above, inside
+	// the near-miss radius but outside the acceptance window.
+	nearGroup := domain.ProcessedCloneGroup{
+		Hash:   "aaaa1111aaaa1111",
+		Clones: []domain.ProcessedClone{{Filename: "near.go", LineStart: 11, LineEnd: 11}},
+	}
+	if set.IsAccepted(nearGroup) {
+		t.Fatal("directive 8 lines above must not accept")
+	}
+
+	// far.go: directive line 3, group starts line 15 — 12 lines above, outside
+	// even the near-miss radius.
+	farGroup := domain.ProcessedCloneGroup{
+		Hash:   "bbbb2222bbbb2222",
+		Clones: []domain.ProcessedClone{{Filename: "far.go", LineStart: 15, LineEnd: 15}},
+	}
+	if set.IsAccepted(farGroup) {
+		t.Fatal("directive 12 lines above must not accept")
+	}
+
+	misses := set.NearMissDirectives()
+	if len(misses) != 1 {
+		t.Fatalf("expected exactly 1 near miss (near.go), got %+v", misses)
+	}
+
+	if misses[0].Filename != "near.go" || misses[0].Line != 3 || misses[0].GroupStart != 11 {
+		t.Errorf("near miss = %+v, want near.go:3 -> group line 11", misses[0])
+	}
+
+	var buf bytes.Buffer
+	set.WarnNearMissDirectives(&buf)
+
+	out := buf.String()
+	want := "warning: //art-dupl:accept at near.go:3 sits 8 lines above a clone group starting at line 11"
+	if !strings.Contains(out, want) {
+		t.Errorf("warning output %q missing expected text %q", out, want)
+	}
+
+	// A directive that accepts a group is never reported as a near miss even
+	// when it nearly missed a different group.
+	placed := NewAcceptedSet(func(name string) ([]byte, error) {
+		return []byte("package c\n\nfunc f() {\n\t// filler\n\t// filler\n\t// filler\n\t// filler\n\t// filler\n\t// filler\n\t// art-dupl:accept right above\n\tg()\n}\n"), nil
+	})
+	placedGroup := domain.ProcessedCloneGroup{
+		Hash:   "cccc3333cccc3333",
+		Clones: []domain.ProcessedClone{{Filename: "placed.go", LineStart: 11, LineEnd: 11}},
+	}
+	if !placed.IsAccepted(placedGroup) {
+		t.Fatal("directive 1 line above must accept")
+	}
+
+	if got := placed.NearMissDirectives(); len(got) != 0 {
+		t.Errorf("accepted directive must not be a near miss, got %+v", got)
+	}
+}

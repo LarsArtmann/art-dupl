@@ -621,6 +621,20 @@ silently dead ever since. Fix it by copying the fresh hash from a new report
 or removing the directive. Machine formats (JSON, SARIF, LSP, plumbing, CSV) keep
 a diagnostics-free stderr and never print this warning.
 
+### Placement Near-Miss Hints
+
+Directives are honored on any line within the clone's range or up to 5 lines
+above `LineStart`. When a directive sits FARTHER above — but still within 10
+lines of a group start — art-dupl recognizes the intent and says so:
+
+```text
+warning: //art-dupl:accept at src/order.go:42 sits 8 lines above a clone group starting at line 50 — outside the 5-line acceptance window; move the directive onto the flagged range or within 5 lines above it
+```
+
+The classic cause: placing the directive above a function's doc comment while
+the flagged range begins inside the body. Like the stale-directive warning,
+this hint prints only for text/HTML output and even under `--quiet`.
+
 ### Disabling Accept Directives
 
 To see all clone groups regardless of accept directives (useful for auditing):
