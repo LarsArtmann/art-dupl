@@ -9,6 +9,7 @@
 ## a) FULLY DONE
 
 ### T1 — Precision baseline + false-reason taxonomy (the keystone)
+
 - Ran `--suggest-generics --no-actionability --json` over all 6 corpus repos at `-t 5/3/2/1`; supplementary probes: `--suggest-generics-min-lines 0` and a temporary `MinDivergentPositions 2→1` build (source restored after measurement).
 - Result at the time: **0 candidates on 5/6 repos at ANY threshold/gate combination**; only art-dupl self produced 9 groups / 4 content families.
 - Labeled all 4 families by reading source: 1 TRUE (`syntax/golang/snippet.go` `caseExprsAsNodes`/`statementsAsNodes` — genuine `[]T→[]ast.Node` pair), 3 FALSE (trivial `x = append(x, y)` collector tails in unrelated code). **Precision 25% @ n=4.** The ROADMAP's "12.5%" figure is not reproducible on the current corpus.
@@ -17,21 +18,25 @@
 - Doc-claim bug found: "use `--no-actionability` to see all candidates" is misleading — pattern evaluation always runs and `printer/clone_processor.go:167` gates candidacy on `label == PatternNone` regardless of the flag.
 
 ### T2 — Instantiation-vs-indexing collision, verified + pinned
+
 - Live-verified BOTH modes collide at `-t 1/2`: semantic (narrow — cross-package same base name + canonical numbering alignment; type params are declared first by the normalizer, so pkgA needed a second param `j` for `h` to land on the same canonical index as pkgB's) and structural (trivially, identifiers ignored).
 - `bdd/instantiation_collision_test.go`: semantic collision spec + structural collision spec, with CURRENT/EXPECTED/IMPACT comments. Green.
 
 ### T11 — Accept-directive reason mining (2 repos)
+
 - Mined art-dupl production directives (~30 after excluding the directive-machinery's own doc comments) + branching-flow HEAD (54).
 - Frequency table staged (currently at `/tmp/t11-mining-table.md` — volatile, see d): top clusters are idiomatic guards (comma-ok/empty-string/nil-params, 10 in bf), switch default arms (9), architectural alias/parallel enum re-exports (9 in art-dupl), intentional mirrors/benchmark twins, "would be over-engineering" refusals (6 in bf — T6's target), append/filter loop tails (4).
 - **T12.1 overlap verdicts (data beats the plan):** mutex idiom (Lock+defer Unlock) ALREADY covered by `raii-defer`'s 2-statement form (`actionability_control_flow.go:36-40`); `flag.Value.Set` ALREADY covered via `commonInterfaceMethodNames` → `interface-method` path 1 (works without type-aware); `t.Parallel()` covered by the single-call test-framework name list. → Wave 1's planned patterns are redundant; the data-backed replacements are **append-collector-tail** (T1's dominant FP) and **nil-guard-after-helper** (T13's item, pulled forward).
 
 ### T4 — Alias FP fix (`types.Identical` intent)
+
 - Realized as **population-time `types.Unalias`** in `identTypeString` (`syntax/golang/typeinfo.go`) — single seam, same precision outcome as the planned printer-side comparator.
 - Empirically proved the FP first: Go 1.27 prints `type MyDur = time.Duration` variables as `"main.MyDur"` vs `"time.Duration"` → false divergence. Post-fix: identical strings.
 - Import-alias spelling (`tm "time"` vs `"time"`) was ALREADY path-canonical in go/types strings — pinned by test so it stays true.
 - 2 new tests (`typeinfo_test.go`); parity test green; corpus candidates unchanged (as predicted, zero field occurrences then); static-fixture output byte-identical; **CacheVersion 5→6** (ta/sg streams changed).
 
 ### T5 — Reuse-existing-generic (flagship)
+
 - `syntax/golang/generic_decl_index.go`: `CollectGenericDecls` (qualified name → type-param count; counts NAMES not FieldList fields — `[T, U any]` is 2), `LookupGenericDecl` (qualifier-prefix stripping with bracket-depth matching: `*`/`[]`/`[N]`/`map[k]`/`chan`), `FormatGenericParams`.
 - `PreloadedAST.PkgPath` added; captured during load; survives `WithEraseHash` shallow copies.
 - printer: `WithGenericDecls` process option; `ClassifyReuseExistingGeneric` — two-pass verdict (anchor: every divergence an instantiation pair of ONE indexed generic; allow: plain-type divergences that match a recorded arg pair — the type-argument propagation signal); suggestion text `"Reuse existing generic pkg.Box[T1]"` replaces `"Extract to generic function"` when it fires.
@@ -41,20 +46,24 @@
 - T5.8 (SDK parity): **documented deliberate cut** — `pkg/artdupl` exposes no generics-hint surface today, so there is nothing to mirror without an SDK API decision.
 
 ### T7 — `types.Info.Instances` wiring + THE recall breakthrough
+
 - `instantiationMarker` encoded into `IndexExpr`/`IndexListExpr` node types when go/types data is loaded (bare-Ident and `pkg.Box[int]` selector forms via `SelectorExpr.Sel`); instantiated type string on `VarType`; default semantic mode stays ambiguity-blind (Q2 decision, pinned by test).
 - 4 new tests (`instantiation_test.go`): hash-differ, default-equivalent, selector-form (module-scoped go/packages load with `Dir`), plain-indexing-unchanged. T2's BDD suite gained the sg-disambiguation spec (0 groups at `-t 2` with type data).
 - **Unplanned major bug fix (the T1 recall mystery solved):** `LoadTypeAwareData` fed ALL files as `file=` patterns from the process cwd. For any target outside the cwd's module, go/packages merged every package into ONE erroring `command-line-arguments` pseudo-package — cross-package types resolved against a garbage symbol table (proved with an in-process probe: `package pkgb; expected package pkga`). Fixed by grouping files by **nearest go.mod ancestor** and running one load per module with `Config.Dir` anchored at the module root (directory-lookup cached per dir).
 - **Corpus candidates at `-t 2` after the fix: go-sse 0→2, go-cqrs-lite 0→152, go-paperless 0→3, DiscordSync 0→0, branching-flow 0→2.** Spot-check of go-cqrs-lite hints shows genuine families (`mysqlEngine vs pgEngine vs duckdbEngine`, `SQLCommandStore vs SQLEventStore`, iterator twins). T1's explanation (a) "corpora lack the shape" is REFUTED; the loader bug + sparse VarType were the cause. Recorded as a ledger row in the T1 baseline doc.
 
 ### T8 — Type-args on erased pass (collapsed by design, honestly)
+
 - T7 already puts the instantiated type on the IndexExpr node's `VarType`, so the planned dedicated `Node` field would be redundant (Node layout untouched, no extra cache bump).
 - Delivered the interplay pin: instantiation-only divergence at 2 positions satisfies `MinDivergentPositions` (unit test).
 
 ### T9 — Instantiation hint naming
-- `allInstantiationPairs` + `splitInstantiation` (via newly exported `golang.StripQualifierPrefixes`) + `formatInstantiationOnlyHint`: when EVERY divergence is a type-argument pair of one base type, the hint becomes `differs only in generic instantiation: `X` vs `Y``.
+
+- `allInstantiationPairs` + `splitInstantiation` (via newly exported `golang.StripQualifierPrefixes`) + `formatInstantiationOnlyHint`: when EVERY divergence is a type-argument pair of one base type, the hint becomes `differs only in generic instantiation:`X`vs`Y``.
 - No JSON/SARIF schema change (hint carries it); every suite that pins hint strings is green; HOW_TO_USE updated.
 
 ### Incident response: jsonv2 recurrence #7
+
 - The T1 boundary gate caught `internal/jsonutil` + `config/config_migrate.go` back on direct v2 imports (daemon commit `945f38f5`, Oct 6 13:33 — it had been broken for 5 days). Restored both verbatim from `2e3d3cd7` per policy; affected packages green. AGENTS.md still says "SIX times" — counter update pending (T19).
 
 ---
@@ -62,10 +71,12 @@
 ## b) PARTIALLY DONE
 
 ### T3 — Executable limitation tests
+
 - DONE: structural-mode equivalence pin (T2 BDD spec), default-mode ambiguity pin (`TestSemanticDefault_InstantiationAndIndexingStayEquivalent`), phantom-invisible-at-`-t 5` expectation.
 - IN FLIGHT / RED: the `-t 1` whole-file phantom pin. Attempt 1 fixture (spread-attribute divergence) matched only the shared `{ title }` line-4 fragment, not the whole-file group. Attempt 2 (fully divergent bodies) still fails — the documented phantom shape has not yet been reproduced from a clean fixture. The test file `bdd/templ_phantom_limitation_test.go` sits in the tree with the first spec failing.
 
 ### Background gates launched but results unverified
+
 - t2 gate: green (checked). t1 gate: failed (jsonv2 recurrence — fixed, see a). **t4, t5, t7 gate logs (`/tmp/t4-gate.log`, `/tmp/t5-gate.log`, `/tmp/t7-gate.log`) were never read** — the t7 one is the critical one (covers the loader fix + marker).
 
 ---

@@ -8,39 +8,39 @@
 
 ## a) FULLY DONE
 
-| # | Item | Evidence |
-|---|------|----------|
-| A1 | **Ledger-first re-read**: prior 2026-10-05 deep-dive + §05 remediation ledger read in full before proposing anything; every prior verdict respected (baseline retraction, streaming verdict, N/A rows) | `docs/research/2026-10-05_go-finding-deep-dive.html` §05 |
-| A2 | **Usage catalog**: 50+ distinct go-finding/toolsdk identifiers mapped across `printer/finding`, `printer` (LSP), `pkg/provider` | grep census, in-report §06 |
-| A3 | **Version currency proven**: art-dupl pins core v1.14.0 + toolsdk v1.15.0 = latest tags; unreleased upstream commits are docs-only (working copy + `git ls-remote`) | session transcript, §06 header |
-| A4 | **Full pinned API surface enumerated** (core + toolsdk via `go doc -all`) and every unused symbol judged: Trigger/Requires/NotRequires, OnGoFiles/OnGoModule, SwitchCases, Repairer/WithDryRun, MergeIter/GroupBy/Filter/Format*, test helpers, Option.Validate | §06.2 verdict table |
-| A5 | **New finding dissolved with evidence**: `Option.Validate` is declaration-only (never sees consumer values) — value-range-at-Detect IS the D1 contract. Prevented a cargo-cult change | toolsdk `options.go` `ValidateOptions`, `TestDetectThresholdOption` |
-| A6 | **SARIF `relatedLocations` + `region.snippet` shipped** (the §05.3 candidate that never landed): multi-occurrence results link siblings with `clone-of` message mirroring `ToSARIF()`; regions carry fragment text, omitted when absent (no file-read fallback — output stays environment-independent); index-based sibling skip | `printer/sarif.go` (`sarifPhysicalLocation`, `SARIFRelatedLocation`, `SARIFArtifactContent`) |
-| A7 | **Tests added**: related-locations+snippet unit test, single-clone omits `relatedLocations` test, and the T09 cross-check contract **extended** to pin related-location parity (uri/startLine/message) between CLI printer and `ToSARIF()` — passed on first run | `TestSARIFOutput_RelatedLocationsAndSnippet`, `TestSARIFOutput_SingleCloneOmitsRelatedLocations`, `TestSARIFCrossCheckRelatedLocations` |
-| A8 | **Verification**: `go build ./...` green; `-race` (CGO) green on `printer/...` + `pkg/provider/...`; full `bdd/` suite green; golangci-lint **0 issues** (after `buildflow format` fixed my wsl/gci findings); `scripts/check-boundary.sh` fast profile green; committed state re-verified green in an isolated worktree with the foreign in-flight files restored to parent | session transcript |
-| A9 | **Docs updated per policy**: CHANGELOG Unreleased entry, FEATURES SARIF row, **§06 currency re-review ledger** appended to the deep-dive HTML (never rewrote history), research README index row, report footer currency line | `CHANGELOG.md`, `FEATURES.md:38`, deep-dive §06, `docs/research/README.md` |
-| A10 | **Tree healed + re-verified at close**: the concurrent session's generics work finished; `go build ./...` and `go test ./printer/` green at HEAD `60b3b403`; fork **ahead 14, nothing pushed** | `date`-stamp probes at 06:37 |
+| #   | Item                                                                                                                                                                                                                                                                                                                                                                         | Evidence                                                                                                                                |
+| --- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| A1  | **Ledger-first re-read**: prior 2026-10-05 deep-dive + §05 remediation ledger read in full before proposing anything; every prior verdict respected (baseline retraction, streaming verdict, N/A rows)                                                                                                                                                                       | `docs/research/2026-10-05_go-finding-deep-dive.html` §05                                                                                |
+| A2  | **Usage catalog**: 50+ distinct go-finding/toolsdk identifiers mapped across `printer/finding`, `printer` (LSP), `pkg/provider`                                                                                                                                                                                                                                              | grep census, in-report §06                                                                                                              |
+| A3  | **Version currency proven**: art-dupl pins core v1.14.0 + toolsdk v1.15.0 = latest tags; unreleased upstream commits are docs-only (working copy + `git ls-remote`)                                                                                                                                                                                                          | session transcript, §06 header                                                                                                          |
+| A4  | **Full pinned API surface enumerated** (core + toolsdk via `go doc -all`) and every unused symbol judged: Trigger/Requires/NotRequires, OnGoFiles/OnGoModule, SwitchCases, Repairer/WithDryRun, MergeIter/GroupBy/Filter/Format*, test helpers, Option.Validate                                                                                                              | §06.2 verdict table                                                                                                                     |
+| A5  | **New finding dissolved with evidence**: `Option.Validate` is declaration-only (never sees consumer values) — value-range-at-Detect IS the D1 contract. Prevented a cargo-cult change                                                                                                                                                                                        | toolsdk `options.go` `ValidateOptions`, `TestDetectThresholdOption`                                                                     |
+| A6  | **SARIF `relatedLocations` + `region.snippet` shipped** (the §05.3 candidate that never landed): multi-occurrence results link siblings with `clone-of` message mirroring `ToSARIF()`; regions carry fragment text, omitted when absent (no file-read fallback — output stays environment-independent); index-based sibling skip                                             | `printer/sarif.go` (`sarifPhysicalLocation`, `SARIFRelatedLocation`, `SARIFArtifactContent`)                                            |
+| A7  | **Tests added**: related-locations+snippet unit test, single-clone omits `relatedLocations` test, and the T09 cross-check contract **extended** to pin related-location parity (uri/startLine/message) between CLI printer and `ToSARIF()` — passed on first run                                                                                                             | `TestSARIFOutput_RelatedLocationsAndSnippet`, `TestSARIFOutput_SingleCloneOmitsRelatedLocations`, `TestSARIFCrossCheckRelatedLocations` |
+| A8  | **Verification**: `go build ./...` green; `-race` (CGO) green on `printer/...` + `pkg/provider/...`; full `bdd/` suite green; golangci-lint **0 issues** (after `buildflow format` fixed my wsl/gci findings); `scripts/check-boundary.sh` fast profile green; committed state re-verified green in an isolated worktree with the foreign in-flight files restored to parent | session transcript                                                                                                                      |
+| A9  | **Docs updated per policy**: CHANGELOG Unreleased entry, FEATURES SARIF row, **§06 currency re-review ledger** appended to the deep-dive HTML (never rewrote history), research README index row, report footer currency line                                                                                                                                                | `CHANGELOG.md`, `FEATURES.md:38`, deep-dive §06, `docs/research/README.md`                                                              |
+| A10 | **Tree healed + re-verified at close**: the concurrent session's generics work finished; `go build ./...` and `go test ./printer/` green at HEAD `60b3b403`; fork **ahead 14, nothing pushed**                                                                                                                                                                               | `date`-stamp probes at 06:37                                                                                                            |
 
 ## b) PARTIALLY DONE
 
-| Item | Works | Open | Blocker | Effort |
-|------|-------|------|---------|--------|
-| Full-tree `--full` boundary gate at close-out | fast profile (internal/config/cmd) green pre-collision; targeted full race green in worktree | a clean whole-tree `./...` race run never completed this session (foreign breakage landed mid-run; healed after) | none now — tree healed at 06:37 | S (rerun once) |
-| Cross-check contract completeness | pins ruleId/level/groupId (T09) + related (uri,startLine,message) | does NOT pin related-region **snippets** — I emit snippet text on related entries; I never verified whether `ToSARIF()` does the same on its related regions, so "mirroring ToSARIF's shape" is overclaimed for that one field | needs a 10-min read of upstream `sarif_export.go` | S |
-| Section (f) harvest | 30 concrete items listed below | not yet pulled into TODO_LIST/ROADMAP (user said WAIT; skill says HARVEST when session continues) | user instruction to wait | S |
+| Item                                          | Works                                                                                        | Open                                                                                                                                                                                                                           | Blocker                                           | Effort         |
+| --------------------------------------------- | -------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------- | -------------- |
+| Full-tree `--full` boundary gate at close-out | fast profile (internal/config/cmd) green pre-collision; targeted full race green in worktree | a clean whole-tree `./...` race run never completed this session (foreign breakage landed mid-run; healed after)                                                                                                               | none now — tree healed at 06:37                   | S (rerun once) |
+| Cross-check contract completeness             | pins ruleId/level/groupId (T09) + related (uri,startLine,message)                            | does NOT pin related-region **snippets** — I emit snippet text on related entries; I never verified whether `ToSARIF()` does the same on its related regions, so "mirroring ToSARIF's shape" is overclaimed for that one field | needs a 10-min read of upstream `sarif_export.go` | S              |
+| Section (f) harvest                           | 30 concrete items listed below                                                               | not yet pulled into TODO_LIST/ROADMAP (user said WAIT; skill says HARVEST when session continues)                                                                                                                              | user instruction to wait                          | S              |
 
 ## c) NOT STARTED (known-open, untouched this session by design)
 
-| Item | Why not started | Still wanted? |
-|------|-----------------|---------------|
-| **T07b upstream prototype** (DetectResult behind optional DetectorV2, or coverage context channel) in `~/projects/go-finding` | upstream-gated by design; TODO_LIST recipe says it is its own scoped session | YES — now the ONLY structural go-finding gap |
-| T07b art-dupl consumption (provider populates FilesScanned/SkippedModules from its crawl) | blocked on upstream tag | YES |
-| T07b BuildFlow surfacing of coverage | blocked on the above | YES |
-| `emit-suppressed-accepted` default-flip | owner-blocked (tracked, "do NOT flip without owner answer") | YES, decision-pending |
-| BDD test: multi-clone CLI SARIF → `FindingsFromSARIF` → `Report.GroupFindings()` reconstruction | not attempted; existing BDD covers the single-clone/parse paths | YES — cheap, closes the loop A7 doesn't |
-| Daemon-hardening decision (jsonv2gate exclusion list vs pre-commit hook; report §g Q1 since session 2) | owner decision; recurrence #6 already documented | YES — the class fired again THIS session (see d1) |
-| A-lite→A re-keying of archived snapshots; monthly docs-health pass (due 2026-10-28); monthly self-scan (~2026-10-22) | cadence-owned, not this session's scope | YES |
-| Migrating remaining ~30 direct `encoding/json/v2` imports (fleet-audit entry) | tolerated where no Duration/wire concern; sweep is scoped work | YES, low priority |
+| Item                                                                                                                          | Why not started                                                              | Still wanted?                                     |
+| ----------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ------------------------------------------------- |
+| **T07b upstream prototype** (DetectResult behind optional DetectorV2, or coverage context channel) in `~/projects/go-finding` | upstream-gated by design; TODO_LIST recipe says it is its own scoped session | YES — now the ONLY structural go-finding gap      |
+| T07b art-dupl consumption (provider populates FilesScanned/SkippedModules from its crawl)                                     | blocked on upstream tag                                                      | YES                                               |
+| T07b BuildFlow surfacing of coverage                                                                                          | blocked on the above                                                         | YES                                               |
+| `emit-suppressed-accepted` default-flip                                                                                       | owner-blocked (tracked, "do NOT flip without owner answer")                  | YES, decision-pending                             |
+| BDD test: multi-clone CLI SARIF → `FindingsFromSARIF` → `Report.GroupFindings()` reconstruction                               | not attempted; existing BDD covers the single-clone/parse paths              | YES — cheap, closes the loop A7 doesn't           |
+| Daemon-hardening decision (jsonv2gate exclusion list vs pre-commit hook; report §g Q1 since session 2)                        | owner decision; recurrence #6 already documented                             | YES — the class fired again THIS session (see d1) |
+| A-lite→A re-keying of archived snapshots; monthly docs-health pass (due 2026-10-28); monthly self-scan (~2026-10-22)          | cadence-owned, not this session's scope                                      | YES                                               |
+| Migrating remaining ~30 direct `encoding/json/v2` imports (fleet-audit entry)                                                 | tolerated where no Duration/wire concern; sweep is scoped work               | YES, low priority                                 |
 
 ## d) TOTALLY FUCKED UP
 
@@ -60,38 +60,38 @@
 
 ## f) NEXT (ranked by impact; brainstorm, not commitment — HARVEST routing applies)
 
-| # | Task | Impact | Effort | Category |
-|---|------|--------|--------|----------|
-| 1 | T07b upstream session: prototype `DetectResult`/DetectorV2 (or coverage ctx channel) in go-finding, tests, PR, tag | High | L | Feature (upstream) |
-| 2 | After T07b tag: provider populates FilesScanned/SkippedModules from its crawl + tests | High | M | Feature |
-| 3 | After (2): BuildFlow surfaces coverage in its report | High | M | Feature (BuildFlow) |
-| 4 | Decide daemon hardening: pre-commit build+jsonv2gate hook vs daemon exclusion list (Q1, 6 recurrences + today's d1) | Critical | M | Quality/Infra |
-| 5 | Verify whether ToSARIF emits snippets on related regions; pin parity in cross-check or document delta | Medium | S | Quality |
-| 6 | Measure SARIF output-size growth from snippet duplication on a large real tree; set policy (primary-only?) | Medium | S | Quality |
-| 7 | BDD: multi-clone CLI SARIF → FindingsFromSARIF → GroupFindings reconstruction test | Medium | S | Testing |
-| 8 | Rerun `scripts/check-boundary.sh --full` on the healed tree (close this session's gate debt) | Medium | S | Quality |
-| 9 | `emit-suppressed-accepted` default-flip decision (needs BuildFlow owner answer; possibly BuildFlow M70 per-repo mapping) | Medium | S | Decision |
-| 10 | Update AGENTS.md deep-dive pointer "§05" → "§05–§06" so future sessions read the new verdicts | Low | S | Docs |
-| 11 | Byte-level SARIF golden (with siblings incl. relatedLocations/snippet) to freeze the new wire shape | Medium | S | Testing |
-| 12 | HARVEST this section into TODO_LIST/ROADMAP per docs-health rules | Medium | S | Docs |
-| 13 | Fold `cmd/go-finding`-can't-discover-toolsdk-providers upstream gap into the T07b PR scope (already decided, needs doing) | Medium | M | Feature (upstream) |
-| 14 | Empty `category` property in CLI SARIF: fix opportunistically when SARIF is next touched (documented non-churn until then) | Low | S | Cleanup |
-| 15 | Go-finding upstream: release pipeline Unreleased section (EditListProvider et al.) as pipeline/v1.14.0 so consumers stop pinning Unreleased semantics | Low | S | Release (upstream) |
-| 16 | Migrate remaining ~30 direct `encoding/json/v2` imports where a wire/Duration concern exists (fleet-audit sweep) | Medium | M | Cleanup |
-| 17 | Monthly self-scan `scripts/self-scan.sh` + ledger append (due ~2026-10-22) | Medium | M | Quality |
-| 18 | Monthly docs-health pass (due 2026-10-28): HARVEST reports, annotate, archive | Medium | M | Docs |
-| 19 | A-lite→A re-keying of the 55 archived status snapshots | Low | M | Docs |
-| 20 | Suggest-generics precision: act on the 2026-10-11 baseline (25% precision; new append-collector-tail FP category) — denylist pattern or divergence-gate tweak | High | M | Feature |
-| 21 | Durable upstream fix in BuildFlow `go-version-auto-configure`: respect existing patch-level go pins (ends the 5x flip war permanently) | Medium | M | Infra (BuildFlow) |
-| 22 | TODO_LIST #18: pick up branch-protection required-check names (recipe exists) | Low | S | Infra |
-| 23 | Windows Test lane: retire the now-historical GOEXPERIMENT env split (crash class gone?) — verify then simplify | Low | S | Infra |
-| 24 | Provider: consider declaring `Spec.Trigger.Requires` docs note (deliberately none — document why in the Spec comment) | Low | S | Docs |
-| 25 | toolsdk upstream (optional): per-value validation hook so consumers can range-check option VALUES at ValidateOptions time (would have made C real) | Low | M | Feature (upstream) |
-| 26 | Add `emit-suppressed-accepted` + `threshold` to FEATURES provider row after any default-flip | Low | S | Docs |
-| 27 | Benchstat: confirm `printer` additions caused zero alloc churn on hot paths (they're per-group, not per-token — verify once) | Low | S | Quality |
-| 28 | Consider `relatedLocations` for the `--lsp` format's `relatedInformation` (already links siblings — verify parity with the new SARIF shape) | Low | S | Quality |
-| 29 | Write the §06 verdicts back into AGENTS.md's go-finding section IF any future session would re-litigate them (ledger exists; only pointer fix #10 needed now) | Low | S | Docs |
-| 30 | Push `fork` once gates are green (ahead 14, deliberately unpushed; user call) | High | S | Release |
+| #  | Task                                                                                                                                                          | Impact   | Effort | Category            |
+| -- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ------ | ------------------- |
+| 1  | T07b upstream session: prototype `DetectResult`/DetectorV2 (or coverage ctx channel) in go-finding, tests, PR, tag                                            | High     | L      | Feature (upstream)  |
+| 2  | After T07b tag: provider populates FilesScanned/SkippedModules from its crawl + tests                                                                         | High     | M      | Feature             |
+| 3  | After (2): BuildFlow surfaces coverage in its report                                                                                                          | High     | M      | Feature (BuildFlow) |
+| 4  | Decide daemon hardening: pre-commit build+jsonv2gate hook vs daemon exclusion list (Q1, 6 recurrences + today's d1)                                           | Critical | M      | Quality/Infra       |
+| 5  | Verify whether ToSARIF emits snippets on related regions; pin parity in cross-check or document delta                                                         | Medium   | S      | Quality             |
+| 6  | Measure SARIF output-size growth from snippet duplication on a large real tree; set policy (primary-only?)                                                    | Medium   | S      | Quality             |
+| 7  | BDD: multi-clone CLI SARIF → FindingsFromSARIF → GroupFindings reconstruction test                                                                            | Medium   | S      | Testing             |
+| 8  | Rerun `scripts/check-boundary.sh --full` on the healed tree (close this session's gate debt)                                                                  | Medium   | S      | Quality             |
+| 9  | `emit-suppressed-accepted` default-flip decision (needs BuildFlow owner answer; possibly BuildFlow M70 per-repo mapping)                                      | Medium   | S      | Decision            |
+| 10 | Update AGENTS.md deep-dive pointer "§05" → "§05–§06" so future sessions read the new verdicts                                                                 | Low      | S      | Docs                |
+| 11 | Byte-level SARIF golden (with siblings incl. relatedLocations/snippet) to freeze the new wire shape                                                           | Medium   | S      | Testing             |
+| 12 | HARVEST this section into TODO_LIST/ROADMAP per docs-health rules                                                                                             | Medium   | S      | Docs                |
+| 13 | Fold `cmd/go-finding`-can't-discover-toolsdk-providers upstream gap into the T07b PR scope (already decided, needs doing)                                     | Medium   | M      | Feature (upstream)  |
+| 14 | Empty `category` property in CLI SARIF: fix opportunistically when SARIF is next touched (documented non-churn until then)                                    | Low      | S      | Cleanup             |
+| 15 | Go-finding upstream: release pipeline Unreleased section (EditListProvider et al.) as pipeline/v1.14.0 so consumers stop pinning Unreleased semantics         | Low      | S      | Release (upstream)  |
+| 16 | Migrate remaining ~30 direct `encoding/json/v2` imports where a wire/Duration concern exists (fleet-audit sweep)                                              | Medium   | M      | Cleanup             |
+| 17 | Monthly self-scan `scripts/self-scan.sh` + ledger append (due ~2026-10-22)                                                                                    | Medium   | M      | Quality             |
+| 18 | Monthly docs-health pass (due 2026-10-28): HARVEST reports, annotate, archive                                                                                 | Medium   | M      | Docs                |
+| 19 | A-lite→A re-keying of the 55 archived status snapshots                                                                                                        | Low      | M      | Docs                |
+| 20 | Suggest-generics precision: act on the 2026-10-11 baseline (25% precision; new append-collector-tail FP category) — denylist pattern or divergence-gate tweak | High     | M      | Feature             |
+| 21 | Durable upstream fix in BuildFlow `go-version-auto-configure`: respect existing patch-level go pins (ends the 5x flip war permanently)                        | Medium   | M      | Infra (BuildFlow)   |
+| 22 | TODO_LIST #18: pick up branch-protection required-check names (recipe exists)                                                                                 | Low      | S      | Infra               |
+| 23 | Windows Test lane: retire the now-historical GOEXPERIMENT env split (crash class gone?) — verify then simplify                                                | Low      | S      | Infra               |
+| 24 | Provider: consider declaring `Spec.Trigger.Requires` docs note (deliberately none — document why in the Spec comment)                                         | Low      | S      | Docs                |
+| 25 | toolsdk upstream (optional): per-value validation hook so consumers can range-check option VALUES at ValidateOptions time (would have made C real)            | Low      | M      | Feature (upstream)  |
+| 26 | Add `emit-suppressed-accepted` + `threshold` to FEATURES provider row after any default-flip                                                                  | Low      | S      | Docs                |
+| 27 | Benchstat: confirm `printer` additions caused zero alloc churn on hot paths (they're per-group, not per-token — verify once)                                  | Low      | S      | Quality             |
+| 28 | Consider `relatedLocations` for the `--lsp` format's `relatedInformation` (already links siblings — verify parity with the new SARIF shape)                   | Low      | S      | Quality             |
+| 29 | Write the §06 verdicts back into AGENTS.md's go-finding section IF any future session would re-litigate them (ledger exists; only pointer fix #10 needed now) | Low      | S      | Docs                |
+| 30 | Push `fork` once gates are green (ahead 14, deliberately unpushed; user call)                                                                                 | High     | S      | Release             |
 
 (Stopped at 30 rather than padding to 50 — items 31–50 would be fabricated filler. Roadmap-fuel candidates belong to the docs-health HARVEST pass, not this snapshot.)
 
@@ -103,4 +103,4 @@
 
 ---
 
-*Report ends. WAITING FOR INSTRUCTIONS.*
+_Report ends. WAITING FOR INSTRUCTIONS._
