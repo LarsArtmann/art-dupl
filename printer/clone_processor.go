@@ -202,18 +202,7 @@ func ProcessClones(fread ReadFile, dups [][]*syntax.Node, opts ...ProcessOption)
 
 	if label == actionability.PatternNone && passesGenericsLineGate(conf, clones) {
 		genericsCandidate, genericsHint = ClassifyGenericsCandidate(toCloneNodeSeqs(dups))
-
-		// Already-generic annotation (plan T6): the clones instantiate shared
-		// generics but are not pure reuse candidates — name the
-		// over-engineering risk instead of pushing another abstraction.
-		if genericsCandidate && conf.genericDecls != nil &&
-			usesIndexedGenericInstantiation(toCloneNodeSeqs(dups), conf.genericDecls) {
-			_, _, reuses := ClassifyReuseExistingGeneric(toCloneNodeSeqs(dups), conf.genericDecls)
-
-			if !reuses {
-				genericsHint += alreadyGenericNote
-			}
-		}
+		genericsHint = annotateAlreadyGeneric(conf, dups, genericsCandidate, genericsHint)
 	}
 
 	for i := range clones {
@@ -240,6 +229,30 @@ func ProcessClones(fread ReadFile, dups [][]*syntax.Node, opts ...ProcessOption)
 	}
 
 	return clones, nil
+}
+
+// annotateAlreadyGeneric appends the over-engineering note (plan T6) when
+// the clones instantiate shared generics but are not pure reuse candidates;
+// pure reuse groups keep their clean hint (they get the stronger "Reuse
+// existing generic" suggestion instead).
+func annotateAlreadyGeneric(
+	conf processConfig, dups [][]*syntax.Node, candidate bool, hint string,
+) string {
+	if !candidate || conf.genericDecls == nil {
+		return hint
+	}
+
+	seqs := toCloneNodeSeqs(dups)
+
+	if !usesIndexedGenericInstantiation(seqs, conf.genericDecls) {
+		return hint
+	}
+
+	if _, _, reuses := ClassifyReuseExistingGeneric(seqs, conf.genericDecls); reuses {
+		return hint
+	}
+
+	return hint + alreadyGenericNote
 }
 
 // genericsSuggestion decides between the two candidate suggestions: when the
