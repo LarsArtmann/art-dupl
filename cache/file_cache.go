@@ -58,7 +58,11 @@ const (
 	// else branches are structured, declaration names hash the declared name
 	// only, CSS declarations are statement composites). v4 entries would
 	// reproduce the old expression-blind streams for templ files.
-	CacheVersion = 5
+	// v5 → v6: identTypeString now resolves aliases via types.Unalias, so
+	// type-aware ('ta') hashes and suggest-generics ('sg') VarType strings
+	// changed for alias-using files. v5 entries would replay alias-spelled
+	// type strings and pre-fix hashes.
+	CacheVersion = 6
 
 	// Directory permissions.
 	cacheDirPerms = 0o750

@@ -190,6 +190,82 @@ func TestNormalizer_IsLocal(t *testing.T) {
 	}
 }
 
+// TestTypeAware_AliasAndDirectProduceSameVarType pins the T4 fix: a variable
+// declared through a type alias (`type MyDur = time.Duration`) and one declared
+// with the underlying type directly must produce the SAME VarType string.
+// Before the fix, obj.Type().String() returned the alias spelling
+// ("testpkg.MyDur"), which the generics classifier counted as a type
+// divergence — a false generics candidate (plan T4, generics-precision cluster).
+func TestTypeAware_AliasAndDirectProduceSameVarType(t *testing.T) {
+	t.Parallel()
+
+	srcA := `package testpkg
+import "time"
+type MyDur = time.Duration
+func useAlias(d MyDur) time.Duration {
+	total := d + d
+	return total
+}
+`
+
+	srcB := `package testpkg
+import "time"
+func useDirect(d time.Duration) time.Duration {
+	total := d + d
+	return total
+}
+`
+
+	pair := newTypeAwarePair(t, srcA, srcB, true)
+
+	vtA := findVarTypeForName(pair.NodeA, "d")
+	vtB := findVarTypeForName(pair.NodeB, "d")
+
+	if vtA == "" || vtB == "" {
+		t.Fatalf("VarType not populated: alias=%q direct=%q", vtA, vtB)
+	}
+
+	if vtA != vtB {
+		t.Errorf("alias-spelled and direct types must produce identical VarType strings, got %q vs %q", vtA, vtB)
+	}
+}
+
+// TestTypeAware_ImportAliasSpellingProducesSameVarType pins that go/types type
+// strings are import-alias-independent: importing time as `tm` in one file and
+// as `time` in another must not change the VarType string (go/types prints
+// package paths, not local alias names). This is the second FP class the plan
+// anticipated for T4; it turns out to be already correct — this test guards it.
+func TestTypeAware_ImportAliasSpellingProducesSameVarType(t *testing.T) {
+	t.Parallel()
+
+	srcA := `package testpkg
+import tm "time"
+func aliased(d tm.Duration) tm.Duration {
+	return d + d
+}
+`
+
+	srcB := `package testpkg
+import "time"
+func plain(d time.Duration) time.Duration {
+	return d + d
+}
+`
+
+	pair := newTypeAwarePair(t, srcA, srcB, true)
+
+	vtA := findVarTypeForName(pair.NodeA, "d")
+	vtB := findVarTypeForName(pair.NodeB, "d")
+
+	if vtA == "" || vtB == "" {
+		t.Fatalf("VarType not populated: aliased=%q plain=%q", vtA, vtB)
+	}
+
+	if vtA != vtB {
+		t.Errorf("import-alias spelling must not affect VarType strings, got %q vs %q", vtA, vtB)
+	}
+}
+
 // --- Helpers ---
 
 func parseSemantic(t *testing.T, src string) *syntax.Node {

@@ -144,6 +144,12 @@ func LoadTypeAwareData(files []string, eraseHash bool) (TypeAwareData, error) {
 // identTypeString returns the canonical type string for the object that ident
 // refers to, or "" if type information is unavailable. Uses the type checker's
 // Uses map (identifier references) and falls back to Defs (definitions).
+//
+// Aliases are resolved via types.Unalias: a variable declared through an alias
+// (`type MyDur = time.Duration`) and one declared directly must produce the
+// SAME string, otherwise the generics classifier would count them as a type
+// divergence (false candidate — plan T4, generics-precision cluster). Type
+// identity, not alias spelling, is what divergence comparison means.
 func identTypeString(info *types.Info, ident *ast.Ident) string {
 	if info == nil || ident == nil {
 		return ""
@@ -151,13 +157,13 @@ func identTypeString(info *types.Info, ident *ast.Ident) string {
 
 	if obj, ok := info.Uses[ident]; ok && obj != nil {
 		if t := obj.Type(); t != nil {
-			return t.String()
+			return types.Unalias(t).String()
 		}
 	}
 
 	if obj, ok := info.Defs[ident]; ok && obj != nil {
 		if t := obj.Type(); t != nil {
-			return t.String()
+			return types.Unalias(t).String()
 		}
 	}
 
