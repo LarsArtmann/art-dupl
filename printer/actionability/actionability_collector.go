@@ -365,6 +365,24 @@ func copyPlumbingSubtree(n *domain.CloneNode) bool {
 	return slices.ContainsFunc(n.Children, copyPlumbingSubtree)
 }
 
+// subtreeHasComplexity reports whether the subtree contains any
+// logic-bearing node type (closures, composite literals, defers, goroutines,
+// selects, switches, channel sends, type asserts) — WITHOUT the call-callee
+// restriction of subtreeHasRealLogic. Used where a call of any callee is
+// acceptable but its arguments must be plain values (helper results,
+// constructor seeding).
+func subtreeHasComplexity(n *domain.CloneNode) bool {
+	if n == nil {
+		return false
+	}
+
+	if collectorRealLogicTypes[n.BaseType] {
+		return true
+	}
+
+	return slices.ContainsFunc(n.Children, subtreeHasComplexity)
+}
+
 // isOptionApplyLoop reports whether every clone is the bare functional-
 // options idiom: `for _, opt := range opts { opt(x) }` optionally followed
 // by a bare `return x`. The loop body must be exactly one call of the range
@@ -376,7 +394,7 @@ func isOptionApplyLoop(nodeSeqs [][]*domain.CloneNode) bool {
 }
 
 func seqIsOptionApply(seq []*domain.CloneNode) bool {
-	if len(seq) == 0 || len(seq) > 2 {
+	if len(seq) == 0 || len(seq) > 3 {
 		return false
 	}
 
@@ -392,6 +410,18 @@ func seqIsOptionApply(seq []*domain.CloneNode) bool {
 			loop = root
 		case golang.ReturnStmt:
 			if !returnsIdentsOnly(root) {
+				return false
+			}
+		case golang.IfStmt:
+			// Constructor lookup guard: `if !ok { return }` before the apply
+			// loop (gap family 67761296 in the survivor labeling).
+			if !ifIsBareReturnGuard(root) {
+				return false
+			}
+		case golang.AssignStmt:
+			// Target seeding: `cfg := defaultConfig()` or `cfg := Config{...}`
+			// before the apply loop (gap families 2384b605 / 87e6d65d / 754d60f8).
+			if !assignSeedsOptionTarget(root) {
 				return false
 			}
 		default:
@@ -438,6 +468,42 @@ func isRangeHeaderIdent(loop *domain.CloneNode, name string) bool {
 	return slices.ContainsFunc(loop.Children, func(child *domain.CloneNode) bool {
 		return child.BaseType == golang.Ident && child.Name == name
 	})
+}
+
+// ifIsBareReturnGuard matches a pre-loop lookup guard: guard-clause shape
+// (`if !ok { ... }`, no else) whose body is only bare/identifier returns.
+func ifIsBareReturnGuard(root *domain.CloneNode) bool {
+	return isGuardClauseBody(root) && blockReturnsOnlyIdents(root)
+}
+
+// assignSeedsOptionTarget matches the constructor seeding that precedes an
+// option-apply loop: `cfg := defaultConfig()` (call of any callee with
+// plain-value arguments) or `cfg := Config{seed: true}` (composite literal
+// with plain-value elements), onto a single identifier target. The seeded
+// values are idiom plumbing — where they carry closures or nested literals
+// the constructor has real defaulting logic and stays actionable.
+func assignSeedsOptionTarget(n *domain.CloneNode) bool {
+	if len(n.Children) != 2 {
+		return false
+	}
+
+	value, target := n.Children[0], n.Children[1]
+	if target.BaseType == golang.CallExpr && value.BaseType != golang.CallExpr {
+		value, target = target, value
+	}
+
+	if target.BaseType != golang.Ident {
+		return false
+	}
+
+	switch value.BaseType {
+	case golang.CallExpr:
+		return !subtreeHasComplexity(value)
+	case golang.CompositeLit:
+		return !slices.ContainsFunc(value.Children, subtreeHasComplexity)
+	default:
+		return false
+	}
 }
 
 // soleBlockChild returns the single BlockStmt child of n, or nil.

@@ -53,6 +53,7 @@ var actionabilityPatternTable = []patternEntry{ //nolint:gochecknoglobals // sta
 	{isEmptyDefault, PatternEmptyDefault},
 	{isAppendCollectorTail, PatternAppendCollectorTail},
 	{isOptionApplyLoop, PatternOptionApplyLoop},
+	{isNilGuardAfterHelper, PatternNilGuardAfterHelper},
 }
 
 // AllActionabilityPatterns returns all pattern labels that can appear in
@@ -202,6 +203,7 @@ const (
 	PatternEmptyDefault               PatternLabel = "empty-default"
 	PatternAppendCollectorTail        PatternLabel = "append-collector-tail"
 	PatternOptionApplyLoop            PatternLabel = "option-apply-loop"
+	PatternNilGuardAfterHelper        PatternLabel = "nil-guard-after-helper"
 )
 
 // EvaluateActionabilityWithLabel returns both the actionability and the
