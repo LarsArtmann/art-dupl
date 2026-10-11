@@ -31,7 +31,7 @@ or external by nature.
 
 ### Generics-precision cluster (branching-flow lessons, 2026-10-11)
 
-**Source:** branching-flow cross-project analysis (`docs/status/2026-10-11_05-02_branching-flow-lessons-self-review.md`, deduped against this file — zero prior overlap) + master plan with ~120-subtask fine breakdown: `docs/planning/2026-10-11_05-06_generics-precision-from-branching-flow-lessons.md`. This cluster is the work behind ROADMAP gate 1 ("precision filtering brings `--suggest-generics` from 12.5% to >50%", the type-aware-default flip). Execution order per plan §4.
+**Source:** branching-flow cross-project analysis (`docs/status/2026-10-11_05-02_branching-flow-lessons-self-review.md`, deduped against this file — zero prior overlap) + master plan with 103-subtask fine breakdown: `docs/planning/2026-10-11_05-06_generics-precision-from-branching-flow-lessons.md`. This cluster is the work behind ROADMAP gate 1 ("precision filtering brings `--suggest-generics` from 12.5% to >50%", the type-aware-default flip). Execution order per plan §4.
 
 - [ ] **T1 — Precision baseline + false-reason taxonomy (keystone, the 1%)**: run `--suggest-generics` over the 5-repo corpus + branching-flow HEAD, label every candidate TRUE/FALSE, categorize false reasons (alias-string / instantiation-args-only / already-generic / min-lines noise); re-derive the 12.5% figure; persist `docs/research/2026-10-11_suggest-generics-precision-baseline.md`.
 - [ ] **T2 — Fixture-verify instantiation-vs-indexing collision**: semantic cross-file `cache[i]` vs `cache[T]` + structural mode; pin CURRENT behavior (the 2026-10-11 session's claim was reasoned, not demonstrated — its example was wrong in detail).

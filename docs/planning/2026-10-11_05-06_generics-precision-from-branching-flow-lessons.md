@@ -287,7 +287,7 @@ Grouped under parent tasks; execution order within a group is top-down unless no
 | T20.2 | CHANGELOG audit (every shipped task has an entry) | 12 | T20.1 |
 | T20.3 | Final `git status` clean; commit; nix flake check if build-affecting | 12 | T20.2 |
 
-**Fine total:** ~120 subtasks, ~21.5h.
+**Fine total:** 103 subtasks, ~19.7h of estimated fine-grained work (the ~21.5h medium envelope in §2 carries coordination overhead).
 
 ---
 
