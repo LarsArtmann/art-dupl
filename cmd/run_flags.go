@@ -245,6 +245,7 @@ func runStandardAnalysis(
 	// output are never surprised.
 	if mergedConfig.OutputFormat == config.OutputFormatText || mergedConfig.OutputFormat == config.OutputFormatHTML {
 		suppression.AcceptDirectives.WarnDeadDirectives(cmd.ErrOrStderr())
+		suppression.AcceptDirectives.WarnNearMissDirectives(cmd.ErrOrStderr())
 	}
 
 	timing.finish(ctx, cmd.ErrOrStderr())

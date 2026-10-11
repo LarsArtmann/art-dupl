@@ -35,6 +35,14 @@ var acceptDirectiveRe = regexp.MustCompile(`//\s*art-dupl:accept`)
 // unrelated groups that happen to be nearby.
 const acceptDirectiveScanAbove = 5
 
+// acceptDirectiveNearMissAbove is the wider window within which a directive
+// that failed acceptance is still reported as a placement near-miss: the
+// user clearly INTENDED to accept a nearby group (typically the directive
+// sits above a declaration's doc comment while the flagged range starts
+// inside the body) but placed it too far above LineStart for the acceptance
+// window. Diagnosing this silently-ignored-intent case is plan T15.
+const acceptDirectiveNearMissAbove = 10
+
 const (
 	scannerInitBufSize = 65536   // 64 KB
 	scannerMaxBufSize  = 1048576 // 1 MB
@@ -50,16 +58,26 @@ type AcceptedDirective struct {
 // It lazily scans files on first access and caches the result so each file is
 // read at most once per run.
 type AcceptedSet struct {
-	mu       sync.RWMutex
-	scanned  map[string][]AcceptedDirective // filename → directives found
-	matched  map[directiveKey]bool          // directives that accepted ≥1 group this run
-	readFile func(string) ([]byte, error)
+	mu         sync.RWMutex
+	scanned    map[string][]AcceptedDirective // filename → directives found
+	matched    map[directiveKey]bool          // directives that accepted ≥1 group this run
+	nearMissed map[directiveKey]NearMiss       // window-missed directives seen this run
+	readFile   func(string) ([]byte, error)
 }
 
 // directiveKey identifies a directive by its file and line.
 type directiveKey struct {
 	filename string
 	line     int
+}
+
+// NearMiss describes a directive that was evaluated against a group but sat
+// outside the acceptance window while still close enough above the group to
+// look intentional (see acceptDirectiveNearMissAbove).
+type NearMiss struct {
+	Filename   string
+	Line       int
+	GroupStart int // LineStart of the nearest group it nearly accepted
 }
 
 // DeadDirective is a hash-precision accept directive that matched zero clone
@@ -98,7 +116,13 @@ func (a *AcceptedSet) IsAccepted(group domain.ProcessedCloneGroup) bool {
 		scanFrom := max(1, clone.LineStart-acceptDirectiveScanAbove)
 
 		for _, d := range directives {
-			if d.Line < scanFrom || d.Line > clone.LineEnd {
+			if d.Line > clone.LineEnd {
+				continue
+			}
+
+			if d.Line < scanFrom {
+				a.recordNearMiss(clone.Filename, d.Line, clone.LineStart)
+
 				continue
 			}
 
@@ -218,6 +242,29 @@ func (a *AcceptedSet) recordMatched(filename string, line int) {
 	a.matched[directiveKey{filename: filename, line: line}] = true
 }
 
+// recordNearMiss remembers a directive that sat above the acceptance window
+// of an evaluated group, within the wider near-miss radius. Only the closest
+// group start is kept per directive.
+func (a *AcceptedSet) recordNearMiss(filename string, line, groupStart int) {
+	if groupStart-line > acceptDirectiveNearMissAbove {
+		return
+	}
+
+	a.mu.Lock()
+	defer a.mu.Unlock()
+
+	if a.nearMissed == nil {
+		a.nearMissed = make(map[directiveKey]NearMiss)
+	}
+
+	key := directiveKey{filename: filename, line: line}
+	if existing, ok := a.nearMissed[key]; ok && existing.GroupStart <= groupStart {
+		return
+	}
+
+	a.nearMissed[key] = NearMiss{Filename: filename, Line: line, GroupStart: groupStart}
+}
+
 // DeadDirectives returns the hash-precision directives seen this run that
 // matched zero groups. Hash-less directives (//art-dupl:accept without a
 // token) never go stale in this sense — they accept whatever sits nearby —
@@ -275,6 +322,64 @@ func (a *AcceptedSet) WarnDeadDirectives(stderr io.Writer) {
 			d.Hash,
 			d.Filename,
 			d.Line,
+		)
+	}
+}
+
+// NearMissDirectives returns directives that were evaluated this run but sat
+// outside the acceptance window while remaining within the near-miss radius
+// of a group start — the user almost certainly intended to accept that group
+// (the classic shape: directive above a declaration's doc comment while the
+// flagged range begins inside the body). Directives that DID accept some
+// group are excluded.
+func (a *AcceptedSet) NearMissDirectives() []NearMiss {
+	if a == nil {
+		return nil
+	}
+
+	a.mu.RLock()
+	defer a.mu.RUnlock()
+
+	misses := make([]NearMiss, 0, len(a.nearMissed))
+
+	for key, miss := range a.nearMissed {
+		if a.matched[key] {
+			continue
+		}
+
+		misses = append(misses, miss)
+	}
+
+	sort.Slice(misses, func(i, j int) bool {
+		if misses[i].Filename != misses[j].Filename {
+			return misses[i].Filename < misses[j].Filename
+		}
+
+		return misses[i].Line < misses[j].Line
+	})
+
+	return misses
+}
+
+// WarnNearMissDirectives prints one stderr hint per placement near-miss,
+// naming the nearest group start and the acceptance window. Diagnostics, not
+// progress: prints even under --quiet. Nil-safe on receiver and writer.
+func (a *AcceptedSet) WarnNearMissDirectives(stderr io.Writer) {
+	misses := a.NearMissDirectives()
+	if len(misses) == 0 || stderr == nil {
+		return
+	}
+
+	for _, m := range misses {
+		fmt.Fprintf(
+			stderr,
+			"warning: //art-dupl:accept at %s:%d sits %d lines above a clone group starting at line %d — outside the %d-line acceptance window; move the directive onto the flagged range or within %d lines above it\n",
+			m.Filename,
+			m.Line,
+			m.GroupStart-m.Line,
+			m.GroupStart,
+			acceptDirectiveScanAbove,
+			acceptDirectiveScanAbove,
 		)
 	}
 }
