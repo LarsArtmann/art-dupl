@@ -78,6 +78,68 @@ func ClassifyGenericsCandidate(seqs [][]*domain.CloneNode) (bool, string) {
 	return true, formatGenericsHint(divergences)
 }
 
+// ClassifyReuseExistingGeneric reports whether a generics candidate's type
+// divergences are ALL instantiations of the SAME already-declared generic.
+// When they are, the user should reuse that generic instead of extracting a
+// new abstraction: the clones differ only in type arguments
+// (Box[int] vs Box[string]), which the existing parameterization already
+// covers. This is the reuse-vs-extract distinction from the
+// generics-precision cluster (plan T5): "reuse pkg.Box[T]" is actionable with
+// zero new abstraction; "extract to generic" for the same group would
+// duplicate an existing generic.
+//
+// index is the generic-declaration index (name → type-param count) collected
+// from the run's pre-loaded ASTs (golang.CollectGenericDecls). An empty index
+// disables the verdict. Returns the resolved declaration key and its type
+// parameter count when the reuse verdict fires.
+func ClassifyReuseExistingGeneric(
+	seqs [][]*domain.CloneNode,
+	index map[string]int,
+) (declKey string, typeParamCount int, reuse bool) {
+	if len(index) == 0 || len(seqs) < 2 {
+		return "", 0, false
+	}
+
+	base := flattenCloneNodes(seqs[0])
+
+	resolved := ""
+
+	for i := 1; i < len(seqs); i++ {
+		other := flattenCloneNodes(seqs[i])
+
+		for j := range min(len(base), len(other)) {
+			a := base[j].VarType
+			b := other[j].VarType
+
+			if a == "" || b == "" || a == b {
+				continue
+			}
+
+			keyA := golang.LookupGenericDecl(a, index)
+			keyB := golang.LookupGenericDecl(b, index)
+
+			if keyA == "" || keyB == "" || keyA != keyB {
+				// A divergence that is not a pair of instantiations of the
+				// same indexed generic: the group needs genuinely different
+				// types parameterized, so extraction — not reuse — applies.
+				return "", 0, false
+			}
+
+			if resolved == "" {
+				resolved = keyA
+			} else if resolved != keyA {
+				return "", 0, false
+			}
+		}
+	}
+
+	if resolved == "" {
+		return "", 0, false
+	}
+
+	return resolved, index[resolved], true
+}
+
 // distinctPositions returns the set of structural positions that appear in
 // the given divergences.
 func distinctPositions(divs []TypeDivergence) map[int]bool {

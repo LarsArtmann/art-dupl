@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Nothing yet.
+- **SARIF related locations + region snippets** (2026-10-11): CLI SARIF results in a multi-occurrence group now carry `relatedLocations` — one entry per sibling occurrence with its physical location and a `clone-of` message, matching what go-finding `Report.ToSARIF()` emits — and every region carries the clone's source text as `region.snippet` (omitted when no fragment was extracted). Single-clone results emit no `relatedLocations` (`omitempty`). The T09 cross-check contract now also pins related-location parity between the CLI printer and `ToSARIF()`.
 
 ### Fixed
 

@@ -1642,12 +1642,93 @@ for _, f := range report.FindingsSnapshot() {
           </table>
         </section>
 
+        <!-- Currency re-review 2026-10-11 -->
+        <section id="currency-review-1011">
+          <h2><span class="num">06</span>Currency re-review (2026-10-11)</h2>
+          <p>
+            Re-asked &ldquo;how could art-dupl better leverage
+            go-finding/toolsdk?&rdquo; five days after remediation, against
+            the current pins: core v1.14.0 and toolsdk v1.15.0 are the latest
+            tags (zero version gap; upstream unreleased commits since the tags
+            are docs-only, verified in the working copy). Every remaining
+            thread from &sect;01/&sect;05 was re-judged. One shipped, one
+            dissolved under verification, the rest re-confirmed.
+          </p>
+
+          <h3>06.1 Shipped</h3>
+          <table class="compare">
+            <thead>
+              <tr><th>Item</th><th>Outcome</th><th>Pin</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>SARIF <code>relatedLocations</code> + <code>region.snippet</code> (&sect;05.3 candidate)</td>
+                <td class="yes">Shipped &mdash; multi-occurrence results link each sibling occurrence (physical location + <code>clone-of</code> message, mirroring <code>ToSARIF()</code>'s shape); every region carries the clone's source text, omitted when no fragment was extracted (no file-read fallback, output stays environment-independent)</td>
+                <td><code>TestSARIFOutput_RelatedLocationsAndSnippet</code>, <code>TestSARIFOutput_SingleCloneOmitsRelatedLocations</code>, cross-check extended with <code>TestSARIFCrossCheckRelatedLocations</code></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h3>06.2 Verdicts (this pass)</h3>
+          <table class="compare">
+            <thead>
+              <tr><th>Question</th><th>Verdict</th><th>Evidence</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Wire <code>toolsdk.Option.Validate</code> on the threshold option so out-of-range values fail at <code>ValidateOptions</code> time?</td>
+                <td class="no">No &mdash; dissolved</td>
+                <td><code>Option.Validate</code> validates the <em>declaration</em> (name/kind/default), invoked once per declared option &mdash; it never sees consumer values (toolsdk <code>options.go</code> <code>ValidateOptions</code>). Value-range enforcement at Detect is the D1 contract (range-reject 0 and 1001 tested in <code>TestDetectThresholdOption</code>); kind-only at <code>ValidateOptions</code> is upstream design. Nothing to change.</td>
+              </tr>
+              <tr>
+                <td>Adopt <code>toolsdk.SwitchCases</code> / <code>Repairer</code> / <code>Edits</code> / <code>ModuleFanOut</code> / pipeline / analysis?</td>
+                <td class="yes">Re-confirmed N/A</td>
+                <td>Same grounds as &sect;05.2: single-rule detector-only tool; repair gating needs a Repairer; cross-module cloning is the value; pipeline/analysis are consumer-side layers (BuildFlow owns orchestration for these findings).</td>
+              </tr>
+              <tr>
+                <td>Switch the provider <code>Trigger</code> to <code>OnGoFiles</code>/<code>OnGoModule</code>, or declare <code>Requires</code>/<code>NotRequires</code>?</td>
+                <td class="no">No</td>
+                <td><code>OnGoFiles</code>/<code>OnGoModule</code> would drop <code>.templ</code> coverage (art-dupl detects templ clones; <code>OnFiles</code> with both globs is correct). <code>Requires</code> adds a false prerequisite (art-dupl parses Go files without a module root). <code>NotRequires</code> deference is for ownership conflicts between writing tools &mdash; the provider is read-only, nothing to defer to.</td>
+              </tr>
+              <tr>
+                <td>Adopt <code>MergeIter</code>/<code>GroupBy</code>/<code>Filter</code>/<code>Format*</code>/JSON-wire helpers in the CLI?</td>
+                <td class="no">No &mdash; streaming verdict stands</td>
+                <td>&sect;05.2: the CLI/SDK stream groups for constant memory; Report queries and renderers are consumer-side. art-dupl's own JSON/SARIF/text are the product formats.</td>
+              </tr>
+              <tr>
+                <td>Adopt <code>toolsdk.SnapshotForTest</code>/<code>RestoreForTest</code> in provider tests?</td>
+                <td class="no">No &mdash; no need measured</td>
+                <td>Registration is a single package-level <code>var Provider</code>; tests never mutate the global registry, so there is no isolation problem for the helpers to solve.</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h3>06.3 Still open (unchanged)</h3>
+          <ul>
+            <li><strong>T07b coverage-evidence channel</strong> &mdash; upstream-gated; the recipe (DetectResult behind an optional DetectorV2, or a context coverage channel; then provider populates counts, BuildFlow surfaces them) and its &ldquo;next concrete step is the upstream prototype session&rdquo; are unchanged. Now the <em>only</em> structural capability gap.</li>
+            <li><strong><code>emit-suppressed-accepted</code> default-flip</strong> &mdash; deferred on the BuildFlow owner answer (TODO_LIST tracks it; do NOT flip without it).</li>
+            <li><strong>Empty <code>category</code> property</strong> &mdash; deliberate non-churn (wire conservatism, &sect;05.3); riders along with future SARIF changes if ever.</li>
+          </ul>
+
+          <div class="callout callout-teal">
+            <strong>Updated bottom line</strong>
+            After this pass the CLI SARIF is a strict superset of
+            <code>ToSARIF()</code> on the fields consumers diff (fingerprints,
+            invocations, related locations, snippets, groupId). The capability
+            table in &sect;05.5 changes in one row: SARIF export moves from
+            &ldquo;pinned-equivalent&rdquo; to <strong>fully leveraged</strong>.
+            What remains is exactly one upstream item (coverage evidence,
+            T07b) and one deferred product decision (suppression default).
+          </div>
+        </section>
+
         <!-- Footer -->
         <footer class="footer">
           <p>
-            Generated 2026-10-05 &middot; Re-reviewed 2026-10-06 against go-finding
-            v1.14.0 (module proxy + working copy) &middot; Claims verified against
-            art-dupl source and the ~/projects/go-finding checkout where cited
+            Generated 2026-10-05 &middot; Re-reviewed 2026-10-06 and 2026-10-11
+            against go-finding v1.14.0 / toolsdk v1.15.0 (module proxy +
+            working copy) &middot; Claims verified against art-dupl source and
+            the ~/projects/go-finding checkout where cited
           </p>
         </footer>
       </main>

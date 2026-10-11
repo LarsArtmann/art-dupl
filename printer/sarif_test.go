@@ -315,6 +315,7 @@ func TestSARIFOutput_RelatedLocationsAndSnippet(t *testing.T) {
 	if err := printer.PrintClones(group); err != nil {
 		t.Fatalf("PrintClones: %v", err)
 	}
+
 	if err := printer.PrintFooter(); err != nil {
 		t.Fatalf("PrintFooter: %v", err)
 	}
@@ -358,6 +359,7 @@ func TestSARIFOutput_RelatedLocationsAndSnippet(t *testing.T) {
 		}
 
 		wantRelated := map[string]bool{}
+
 		for key := range allOccurrences {
 			if key != selfKey {
 				wantRelated[key] = true
@@ -365,6 +367,7 @@ func TestSARIFOutput_RelatedLocationsAndSnippet(t *testing.T) {
 		}
 
 		gotRelated := map[string]bool{}
+
 		for _, rel := range result.RelatedLocations {
 			if rel.Message.Text != "clone-of" {
 				t.Errorf(
@@ -393,6 +396,7 @@ func TestSARIFOutput_RelatedLocationsAndSnippet(t *testing.T) {
 				t.Errorf("%s: missing related location %s", selfKey, key)
 			}
 		}
+
 		for key := range gotRelated {
 			if !wantRelated[key] {
 				t.Errorf("%s: unexpected related location %s", selfKey, key)
@@ -426,6 +430,7 @@ func TestSARIFOutput_SingleCloneOmitsRelatedLocations(t *testing.T) {
 	if err := printer.PrintClones(group); err != nil {
 		t.Fatalf("PrintClones: %v", err)
 	}
+
 	if err := printer.PrintFooter(); err != nil {
 		t.Fatalf("PrintFooter: %v", err)
 	}
@@ -434,6 +439,7 @@ func TestSARIFOutput_SingleCloneOmitsRelatedLocations(t *testing.T) {
 	if strings.Contains(raw, "relatedLocations") {
 		t.Error("single-clone result must omit relatedLocations")
 	}
+
 	if !strings.Contains(raw, `"snippet"`) {
 		t.Error("expected region snippet in output")
 	}

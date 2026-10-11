@@ -19,6 +19,13 @@ type PreloadedAST struct {
 	TypeInfo *types.Info
 	Fset     *token.FileSet
 
+	// PkgPath is the import path of the package the file belongs to. Used to
+	// qualify generic-declaration names so the reuse-existing-generic verdict
+	// can match them against fully-qualified type strings in VarType
+	// ("github.com/x/pkg.Box[int]" resolves to the indexed key
+	// "github.com/x/pkg.Box"). Empty when unknown.
+	PkgPath string
+
 	// EraseHash, when true, populates VarType on nodes but does NOT encode the
 	// type string into the identifier hash. Used by --suggest-generics so that
 	// clones with different concrete types still match, while the type info is
@@ -133,6 +140,7 @@ func LoadTypeAwareData(files []string, eraseHash bool) (TypeAwareData, error) {
 				File:      syntaxFile,
 				TypeInfo:  pkg.TypesInfo,
 				Fset:      pkg.Fset,
+				PkgPath:   pkg.PkgPath,
 				EraseHash: eraseHash,
 			}
 		}

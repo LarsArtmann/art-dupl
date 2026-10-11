@@ -137,10 +137,13 @@ func TestSARIFCrossCheckRelatedLocations(t *testing.T) {
 	if err := cliPrinter.PrintHeader(); err != nil {
 		t.Fatalf("PrintHeader: %v", err)
 	}
+
 	cliPrinter.SetHash(group.Hash)
+
 	if err := cliPrinter.PrintClones(group); err != nil {
 		t.Fatalf("PrintClones: %v", err)
 	}
+
 	if err := cliPrinter.PrintFooter(); err != nil {
 		t.Fatalf("PrintFooter: %v", err)
 	}
@@ -281,6 +284,7 @@ func extractRelatedLocations(
 				strconv.Itoa(self.Region.StartLine)
 
 			siblings := make(relatedSet, len(res.RelatedLocations))
+
 			message := ""
 			for i, rel := range res.RelatedLocations {
 				if i == 0 {
@@ -307,6 +311,7 @@ func extractRelatedLocations(
 
 	return rows
 }
+
 // sarifRow is the projection both SARIF paths must agree on.
 type sarifRow struct {
 	RuleID  string

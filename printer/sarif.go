@@ -81,13 +81,13 @@ type SARIFConfiguration struct {
 
 // SARIFResult represents a single result (finding).
 type SARIFResult struct {
-	RuleID       string                 `json:"ruleId"`
-	Level        string                 `json:"level"`
-	Message      SARIFMessage           `json:"message"`
-	Locations    []SARIFLocation        `json:"locations"`
+	RuleID           string                 `json:"ruleId"`
+	Level            string                 `json:"level"`
+	Message          SARIFMessage           `json:"message"`
+	Locations        []SARIFLocation        `json:"locations"`
 	RelatedLocations []SARIFRelatedLocation `json:"relatedLocations,omitempty"`
-	Fingerprints SARIFFingerprints      `json:"fingerprints"`
-	Properties   map[string]string      `json:"properties,omitempty"`
+	Fingerprints     SARIFFingerprints      `json:"fingerprints"`
+	Properties       map[string]string      `json:"properties,omitempty"`
 }
 
 // SARIFRelatedLocation represents one sibling occurrence of the same clone
@@ -260,6 +260,7 @@ func (p *sarifPrinter) PrintClones(
 			if i == idx {
 				continue
 			}
+
 			related = append(related, siblingLocations[i])
 		}
 
