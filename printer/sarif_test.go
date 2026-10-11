@@ -357,6 +357,7 @@ func TestSARIFOutput_RelatedLocationsAndSnippet(t *testing.T) {
 				len(result.RelatedLocations),
 			)
 		}
+
 		wantRelated := map[string]bool{}
 
 		for key := range allOccurrences {
