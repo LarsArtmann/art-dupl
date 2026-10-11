@@ -80,14 +80,24 @@ func ClassifyGenericsCandidate(seqs [][]*domain.CloneNode) (bool, string) {
 }
 
 // ClassifyReuseExistingGeneric reports whether a generics candidate's type
-// divergences are ALL instantiations of the SAME already-declared generic.
+// divergences are dominated by instantiations of one already-declared generic.
 // When they are, the user should reuse that generic instead of extracting a
 // new abstraction: the clones differ only in type arguments
 // (Box[int] vs Box[string]), which the existing parameterization already
 // covers. This is the reuse-vs-extract distinction from the
-// generics-precision cluster (plan T5): "reuse pkg.Box[T]" is actionable with
+// generics-precision cluster (plan T5): "reuse pkg.Box[T1]" is actionable with
 // zero new abstraction; "extract to generic" for the same group would
 // duplicate an existing generic.
+//
+// Verdict rules, evaluated over every divergent position:
+//   - A position whose two sides are instantiations of the SAME indexed
+//     generic anchors the verdict and records the observed argument pair.
+//   - A plain-type divergence is allowed only when it matches a recorded
+//     argument pair — that is how a type argument propagates to related
+//     locals (Box[int] naturally pairs with a value of type int).
+//   - Any other divergence (two unrelated plain types, instantiations of
+//     different generics, unindexed names) means the group parameterizes
+//     genuinely different types: extraction, not reuse.
 //
 // index is the generic-declaration index (name → type-param count) collected
 // from the run's pre-loaded ASTs (golang.CollectGenericDecls). An empty index
@@ -101,9 +111,56 @@ func ClassifyReuseExistingGeneric(
 		return "", 0, false
 	}
 
+	divs := collectDivergences(seqs)
+	if len(divs) == 0 {
+		return "", 0, false
+	}
+
+	// Pass 1: anchor positions — instantiations of one indexed generic.
+	resolved := ""
+
+	argPairs := make([][2]string, 0, len(divs))
+
+	for _, d := range divs {
+		keyA := golang.LookupGenericDecl(d.TypeA, index)
+		keyB := golang.LookupGenericDecl(d.TypeB, index)
+		if keyA == "" || keyA != keyB {
+			continue
+		}
+
+		if resolved == "" {
+			resolved = keyA
+		} else if resolved != keyA {
+			return "", 0, false
+		}
+
+		argPairs = append(argPairs, [2]string{typeArgsOf(d.TypeA), typeArgsOf(d.TypeB)})
+	}
+
+	if resolved == "" {
+		return "", 0, false
+	}
+
+	// Pass 2: every non-anchor divergence must be a propagated argument pair.
+	for _, d := range divs {
+		if golang.LookupGenericDecl(d.TypeA, index) != "" {
+			continue
+		}
+
+		if !matchesArgPair(d.TypeA, d.TypeB, argPairs) {
+			return "", 0, false
+		}
+	}
+
+	return resolved, index[resolved], true
+}
+
+// collectDivergences gathers every position where corresponding nodes across
+// clone instances carry different non-empty VarType values.
+func collectDivergences(seqs [][]*domain.CloneNode) []TypeDivergence {
 	base := flattenCloneNodes(seqs[0])
 
-	resolved := ""
+	var divergences []TypeDivergence
 
 	for i := 1; i < len(seqs); i++ {
 		other := flattenCloneNodes(seqs[i])
@@ -116,29 +173,37 @@ func ClassifyReuseExistingGeneric(
 				continue
 			}
 
-			keyA := golang.LookupGenericDecl(a, index)
-			keyB := golang.LookupGenericDecl(b, index)
-
-			if keyA == "" || keyB == "" || keyA != keyB {
-				// A divergence that is not a pair of instantiations of the
-				// same indexed generic: the group needs genuinely different
-				// types parameterized, so extraction — not reuse — applies.
-				return "", 0, false
-			}
-
-			if resolved == "" {
-				resolved = keyA
-			} else if resolved != keyA {
-				return "", 0, false
-			}
+			divergences = append(divergences, TypeDivergence{Position: j, TypeA: a, TypeB: b})
 		}
 	}
 
-	if resolved == "" {
-		return "", 0, false
+	return divergences
+}
+
+// typeArgsOf returns the type-argument substring of an instantiation
+// ("pkg.Box[int]" → "int"); the input is assumed to end with a bracketed
+// argument list (the caller resolved it via LookupGenericDecl).
+func typeArgsOf(typeStr string) string {
+	base := typeStr
+	for i := len(base) - 1; i >= 0; i-- {
+		if base[i] == '[' {
+			return base[i+1 : len(base)-1]
+		}
 	}
 
-	return resolved, index[resolved], true
+	return ""
+}
+
+// matchesArgPair reports whether a plain type divergence (a vs b) equals a
+// recorded argument pair in either orientation.
+func matchesArgPair(a, b string, argPairs [][2]string) bool {
+	for _, p := range argPairs {
+		if (a == p[0] && b == p[1]) || (a == p[1] && b == p[0]) {
+			return true
+		}
+	}
+
+	return false
 }
 
 // distinctPositions returns the set of structural positions that appear in
