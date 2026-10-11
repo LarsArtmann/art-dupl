@@ -4,10 +4,12 @@ import (
 	"context"
 	"encoding/json/v2"
 	"regexp"
+	"sort"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
+	"github.com/LarsArtmann/art-dupl/internal/testutil"
 	gofinding "github.com/larsartmann/go-finding"
 )
 
@@ -17,6 +19,103 @@ import (
 // the exact clone groups come back — the same tree, re-run through --json,
 // must reconstruct the identical group set (GroupID = clone-group content
 // hash, deterministic across channels and runs).
+// multiCloneSnippets returns three distinct clone families (cache, queue,
+// formatter), each duplicated across three files, so the SARIF partition
+// assertions exercise multiple groups with 3 occurrences each.
+func multiCloneSnippets() map[string]string {
+	return map[string]string{
+		"multiCache": `package multi
+
+import "sync"
+
+type cacheStore struct {
+	mu    sync.Mutex
+	items map[string]int
+}
+
+func (c *cacheStore) load(key string) (int, bool) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	value, ok := c.items[key]
+	return value, ok
+}
+`,
+		"multiQueue": `package multi
+
+import "errors"
+
+var errEmpty = errors.New("queue empty")
+
+type queue struct {
+	items []string
+}
+
+func (q *queue) pop() (string, error) {
+	if len(q.items) == 0 {
+		return "", errEmpty
+	}
+	item := q.items[0]
+	q.items = q.items[1:]
+	return item, nil
+}
+`,
+		"multiFormat": `package multi
+
+import "fmt"
+
+func render(label string, count int) string {
+	header := fmt.Sprintf("%s: %d items", label, count)
+	footer := fmt.Sprintf("%s: done", label)
+	return header + "\n" + footer
+}
+`,
+	}
+}
+
+// createMultiCloneTree writes the three clone families to the setup tree.
+func createMultiCloneTree(setup *testutil.BDDTestSetup) {
+	for prefix, code := range multiCloneSnippets() {
+		err := setup.CreateDuplicateFiles(
+			[]string{prefix + "1.go", prefix + "2.go", prefix + "3.go"},
+			code,
+		)
+		Expect(err).NotTo(HaveOccurred())
+	}
+}
+
+// sarifGroupPartition runs the CLI in SARIF mode (plus any extra args) and
+// reconstructs the clone-group partition from go-finding: group hash →
+// sorted occurrence file list.
+func sarifGroupPartition(setup *testutil.BDDTestSetup, extraArgs ...string) map[string][]string {
+	args := append([]string{"--sarif", "--threshold", "1", "--no-actionability"}, extraArgs...)
+
+	sarifBytes, err := setup.RunArtDupl(args...)
+	Expect(err).ToNot(HaveOccurred())
+
+	findings, err := gofinding.FindingsFromSARIF(context.Background(), sarifBytes)
+	Expect(err).ToNot(HaveOccurred())
+	Expect(findings).NotTo(BeEmpty())
+
+	report := gofinding.NewReportFromFindings(
+		gofinding.ToolInfo{Name: "art-dupl"},
+		findings,
+	)
+
+	partition := map[string][]string{}
+
+	for id, groupFindings := range report.GroupFindings() {
+		files := make([]string, 0, len(groupFindings))
+		for _, f := range groupFindings {
+			files = append(files, string(f.Position.File))
+		}
+
+		sort.Strings(files)
+		partition[string(id)] = files
+	}
+
+	return partition
+}
+
 var _ = Describe("SARIF to go-finding integration", func() {
 	It("reconstructs exact clone groups from real CLI SARIF output", func() {
 		setup := CreateBDDTestSetup()
@@ -77,61 +176,7 @@ var _ = Describe("SARIF to go-finding integration", func() {
 	It("reconstructs the exact multi-clone partition with sibling links", func() {
 		setup := CreateBDDTestSetup()
 
-		snippets := map[string]string{
-			"multiCache": `package multi
-
-import "sync"
-
-type cacheStore struct {
-	mu    sync.Mutex
-	items map[string]int
-}
-
-func (c *cacheStore) load(key string) (int, bool) {
-	c.mu.Lock()
-	defer c.mu.Unlock()
-	value, ok := c.items[key]
-	return value, ok
-}
-`,
-			"multiQueue": `package multi
-
-import "errors"
-
-var errEmpty = errors.New("queue empty")
-
-type queue struct {
-	items []string
-}
-
-func (q *queue) pop() (string, error) {
-	if len(q.items) == 0 {
-		return "", errEmpty
-	}
-	item := q.items[0]
-	q.items = q.items[1:]
-	return item, nil
-}
-`,
-			"multiFormat": `package multi
-
-import "fmt"
-
-func render(label string, count int) string {
-	header := fmt.Sprintf("%s: %d items", label, count)
-	footer := fmt.Sprintf("%s: done", label)
-	return header + "\n" + footer
-}
-`,
-		}
-
-		for prefix, code := range snippets {
-			err := setup.CreateDuplicateFiles(
-				[]string{prefix + "1.go", prefix + "2.go", prefix + "3.go"},
-				code,
-			)
-			Expect(err).NotTo(HaveOccurred())
-		}
+		createMultiCloneTree(setup)
 
 		sarifBytes, err := setup.RunArtDupl("--sarif", "--threshold", "1", "--no-actionability")
 		Expect(err).ToNot(HaveOccurred())
@@ -205,5 +250,18 @@ func render(label string, count int) string {
 				}
 			}
 		}
+	})
+
+	It("reconstructs the identical partition under --search-workers 1 (determinism twin)", func() {
+		setup := CreateBDDTestSetup()
+
+		createMultiCloneTree(setup)
+
+		parallel := sarifGroupPartition(setup)
+		sequential := sarifGroupPartition(setup, "--search-workers", "1")
+
+		Expect(parallel).NotTo(BeEmpty())
+		Expect(sequential).To(Equal(parallel),
+			"the reconstructed clone-group partition must be identical across parallel and sequential search")
 	})
 })
