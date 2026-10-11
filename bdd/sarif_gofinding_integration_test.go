@@ -127,7 +127,7 @@ func render(label string, count int) string {
 
 		for prefix, code := range snippets {
 			err := setup.CreateDuplicateFiles(
-				[]string{prefix+"1.go", prefix+"2.go", prefix+"3.go"},
+				[]string{prefix + "1.go", prefix + "2.go", prefix + "3.go"},
 				code,
 			)
 			Expect(err).NotTo(HaveOccurred())
