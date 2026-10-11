@@ -54,6 +54,45 @@ func AddB(x Beta, y Beta) int { return x.V + y.V }
 `
 
 var _ = Describe("Suggest-Generics Enhancer", func() {
+	It("should suggest reusing an existing generic when divergences are instantiations of it", func() {
+		setup := CreateBDDTestSetup()
+
+		err := setup.CreateTestFile("generics_reuse.go", `package main
+
+type Box[T any] struct{ Value T }
+
+func SumInt(b Box[int], times int) int {
+	total := b.Value
+	for i := 0; i < times; i++ {
+		total += b.Value
+	}
+	return total
+}
+
+func SumFloat(b Box[float64], times int) float64 {
+	total := b.Value
+	for i := 0; i < times; i++ {
+		total += b.Value
+	}
+	return total
+}
+`)
+		Expect(err).NotTo(HaveOccurred())
+
+		output, err := setup.RunArtDupl(
+			"--threshold", "1",
+			"--suggest-generics",
+			"--no-actionability",
+			"--explain",
+			"--suggest-generics-min-lines", "0",
+		)
+		Expect(err).ToNot(HaveOccurred())
+
+		Expect(string(output)).To(ContainSubstring("generics:"))
+		Expect(string(output)).To(ContainSubstring("Reuse existing generic"))
+		Expect(string(output)).To(ContainSubstring("Box[T1]"))
+	})
+
 	It("should annotate type-divergent clones with a generics hint", func() {
 		setup := CreateBDDTestSetup()
 

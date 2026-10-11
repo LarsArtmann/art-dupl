@@ -527,7 +527,9 @@ Semantics:
 
 Highlights clones where the algorithm is identical but local variable types differ across instances — the class of duplication that Go generics can eliminate. Uses type-erased hashing so structurally-identical functions on different types still match, then classifies by comparing type information at corresponding positions.
 
-**Enhancer, not filter**: All clone groups are shown. Generics candidates are annotated with a `generics:` hint line and `Extract to generic function` suggestion. Use `--min-tokens` or `--threshold` to reduce noise.
+**Enhancer, not filter**: All clone groups are shown. Generics candidates are annotated with a `generics:` hint line and a suggestion. Use `--min-tokens` or `--threshold` to reduce noise.
+
+**Reuse vs extract**: when every type divergence in a candidate is an instantiation of one generic that already exists in the analyzed code (`Box[int]` vs `Box[string]` with `type Box[T any]` declared), the suggestion is `Reuse existing generic Box[T1]` — pointing at the existing parameterization instead of proposing a new abstraction. Any other divergence shape keeps the `Extract to generic function` suggestion.
 
 ```bash
 # Highlight generics-extraction candidates among all clones
