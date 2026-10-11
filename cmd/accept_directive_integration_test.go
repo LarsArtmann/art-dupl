@@ -191,3 +191,85 @@ func TestDeadDirectiveWarningEndToEnd(t *testing.T) {
 		t.Errorf("live directive must suppress the group, got:\n%s", output)
 	}
 }
+
+// TestNearMissDirectiveHintEndToEnd (plan T15) verifies the placement
+// near-miss detector over the real CLI: a directive that sits above the
+// 5-line acceptance window but within the 10-line near-miss radius of a
+// group start produces a stderr hint naming the distance and window; a
+// properly placed directive produces no hint; machine formats stay clean.
+func TestNearMissDirectiveHintEndToEnd(t *testing.T) {
+	// executeTestCommand mutates process-global os.Stdout/os.Stderr — serial only.
+	dir := t.TempDir()
+
+	dupCode := "package dup\n\n" +
+		"func fa(x int) int {\n" +
+		"\t//art-dupl:accept idiomatic prelude\n" +
+		"\t// filler comment one\n" +
+		"\t// filler comment two\n" +
+		"\t// filler comment three\n" +
+		"\t// filler comment four\n" +
+		"\t// filler comment five\n" +
+		"\t// filler comment six\n" +
+		"\ta := x + 1\n" +
+		"\tb := a * 2\n" +
+		"\tc := b - 3\n" +
+		"\td := c + 4\n" +
+		"\te := d * 5\n" +
+		"\treturn e\n" +
+		"}\n"
+
+	for _, name := range []string{"one.go", "two.go"} {
+		if err := os.WriteFile(filepath.Join(dir, name), []byte(dupCode), 0o600); err != nil {
+			t.Fatalf("write %s: %v", name, err)
+		}
+	}
+
+	output, err := executeTestCommand(t, []string{binaryName, "-t", "1", "--no-actionability", dir})
+	if err != nil {
+		t.Fatalf("run with misplaced directive failed: %v\nOutput: %s", err, output)
+	}
+
+	nearMissHint := "sits 7 lines above a clone group starting at line"
+	if !strings.Contains(string(output), nearMissHint) {
+		t.Errorf("expected near-miss placement hint on stderr, got:\n%s", output)
+	}
+
+	if !strings.Contains(string(output), "one.go") {
+		t.Errorf("misplaced directive must NOT suppress the group (clones should show), got:\n%s", output)
+	}
+
+	// Machine formats keep a diagnostics-free stderr.
+	jsonOutput, err := executeTestCommand(t, []string{binaryName, "-t", "1", "--no-actionability", "--json", dir})
+	if err != nil {
+		t.Fatalf("json run failed: %v\nOutput: %s", err, jsonOutput)
+	}
+
+	if strings.Contains(string(jsonOutput), nearMissHint) {
+		t.Errorf("machine format must not carry the near-miss hint, got:\n%s", jsonOutput)
+	}
+
+	// Moving the directive within the window silences the hint and accepts.
+	placedCode := strings.Replace(dupCode,
+		"\t// filler comment six\n\ta := x + 1\n",
+		"\t// filler comment six\n\t//art-dupl:accept idiomatic prelude\n\ta := x + 1\n", 1)
+	placedCode = strings.Replace(placedCode, "\t//art-dupl:accept idiomatic prelude\n\t// filler comment one\n", "\t// filler comment one\n", 1)
+
+	for _, name := range []string{"one.go", "two.go"} {
+		if err := os.WriteFile(filepath.Join(dir, name), []byte(placedCode), 0o600); err != nil {
+			t.Fatalf("rewrite directive in %s: %v", name, err)
+		}
+	}
+
+	output, err = executeTestCommand(t, []string{binaryName, "-t", "1", "--no-actionability", dir})
+	if err != nil {
+		t.Fatalf("run with properly placed directive failed: %v\nOutput: %s", err, output)
+	}
+
+	if strings.Contains(string(output), "lines above a clone group") {
+		t.Errorf("properly placed directive must not produce a near-miss hint, got:\n%s", output)
+	}
+
+	if !strings.Contains(string(output), "0 shown") {
+		t.Errorf("properly placed directive should accept the group, got:\n%s", output)
+	}
+}
