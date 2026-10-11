@@ -1,0 +1,3 @@
+# branching-flow — pre-pattern generics-candidate families (--suggest-generics --no-actionability -t 2, 2026-10-11)
+# hash	file:line-line[, ...]
+91252a761a98fe11	cmd/branching-flow/runner.go:77-81, pkg/panicanalyzer/analyzer.go:200-203

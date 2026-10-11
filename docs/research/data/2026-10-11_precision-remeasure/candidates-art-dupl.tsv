@@ -1,0 +1,6 @@
+# art-dupl — pre-pattern generics-candidate families (--suggest-generics --no-actionability -t 2, 2026-10-11)
+# hash	file:line-line[, ...]
+0cfc073b42c1b1dd	art-dupl/cmd/type_aware.go:49-52, art-dupl/job/incremental_parallel_test.go:53-56, art-dupl/syntax/syntax.go:532-536
+17b5f67605417c20	art-dupl/syntax/golang/snippet.go:189-194, art-dupl/syntax/golang/snippet.go:198-203
+c4ea6cba36daf83f	art-dupl/cmd/diff_report.go:107-110, art-dupl/pkg/artdupl/detector_conversion.go:32-35
+e12d4e29520351fe	art-dupl/internal/testutil/file.go:81-84, art-dupl/syntax/syntax_match.go:167-171

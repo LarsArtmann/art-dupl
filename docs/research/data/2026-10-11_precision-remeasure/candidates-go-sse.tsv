@@ -1,0 +1,3 @@
+# go-sse — pre-pattern generics-candidate families (--suggest-generics --no-actionability -t 2, 2026-10-11)
+# hash	file:line-line[, ...]
+a3f383f9fcd2db2a	sseparse/reader.go:41-45, ssetest/options.go:82-86

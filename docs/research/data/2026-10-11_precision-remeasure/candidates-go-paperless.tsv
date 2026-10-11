@@ -1,0 +1,3 @@
+# go-paperless — pre-pattern generics-candidate families (--suggest-generics --no-actionability -t 2, 2026-10-11)
+# hash	file:line-line[, ...]
+0790b1e247a5a5d6	paperlesstest/documents.go:312-315, paperlesstest/documents.go:75-78, paperlesstest/tasks.go:48-51

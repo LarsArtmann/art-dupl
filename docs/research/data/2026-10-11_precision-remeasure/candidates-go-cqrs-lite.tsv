@@ -1,0 +1,56 @@
+# go-cqrs-lite — pre-pattern generics-candidate families (--suggest-generics --no-actionability -t 2, 2026-10-11)
+# hash	file:line-line[, ...]
+04b941585b955cd9	projectionhost/host.go:325-329, projectionhost/host.go:346-350, stack/closers.go:23-27
+0520ac36eeaf822c	metaengine/mysqlengine/backends.go:60-64, metaengine/pgengine/engine.go:230-234
+065f6a524a09c72e	cmd/cqrs-gen/scan.go:99-102, cmd/cqrs-lint/filters.go:152-156, cmd/cqrs-lint/filters.go:293-296, cmd/cqrs-lint/pkg/analyzer/module_catalog.go:125-128, cmd/doc-check/resolve.go:95-99, stack/materialize.go:284-288, storage/turso/indexing/advisor_plan.go:156-159
+0c545dae82084a39	metaengine/mysqlengine/map_update.go:25-29, metaengine/pgengine/map_update.go:26-30
+0cfc073b42c1b1dd	benchkit/artifacts.go:72-75, cmd/cqrs-lint/filters.go:164-168, cmd/cqrs-lint/filters.go:240-244, cmd/cqrs-lint/pkg/analyzer/project_config.go:296-300, cmd/cqrs-lint/testdata/scanfixture/main.go:103-106, cmd/doc-check/resolve.go:264-268, listing/in_memory.go:176-180, listing/in_memory.go:194-198, metaengine/fold_inference.go:169-173, metaengine/infer_filters.go:138-142, metaengine/irohengine/transport.go:103-106, metaengine/plan_diff.go:234-238, metaengine/task_snapshot.go:50-54, signing/multisig/extract.go:137-141, storage/memory/command_store.go:193-197, storage/memory/command_store.go:208-212, storage/memory/log_store.go:183-187, storage/turso/indexing/index.go:70-74, system/schema.go:64-67, systemscenario/capture.go:60-64, watermill/catchup_shutdown_noise_test.go:46-50
+0ffcf5f94ff44cc5	example/taskmanager/decider.go:542-548, example/taskmanager/projection.go:33-39
+12cab493c3c497af	benchkit/benchkit_test.go:2219-2222, cmd/cqrs-lint/filters.go:139-142, cmd/cqrs-lint/pkg/rules/register.go:244-248, metaengine/pebbleengine/layout_planner.go:347-350, storage/turso/indexing/stats.go:104-108
+1ba45c8e59ca6a39	watermill/command_bus.go:66-81, watermill/event_bus.go:76-100
+20362e234d3762e9	systemscenario/then.go:165-169, systemscenario/then_commands.go:90-94
+2384b605be075d0f	stack/bbolt/preset.go:81-84, stack/pebble/preset.go:206-210, stack/turso/preset.go:107-111
+24b9a2ac1a26eff7	catalog/eventcatalog/writer_llms.go:222-226, catalog/eventcatalog/writer_llms.go:58-62
+2529c2b0d9feade2	metaengine/duckdbengine/stream_log.go:160-175, metaengine/mysqlengine/stream_log.go:151-166, metaengine/pgengine/stream_log.go:140-152
+27a9c84f459fdbf1	cmd/cqrs-lint/doctor_audit.go:102-106, storage/relational/sink_helpers.go:26-30
+2faed145faf87623	catalog/asyncapi/exporter.go:61-65, catalog/d2/exporter.go:43-47, catalog/openapi/exporter.go:55-59
+317cc006e5a1f922	storage/bbolt/base.go:36-40, storage/bbolt/kv_adapter.go:28-32, storage/bbolt/kv_iterator.go:77-81
+399dadc4f48eb4ec	metaengine/bigtableengine/map_backend.go:191-194, metaengine/dgraphengine/multimap_log.go:94-97
+3a8477484cfe9ca4	middleware/deadletter.go:82-85, projectionhost/dlq.go:128-131
+3b6f94d565914976	storage/eventstore/event_store_stream.go:53-57, storage/readmodel/kv_sql.go:297-301
+3d63036e1a032b56	metaengine/pgengine/evolve.go:80-91, metaengine/sqliteengine/planned_parity.go:84-95
+3ea5b01b4e0c9b69	storage/bbolt/command_serialization.go:46-51, storage/bbolt/serialization.go:72-77
+43cac70281142a0d	graph/memory.go:51-55, metaengine/irohengine/transport.go:65-68, metaengine/memory_versioned.go:292-296
+521d5cf3b02b8c3e	metaengine/duckdbengine/stream_log.go:132-147, metaengine/mysqlengine/stream_log.go:125-137, metaengine/pgengine/stream_log.go:112-127
+5ac0a07b1beb392b	cmd/cqrs-lint/filters.go:412-415, storage/relational/sink_helpers.go:93-96
+5c5ee502a05720d9	catalog/d2/services.go:148-152, catalog/d2/services.go:219-223
+67761296ad715d01	catalog/registry.go:184-190, catalog/registry_resources.go:8-14
+67b451810a8ab0e4	storage/command_store_save.go:52-58, storage/eventstore/event_store.go:130-136
+6aea5e28e82b534e	storage/command_store_journal.go:55-58, storage/eventstore/event_store_global.go:50-53, storage/query_store_load.go:93-96
+72ecd44a8959ae60	catalog/eventcatalog/server.go:90-94, snapshot/read_pressure.go:93-97, storage/pebble/adapter.go:69-73
+754d60f89ca05486	stack/turso/preset.go:139-143, systemscenario/scenario.go:138-141
+7550c20534fcc504	catalog/d2/exporter.go:19-25, catalog/openapi/exporter.go:29-35
+771f91be06710f3e	benchkit/artifacts.go:69-72, cmd/cqrs-lint/pkg/rules/version/v007_paths.go:87-90
+7bc04a86d28a1296	system/adapter_command.go:44-48, system/adapter_query.go:46-50
+7faf1ce081c29a29	metaengine/mysqlengine/planned_tables.go:45-48, system/adapter_command.go:119-123, system/adapter_event.go:288-292, system/adapter_query.go:89-93
+82f0adb721d96bde	cmd/cqrs-gen/scan.go:35-38, schema/chain_engine.go:50-53
+8635e4c4e51958b2	metaengine/duckdbengine/scan.go:68-72, metaengine/sqliteengine/engine.go:401-405
+87e6d65dc37b6b2b	metaengine/badgerengine/engine.go:91-94, metaengine/pebbleengine/engine.go:129-132, metaengine/pebbleengine/engine.go:173-176
+8872e66f1dedee08	catalog/eventcatalog/message_index.go:87-90, catalog/eventcatalog/message_index.go:98-101
+887684d2f589a0a5	catalog/eventcatalog/frontmatter_convert_flow.go:165-168, catalog/eventcatalog/frontmatter_render.go:128-131
+894dff88c115a1da	schema/registry.go:124-127, system/adapter_core.go:65-68
+8d586b82d57d7a93	cmd/cqrs-lint/doctor_profile.go:146-149, cmd/cqrs-lint/doctor_profile.go:180-183
+a23b3faae9a20f09	cmd/cqrs-lint/diagnostics.go:182-185, cmd/cqrs-lint/pkg/rules/version/v006.go:172-175
+a3f383f9fcd2db2a	middleware/options.go:27-31, schema/ops.go:201-205
+a4bb97228a1b893a	system/adapter_command.go:135-138, system/adapter_query.go:109-112
+abf9e592588cab30	metaengine/mysqlengine/graph.go:107-111, metaengine/sqliteengine/graph.go:86-90
+c543d8b048ddb4f8	catalog/internal/cattest/assertions.go:57-61, event/v4/eventtest/assertions.go:56-60
+dd51a01ae5da6770	benchkit/metrics.go:74-78, catalog/eventcatalog/exporter.go:36-40, storage/turso/indexing/advisor.go:104-108, storage/turso/indexing/auto.go:63-67
+dfba5738ef029718	storage/bbolt/kv_iterator.go:55-59, storage/bbolt/stream.go:93-97
+dfff47d89388a881	metaengine/duckdbengine/planned_parity.go:171-174, metaengine/sqliteengine/planned_parity.go:141-144
+e12d4e29520351fe	cmd/cqrs-upgrade/apply.go:53-56, scenario/equivalence.go:50-54
+f18d3f584ae7d405	watermill/command_bus_internals.go:43-47, watermill/event_bus_internals.go:63-67
+f1fdc350337a2ec2	stack/contracttest/contract.go:60-65, stack/contracttest/multidb.go:91-96
+f37c0916dd9a31d7	storage/pebble/checkpoint.go:67-71, storage/pebble/command_store.go:77-81, storage/pebble/query_store.go:66-70, storage/pebble/snapshot.go:68-72, storage/pebble/store.go:60-64
+f5c7a628c67e6bcf	catalog/message_config.go:252-255, metaengine/projectionadapter/adapter.go:108-111
+fec507e77ad5026f	metaengine/typed_reader.go:158-162, schema/chain_engine.go:98-101

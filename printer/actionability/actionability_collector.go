@@ -272,6 +272,7 @@ func blockIsCollectorOnly(n *domain.CloneNode) bool {
 
 		if slices.ContainsFunc(child.Children, func(stmt *domain.CloneNode) bool {
 			_, ok := collectorStatementAccumulates(stmt)
+
 			return !ok
 		}) {
 			return false
