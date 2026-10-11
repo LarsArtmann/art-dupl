@@ -651,6 +651,15 @@ By default, art-dupl suppresses clones that match known boilerplate patterns (gu
 art-dupl --no-actionability ./src
 ```
 
+Note: `--no-actionability` only un-filters output. Pattern evaluation still runs, and
+generics candidacy stays pattern-gated — a pattern-matched group never becomes a
+`--suggest-generics` candidate even under this flag. To make one pattern stop
+matching entirely (including candidacy and the recorded label), disable it by label:
+
+```bash
+art-dupl --disable-pattern append-collector-tail ./src
+```
+
 ### Explaining Clone Reports
 
 To understand WHY each clone group was reported, use `--explain`:
