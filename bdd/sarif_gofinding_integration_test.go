@@ -200,7 +200,7 @@ func render(label string, count int) string {
 					"group %s: every occurrence must link its %d siblings", id, len(wantFiles)-1)
 
 				for _, rel := range f.Related {
-					Expect(rel.Position.File).To(BeElementOf(wantFiles),
+					Expect(string(rel.Position.File)).To(BeElementOf(wantFiles),
 						"group %s: related location must point at a sibling occurrence", id)
 				}
 			}
