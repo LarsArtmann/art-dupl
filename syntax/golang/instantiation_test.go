@@ -5,9 +5,8 @@ import (
 	"slices"
 	"testing"
 
-	"golang.org/x/tools/go/packages"
-
 	"github.com/LarsArtmann/art-dupl/syntax"
+	"golang.org/x/tools/go/packages"
 )
 
 // findIndexExprNode returns the first node whose base type is IndexExpr.

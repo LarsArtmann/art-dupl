@@ -1,5 +1,15 @@
 # Suggest-Generics Precision Baseline
 
+> **DATED CALLOUT (2026-10-11, later same day):** the "field recall ~0 on 5/6
+> repos" conclusion below was measured BEFORE the foreign-module `go/packages`
+> loader fix landed (plan T7 — `LoadTypeAwareData` now groups files by nearest
+> go.mod; see the ledger row at the bottom). Post-fix candidate counts at
+> `-t 2`: go-cqrs-lite **152**, go-paperless **3**, go-sse **2**,
+> branching-flow **2**, DiscordSync 0. The 25% @ n=4 precision figure stands
+> as measured but describes ONLY the pre-fix population; a re-measure on the
+> new population is queued. Read the recall section below as history, not
+> current state.
+
 **Date:** 2026-10-11
 **Task:** T1 of the generics-precision cluster (`docs/planning/2026-10-11_05-06_generics-precision-from-branching-flow-lessons.md`)
 **Question:** What is the current TRUE/FALSE precision of `--suggest-generics` on the validation corpus, and WHY are the false ones false?

@@ -1,0 +1,43 @@
+# Accept-Directive Reason Mining (art-dupl + branching-flow)
+
+**Date:** 2026-10-11 (re-mined; the original table lived in `/tmp` and was lost — regenerated from the repos directly)
+**Method:** `rg "art-dupl:accept"` over production sources of both repos (docs/markdown/test-machinery comments excluded), reasons normalized and clustered by hand.
+**Feeds:** plan T12/T13 (actionability pattern waves), T16 (research HTML data section). Replaces the volatile `/tmp/t11-mining-table.md`.
+
+## art-dupl (self) — ~26 directives
+
+| Cluster | Count | Representative reason | Pattern verdict |
+| --- | --- | --- | --- |
+| Deliberate exclude/include symmetry (`filter_stats.go`) | 5 | "deliberate exclude/include symmetry" | Intentional mirror — no pattern (would over-suppress genuine symmetry bugs) |
+| Architectural alias / parallel enum re-exports | 3 | "SDK re-exports domain constant (ADR-0005)", "parallel iota enum: different domain" | `type-alias-block` exists; enum-reexport variant deliberately NOT patterned (aliases are legitimate architecture) |
+| Standard idioms (defer-close, context cleanup, recursion-break JSON marshal, range loop) | 5 | "standard defer-close idiom (different types)" | `raii-defer`/`defer-call` already cover the defer pair; recursion-break + range-loop stay manual (each is 1 site) |
+| Recursive twins (`generics_candidate.go`) | 2 | "recursive twin of flattenChildren" | No pattern — structural twins are legitimate |
+| LCS mirror (`diff.go`) | 1 (2 lines, one doubled directive on one line — cosmetic) | "LCS removed/added mirror" | No pattern (algorithmic mirror) |
+| One-off domain accepts (templ one-liner, section-header boilerplate, example self-containment, test error handling) | 4+ | "two expressions on one templ line, not duplication" | Stays manual |
+
+## branching-flow (HEAD 2026-10-11) — 54 directives (50 with readable reasons)
+
+| Cluster | Count | Representative reason | Pattern verdict |
+| --- | --- | --- | --- |
+| Comma-ok guards (map-lookup + type assertion) | 4 | "comma-ok map-lookup guard: canonical Go filter idiom" | Deliberately NOT patterned — comma-ok is often load-bearing logic; over-suppression risk |
+| Switch default arms | 4 | "unsupported-format fallbacks are per-format domain decisions" | `empty-default` exists for empty arms; value-returning default arms stay manual (domain decisions) |
+| Single-line severity returns in switches | 4 | "single-line severity returns inside unrelated pattern switches" | Candidate: too narrow (severity switches are linter-specific); stays manual |
+| Empty-string skip guards | 3 | "empty-string skip guards on different domain values" | Candidate `empty-guard` — declined this wave: 3 sites, one repo; watch for recurrence |
+| Filter/append/counter loop tails | 3 | "idiomatic prealloc filter loop; stdlib has no Filter by design" | **→ T12 `append-collector-tail`** (also T1's dominant FP: 75% of observed false candidates) |
+| 1-field generic wrapper ("generics already used") | 2 | "different Detection types; generics already used" | **→ T6 already-generic annotation** |
+| t.Parallel() markers | 2 | "standard Go test concurrency marker" | ALREADY covered: single-call test-framework name list (`actionability_idioms.go:50`) |
+| Per-linter finding-conversion tails | 2 | "metadata maps and builders differ per analyzer" | Domain mirror; stays manual |
+| Nil-guard / nil-params prelude | 2 | "nil-params guard: canonical Go early return" | **→ T13 `nil-guard-after-helper`** |
+| Type-switch arm dispatch | 2 | "each switch dispatches a different AST shape" | Stays manual (dispatch IS the logic) |
+| Warn-and-continue guards | 2 | "parse vs read failures warn different domain fields" | Stays manual |
+| Guard-chain / bound predicates | 2 | "distinct bound predicates (EQL vs NEQ semantics)" | Stays manual (semantics differ — exactly what hashing SHOULD distinguish) |
+| String-builder tails | 2 | "Builder newline tail in an unrelated string builder" | Too narrow; stays manual |
+| One-off domain accepts (cobra idioms ×3, embedded-field guard, asMakeCall, address-taking, import-gate, aliasMethodName, suppression chains, constructor mirrors, accumulation, LossType arms, multi-return usage, build-error skip, standard error handling, comma-ok+TypeString, injector-first-param, filter-loop-with-predicates) | ~18 | — | Stays manual |
+
+## Wave verdicts (data beats plan)
+
+1. **Plan T12.2 mutex idiom — CANCELLED with evidence:** `raii-defer`'s 2-statement form (`actionability_control_flow.go:36-40`) already matches Lock+defer Unlock pairs.
+2. **Plan T12.4 `flag.Value.Set` — CANCELLED with evidence:** `commonInterfaceMethodNames` feeds `interface-method` path 1 (works WITHOUT `--type-aware`) — `actionability_interface_method.go:33-34`.
+3. **T12 replacement pattern: `append-collector-tail`** — the only cluster that is BOTH an accept-reason (bf ×3) AND the dominant FP class in the T1 precision baseline (75% of false candidates).
+4. **T13 pattern: `nil-guard-after-helper`** — bf ×2 ("nil-params guard", "IndexIdent+exprName nil-guard prelude"); FP-guarded by requiring a trivial guard body.
+5. Comma-ok guards were considered and DELIBERATELY declined (over-suppression risk: comma-ok is frequently load-bearing).

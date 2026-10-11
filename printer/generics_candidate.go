@@ -191,6 +191,7 @@ func ClassifyReuseExistingGeneric(
 
 	for _, d := range divs {
 		keyA := golang.LookupGenericDecl(d.TypeA, index)
+
 		keyB := golang.LookupGenericDecl(d.TypeB, index)
 		if keyA == "" || keyA != keyB {
 			continue
