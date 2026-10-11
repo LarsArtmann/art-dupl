@@ -43,3 +43,25 @@ Post-fix survivor tables were measured at the 2026-10-11 18:5x HEADs
 measurements; family-level deltas are still valid because group hashes are
 content-derived, but absolute family sets can differ where the corpus
 changed.
+
+## Pinned worktree mirrors (2026-10-11, session 4)
+
+The survivor labeling was done against exact recorded HEADs via detached git
+worktrees, so labels are reproducible even as the corpus repos drift:
+
+```sh
+git -C ~/projects/<repo> worktree add --detach \
+  ~/projects/.corpus-pins/<repo>@<short-hash> <full-hash>
+```
+
+| Mirror                            | Used for                        |
+| --------------------------------- | ------------------------------- |
+| `.corpus-pins/go-cqrs-lite@10c9f987` | survivor + suppressed labeling |
+| `.corpus-pins/branching-flow@dbdeb0f1` | B2 mechanism verification    |
+| `.corpus-pins/go-sse@67a16fa`     | (population was 1 FALSE family) |
+| `.corpus-pins/go-paperless@1909797` | deep-copy extension target     |
+| `.corpus-pins/DiscordSync@4c0502c3` | empty population               |
+
+Mirrors are regenerable local state (delete + re-add at any recorded hash);
+they exist so before/after claims stop depending on corpus repos holding
+still.

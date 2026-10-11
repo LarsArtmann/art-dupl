@@ -1,5 +1,5 @@
-# go-paperless — SURVIVOR families after fixed append-collector-tail + option-apply-loop
-# (--suggest-generics --no-actionability -t 2, binary built 2026-10-11 18:53; pinned HEAD in README)
-# ZERO survivor families: the entire pre-pattern population was suppressed by the two
-# patterns (all FALSE classes, plus the accepted-collateral TRUE family — see ledger row).
+# go-paperless — SURVIVOR families after fixed patterns (pinned 1909797)
+# ZERO survivor families: the single pre-pattern family (deep-copy plumbing pair,
+# the session-3 deep-copy extension target) is suppressed by append-collector-tail
+# with the slices/maps Clone exception — the measured intent of the extension.
 # hash	instances	s2	strict	reason

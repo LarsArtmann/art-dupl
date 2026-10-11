@@ -1,5 +1,4 @@
-# go-sse — SURVIVOR families after fixed append-collector-tail + option-apply-loop
-# (--suggest-generics --no-actionability -t 2, binary built 2026-10-11 18:53; pinned HEAD in README)
-# ZERO survivor families: the entire pre-pattern population was suppressed by the two
-# patterns (all FALSE classes, plus the accepted-collateral TRUE family — see ledger row).
+# go-sse — SURVIVOR families after fixed patterns (pinned 67a16fa)
+# ZERO survivor families: the single pre-pattern family was a bare option-apply loop
+# (session-2 FALSE class) suppressed by option-apply-loop.
 # hash	instances	s2	strict	reason

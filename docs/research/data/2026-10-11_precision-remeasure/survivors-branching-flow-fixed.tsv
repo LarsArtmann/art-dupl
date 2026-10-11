@@ -1,5 +1,9 @@
-# branching-flow — SURVIVOR families after fixed append-collector-tail + option-apply-loop
-# (--suggest-generics --no-actionability -t 2, binary built 2026-10-11 18:53; pinned HEAD in README)
-# ZERO survivor families: the entire pre-pattern population was suppressed by the two
-# patterns (all FALSE classes, plus the accepted-collateral TRUE family — see ledger row).
+# branching-flow — SURVIVOR families after fixed patterns (pinned dbdeb0f1)
+# ZERO survivor families: the single pre-pattern family 91252a76 (runner.go:77-81 +
+# panicanalyzer/analyzer.go:200-203) is labeled append-collector-tail — BOTH fragments
+# are guard-continue + append-collector tails (the predicate call at runner.go:75 sits
+# OUTSIDE the matched range, so this is not the spared filter-loop-with-predicates
+# class; the pinned negative test covers fragments containing the predicate call).
+# Verified live: --show-suppressed --explain attributes the family to
+# append-collector-tail at both instances.
 # hash	instances	s2	strict	reason
