@@ -51,6 +51,8 @@ var actionabilityPatternTable = []patternEntry{ //nolint:gochecknoglobals // sta
 	{isEmbedDirectivePattern, PatternEmbedDirective},
 	{isStateFlagMutation, PatternStateFlagMutation},
 	{isEmptyDefault, PatternEmptyDefault},
+	{isAppendCollectorTail, PatternAppendCollectorTail},
+	{isOptionApplyLoop, PatternOptionApplyLoop},
 }
 
 // AllActionabilityPatterns returns all pattern labels that can appear in
@@ -198,6 +200,8 @@ const (
 	PatternEmbedDirective             PatternLabel = "embed-directive"
 	PatternStateFlagMutation          PatternLabel = "state-flag-mutation"
 	PatternEmptyDefault               PatternLabel = "empty-default"
+	PatternAppendCollectorTail        PatternLabel = "append-collector-tail"
+	PatternOptionApplyLoop            PatternLabel = "option-apply-loop"
 )
 
 // EvaluateActionabilityWithLabel returns both the actionability and the
