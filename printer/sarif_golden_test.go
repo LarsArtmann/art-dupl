@@ -42,6 +42,8 @@ func TestSARIFOutputGolden(t *testing.T) {
 		t.Fatalf("PrintHeader() error: %v", err)
 	}
 
+	printer.SetHash(multiClone.Hash)
+
 	if err := printer.PrintClones(multiClone); err != nil {
 		t.Fatalf("PrintClones(multiClone) error: %v", err)
 	}
@@ -55,6 +57,8 @@ func TestSARIFOutputGolden(t *testing.T) {
 		CloneType: domain.CloneType1,
 		Category:  domain.CategoryBlock,
 	}
+
+	printer.SetHash(single.Hash)
 
 	if err := printer.PrintClones(single); err != nil {
 		t.Fatalf("PrintClones(single) error: %v", err)

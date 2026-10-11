@@ -1,0 +1,1081 @@
+{
+  "$schema": "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "art-dupl",
+          "version": "1.0.0",
+          "informationUri": "https://github.com/LarsArtmann/art-dupl",
+          "rules": [
+            {
+              "id": "art-dupl/duplicate-code",
+              "name": "Duplicate Code Detection",
+              "shortDescription": {
+                "text": "Detects duplicate code fragments in source files"
+              },
+              "fullDescription": {
+                "text": "This rule identifies code duplication by analyzing abstract syntax trees (ASTs) and finding structural similarities between code fragments. Duplicated code increases maintenance burden and can lead to inconsistent bug fixes."
+              },
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "helpUri": "https://github.com/LarsArtmann/art-dupl#duplicate-code-detection",
+              "properties": {
+                "precision": "high",
+                "problem.severity": "warning",
+                "tags": [
+                  "maintainability",
+                  "duplicate-code",
+                  "design"
+                ]
+              }
+            },
+            {
+              "id": "art-dupl/pattern/signature-only",
+              "name": "signature-only",
+              "shortDescription": {
+                "text": "Actionability pattern \"signature-only\" (denylist) — marks matching clone groups as boilerplate"
+              },
+              "fullDescription": {
+                "text": "Informational descriptor for the actionability classification carried on results in the non_actionable_pattern property. A group is suppressed only when EVERY clone matches the same pattern; --no-actionability disables suppression and --disable-pattern disables one pattern."
+              },
+              "defaultConfiguration": {
+                "level": "none"
+              },
+              "helpUri": "https://github.com/LarsArtmann/art-dupl/blob/main/docs/ACTIONABILITY_PATTERNS.md#pattern-priority-order",
+              "properties": {
+                "precision": "very-high",
+                "tags": [
+                  "actionability",
+                  "denylist",
+                  "suppressible"
+                ]
+              }
+            },
+            {
+              "id": "art-dupl/pattern/interface-implementation",
+              "name": "interface-implementation",
+              "shortDescription": {
+                "text": "Actionability pattern \"interface-implementation\" (denylist) — marks matching clone groups as boilerplate"
+              },
+              "fullDescription": {
+                "text": "Informational descriptor for the actionability classification carried on results in the non_actionable_pattern property. A group is suppressed only when EVERY clone matches the same pattern; --no-actionability disables suppression and --disable-pattern disables one pattern."
+              },
+              "defaultConfiguration": {
+                "level": "none"
+              },
+              "helpUri": "https://github.com/LarsArtmann/art-dupl/blob/main/docs/ACTIONABILITY_PATTERNS.md#pattern-priority-order",
+              "properties": {
+                "precision": "very-high",
+                "tags": [
+                  "actionability",
+                  "denylist",
+                  "suppressible"
+                ]
+              }
+            },
+            {
+              "id": "art-dupl/pattern/interface-method",
+              "name": "interface-method",
+              "shortDescription": {
+                "text": "Actionability pattern \"interface-method\" (denylist) — marks matching clone groups as boilerplate"
+              },
+              "fullDescription": {
+                "text": "Informational descriptor for the actionability classification carried on results in the non_actionable_pattern property. A group is suppressed only when EVERY clone matches the same pattern; --no-actionability disables suppression and --disable-pattern disables one pattern."
+              },
+              "defaultConfiguration": {
+                "level": "none"
+              },
+              "helpUri": "https://github.com/LarsArtmann/art-dupl/blob/main/docs/ACTIONABILITY_PATTERNS.md#pattern-priority-order",
+              "properties": {
+                "precision": "very-high",
+                "tags": [
+                  "actionability",
+                  "denylist",
+                  "suppressible"
+                ]
+              }
+            },
+            {
+              "id": "art-dupl/pattern/raii-defer",
+              "name": "raii-defer",
+              "shortDescription": {
+                "text": "Actionability pattern \"raii-defer\" (denylist) — marks matching clone groups as boilerplate"
+              },
+              "fullDescription": {
+                "text": "Informational descriptor for the actionability classification carried on results in the non_actionable_pattern property. A group is suppressed only when EVERY clone matches the same pattern; --no-actionability disables suppression and --disable-pattern disables one pattern."
+              },
+              "defaultConfiguration": {
+                "level": "none"
+              },
+              "helpUri": "https://github.com/LarsArtmann/art-dupl/blob/main/docs/ACTIONABILITY_PATTERNS.md#pattern-priority-order",
+              "properties": {
+                "precision": "very-high",
+                "tags": [
+                  "actionability",
+                  "denylist",
+                  "suppressible"
+                ]
+              }
+            },
+            {
+              "id": "art-dupl/pattern/error-propagation",
+              "name": "error-propagation",
+              "shortDescription": {
+                "text": "Actionability pattern \"error-propagation\" (denylist) — marks matching clone groups as boilerplate"
+              },
+              "fullDescription": {
+                "text": "Informational descriptor for the actionability classification carried on results in the non_actionable_pattern property. A group is suppressed only when EVERY clone matches the same pattern; --no-actionability disables suppression and --disable-pattern disables one pattern."
+              },
+              "defaultConfiguration": {
+                "level": "none"
+              },
+              "helpUri": "https://github.com/LarsArtmann/art-dupl/blob/main/docs/ACTIONABILITY_PATTERNS.md#pattern-priority-order",
+              "properties": {
+                "precision": "very-high",
+                "tags": [
+                  "actionability",
+                  "denylist",
+                  "suppressible"
+                ]
+              }
+            },
+            {
+              "id": "art-dupl/pattern/guard-clause",
+              "name": "guard-clause",
+              "shortDescription": {
+                "text": "Actionability pattern \"guard-clause\" (denylist) — marks matching clone groups as boilerplate"
+              },
+              "fullDescription": {
+                "text": "Informational descriptor for the actionability classification carried on results in the non_actionable_pattern property. A group is suppressed only when EVERY clone matches the same pattern; --no-actionability disables suppression and --disable-pattern disables one pattern."
+              },
+              "defaultConfiguration": {
+                "level": "none"
+              },
+              "helpUri": "https://github.com/LarsArtmann/art-dupl/blob/main/docs/ACTIONABILITY_PATTERNS.md#pattern-priority-order",
+              "properties": {
+                "precision": "very-high",
+                "tags": [
+                  "actionability",
+                  "denylist",
+                  "suppressible"
+                ]
+              }
+            },
+            {
+              "id": "art-dupl/pattern/assign-error-check",
+              "name": "assign-error-check",
+              "shortDescription": {
+                "text": "Actionability pattern \"assign-error-check\" (denylist) — marks matching clone groups as boilerplate"
+              },
+              "fullDescription": {
+                "text": "Informational descriptor for the actionability classification carried on results in the non_actionable_pattern property. A group is suppressed only when EVERY clone matches the same pattern; --no-actionability disables suppression and --disable-pattern disables one pattern."
+              },
+              "defaultConfiguration": {
+                "level": "none"
+              },
+              "helpUri": "https://github.com/LarsArtmann/art-dupl/blob/main/docs/ACTIONABILITY_PATTERNS.md#pattern-priority-order",
+              "properties": {
+                "precision": "very-high",
+                "tags": [
+                  "actionability",
+                  "denylist",
+                  "suppressible"
+                ]
+              }
+            },
+            {
+              "id": "art-dupl/pattern/bool-guard",
+              "name": "bool-guard",
+              "shortDescription": {
+                "text": "Actionability pattern \"bool-guard\" (denylist) — marks matching clone groups as boilerplate"
+              },
+              "fullDescription": {
+                "text": "Informational descriptor for the actionability classification carried on results in the non_actionable_pattern property. A group is suppressed only when EVERY clone matches the same pattern; --no-actionability disables suppression and --disable-pattern disables one pattern."
+              },
+              "defaultConfiguration": {
+                "level": "none"
+              },
+              "helpUri": "https://github.com/LarsArtmann/art-dupl/blob/main/docs/ACTIONABILITY_PATTERNS.md#pattern-priority-order",
+              "properties": {
+                "precision": "very-high",
+                "tags": [
+                  "actionability",
+                  "denylist",
+                  "suppressible"
+                ]
+              }
+            },
+            {
+              "id": "art-dupl/pattern/single-call-expression",
+              "name": "single-call-expression",
+              "shortDescription": {
+                "text": "Actionability pattern \"single-call-expression\" (denylist) — marks matching clone groups as boilerplate"
+              },
+              "fullDescription": {
+                "text": "Informational descriptor for the actionability classification carried on results in the non_actionable_pattern property. A group is suppressed only when EVERY clone matches the same pattern; --no-actionability disables suppression and --disable-pattern disables one pattern."
+              },
+              "defaultConfiguration": {
+                "level": "none"
+              },
+              "helpUri": "https://github.com/LarsArtmann/art-dupl/blob/main/docs/ACTIONABILITY_PATTERNS.md#pattern-priority-order",
+              "properties": {
+                "precision": "very-high",
+                "tags": [
+                  "actionability",
+                  "denylist",
+                  "suppressible"
+                ]
+              }
+            },
+            {
+              "id": "art-dupl/pattern/single-simple-statement",
+              "name": "single-simple-statement",
+              "shortDescription": {
+                "text": "Actionability pattern \"single-simple-statement\" (denylist) — marks matching clone groups as boilerplate"
+              },
+              "fullDescription": {
+                "text": "Informational descriptor for the actionability classification carried on results in the non_actionable_pattern property. A group is suppressed only when EVERY clone matches the same pattern; --no-actionability disables suppression and --disable-pattern disables one pattern."
+              },
+              "defaultConfiguration": {
+                "level": "none"
+              },
+              "helpUri": "https://github.com/LarsArtmann/art-dupl/blob/main/docs/ACTIONABILITY_PATTERNS.md#pattern-priority-order",
+              "properties": {
+                "precision": "very-high",
+                "tags": [
+                  "actionability",
+                  "denylist",
+                  "suppressible"
+                ]
+              }
+            },
+            {
+              "id": "art-dupl/pattern/bool-accumulator-initializer",
+              "name": "bool-accumulator-initializer",
+              "shortDescription": {
+                "text": "Actionability pattern \"bool-accumulator-initializer\" (denylist) — marks matching clone groups as boilerplate"
+              },
+              "fullDescription": {
+                "text": "Informational descriptor for the actionability classification carried on results in the non_actionable_pattern property. A group is suppressed only when EVERY clone matches the same pattern; --no-actionability disables suppression and --disable-pattern disables one pattern."
+              },
+              "defaultConfiguration": {
+                "level": "none"
+              },
+              "helpUri": "https://github.com/LarsArtmann/art-dupl/blob/main/docs/ACTIONABILITY_PATTERNS.md#pattern-priority-order",
+              "properties": {
+                "precision": "very-high",
+                "tags": [
+                  "actionability",
+                  "denylist",
+                  "suppressible"
+                ]
+              }
+            },
+            {
+              "id": "art-dupl/pattern/interface-assertion",
+              "name": "interface-assertion",
+              "shortDescription": {
+                "text": "Actionability pattern \"interface-assertion\" (denylist) — marks matching clone groups as boilerplate"
+              },
+              "fullDescription": {
+                "text": "Informational descriptor for the actionability classification carried on results in the non_actionable_pattern property. A group is suppressed only when EVERY clone matches the same pattern; --no-actionability disables suppression and --disable-pattern disables one pattern."
+              },
+              "defaultConfiguration": {
+                "level": "none"
+              },
+              "helpUri": "https://github.com/LarsArtmann/art-dupl/blob/main/docs/ACTIONABILITY_PATTERNS.md#pattern-priority-order",
+              "properties": {
+                "precision": "very-high",
+                "tags": [
+                  "actionability",
+                  "denylist",
+                  "suppressible"
+                ]
+              }
+            },
+            {
+              "id": "art-dupl/pattern/single-declaration",
+              "name": "single-declaration",
+              "shortDescription": {
+                "text": "Actionability pattern \"single-declaration\" (denylist) — marks matching clone groups as boilerplate"
+              },
+              "fullDescription": {
+                "text": "Informational descriptor for the actionability classification carried on results in the non_actionable_pattern property. A group is suppressed only when EVERY clone matches the same pattern; --no-actionability disables suppression and --disable-pattern disables one pattern."
+              },
+              "defaultConfiguration": {
+                "level": "none"
+              },
+              "helpUri": "https://github.com/LarsArtmann/art-dupl/blob/main/docs/ACTIONABILITY_PATTERNS.md#pattern-priority-order",
+              "properties": {
+                "precision": "very-high",
+                "tags": [
+                  "actionability",
+                  "denylist",
+                  "suppressible"
+                ]
+              }
+            },
+            {
+              "id": "art-dupl/pattern/type-alias-block",
+              "name": "type-alias-block",
+              "shortDescription": {
+                "text": "Actionability pattern \"type-alias-block\" (denylist) — marks matching clone groups as boilerplate"
+              },
+              "fullDescription": {
+                "text": "Informational descriptor for the actionability classification carried on results in the non_actionable_pattern property. A group is suppressed only when EVERY clone matches the same pattern; --no-actionability disables suppression and --disable-pattern disables one pattern."
+              },
+              "defaultConfiguration": {
+                "level": "none"
+              },
+              "helpUri": "https://github.com/LarsArtmann/art-dupl/blob/main/docs/ACTIONABILITY_PATTERNS.md#pattern-priority-order",
+              "properties": {
+                "precision": "very-high",
+                "tags": [
+                  "actionability",
+                  "denylist",
+                  "suppressible"
+                ]
+              }
+            },
+            {
+              "id": "art-dupl/pattern/test-helper-delegate",
+              "name": "test-helper-delegate",
+              "shortDescription": {
+                "text": "Actionability pattern \"test-helper-delegate\" (denylist) — marks matching clone groups as boilerplate"
+              },
+              "fullDescription": {
+                "text": "Informational descriptor for the actionability classification carried on results in the non_actionable_pattern property. A group is suppressed only when EVERY clone matches the same pattern; --no-actionability disables suppression and --disable-pattern disables one pattern."
+              },
+              "defaultConfiguration": {
+                "level": "none"
+              },
+              "helpUri": "https://github.com/LarsArtmann/art-dupl/blob/main/docs/ACTIONABILITY_PATTERNS.md#pattern-priority-order",
+              "properties": {
+                "precision": "very-high",
+                "tags": [
+                  "actionability",
+                  "denylist",
+                  "suppressible"
+                ]
+              }
+            },
+            {
+              "id": "art-dupl/pattern/error-wrapping",
+              "name": "error-wrapping",
+              "shortDescription": {
+                "text": "Actionability pattern \"error-wrapping\" (denylist) — marks matching clone groups as boilerplate"
+              },
+              "fullDescription": {
+                "text": "Informational descriptor for the actionability classification carried on results in the non_actionable_pattern property. A group is suppressed only when EVERY clone matches the same pattern; --no-actionability disables suppression and --disable-pattern disables one pattern."
+              },
+              "defaultConfiguration": {
+                "level": "none"
+              },
+              "helpUri": "https://github.com/LarsArtmann/art-dupl/blob/main/docs/ACTIONABILITY_PATTERNS.md#pattern-priority-order",
+              "properties": {
+                "precision": "very-high",
+                "tags": [
+                  "actionability",
+                  "denylist",
+                  "suppressible"
+                ]
+              }
+            },
+            {
+              "id": "art-dupl/pattern/error-guard-fallthrough",
+              "name": "error-guard-fallthrough",
+              "shortDescription": {
+                "text": "Actionability pattern \"error-guard-fallthrough\" (denylist) — marks matching clone groups as boilerplate"
+              },
+              "fullDescription": {
+                "text": "Informational descriptor for the actionability classification carried on results in the non_actionable_pattern property. A group is suppressed only when EVERY clone matches the same pattern; --no-actionability disables suppression and --disable-pattern disables one pattern."
+              },
+              "defaultConfiguration": {
+                "level": "none"
+              },
+              "helpUri": "https://github.com/LarsArtmann/art-dupl/blob/main/docs/ACTIONABILITY_PATTERNS.md#pattern-priority-order",
+              "properties": {
+                "precision": "very-high",
+                "tags": [
+                  "actionability",
+                  "denylist",
+                  "suppressible"
+                ]
+              }
+            },
+            {
+              "id": "art-dupl/pattern/assertion-chain",
+              "name": "assertion-chain",
+              "shortDescription": {
+                "text": "Actionability pattern \"assertion-chain\" (denylist) — marks matching clone groups as boilerplate"
+              },
+              "fullDescription": {
+                "text": "Informational descriptor for the actionability classification carried on results in the non_actionable_pattern property. A group is suppressed only when EVERY clone matches the same pattern; --no-actionability disables suppression and --disable-pattern disables one pattern."
+              },
+              "defaultConfiguration": {
+                "level": "none"
+              },
+              "helpUri": "https://github.com/LarsArtmann/art-dupl/blob/main/docs/ACTIONABILITY_PATTERNS.md#pattern-priority-order",
+              "properties": {
+                "precision": "very-high",
+                "tags": [
+                  "actionability",
+                  "denylist",
+                  "suppressible"
+                ]
+              }
+            },
+            {
+              "id": "art-dupl/pattern/cobra-boilerplate",
+              "name": "cobra-boilerplate",
+              "shortDescription": {
+                "text": "Actionability pattern \"cobra-boilerplate\" (denylist) — marks matching clone groups as boilerplate"
+              },
+              "fullDescription": {
+                "text": "Informational descriptor for the actionability classification carried on results in the non_actionable_pattern property. A group is suppressed only when EVERY clone matches the same pattern; --no-actionability disables suppression and --disable-pattern disables one pattern."
+              },
+              "defaultConfiguration": {
+                "level": "none"
+              },
+              "helpUri": "https://github.com/LarsArtmann/art-dupl/blob/main/docs/ACTIONABILITY_PATTERNS.md#pattern-priority-order",
+              "properties": {
+                "precision": "very-high",
+                "tags": [
+                  "actionability",
+                  "denylist",
+                  "suppressible"
+                ]
+              }
+            },
+            {
+              "id": "art-dupl/pattern/testdata-pair",
+              "name": "testdata-pair",
+              "shortDescription": {
+                "text": "Actionability pattern \"testdata-pair\" (denylist) — marks matching clone groups as boilerplate"
+              },
+              "fullDescription": {
+                "text": "Informational descriptor for the actionability classification carried on results in the non_actionable_pattern property. A group is suppressed only when EVERY clone matches the same pattern; --no-actionability disables suppression and --disable-pattern disables one pattern."
+              },
+              "defaultConfiguration": {
+                "level": "none"
+              },
+              "helpUri": "https://github.com/LarsArtmann/art-dupl/blob/main/docs/ACTIONABILITY_PATTERNS.md#pattern-priority-order",
+              "properties": {
+                "precision": "very-high",
+                "tags": [
+                  "actionability",
+                  "denylist",
+                  "suppressible"
+                ]
+              }
+            },
+            {
+              "id": "art-dupl/pattern/table-driven-test",
+              "name": "table-driven-test",
+              "shortDescription": {
+                "text": "Actionability pattern \"table-driven-test\" (denylist) — marks matching clone groups as boilerplate"
+              },
+              "fullDescription": {
+                "text": "Informational descriptor for the actionability classification carried on results in the non_actionable_pattern property. A group is suppressed only when EVERY clone matches the same pattern; --no-actionability disables suppression and --disable-pattern disables one pattern."
+              },
+              "defaultConfiguration": {
+                "level": "none"
+              },
+              "helpUri": "https://github.com/LarsArtmann/art-dupl/blob/main/docs/ACTIONABILITY_PATTERNS.md#pattern-priority-order",
+              "properties": {
+                "precision": "very-high",
+                "tags": [
+                  "actionability",
+                  "denylist",
+                  "suppressible"
+                ]
+              }
+            },
+            {
+              "id": "art-dupl/pattern/test-scaffolding",
+              "name": "test-scaffolding",
+              "shortDescription": {
+                "text": "Actionability pattern \"test-scaffolding\" (denylist) — marks matching clone groups as boilerplate"
+              },
+              "fullDescription": {
+                "text": "Informational descriptor for the actionability classification carried on results in the non_actionable_pattern property. A group is suppressed only when EVERY clone matches the same pattern; --no-actionability disables suppression and --disable-pattern disables one pattern."
+              },
+              "defaultConfiguration": {
+                "level": "none"
+              },
+              "helpUri": "https://github.com/LarsArtmann/art-dupl/blob/main/docs/ACTIONABILITY_PATTERNS.md#pattern-priority-order",
+              "properties": {
+                "precision": "very-high",
+                "tags": [
+                  "actionability",
+                  "denylist",
+                  "suppressible"
+                ]
+              }
+            },
+            {
+              "id": "art-dupl/pattern/data-dominated",
+              "name": "data-dominated",
+              "shortDescription": {
+                "text": "Actionability pattern \"data-dominated\" (denylist) — marks matching clone groups as boilerplate"
+              },
+              "fullDescription": {
+                "text": "Informational descriptor for the actionability classification carried on results in the non_actionable_pattern property. A group is suppressed only when EVERY clone matches the same pattern; --no-actionability disables suppression and --disable-pattern disables one pattern."
+              },
+              "defaultConfiguration": {
+                "level": "none"
+              },
+              "helpUri": "https://github.com/LarsArtmann/art-dupl/blob/main/docs/ACTIONABILITY_PATTERNS.md#pattern-priority-order",
+              "properties": {
+                "precision": "very-high",
+                "tags": [
+                  "actionability",
+                  "denylist",
+                  "suppressible"
+                ]
+              }
+            },
+            {
+              "id": "art-dupl/pattern/describe-table",
+              "name": "describe-table",
+              "shortDescription": {
+                "text": "Actionability pattern \"describe-table\" (denylist) — marks matching clone groups as boilerplate"
+              },
+              "fullDescription": {
+                "text": "Informational descriptor for the actionability classification carried on results in the non_actionable_pattern property. A group is suppressed only when EVERY clone matches the same pattern; --no-actionability disables suppression and --disable-pattern disables one pattern."
+              },
+              "defaultConfiguration": {
+                "level": "none"
+              },
+              "helpUri": "https://github.com/LarsArtmann/art-dupl/blob/main/docs/ACTIONABILITY_PATTERNS.md#pattern-priority-order",
+              "properties": {
+                "precision": "very-high",
+                "tags": [
+                  "actionability",
+                  "denylist",
+                  "suppressible"
+                ]
+              }
+            },
+            {
+              "id": "art-dupl/pattern/builder-callback",
+              "name": "builder-callback",
+              "shortDescription": {
+                "text": "Actionability pattern \"builder-callback\" (denylist) — marks matching clone groups as boilerplate"
+              },
+              "fullDescription": {
+                "text": "Informational descriptor for the actionability classification carried on results in the non_actionable_pattern property. A group is suppressed only when EVERY clone matches the same pattern; --no-actionability disables suppression and --disable-pattern disables one pattern."
+              },
+              "defaultConfiguration": {
+                "level": "none"
+              },
+              "helpUri": "https://github.com/LarsArtmann/art-dupl/blob/main/docs/ACTIONABILITY_PATTERNS.md#pattern-priority-order",
+              "properties": {
+                "precision": "very-high",
+                "tags": [
+                  "actionability",
+                  "denylist",
+                  "suppressible"
+                ]
+              }
+            },
+            {
+              "id": "art-dupl/pattern/templ-rendering-idiom",
+              "name": "templ-rendering-idiom",
+              "shortDescription": {
+                "text": "Actionability pattern \"templ-rendering-idiom\" (denylist) — marks matching clone groups as boilerplate"
+              },
+              "fullDescription": {
+                "text": "Informational descriptor for the actionability classification carried on results in the non_actionable_pattern property. A group is suppressed only when EVERY clone matches the same pattern; --no-actionability disables suppression and --disable-pattern disables one pattern."
+              },
+              "defaultConfiguration": {
+                "level": "none"
+              },
+              "helpUri": "https://github.com/LarsArtmann/art-dupl/blob/main/docs/ACTIONABILITY_PATTERNS.md#pattern-priority-order",
+              "properties": {
+                "precision": "very-high",
+                "tags": [
+                  "actionability",
+                  "denylist",
+                  "suppressible"
+                ]
+              }
+            },
+            {
+              "id": "art-dupl/pattern/defer-call",
+              "name": "defer-call",
+              "shortDescription": {
+                "text": "Actionability pattern \"defer-call\" (denylist) — marks matching clone groups as boilerplate"
+              },
+              "fullDescription": {
+                "text": "Informational descriptor for the actionability classification carried on results in the non_actionable_pattern property. A group is suppressed only when EVERY clone matches the same pattern; --no-actionability disables suppression and --disable-pattern disables one pattern."
+              },
+              "defaultConfiguration": {
+                "level": "none"
+              },
+              "helpUri": "https://github.com/LarsArtmann/art-dupl/blob/main/docs/ACTIONABILITY_PATTERNS.md#pattern-priority-order",
+              "properties": {
+                "precision": "very-high",
+                "tags": [
+                  "actionability",
+                  "denylist",
+                  "suppressible"
+                ]
+              }
+            },
+            {
+              "id": "art-dupl/pattern/test-framework-call",
+              "name": "test-framework-call",
+              "shortDescription": {
+                "text": "Actionability pattern \"test-framework-call\" (denylist) — marks matching clone groups as boilerplate"
+              },
+              "fullDescription": {
+                "text": "Informational descriptor for the actionability classification carried on results in the non_actionable_pattern property. A group is suppressed only when EVERY clone matches the same pattern; --no-actionability disables suppression and --disable-pattern disables one pattern."
+              },
+              "defaultConfiguration": {
+                "level": "none"
+              },
+              "helpUri": "https://github.com/LarsArtmann/art-dupl/blob/main/docs/ACTIONABILITY_PATTERNS.md#pattern-priority-order",
+              "properties": {
+                "precision": "very-high",
+                "tags": [
+                  "actionability",
+                  "denylist",
+                  "suppressible"
+                ]
+              }
+            },
+            {
+              "id": "art-dupl/pattern/test-preamble",
+              "name": "test-preamble",
+              "shortDescription": {
+                "text": "Actionability pattern \"test-preamble\" (denylist) — marks matching clone groups as boilerplate"
+              },
+              "fullDescription": {
+                "text": "Informational descriptor for the actionability classification carried on results in the non_actionable_pattern property. A group is suppressed only when EVERY clone matches the same pattern; --no-actionability disables suppression and --disable-pattern disables one pattern."
+              },
+              "defaultConfiguration": {
+                "level": "none"
+              },
+              "helpUri": "https://github.com/LarsArtmann/art-dupl/blob/main/docs/ACTIONABILITY_PATTERNS.md#pattern-priority-order",
+              "properties": {
+                "precision": "very-high",
+                "tags": [
+                  "actionability",
+                  "denylist",
+                  "suppressible"
+                ]
+              }
+            },
+            {
+              "id": "art-dupl/pattern/testmain-boilerplate",
+              "name": "testmain-boilerplate",
+              "shortDescription": {
+                "text": "Actionability pattern \"testmain-boilerplate\" (denylist) — marks matching clone groups as boilerplate"
+              },
+              "fullDescription": {
+                "text": "Informational descriptor for the actionability classification carried on results in the non_actionable_pattern property. A group is suppressed only when EVERY clone matches the same pattern; --no-actionability disables suppression and --disable-pattern disables one pattern."
+              },
+              "defaultConfiguration": {
+                "level": "none"
+              },
+              "helpUri": "https://github.com/LarsArtmann/art-dupl/blob/main/docs/ACTIONABILITY_PATTERNS.md#pattern-priority-order",
+              "properties": {
+                "precision": "very-high",
+                "tags": [
+                  "actionability",
+                  "denylist",
+                  "suppressible"
+                ]
+              }
+            },
+            {
+              "id": "art-dupl/pattern/embed-directive",
+              "name": "embed-directive",
+              "shortDescription": {
+                "text": "Actionability pattern \"embed-directive\" (denylist) — marks matching clone groups as boilerplate"
+              },
+              "fullDescription": {
+                "text": "Informational descriptor for the actionability classification carried on results in the non_actionable_pattern property. A group is suppressed only when EVERY clone matches the same pattern; --no-actionability disables suppression and --disable-pattern disables one pattern."
+              },
+              "defaultConfiguration": {
+                "level": "none"
+              },
+              "helpUri": "https://github.com/LarsArtmann/art-dupl/blob/main/docs/ACTIONABILITY_PATTERNS.md#pattern-priority-order",
+              "properties": {
+                "precision": "very-high",
+                "tags": [
+                  "actionability",
+                  "denylist",
+                  "suppressible"
+                ]
+              }
+            },
+            {
+              "id": "art-dupl/pattern/state-flag-mutation",
+              "name": "state-flag-mutation",
+              "shortDescription": {
+                "text": "Actionability pattern \"state-flag-mutation\" (denylist) — marks matching clone groups as boilerplate"
+              },
+              "fullDescription": {
+                "text": "Informational descriptor for the actionability classification carried on results in the non_actionable_pattern property. A group is suppressed only when EVERY clone matches the same pattern; --no-actionability disables suppression and --disable-pattern disables one pattern."
+              },
+              "defaultConfiguration": {
+                "level": "none"
+              },
+              "helpUri": "https://github.com/LarsArtmann/art-dupl/blob/main/docs/ACTIONABILITY_PATTERNS.md#pattern-priority-order",
+              "properties": {
+                "precision": "very-high",
+                "tags": [
+                  "actionability",
+                  "denylist",
+                  "suppressible"
+                ]
+              }
+            },
+            {
+              "id": "art-dupl/pattern/empty-default",
+              "name": "empty-default",
+              "shortDescription": {
+                "text": "Actionability pattern \"empty-default\" (denylist) — marks matching clone groups as boilerplate"
+              },
+              "fullDescription": {
+                "text": "Informational descriptor for the actionability classification carried on results in the non_actionable_pattern property. A group is suppressed only when EVERY clone matches the same pattern; --no-actionability disables suppression and --disable-pattern disables one pattern."
+              },
+              "defaultConfiguration": {
+                "level": "none"
+              },
+              "helpUri": "https://github.com/LarsArtmann/art-dupl/blob/main/docs/ACTIONABILITY_PATTERNS.md#pattern-priority-order",
+              "properties": {
+                "precision": "very-high",
+                "tags": [
+                  "actionability",
+                  "denylist",
+                  "suppressible"
+                ]
+              }
+            },
+            {
+              "id": "art-dupl/pattern/property-engine",
+              "name": "property-engine",
+              "shortDescription": {
+                "text": "Actionability pattern \"property-engine\" (property-engine) — marks matching clone groups as boilerplate"
+              },
+              "fullDescription": {
+                "text": "Informational descriptor for the actionability classification carried on results in the non_actionable_pattern property. A group is suppressed only when EVERY clone matches the same pattern; --no-actionability disables suppression and --disable-pattern disables one pattern."
+              },
+              "defaultConfiguration": {
+                "level": "none"
+              },
+              "helpUri": "https://github.com/LarsArtmann/art-dupl/blob/main/docs/ACTIONABILITY_PATTERNS.md#pattern-priority-order",
+              "properties": {
+                "precision": "very-high",
+                "tags": [
+                  "actionability",
+                  "property-engine",
+                  "suppressible"
+                ]
+              }
+            },
+            {
+              "id": "art-dupl/pattern/property-control-flow",
+              "name": "property-control-flow",
+              "shortDescription": {
+                "text": "Actionability pattern \"property-control-flow\" (property-engine) — marks matching clone groups as boilerplate"
+              },
+              "fullDescription": {
+                "text": "Informational descriptor for the actionability classification carried on results in the non_actionable_pattern property. A group is suppressed only when EVERY clone matches the same pattern; --no-actionability disables suppression and --disable-pattern disables one pattern."
+              },
+              "defaultConfiguration": {
+                "level": "none"
+              },
+              "helpUri": "https://github.com/LarsArtmann/art-dupl/blob/main/docs/ACTIONABILITY_PATTERNS.md#pattern-priority-order",
+              "properties": {
+                "precision": "very-high",
+                "tags": [
+                  "actionability",
+                  "property-engine",
+                  "suppressible"
+                ]
+              }
+            },
+            {
+              "id": "art-dupl/pattern/property-roi",
+              "name": "property-roi",
+              "shortDescription": {
+                "text": "Actionability pattern \"property-roi\" (property-engine) — marks matching clone groups as boilerplate"
+              },
+              "fullDescription": {
+                "text": "Informational descriptor for the actionability classification carried on results in the non_actionable_pattern property. A group is suppressed only when EVERY clone matches the same pattern; --no-actionability disables suppression and --disable-pattern disables one pattern."
+              },
+              "defaultConfiguration": {
+                "level": "none"
+              },
+              "helpUri": "https://github.com/LarsArtmann/art-dupl/blob/main/docs/ACTIONABILITY_PATTERNS.md#pattern-priority-order",
+              "properties": {
+                "precision": "very-high",
+                "tags": [
+                  "actionability",
+                  "property-engine",
+                  "suppressible"
+                ]
+              }
+            },
+            {
+              "id": "art-dupl/pattern/property-parameterizable",
+              "name": "property-parameterizable",
+              "shortDescription": {
+                "text": "Actionability pattern \"property-parameterizable\" (property-engine) — marks matching clone groups as boilerplate"
+              },
+              "fullDescription": {
+                "text": "Informational descriptor for the actionability classification carried on results in the non_actionable_pattern property. A group is suppressed only when EVERY clone matches the same pattern; --no-actionability disables suppression and --disable-pattern disables one pattern."
+              },
+              "defaultConfiguration": {
+                "level": "none"
+              },
+              "helpUri": "https://github.com/LarsArtmann/art-dupl/blob/main/docs/ACTIONABILITY_PATTERNS.md#pattern-priority-order",
+              "properties": {
+                "precision": "very-high",
+                "tags": [
+                  "actionability",
+                  "property-engine",
+                  "suppressible"
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "art-dupl/duplicate-code",
+          "level": "note",
+          "message": {
+            "text": "Duplicate code: 0 tokens in 3 instances"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "alpha.go"
+                },
+                "region": {
+                  "startLine": 10,
+                  "endLine": 15,
+                  "snippet": {
+                    "text": "result := x + y\nreturn result"
+                  }
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "beta.go"
+                },
+                "region": {
+                  "startLine": 20,
+                  "endLine": 25
+                }
+              },
+              "message": {
+                "text": "clone-of"
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "gamma.go"
+                },
+                "region": {
+                  "startLine": 30,
+                  "endLine": 35
+                }
+              },
+              "message": {
+                "text": "clone-of"
+              }
+            }
+          ],
+          "fingerprints": {
+            "contentFingerprint": "abc123def4567890",
+            "partialFingerprint": "abc123de"
+          },
+          "properties": {
+            "category": "block",
+            "clone_type": "type-1",
+            "go-finding/groupId": "abc123def4567890"
+          }
+        },
+        {
+          "ruleId": "art-dupl/duplicate-code",
+          "level": "note",
+          "message": {
+            "text": "Duplicate code: 0 tokens in 3 instances"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "beta.go"
+                },
+                "region": {
+                  "startLine": 20,
+                  "endLine": 25,
+                  "snippet": {
+                    "text": "sum := a + b\nreturn sum"
+                  }
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "alpha.go"
+                },
+                "region": {
+                  "startLine": 10,
+                  "endLine": 15
+                }
+              },
+              "message": {
+                "text": "clone-of"
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "gamma.go"
+                },
+                "region": {
+                  "startLine": 30,
+                  "endLine": 35
+                }
+              },
+              "message": {
+                "text": "clone-of"
+              }
+            }
+          ],
+          "fingerprints": {
+            "contentFingerprint": "abc123def4567890",
+            "partialFingerprint": "abc123de"
+          },
+          "properties": {
+            "category": "block",
+            "clone_type": "type-1",
+            "go-finding/groupId": "abc123def4567890"
+          }
+        },
+        {
+          "ruleId": "art-dupl/duplicate-code",
+          "level": "note",
+          "message": {
+            "text": "Duplicate code: 0 tokens in 3 instances"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "gamma.go"
+                },
+                "region": {
+                  "startLine": 30,
+                  "endLine": 35,
+                  "snippet": {
+                    "text": "total := p + q\nreturn total"
+                  }
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "alpha.go"
+                },
+                "region": {
+                  "startLine": 10,
+                  "endLine": 15
+                }
+              },
+              "message": {
+                "text": "clone-of"
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "beta.go"
+                },
+                "region": {
+                  "startLine": 20,
+                  "endLine": 25
+                }
+              },
+              "message": {
+                "text": "clone-of"
+              }
+            }
+          ],
+          "fingerprints": {
+            "contentFingerprint": "abc123def4567890",
+            "partialFingerprint": "abc123de"
+          },
+          "properties": {
+            "category": "block",
+            "clone_type": "type-1",
+            "go-finding/groupId": "abc123def4567890"
+          }
+        },
+        {
+          "ruleId": "art-dupl/duplicate-code",
+          "level": "note",
+          "message": {
+            "text": "Duplicate code: 0 tokens in 1 instances"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "solo.go"
+                },
+                "region": {
+                  "startLine": 5,
+                  "endLine": 9,
+                  "snippet": {
+                    "text": "println(\"only\")"
+                  }
+                }
+              }
+            }
+          ],
+          "fingerprints": {
+            "contentFingerprint": "single0000000001",
+            "partialFingerprint": "single00"
+          },
+          "properties": {
+            "category": "block",
+            "clone_type": "type-1",
+            "go-finding/groupId": "single0000000001"
+          }
+        }
+      ],
+      "invocations": [
+        {
+          "executionSuccessful": true,
+          "startTimeUtc": "2026-10-11T10:34:30Z",
+          "endTimeUtc": "2026-10-11T10:34:30Z"
+        }
+      ]
+    }
+  ]
+}
