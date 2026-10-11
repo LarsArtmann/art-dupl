@@ -17,7 +17,8 @@
 # session 2 of the generics-precision plan shipped 8 real findings through
 # a green fast gate (2026-10-11) — build+vet cannot see them and CI only
 # catches them after push. The lint call delegates to BuildFlow (the covered
-# project's lint owner); it is detect-only, never --fix.
+# project's lint owner); it is detect-only, never --fix. Cost: ~13s warm
+# BuildFlow result cache, up to ~3min cold (first run of the day).
 # Full profile: the complete CGO-enabled race suite, also -count=1, plus lint.
 
 set -euo pipefail

@@ -1,0 +1,55 @@
+# go-cqrs-lite — SURVIVOR families after fixed append-collector-tail + option-apply-loop
+# (--suggest-generics --no-actionability -t 2, binary built 2026-10-11 18:53; corpus pinned at 10c9f987d)
+# This is the ONLY repo with survivors: go-sse, go-paperless, DiscordSync, branching-flow,
+# art-dupl self all have 0 post-pattern candidate families (their entire populations
+# were the two suppressed FALSE classes, plus 1 accepted-collateral TRUE family each in
+# go-sse/art-dupl/branching-flow/paperless).
+#
+# Labels use TWO criteria, both stated in the ledger row of the baseline doc:
+#   s2     — session-2-compatible: same-algorithm-different-types incl. engine/serialization/
+#            constructor twins via method-constraint generics (comparable to the 37.7% baseline)
+#   strict — adapter-free AND algorithm-carrying AND maintainer-positive ("would act on it")
+# hash	instances	s2	strict	reason
+04b941585b955cd9	projectionhost/host.go:325-329, projectionhost/host.go:346-350, stack/closers.go:23-27	TRUE	FALSE	fold-max trio (time.Time/.After, Duration/>, error/first-non-nil): comparison mechanism itself diverges — one generic needs per-type compare adapters
+0520ac36eeaf822c	metaengine/mysqlengine/backends.go:60-64, metaengine/pgengine/engine.go:230-234	TRUE	FALSE	engine-twin planned-get dispatch guard: 3-line dispatch, algorithm lives in the per-engine methods
+0c545dae82084a39	metaengine/mysqlengine/map_update.go:25-29, metaengine/pgengine/map_update.go:26-30	TRUE	FALSE	engine-twin planned-update dispatch guard, same class as 0520ac36
+1ba45c8e59ca6a39	watermill/command_bus.go:66-81, watermill/event_bus.go:76-100	TRUE	TRUE	complete bus constructors with real defaulting logic (opt-apply + nil-publisher gochannel setup), command/event bus type divergence — a maintainer-informative catch
+20362e234d3762e9	systemscenario/then.go:165-169, systemscenario/then_commands.go:90-94	TRUE	TRUE	complete []Event→[]Type / []Command→[]Type map functions, method-constraint generic is adapter-free (same class as art-dupl 17b5f676)
+2384b605be075d0f	stack/bbolt/preset.go:81-84, stack/pebble/preset.go:206-210, stack/turso/preset.go:107-111	FALSE	FALSE	option-apply loop (`cfg := defaultConfig(); opt(&cfg)`) — PATTERN GAP: option-apply-loop does not match the pointer-target form
+24b9a2ac1a26eff7	catalog/eventcatalog/writer_llms.go:222-226, catalog/eventcatalog/writer_llms.go:58-62	FALSE	FALSE	fmt.Fprintf render fragments with field-access divergence (needs interface, not generics)
+2529c2b0d9feade2	metaengine/duckdbengine/stream_log.go:160-175, metaengine/mysqlengine/stream_log.go:151-166, metaengine/pgengine/stream_log.go:140-152	TRUE	FALSE	engine-twin limit-dispatch scan wrappers (SQL string literals normalized away)
+317cc006e5a1f922	storage/bbolt/base.go:36-40, storage/bbolt/kv_adapter.go:28-32, storage/bbolt/kv_iterator.go:77-81	FALSE	FALSE	batch-vs-update 2-line dispatch idiom
+3a8477484cfe9ca4	middleware/deadletter.go:82-85, projectionhost/dlq.go:128-131	FALSE	FALSE	mutex + append idiom — PATTERN GAP: raii-defer/mutex shapes of this 3-statement form not matched
+3b6f94d565914976	storage/eventstore/event_store_stream.go:53-57, storage/readmodel/kv_sql.go:297-301	FALSE	FALSE	close-once guard idiom
+3d63036e1a032b56	metaengine/pgengine/evolve.go:80-91, metaengine/sqliteengine/planned_parity.go:84-95	TRUE	FALSE	engine-twin CREATE INDEX exec loops
+3ea5b01b4e0c9b69	storage/bbolt/command_serialization.go:46-51, storage/bbolt/serialization.go:72-77	FALSE	FALSE	serialization twins but unification needs &sc.StreamID field access — adapter-required (session-2 labeled this class TRUE; field-access rule says FALSE — criterion drift documented in ledger)
+521d5cf3b02b8c3e	metaengine/duckdbengine/stream_log.go:132-147, metaengine/mysqlengine/stream_log.go:125-137, metaengine/pgengine/stream_log.go:112-127	TRUE	FALSE	engine-twin limit-dispatch scan wrappers (entries variant)
+5ac0a07b1beb392b	cmd/cqrs-lint/filters.go:412-415, storage/relational/sink_helpers.go:93-96	FALSE	FALSE	tail-only match (`result[i] = f; return result`) — the actual loops above differ
+67761296ad715d01	catalog/registry.go:184-190, catalog/registry_resources.go:8-14	FALSE	FALSE	option-apply with ok-guard — PATTERN GAP (guard-prefixed option-apply)
+67b451810a8ab0e4	storage/command_store_save.go:52-58, storage/eventstore/event_store.go:130-136	FALSE	FALSE	checkClosed + empty-input guards
+6aea5e28e82b534e	storage/command_store_journal.go:55-58, storage/eventstore/event_store_global.go:50-53, storage/query_store_load.go:93-96	FALSE	FALSE	zero-time → string conversion guard
+754d60f89ca05486	stack/turso/preset.go:139-143, systemscenario/scenario.go:138-141	FALSE	FALSE	option-apply loop — PATTERN GAP (same class as 2384b605)
+7550c20534fcc504	catalog/d2/exporter.go:19-25, catalog/openapi/exporter.go:29-35	FALSE	FALSE	ALREADY-GENERIC option declarations (`type Option = catalog.Option[Exporter]`) — T6 annotation target
+8635e4c4e51958b2	metaengine/duckdbengine/scan.go:68-72, metaengine/duckdbengine/scan.go:68-72	FALSE	FALSE	filter+collect loop with predicate — deliberately manual per mining verdict (runner.go:34 maintainer directive)
+87e6d65dc37b6b2b	metaengine/badgerengine/engine.go:91-94, metaengine/pebbleengine/engine.go:129-132, metaengine/pebbleengine/engine.go:173-176	FALSE	FALSE	option-apply loop without return in fragment — PATTERN GAP
+8872e66f1dedee08	catalog/eventcatalog/message_index.go:87-90, catalog/eventcatalog/message_index.go:98-101	FALSE	FALSE	complete map-collect twins over branded IDs but svc.ID/ch.ID field access = adapter-required (session-2 field-access FALSE class)
+887684d2f589a0a5	catalog/eventcatalog/frontmatter_convert_flow.go:165-168, catalog/eventcatalog/frontmatter_render.go:128-131	FALSE	FALSE	tail-only match
+894dff88c115a1da	schema/registry.go:124-127, system/adapter_core.go:65-68	FALSE	FALSE	tail-only match (`result[i] = upcasted; return result, nil`)
+8d586b82d57d7a93	cmd/cqrs-lint/doctor_profile.go:146-149, cmd/cqrs-lint/doctor_profile.go:180-183	FALSE	FALSE	max-by-rank fragment; the rank maps (the real content) are outside the clone — abstraction cost > 2-line tail
+a4bb97228a1b893a	system/adapter_command.go:135-138, system/adapter_query.go:109-112	FALSE	FALSE	parallel adapter plumbing (command vs query) — deliberate mirror architecture
+abf9e592588cab30	metaengine/mysqlengine/graph.go:107-111, metaengine/sqliteengine/graph.go:86-90	TRUE	FALSE	engine-twin CTE-vs-iterative dispatch
+c543d8b048ddb4f8	catalog/internal/cattest/assertions.go:57-61, event/v4/eventtest/assertions.go:56-60	FALSE	FALSE	test assertion scaffolding
+dfba5738ef029718	storage/bbolt/kv_iterator.go:55-59, storage/bbolt/stream.go:93-97	FALSE	FALSE	nil-guard close idiom — T13 nil-guard pattern target
+f18d3f584ae7d405	watermill/command_bus_internals.go:43-47, watermill/event_bus_internals.go:63-67	FALSE	FALSE	middleware chain over different Handler types — 3-line loop, abstraction cost > loop (maintainer verdict class)
+f1fdc350337a2ec2	stack/contracttest/contract.go:60-65, stack/contracttest/multidb.go:91-96	FALSE	FALSE	test scaffolding (t.Helper + factory Fatalf)
+f5c7a628c67e6bcf	catalog/message_config.go:252-255, metaengine/projectionadapter/adapter.go:108-111	FALSE	FALSE	option-apply tail — PATTERN GAP
+#
+# Summary: s2 10/33 = 30.3% | strict 2/33 = 6.1%
+# Surviving-FALSE structure (T13+ fuel):
+#   option-apply pattern gaps (5): 2384b605 754d60f8 87e6d65d 67761296 f5c7a628
+#   tail-only map fragments (3): 5ac0a07b 887684d2 894dff88
+#   guard idioms (5): 317cc006 3b6f94d5 67b45181 6aea5e28 dfba5738
+#   test scaffolding (2): c543d8b0 f1fdc350
+#   misc idioms (4): 24b9a2ac 3a847748 8635e4c4 8d586b8
+#   architecture-mirrors (3): a4bb9722 f18d3f58 7550c205 (already-generic)
+#   criterion-drift serialization twins (1): 3ea5b01b
