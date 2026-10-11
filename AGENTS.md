@@ -95,8 +95,12 @@ nix flake check    # reproducible CI (includes templ generate in preBuild)
 > newline — both v2-era behaviors that v1 defaults would change); scalar
 > (numeric/bool) fields on output structs must NOT use `omitempty` (v2 always
 > emitted them, v1 would drop zeros). **Remaining direct `encoding/json/v2`
-> imports (~30 files, mostly `_test.go` and enum/string-only payloads) are
-> tolerated only where no Duration/wire-fidelity concern exists — migrate any
+> imports: exactly TWO production files, both deliberate test-support
+> (`internal/testutil/assert.go`, `internal/testutil/bdd_runners.go` —
+> string-only payloads, pinned in the `jsonv2gate` allowlist as of the
+> 2026-10-11 M21 sweep which migrated the enum helpers in
+> `config/enum_helpers.go` and `pkg/enum/enum.go` to the v1 API).
+> Production v2 usage beyond that allowlist fails the gate — migrate any
 > file that must marshal Duration-bearing types to the v1 API** (see
 > TODO_LIST fleet-audit entry). After Go toolchain or GOEXPERIMENT churn,
 > re-verify with `go test -count=1 ./...` — cached results can predate the

@@ -23,8 +23,6 @@ import (
 // migrated to the v1 API (preferred; byte-identical output via
 // internal/jsonutil for wire paths) or added here with a reviewed rationale.
 var toleratedV2Importers = map[string]string{
-	"config/enum_helpers.go":           "enum string-only payloads, no Duration",
-	"pkg/enum/enum.go":                 "enum string-only payloads, no Duration",
 	"internal/testutil/assert.go":      "test-support package, string-only payloads",
 	"internal/testutil/bdd_runners.go": "test-support package, string-only payloads",
 }
