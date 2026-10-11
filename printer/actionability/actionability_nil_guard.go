@@ -30,11 +30,12 @@ func isNilGuardAfterHelper(nodeSeqs [][]*domain.CloneNode) bool {
 	return everySequenceMatch(nodeSeqs, seqIsNilGuardAfterHelper)
 }
 
-// seqIsNilGuardAfterHelper accepts sequences of at most three statements:
+// seqIsNilGuardAfterHelper accepts sequences of two to four statements:
 // helper-result assignments (`x := H(y)`), nil guards, and a trailing bare
-// return — with at least one nil guard present.
+// return — with at least one nil guard present. A LONE guard is
+// guard-clause territory (higher-priority pattern), not this pattern.
 func seqIsNilGuardAfterHelper(seq []*domain.CloneNode) bool {
-	if len(seq) == 0 || len(seq) > 3 {
+	if len(seq) < 2 || len(seq) > 4 {
 		return false
 	}
 
@@ -53,7 +54,7 @@ func seqIsNilGuardAfterHelper(seq []*domain.CloneNode) bool {
 				return false
 			}
 		case golang.ReturnStmt:
-			if !returnsIdentsOnly(root) {
+			if !returnsPlumbingOnly(root) {
 				return false
 			}
 		default:
@@ -72,6 +73,21 @@ func seqIsNilGuardAfterHelper(seq []*domain.CloneNode) bool {
 // reliable on real serialized clones.
 func ifIsNilGuardWithTrivialBody(n *domain.CloneNode) bool {
 	if !isGuardClauseBody(n) {
+		return false
+	}
+
+	// isGuardClauseBody tolerates a second return-only BlockStmt (an else
+	// branch); this pattern requires exactly one block — an else makes the
+	// guard a two-way dispatch, not an early return.
+	blocks := 0
+
+	for _, child := range n.Children {
+		if child.BaseType == golang.BlockStmt {
+			blocks++
+		}
+	}
+
+	if blocks != 1 {
 		return false
 	}
 
@@ -101,21 +117,37 @@ func binaryExprComparesAgainstNil(n *domain.CloneNode) bool {
 }
 
 // blockReturnsOnlyIdents requires every BlockStmt child of the guard to
-// return only identifiers — the trivial-body FP guard. `return tx.Rollback()`
-// (call), `return fmt.Errorf(...)` (call), and any assignment fail here and
-// keep the group actionable.
+// return only plumbing — identifiers, literals, or signed literals. `return
+// tx.Rollback()` (call), `return fmt.Errorf(...)` (call), and any assignment
+// fail here and keep the group actionable.
 func blockReturnsOnlyIdents(n *domain.CloneNode) bool {
 	for _, child := range n.Children {
 		if child.BaseType != golang.BlockStmt {
 			continue
 		}
 
-		if !slices.ContainsFunc(child.Children, returnsIdentsOnly) {
+		if !slices.ContainsFunc(child.Children, returnsPlumbingOnly) {
 			return false
 		}
 	}
 
 	return true
+}
+
+// returnsPlumbingOnly matches `return`, `return x`, `return ""`, `return -1`
+// — bare identifiers, literals, and signed literals. Any other expression
+// (calls, selectors, composite constructions) is real logic.
+func returnsPlumbingOnly(n *domain.CloneNode) bool {
+	return !slices.ContainsFunc(n.Children, func(child *domain.CloneNode) bool {
+		switch child.BaseType {
+		case golang.Ident, golang.BasicLit:
+			return false
+		case golang.UnaryExpr:
+			return len(child.Children) != 1 || child.Children[0].BaseType != golang.BasicLit
+		default:
+			return true
+		}
+	})
 }
 
 // assignIsHelperResult matches `x := H(y)` / `x := H(y, z)`: exactly one
