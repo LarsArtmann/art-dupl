@@ -46,13 +46,14 @@ Read-only advisory session. Explored branching-flow (README, AGENTS.md, pkg tree
 ## d) TOTALLY FUCKED UP
 
 1. **I presented an unverified example as fact.** I wrote: "`items[i]` (indexing) and `box[t]` (instantiation of a lowercase generic type) serialize identically". That is **wrong as stated**: per art-dupl's own alpha-normalization rules, package-level identifiers (which a generic type name always is) are NOT canonicalized — `box` stays verbatim while local `items` becomes `v0`. The real collision class is narrower: it requires the **same base identifier name** resolving to a package-level slice var in one file and an imported generic type in another (`cache[i]` vs `cache[T]` across files → identical `IndexExpr(cache, v0)` tokens), and it is **trivially true in structural mode** where identifiers are ignored entirely. The underlying lesson (syntax alone cannot distinguish indexing from instantiation; only `types.Info.Instances` can) is correct — but I dressed it in an example I had not verified, in a repo whose whole culture is verify-before-claiming. This is the session's cardinal sin.
-2. **First verification command was botched and I nearly trusted its silence.** `rg -rn "Instances" ...` — the `-r n` makes it a *replace* flag, so empty output was ambiguous (no matches vs. replaced-and-hidden). I caught it and re-ran correctly (`rg -n`, empty = genuinely zero usages), but a sloppier moment would have baked a false "verified" claim into the answer.
+2. **First verification command was botched and I nearly trusted its silence.** `rg -rn "Instances" ...` — the `-r n` makes it a _replace_ flag, so empty output was ambiguous (no matches vs. replaced-and-hidden). I caught it and re-ran correctly (`rg -n`, empty = genuinely zero usages), but a sloppier moment would have baked a false "verified" claim into the answer.
 3. **Skipped the project-discovery checklist.** My own AGENTS.md mandates checking TODO_LIST/FEATURES before advising on a project; I advised 8 improvements without once checking whether art-dupl already tracks them. Recommendations that duplicate an existing backlog entry (or re-litigate a decided one) are noise.
 4. **Never ran the tool I was advising about.** A 5-minute fixture (two tiny files) would have upgraded the FP claim from "reasoned" to "demonstrated" — or killed it. For a detection tool, claiming detection behavior without a detection run is exactly the failure mode the verify-external-claims skill exists to prevent.
 
 ## e) WHAT WE SHOULD IMPROVE
 
 **Process (this session's failures, generalized):**
+
 1. **Empirical gate for behavior claims:** any claim about what art-dupl detects/misses gets a fixture + a real run before it's stated as fact. "Reasoned from semantics" must be labeled as such.
 2. **Backlog check before recommending:** grep TODO_LIST/ROADMAP for overlap before delivering improvement lists; mark recommendations that are already tracked.
 3. **Persist cross-project analyses:** lessons from sibling repos belong in a dated `docs/research/` file (per this repo's own tracking policy), not only in chat.
@@ -69,9 +70,10 @@ Read-only advisory session. Explored branching-flow (README, AGENTS.md, pkg tree
 
 ## f) Things to get done next (from this session's findings)
 
-*Numbered by rough priority; T = tracked-here first, most need a TODO_LIST overlap check before becoming work items. No padding — 28 real items, not 50.*
+_Numbered by rough priority; T = tracked-here first, most need a TODO_LIST overlap check before becoming work items. No padding — 28 real items, not 50._
 
 **Generics-path implementation:**
+
 1. Fixture-verify the instantiation-vs-indexing collision: semantic mode cross-file `cache[i]` vs `cache[T]`, plus structural mode — size the FP class before any code.
 2. Document (limitation test) that structural mode equates indexing with instantiation by construction.
 3. Wire `types.Info.Instances` into the type-aware transformer: encode instantiation-vs-index-access via `encodeSemanticType` on `IndexExpr`/`IndexListExpr` (opt-in modes only; kills the ambiguity where go/types is loaded).
@@ -119,6 +121,6 @@ Read-only advisory session. Explored branching-flow (README, AGENTS.md, pkg tree
 
 ## Verdict
 
-The analysis content is solid and the file:line evidence for every branching-flow claim is real — but one art-dupl-side behavior claim was stated with more confidence than its verification deserved, the example illustrating it was wrong in detail, and the project's own backlog was never consulted before recommending work. The session's deliverable (the 8 lessons) survives scrutiny; the session's *process* does not fully.
+The analysis content is solid and the file:line evidence for every branching-flow claim is real — but one art-dupl-side behavior claim was stated with more confidence than its verification deserved, the example illustrating it was wrong in detail, and the project's own backlog was never consulted before recommending work. The session's deliverable (the 8 lessons) survives scrutiny; the session's _process_ does not fully.
 
-*Auto-commit daemon will pick this file up. Waiting for instructions.*
+_Auto-commit daemon will pick this file up. Waiting for instructions._

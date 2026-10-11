@@ -10,25 +10,25 @@ Binary: `go build ./cmd/art-dupl` at fork HEAD `21206db0` (v-dev). Runs: `--sugg
 
 ## Raw numbers
 
-| Repo | groups @t5 | @t2 | @t1 | candidates (any t) |
-|---|---|---|---|---|
-| go-sse | 0 | 10 | 74 | **0** |
-| go-cqrs-lite | 13 | 647 | 2926 | **0** |
-| go-paperless | 1 | 19 | 74 | **0** |
-| DiscordSync | 15 | 209 | 1115 | **0** |
-| art-dupl (self) | 0 | 51 | 408 | **9 groups / 4 families** |
-| branching-flow | 1 | 31 | 414 | **0** |
+| Repo            | groups @t5 | @t2 | @t1  | candidates (any t)        |
+| --------------- | ---------- | --- | ---- | ------------------------- |
+| go-sse          | 0          | 10  | 74   | **0**                     |
+| go-cqrs-lite    | 13         | 647 | 2926 | **0**                     |
+| go-paperless    | 1          | 19  | 74   | **0**                     |
+| DiscordSync     | 15         | 209 | 1115 | **0**                     |
+| art-dupl (self) | 0          | 51  | 408  | **9 groups / 4 families** |
+| branching-flow  | 1          | 31  | 414  | **0**                     |
 
 Candidates survive in art-dupl self at `-t 2` and `-t 1` identically (9 groups, 4 distinct content hashes). No other repo emits a single candidate at ANY threshold with ANY gate disabled.
 
 ## Labels (art-dupl self, the only labelable population)
 
-| Family hash | Instances | Verdict | Reason |
-|---|---|---|---|
-| `17b5f676` | `syntax/golang/snippet.go:188-195` + `:197-204` (`caseExprsAsNodes`/`statementsAsNodes`) | **TRUE** | Genuine `[]T → []ast.Node` conversion pair; a generic `asNodes[T ast.Node]` eliminates it |
-| `0cfc073b` | `cmd/type_aware.go:49-52`, `job/incremental_parallel_test.go:53-56`, `syntax/syntax.go:532-536` | FALSE | Trivial append-collector tails (`x = append(x, y)` in a loop) in otherwise-unrelated code |
-| `c4ea6cba` | `cmd/diff_report.go:107-110`, `pkg/artdupl/detector_conversion.go:32-35` | FALSE | Guard + append tail idiom, not an algorithm |
-| `e12d4e29` | `internal/testutil/file.go:81-84`, `syntax/syntax_match.go:167-171` | FALSE | Append tail idiom again |
+| Family hash | Instances                                                                                       | Verdict  | Reason                                                                                    |
+| ----------- | ----------------------------------------------------------------------------------------------- | -------- | ----------------------------------------------------------------------------------------- |
+| `17b5f676`  | `syntax/golang/snippet.go:188-195` + `:197-204` (`caseExprsAsNodes`/`statementsAsNodes`)        | **TRUE** | Genuine `[]T → []ast.Node` conversion pair; a generic `asNodes[T ast.Node]` eliminates it |
+| `0cfc073b`  | `cmd/type_aware.go:49-52`, `job/incremental_parallel_test.go:53-56`, `syntax/syntax.go:532-536` | FALSE    | Trivial append-collector tails (`x = append(x, y)` in a loop) in otherwise-unrelated code |
+| `c4ea6cba`  | `cmd/diff_report.go:107-110`, `pkg/artdupl/detector_conversion.go:32-35`                        | FALSE    | Guard + append tail idiom, not an algorithm                                               |
+| `e12d4e29`  | `internal/testutil/file.go:81-84`, `syntax/syntax_match.go:167-171`                             | FALSE    | Append tail idiom again                                                                   |
 
 **Precision: 1/4 families = 25%** (2/9 groups = 22%). The ROADMAP's "12.5%" figure is not reproducible on the current corpus at any threshold — treat 25% @ n=4 as the working baseline.
 
@@ -58,6 +58,6 @@ Field recall is ~zero: 5/6 repos produce 0 candidates even with `--suggest-gener
 
 ## Ledger
 
-| Date | Task | Outcome |
-|---|---|---|
+| Date       | Task              | Outcome                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| ---------- | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | 2026-10-11 | T4 (alias FP fix) | Shipped as population-time `types.Unalias` in `identTypeString` (not the planned printer-side comparator — single seam, same precision). Alias vs direct now produce identical VarType; import-alias spelling was ALREADY path-canonical (pinned by test). Corpus candidates unchanged (0/0/0/9) as predicted; static-fixture output byte-stable; CacheVersion 5→6 (ta/sg streams changed). Corpus repos drift under their own daemons — future before/after comparisons must pin corpus commits or use static fixtures. |

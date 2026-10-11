@@ -3,9 +3,11 @@ package printer
 import (
 	"bytes"
 	"encoding/json/v2"
+	"fmt"
 	"strings"
 	"testing"
 
+	"github.com/LarsArtmann/art-dupl/domain"
 	"github.com/LarsArtmann/art-dupl/internal/testutil"
 	"github.com/LarsArtmann/art-dupl/printer/actionability"
 	"github.com/LarsArtmann/art-dupl/printer/finding"
@@ -277,6 +279,163 @@ func TestSARIFOutput_FingerprintCompliance(t *testing.T) {
 			"Expected partialFingerprint 'abc123de', got '%s'",
 			result.Fingerprints.PartialFingerprint,
 		)
+	}
+}
+
+func TestSARIFOutput_RelatedLocationsAndSnippet(t *testing.T) {
+	var buf bytes.Buffer
+
+	printer := newTestSARIFPrinter(&buf, "1.0.0")
+	printer.SetHash("rel000000000001")
+
+	clone := func(file string, start int, fragment string) domain.ProcessedClone {
+		return domain.ProcessedClone{
+			Filename:   file,
+			LineStart:  start,
+			LineEnd:    start + 9,
+			Fragment:   fragment,
+			StartPos:   100,
+			EndPos:     220,
+			TokenCount: 30,
+			Classification: domain.CloneClassification{
+				CloneType: domain.CloneType1,
+			},
+		}
+	}
+
+	group := domain.ProcessedCloneGroup{
+		Hash: "rel000000000001",
+		Clones: []domain.ProcessedClone{
+			clone("a.go", 10, "func a() {}"),
+			clone("b.go", 40, "func b() {}"),
+			clone("c.go", 70, "func c() {}"),
+		},
+	}
+
+	if err := printer.PrintClones(group); err != nil {
+		t.Fatalf("PrintClones: %v", err)
+	}
+	if err := printer.PrintFooter(); err != nil {
+		t.Fatalf("PrintFooter: %v", err)
+	}
+
+	var output SARIFOutput
+
+	err := json.Unmarshal(buf.Bytes(), &output)
+	if err != nil {
+		t.Fatalf("Failed to unmarshal SARIF output: %v", err)
+	}
+
+	results := output.Runs[0].Results
+	if len(results) != 3 {
+		t.Fatalf("Expected 3 results, got %d", len(results))
+	}
+
+	allOccurrences := map[string]bool{
+		"a.go:10": true,
+		"b.go:40": true,
+		"c.go:70": true,
+	}
+
+	for _, result := range results {
+		self := result.Locations[0].PhysicalLocation
+		selfKey := fmt.Sprintf(
+			"%s:%d",
+			self.ArtifactLocation.URI,
+			self.Region.StartLine,
+		)
+
+		if self.Region.Snippet == nil || self.Region.Snippet.Text == "" {
+			t.Errorf("%s: expected non-empty region snippet", selfKey)
+		}
+
+		if len(result.RelatedLocations) != 2 {
+			t.Fatalf(
+				"%s: expected 2 related locations, got %d",
+				selfKey,
+				len(result.RelatedLocations),
+			)
+		}
+
+		wantRelated := map[string]bool{}
+		for key := range allOccurrences {
+			if key != selfKey {
+				wantRelated[key] = true
+			}
+		}
+
+		gotRelated := map[string]bool{}
+		for _, rel := range result.RelatedLocations {
+			if rel.Message.Text != "clone-of" {
+				t.Errorf(
+					"%s: related message %q, want %q",
+					selfKey,
+					rel.Message.Text,
+					"clone-of",
+				)
+			}
+
+			relKey := fmt.Sprintf(
+				"%s:%d",
+				rel.PhysicalLocation.ArtifactLocation.URI,
+				rel.PhysicalLocation.Region.StartLine,
+			)
+			gotRelated[relKey] = true
+
+			if rel.PhysicalLocation.Region.Snippet == nil ||
+				rel.PhysicalLocation.Region.Snippet.Text == "" {
+				t.Errorf("%s: related %s missing snippet", selfKey, relKey)
+			}
+		}
+
+		for key := range wantRelated {
+			if !gotRelated[key] {
+				t.Errorf("%s: missing related location %s", selfKey, key)
+			}
+		}
+		for key := range gotRelated {
+			if !wantRelated[key] {
+				t.Errorf("%s: unexpected related location %s", selfKey, key)
+			}
+		}
+	}
+}
+
+func TestSARIFOutput_SingleCloneOmitsRelatedLocations(t *testing.T) {
+	var buf bytes.Buffer
+
+	printer := newTestSARIFPrinter(&buf, "1.0.0")
+	printer.SetHash("solo000000000001")
+
+	group := domain.ProcessedCloneGroup{
+		Hash: "solo000000000001",
+		Clones: []domain.ProcessedClone{
+			{
+				Filename:   "only.go",
+				LineStart:  5,
+				LineEnd:    14,
+				Fragment:   "func only() {}",
+				TokenCount: 30,
+				Classification: domain.CloneClassification{
+					CloneType: domain.CloneType1,
+				},
+			},
+		},
+	}
+
+	if err := printer.PrintClones(group); err != nil {
+		t.Fatalf("PrintClones: %v", err)
+	}
+	if err := printer.PrintFooter(); err != nil {
+		t.Fatalf("PrintFooter: %v", err)
+	}
+
+	raw := buf.String()
+	if strings.Contains(raw, "relatedLocations") {
+		t.Error("single-clone result must omit relatedLocations")
+	}
+	if !strings.Contains(raw, `"snippet"`) {
+		t.Error("expected region snippet in output")
 	}
 }
 
