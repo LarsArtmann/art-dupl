@@ -27,7 +27,16 @@ or external by nature.
 - [ ] **`deploy-site.yml` masks website failures** (`continue-on-error: true` on the astro check step, line ~52) - flip to failing so a broken site build cannot deploy; flagged by the 2026-07-13 presence reports, still open 2026-10-05.
 - [ ] **Decide `SDK_DESIGN.md`'s fate** - rewrite/move/trim; recurring open item since 2026-07-19 (04-50 g1), still at repo root with stale sections despite the ADR-0025 refresh.
 
-- [ ] **Cut v0.8.0 (owner-gated)** - CHANGELOG `## [0.8.0] - 2026-09-29` complete, worktree rehearsal green; execution recipe parked at `docs/planning/2026-09-29_02-45_v0.8.0-release-park.md` (tag message, notes extraction, sequence; STOP gate = full suite + CI green on pushed HEAD). Same batch: go-paperless v0.4.3 (#20) and the branch-protection settings (#18).
+- [x] ~~**Cut v0.8.0 (owner-gated)**~~ OBSOLETE 2026-10-11: v0.8.0 was never tagged - **v0.9.0 shipped 2026-10-06 subsuming it** (CHANGELOG `## [0.9.0] - 2026-10-06`; proxy + pkg.go.dev live per research README). Same batch items remain open as their own lines: go-paperless v0.4.3 (#20) and branch protection (#18).
+
+### go-finding leverage follow-ups (2026-10-11 deep-dive §06, plan `docs/planning/2026-10-11_08-29_superb-open-work-pareto-plan.md`)
+
+- [ ] **G1 - SARIF snippet-parity pin/delta**: verify whether go-finding `ToSARIF()` sets `region.snippet` on RELATED locations; pin parity in the cross-check or document the CLI delta (today's claim "mirrors ToSARIF's shape" is verified for location+message, unverified for snippets).
+- [ ] **G2 - SARIF snippet-bloat policy**: measure output-size growth from snippet duplication (primary + N-1 related copies) on a real corpus; decide everywhere vs primary-only; record in deep-dive §06.
+- [ ] **G3 - Byte-level SARIF golden** with siblings (relatedLocations + snippet) to freeze the 24h-old wire shape before consumers calcify.
+- [ ] **G4 - BDD multi-clone reconstruction**: CLI SARIF (siblings) → `FindingsFromSARIF` → `Report.GroupFindings()` must reconstruct the exact partition.
+- [ ] **G5 - Daemon gate-safety hook (Q1)**: prototype a pre-commit hook running `go build ./...` + jsonv2gate on daemon commits; the foreign-in-flight-edit class fired an 8th time 2026-10-11 06:15 (broken `8afa9803` on fork, caught pre-push). Write the hook-vs-exclusion-list decision doc; owner answer still pending since 2026-10-05.
+- [ ] **G6 - AGENTS.md deep-dive pointer §05 → "§05–§06"** so future sessions read the 10-11 verdicts (Option.Validate dissolved; SwitchCases/Trigger re-confirmed N/A; SARIF fully leveraged).
 
 ### Generics-precision cluster (branching-flow lessons, 2026-10-11)
 
