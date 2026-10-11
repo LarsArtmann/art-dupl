@@ -14,6 +14,7 @@
 package main
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"io"
@@ -98,7 +99,8 @@ func run(stdout, stderr io.Writer, getenv func(string) string, lookPath func(str
 		}
 	}
 
-	fmt.Fprintf(stderr, "daemon-gate: green (%d check(s), %s)\n", len(checks), time.Since(start).Round(time.Millisecond))
+	elapsed := time.Since(start).Round(time.Millisecond)
+	fmt.Fprintf(stderr, "daemon-gate: green (%d check(s), %s)\n", len(checks), elapsed)
 
 	return exitPass
 }
@@ -135,7 +137,13 @@ func resolveGo(getenv func(string) string, lookPath func(string) (string, error)
 
 	found, err := lookPath("go")
 	if err != nil {
-		return "", fmt.Errorf("%w: %s is unset and %q is not on PATH — the gate cannot judge this repo, so it passes open; fix by pinning %s in the service environment", errNoToolchain, envGoBin, "go", envGoBin)
+		return "", fmt.Errorf(
+			"%w: %s is unset and %q is not on PATH — the gate cannot judge this repo, so it passes open; fix by pinning %s in the service environment",
+			errNoToolchain,
+			envGoBin,
+			"go",
+			envGoBin,
+		)
 	}
 
 	return found, nil
@@ -144,36 +152,29 @@ func resolveGo(getenv func(string) string, lookPath func(string) (string, error)
 // runCheck executes one gate check and turns tool failures into verdicts.
 // Output streams live so the daemon journal carries the compiler's evidence.
 func runCheck(goBin string, check check, stdout, stderr io.Writer) error {
-	cmd := exec.Command(goBin, check.args...) // #nosec G204 -- goBin comes from the pinned env var or LookPath, args are static
+	ctx, cancel := context.WithTimeout(context.Background(), checkTimeout)
+	defer cancel()
+
+	args := strings.Join(check.args, " ")
+
+	cmd := exec.CommandContext(ctx, goBin, check.args...) // #nosec G204 -- goBin comes from the pinned env var or LookPath, args are static
 	cmd.Stdout = stdout
 	cmd.Stderr = stderr
 	cmd.Env = gateEnv(os.Environ())
 
 	if err := cmd.Start(); err != nil {
-		return fmt.Errorf("start go %s: %w", strings.Join(check.args, " "), err)
+		return fmt.Errorf("start go %s: %w", args, err)
 	}
 
-	done := make(chan error, 1)
-
-	go func() { done <- cmd.Wait() }()
-
-	timer := time.NewTimer(checkTimeout)
-	defer timer.Stop()
-
-	select {
-	case err := <-done:
-		if err != nil {
-			return fmt.Errorf("go %s failed (exit): %w", strings.Join(check.args, " "), err)
+	if err := cmd.Wait(); err != nil {
+		if errors.Is(ctx.Err(), context.DeadlineExceeded) {
+			return fmt.Errorf("%w: go %s exceeded %s — a gate that hangs must not hang the daemon", errCheckTimeout, args, checkTimeout)
 		}
 
-		return nil
-	case <-timer.C:
-		_ = cmd.Process.Kill()
-
-		<-done
-
-		return fmt.Errorf("%w: go %s exceeded %s — a gate that hangs must not hang the daemon", errCheckTimeout, strings.Join(check.args, " "), checkTimeout)
+		return fmt.Errorf("go %s failed (exit): %w", args, err)
 	}
+
+	return nil
 }
 
 // gateEnv builds the child environment: inherit everything, but make sure
