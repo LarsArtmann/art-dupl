@@ -76,7 +76,75 @@ func ClassifyGenericsCandidate(seqs [][]*domain.CloneNode) (bool, string) {
 		return false, ""
 	}
 
+	if allInstantiationPairs(divergences) {
+		return true, formatInstantiationOnlyHint(divergences)
+	}
+
 	return true, formatGenericsHint(divergences)
+}
+
+// allInstantiationPairs reports whether every divergence is a pair of
+// instantiations of the SAME base type with different type arguments
+// (list[int] vs list[string]). Detectable without the generic-decl index: the
+// strings share their pre-bracket prefix and both carry type arguments.
+func allInstantiationPairs(divs []TypeDivergence) bool {
+	if len(divs) == 0 {
+		return false
+	}
+
+	for _, d := range divs {
+		baseA, argsA := splitInstantiation(d.TypeA)
+		baseB, argsB := splitInstantiation(d.TypeB)
+
+		if baseA == "" || baseA != baseB || argsA == argsB {
+			return false
+		}
+	}
+
+	return true
+}
+
+// splitInstantiation splits a type string into its pre-bracket base and type
+// arguments ("[]list[int]" → "list", "int"; qualifier prefixes are stripped
+// first). Returns ("", "") when the string carries no type arguments.
+func splitInstantiation(typeStr string) (base, args string) {
+	qualified := golang.StripQualifierPrefixes(typeStr)
+
+	cut := strings.Index(qualified, "[")
+	if cut <= 0 || !strings.HasSuffix(qualified, "]") {
+		return "", ""
+	}
+
+	return qualified[:cut], qualified[cut+1 : len(qualified)-1]
+}
+
+// formatInstantiationOnlyHint renders the T9 hint for groups whose only
+// divergence is the type arguments of one generic: actionable phrasing that
+// names the instantiations instead of listing them as unrelated differences.
+func formatInstantiationOnlyHint(divs []TypeDivergence) string {
+	parts := make([]string, 0, len(divs))
+	seen := make(map[string]bool, len(divs))
+
+	for _, d := range divs {
+		key := divergenceKey(d)
+		if seen[key] {
+			continue
+		}
+
+		seen[key] = true
+
+		parts = append(parts, fmt.Sprintf(
+			"`%s` vs `%s`",
+			shortenTypeString(d.TypeA),
+			shortenTypeString(d.TypeB),
+		))
+
+		if len(parts) >= 3 {
+			break
+		}
+	}
+
+	return "differs only in generic instantiation: " + strings.Join(parts, "; ")
 }
 
 // ClassifyReuseExistingGeneric reports whether a generics candidate's type

@@ -549,7 +549,7 @@ art-dupl --suggest-generics -t 1 --json ./src
 - INVALID with `--exact` or `--structural`: these modes make the type-divergent grouping the enhancer needs impossible, so the combination is rejected with a validation error instead of silently paying the slow parse for zero candidates
 - Candidates require ≥2 distinct positions with differing types and ≥4 lines per instance (tune or disable with `--suggest-generics-min-lines`, `0` disables the line gate)
 - Use `--min-tokens` to filter noise from small clone groups
-- Output shows `generics:` hint line with type differences (text), `generics_candidate`/`generics_hint` fields (JSON), or result properties (SARIF)
+- Output shows `generics:` hint line with type differences (text), `generics_candidate`/`generics_hint` fields (JSON), or result properties (SARIF). When every divergence is a type-argument pair of one generic (`list[int]` vs `list[string]`), the hint reads `differs only in generic instantiation` instead of listing the types as unrelated differences.
 
 ```bash
 # Only annotate candidates where every instance spans at least 10 lines

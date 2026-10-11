@@ -1,6 +1,7 @@
 package printer
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/LarsArtmann/art-dupl/domain"
@@ -97,6 +98,35 @@ func TestClassifyReuseExistingGeneric_EmptyIndexDisabled(t *testing.T) {
 
 	if _, _, reuse := ClassifyReuseExistingGeneric(seqs, map[string]int{}); reuse {
 		t.Error("empty index must disable the reuse verdict")
+	}
+}
+
+func TestClassifyGenericsCandidate_InstantiationOnlyDivergence(t *testing.T) {
+	// T8 pin: divergence positions that are pure generic instantiations
+	// (Box[int] vs Box[string] at two positions, no other type difference)
+	// count toward MinDivergentPositions — the wrapper-function family
+	// (same algorithm over different instantiations) is detectable since the
+	// instantiation marker puts the instantiated type on the IndexExpr node.
+	seqs := [][]*domain.CloneNode{
+		{
+			{Name: "b", VarType: "pkg.Box[int]"},
+			{Name: "out", VarType: "[]pkg.Box[int]"},
+		},
+		{
+			{Name: "b", VarType: "pkg.Box[string]"},
+			{Name: "out", VarType: "[]pkg.Box[string]"},
+		},
+	}
+
+	isCandidate, hint := ClassifyGenericsCandidate(seqs)
+
+	if !isCandidate {
+		t.Fatal("instantiation-only divergence at 2 positions must be a candidate")
+	}
+
+	// T9: instantiation-only divergence gets the actionable hint phrasing.
+	if !strings.Contains(hint, "differs only in generic instantiation") {
+		t.Errorf("hint should use the instantiation-only phrasing, got: %s", hint)
 	}
 }
 

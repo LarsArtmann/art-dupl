@@ -83,7 +83,7 @@ func qualifiedDeclName(pkgPath, name string) string {
 // carries type arguments (a bare "pkg.Box" is the uninstantiated generic
 // itself, not an instantiation); "" otherwise.
 func LookupGenericDecl(typeStr string, index map[string]int) string {
-	base := stripQualifierPrefixes(typeStr)
+	base := StripQualifierPrefixes(typeStr)
 
 	// Only instantiations count: the remaining base must end with type
 	// arguments. Cut at the first '[' — nested arguments ("Box[Pair[int,T]]")
@@ -96,11 +96,13 @@ func LookupGenericDecl(typeStr string, index map[string]int) string {
 	return lookupBareOrQualified(base[:cut], index)
 }
 
-// stripQualifierPrefixes consumes leading pointer, slice, array, map, and
+// StripQualifierPrefixes consumes leading pointer, slice, array, map, and
 // channel qualifiers from a type string, leaving the core named type.
 // Bracket segments are matched by depth so "map[[2]int]pkg.Box" and
 // "[2]pkg.Box" reduce correctly. Returns "" on unterminated brackets.
-func stripQualifierPrefixes(s string) string {
+// Exported for the printer's instantiation-only hint (same prefix rules as
+// LookupGenericDecl).
+func StripQualifierPrefixes(s string) string {
 	for {
 		switch {
 		case strings.HasPrefix(s, "*"), strings.HasPrefix(s, " "):
