@@ -1,6 +1,6 @@
 # TODO List
 
-**Last Updated:** 2026-10-05
+**Last Updated:** 2026-10-11
 
 Actionable items for the next 2-4 weeks. Completed work lives in `CHANGELOG.md`.
 This file is OPEN work only - no completed, rejected, or resolved items.
@@ -28,6 +28,21 @@ or external by nature.
 - [ ] **Decide `SDK_DESIGN.md`'s fate** - rewrite/move/trim; recurring open item since 2026-07-19 (04-50 g1), still at repo root with stale sections despite the ADR-0025 refresh.
 
 - [ ] **Cut v0.8.0 (owner-gated)** - CHANGELOG `## [0.8.0] - 2026-09-29` complete, worktree rehearsal green; execution recipe parked at `docs/planning/2026-09-29_02-45_v0.8.0-release-park.md` (tag message, notes extraction, sequence; STOP gate = full suite + CI green on pushed HEAD). Same batch: go-paperless v0.4.3 (#20) and the branch-protection settings (#18).
+
+### Generics-precision cluster (branching-flow lessons, 2026-10-11)
+
+**Source:** branching-flow cross-project analysis (`docs/status/2026-10-11_05-02_branching-flow-lessons-self-review.md`, deduped against this file — zero prior overlap) + master plan with ~120-subtask fine breakdown: `docs/planning/2026-10-11_05-06_generics-precision-from-branching-flow-lessons.md`. This cluster is the work behind ROADMAP gate 1 ("precision filtering brings `--suggest-generics` from 12.5% to >50%", the type-aware-default flip). Execution order per plan §4.
+
+- [ ] **T1 — Precision baseline + false-reason taxonomy (keystone, the 1%)**: run `--suggest-generics` over the 5-repo corpus + branching-flow HEAD, label every candidate TRUE/FALSE, categorize false reasons (alias-string / instantiation-args-only / already-generic / min-lines noise); re-derive the 12.5% figure; persist `docs/research/2026-10-11_suggest-generics-precision-baseline.md`.
+- [ ] **T2 — Fixture-verify instantiation-vs-indexing collision**: semantic cross-file `cache[i]` vs `cache[T]` + structural mode; pin CURRENT behavior (the 2026-10-11 session's claim was reasoned, not demonstrated — its example was wrong in detail).
+- [ ] **T4 — `types.Identical` divergence comparison** in `ClassifyGenericsCandidate` (alias + import-alias string-equality FP class; go/types already loaded in those modes) + corpus re-validation.
+- [ ] **T5 — Reuse-existing-generic suggestions**: bounded syntax-level generic-decl index (`TypeParams != nil` scan in the existing parse walk) → "reuse `Foo[T]`" instead of "extract"; CLI + SDK parity; evidence: branching-flow's 3 "generics already used" accept directives.
+- [ ] **T7/T8/T9 — `types.Info.Instances` wiring trio**: instantiation flag on `IndexExpr`/`IndexListExpr` encoded in the type-aware hash (T7); type-args recorded on the erased pass for classification (T8); "differs only in generic instantiation: `list[int]` vs `list[string]`" hints + JSON/SARIF (T9). Opt-in modes only — the default-mode ambiguity gets an executable limitation test (T3), not code.
+- [ ] **T11/T12/T13 — Accept-reason mining → actionability waves**: mine `//art-dupl:accept` reasons across art-dupl + branching-flow (56 directives there) → frequency table → new denylist patterns (mutex idiom, `flag.Value.Set`, nil-guard-after-helper) + full 5-repo corpus re-validation.
+- [ ] **T3/T18 — Executable limitation tests + FEATURES sections**: templ `-t 1` whole-file phantom, structural-mode equivalence classes, default-mode ambiguity (branching-flow's `analyzer_type_limitations_test.go` pattern).
+- [ ] **T15 — Directive placement near-miss hint** (stderr when a directive sits just outside the 5-line window; machine formats stay clean).
+- [ ] **T16 — `docs/research/` HTML** for the branching-flow lessons + README index (routing decision: research snapshot + this living list, both).
+- [ ] **Hygiene tail (T6, T10, T14, T17, T19, T20)**: already-generic annotation, extractability interplay, branching-flow corpus entry, post-execution harvest + bidirectional upstream check, AGENTS process rules (fixture-before-behavior-claims), full-gate close-out. See plan §2/§3.
 
 ### BuildFlow core-lane follow-ups (harvested 2026-09-25)
 

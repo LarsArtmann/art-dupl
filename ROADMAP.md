@@ -1,6 +1,6 @@
 # Roadmap
 
-**Last Updated:** 2026-09-28
+**Last Updated:** 2026-10-11
 
 **No timeline.** Aspirational items for future consideration. Items graduate to `TODO_LIST.md` when they become actionable.
 
@@ -57,11 +57,11 @@ Shipped 2026-09-14: nested-block statements (loop/if/switch/select bodies, else-
 - **Fixability score**: Property-based extractability engine implemented (ADR-0017) with 4 properties + confidence scoring. Three-tier output (actionable / low-confidence / non-actionable). Confidence values need calibration against real-world data. Could evolve into a continuous fixability score instead of binary Actionable/NonActionable.
 - **Nested-scope shadowing in alpha-normalization**: Current symbol table is flat (no nested-scope shadowing). Proper lexical scoping would improve Type-2 clone accuracy in deeply nested code.
 - **Type narrowing for interface-typed variables**: If a local has an interface type, two variables with the same interface type match even if their concrete types differ. Could add concrete-type awareness via flow analysis.
-- **Irreducibility class per group**: Classify each group by WHY it can't be reduced: semantic (real duplication), idiomatic (language convention), structurally-bound (framework constraint), or threshold-noise. Would give users actionable context instead of a binary verdict. (samber-do-auditlog feedback)
+- **Irreducibility class per group**: Classify each group by WHY it can't be reduced: semantic (real duplication), idiomatic (language convention), structurally-bound (framework constraint), or threshold-noise. Would give users actionable context instead of a binary verdict. (samber-do-auditlog feedback) branching-flow's dupe `CategorizeGroup` (verdict + named-pattern reason strings, 2026-10-11 lessons) is a working model for the reason taxonomy.
 - **Helper-call-site detection via call-graph**: Detect when duplication is already an invocation of a shared helper (the extraction IS the helper call, not more duplication). Requires call-graph resolution. (upd, discordsync feedback)
-- **Golden-corpus recall harness**: run detection over a curated set of known clones (including loop-skeleton shapes) and report recall %. Turns "did the granularity change help?" into a number. (report #42)
+- **Golden-corpus recall harness**: run detection over a curated set of known clones (including loop-skeleton shapes) and report recall %. Turns "did the granularity change help?" into a number. (report #42) branching-flow joins the corpus set when the harness exists (plan task T14, 2026-10-11) - it is a live consumer with a `-t 1`-triaged baseline (`docs/dedup-acceptance.md` on their side).
 - **Type-aware value heuristic**: report how many type-aware-killed groups were actionable, so the 24x runtime cost becomes a data-driven decision per repo. (report #41/e6)
-- **High-similarity-no-clone warning**: warn when functions share >50% of statements but sit below the threshold - "near-miss, lower -t to N to see it". (report #43)
+- **High-similarity-no-clone warning**: warn when functions share >50% of statements but sit below the threshold - "near-miss, lower -t to N to see it". (report #43) A Jaccard field-overlap score with an incidental-field skip-list (branching-flow `composition` analyzer pattern, 2026-10-11 lessons) is the natural ranking substrate if this graduates.
 - **Cross-repo recall survey**: scan Lars's Go repos for loop-skeleton clones to size ADR-0023's win. (report #39)
 - **CPU-affinity benchmarks post-ADR-0023**: re-run `taskset` pinned comparisons; token streams grew ~10-15%, which shifts the L3-latency tradeoff. (report #47)
 - **README before/after example showing loop-skeleton detection**: marketing artifact for the ADR-0023 recall win. (report #45)
@@ -82,7 +82,7 @@ Shipped 2026-09-14: nested-block statements (loop/if/switch/select bodies, else-
 - **`--suggest-extraction` dry-run mode**: Show the proposed helper signature for a clone group without actually extracting. (go-etag feedback)
 - **`--ci-gate` mode**: Exit non-zero only on actionable clones (not non-actionable boilerplate). Stricter CI gating than current `check` mode. (go-etag feedback)
 - **`--diff-baseline` mode**: Show what changed since the last baseline scan - new, suppressed, and resolved clone groups. (go-cqrs-lite feedback)
-- **Type-aware + suggest-generics as default (with `--fast` escape hatch)**: Long-term goal: make the most informative analysis the default. Revisit AFTER: (1) precision filtering brings `--suggest-generics` from 12.5% to >50%, (2) progress output during the ~100x slower type-checking phase, (3) real-world validation on 3-5 codebases confirms signal-to-noise ratio.
+- **Type-aware + suggest-generics as default (with `--fast` escape hatch)**: Long-term goal: make the most informative analysis the default. Revisit AFTER: (1) precision filtering brings `--suggest-generics` from 12.5% to >50%, (2) progress output during the ~100x slower type-checking phase, (3) real-world validation on 3-5 codebases confirms signal-to-noise ratio. Gate (1) is the target of the generics-precision cluster harvested 2026-10-11 (`TODO_LIST.md` → "Generics-precision cluster", plan `docs/planning/2026-10-11_05-06_generics-precision-from-branching-flow-lessons.md`): precision baseline T1, `types.Identical` divergence T4, reuse-existing-generic T5, `Instances` wiring T7-T9.
 
 ## Website and Presence (harvested 2026-09-28)
 
