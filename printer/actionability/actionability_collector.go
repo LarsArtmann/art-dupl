@@ -22,18 +22,18 @@ import (
 // Any other call (strings.Join, processItem, fmt.Fprintf, ...) is real logic
 // and disqualifies the pattern.
 var collectorCallAllowList = map[string]bool{ //nolint:gochecknoglobals // static set
-	"append": true,
-	"make":   true,
-	"len":    true,
-	"cap":    true,
-	"min":    true,
-	"max":    true,
-	"string": true,
-	"int":    true,
-	"int32":  true,
-	"int64":  true,
-	"uint":   true,
-	"bool":   true,
+	"append":  true,
+	"make":    true,
+	"len":     true,
+	"cap":     true,
+	"min":     true,
+	"max":     true,
+	"string":  true,
+	"int":     true,
+	"int32":   true,
+	"int64":   true,
+	"uint":    true,
+	"bool":    true,
 	"float64": true,
 }
 
@@ -264,14 +264,14 @@ func returnsIdentsOnly(n *domain.CloneNode) bool {
 // collectorRealLogicTypes are node types that indicate real logic (not
 // element plumbing) inside a collector tail.
 var collectorRealLogicTypes = map[int32]bool{ //nolint:gochecknoglobals // static set
-	golang.CompositeLit:  true,
-	golang.FuncLit:       true,
-	golang.DeferStmt:     true,
-	golang.GoStmt:        true,
-	golang.SelectStmt:    true,
-	golang.SwitchStmt:    true,
+	golang.CompositeLit:   true,
+	golang.FuncLit:        true,
+	golang.DeferStmt:      true,
+	golang.GoStmt:         true,
+	golang.SelectStmt:     true,
+	golang.SwitchStmt:     true,
 	golang.TypeSwitchStmt: true,
-	golang.SendStmt:      true,
+	golang.SendStmt:       true,
 	golang.TypeAssertExpr: true,
 }
 

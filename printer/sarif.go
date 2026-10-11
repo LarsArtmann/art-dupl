@@ -168,6 +168,7 @@ type sarifPrinter struct {
 	results         []SARIFResult
 	processedHashes map[string]bool // Track processed hashes to avoid duplicates
 	startTime       time.Time
+	now             func() time.Time
 	currentHash     string // Hash for the current clone group
 	version         string // Tool version for SARIF output
 }
@@ -195,6 +196,7 @@ func NewSARIFWithConfig(w io.Writer, fread ReadFile, cfg SARIFPrinterOptions) Pr
 		results:         []SARIFResult{},
 		processedHashes: make(map[string]bool),
 		startTime:       time.Now(),
+		now:             time.Now,
 		version:         cfg.Version,
 	}
 }
@@ -444,7 +446,7 @@ func (p *sarifPrinter) outputSARIF() error {
 					{
 						ExecutionSuccessful: true,
 						StartTimeUTC:        p.startTime.UTC().Format(time.RFC3339),
-						EndTimeUTC:          time.Now().UTC().Format(time.RFC3339),
+						EndTimeUTC:          p.now().UTC().Format(time.RFC3339),
 					},
 				},
 			},

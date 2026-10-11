@@ -2,7 +2,9 @@ package printer
 
 import (
 	"bytes"
+	"encoding/json"
 	"testing"
+	"time"
 
 	"github.com/LarsArtmann/art-dupl/domain"
 	"github.com/LarsArtmann/art-dupl/internal/testutil"
@@ -22,6 +24,10 @@ func TestSARIFOutputGolden(t *testing.T) {
 	var buf bytes.Buffer
 
 	printer := newTestSARIFPrinter(&buf, "1.0.0")
+
+	fixedTime := time.Unix(1700000000, 0).UTC()
+	printer.startTime = fixedTime
+	printer.now = func() time.Time { return fixedTime }
 
 	multiClone := domain.ProcessedCloneGroup{
 		Hash: "abc123def4567890",
@@ -66,6 +72,19 @@ func TestSARIFOutputGolden(t *testing.T) {
 
 	if err := printer.PrintFooter(); err != nil {
 		t.Fatalf("PrintFooter() error: %v", err)
+	}
+
+	var decoded SARIFOutput
+
+	if err := json.Unmarshal(buf.Bytes(), &decoded); err != nil {
+		t.Fatalf("golden fixture must be valid SARIF JSON: %v", err)
+	}
+
+	if len(decoded.Runs) == 0 || len(decoded.Runs[0].Results) == 0 {
+		t.Fatalf(
+			"golden fixture captured %d results; a non-empty results set is required so -update cannot silently freeze an empty wire",
+			len(decoded.Runs),
+		)
 	}
 
 	testutil.RequireGolden(t, buf.Bytes())
