@@ -5,6 +5,7 @@ import (
 	"go/ast"
 	"go/token"
 	"go/types"
+	"os"
 	"path/filepath"
 
 	"golang.org/x/tools/go/packages"
@@ -81,6 +82,16 @@ func (td TypeAwareData) LookupPreloaded(file string) *PreloadedAST {
 // identifier hash. This is used by --suggest-generics to detect generics-
 // extraction candidates that --type-aware would suppress.
 //
+// Files are grouped by their nearest enclosing module (nearest ancestor
+// directory with a go.mod) and one go/packages load runs per module with
+// Config.Dir set to the module root. Without this, `file=` patterns for files
+// from DIFFERENT packages collapse into a single synthesized
+// "command-line-arguments" package with type errors whenever the load's
+// working directory is outside the target module — cross-package identifiers
+// then resolve against one merged symbol table and types.Info.Instances stays
+// empty or wrong (found while wiring the instantiation marker,
+// generics-precision cluster T7).
+//
 // This is significantly slower than parsing alone (10-100x) because it runs the
 // full Go type checker with import resolution.
 func LoadTypeAwareData(files []string, eraseHash bool) (TypeAwareData, error) {
@@ -103,8 +114,76 @@ func LoadTypeAwareData(files []string, eraseHash bool) (TypeAwareData, error) {
 		}
 	}
 
-	patterns := make([]string, len(absFiles))
-	for i, f := range absFiles {
+	result := make(TypeAwareData, len(absFiles))
+
+	for moduleDir, moduleFiles := range groupFilesByModule(absFiles) {
+		if err := loadModuleTypeAware(moduleDir, moduleFiles, eraseHash, result); err != nil {
+			return nil, err
+		}
+	}
+
+	return result, nil
+}
+
+// groupFilesByModule buckets absolute files by their nearest ancestor
+// directory containing a go.mod. Files with no enclosing module share the ""
+// bucket and load relative to the process working directory (legacy
+// behavior). The module lookup is cached per directory — repository trees
+// share directory prefixes, so the walk runs once per distinct ancestor
+// chain, not once per file.
+func groupFilesByModule(absFiles []string) map[string][]string {
+	groups := make(map[string][]string)
+
+	cache := make(map[string]string)
+
+	moduleFor := func(dir string) string {
+		if m, ok := cache[dir]; ok {
+			return m
+		}
+
+		m := nearestModuleDir(dir)
+		cache[dir] = m
+
+		return m
+	}
+
+	for _, f := range absFiles {
+		module := moduleFor(filepath.Dir(f))
+		groups[module] = append(groups[module], f)
+	}
+
+	return groups
+}
+
+// nearestModuleDir walks up from dir and returns the first ancestor holding a
+// go.mod, or "" when none exists up to the filesystem root.
+func nearestModuleDir(dir string) string {
+	for {
+		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
+			return dir
+		}
+
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			return ""
+		}
+
+		dir = parent
+	}
+}
+
+// loadModuleTypeAware loads one module's files with Config.Dir anchored at
+// the module root so `file=` patterns resolve to their REAL packages instead
+// of a synthesized command-line-arguments merge. An empty moduleDir keeps the
+// legacy cwd-relative load.
+func loadModuleTypeAware(
+	moduleDir string,
+	files []string,
+	eraseHash bool,
+	result TypeAwareData,
+) error {
+	patterns := make([]string, len(files))
+	for i, f := range files {
 		patterns[i] = "file=" + f
 	}
 
@@ -112,12 +191,14 @@ func LoadTypeAwareData(files []string, eraseHash bool) (TypeAwareData, error) {
 		Mode: packages.NeedName | packages.NeedSyntax | packages.NeedTypes | packages.NeedTypesInfo,
 	}
 
-	pkgs, err := packages.Load(cfg, patterns...)
-	if err != nil {
-		return nil, fmt.Errorf("go/packages.Load failed: %w", err)
+	if moduleDir != "" {
+		cfg.Dir = moduleDir
 	}
 
-	result := make(TypeAwareData, len(absFiles))
+	pkgs, err := packages.Load(cfg, patterns...)
+	if err != nil {
+		return fmt.Errorf("go/packages.Load failed: %w", err)
+	}
 
 	for _, pkg := range pkgs {
 		if pkg.TypesInfo == nil {
@@ -146,7 +227,7 @@ func LoadTypeAwareData(files []string, eraseHash bool) (TypeAwareData, error) {
 		}
 	}
 
-	return result, nil
+	return nil
 }
 
 // identTypeString returns the canonical type string for the object that ident
