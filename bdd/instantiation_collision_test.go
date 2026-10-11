@@ -112,4 +112,29 @@ var _ = Describe("Instantiation vs indexing collision", func() {
 		Expect(string(output)).To(ContainSubstring("structa/a.go"))
 		Expect(string(output)).To(ContainSubstring("structb/b.go"))
 	})
+
+	It("type-aware data disambiguates instantiation from indexing (--suggest-generics)", func() {
+		// CURRENT (since the Instances wiring, generics-precision cluster T7):
+		// with go/types loaded, `feed[T]` (instantiation, flagged via
+		// types.Info.Instances) and `feed[i]` (indexing, unflagged) hash
+		// differently, so the false pair is NOT reported in --suggest-generics
+		// or --type-aware runs. The fixture needs a go.mod: without module
+		// context, go/packages merges both files into one erroring
+		// command-line-arguments package and Instances stays empty.
+		// EXPECTED: stays green; a regression means the marker stopped
+		// encoding.
+		setup := CreateBDDTestSetup()
+
+		err := setup.CreateTestFiles(map[string]string{
+			"go.mod":    "module collisionfixture\n\ngo 1.27\n",
+			"pkga/a.go": collisionIndexingPkg,
+			"pkgb/b.go": collisionInstantiationPkg,
+		})
+		Expect(err).NotTo(HaveOccurred())
+
+		output, err := setup.RunArtDupl("--threshold", "2", "--suggest-generics", "--no-actionability")
+		Expect(err).ToNot(HaveOccurred())
+
+		Expect(string(output)).To(ContainSubstring("Found total 0 clone groups"))
+	})
 })
