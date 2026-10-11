@@ -40,7 +40,7 @@ Any consumer that checked out `8afa9803` between 06:15 and the heal could not bu
 
 - The daemon's systemd environment **deliberately disables repo hooks** (`GIT_CONFIG_VALUE_0=/var/empty` in `SystemNix/modules/nixos/services/projects-management-automation.nix:187-189`): its PATH carries only `pma, git, coreutils, findutils, grep, sed, systemd` — no bash — so every `#!/usr/bin/env bash` hook failed to exec and the daemon **retried forever** (live incident 2026-08-19, PMA `ce0f638`). Therefore the hook must be an interpreter-free binary; a shell script is a non-starter.
 - pma shells out to real `git commit` **without** `--no-verify` (`committer/committer.go:90-110` never sets `SkipHooks`), so a hooks-path override re-enables hooks **for the daemon only**, leaving interactive commits untouched.
-- pma failures hit a **failure cooldown** (not the old hot-retry), and message generation happens before staging — with our AI provider already failing every cycle (all daemon commits are `(heuristic)`), a refused commit costs the same per cycle as today's normal cycle.
+- pma failures hit a **failure cooldown** (not the old hot-retry) — `failureCooldown = 5 * time.Minute`, capped at `maxFailureCooldown = 4 * time.Hour` (`pma-daemon/service.go:36,43`) — and message generation happens before staging; with our AI provider already failing every cycle (all daemon commits are `(heuristic)`), a refused commit costs the same per cycle as today's normal cycle.
 
 Semantics (encoded in the binary, not just documented):
 
@@ -64,7 +64,7 @@ Semantics (encoded in the binary, not just documented):
 
 **Option A now, Option B as the upstream follow-up.**
 
-A is reversible (flip one env var back), requires no daemon code change during a period when concurrent sessions are actively editing pma, and kills the entire class fleet-wide the moment SystemNix deploys it. Its only real cost — refusal cycles while a tree is legitimately red mid-session — is bounded by the existing cooldown and is strictly cheaper than the incidents (90 minutes of a broken remote; days of masked cache staleness). B remains the semantically correct end state (silent skip instead of refused commit) and the SystemNix rationale comment already anticipates it; prototype A's gate logic is reusable verbatim if B execs the same binary.
+A is reversible (flip one env var back), requires no daemon code change during a period when concurrent sessions are actively editing pma, and kills the entire class fleet-wide the moment SystemNix deploys it. Its only real cost — refusal cycles while a tree is legitimately red mid-session — is bounded by the existing cooldown (5-minute backoff escalating to a 4-hour cap, `pma-daemon/service.go:36,43`) and is strictly cheaper than the incidents (90 minutes of a broken remote; days of masked cache staleness). B remains the semantically correct end state (silent skip instead of refused commit) and the SystemNix rationale comment already anticipates it; prototype A's gate logic is reusable verbatim if B execs the same binary.
 
 ## f) Rollout checklist (owner)
 

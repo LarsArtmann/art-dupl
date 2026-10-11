@@ -79,8 +79,14 @@ func feedFromStdin(
 		}()
 
 		sc := bufio.NewScanner(rc)
+		contentLines := 0
 		for sc.Scan() {
 			f := sc.Text()
+			if strings.TrimSpace(f) == "" {
+				continue
+			}
+
+			contentLines++
 			path := filepath.ToSlash(strings.TrimPrefix(f, "./"))
 
 			filterStats.recordPatternCandidate(path)
@@ -101,6 +107,10 @@ func feedFromStdin(
 		}
 
 		close(done)
+
+		if contentLines == 0 && ctx.Err() == nil {
+			fmt.Fprintf(stderr, "warning: --files read no paths from stdin; pipe a newline-delimited file list or pass paths as arguments\n")
+		}
 
 		if err := sc.Err(); err != nil && ctx.Err() == nil {
 			fmt.Fprintf(stderr, "reading stdin: %v\n", err)

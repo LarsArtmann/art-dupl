@@ -36,13 +36,13 @@ func CollectGenericDecls(td TypeAwareData) map[string]int {
 
 			case *ast.GenDecl:
 				for _, spec := range d.Specs {
-					ts, ok := spec.(*ast.TypeSpec)
-					if !ok || ts.TypeParams == nil {
+					typeSpec, ok := spec.(*ast.TypeSpec)
+					if !ok || typeSpec.TypeParams == nil {
 						continue
 					}
 
-					if count := typeParamCount(ts.TypeParams); count > 0 {
-						index[qualifiedDeclName(pre.PkgPath, ts.Name.Name)] = count
+					if count := typeParamCount(typeSpec.TypeParams); count > 0 {
+						index[qualifiedDeclName(pre.PkgPath, typeSpec.Name.Name)] = count
 					}
 				}
 			}

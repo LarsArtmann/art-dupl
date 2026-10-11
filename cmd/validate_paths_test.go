@@ -1,12 +1,9 @@
 package cmd
 
 import (
-	"errors"
 	"os"
 	"path/filepath"
 	"testing"
-
-	duplerrors "github.com/LarsArtmann/art-dupl/errors"
 )
 
 func TestValidatePaths(t *testing.T) {
@@ -23,7 +20,6 @@ func TestValidatePaths(t *testing.T) {
 		paths          []string
 		filesFromStdin bool
 		wantErr        bool
-		wantValidation bool
 	}{
 		{
 			name:    "no paths and no stdin flag is valid",
@@ -42,11 +38,12 @@ func TestValidatePaths(t *testing.T) {
 			wantErr:        false,
 		},
 		{
-			name:           "stdin flag with positional paths is a validation error",
-			paths:          []string{"sarif", existingFile},
+			name: "stdin flag with positional paths is valid: paths are the gitignore discovery root",
+			paths: []string{
+				existingFile,
+			},
 			filesFromStdin: true,
-			wantErr:        true,
-			wantValidation: true,
+			wantErr:        false,
 		},
 		{
 			name:    "all nonexistent paths fail",
@@ -64,10 +61,6 @@ func TestValidatePaths(t *testing.T) {
 			if tt.wantErr {
 				if err == nil {
 					t.Fatalf("validatePaths(%v, %v) = nil, want error", tt.paths, tt.filesFromStdin)
-				}
-
-				if _, ok := errors.AsType[*duplerrors.DuplError](err); tt.wantValidation && !ok {
-					t.Fatalf("want validation error class, got %T: %v", err, err)
 				}
 
 				return

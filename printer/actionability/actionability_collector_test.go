@@ -27,6 +27,16 @@ func collectorIdent(name string) *domain.CloneNode {
 	return &domain.CloneNode{BaseType: golang.Ident, Name: name}
 }
 
+// collectorSel mirrors the transformer's SelectorExpr serialization: Name
+// carries the selected field, children are [X, Sel].
+func collectorSel(x, field string) *domain.CloneNode {
+	return &domain.CloneNode{
+		BaseType: golang.SelectorExpr,
+		Name:     field,
+		Children: []*domain.CloneNode{collectorIdent(x), collectorIdent(field)},
+	}
+}
+
 func appendAssign(target, value string) *domain.CloneNode {
 	return node(golang.AssignStmt,
 		node(golang.CallExpr, collectorIdent("append"), collectorIdent(target), collectorIdent(value)),
@@ -130,10 +140,10 @@ func TestAppendCollectorTail(t *testing.T) {
 					),
 					node(golang.AssignStmt,
 						node(golang.CallExpr,
-							node(golang.SelectorExpr, collectorIdent("slices"), collectorIdent("Clone")),
-							node(golang.SelectorExpr, collectorIdent("v1"), collectorIdent("Content")),
+							collectorSel("slices", "Clone"),
+							collectorSel("v1", "Content"),
 						),
-						node(golang.SelectorExpr, collectorIdent("v3"), collectorIdent("Content")),
+						collectorSel("v3", "Content"),
 					),
 					appendAssign("v2", "v3"),
 				)},
@@ -145,8 +155,8 @@ func TestAppendCollectorTail(t *testing.T) {
 			seqs: [][]*domain.CloneNode{
 				{collectorLoop(
 					node(golang.AssignStmt,
-						node(golang.SelectorExpr, collectorIdent("v1"), collectorIdent("Name")),
-						node(golang.SelectorExpr, collectorIdent("v3"), collectorIdent("Name")),
+						collectorSel("v1", "Name"),
+						collectorSel("v3", "Name"),
 					),
 					appendAssign("v2", "v3"),
 				)},
@@ -192,9 +202,7 @@ func TestAppendCollectorTail(t *testing.T) {
 			seqs: [][]*domain.CloneNode{
 				{collectorLoop(
 					node(golang.AssignStmt,
-						node(golang.CallExpr,
-							node(golang.SelectorExpr, collectorIdent("v1"), collectorIdent("Clone")),
-						),
+						node(golang.CallExpr, collectorSel("v1", "Clone")),
 						collectorIdent("v3"),
 					),
 					appendAssign("v2", "v3"),

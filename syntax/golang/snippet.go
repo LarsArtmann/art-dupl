@@ -367,6 +367,10 @@ func snippetBodyPrefix(kind SnippetKind) string {
 		return "switch {\ncase "
 	case SnippetStatements:
 		return "\n"
+	case SnippetExpression, SnippetGoFile:
+		// These kinds bypass the wrapper body entirely (see snippetWrapper),
+		// so no prefix applies; listed for switch completeness.
+		return ""
 	default:
 		return ""
 	}

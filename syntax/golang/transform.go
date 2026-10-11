@@ -452,18 +452,18 @@ func (t *transformer) instantiationType(expr ast.Expr) (string, bool) {
 		return "", false
 	}
 
-	var id *ast.Ident
+	var genericIdent *ast.Ident
 
 	switch x := expr.(type) {
 	case *ast.Ident:
-		id = x
+		genericIdent = x
 	case *ast.SelectorExpr:
-		id = x.Sel
+		genericIdent = x.Sel
 	default:
 		return "", false
 	}
 
-	if inst, ok := t.typeInfo.Instances[id]; ok && inst.Type != nil {
+	if inst, ok := t.typeInfo.Instances[genericIdent]; ok && inst.Type != nil {
 		return types.Unalias(inst.Type).String(), true
 	}
 
