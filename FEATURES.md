@@ -5,7 +5,7 @@
 
 ## Overview
 
-**art-dupl** is a Go tool for finding code clones using suffix tree algorithms and hash-based detection. It analyzes abstract syntax trees (ASTs) to find structural code clones while ignoring literal values. Supports multi-method detection, professional CLI (Fang/Cobra), 8 output formats, and 35 actionability patterns (plus 4 property-engine labels). Tuned on real-world Go projects (6,000+ Go files, 320+ templ files) to minimize false positives at the default threshold.
+**art-dupl** is a Go tool for finding code clones using suffix tree algorithms and hash-based detection. It analyzes abstract syntax trees (ASTs) to find structural code clones while ignoring literal values. Supports multi-method detection, professional CLI (Fang/Cobra), 8 output formats, and 36 actionability patterns (plus 4 property-engine labels). Tuned on real-world Go projects (6,000+ Go files, 320+ templ files) to minimize false positives at the default threshold.
 
 ---
 
@@ -60,7 +60,7 @@
 | **Health Grade**            | FULLY_FUNCTIONAL | A-F health grade (`domain.HealthScore`) with validation                                                                                                                                               |
 | **Clone Metrics**           | FULLY_FUNCTIONAL | Total clones, groups, files affected, duplication %                                                                                                                                                   |
 | **Spread Analysis**         | FULLY_FUNCTIONAL | Complexity scores, severity distributions                                                                                                                                                             |
-| **Actionability Class.**    | FULLY_FUNCTIONAL | AST-based detection of 35 denylist boilerplate patterns + 4 property-engine labels (full table with examples and priority order: [`docs/ACTIONABILITY_PATTERNS.md`](docs/ACTIONABILITY_PATTERNS.md))  |
+| **Actionability Class.**    | FULLY_FUNCTIONAL | AST-based detection of 36 denylist boilerplate patterns + 4 property-engine labels (full table with examples and priority order: [`docs/ACTIONABILITY_PATTERNS.md`](docs/ACTIONABILITY_PATTERNS.md))  |
 | **Clone Classification**    | FULLY_FUNCTIONAL | 17 categories (function, method, test, struct, interface, handler, loop, conditional, test-boilerplate, test-fixture, assignment, expression, block, call, return, defer, unknown), 4 priority levels |
 | **Refactoring Suggestions** | FULLY_FUNCTIONAL | Category + actionability pattern based suggestions (`printer/clone_classify.go::getSuggestion`)                                                                                                       |
 | **Stats Recommendations**   | FULLY_FUNCTIONAL | Grade-specific (A-F) actionable next steps in stats output                                                                                                                                            |
@@ -115,7 +115,7 @@
 | **Actionability Verdict**                | FULLY_FUNCTIONAL | Labels clones actionable vs non-actionable (test boilerplate, idioms, etc.)                                                                                     |
 | **Actionability Override**               | FULLY_FUNCTIONAL | `--no-actionability` disables filtering, showing ALL clones including boilerplate                                                                               |
 | **Disable Specific Pattern**             | FULLY_FUNCTIONAL | `--disable-pattern <label>` selectively re-enables a single boilerplate pattern                                                                                 |
-| **List Patterns**                        | FULLY_FUNCTIONAL | `--list-patterns` prints all 39 pattern labels (35 denylist + 4 property-engine)                                                                                |
+| **List Patterns**                        | FULLY_FUNCTIONAL | `--list-patterns` prints all 40 pattern labels (36 denylist + 4 property-engine)                                                                                |
 | **Explain Mode**                         | FULLY_FUNCTIONAL | `--explain` prints why each clone group was reported (type, actionability, category, extractability)                                                            |
 | **Property-Based Extractability Engine** | PARTIALLY_DONE   | Second-pass analysis using 4 computable properties (control-flow, ROI, parameterizability, confidence). Patterns run first, engine catches misses. See ADR-0017 |
 | **Confidence Tiers**                     | PARTIALLY_DONE   | Three-tier output: actionable / low-confidence / non-actionable with `confidence` field in JSON                                                                 |
@@ -195,7 +195,7 @@
 | **Explain Mode**             | FULLY_FUNCTIONAL | `--explain` prints a per-group rationale (type, actionability, category, savings)                                                                                      |
 | **Actionability Toggle**     | FULLY_FUNCTIONAL | `--no-actionability` shows all clones, including non-actionable boilerplate                                                                                            |
 | **Disable Pattern**          | FULLY_FUNCTIONAL | `--disable-pattern <label>` re-enables a specific boilerplate pattern                                                                                                  |
-| **List Patterns**            | FULLY_FUNCTIONAL | `--list-patterns` prints all 39 pattern labels (35 denylist + 4 property-engine)                                                                                       |
+| **List Patterns**            | FULLY_FUNCTIONAL | `--list-patterns` prints all 40 pattern labels (36 denylist + 4 property-engine)                                                                                       |
 | **Threshold Recommendation** | FULLY_FUNCTIONAL | `--recommend-threshold` suggests CI gate and deep-audit thresholds                                                                                                     |
 | **Token-Count Filter**       | FULLY_FUNCTIONAL | `--min-tokens N` suppresses clone groups where any clone has < N tokens                                                                                                |
 | **Diff Report**              | FULLY_FUNCTIONAL | `--diff-report <baseline>` shows new/suppressed/resolved clones                                                                                                        |
@@ -343,7 +343,7 @@ art-dupl --recommend-threshold ./src
 ### Pattern Control
 
 ```bash
-# List all 39 actionability pattern labels (35 denylist + 4 property-engine)
+# List all 40 actionability pattern labels (36 denylist + 4 property-engine)
 art-dupl --list-patterns
 
 # Re-enable a specific boilerplate pattern

@@ -41,8 +41,9 @@ These patterns represent Go idioms that cannot be eliminated without breaking se
 | Test preamble           | `test-preamble`                | Leading `t.Parallel()`/`t.Helper()` + only trivial setup statements (assignments, non-assertion calls) in test-context files. Test-context = `_test.go` OR a test-named helper package (`backuptest/`, `commandtest/`, `testutil/`). Control flow or assertion calls anywhere → stays actionable                                                                  | `t.Parallel()` + `ctx := context.Background()`        |
 | TestMain boilerplate    | `testmain-boilerplate`         | `TestMain` body: `code := m.Run()` + simple middle calls (`flag.Parse()`, `snaps.Clean(m)`) + `os.Exit(code)`. Go requires one in-package `TestMain` per package — inextractable by language rules                                                                                                                                                                | `code := m.Run(); snaps.Clean(m); os.Exit(code)`      |
 | Embed directive         | `embed-directive`              | Sequence anchored on `var ... embed.FS` (optionally + `fs.Sub` assign + error guard). The `//go:embed` compiler directive is package-bound — no import/re-export can share an embedded FS across packages                                                                                                                                                         | `var staticFiles embed.FS` + `fs.Sub(...)`            |
-| Append collector tail   | `append-collector-tail`        | Collector/filter loop tails: every statement is append-accumulation (`x = append(x, y)`), make-prealloc, collector-only `if` filter (no else), bare `return x`, or `continue` — with ≥1 actual accumulation and no call outside the builtin/conversion allow list. Data-backed: 47% of false `--suggest-generics` candidates + 3 branching-flow accept directives | `for _, v := range in { out = append(out, v) }`       |
-| Option apply loop       | `option-apply-loop`            | Bare functional-options idiom: `for _, opt := range opts { opt(x) }` optionally + bare `return x` — the loop body is exactly one call of the range variable on one argument. Constructors with further logic (defaults, wiring) do NOT match. Data-backed: 34% of false `--suggest-generics` candidates                                                           | `for _, opt := range opts { opt(&cfg) }`              |
+| Append collector tail   | `append-collector-tail`        | Collector/filter loop tails: every statement is append-accumulation (`x = append(x, y)`), make-prealloc, collector-only `if` filter (no else), bare `return x`, or `continue` — with ≥1 actual accumulation and no call outside the builtin/conversion allow list. Deep-copy plumbing (`copied := *src`, `field = slices.Clone(src.Field)`) explicitly allowed. Data-backed: 47% of false `--suggest-generics` candidates + 3 branching-flow accept directives | `for _, v := range in { out = append(out, v) }`       |
+| Option apply loop       | `option-apply-loop`            | Functional-options idiom: `for _, opt := range opts { opt(x) }` optionally + target seeding (`cfg := defaultConfig()` / `cfg := Config{seed: true}`), a lookup guard (`if !ok { return }`), or bare `return x` — the loop body is exactly one call of the range variable on one plumbing argument. Constructors with further logic (defaults, wiring, closures in the seed) do NOT match. Data-backed: 34% of false `--suggest-generics` candidates + 4 measured gap families closed 2026-10-11 | `cfg := defaultConfig()` + `for _, opt := range opts { opt(&cfg) }` |
+| Nil guard after helper  | `nil-guard-after-helper`       | 2–4 statements of canonical early-return prelude: helper-result assignments (`x := H(y)`, plain-value args) + nil guards (`if x == nil { return false }`, either comparison order) + bare/plumbing return. FP guard: guard bodies must return only plumbing — `return tx.Rollback()`, error construction, or state mutation do NOT match. Comma-ok guards deliberately declined. Data-backed: 2 branching-flow accept directives ("canonical IndexIdent+exprName nil-guard prelude", "nil-params guard") | `x := astutil.IndexIdent(i)` + `if x == nil { return false }` |
 
 ## Corpus Validation (2026-08-16)
 
@@ -56,7 +57,7 @@ Measured on the three feedback corpora, before → after adding `test-preamble`,
 
 ## How It Works
 
-1. `EvaluateActionabilityWithLabel` runs 33 pattern checks in priority order.
+1. `EvaluateActionabilityWithLabel` runs 36 pattern checks in priority order.
 2. The first matching pattern wins (returns its `PatternLabel`).
 3. If no pattern matches, the group is **Actionable**.
 4. Only `semantic` detection mode runs actionability checks. `exact` and `structural` skip them.
@@ -100,11 +101,12 @@ Patterns are checked in this order (first match wins):
 32. TestMain-boilerplate (`m.Run()` + simple calls + `os.Exit(code)`)
 33. Embed-directive (`var ... embed.FS` anchor + optional `fs.Sub` guard)
 34. Append-collector-tail (collector/filter loop tails with ≥1 append/make accumulation)
-35. Option-apply-loop (bare `for _, opt := range opts { opt(x) }` + optional bare return)
+35. Option-apply-loop (`for _, opt := range opts { opt(x) }` + optional seeding/guard/return)
+36. Nil-guard-after-helper (`x := H(y)` + `if x == nil { return ... }` prelude)
 
 ## Property-Based Classification Engine (Second Pass)
 
-After the 35 pattern-table checks run, a **property-based extractability engine** runs as a second-pass fallback. It evaluates four computable properties that define "harmful duplication" from first principles, catching false positives that the pattern table misses.
+After the 36 pattern-table checks run, a **property-based extractability engine** runs as a second-pass fallback. It evaluates four computable properties that define "harmful duplication" from first principles, catching false positives that the pattern table misses.
 
 See `docs/adr/0017-property-based-classification.md` for the full design.
 
