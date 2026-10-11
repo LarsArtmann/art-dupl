@@ -61,7 +61,7 @@ type AcceptedSet struct {
 	mu         sync.RWMutex
 	scanned    map[string][]AcceptedDirective // filename → directives found
 	matched    map[directiveKey]bool          // directives that accepted ≥1 group this run
-	nearMissed map[directiveKey]NearMiss       // window-missed directives seen this run
+	nearMissed map[directiveKey]NearMiss      // window-missed directives seen this run
 	readFile   func(string) ([]byte, error)
 }
 

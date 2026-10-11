@@ -11,7 +11,7 @@ import (
 // fixtures parse through golang.ParseSnippet so the node shapes mirror
 // production serialization exactly — the session-3 lesson: hand-built trees
 // lie in both directions (they masked the append-collector-tail child-order
-// bug for an entire session).
+// defect for an entire session).
 func TestNilGuardAfterHelperRealSource(t *testing.T) {
 	t.Parallel()
 

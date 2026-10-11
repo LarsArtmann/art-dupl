@@ -54,13 +54,13 @@ git -C ~/projects/<repo> worktree add --detach \
   ~/projects/.corpus-pins/<repo>@<short-hash> <full-hash>
 ```
 
-| Mirror                            | Used for                        |
-| --------------------------------- | ------------------------------- |
-| `.corpus-pins/go-cqrs-lite@10c9f987` | survivor + suppressed labeling |
-| `.corpus-pins/branching-flow@dbdeb0f1` | B2 mechanism verification    |
-| `.corpus-pins/go-sse@67a16fa`     | (population was 1 FALSE family) |
-| `.corpus-pins/go-paperless@1909797` | deep-copy extension target     |
-| `.corpus-pins/DiscordSync@4c0502c3` | empty population               |
+| Mirror                                 | Used for                        |
+| -------------------------------------- | ------------------------------- |
+| `.corpus-pins/go-cqrs-lite@10c9f987`   | survivor + suppressed labeling  |
+| `.corpus-pins/branching-flow@dbdeb0f1` | B2 mechanism verification       |
+| `.corpus-pins/go-sse@67a16fa`          | (population was 1 FALSE family) |
+| `.corpus-pins/go-paperless@1909797`    | deep-copy extension target      |
+| `.corpus-pins/DiscordSync@4c0502c3`    | empty population                |
 
 Mirrors are regenerable local state (delete + re-add at any recorded hash);
 they exist so before/after claims stop depending on corpus repos holding
