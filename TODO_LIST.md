@@ -38,6 +38,16 @@ or external by nature.
 - [ ] **G5 - Daemon gate-safety hook (Q1)**: prototype a pre-commit hook running `go build ./...` + jsonv2gate on daemon commits; the foreign-in-flight-edit class fired an 8th time 2026-10-11 06:15 (broken `8afa9803` on fork, caught pre-push). Write the hook-vs-exclusion-list decision doc; owner answer still pending since 2026-10-05.
 - [ ] **G6 - AGENTS.md deep-dive pointer §05 → "§05–§06"** so future sessions read the 10-11 verdicts (Option.Validate dissolved; SwitchCases/Trigger re-confirmed N/A; SARIF fully leveraged).
 
+Harvest tails from status-report §f (2026-10-11 06:37, second pass 2026-10-11):
+
+- [ ] **G7 - Empty `category` property in CLI SARIF**: fix when SARIF is next touched (M5–M8 ARE that touch — decide BEFORE the byte-level golden freezes it, else the golden pins the empty field); documented non-churn until then.
+- [ ] **G8 - go-finding upstream: release the pipeline Unreleased section** (EditListProvider et al.) as `pipeline/v1.14.0` so consumers stop pinning Unreleased semantics.
+- [ ] **G9 - Windows Test lane: retire the historical GOEXPERIMENT env split** — the crash class may be gone; verify one windows lane without the split, then simplify ci.yml.
+- [ ] **G10 - Provider: document why `Spec.Trigger.Requires` is deliberately empty** (Spec comment note; M59 §f#24).
+- [ ] **G11 - toolsdk upstream (optional): per-value validation hook** so consumers can range-check option VALUES at ValidateOptions time (would have made the 10-11 candidate C real; upstream-gated).
+- [ ] **G12 - Benchstat: confirm printer SARIF additions caused zero alloc churn on hot paths** (per-group, not per-token — verify once).
+- [ ] **G13 - `--lsp` format: consider `relatedInformation` for siblings** and verify parity with the new SARIF `relatedLocations` shape.
+
 ### Generics-precision cluster (branching-flow lessons, 2026-10-11)
 
 **Source:** branching-flow cross-project analysis (`docs/status/2026-10-11_05-02_branching-flow-lessons-self-review.md`, deduped against this file — zero prior overlap) + master plan with 103-subtask fine breakdown: `docs/planning/2026-10-11_05-06_generics-precision-from-branching-flow-lessons.md`. This cluster is the work behind ROADMAP gate 1 ("precision filtering brings `--suggest-generics` from 12.5% to >50%", the type-aware-default flip). Execution order per plan §4.
