@@ -73,4 +73,137 @@ var _ = Describe("SARIF to go-finding integration", func() {
 		Expect(sarifHashes).To(Equal(jsonHashes),
 			"SARIF and JSON channels must surface the identical group set for the same tree")
 	})
+
+	It("reconstructs the exact multi-clone partition with sibling links", func() {
+		setup := CreateBDDTestSetup()
+
+		snippets := map[string]string{
+			"multiCache": `package multi
+
+import "sync"
+
+type cacheStore struct {
+	mu    sync.Mutex
+	items map[string]int
+}
+
+func (c *cacheStore) load(key string) (int, bool) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	value, ok := c.items[key]
+	return value, ok
+}
+`,
+			"multiQueue": `package multi
+
+import "errors"
+
+var errEmpty = errors.New("queue empty")
+
+type queue struct {
+	items []string
+}
+
+func (q *queue) pop() (string, error) {
+	if len(q.items) == 0 {
+		return "", errEmpty
+	}
+	item := q.items[0]
+	q.items = q.items[1:]
+	return item, nil
+}
+`,
+			"multiFormat": `package multi
+
+import "fmt"
+
+func render(label string, count int) string {
+	header := fmt.Sprintf("%s: %d items", label, count)
+	footer := fmt.Sprintf("%s: done", label)
+	return header + "\n" + footer
+}
+`,
+		}
+
+		for prefix, code := range snippets {
+			err := setup.CreateDuplicateFiles(
+				[]string{prefix+"1.go", prefix+"2.go", prefix+"3.go"},
+				code,
+			)
+			Expect(err).NotTo(HaveOccurred())
+		}
+
+		sarifBytes, err := setup.RunArtDupl("--sarif", "--threshold", "1", "--no-actionability")
+		Expect(err).ToNot(HaveOccurred())
+
+		findings, err := gofinding.FindingsFromSARIF(context.Background(), sarifBytes)
+		Expect(err).ToNot(HaveOccurred())
+		Expect(findings).NotTo(BeEmpty())
+
+		report := gofinding.NewReportFromFindings(
+			gofinding.ToolInfo{Name: "art-dupl"},
+			findings,
+		)
+		byGroup := report.GroupFindings()
+		Expect(byGroup).NotTo(BeEmpty())
+
+		jsonBytes, err := setup.RunArtDupl("--json", "--threshold", "1", "--no-actionability")
+		Expect(err).ToNot(HaveOccurred())
+
+		var output struct {
+			CloneGroups []struct {
+				Hash  string `json:"hash"`
+				Files []struct {
+					Filename string `json:"filename"`
+				} `json:"files"`
+			} `json:"clone_groups"`
+		}
+		Expect(json.Unmarshal(jsonBytes, &output)).To(Succeed())
+		Expect(output.CloneGroups).NotTo(BeEmpty())
+
+		jsonGroups := map[string][]string{}
+		for _, group := range output.CloneGroups {
+			files := make([]string, 0, len(group.Files))
+			for _, f := range group.Files {
+				files = append(files, f.Filename)
+			}
+			jsonGroups[group.Hash] = files
+		}
+
+		sarifGroups := map[string]bool{}
+		for id := range byGroup {
+			sarifGroups[string(id)] = true
+		}
+
+		jsonHashes := map[string]bool{}
+		for hash := range jsonGroups {
+			jsonHashes[hash] = true
+		}
+
+		Expect(sarifGroups).To(Equal(jsonHashes),
+			"the SARIF round-trip must reconstruct exactly the JSON group set — no split, no merge")
+
+		for id, groupFindings := range byGroup {
+			wantFiles, ok := jsonGroups[string(id)]
+			Expect(ok).To(BeTrue(), "reconstructed group %s missing from JSON channel", id)
+
+			gotFiles := make([]string, 0, len(groupFindings))
+			for _, f := range groupFindings {
+				gotFiles = append(gotFiles, string(f.Position.File))
+			}
+
+			Expect(gotFiles).To(ConsistOf(wantFiles),
+				"group %s occurrences must match the JSON channel exactly", id)
+
+			for _, f := range groupFindings {
+				Expect(f.Related).To(HaveLen(len(wantFiles)-1),
+					"group %s: every occurrence must link its %d siblings", id, len(wantFiles)-1)
+
+				for _, rel := range f.Related {
+					Expect(rel.Position.File).To(BeElementOf(wantFiles),
+						"group %s: related location must point at a sibling occurrence", id)
+				}
+			}
+		}
+	})
 })
