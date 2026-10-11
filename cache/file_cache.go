@@ -60,8 +60,10 @@ const (
 	// reproduce the old expression-blind streams for templ files.
 	// v5 → v6: identTypeString now resolves aliases via types.Unalias, so
 	// type-aware ('ta') hashes and suggest-generics ('sg') VarType strings
-	// changed for alias-using files. v5 entries would replay alias-spelled
-	// type strings and pre-fix hashes.
+	// changed for alias-using files; IndexExpr/IndexListExpr nodes of generic
+	// instantiations now carry the instantiation marker hash and instantiated
+	// type on VarType (types.Info.Instances wiring). v5 entries would replay
+	// alias-spelled type strings and pre-fix hashes.
 	CacheVersion = 6
 
 	// Directory permissions.

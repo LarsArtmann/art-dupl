@@ -2,7 +2,10 @@ package golang
 
 import (
 	"path/filepath"
+	"slices"
 	"testing"
+
+	"golang.org/x/tools/go/packages"
 
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
@@ -24,13 +27,7 @@ func findIndexExprNode(root *syntax.Node) *syntax.Node {
 			return true
 		}
 
-		for _, c := range n.Children {
-			if walk(c) {
-				return true
-			}
-		}
-
-		return false
+		return slices.ContainsFunc(n.Children, walk)
 	}
 
 	walk(root)
@@ -132,8 +129,9 @@ func TestTypeAware_SelectorFormInstantiationFlagged(t *testing.T) {
 	t.Parallel()
 
 	dir := t.TempDir()
-	writeFile(t, filepath.Join(dir, "go.mod"), "module t\n\n-go 1.27\n")
+	writeFile(t, filepath.Join(dir, "go.mod"), "module t\n\ngo 1.27\n")
 	writeFile(t, filepath.Join(dir, "box", "box.go"), "package box\n\ntype Box[T any] struct{ Value T }\n")
+
 	mainSrc := `package main
 
 import "t/box"
