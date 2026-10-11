@@ -14,6 +14,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -41,7 +42,16 @@ const (
 	// encoding/json/v2 wire-regression scanner.
 	jsonv2gateDir = "internal/jsonv2gate"
 	jsonv2gatePkg = "./internal/jsonv2gate/"
-	checkTimeout  = 10 * time.Minute
+
+	checkTimeout = 10 * time.Minute
+)
+
+// Infrastructure failures (fail-open) and verdict failures (fail-closed) are
+// distinct static errors so callers and logs can tell them apart.
+var (
+	errNoToolchain  = errors.New("no Go toolchain found")
+	errPinnedGoBad  = errors.New("pinned Go binary is not an executable file")
+	errCheckTimeout = errors.New("gate check exceeded its time budget and was killed")
 )
 
 func main() {
@@ -52,37 +62,44 @@ func main() {
 func run(stdout, stderr io.Writer, getenv func(string) string, lookPath func(string) (string, error)) int {
 	if getenv(envDisable) == "1" {
 		fmt.Fprintln(stderr, "daemon-gate: disabled via "+envDisable+"=1, passing")
+
 		return exitPass
 	}
 
 	goBin, err := resolveGo(getenv, lookPath)
 	if err != nil {
-		// Infrastructure failure: fail-open (see package doc).
 		fmt.Fprintf(stderr, "daemon-gate: PASS (no gate): %v\n", err)
+
 		return exitPass
 	}
 
-	wd, err := os.Getwd()
+	workdir, err := os.Getwd()
 	if err != nil {
 		fmt.Fprintf(stderr, "daemon-gate: PASS (no gate): cannot determine working directory: %v\n", err)
+
 		return exitPass
 	}
 
-	if _, err := os.Stat(filepath.Join(wd, "go.mod")); err != nil {
-		// Not a Go module: nothing this binary can judge. Not an error.
+	if _, err := os.Stat(filepath.Join(workdir, "go.mod")); err != nil {
 		return exitPass
 	}
 
-	checks := planChecks(wd)
+	checks := planChecks(workdir)
 	start := time.Now()
+
 	for _, check := range checks {
 		if err := runCheck(goBin, check, stdout, stderr); err != nil {
-			fmt.Fprintf(stderr, "daemon-gate: REFUSED (red %s after %s): %v\n", check.name, time.Since(start).Round(time.Second), err)
-			fmt.Fprintln(stderr, "daemon-gate: the commit was blocked because the tree does not pass its gate; fix or stash the red state, or set "+envDisable+"=1 to bypass for one commit")
+			fmt.Fprintf(stderr, "daemon-gate: REFUSED (red %s after %s): %v\n",
+				check.name, time.Since(start).Round(time.Second), err)
+			fmt.Fprintln(stderr, "daemon-gate: the commit was blocked because the tree does not pass its gate;")
+			fmt.Fprintln(stderr, "daemon-gate: fix or stash the red state; bypass one commit with "+envDisable+"=1")
+
 			return exitRed
 		}
 	}
+
 	fmt.Fprintf(stderr, "daemon-gate: green (%d check(s), %s)\n", len(checks), time.Since(start).Round(time.Millisecond))
+
 	return exitPass
 }
 
@@ -97,74 +114,90 @@ type check struct {
 // AST scanner (the encoding/json/v2 Duration/wire regression class).
 func planChecks(wd string) []check {
 	checks := []check{{name: "build", args: []string{"build", "./..."}}}
+
 	if info, err := os.Stat(filepath.Join(wd, jsonv2gateDir)); err == nil && info.IsDir() {
 		checks = append(checks, check{name: "jsonv2gate", args: []string{"test", "-count=1", jsonv2gatePkg}})
 	}
+
 	return checks
 }
 
 // resolveGo finds the Go toolchain without assuming PATH carries it.
 func resolveGo(getenv func(string) string, lookPath func(string) (string, error)) (string, error) {
 	if pinned := getenv(envGoBin); pinned != "" {
-		if info, err := os.Stat(pinned); err != nil || info.IsDir() {
-			return "", fmt.Errorf("%s=%q is not an executable file (SystemNix must pin the nix store path)", envGoBin, pinned)
+		info, statErr := os.Stat(pinned)
+		if statErr != nil || info.IsDir() {
+			return "", fmt.Errorf("%w: %s=%q (SystemNix must pin the nix store path)", errPinnedGoBad, envGoBin, pinned)
 		}
+
 		return pinned, nil
 	}
+
 	found, err := lookPath("go")
 	if err != nil {
-		return "", fmt.Errorf("no Go toolchain: %s is unset and %q is not on PATH — the gate cannot judge this repo, so it passes open; fix by pinning %s in the service environment", envGoBin, "go", envGoBin)
+		return "", fmt.Errorf("%w: %s is unset and %q is not on PATH — the gate cannot judge this repo, so it passes open; fix by pinning %s in the service environment", errNoToolchain, envGoBin, "go", envGoBin)
 	}
+
 	return found, nil
 }
 
 // runCheck executes one gate check and turns tool failures into verdicts.
 // Output streams live so the daemon journal carries the compiler's evidence.
 func runCheck(goBin string, check check, stdout, stderr io.Writer) error {
-	cmd := exec.Command(goBin, check.args...)
+	cmd := exec.Command(goBin, check.args...) // #nosec G204 -- goBin comes from the pinned env var or LookPath, args are static
 	cmd.Stdout = stdout
 	cmd.Stderr = stderr
-	cmd.Env = gateEnv()
+	cmd.Env = gateEnv(os.Environ())
+
 	if err := cmd.Start(); err != nil {
 		return fmt.Errorf("start go %s: %w", strings.Join(check.args, " "), err)
 	}
 
 	done := make(chan error, 1)
+
 	go func() { done <- cmd.Wait() }()
 
 	timer := time.NewTimer(checkTimeout)
 	defer timer.Stop()
+
 	select {
 	case err := <-done:
 		if err != nil {
 			return fmt.Errorf("go %s failed (exit): %w", strings.Join(check.args, " "), err)
 		}
+
 		return nil
 	case <-timer.C:
 		_ = cmd.Process.Kill()
+
 		<-done
-		return fmt.Errorf("go %s exceeded %s — killed; a gate that hangs must not hang the daemon", strings.Join(check.args, " "), checkTimeout)
+
+		return fmt.Errorf("%w: go %s exceeded %s — a gate that hangs must not hang the daemon", errCheckTimeout, strings.Join(check.args, " "), checkTimeout)
 	}
 }
 
 // gateEnv builds the child environment: inherit everything, but make sure
-// GOCACHE/HOME exist so go does not die with "GOCACHE is not defined" in a
-// stripped service environment. A missing cache location is an infrastructure
-// problem the caller reports as fail-open.
-func gateEnv() []string {
-	env := os.Environ()
-	has := func(key string) bool {
-		for _, kv := range env {
-			if strings.HasPrefix(kv, key+"=") {
-				return true
-			}
-		}
-		return false
-	}
-	if !has("GOCACHE") {
+// GOCACHE exists so go does not die with "GOCACHE is not defined" in a
+// stripped service environment.
+func gateEnv(env []string) []string {
+	if !envHas(env, "GOCACHE") {
 		if cache, err := os.UserCacheDir(); err == nil {
 			env = append(env, "GOCACHE="+filepath.Join(cache, "go-build"))
 		}
 	}
+
 	return env
+}
+
+// envHas reports whether the environment carries the given key.
+func envHas(env []string, key string) bool {
+	prefix := key + "="
+
+	for _, kv := range env {
+		if strings.HasPrefix(kv, prefix) {
+			return true
+		}
+	}
+
+	return false
 }
