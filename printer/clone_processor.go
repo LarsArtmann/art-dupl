@@ -85,6 +85,12 @@ type processConfig struct {
 	// (qualified name → type-param count) used by the reuse-existing-generic
 	// verdict. nil/empty disables the reuse suggestion.
 	genericDecls map[string]int
+
+	// disabledPatterns are actionability patterns disabled via
+	// --disable-pattern. Disabled patterns must not disqualify generics
+	// candidacy nor be recorded as the group's pattern label — the flag is a
+	// full opt-out, not just a suppression toggle.
+	disabledPatterns map[actionability.PatternLabel]bool
 }
 
 // WithGenericsMinLines sets the minimum line count for generics-extraction
@@ -103,6 +109,16 @@ func WithGenericsMinLines(minLines int) ProcessOption {
 func WithGenericDecls(decls map[string]int) ProcessOption {
 	return func(conf *processConfig) {
 		conf.genericDecls = decls
+	}
+}
+
+// WithDisabledPatterns excludes the given actionability patterns from label
+// evaluation inside ProcessClones, so disabled patterns neither mark the
+// group non-actionable nor veto generics candidacy. Mirrors the semantics of
+// cmd's --disable-pattern for every consumer of NodesToGroup/ProcessClones.
+func WithDisabledPatterns(disabled map[actionability.PatternLabel]bool) ProcessOption {
+	return func(conf *processConfig) {
+		conf.disabledPatterns = disabled
 	}
 }
 
@@ -167,7 +183,12 @@ func ProcessClones(fread ReadFile, dups [][]*syntax.Node, opts ...ProcessOption)
 	// Populate group-level Actionability and CloneType after all per-instance
 	// classifications are computed. Both are group properties: every instance
 	// in a clone group shares the same actionability verdict and clone type.
-	label, verdict := actionability.EvaluateActionabilityWithLabel(toCloneNodeSeqs(dups))
+	// Disabled patterns (--disable-pattern) are honored here so the recorded
+	// label, the suppression verdict, and the generics-candidacy gate all see
+	// the same pattern set.
+	label, verdict := actionability.EvaluateActionabilityWithLabelAndDisabled(
+		toCloneNodeSeqs(dups), conf.disabledPatterns,
+	)
 	cloneType := classifyCloneType(dups)
 
 	// Generics-extraction candidacy is precision-gated: a group qualifies only

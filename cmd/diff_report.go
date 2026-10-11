@@ -98,6 +98,7 @@ func collectCurrentGroups(
 		group, err := printer.NodesToGroup(
 			os.ReadFile, k, uniq,
 			printer.WithGenericsMinLines(mergedConfig.SuggestGenericsMinLines),
+			printer.WithDisabledPatterns(suppression.DisabledPatterns),
 		)
 		if err != nil {
 			return nil, fmt.Errorf("processing clones for group %s: %w", k, err)

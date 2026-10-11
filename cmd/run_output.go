@@ -171,6 +171,7 @@ func printCloneGroups(
 			fread, k, uniq,
 			printer.WithGenericsMinLines(suppression.GenericsMinLines),
 			printer.WithGenericDecls(suppression.GenericDecls),
+			printer.WithDisabledPatterns(suppression.DisabledPatterns),
 		)
 		if err != nil {
 			return errors.Wrapf(err, errors.AnalysisError,

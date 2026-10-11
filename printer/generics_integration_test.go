@@ -3,6 +3,8 @@ package printer
 import (
 	"testing"
 
+	"github.com/LarsArtmann/art-dupl/domain"
+	"github.com/LarsArtmann/art-dupl/printer/actionability"
 	"github.com/LarsArtmann/art-dupl/syntax"
 	"github.com/LarsArtmann/art-dupl/syntax/golang"
 )
@@ -246,6 +248,59 @@ func TestProcessClones_NoVarTypeNotGenericsCandidate(t *testing.T) {
 	for i, c := range clones {
 		if c.Classification.GenericsCandidate {
 			t.Errorf("clone %d: expected GenericsCandidate=false (no VarType data)", i)
+		}
+	}
+}
+
+// TestProcessClones_DisabledPatternRestoresCandidacy pins the
+// --disable-pattern contract at the classification layer: a disabled pattern
+// must not mark the group non-actionable, must not be recorded as
+// NonActionablePattern, and must not veto generics candidacy. The escape
+// hatch exists so consumers can recover hints suppressed by a pattern they
+// disagree with (e.g. the TRUE append-collector-tail family in art-dupl
+// itself, 17b5f676).
+func TestProcessClones_DisabledPatternRestoresCandidacy(t *testing.T) {
+	t.Parallel()
+
+	makeCall := func(filename, typeA, typeB string) []*syntax.Node {
+		return []*syntax.Node{
+			{
+				Type:     golang.CallExpr,
+				Name:     "convert",
+				Filename: filename,
+				Pos:      3,
+				End:      13,
+				Children: []*syntax.Node{
+					{Type: golang.Ident, Name: "arg0", VarType: typeA, Filename: filename},
+					{Type: golang.Ident, Name: "arg1", VarType: typeB, Filename: filename},
+				},
+			},
+		}
+	}
+
+	dups := [][]*syntax.Node{
+		makeCall("test_a.go", "db.Author", "db.AuthorLabel"),
+		makeCall("test_b.go", "db.Member", "db.MemberAlias"),
+	}
+
+	disabled := map[actionability.PatternLabel]bool{actionability.PatternSingleCallExpr: true}
+
+	clones, err := ProcessClones(multiLineReadFile, dups, WithGenericsMinLines(0), WithDisabledPatterns(disabled))
+	if err != nil {
+		t.Fatalf("ProcessClones failed: %v", err)
+	}
+
+	for i, c := range clones {
+		if !c.Classification.GenericsCandidate {
+			t.Errorf("clone %d: expected GenericsCandidate=true (single-call-expression disabled)", i)
+		}
+
+		if c.Classification.NonActionablePattern != "" {
+			t.Errorf("clone %d: expected no NonActionablePattern, got %q", i, c.Classification.NonActionablePattern)
+		}
+
+		if c.Classification.Actionability != domain.Actionable {
+			t.Errorf("clone %d: expected Actionable verdict with pattern disabled", i)
 		}
 	}
 }

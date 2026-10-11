@@ -211,6 +211,18 @@ func EvaluateActionabilityWithLabel(nodeSeqs [][]*domain.CloneNode) (PatternLabe
 	return evaluateActionabilityDetailed(nodeSeqs)
 }
 
+// EvaluateActionabilityWithLabelAndDisabled is like
+// EvaluateActionabilityWithLabel but skips patterns whose labels are in the
+// disabled set. Use this wherever --disable-pattern semantics must apply to
+// the recorded label AND everything gated on it (e.g. generics candidacy) —
+// not just to group suppression.
+func EvaluateActionabilityWithLabelAndDisabled(
+	nodeSeqs [][]*domain.CloneNode,
+	disabled map[PatternLabel]bool,
+) (PatternLabel, domain.CloneActionability) {
+	return evaluateActionabilityWithDisabled(nodeSeqs, disabled)
+}
+
 func evaluateActionabilityDetailed(nodeSeqs [][]*domain.CloneNode) (PatternLabel, domain.CloneActionability) {
 	return evaluateActionabilityWithDisabled(nodeSeqs, nil)
 }
