@@ -279,11 +279,23 @@ func buildSuffixTreeStandardPass(
 }
 
 // validatePaths checks that at least one given path exists on the filesystem.
-// Skips validation when reading paths from stdin.
+// Returns a validation error when positional paths accompany --files (the file
+// list must come from stdin alone).
 // If some paths are invalid, they're silently skipped during crawl (with stderr warning).
 // Only returns an error when NONE of the specified paths exist.
 func validatePaths(paths []string, filesFromStdin bool) error {
-	if filesFromStdin || len(paths) == 0 {
+	if filesFromStdin {
+		if len(paths) > 0 {
+			return duplerrors.NewValidationError(
+				"--files reads paths from stdin; positional arguments cannot be combined with it: "+strings.Join(paths, ", "),
+				nil,
+			)
+		}
+
+		return nil
+	}
+
+	if len(paths) == 0 {
 		return nil
 	}
 
