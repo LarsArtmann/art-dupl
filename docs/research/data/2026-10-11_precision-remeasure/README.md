@@ -21,7 +21,7 @@ families existed, where, and what survived.
 ## Regeneration
 
 ```sh
-art-dupl <repo-path> --suggest-generics --no-actionability -t 2 --format json --quiet \
+art-dupl <repo-path> --suggest-generics --no-actionability -t 2 --json --quiet \
   | jq -r '[.clone_groups[] | select(.files[]?.generics_candidate == true)]
            | unique_by(.hash) | .[]
            | .hash + "\t" + ([.files[] | .filename + ":" + (.line_start|tostring) + "-" + (.line_end|tostring)] | unique | join(", "))'
