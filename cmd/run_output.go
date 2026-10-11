@@ -24,6 +24,11 @@ type SuppressionConfig struct {
 	// precision filter, unlike the fields above which suppress whole groups).
 	// 0 disables the gate.
 	GenericsMinLines int
+	// GenericDecls is the run-wide generic-declaration index (qualified name →
+	// type-param count, from golang.CollectGenericDecls over the loaded
+	// type-aware data). Powers the reuse-existing-generic suggestion; nil or
+	// empty falls back to the extraction suggestion everywhere.
+	GenericDecls     map[string]int
 	AcceptDirectives *AcceptedSet
 	NoActionability  bool
 	ShowSuppressed   bool
@@ -165,6 +170,7 @@ func printCloneGroups(
 		group, err := printer.NodesToGroup(
 			fread, k, uniq,
 			printer.WithGenericsMinLines(suppression.GenericsMinLines),
+			printer.WithGenericDecls(suppression.GenericDecls),
 		)
 		if err != nil {
 			return errors.Wrapf(err, errors.AnalysisError,

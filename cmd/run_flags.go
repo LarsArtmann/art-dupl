@@ -162,7 +162,7 @@ func runStandardAnalysis(
 	sortBy string,
 	timing *runTiming,
 ) error {
-	duplChan, parseStats, _, err := executeAnalysis(
+	duplChan, parseStats, _, genericDecls, err := executeAnalysis(
 		ctx,
 		mergedConfig,
 		mergedConfig.Paths,
@@ -211,6 +211,7 @@ func runStandardAnalysis(
 	}
 
 	suppression := buildSuppressionConfig(mergedConfig)
+	suppression.GenericDecls = genericDecls
 
 	printStart := time.Now()
 

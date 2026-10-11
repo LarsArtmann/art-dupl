@@ -80,6 +80,11 @@ type processConfig struct {
 	// genericsMinLines is the minimum line count (across all instances) for a
 	// generics-extraction candidate. Values <= 0 disable the line gate.
 	genericsMinLines int
+
+	// genericDecls is the run-wide generic-declaration index
+	// (qualified name → type-param count) used by the reuse-existing-generic
+	// verdict. nil/empty disables the reuse suggestion.
+	genericDecls map[string]int
 }
 
 // WithGenericsMinLines sets the minimum line count for generics-extraction
@@ -88,6 +93,16 @@ type processConfig struct {
 func WithGenericsMinLines(minLines int) ProcessOption {
 	return func(conf *processConfig) {
 		conf.genericsMinLines = minLines
+	}
+}
+
+// WithGenericDecls provides the run-wide generic-declaration index (from
+// golang.CollectGenericDecls over the suggest-generics type-aware data). When
+// set, generics candidates whose divergences are all instantiations of one
+// indexed generic get a reuse suggestion instead of an extraction suggestion.
+func WithGenericDecls(decls map[string]int) ProcessOption {
+	return func(conf *processConfig) {
+		conf.genericDecls = decls
 	}
 }
 
@@ -187,11 +202,30 @@ func ProcessClones(fread ReadFile, dups [][]*syntax.Node, opts ...ProcessOption)
 		clones[i].Classification.GenericsHint = genericsHint
 
 		if genericsCandidate && clones[i].Classification.Actionability == domain.Actionable {
-			clones[i].Classification.Suggestion = "Extract to generic function"
+			clones[i].Classification.Suggestion = genericsSuggestion(conf, toCloneNodeSeqs(dups))
 		}
 	}
 
 	return clones, nil
+}
+
+// genericsSuggestion decides between the two candidate suggestions: when the
+// group's divergences are all instantiations of one indexed generic, reuse it
+// (zero new abstraction); otherwise extraction is the right advice. The reuse
+// hint replaces the divergence summary so users see the actionable form.
+func genericsSuggestion(conf processConfig, seqs [][]*domain.CloneNode) string {
+	if declKey, count, ok := ClassifyReuseExistingGeneric(seqs, conf.genericDecls); ok {
+		return "Reuse existing generic " + golang.FormatGenericParams(shortDeclName(declKey), count)
+	}
+
+	return "Extract to generic function"
+}
+
+// shortDeclName strips the package-path from a qualified declaration key for
+// suggestion text ("github.com/x/pkg.Box" → "pkg.Box" keeps enough context to
+// find the declaration without the full import path noise).
+func shortDeclName(declKey string) string {
+	return shortenTypeString(declKey)
 }
 
 // passesGenericsLineGate reports whether every clone instance in the group

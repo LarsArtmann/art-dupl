@@ -22,10 +22,11 @@ import (
 
 // treeBuildResult holds the result of a suffix tree build.
 type treeBuildResult struct {
-	tree       *suffixtree.STree
-	data       []*syntax.Node
-	parseStats job.ParseStats
-	err        error
+	tree         *suffixtree.STree
+	data         []*syntax.Node
+	parseStats   job.ParseStats
+	genericDecls map[string]int
+	err          error
 }
 
 // buildParams holds parameters for suffix tree building.
@@ -166,7 +167,20 @@ func buildSuffixTreeIncremental(params buildParams) treeBuildResult {
 		incParser.SetTypeAwareData(typeInfos)
 	}
 
-	return buildSuffixTreeIncrementalPass(params, incParser, filesChan, true)
+	return withGenericDecls(
+		buildSuffixTreeIncrementalPass(params, incParser, filesChan, true),
+		golang.CollectGenericDecls(typeInfos),
+	)
+}
+
+// withGenericDecls attaches a generic-declaration index to a tree build
+// result. The index is computed once at type-data load time (empty when the
+// run did not load type-aware data) and consumed by the print phase's
+// reuse-existing-generic verdict.
+func withGenericDecls(result treeBuildResult, decls map[string]int) treeBuildResult {
+	result.genericDecls = decls
+
+	return result
 }
 
 // buildSuffixTreeIncrementalPass parses filesChan through the given incremental
@@ -222,7 +236,10 @@ func buildSuffixTreeStandard(params buildParams) treeBuildResult {
 		typeInfos, filesChan = loadTypeAwareData(params.ctx, filesChan, params.stderr, params.cfg.SuggestGenerics)
 	}
 
-	return buildSuffixTreeStandardPass(params, filesChan, typeInfos)
+	return withGenericDecls(
+		buildSuffixTreeStandardPass(params, filesChan, typeInfos),
+		golang.CollectGenericDecls(typeInfos),
+	)
 }
 
 // buildSuffixTreeStandardPass parses filesChan into a suffix tree with the
@@ -406,17 +423,17 @@ func executeAnalysis(
 	paths []string,
 	outputFormat config.OutputFormat,
 	stderr io.Writer,
-) (chan syntax.Match, job.ParseStats, *FilterStats, error) {
+) (chan syntax.Match, job.ParseStats, *FilterStats, map[string]int, error) {
 	err := validatePaths(paths, cfg.FilesFromStdin)
 	if err != nil {
-		return nil, job.ParseStats{}, nil, duplerrors.WrapValidation(err, "path validation failed")
+		return nil, job.ParseStats{}, nil, nil, duplerrors.WrapValidation(err, "path validation failed")
 	}
 
 	startProfile := startProfiling(stderr, cfg)
 
 	filterParam, err := setupFilter(stderr, cfg)
 	if err != nil {
-		return nil, job.ParseStats{}, nil, duplerrors.Wrap(
+		return nil, job.ParseStats{}, nil, nil, duplerrors.Wrap(
 			err,
 			duplerrors.AnalysisError,
 			fmt.Sprintf("failed to setup filter (outputFormat: %s)", outputFormat),
@@ -428,7 +445,7 @@ func executeAnalysis(
 	if cfg.DetectionMethods.IsHashOnly() {
 		ch, ps, fs, err := executeHashOnlyAnalysis(ctx, cfg, paths, filterParam, filterStats, outputFormat, stderr)
 
-		return ch, ps, fs, err
+		return ch, ps, fs, nil, err
 	}
 
 	if isCombinedTypeAndGenericsMode(cfg) {
@@ -449,7 +466,7 @@ func executeAnalysis(
 	job.RecordStage(ctx, job.PhaseIngest, time.Since(ingestStart))
 
 	if result.err != nil {
-		return nil, job.ParseStats{}, nil, duplerrors.Wrap(
+		return nil, job.ParseStats{}, nil, nil, duplerrors.Wrap(
 			result.err,
 			duplerrors.AnalysisError,
 			fmt.Sprintf(
@@ -470,7 +487,7 @@ func executeAnalysis(
 
 	endProfiling(cfg, startProfile)
 
-	return duplChan, result.parseStats, filterStats, nil
+	return duplChan, result.parseStats, filterStats, result.genericDecls, nil
 }
 
 // spawnCloneDetection starts a goroutine that drains clone matches from the detector.

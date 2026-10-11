@@ -68,7 +68,7 @@ func runBaseline(c *cobra.Command, arguments []string) error {
 
 	startProfile := job.StartProfile()
 
-	duplChan, parseStats, filterStats, err := executeAnalysis(
+	duplChan, parseStats, filterStats, _, err := executeAnalysis(
 		ctx, mergedConfig, mergedConfig.Paths, config.OutputFormatText, c.ErrOrStderr(),
 	)
 	if err != nil {
@@ -142,7 +142,7 @@ func runCheck(c *cobra.Command, arguments []string) error {
 	ctx, cancel := utils.ApplyTimeout(ctx, mergedConfig.Timeout)
 	defer cancel()
 
-	duplChan, _, _, err := executeAnalysis(
+	duplChan, _, _, _, err := executeAnalysis(
 		ctx, mergedConfig, mergedConfig.Paths, config.OutputFormatText, c.ErrOrStderr(),
 	)
 	if err != nil {

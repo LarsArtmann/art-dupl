@@ -48,7 +48,7 @@ func executeCombinedAnalysis(
 	filterStats *FilterStats,
 	outputFormat config.OutputFormat,
 	stderr io.Writer,
-) (chan syntax.Match, job.ParseStats, *FilterStats, error) {
+) (chan syntax.Match, job.ParseStats, *FilterStats, map[string]int, error) {
 	params := buildParams{
 		ctx:          ctx,
 		paths:        paths,
@@ -65,7 +65,7 @@ func executeCombinedAnalysis(
 	allFiles := collectFiles(ctx, filesChan)
 
 	if err := ctx.Err(); err != nil {
-		return nil, job.ParseStats{}, nil, err
+		return nil, job.ParseStats{}, nil, nil, err
 	}
 
 	typeAwareData, erasedData := loadCombinedTypeData(stderr, allFiles)
@@ -82,7 +82,7 @@ func executeCombinedAnalysis(
 
 	for _, result := range []treeBuildResult{resultTa, resultSg} {
 		if result.err != nil {
-			return nil, job.ParseStats{}, nil, duplerrors.Wrap(
+			return nil, job.ParseStats{}, nil, nil, duplerrors.Wrap(
 				result.err,
 				duplerrors.AnalysisError,
 				fmt.Sprintf(
@@ -98,7 +98,7 @@ func executeCombinedAnalysis(
 
 	merged := mergeCombinedMatches(ctx, taChan, sgChan)
 
-	return merged, resultTa.parseStats, filterStats, nil
+	return merged, resultTa.parseStats, filterStats, golang.CollectGenericDecls(typeAwareData), nil
 }
 
 // combinedDetector builds the detector for one combined-mode pass.

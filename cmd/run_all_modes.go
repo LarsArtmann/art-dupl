@@ -41,7 +41,7 @@ func runAllModes(ctx context.Context, cfg *config.Config, sortBy, outputDir stri
 	)
 
 	// Run analysis once
-	duplChan, parseStats, _, err := executeAnalysis(ctx, cfg, cfg.Paths, cfg.OutputFormat, stderr)
+	duplChan, parseStats, _, _, err := executeAnalysis(ctx, cfg, cfg.Paths, cfg.OutputFormat, stderr)
 	if err != nil {
 		return fmt.Errorf(
 			"analysis failed for paths %v (sortBy=%s, outputDir=%s): %w",

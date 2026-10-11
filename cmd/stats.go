@@ -99,7 +99,7 @@ func runStats(c *cobra.Command, arguments []string) error {
 	startProfile := job.StartProfile()
 
 	// Run analysis
-	duplChan, parseStats, filterStats, err := executeAnalysis(
+	duplChan, parseStats, filterStats, _, err := executeAnalysis(
 		ctx,
 		mergedConfig,
 		mergedConfig.Paths,

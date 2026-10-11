@@ -37,7 +37,7 @@ func runDiffReport(
 		return duplerrors.Wrap(err, duplerrors.IOError, "loading baseline "+baselinePath)
 	}
 
-	duplChan, _, _, err := executeAnalysis(
+	duplChan, _, _, _, err := executeAnalysis(
 		ctx, mergedConfig, mergedConfig.Paths, config.OutputFormatText, stderr,
 	)
 	if err != nil {

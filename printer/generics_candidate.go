@@ -7,6 +7,7 @@ import (
 
 	"github.com/LarsArtmann/art-dupl/domain"
 	"github.com/LarsArtmann/art-dupl/syntax"
+	"github.com/LarsArtmann/art-dupl/syntax/golang"
 )
 
 // TypeDivergence describes a single position where corresponding nodes across
