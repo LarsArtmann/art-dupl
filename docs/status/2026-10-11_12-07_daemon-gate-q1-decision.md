@@ -10,15 +10,15 @@
 
 The daemon commits whatever the working tree holds at debounce time. With concurrent agent sessions live on `fork`, a foreign half-done state gets snapshotted as HEAD. Since 2026-09-23 this fired at least **eight times**:
 
-| Date | Incident | Cost |
-|------|----------|------|
-| 2026-09-23/24 | jsonv2gate recurrences #1–#3 (`internal/jsonutil` + `config` re-migrated to `encoding/json/v2`; Duration refusal broke `config.SaveConfig`) | masked for days by stale test caches before detection |
-| 2026-09-29 | jsonutil regression **reached the remote** (`b679c615`, restored `42ee0a72`) | ~90 minutes live on `origin/fork` |
-| 2026-09-29 | third jsonutil clobber (`ce716456`, restored `9a97ec82`) | session time |
-| 2026-10-04 | recurrence #4 (`758646e5`, restored) | session time |
-| 2026-10-04/05 | recurrence #5 (`db992e16`/`b2a3b4ec`, restored from `d8e53515`) | golden tests flipped nondeterministically before detection |
-| 2026-10-06 | recurrence #6 (`b729d8a7`, restored `2e3d3cd7`) | caught by boundary gate before any consumer rebuilt |
-| 2026-10-11 06:15 | **build-broken half-state committed as HEAD** (`8afa9803`, healed `60b3b403`) — foreign generics-session edit with `undefined: golang` | session time; the class is not JSON-specific, it is ANY red tree |
+| Date             | Incident                                                                                                                                    | Cost                                                             |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| 2026-09-23/24    | jsonv2gate recurrences #1–#3 (`internal/jsonutil` + `config` re-migrated to `encoding/json/v2`; Duration refusal broke `config.SaveConfig`) | masked for days by stale test caches before detection            |
+| 2026-09-29       | jsonutil regression **reached the remote** (`b679c615`, restored `42ee0a72`)                                                                | ~90 minutes live on `origin/fork`                                |
+| 2026-09-29       | third jsonutil clobber (`ce716456`, restored `9a97ec82`)                                                                                    | session time                                                     |
+| 2026-10-04       | recurrence #4 (`758646e5`, restored)                                                                                                        | session time                                                     |
+| 2026-10-04/05    | recurrence #5 (`db992e16`/`b2a3b4ec`, restored from `d8e53515`)                                                                             | golden tests flipped nondeterministically before detection       |
+| 2026-10-06       | recurrence #6 (`b729d8a7`, restored `2e3d3cd7`)                                                                                             | caught by boundary gate before any consumer rebuilt              |
+| 2026-10-11 06:15 | **build-broken half-state committed as HEAD** (`8afa9803`, healed `60b3b403`) — foreign generics-session edit with `undefined: golang`      | session time; the class is not JSON-specific, it is ANY red tree |
 
 ## b) Evidence reproduced today (2026-10-11)
 
@@ -53,12 +53,12 @@ Semantics (encoded in the binary, not just documented):
 
 ## d) Options costed
 
-| Option | Mechanism | Red-tree behavior | Code changed | Fleet coverage | Risk |
-|--------|-----------|-------------------|--------------|----------------|------|
-| **A. Hook binary** (prototype) | SystemNix flips `GIT_CONFIG_VALUE_0` from `/var/empty` to a hooks dir containing the `.#daemon-gate` binary | `git commit` exits 1 → pma failure cooldown absorbs; ~1 failed LLM call + 13 s gate per cycle while red | **Zero** (config-only) | Every Go repo the daemon commits, immediately | A red tree lasting hours burns cooldown cycles; hook cannot tell pma "skip quietly" |
-| **B. pma-native gate** | pma committer runs a per-repo gate command BEFORE staging; red → existing `StatusSkipped` path | No LLM call, no git attempt, clean skip logged | pma committer + config schema + SystemNix render | Same, after pma release | Touches the fleet-critical daemon; the SystemNix comment already says "root fix belongs upstream (PMA committer should skip hooks explicitly)" |
-| **C. Exclusion list** | Add art-dupl to daemon `excludePaths` | No commits at all from art-dupl | Config-only | art-dupl only | Loses auto-commit for the most actively developed repo; protects nothing else. **Rejected** |
-| **D. Status quo** | — | Broken states keep entering history | Zero | None | The class fired twice in the last 5 days. **Rejected** |
+| Option                         | Mechanism                                                                                                   | Red-tree behavior                                                                                       | Code changed                                     | Fleet coverage                                | Risk                                                                                                                                           |
+| ------------------------------ | ----------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- | ------------------------------------------------ | --------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| **A. Hook binary** (prototype) | SystemNix flips `GIT_CONFIG_VALUE_0` from `/var/empty` to a hooks dir containing the `.#daemon-gate` binary | `git commit` exits 1 → pma failure cooldown absorbs; ~1 failed LLM call + 13 s gate per cycle while red | **Zero** (config-only)                           | Every Go repo the daemon commits, immediately | A red tree lasting hours burns cooldown cycles; hook cannot tell pma "skip quietly"                                                            |
+| **B. pma-native gate**         | pma committer runs a per-repo gate command BEFORE staging; red → existing `StatusSkipped` path              | No LLM call, no git attempt, clean skip logged                                                          | pma committer + config schema + SystemNix render | Same, after pma release                       | Touches the fleet-critical daemon; the SystemNix comment already says "root fix belongs upstream (PMA committer should skip hooks explicitly)" |
+| **C. Exclusion list**          | Add art-dupl to daemon `excludePaths`                                                                       | No commits at all from art-dupl                                                                         | Config-only                                      | art-dupl only                                 | Loses auto-commit for the most actively developed repo; protects nothing else. **Rejected**                                                    |
+| **D. Status quo**              | —                                                                                                           | Broken states keep entering history                                                                     | Zero                                             | None                                          | The class fired twice in the last 5 days. **Rejected**                                                                                         |
 
 ## e) Recommendation
 

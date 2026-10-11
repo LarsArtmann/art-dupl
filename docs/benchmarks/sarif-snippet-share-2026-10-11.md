@@ -6,10 +6,10 @@
 
 ## Numbers
 
-| Threshold | SARIF bytes | Primary snippet bytes | Related snippet bytes | Related snippet share | Results | Related locs (all w/ snippet) |
-|-----------|-------------|----------------------|----------------------|----------------------|---------|-------------------------------|
-| `-t 1`    | 13,883,532  | 136,012 (0.98%)      | **1,268,255**        | **9.13%**            | 1,840   | 17,904                        |
-| default(5)| 70,911      | 8,269 (11.7%)        | **8,458**            | **11.9%**            | 5       | 8                             |
+| Threshold  | SARIF bytes | Primary snippet bytes | Related snippet bytes | Related snippet share | Results | Related locs (all w/ snippet) |
+| ---------- | ----------- | --------------------- | --------------------- | --------------------- | ------- | ----------------------------- |
+| `-t 1`     | 13,883,532  | 136,012 (0.98%)       | **1,268,255**         | **9.13%**             | 1,840   | 17,904                        |
+| default(5) | 70,911      | 8,269 (11.7%)         | **8,458**             | **11.9%**             | 5       | 8                             |
 
 Every related location duplicated the sibling's full `Fragment` text: an N-instance
 group shipped the same fragment N times (once primary + N-1 copies).

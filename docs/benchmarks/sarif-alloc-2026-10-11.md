@@ -12,6 +12,7 @@ separately by the suffixtree/syntax alloc budgets
 output-path cost so future wire changes have a benchstat baseline.
 
 Benchmark: `BenchmarkSARIFPrintClonesMulti` (`printer/sarif_bench_test.go`)
+
 - one clone group, 3 occurrences in distinct files, fragments present
   (snippet + sibling-link paths hot), full PrintHeader/PrintClones/
   PrintFooter cycle including the final JSON marshal of the whole document.

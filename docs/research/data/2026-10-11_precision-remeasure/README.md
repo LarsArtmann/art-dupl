@@ -29,14 +29,14 @@ art-dupl <repo-path> --suggest-generics --no-actionability -t 2 --format json --
 
 ## Corpus pins (pre-pattern population, 2026-10-11 ~12:13 CEST)
 
-| Repo            | HEAD        | Note                                     |
-| --------------- | ----------- | ---------------------------------------- |
-| go-cqrs-lite    | `80bf5a18a` | the only repo session 2 pinned           |
-| go-sse          | `67a16fa`   | recorded post-hoc (repo drifts under its own daemon) |
-| go-paperless    | `1909797`   | recorded post-hoc                        |
-| DiscordSync     | `4c0502c3`  | recorded post-hoc                        |
-| branching-flow  | `0d11b13a`  | recorded post-hoc                        |
-| art-dupl        | fork HEAD at measurement time |                           |
+| Repo           | HEAD                          | Note                                                 |
+| -------------- | ----------------------------- | ---------------------------------------------------- |
+| go-cqrs-lite   | `80bf5a18a`                   | the only repo session 2 pinned                       |
+| go-sse         | `67a16fa`                     | recorded post-hoc (repo drifts under its own daemon) |
+| go-paperless   | `1909797`                     | recorded post-hoc                                    |
+| DiscordSync    | `4c0502c3`                    | recorded post-hoc                                    |
+| branching-flow | `0d11b13a`                    | recorded post-hoc                                    |
+| art-dupl       | fork HEAD at measurement time |                                                      |
 
 Post-fix survivor tables were measured at the 2026-10-11 18:5x HEADs
 (recorded in each TSV header) because the corpus drifted between
