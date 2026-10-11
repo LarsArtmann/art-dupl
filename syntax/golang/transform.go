@@ -3,6 +3,7 @@ package golang
 import (
 	"go/ast"
 	"go/token"
+	"go/types"
 
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
@@ -270,10 +271,28 @@ func (t *transformer) trans(
 
 	case *ast.IndexExpr:
 		o.Type = IndexExpr
+		// When go/types data is loaded (--type-aware / --suggest-generics),
+		// types.Info.Instances disambiguates generic instantiation
+		// (Box[int], f[T](x)) from slice/map indexing (xs[i]). The marker is
+		// encoded into the node type so the two no longer hash identically;
+		// the instantiated type string lands on VarType for classification
+		// and the reuse-existing-generic verdict. Without type info the node
+		// type stays plain — the parser cannot make this distinction (plan Q2
+		// decision, generics-precision cluster T7).
+		if instType, ok := t.instantiationType(n.X); ok {
+			o.Type = encodeSemanticType(IndexExpr, instantiationMarker, t.config.Mode.HashesIdentifiers())
+			o.VarType = instType
+		}
+
 		o.AddChildren(t.trans(n.X), t.trans(n.Index))
 
 	case *ast.IndexListExpr:
 		o.Type = IndexListExpr
+		if instType, ok := t.instantiationType(n.X); ok {
+			o.Type = encodeSemanticType(IndexListExpr, instantiationMarker, t.config.Mode.HashesIdentifiers())
+			o.VarType = instType
+		}
+
 		o.AddChildren(t.trans(n.X))
 
 		for _, idx := range n.Indices {
@@ -417,6 +436,38 @@ func (t *transformer) encodeTypeIfAware(nameForHash string, n *ast.Ident, o *syn
 	}
 
 	return nameForHash
+}
+
+// instantiationMarker is the semantic token that distinguishes a generic
+// instantiation (Box[int], f[T](x)) from plain indexing (xs[i]) in the node
+// type hash. Only applied when go/types data is available (types.Info.Instances).
+const instantiationMarker = "instantiation"
+
+// instantiationType resolves whether expr is the operand of a generic
+// instantiation and returns the instantiated type string. Handles the bare
+// identifier form (Box[int]) and the selector form (pkg.Box[int]) — go/types
+// keys Instances by the identifier denoting the instantiated generic.
+func (t *transformer) instantiationType(expr ast.Expr) (string, bool) {
+	if t.typeInfo == nil {
+		return "", false
+	}
+
+	var id *ast.Ident
+
+	switch x := expr.(type) {
+	case *ast.Ident:
+		id = x
+	case *ast.SelectorExpr:
+		id = x.Sel
+	default:
+		return "", false
+	}
+
+	if inst, ok := t.typeInfo.Instances[id]; ok && inst.Type != nil {
+		return types.Unalias(inst.Type).String(), true
+	}
+
+	return "", false
 }
 
 // extractReceiverTypeName extracts the type name from a method receiver.

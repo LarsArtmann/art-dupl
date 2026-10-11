@@ -339,7 +339,7 @@ func TestExecuteAnalysis_Integration(t *testing.T) {
 
 		ctx := t.Context()
 
-		duplChan, parseStats, filterStats, err := executeAnalysis(
+		duplChan, parseStats, filterStats, _, err := executeAnalysis(
 			ctx,
 			cfg,
 			[]string{tmpDir},
@@ -379,7 +379,7 @@ func TestExecuteAnalysis_Integration(t *testing.T) {
 
 		ctx := t.Context()
 
-		duplChan, _, _, err := executeAnalysis(ctx, cfg, []string{tmpDir}, config.OutputFormatText, io.Discard)
+		duplChan, _, _, _, err := executeAnalysis(ctx, cfg, []string{tmpDir}, config.OutputFormatText, io.Discard)
 		if err != nil {
 			t.Fatalf("executeAnalysis() error = %v", err)
 		}
