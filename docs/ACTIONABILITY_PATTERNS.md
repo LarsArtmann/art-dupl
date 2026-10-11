@@ -41,6 +41,8 @@ These patterns represent Go idioms that cannot be eliminated without breaking se
 | Test preamble           | `test-preamble`                | Leading `t.Parallel()`/`t.Helper()` + only trivial setup statements (assignments, non-assertion calls) in test-context files. Test-context = `_test.go` OR a test-named helper package (`backuptest/`, `commandtest/`, `testutil/`). Control flow or assertion calls anywhere → stays actionable | `t.Parallel()` + `ctx := context.Background()`        |
 | TestMain boilerplate    | `testmain-boilerplate`         | `TestMain` body: `code := m.Run()` + simple middle calls (`flag.Parse()`, `snaps.Clean(m)`) + `os.Exit(code)`. Go requires one in-package `TestMain` per package — inextractable by language rules                                                                                               | `code := m.Run(); snaps.Clean(m); os.Exit(code)`      |
 | Embed directive         | `embed-directive`              | Sequence anchored on `var ... embed.FS` (optionally + `fs.Sub` assign + error guard). The `//go:embed` compiler directive is package-bound — no import/re-export can share an embedded FS across packages                                                                                        | `var staticFiles embed.FS` + `fs.Sub(...)`            |
+| Append collector tail   | `append-collector-tail`        | Collector/filter loop tails: every statement is append-accumulation (`x = append(x, y)`), make-prealloc, collector-only `if` filter (no else), bare `return x`, or `continue` — with ≥1 actual accumulation and no call outside the builtin/conversion allow list. Data-backed: 47% of false `--suggest-generics` candidates + 3 branching-flow accept directives | `for _, v := range in { out = append(out, v) }`       |
+| Option apply loop       | `option-apply-loop`            | Bare functional-options idiom: `for _, opt := range opts { opt(x) }` optionally + bare `return x` — the loop body is exactly one call of the range variable on one argument. Constructors with further logic (defaults, wiring) do NOT match. Data-backed: 34% of false `--suggest-generics` candidates                                                            | `for _, opt := range opts { opt(&cfg) }`              |
 
 ## Corpus Validation (2026-08-16)
 
@@ -97,10 +99,12 @@ Patterns are checked in this order (first match wins):
 31. Test-preamble (`t.Parallel()`/`t.Helper()` + trivial setup, test-context files)
 32. TestMain-boilerplate (`m.Run()` + simple calls + `os.Exit(code)`)
 33. Embed-directive (`var ... embed.FS` anchor + optional `fs.Sub` guard)
+34. Append-collector-tail (collector/filter loop tails with ≥1 append/make accumulation)
+35. Option-apply-loop (bare `for _, opt := range opts { opt(x) }` + optional bare return)
 
 ## Property-Based Classification Engine (Second Pass)
 
-After the 33 pattern-table checks run, a **property-based extractability engine** runs as a second-pass fallback. It evaluates four computable properties that define "harmful duplication" from first principles, catching false positives that the pattern table misses.
+After the 35 pattern-table checks run, a **property-based extractability engine** runs as a second-pass fallback. It evaluates four computable properties that define "harmful duplication" from first principles, catching false positives that the pattern table misses.
 
 See `docs/adr/0017-property-based-classification.md` for the full design.
 
