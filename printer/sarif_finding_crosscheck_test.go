@@ -99,9 +99,14 @@ func TestSARIFCrossCheckCLIvsGoFinding(t *testing.T) {
 // TestSARIFCrossCheckRelatedLocations extends the T09 contract to
 // result.relatedLocations for multi-occurrence groups: for every result,
 // both producers must list the same sibling occurrence locations with the
-// same relation message. The go-finding/id property on go-finding's related
-// entries is an accepted delta (the CLI result set has no per-occurrence
-// ids; it carries fingerprints instead).
+// same relation message. Region snippets are exact parity as of 2026-10-11
+// (M5): NEITHER producer emits them on related regions — the CLI previously
+// duplicated the fragment text per sibling (9.1% of SARIF bytes at -t 1 on
+// go-cqrs-lite) and was trimmed to match go-finding's sarifRelatedLocs,
+// whose import path drops related snippets anyway. The go-finding/id
+// property on go-finding's related entries remains an accepted delta (the
+// CLI result set has no per-occurrence ids; it carries fingerprints
+// instead).
 func TestSARIFCrossCheckRelatedLocations(t *testing.T) {
 	t.Parallel()
 
