@@ -30,6 +30,7 @@ func NewBaselineCommand() *cobra.Command {
 
 	addSharedFlags(cmd)
 	cmd.Flags().String(baselinePathFlag, baseline.DefaultBaselinePath, "path to write the baseline file")
+	addTestInclusionFlags(cmd)
 
 	return cmd
 }
@@ -51,8 +52,17 @@ func NewCheckCommand() *cobra.Command {
 	addSharedFlags(cmd)
 	cmd.Flags().String(baselinePathFlag, baseline.DefaultBaselinePath, "path to the baseline file")
 	cmd.Flags().Bool("json", false, "output new clones as JSON")
+	addTestInclusionFlags(cmd)
 
 	return cmd
+}
+
+// addTestInclusionFlags gives baseline/check the same test-file controls the
+// root command has: a baseline recorded with a different test-inclusion
+// mode than the check run silently mismatches, which defeats the CI gate.
+func addTestInclusionFlags(cmd *cobra.Command) {
+	cmd.Flags().Bool("ignore-tests", false, "exclude *_test.go files from analysis entirely")
+	cmd.Flags().Bool("include-tests", false, "override --ignore-tests and analyze test files normally")
 }
 
 func runBaseline(c *cobra.Command, arguments []string) error {

@@ -13,20 +13,13 @@ tool_options:
   go-version-auto-configure:
     respect_patch_floor: true
 
+# go-mod-normalize UNSKIPPED 2026-10-14 (W25/BF2): BOTH go-line rewriters now
+# honor tool_options.go-version-auto-configure.respect_patch_floor (set above)
+# — gvac since v0.2.5, go-mod-normalize since BuildFlow's 2026-10-14 plumbing —
+# so the deliberate `go 1.27.1` pin survives every pipeline (verified live:
+# normalize run leaves the pin byte-identical). The 2026-09/10 flip-flop war
+# is over; see gvac README's rule×pin matrix.
 skip_steps:
-  # go.mod deliberately pins the patch version (`go 1.27.1`): it aligns with
-  # .golangci.yml run.go, flake.nix go_1_27, and the CI matrix, and keeps the
-  # stale-shell guard hard-failing below 1.27.1. go-mod-normalize rewrites it
-  # to "go 1.27" on every full run while `buildflow update` raises it back to
-  # the toolchain version — the go-line flip-flop BuildFlow's own preflight
-  # warns about (workspace/go-line-flipflop). Skipped until the fleet aligns
-  # the go-version-auto-configure and go-mod-update dispositions upstream.
-  # 2026-09-29: go-mod-normalize was NOT the only rewriter — observed live,
-  # the FORMAT pipeline's go-version-auto-configure:repair step also strips
-  # the patch (`go 1.27.1` → `go 1.27`) even in fast build mode, so the
-  # flip-flop survived this skip. Skipped too; same upstream-alignment
-  # condition.
-  - go-mod-normalize
   # This repo deliberately bans exhaustruct and tagliatelle (see AGENTS.md
   # "Lint config" and scripts/check-disabled-linters.sh). The auto-configurer
   # re-adds both from its fleet defaults on every pipeline run; the guard
