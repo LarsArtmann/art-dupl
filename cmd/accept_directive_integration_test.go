@@ -119,7 +119,7 @@ func TestDeadDirectiveWarningEndToEnd(t *testing.T) {
 	dupCode := "package dup\n\n" +
 		"import \"fmt\"\n\n" +
 		"func fa(x int) int {\n" +
-		"\t// art-dupl:accept deadbeefdeadbeef\n" +
+		"\t// art-dupl:" + "accept deadbeefdeadbeef\n" +
 		"\ta := x + 1\n" +
 		"\tb := a * 2\n" +
 		"\tc := b - 3\n" +

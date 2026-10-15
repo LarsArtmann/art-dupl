@@ -211,12 +211,12 @@ func diffLCS(srcRows, dstRows [][]byte, left, right []DiffLine) bool {
 			j--
 		case dp[i-1][j] >= dp[i][j-1]:
 			// Line removed from base
-			left[i-1].Type = DiffLineRemoved //art-dupl:accept LCS removed/added mirror //art-dupl:accept LCS removed/added mirror
+			left[i-1].Type = DiffLineRemoved //art-dupl:accept LCS removed/added mirror
 			hasDiff = true
 			i--
 		default:
 			// Line added in compared
-			right[j-1].Type = DiffLineAdded //art-dupl:accept LCS removed/added mirror //art-dupl:accept LCS removed/added mirror
+			right[j-1].Type = DiffLineAdded //art-dupl:accept LCS removed/added mirror
 			hasDiff = true
 			j--
 		}

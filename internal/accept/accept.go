@@ -1,4 +1,4 @@
-// Package accept resolves //art-dupl:accept directives: in-source
+// Package accept resolves art-dupl:accept directives: in-source
 // suppressions users place on or above clone ranges they have reviewed.
 //
 // Extracted from cmd/accept_directive.go (2026-10-05) so non-CLI consumers —
@@ -19,13 +19,12 @@ import (
 	"github.com/LarsArtmann/art-dupl/domain"
 )
 
-// acceptDirectiveRe locates the //art-dupl:accept marker anywhere on a line,
+// acceptDirectiveRe locates the accept directive marker anywhere on a line,
 // tolerating optional whitespace between "//" and "art-dupl". This recognizes
-// the compact form (//art-dupl:accept), the gofmt-canonical form
-// (// art-dupl:accept — gofmt enforces a space after "//" for comment lines),
-// and trailing inline directives (code(); //art-dupl:accept). Without the
-// whitespace tolerance, every standalone directive written in idiomatic Go
-// style would be silently ignored.
+// the compact form, the gofmt-canonical form (gofmt enforces a space after
+// "//" for comment lines), and trailing inline directives on code lines.
+// Without the whitespace tolerance, every standalone directive written in
+// idiomatic Go style would be silently ignored.
 var acceptDirectiveRe = regexp.MustCompile(`//\s*art-dupl:accept`)
 
 // acceptDirectiveScanAbove is the number of lines above clone.LineStart to
@@ -43,18 +42,25 @@ const acceptDirectiveScanAbove = 5
 // window. Diagnosing this silently-ignored-intent case is plan T15.
 const acceptDirectiveNearMissAbove = 10
 
+// MarkerText spells the directive marker for diagnostics and user-facing help
+// text. It is assembled by concatenation so art-dupl's own source lines never
+// contain the contiguous marker: scanFile regex-matches any source line, so a
+// literal occurrence anywhere in this repository would be indistinguishable
+// from a real directive on self-runs.
+const MarkerText = "//art-dupl:" + "accept"
+
 const (
 	scannerInitBufSize = 65536   // 64 KB
 	scannerMaxBufSize  = 1048576 // 1 MB
 )
 
-// AcceptedDirective represents a single //art-dupl:accept comment in source code.
+// AcceptedDirective represents a single art-dupl:accept comment in source code.
 type AcceptedDirective struct {
 	Line int    // 1-indexed source line number where the directive appears
 	Hash string // optional group hash for precision matching (empty = match any group)
 }
 
-// AcceptedSet tracks //art-dupl:accept directives across source files.
+// AcceptedSet tracks art-dupl:accept directives across source files.
 // It lazily scans files on first access and caches the result so each file is
 // read at most once per run.
 type AcceptedSet struct {
@@ -104,11 +110,19 @@ func NewAcceptedSet(readFile func(string) ([]byte, error)) *AcceptedSet {
 // (LineStart - acceptDirectiveScanAbove) <= N <= LineEnd. This matches user
 // expectations: directives placed on the line above the clone (like every
 // other linter) are honored. When the directive includes a hash
-// (//art-dupl:accept <hash>), it only matches groups with that exact hash.
+// (art-dupl:accept <hash>), it only matches groups with that exact hash.
+//
+// Every directive covering ANY clone of an accepted group is recorded as
+// matched, not just the one that first proves acceptance: returning at the
+// first matching clone left directives on the group's later clones
+// unaccounted, which surfaced as false near-miss and stale-hash warnings
+// whenever such a directive also sat near a different group.
 func (a *AcceptedSet) IsAccepted(group domain.ProcessedCloneGroup) bool {
 	if a == nil {
 		return false
 	}
+
+	accepted := false
 
 	for _, clone := range group.Clones {
 		directives := a.getDirectives(clone.Filename)
@@ -129,12 +143,12 @@ func (a *AcceptedSet) IsAccepted(group domain.ProcessedCloneGroup) bool {
 			if d.Hash == "" || d.Hash == group.Hash {
 				a.recordMatched(clone.Filename, d.Line)
 
-				return true
+				accepted = true
 			}
 		}
 	}
 
-	return false
+	return accepted
 }
 
 // getDirectives returns the accept directives for the given file, scanning it
@@ -161,7 +175,7 @@ func (a *AcceptedSet) getDirectives(filename string) []AcceptedDirective {
 	return directives
 }
 
-// scanFile reads a file and extracts all //art-dupl:accept directives.
+// scanFile reads a file and extracts all accept directives.
 func (a *AcceptedSet) scanFile(filename string) []AcceptedDirective {
 	data, err := a.readFile(filename)
 	if err != nil {
@@ -190,15 +204,17 @@ func (a *AcceptedSet) scanFile(filename string) []AcceptedDirective {
 		rest := strings.TrimSpace(text[loc[1]:])
 
 		// Grammar (suppression behavior is identical for every input — only
-		// dead-directive reporting visibility changes at the edges):
-		//   //art-dupl:accept                    → bare accept (hash-less)
-		//   //art-dupl:accept <hex>              → precision hash (group
+		// dead-directive reporting visibility changes at the edges), written
+		// without the comment slashes so the lines below are not themselves
+		// scanned as directives:
+		//   art-dupl:accept                    → bare accept (hash-less)
+		//   art-dupl:accept <hex>              → precision hash (group
 		//       hashes are XXH3 16-char hex, so a non-hex token could never
 		//       match a group)
-		//   //art-dupl:accept <multi-word text>  → description, bare accept
-		//   //art-dupl:accept <single non-hex>   → NOT a directive. Prose
+		//   art-dupl:accept <multi-word text>  → description, bare accept
+		//   art-dupl:accept <single non-hex>   → NOT a directive. Prose
 		//       merely mentioning the syntax ("...accepts it with
-		//       //art-dupl:accept.") lands here; under the old single-token-
+		//       art-dupl:accept.") lands here; under the old single-token-
 		//       is-a-hash rule it became a precision directive that could
 		//       never fire — harmless before the dead-directive detector,
 		//       nonsense-warning material after.
@@ -266,7 +282,7 @@ func (a *AcceptedSet) recordNearMiss(filename string, line, groupStart int) {
 }
 
 // DeadDirectives returns the hash-precision directives seen this run that
-// matched zero groups. Hash-less directives (//art-dupl:accept without a
+// matched zero groups. Hash-less directives (art-dupl:accept without a
 // token) never go stale in this sense — they accept whatever sits nearby —
 // so they are never reported. Only directives in files that the run actually
 // consulted (files with at least one evaluated clone group) are visible here;
@@ -318,7 +334,8 @@ func (a *AcceptedSet) WarnDeadDirectives(stderr io.Writer) {
 	for _, d := range dead {
 		fmt.Fprintf(
 			stderr,
-			"warning: stale //art-dupl:accept %s at %s:%d — matched no clone groups this run; remove it or update the hash\n",
+			"warning: stale %s %s at %s:%d — matched no clone groups this run; remove it or update the hash\n",
+			MarkerText,
 			d.Hash,
 			d.Filename,
 			d.Line,
@@ -373,7 +390,8 @@ func (a *AcceptedSet) WarnNearMissDirectives(stderr io.Writer) {
 	for _, m := range misses {
 		fmt.Fprintf(
 			stderr,
-			"warning: //art-dupl:accept at %s:%d sits %d lines above a clone group starting at line %d — outside the %d-line acceptance window; move the directive onto the flagged range or within %d lines above it\n",
+			"warning: %s at %s:%d sits %d lines above a clone group starting at line %d — outside the %d-line acceptance window; move the directive onto the flagged range or within %d lines above it\n",
+			MarkerText,
 			m.Filename,
 			m.Line,
 			m.GroupStart-m.Line,

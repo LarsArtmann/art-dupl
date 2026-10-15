@@ -141,10 +141,17 @@ func TestAcceptedSetNilIsSafe(t *testing.T) {
 func TestAcceptedSetHashPrecision(t *testing.T) {
 	t.Parallel()
 
+	// The directive line is assembled by concatenation so the contiguous
+	// marker never appears in this file's own source: the production scanner
+	// regex-matches any source line, so a literal fixture here fires the
+	// stale-directive warning on art-dupl's own self-runs (same discipline as
+	// the fuzz-seed gate's fixture rule).
+	hashDirective := "\t//art-dupl:" + "accept abc123"
+
 	fileContent := `package example
 
 func foo() {
-	//art-dupl:accept abc123
+` + hashDirective + `
 	fmt.Println("hello")
 }
 `

@@ -7,14 +7,14 @@ import (
 	"github.com/LarsArtmann/art-dupl/internal/accept"
 )
 
-// The //art-dupl:accept directive machinery is canonical in internal/accept
+// The art-dupl:accept directive machinery is canonical in internal/accept
 // (extracted 2026-10-05, same pattern as internal/gitignore) so the toolsdk
 // provider can share the exact suppression semantics; these aliases keep the
 // cmd-level API — tests and run_output call sites — unchanged.
 type (
-	// AcceptedSet tracks //art-dupl:accept directives across source files.
+	// AcceptedSet tracks art-dupl:accept directives across source files.
 	AcceptedSet = accept.AcceptedSet
-	// AcceptedDirective is a single //art-dupl:accept comment in source code.
+	// AcceptedDirective is a single art-dupl:accept comment in source code.
 	AcceptedDirective = accept.AcceptedDirective
 	// DeadDirective is a hash-precision directive that matched zero groups.
 	DeadDirective = accept.DeadDirective
