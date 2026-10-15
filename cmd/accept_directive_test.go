@@ -453,13 +453,19 @@ func TestAcceptedSetGofmtStyleDirective(t *testing.T) {
 	// old scanner matched the exact substring "//art-dupl:accept" (no space)
 	// and silently dropped every gofmt-canonical directive. The scanner now
 	// tolerates optional whitespace between "//" and "art-dupl".
+	// Both fixture directives are assembled so the contiguous marker stays out
+	// of this file's own source: the scanner would otherwise read them as real
+	// directives sitting near this test's own clone groups.
+	gofmtStandalone := "// art-dupl:" + "accept gofmt-canonical standalone directive with a description"
+	gofmtInline := "fmt.Println(\"x\") // art-dupl:" + "accept inline directive also tolerates the space"
+
 	fileContent := `package example
 
-// art-dupl:accept gofmt-canonical standalone directive with a description
+` + gofmtStandalone + `
 const Foo = pkg.Foo
 
 func bar() {
-	fmt.Println("x") // art-dupl:accept inline directive also tolerates the space
+	` + gofmtInline + `
 }
 `
 

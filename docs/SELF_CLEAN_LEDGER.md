@@ -178,3 +178,59 @@ recorded so the monthly self-scan does not re-litigate them:
   (2026-10-06) — the /tmp-vanish class the 09-28 pass already swore off.
   Rule: keys are MECHANICAL (`--emit-keys <file> <lineno...>`) — verdict
   agents quote evidence, the driver resolves keys against the file.
+
+## 2026-10-16 — accept-directive self-run triage (`-t 3 --suggest-generics`)
+
+First self-run after the near-miss detector (plan T15) surfaced three
+warnings, and the deterministic accounting fix exposed a fourth latent one.
+Two real defects, two fixture/prose classes:
+
+- **IsAccepted accounting bug (fixed)**: `IsAccepted` returned at the FIRST
+  matching clone, so directives covering a group's LATER clones were never
+  recorded as matched. `printer/diff.go:227` (inline directive on the second
+  clone of the accepted LCS-backtrack group {214-216, 227-229}) was falsely
+  reported as a near-miss against the neighboring group; the same shape
+  could produce false stale-hash reports, and warning visibility was
+  clone-order and run-scope dependent (the integration-test fixture warned
+  in ./cmd-scoped runs but not full runs). Fix: record every covering
+  directive before returning. Pinned by
+  `TestAcceptedSetAccountsDirectivesOnEveryClone` (cmd/accept_directive_test.go).
+- **Prose directives in production sources (fixed)**: the scanner
+  regex-matches any source line, so every doc-comment mention of the full
+  marker syntax was a live bare directive — the one on `DeadDirectives`'s
+  doc (internal/accept/accept.go:269) sat 6 lines above its own function's
+  nil-guard clone group and warned. All prose mentions in production files
+  were rewritten without the `//` prefix; runtime strings use the
+  concatenated `accept.MarkerText` const (assembled so no art-dupl source
+  line contains the contiguous marker). printer/finding uses an inline
+  split (arch-lint: may not import internal/accept).
+- **Test fixtures in scanned sources (fixed where active)**: `_test.go`
+  files are analyzed by default (config `IgnoreFiles` default is empty), so
+  directive fixtures inside the accept tests are scanned as real
+  directives. The hash fixture at cmd/accept_directive_test.go:147 (dead
+  warning), the integration fixture at :122 (near-miss in scoped runs), and
+  the gofmt-style fixtures at :458/:462 (near-miss + silent accept of the
+  adjacent readFile group) are now assembled by concatenation — same
+  discipline as the fuzz-seed gate's fixture rule. Remaining bare fixtures
+  (:187, :254, :498, …) are accepted residuals: they only double-suppress
+  test-file groups that test-context patterns already suppress, and
+  splicing every one would wreck fixture readability.
+- **Deferred**: a quote-aware scanner (skip marker matches inside string
+  literals) would fix the fixture class generally — rejected for now as
+  hand-rolled-lexer risk (escapes, backtick blocks, .templ) for noise the
+  warnings already surface deterministically.
+- **diff.go cleanup**: the doubled inline directives at 214/219 (appended
+  twice by an earlier session) were deduplicated; all four LCS directives
+  (214/219/227/233) are live acceptors under the accounting fix.
+- Cosmetic: `loadTypeAwareData`'s progress label now says
+  "Suggest-generics mode" when only `--suggest-generics` is active
+  (previously always "Type-aware mode").
+- Post-fix full self-run: ZERO warnings, exit 0, 5 shown / 205 detected
+  (was 207 — the two dropped groups are fixture-adjacent test-file clones
+  whose shapes the splice restructured; scoped ./cmd count 24→22 for the
+  same reason), `-t 5` self-analysis invariant still 0 shown.
+- **jsonv2 recurrence #8 (restored same session)**: auto-commit `7348b4ba`
+  (2026-10-11 23:15) re-migrated `internal/jsonutil/jsonutil.go`,
+  `config/config_migrate.go`, AND `pkg/enum/enum.go` to direct v2 imports;
+  caught by a fresh `-count=1` test run, restored verbatim from `d3c326b7`
+  (the recurrence-#7 v1-only state).

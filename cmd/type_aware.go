@@ -72,7 +72,12 @@ func loadTypeAwareData(
 		return nil, replayFiles(allFiles)
 	}
 
-	fmt.Fprintf(stderr, "🔍 Type-aware mode: loading type information for %d Go files...\n", len(goFiles))
+	label := "Type-aware mode"
+	if eraseHash {
+		label = "Suggest-generics mode"
+	}
+
+	fmt.Fprintf(stderr, "🔍 %s: loading type information for %d Go files...\n", label, len(goFiles))
 
 	typeData, err := golang.LoadTypeAwareData(goFiles, eraseHash)
 	if err != nil {
