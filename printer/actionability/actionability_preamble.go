@@ -152,7 +152,7 @@ const maxTestMainStatements = 5
 //
 // Source: go-cqrs-lite feedback (Finding 3) — a 15-module snaps.Clean
 // TestMain clone group that users had to accept via 15 hand-written
-// //art-dupl:accept directives.
+// art-dupl:accept directives.
 //
 // Guards against over-suppression:
 //   - all clones must originate from test context files

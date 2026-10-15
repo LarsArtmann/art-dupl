@@ -7,6 +7,7 @@ import (
 	"github.com/LarsArtmann/art-dupl/baseline"
 	"github.com/LarsArtmann/art-dupl/config"
 	duplerrors "github.com/LarsArtmann/art-dupl/errors"
+	"github.com/LarsArtmann/art-dupl/internal/accept"
 	"github.com/LarsArtmann/art-dupl/internal/utils"
 	"github.com/LarsArtmann/art-dupl/job"
 	"github.com/LarsArtmann/art-dupl/printer"
@@ -123,7 +124,7 @@ func runBaseline(c *cobra.Command, arguments []string) error {
 
 	if !mergedConfig.NoAcceptDirectives {
 		fmt.Fprintf(c.ErrOrStderr(),
-			"Note: baseline includes all groups regardless of //art-dupl:accept directives.\n")
+			"Note: baseline includes all groups regardless of %s directives.\n", accept.MarkerText)
 	}
 
 	return nil

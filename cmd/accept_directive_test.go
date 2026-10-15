@@ -185,6 +185,72 @@ func foo() {
 	}
 }
 
+// TestAcceptedSetAccountsDirectivesOnEveryClone pins the diagnostics
+// accounting of IsAccepted: a directive covering ANY clone of an accepted
+// group counts as matched even when an earlier clone already proved
+// acceptance. Before the fix, IsAccepted returned at the first matching
+// clone, so directives sitting on a group's later clone were reported as
+// stale hashes or placement near-misses whenever they also sat near a
+// different group (observed on printer/diff.go: an inline directive on the
+// second clone of an accepted LCS-backtrack group warned as a near-miss
+// against the neighboring group).
+func TestAcceptedSetAccountsDirectivesOnEveryClone(t *testing.T) {
+	t.Parallel()
+
+	// Assembled, never literal: a contiguous marker in this file's own source
+	// would itself be scanned as a directive on self-runs.
+	marker := "//art-dupl:" + "accept"
+	groupHash := "0123456789abcdef"
+	otherHash := "ffffffffffffffff"
+
+	lines := make([]string, 50)
+	for i := range lines {
+		lines[i] = "// filler"
+	}
+	lines[0] = "package example"
+	lines[7] = marker                    // line 8: 4 above cloneA, accepts group1
+	lines[33] = marker + " " + groupHash // line 34: on cloneB, hash-precise
+	lines[35] = marker + " twin desc"    // line 36: on cloneB, 6 above group2's cloneC
+
+	fileContent := strings.Join(lines, "\n")
+
+	readFile := func(name string) ([]byte, error) {
+		return []byte(fileContent), nil
+	}
+
+	group1 := domain.ProcessedCloneGroup{
+		Hash: groupHash,
+		Clones: []domain.ProcessedClone{
+			{Filename: "twin.go", LineStart: 12, LineEnd: 20},
+			{Filename: "twin.go", LineStart: 32, LineEnd: 40},
+		},
+	}
+	group2 := domain.ProcessedCloneGroup{
+		Hash: otherHash,
+		Clones: []domain.ProcessedClone{
+			{Filename: "twin.go", LineStart: 42, LineEnd: 50},
+		},
+	}
+
+	set := NewAcceptedSet(readFile)
+
+	if !set.IsAccepted(group1) {
+		t.Error("group1 must be accepted via the directive above cloneA")
+	}
+
+	if set.IsAccepted(group2) {
+		t.Error("group2 has no covering directive and must not be accepted")
+	}
+
+	if dead := set.DeadDirectives(); len(dead) != 0 {
+		t.Errorf("hash directive on the second clone must count as matched, got dead: %+v", dead)
+	}
+
+	if misses := set.NearMissDirectives(); len(misses) != 0 {
+		t.Errorf("directives covering an accepted group must not near-miss, got: %+v", misses)
+	}
+}
+
 func TestAcceptedSetDescriptionText(t *testing.T) {
 	t.Parallel()
 

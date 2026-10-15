@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"github.com/LarsArtmann/art-dupl/config"
+	"github.com/LarsArtmann/art-dupl/internal/accept"
 	"github.com/spf13/cobra"
 )
 
@@ -56,7 +57,7 @@ func addSharedFlags(cmd *cobra.Command) {
 	cmd.Flags().
 		Bool("no-actionability", false, "show all clones including non-actionable boilerplate (disable actionability filtering)")
 	cmd.Flags().
-		Bool("no-accept-directives", false, "ignore //art-dupl:accept directives in source code (show all clones)")
+		Bool("no-accept-directives", false, "ignore "+accept.MarkerText+" directives in source code (show all clones)")
 	cmd.Flags().
 		Int("min-lines", 0, "suppress clone groups spanning fewer than N source lines (0 = disabled)")
 	cmd.Flags().

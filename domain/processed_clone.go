@@ -57,7 +57,7 @@ const (
 	NonActionable CloneActionability = "non-actionable"
 	// LowConfidence clones are ambiguous — the property engine could not
 	// definitively classify them as actionable or non-actionable. These should
-	// be reviewed by the user and accepted via //art-dupl:accept if not harmful.
+	// be reviewed by the user and accepted via art-dupl:accept if not harmful.
 	LowConfidence CloneActionability = "low-confidence"
 )
 

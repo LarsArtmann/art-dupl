@@ -72,7 +72,7 @@ const providerOptionThreshold = "threshold"
 
 // providerOptionEmitSuppressedAccepted is the declared knob that opts into
 // surfacing reviewed duplicates: when true, clone groups covered by an
-// in-source //art-dupl:accept directive are emitted with a go-finding
+// in-source art-dupl:accept directive are emitted with a go-finding
 // in-source Suppression annotation instead of plain findings, so consumers
 // can distinguish reviewed duplication (go-finding drops suppressed findings
 // from SARIF by default). Default false keeps the provider's output
@@ -107,7 +107,7 @@ var Provider = toolsdk.Register(toolsdk.Spec{
 			// Default false is load-bearing: no source scanning happens and
 			// the output stays byte-identical to the pre-flag behavior.
 			Default: false,
-			Description: "Annotate clone groups covered by //art-dupl:accept directives " +
+			Description: "Annotate clone groups covered by " + accept.MarkerText + " directives " +
 				"with in-source suppressions instead of plain findings (reviewed duplication)",
 		},
 	},
@@ -236,7 +236,7 @@ func boolOptionFromContext(ctx context.Context, name string) bool {
 // is advisory-capped (see capAdvisorySeverities). Classification metadata
 // keys are intentionally absent: the SDK pipeline never computes them (see
 // the package doc). A non-nil acceptedSet (the emit-suppressed-accepted
-// option) annotates groups covered by //art-dupl:accept directives with
+// option) annotates groups covered by art-dupl:accept directives with
 // in-source suppressions; the CLI-equivalent predicate semantics come from
 // internal/accept, the same package cmd aliases.
 func findingsFromGroups(groups []*artdupl.CloneGroup, acceptedSet *accept.AcceptedSet) []gofinding.Finding {

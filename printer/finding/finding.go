@@ -78,7 +78,7 @@ type Options struct {
 	EmitSuppressedAccepted bool
 
 	// Accepted reports whether a clone group is covered by an in-source
-	// //art-dupl:accept directive. It is the CLI's AcceptedSet.IsAccepted
+	// art-dupl:accept directive. It is the CLI's AcceptedSet.IsAccepted
 	// (internal/accept) at the call site; declared as a plain predicate so
 	// this adapter stays decoupled from cmd and internal/accept. Only
 	// consulted when EmitSuppressedAccepted is true; nil accepts nothing.
@@ -188,7 +188,7 @@ func toFinding(
 		b = b.WithSuppression(gofinding.Suppression{
 			Kind:   gofinding.SuppressionInSource,
 			Rule:   gofinding.RuleName(RuleCloneDetected),
-			Reason: "//art-dupl:accept directive",
+			Reason: "//art-dupl:" + "accept directive",
 		})
 	}
 

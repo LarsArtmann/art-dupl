@@ -212,7 +212,7 @@ type Config struct {
 	// actionability, category, extractability, suggestion).
 	Explain bool `json:"explain,omitempty"`
 
-	// NoAcceptDirectives disables //art-dupl:accept inline directive processing.
+	// NoAcceptDirectives disables art-dupl:accept inline directive processing.
 	// When true, all clone groups are reported regardless of accept directives.
 	NoAcceptDirectives bool `json:"noAcceptDirectives,omitempty"`
 
