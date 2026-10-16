@@ -13,40 +13,40 @@ func TestResolveBuildInfo(t *testing.T) {
 	tests := []struct {
 		name string
 
-		ldVersion    string
-		ldCommit     string
-		ldDate       string
-		moduleVer    string
-		vcsRevision  string
-		vcsTime      string
+		ldVersion   string
+		ldCommit    string
+		ldDate      string
+		moduleVer   string
+		vcsRevision string
+		vcsTime     string
 
 		wantVersion string
 		wantCommit  string
 		wantDate    string
 	}{
 		{
-			name:       "release ldflags win",
-			ldVersion:  "0.9.0",
-			ldCommit:   "8ce4b2d1234567890",
-			ldDate:     "2026-10-01",
-			moduleVer:  "(devel)",
+			name:        "release ldflags win",
+			ldVersion:   "0.9.0",
+			ldCommit:    "8ce4b2d1234567890",
+			ldDate:      "2026-10-01",
+			moduleVer:   "(devel)",
 			vcsRevision: "fffffffffffffff",
 			wantVersion: "0.9.0",
 			wantCommit:  "8ce4b2d1234567890",
 			wantDate:    "2026-10-01",
 		},
 		{
-			name:       "go install module version replaces dev",
-			ldVersion:  "dev",
-			moduleVer:  "v0.9.0",
+			name:        "go install module version replaces dev",
+			ldVersion:   "dev",
+			moduleVer:   "v0.9.0",
 			wantVersion: "v0.9.0",
 			wantCommit:  "unknown",
 			wantDate:    "unknown",
 		},
 		{
-			name:       "checkout build falls back to vcs revision",
-			ldVersion:  "dev",
-			moduleVer:  "(devel)",
+			name:        "checkout build falls back to vcs revision",
+			ldVersion:   "dev",
+			moduleVer:   "(devel)",
 			vcsRevision: "8ce4b2d1234567890",
 			vcsTime:     "2026-10-15T16:00:00Z",
 			wantVersion: "dev-8ce4b2d",
@@ -54,9 +54,9 @@ func TestResolveBuildInfo(t *testing.T) {
 			wantDate:    "2026-10-15T16:00:00Z",
 		},
 		{
-			name:       "module version preferred over vcs revision",
-			ldVersion:  "dev",
-			moduleVer:  "v0.9.1",
+			name:        "module version preferred over vcs revision",
+			ldVersion:   "dev",
+			moduleVer:   "v0.9.1",
 			vcsRevision: "8ce4b2d1234567890",
 			wantVersion: "v0.9.1",
 			wantCommit:  "8ce4b2d1234567890",

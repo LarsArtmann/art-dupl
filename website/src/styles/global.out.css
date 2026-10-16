@@ -5,6 +5,9 @@
   :root, :host {
     --font-sans: var(--font-syne), -apple-system, BlinkMacSystemFont, sans-serif;
     --font-mono: var(--font-jetbrains-mono), monospace;
+    --color-gray-400: oklch(70.7% 0.022 261.325);
+    --color-gray-500: oklch(55.1% 0.027 264.364);
+    --color-gray-600: oklch(44.6% 0.03 256.802);
     --color-white: #fff;
     --spacing: 0.25rem;
     --container-md: 28rem;
@@ -324,6 +327,12 @@
   }
   .mt-1 {
     margin-top: var(--spacing);
+  }
+  .mt-2 {
+    margin-top: calc(var(--spacing) * 2);
+  }
+  .mt-4 {
+    margin-top: calc(var(--spacing) * 4);
   }
   .mt-10 {
     margin-top: calc(var(--spacing) * 10);
@@ -875,6 +884,12 @@
   .text-danger {
     color: var(--color-danger);
   }
+  .text-gray-500 {
+    color: var(--color-gray-500);
+  }
+  .text-gray-600 {
+    color: var(--color-gray-600);
+  }
   .text-on-accent {
     color: var(--color-on-accent);
   }
@@ -1225,6 +1240,11 @@
   @media (width >= 80rem) {
     .xl\:max-w-7xl {
       max-width: var(--container-7xl);
+    }
+  }
+  @media (prefers-color-scheme: dark) {
+    .dark\:text-gray-400 {
+      color: var(--color-gray-400);
     }
   }
   @media (width < 40rem) {
