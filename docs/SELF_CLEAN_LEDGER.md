@@ -258,7 +258,13 @@ zero warnings on all three.**
   `TestCaseLabelTerminalStatement`, `TestCommClauseLabelTerminalStatement`.
   CommClause keys are STATEMENTS (unlike CaseClause expression keys) — the
   initial ≤1 rule missed them; caught by the multidetector/combined.go
-  `case <-ctx.Done():` group surviving the first cut.
+  `case <-ctx.Done():` group surviving the first cut. The extension ALSO
+  tripped the documented file-kind collision trap on its first cut: templ
+  `ComponentIfStatement` shares a raw value with a golang clause type, so
+  the BDD "duplicate if statements in templates" spec went red (the group
+  became non-actionable) — fixed by suffix-scoping the branch to non-.templ
+  files (same rule as clone_classify), pinned by the templ-collision case
+  in `TestCaseLabelTerminalStatement`.
 - **Extraction**: `pkg/artdupl/detector.go` — the duplicated
   buildResult/reportProgress/ErrNoDuplicatesFound tail of `findClones` and
   `findClonesCombined` extracted to `finalizeResult` (this was the user's
