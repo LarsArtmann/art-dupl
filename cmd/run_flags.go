@@ -210,6 +210,10 @@ func runStandardAnalysis(
 		}
 	}
 
+	if vfs, ok := p.(printer.VersionFooterSetter); ok {
+		vfs.SetVersionFooter(GetVersion())
+	}
+
 	suppression := buildSuppressionConfig(mergedConfig)
 	suppression.GenericDecls = genericDecls
 

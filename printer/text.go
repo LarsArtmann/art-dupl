@@ -27,6 +27,7 @@ type TextPrinter struct {
 	isFileDupe       bool
 	richText         bool
 	explain          bool
+	versionFooter    string
 	diffHintFiles    []string
 	suppressionStats SuppressionStats
 }
@@ -49,6 +50,22 @@ func (p *TextPrinter) SetRichText(enabled bool) {
 
 func (p *TextPrinter) SetExplain(enabled bool) {
 	p.explain = enabled
+}
+
+// SetVersionFooter stamps the effective binary version into the summary
+// footer lines. Empty string leaves the footer unchanged (used by tests and
+// callers that render machine formats).
+func (p *TextPrinter) SetVersionFooter(version string) {
+	p.versionFooter = version
+}
+
+// versionSuffix renders the provenance bracket appended to summary lines.
+func (p *TextPrinter) versionSuffix() string {
+	if p.versionFooter == "" {
+		return ""
+	}
+
+	return fmt.Sprintf(" [art-dupl %s]", p.versionFooter)
 }
 
 func NewText(w io.Writer, fread ReadFile) Printer {
@@ -149,7 +166,7 @@ func (p *TextPrinter) PrintFooter() error {
 		if err := p.writeSuppressionSummary(s); err != nil {
 			return err
 		}
-	} else if _, err := fmt.Fprintf(p.w, "\nFound total %d clone groups.\n", p.cnt); err != nil {
+	} else if _, err := fmt.Fprintf(p.w, "\nFound total %d clone groups.%s\n", p.cnt, p.versionSuffix()); err != nil {
 		return err
 	}
 
@@ -188,7 +205,7 @@ func (p *TextPrinter) writeSuppressionSummary(s SuppressionStats) error {
 		}
 	}
 
-	if _, err := fmt.Fprintln(p.w, "."); err != nil {
+	if _, err := fmt.Fprintln(p.w, "."+p.versionSuffix()); err != nil {
 		return err
 	}
 

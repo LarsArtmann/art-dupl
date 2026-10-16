@@ -29,7 +29,7 @@ func NewVersionCommand() *cobra.Command {
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			short, _ := cmd.Flags().GetBool("short")
 			if short {
-				_, _ = fmt.Fprintln(cmd.OutOrStdout(), Version)
+				_, _ = fmt.Fprintln(cmd.OutOrStdout(), GetVersion())
 
 				return nil
 			}
@@ -37,9 +37,9 @@ func NewVersionCommand() *cobra.Command {
 			jsonFormat, _ := cmd.Flags().GetBool("json")
 			if jsonFormat {
 				info := VersionInfo{
-					Version:   Version,
-					Commit:    Commit,
-					Date:      Date,
+					Version:   GetVersion(),
+					Commit:    GetCommit(),
+					Date:      GetBuildDate(),
 					GoVersion: runtime.Version(),
 					Compiler:  runtime.Compiler,
 					Platform:  runtime.GOOS,

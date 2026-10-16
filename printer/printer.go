@@ -26,6 +26,13 @@ type ExplainSetter interface {
 	SetExplain(enabled bool)
 }
 
+// VersionFooterSetter enables printers to stamp the effective binary
+// version next to the report summary, so every pasted report names its
+// build (issue #8: dev binaries carried no provenance).
+type VersionFooterSetter interface {
+	SetVersionFooter(version string)
+}
+
 // SuppressionStats carries counts of detected vs suppressed clone groups,
 // enabling the summary to distinguish "what the detector found" from "what
 // is actually actionable." This prevents the "drive to zero" failure mode

@@ -157,6 +157,10 @@ func writeFormatFile(
 
 	setJSONPrinterFilesCount(p, parseStats.FilesCount)
 
+	if vfs, ok := p.(printer.VersionFooterSetter); ok {
+		vfs.SetVersionFooter(GetVersion())
+	}
+
 	// Create channel from matches for this printer
 	matchChan := make(chan syntax.Match)
 
