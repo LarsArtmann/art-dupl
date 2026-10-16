@@ -234,3 +234,69 @@ Two real defects, two fixture/prose classes:
   `config/config_migrate.go`, AND `pkg/enum/enum.go` to direct v2 imports;
   caught by a fresh `-count=1` test run, restored verbatim from `d3c326b7`
   (the recurrence-#7 v1-only state).
+
+## 2026-10-16 — October monthly self-scan (`-t 1 --type-aware`) + follow-up pass
+
+Routine self-scan plus the triage follow-ups, one session. Start state:
+44 shown. End state: **0 shown at -t 1, -t 3 --suggest-generics, and -t 5,
+zero warnings on all three.**
+
+- **Prose-hygiene correction (same day)**: the earlier "write
+  `art-dupl:accept` without `//`" rule was INSUFFICIENT for comment lines —
+  the scanner tolerates whitespace between `//` and the marker, so a marker
+  leading a comment line (the grammar block in internal/accept/accept.go,
+  printer/finding/finding.go:81, actionability_preamble.go:155) still
+  matched. Fixed by backtick-wrapping the marker (a quote char breaks
+  `//\s*`). Correct rule, now in AGENTS.md: in comments the marker must not
+  directly follow `//` + whitespace.
+- **Case/comm-label pattern extension**: `isTerminalStatement` now treats
+  CaseClause/CommClause fragments with at most a trivial body (one simple
+  statement; a comm clause allows its receive-statement key plus one) as
+  terminal, so `single-simple-statement` suppresses the bare-label clone
+  class (~8 of 44 groups were pure label clones: `default:`, `case <-ctx.Done():`).
+  Fat case bodies stay actionable. Real-source regressions:
+  `TestCaseLabelTerminalStatement`, `TestCommClauseLabelTerminalStatement`.
+  CommClause keys are STATEMENTS (unlike CaseClause expression keys) — the
+  initial ≤1 rule missed them; caught by the multidetector/combined.go
+  `case <-ctx.Done():` group surviving the first cut.
+- **Extraction**: `pkg/artdupl/detector.go` — the duplicated
+  buildResult/reportProgress/ErrNoDuplicatesFound tail of `findClones` and
+  `findClonesCombined` extracted to `finalizeResult` (this was the user's
+  -t 3 run group #2).
+- **Accept directives (32 + 1 templ)**: one bare directive per remaining
+  group on its first occurrence (acceptance is group-level — one covered
+  occurrence accepts the whole group). Classes: terminal-return fragments
+  across distinct matchers (actionability helpers), channel-send/close
+  cleanup idioms (job/parse, job/incremental), flag/accumulator assignment
+  pairs, guard idioms (nil-guard + mutex prologues incl. the user's -t 3
+  groups #1/#4), the 16-clone enum `return true` family (domain IsValid
+  bodies; one directive on domain/detection_method.go), the SDK/CLI
+  `.go`-filter mirror (pkg/artdupl/combined.go + detector_pipeline.go,
+  deliberate ADR-0026 mirror), Ukkonen internals (suffixtree root checks),
+  and transformer state save/restore prologues (transform.go FuncDecl/
+  FuncLit symmetry — visible only under the type-erased pass, hence not in
+  the -t 1 type-aware list; accepted at its -t 3 occurrence).
+  The templ directive (report.templ wrapper loops delegating to the shared
+  cloneOccurrence component) is an HTML comment — valid templ markup that
+  still regex-matches.
+- **Stale directive removed**: pkg/artdupl/types.go:17 (`architectural
+  alias` above `type DetectionMethod`) matched nothing since its alias-decl
+  family dissolved; the deterministic accounting surfaced it as a near-miss
+  against the const group at :23 (which has its own directive at :22).
+- **Judged-not-extracted**: pkg/position/lines.go defensive clamp pair
+  (guards differ in shape; extraction would obscure), baseline_cmd
+  constructor flag calls, bdd_helpers test guards.
+- **Deferred pattern candidate (data point for the next mining pass)**:
+  "≤2 terminal statements" would kill most of the 2-token residue
+  (`return false` tails, `hasX = true` pairs) without per-site directives;
+  needs the corpus precision ritual before adoption.
+- **Follow-up fixes riding the same session**: restored the four docs
+  gutted by auto-refresh commit `8a4ba024` (2026-07-26 — MIGRATION_GUIDE,
+  DEDUPLICATION_FINAL_REPORT, EXECUTION_SUMMARY, IMPROVEMENTS_REPORT were
+  0-byte husks; 1261 lines recovered from `8a4ba024^`); created
+  `lychee.toml` excluding `docs/brainstorming/archived` (buildflow
+  preflight remedy); added the `type-load` timing phase (job.PhaseTypeLoad)
+  recorded around every go/packages load — the previously invisible ~15-30s
+  inside `ingest` is now its own row; `--suggest-generics`-only runs now
+  label the loading message "Suggest-generics mode" instead of
+  "Type-aware mode".

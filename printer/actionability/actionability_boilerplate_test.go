@@ -792,6 +792,14 @@ default:
 		t.Error("single trivial case label must match single-simple-statement")
 	}
 
+	// File-kind scoping: templ and golang enums overlap numerically, so a
+	// templ node whose raw value equals golang.CaseClause must not route
+	// into the Go case-label branch.
+	templCollision := &domain.CloneNode{BaseType: int32(golang.CaseClause), Filename: "page.templ"}
+	if isTerminalStatement(templCollision) {
+		t.Error("templ node with colliding raw type must not classify as a Go case label")
+	}
+
 	fat := `switch x {
 default:
 	a := compute(x)

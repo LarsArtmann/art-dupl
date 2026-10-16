@@ -2,6 +2,7 @@ package actionability
 
 import (
 	"slices"
+	"strings"
 
 	"github.com/LarsArtmann/art-dupl/domain"
 	"github.com/LarsArtmann/art-dupl/syntax/golang"
@@ -212,6 +213,13 @@ func isTerminalStatement(n *domain.CloneNode) bool {
 		return true
 
 	case golang.CaseClause, golang.CommClause:
+		// File-kind scoped: the golang and templ node-type enums overlap
+		// numerically (parallel iota), so a templ node with the same raw value
+		// must not route here — same rule as clone_classify's isTempl switch.
+		if strings.HasSuffix(n.Filename, ".templ") {
+			return false
+		}
+
 		return caseClauseIsTrivialLabel(n)
 
 	case golang.DeclStmt:
