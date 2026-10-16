@@ -77,6 +77,7 @@ templ cloneGroupFull(data CloneGroupView) {
 		@cloneHeader(data)
 		<div class="clone-body">
 			@suggestionBlock(data)
+			<!-- //art-dupl:accept wrapper loops delegate to the shared cloneOccurrence component (2026-10-16 self-scan) -->
 			for i, cl := range data.Clones {
 				@cloneOccurrence(cl, data.GroupNum, i)
 			}
