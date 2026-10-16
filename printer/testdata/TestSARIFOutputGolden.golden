@@ -605,6 +605,28 @@
               }
             },
             {
+              "id": "art-dupl/pattern/templ-children-idiom",
+              "name": "templ-children-idiom",
+              "shortDescription": {
+                "text": "Actionability pattern \"templ-children-idiom\" (denylist) — marks matching clone groups as boilerplate"
+              },
+              "fullDescription": {
+                "text": "Informational descriptor for the actionability classification carried on results in the non_actionable_pattern property. A group is suppressed only when EVERY clone matches the same pattern; --no-actionability disables suppression and --disable-pattern disables one pattern."
+              },
+              "defaultConfiguration": {
+                "level": "none"
+              },
+              "helpUri": "https://github.com/LarsArtmann/art-dupl/blob/main/docs/ACTIONABILITY_PATTERNS.md#pattern-priority-order",
+              "properties": {
+                "precision": "very-high",
+                "tags": [
+                  "actionability",
+                  "denylist",
+                  "suppressible"
+                ]
+              }
+            },
+            {
               "id": "art-dupl/pattern/defer-call",
               "name": "defer-call",
               "shortDescription": {

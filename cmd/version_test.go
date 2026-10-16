@@ -60,6 +60,7 @@ func TestResolveBuildInfo(t *testing.T) {
 			vcsRevision: "8ce4b2d1234567890",
 			wantVersion: "v0.9.1",
 			wantCommit:  "8ce4b2d1234567890",
+			wantDate:    "unknown",
 		},
 		{
 			name:        "no buildinfo at all keeps dev",

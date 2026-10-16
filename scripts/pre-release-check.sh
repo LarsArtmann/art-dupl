@@ -17,7 +17,10 @@
 #   9.  golangci-lint via buildflow          (--lint)
 #   10. Tag collision: --version must not exist on the remote
 #       (git ls-remote; a colliding tag is UNRECOVERABLE once the proxy sees it)
-#   11. CI green on the default branch       (gh; --skip-ci to override explicitly)
+#   11. Version stamp: --version must equal CHANGELOG.md's newest header
+#       (flake.nix derives the stamp from it; mismatch ships a binary that
+#       reports the WRONG version — the v0.7.1/v0.7.2/v0.9.0 drift class, #5)
+#   12. CI green on the default branch       (gh; --skip-ci to override explicitly)
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
@@ -120,11 +123,19 @@ if [ -n "$VERSION" ]; then
 		fail "tag $VERSION already exists on the remote — pick a new version; NEVER move a tag"
 	fi
 	say "$VERSION does not collide with the remote"
+
+	# 11. version stamp: flake.nix derives version from CHANGELOG.md's newest
+	# `## [X.Y.Z]` header; tagging a version without its changelog section
+	# silently stamps the PREVIOUS version into every nix-built binary.
+	changelog_version=$(grep -m1 -oE '^## \[[0-9]+\.[0-9]+\.[0-9]+\]' CHANGELOG.md | tr -d '[]# ')
+	[ "v${changelog_version}" = "$VERSION" ] ||
+		fail "CHANGELOG.md's newest version is 'v${changelog_version:-none}' but the pending tag is '$VERSION' — add the '$VERSION' section to CHANGELOG.md first (flake.nix derives the stamped version from it)"
+	say "CHANGELOG newest version matches $VERSION"
 else
 	say "SKIP: pass --version vX.Y.Z to run the tag-collision check"
 fi
 
-# 11. CI green on default branch
+# 12. CI green on default branch
 if [ "$SKIP_CI" -eq 1 ]; then
 	say "SKIP: CI gate overridden by --skip-ci"
 elif command -v gh >/dev/null 2>&1; then

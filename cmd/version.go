@@ -6,7 +6,6 @@ import (
 	"runtime"
 	"runtime/debug"
 	"strings"
-	"sync"
 )
 
 // Version information - can be overridden during build.
@@ -40,6 +39,21 @@ func resolveBuildInfo(
 	ldVersion, ldCommit, ldDate, moduleVersion, vcsRevision, vcsTime string,
 ) buildInfo {
 	info := buildInfo{version: ldVersion, commit: ldCommit, date: ldDate}
+
+	// An ldflag var that is unset or overridden with "" behaves like its
+	// default sentinel ("dev"/"unknown") — `go build -ldflags -X ...=` can
+	// produce empty values.
+	if info.version == "" {
+		info.version = "dev"
+	}
+
+	if info.commit == "" {
+		info.commit = "unknown"
+	}
+
+	if info.date == "" {
+		info.date = "unknown"
+	}
 
 	if info.version == "dev" && moduleVersion != "" && moduleVersion != "(devel)" {
 		info.version = moduleVersion
@@ -87,7 +101,11 @@ func commitSuffix(version, commit string) string {
 	return short
 }
 
-var effectiveBuildInfo = sync.OnceValue(func() buildInfo { //nolint:gochecknoglobals // computed once from immutable build metadata
+// readEffectiveBuildInfo merges the current ldflag globals with the
+// embedded build metadata. Uncached by design: tests mutate the ldflag
+// globals and expect live reads, and debug.ReadBuildInfo is cheap (it
+// decodes the small buildinfo blob embedded in every binary).
+func readEffectiveBuildInfo() buildInfo {
 	info, ok := debug.ReadBuildInfo()
 	if !ok {
 		return buildInfo{version: Version, commit: Commit, date: Date}
@@ -105,11 +123,11 @@ var effectiveBuildInfo = sync.OnceValue(func() buildInfo { //nolint:gochecknoglo
 	}
 
 	return resolveBuildInfo(Version, Commit, Date, info.Main.Version, vcsRevision, vcsTime)
-})
+}
 
 // GetVersion returns version information including build info.
 func GetVersion() string {
-	info := effectiveBuildInfo()
+	info := readEffectiveBuildInfo()
 
 	if suffix := commitSuffix(info.version, info.commit); suffix != "" {
 		return info.version + "-" + suffix
@@ -120,12 +138,12 @@ func GetVersion() string {
 
 // GetCommit returns commit hash.
 func GetCommit() string {
-	return effectiveBuildInfo().commit
+	return readEffectiveBuildInfo().commit
 }
 
 // GetBuildDate returns build date.
 func GetBuildDate() string {
-	return effectiveBuildInfo().date
+	return readEffectiveBuildInfo().date
 }
 
 // PrintVersion prints version information to w.

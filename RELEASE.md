@@ -36,7 +36,11 @@ nix flake check               # all 8 checks pass
 
 ## 4. Tag and Sign
 
+Run the gate first — it now asserts the pending tag equals CHANGELOG.md's
+newest version header (the v0.7.1/v0.7.2/v0.9.0 stale-stamp class, issue #5):
+
 ```bash
+scripts/pre-release-check.sh --version v0.X.0 --race --lint
 git tag -s v0.X.0 -m "art-dupl v0.X.0"
 git tag -v v0.X.0              # verify signature
 ```
