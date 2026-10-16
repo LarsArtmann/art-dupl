@@ -762,6 +762,7 @@ default:
 	var labels []*domain.CloneNode
 
 	var collectLabels func(n *syntax.Node)
+
 	collectLabels = func(n *syntax.Node) {
 		if golang.DecodeBaseType(n.Type) == golang.CaseClause {
 			labels = append(labels, cloneNodeFrom(n))
@@ -817,6 +818,7 @@ default:
 	sawFat := false
 
 	var collectFat func(n *syntax.Node)
+
 	collectFat = func(n *syntax.Node) {
 		if golang.DecodeBaseType(n.Type) != golang.CaseClause {
 			for _, c := range n.Children {
@@ -853,6 +855,7 @@ func TestCommClauseLabelTerminalStatement(t *testing.T) {
 case <-ctx.Done():
 	return false
 }`
+
 	nodes, err := golang.ParseSnippet(
 		golang.SnippetStatements, src, "comm.go", 0, golang.DetectionModeSemantic,
 	)
@@ -863,6 +866,7 @@ case <-ctx.Done():
 	found := false
 
 	var collect func(n *syntax.Node)
+
 	collect = func(n *syntax.Node) {
 		if golang.DecodeBaseType(n.Type) != golang.CommClause {
 			for _, c := range n.Children {
@@ -893,6 +897,7 @@ case v := <-ch:
 	b := a * 2
 	return b
 }`
+
 	fatNodes, err := golang.ParseSnippet(
 		golang.SnippetStatements, fatSrc, "fatcomm.go", 0, golang.DetectionModeSemantic,
 	)

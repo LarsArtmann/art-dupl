@@ -23,9 +23,9 @@ Everything below is from this session's run only.
 3. **Marker prose hygiene in production sources** (second pass): 7
    marker-leading comment lines remained after round 1 (whitespace-tolerance
    insight — `// art-dupl:accept` still matches); fixed via backtick-wrapping
-   + `accept.MarkerText` concatenated const for runtime strings
-   (flags.go, baseline_cmd.go, provider.go; inline split in printer/finding —
-   arch-lint). Scanner-semantics rg now returns only intentional directives.
+   - `accept.MarkerText` concatenated const for runtime strings
+     (flags.go, baseline_cmd.go, provider.go; inline split in printer/finding —
+     arch-lint). Scanner-semantics rg now returns only intentional directives.
 4. **jsonv2 recurrence #8 restored**: auto-commit `7348b4ba` had re-migrated
    `internal/jsonutil`, `config_migrate.go`, AND `pkg/enum/enum.go` to v2;
    restored verbatim from `d3c326b7`. Class has now fired 8 times; AGENTS.md
@@ -47,12 +47,11 @@ Everything below is from this session's run only.
 10. **October monthly self-scan executed** (was due; ledger had no October
     entry): 44 shown → **0 shown at `-t 1 --type-aware`, `-t 3
     --suggest-generics`, and `-t 5`; zero warnings on all three**. Delivered via:
-    - `isTerminalStatement` extension: trivial CaseClause/CommClause labels
-      (≤1 simple body stmt; comm clauses allow their receive-statement key
-      + 1) now terminal → `single-simple-statement` kills the bare-label
-      class. 3 real-source regression tests
-      (`TestCaseLabelTerminalStatement`, `TestCommClauseLabelTerminalStatement`,
-      + templ-collision case).
+    - ## `isTerminalStatement` extension: trivial CaseClause/CommClause labels(≤1 simple body stmt; comm clauses allow their receive-statement key
+      1. now terminal → `single-simple-statement` kills the bare-label
+         class. 3 real-source regression tests
+         (`TestCaseLabelTerminalStatement`, `TestCommClauseLabelTerminalStatement`,
+      - templ-collision case).
     - `finalizeResult` extraction in `pkg/artdupl/detector.go` (the
       duplicated buildResult/reportProgress/ErrNoDuplicatesFound tail).
     - 32 Go accept directives (one per group, group-level acceptance) + 1
@@ -186,10 +185,10 @@ Everything below is from this session's run only.
 17. Raise or restructure the buildflow lint budget (1m32s vs 1m on cold
     cache) or accept and silence knowingly.
 18. The performance-budget/husk/lychee preflight warnings should block or
-   be fixed — right now they warn into the void.
+    be fixed — right now they warn into the void.
 19. Consider committing the directive-placement script (currently /tmp) as
-   `scripts/` tooling for future self-scans, with the group-level placement
-   rule documented.
+    `scripts/` tooling for future self-scans, with the group-level placement
+    rule documented.
 20. Ledger: add an "October cadence completed 2026-10-16" pointer to the
     AGENTS monthly-cadence bullet so the next session doesn't re-run it.
 21. Review the 32 directive sites by hand at leisure; upgrade any
@@ -215,7 +214,7 @@ Everything below is from this session's run only.
 
 ---
 
-*End-state verification (2026-10-16 ~03:00): full `go test -count=1 ./...`
+_End-state verification (2026-10-16 ~03:00): full `go test -count=1 ./...`
 green (353 BDD specs, 4 pending-by-design), boundary gate OK (fast profile),
 gofmt clean, `-t 1 --type-aware` / `-t 3 --suggest-generics` / `-t 5` all
-0 shown with zero warnings, working tree committed by the daemon.*
+0 shown with zero warnings, working tree committed by the daemon._
