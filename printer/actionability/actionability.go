@@ -44,6 +44,7 @@ var actionabilityPatternTable = []patternEntry{ //nolint:gochecknoglobals // sta
 	{isDescribeTablePattern, PatternDescribeTable},
 	{isBuilderCallbackPattern, PatternBuilderCallback},
 	{isTemplRenderingIdiom, PatternTemplRenderingIdiom},
+	{isTemplChildrenIdiom, PatternTemplChildrenIdiom},
 	{isDeferCallPattern, PatternDeferCall},
 	{isTestFrameworkCallPattern, PatternTestFrameworkCall},
 	{isTestPreamblePattern, PatternTestPreamble},
@@ -194,6 +195,7 @@ const (
 	PatternPropertyROI                PatternLabel = "property-roi"
 	PatternPropertyParameterizable    PatternLabel = "property-parameterizable"
 	PatternTemplRenderingIdiom        PatternLabel = "templ-rendering-idiom"
+	PatternTemplChildrenIdiom         PatternLabel = "templ-children-idiom"
 	PatternDeferCall                  PatternLabel = "defer-call"
 	PatternTestFrameworkCall          PatternLabel = "test-framework-call"
 	PatternTestPreamble               PatternLabel = "test-preamble"

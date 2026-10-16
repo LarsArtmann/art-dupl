@@ -52,6 +52,7 @@ func TestAllActionabilityPatterns_ContainsLabels(t *testing.T) {
 		PatternBuilderCallback,
 		PatternBoolGuard,
 		PatternTemplRenderingIdiom,
+		PatternTemplChildrenIdiom,
 	}
 
 	for _, label := range required {
