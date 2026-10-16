@@ -122,6 +122,24 @@ func (d *detector) extractFragmentContent(frag []*syntax.Node) string {
 	return string(content[start:end])
 }
 
+// finalizeResult builds the Result, reports completion progress, and applies
+// the no-duplicates contract shared by every detection path.
+func (d *detector) finalizeResult(
+	cloneGroups []*CloneGroup,
+	fileCount, linesAnalyzed int,
+	startTime time.Time,
+) (*Result, error) {
+	result := d.buildResult(cloneGroups, fileCount, linesAnalyzed, startTime)
+
+	d.reportProgress(100, "Analysis complete", "")
+
+	if len(result.CloneGroups) == 0 {
+		return nil, ErrNoDuplicatesFound
+	}
+
+	return result, nil
+}
+
 // buildResult creates final Result structure.
 func (d *detector) buildResult(cloneGroups []*CloneGroup, fileCount, linesAnalyzed int, startTime time.Time) *Result {
 	analysisTime := time.Since(startTime)

@@ -100,15 +100,7 @@ func (d *detector) FindClones(ctx context.Context, files []string) (*Result, err
 	}
 
 	// Build and return result
-	result := d.buildResult(cloneGroups, pipeline.fileCount.FilesCount, pipeline.fileCount.LinesCount, startTime)
-
-	d.reportProgress(100, "Analysis complete", "")
-
-	if len(result.CloneGroups) == 0 {
-		return nil, ErrNoDuplicatesFound
-	}
-
-	return result, nil
+	return d.finalizeResult(cloneGroups, pipeline.fileCount.FilesCount, pipeline.fileCount.LinesCount, startTime)
 }
 
 // findClonesCombined runs the two-pass combined mode and builds the result.
@@ -128,15 +120,7 @@ func (d *detector) findClonesCombined(
 		)
 	}
 
-	result := d.buildResult(cloneGroups, pipeline.fileCount.FilesCount, pipeline.fileCount.LinesCount, startTime)
-
-	d.reportProgress(100, "Analysis complete", "")
-
-	if len(result.CloneGroups) == 0 {
-		return nil, ErrNoDuplicatesFound
-	}
-
-	return result, nil
+	return d.finalizeResult(cloneGroups, pipeline.fileCount.FilesCount, pipeline.fileCount.LinesCount, startTime)
 }
 
 // FindClonesStreamResult provides streaming results with error propagation.
