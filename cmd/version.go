@@ -5,6 +5,7 @@ import (
 	"io"
 	"runtime"
 	"runtime/debug"
+	"strings"
 	"sync"
 )
 
@@ -69,6 +70,23 @@ func shortRevision(rev string) string {
 	return rev
 }
 
+// commitSuffix returns the short-commit suffix for a version string, or ""
+// when the commit is unknown or too short to truncate. A version that
+// already ends with the short revision (the `dev-<rev>` buildinfo fallback)
+// must not have it appended twice.
+func commitSuffix(version, commit string) string {
+	if commit == "unknown" || len(commit) <= 7 {
+		return ""
+	}
+
+	short := shortRevision(commit)
+	if strings.HasSuffix(version, short) {
+		return ""
+	}
+
+	return short
+}
+
 var effectiveBuildInfo = sync.OnceValue(func() buildInfo { //nolint:gochecknoglobals // computed once from immutable build metadata
 	info, ok := debug.ReadBuildInfo()
 	if !ok {
@@ -93,12 +111,11 @@ var effectiveBuildInfo = sync.OnceValue(func() buildInfo { //nolint:gochecknoglo
 func GetVersion() string {
 	info := effectiveBuildInfo()
 
-	version := info.version
-	if info.commit != "unknown" && len(info.commit) > 7 {
-		version += "-" + shortRevision(info.commit)
+	if suffix := commitSuffix(info.version, info.commit); suffix != "" {
+		return info.version + "-" + suffix
 	}
 
-	return version
+	return info.version
 }
 
 // GetCommit returns commit hash.

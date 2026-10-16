@@ -461,6 +461,43 @@ func TestTextPrinter_OutputText(t *testing.T) {
 	testutil.AssertStringContains(t, output, "Found total", "OutputText() missing footer")
 }
 
+// TestTextPrinter_VersionFooter pins the provenance footer (issue #8): the
+// summary lines carry the effective binary version when set, and stay
+// byte-identical to the historical output when unset.
+func TestTextPrinter_VersionFooter(t *testing.T) {
+	t.Parallel()
+
+	run := func(version string) string {
+		var buf bytes.Buffer
+
+		p := NewText(&buf, mockReadFile("package main\n"))
+		tp := p.(*TextPrinter)
+		tp.SetVersionFooter(version)
+
+		if err := tp.OutputText(15, config.SortBySize); err != nil {
+			t.Fatalf("OutputText() error: %v", err)
+		}
+
+		return buf.String()
+	}
+
+	withVersion := run("dev-8ce4b2d")
+	testutil.AssertStringContains(
+		t,
+		withVersion,
+		"Found total 0 clone groups. [art-dupl dev-8ce4b2d]",
+		"summary line must name the build when the version footer is set",
+	)
+
+	withoutVersion := run("")
+	testutil.AssertStringContains(
+		t,
+		withoutVersion,
+		"Found total 0 clone groups.",
+		"unset version footer must keep the summary line unchanged",
+	)
+}
+
 func TestTextPrinter_OutputText_Empty(t *testing.T) {
 	t.Parallel()
 
