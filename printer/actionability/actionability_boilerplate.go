@@ -211,6 +211,9 @@ func isTerminalStatement(n *domain.CloneNode) bool {
 		golang.BranchStmt, golang.SendStmt:
 		return true
 
+	case golang.CaseClause, golang.CommClause:
+		return caseClauseIsTrivialLabel(n)
+
 	case golang.DeclStmt:
 		return !subtreeContainsTypeSpec(n)
 
@@ -218,6 +221,48 @@ func isTerminalStatement(n *domain.CloneNode) bool {
 		// Standalone unary expression statements (<-ch, *ptr, etc.) are
 		// synchronization/trivial operations, not actionable duplication.
 		return len(n.Children) == 1 && n.Children[0].BaseType == golang.UnaryExpr
+
+	default:
+		return false
+	}
+}
+
+// caseClauseIsTrivialLabel reports whether a CaseClause/CommClause fragment
+// carries at most one simple body statement. A bare case/default/comm label
+// is switch structure, not extractable logic: identical labels across
+// switches coincide by shape, and nested-statement emission already reports
+// any duplicated body statements as their own token groups (2026-10-16
+// self-scan: ~8 of 44 shown groups were pure label clones).
+func caseClauseIsTrivialLabel(n *domain.CloneNode) bool {
+	bodyStmts := 0
+
+	for _, c := range n.Children {
+		if !baseTypeIsGoStatement(c.BaseType) {
+			continue
+		}
+
+		bodyStmts++
+		if bodyStmts > 1 || !isTerminalStatement(c) {
+			return false
+		}
+	}
+
+	return true
+}
+
+// baseTypeIsGoStatement reports whether the decoded base type is a Go
+// statement node, as opposed to the expression types that appear as
+// case/comm clause keys.
+func baseTypeIsGoStatement(t int32) bool {
+	switch t {
+	case golang.AssignStmt, golang.BlockStmt, golang.BranchStmt,
+		golang.CaseClause, golang.CommClause, golang.DeclStmt,
+		golang.DeferStmt, golang.EmptyStmt, golang.ExprStmt,
+		golang.ForStmt, golang.GoStmt, golang.IfStmt, golang.IncDecStmt,
+		golang.LabeledStmt, golang.RangeStmt, golang.ReturnStmt,
+		golang.SelectStmt, golang.SendStmt, golang.SwitchStmt,
+		golang.TypeSwitchStmt:
+		return true
 
 	default:
 		return false

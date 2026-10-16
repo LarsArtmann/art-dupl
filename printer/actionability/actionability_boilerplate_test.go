@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/LarsArtmann/art-dupl/domain"
+	"github.com/LarsArtmann/art-dupl/syntax"
 	"github.com/LarsArtmann/art-dupl/syntax/golang"
 )
 
@@ -733,5 +734,102 @@ func TestIsTestHelperDelegate(t *testing.T) {
 				t.Errorf("isTestHelperDelegate() = %v, want %v", result, tt.expected)
 			}
 		})
+	}
+}
+
+// Real-source regression (2026-10-16 self-scan): identical case/default
+// labels across switches serialize as single CaseClause composite tokens; a
+// label with at most a trivial body must classify as a terminal statement so
+// the single-simple-statement pattern suppresses the label-clone class. Fat
+// case bodies stay actionable (their duplicated statements carry signal).
+func TestCaseLabelTerminalStatement(t *testing.T) {
+	t.Parallel()
+
+	trivial := `switch x {
+case 1:
+	return true
+default:
+	return false
+}`
+
+	nodes, err := golang.ParseSnippet(
+		golang.SnippetStatements, trivial, "fixture.go", 0, golang.DetectionModeSemantic,
+	)
+	if err != nil {
+		t.Fatalf("ParseSnippet error: %v", err)
+	}
+
+	var labels []*domain.CloneNode
+
+	var collectLabels func(n *syntax.Node)
+	collectLabels = func(n *syntax.Node) {
+		if golang.DecodeBaseType(n.Type) == golang.CaseClause {
+			labels = append(labels, cloneNodeFrom(n))
+
+			return
+		}
+
+		for _, c := range n.Children {
+			collectLabels(c)
+		}
+	}
+
+	for _, n := range nodes {
+		collectLabels(n)
+	}
+
+	if len(labels) != 2 {
+		t.Fatalf("expected 2 case clauses in the stream, got %d", len(labels))
+	}
+
+	for _, lbl := range labels {
+		if !isTerminalStatement(lbl) {
+			t.Errorf("case label with trivial body (base type %d) must be terminal", lbl.BaseType)
+		}
+	}
+
+	if !isSingleSimpleStatement([][]*domain.CloneNode{labels[:1]}) {
+		t.Error("single trivial case label must match single-simple-statement")
+	}
+
+	fat := `switch x {
+default:
+	a := compute(x)
+	b := a + 1
+	return b
+}`
+
+	fatNodes, err := golang.ParseSnippet(
+		golang.SnippetStatements, fat, "fat.go", 0, golang.DetectionModeSemantic,
+	)
+	if err != nil {
+		t.Fatalf("ParseSnippet error: %v", err)
+	}
+
+	sawFat := false
+
+	var collectFat func(n *syntax.Node)
+	collectFat = func(n *syntax.Node) {
+		if golang.DecodeBaseType(n.Type) != golang.CaseClause {
+			for _, c := range n.Children {
+				collectFat(c)
+			}
+
+			return
+		}
+
+		sawFat = true
+
+		if isTerminalStatement(cloneNodeFrom(n)) {
+			t.Error("case label with a multi-statement body must stay actionable")
+		}
+	}
+
+	for _, n := range fatNodes {
+		collectFat(n)
+	}
+
+	if !sawFat {
+		t.Fatal("expected at least one case clause in the fat fixture stream")
 	}
 }
