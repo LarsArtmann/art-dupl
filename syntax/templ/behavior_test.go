@@ -114,6 +114,67 @@ func TestAttributeExpressionDifferencesPreventClone(t *testing.T) {
 	assertStreamsDiffer(t, a, b, golang.DetectionModeSemantic)
 }
 
+// --- Constant attribute values: markup identity (issue #6) ---
+
+func TestConstantAttributeValueDifferencesPreventClone(t *testing.T) {
+	t.Parallel()
+
+	a := `<p class="mt-4 text-sm">x</p>`
+	b := `<p class="mt-2 text-xs">x</p>`
+
+	assertStreamsDiffer(t, a, b, golang.DetectionModeSemantic)
+}
+
+func TestConstantAttributeSameValueStillClones(t *testing.T) {
+	t.Parallel()
+
+	a := `<p class="mt-4 text-sm">x</p>`
+	b := `<p class="mt-4 text-sm">y</p>`
+
+	assertStreamsEqual(t, a, b, golang.DetectionModeSemantic)
+}
+
+func TestConstantAttributeReorderedClassListStillClones(t *testing.T) {
+	t.Parallel()
+
+	// CSS class order carries no meaning: semantic mode sorts class-list
+	// tokens before hashing (the Type-2 tolerance for class attributes).
+	a := `<p class="mt-4 text-sm text-gray-500">x</p>`
+	b := `<p class="text-gray-500 mt-4 text-sm">x</p>`
+
+	assertStreamsEqual(t, a, b, golang.DetectionModeSemantic)
+}
+
+func TestConstantAttributeReorderedClassListDiffersInExactMode(t *testing.T) {
+	t.Parallel()
+
+	// Exact mode hashes values verbatim (Type-1 copy-paste only).
+	a := `<p class="mt-4 text-sm">x</p>`
+	b := `<p class="text-sm mt-4">x</p>`
+
+	assertStreamsDiffer(t, a, b, golang.DetectionModeExact)
+}
+
+func TestConstantAttributeValueInvisibleInStructuralMode(t *testing.T) {
+	t.Parallel()
+
+	// Structural mode matches AST shape only: neither keys nor values
+	// participate (documented scope, mirrors the golang identifier policy).
+	a := `<p class="mt-4">x</p>`
+	b := `<p class="mt-2">x</p>`
+
+	assertStreamsEqual(t, a, b, golang.DetectionModeStructural)
+}
+
+func TestNonClassConstantAttributeValuesDiffer(t *testing.T) {
+	t.Parallel()
+
+	a := `<a href="/users">users</a>`
+	b := `<a href="/settings">settings</a>`
+
+	assertStreamsDiffer(t, a, b, golang.DetectionModeSemantic)
+}
+
 // --- Spread attributes: { expr... } ---
 
 func TestSpreadAttributeExpressionDifferencesPreventClone(t *testing.T) {

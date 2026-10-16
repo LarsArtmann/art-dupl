@@ -1,6 +1,9 @@
 package templ
 
 import (
+	"slices"
+	"strings"
+
 	"github.com/LarsArtmann/art-dupl/syntax"
 	"github.com/LarsArtmann/art-dupl/syntax/golang"
 	templparser "github.com/a-h/templ/parser/v2"
@@ -109,7 +112,7 @@ func (t *transformer) transformAttribute(attr templparser.Attribute) *syntax.Nod
 
 	switch a := attr.(type) {
 	case *templparser.ConstantAttribute:
-		t.setAttributeKey(o, a.Key.String())
+		t.setConstantAttribute(o, a.Key.String(), a.Value)
 		t.setNodePosFromRange(o, a.Range)
 	case *templparser.ExpressionAttribute:
 		t.setAttributeKey(o, a.Key.String())
@@ -133,6 +136,46 @@ func (t *transformer) transformAttribute(attr templparser.Attribute) *syntax.Nod
 	}
 
 	return o
+}
+
+// setConstantAttribute encodes the attribute key AND the constant value into
+// the node type hash. Constant attribute values are markup identity (API
+// surface, mirroring the Go pipeline's KeyValueExpr field-name policy):
+// `<p class="mt-2">` and `<p class="mt-4">` render differently and must not
+// match. In semantic mode class lists are token-sorted before hashing because
+// CSS class order carries no meaning (`class="a b"` still matches
+// `class="b a"`); exact mode hashes the value verbatim (Type-1 copy-paste).
+// Structural mode ignores keys and values alike (shape only).
+func (t *transformer) setConstantAttribute(o *syntax.Node, key, value string) {
+	o.Type = Attribute
+	o.Name = key
+
+	if !t.mode.HashesIdentifiers() {
+		return
+	}
+
+	encoded := key
+	if value != "" {
+		encoded = key + "\x00" + normalizeConstantAttributeValue(key, value, t.mode.NormalizesLiterals())
+	}
+
+	o.Type = syntax.EncodeSemanticType(Attribute, encoded, true)
+}
+
+// normalizeConstantAttributeValue canonicalizes a constant attribute value
+// for hashing. Semantic mode collapses whitespace runs and sorts class-list
+// tokens; exact mode returns the value verbatim.
+func normalizeConstantAttributeValue(key, value string, semantic bool) string {
+	if !semantic {
+		return value
+	}
+
+	tokens := strings.Fields(value)
+	if strings.EqualFold(key, "class") {
+		slices.Sort(tokens)
+	}
+
+	return strings.Join(tokens, " ")
 }
 
 // transformConditionalAttribute converts `if cond { attrs } else { attrs }`

@@ -64,7 +64,11 @@ const (
 	// instantiations now carry the instantiation marker hash and instantiated
 	// type on VarType (types.Info.Instances wiring). v5 entries would replay
 	// alias-spelled type strings and pre-fix hashes.
-	CacheVersion = 6
+	// v6 → v7: templ constant attribute values now participate in the node
+	// type hash (markup identity: differing class/id/href values no longer
+	// match; semantic mode sorts class-list tokens). v6 entries would replay
+	// the old value-blind attribute hashes for .templ files.
+	CacheVersion = 7
 
 	// Directory permissions.
 	cacheDirPerms = 0o750
