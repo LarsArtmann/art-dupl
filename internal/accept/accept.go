@@ -204,20 +204,21 @@ func (a *AcceptedSet) scanFile(filename string) []AcceptedDirective {
 		rest := strings.TrimSpace(text[loc[1]:])
 
 		// Grammar (suppression behavior is identical for every input — only
-		// dead-directive reporting visibility changes at the edges), written
-		// without the comment slashes so the lines below are not themselves
-		// scanned as directives:
-		//   art-dupl:accept                    → bare accept (hash-less)
-		//   art-dupl:accept <hex>              → precision hash (group
+		// dead-directive reporting visibility changes at the edges); the
+		// marker is backticked because the scanner tolerates whitespace
+		// between "//" and the marker, so an unquoted marker leading a comment
+		// line would itself be scanned as a directive:
+		//   `art-dupl:accept`                    → bare accept (hash-less)
+		//   `art-dupl:accept <hex>`              → precision hash (group
 		//       hashes are XXH3 16-char hex, so a non-hex token could never
 		//       match a group)
-		//   art-dupl:accept <multi-word text>  → description, bare accept
-		//   art-dupl:accept <single non-hex>   → NOT a directive. Prose
-		//       merely mentioning the syntax ("...accepts it with
-		//       art-dupl:accept.") lands here; under the old single-token-
-		//       is-a-hash rule it became a precision directive that could
-		//       never fire — harmless before the dead-directive detector,
-		//       nonsense-warning material after.
+		//   `art-dupl:accept <multi-word text>`  → description, bare accept
+		//   `art-dupl:accept <single non-hex>`   → NOT a directive. Prose
+		//       merely mentioning the syntax (e.g. a sentence ending with
+		//       the marker and a period) lands here; under the old
+		//       single-token-is-a-hash rule it became a precision directive
+		//       that could never fire — harmless before the dead-directive
+		//       detector, nonsense-warning material after.
 		switch {
 		case rest == "":
 			directives = append(directives, d)
