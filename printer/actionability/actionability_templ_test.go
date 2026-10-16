@@ -68,6 +68,7 @@ func TestIsTemplChildrenIdiom_Disabled(t *testing.T) {
 	}
 
 	children := findNodesByBaseType(root, templpkg.ComponentChildrenExpression)
+
 	seqs := make([][]*domain.CloneNode, len(children))
 	for i, n := range children {
 		seqs[i] = []*domain.CloneNode{cloneNodeFromSyntax(n)}

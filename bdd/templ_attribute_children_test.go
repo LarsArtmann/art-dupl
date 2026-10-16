@@ -31,19 +31,45 @@ templ alpha() {
 }
 
 templ beta() {
-	<p class="mt-2 text-xs text-gray-500 dark:text-gray-400">{ i18n.T(ctx, i18n.KeyAlpha) }</p>
+	<p class="mt-2 text-xs text-gray-500 dark:text-gray-400">{ validityText(loc, v, timeNow()) }</p>
 }
 `,
 		})
 		Expect(err).NotTo(HaveOccurred())
 	})
 
-	It("does not group elements whose class values differ", func() {
+	It("does not group the issue #6 minimal proof (different classes, different callees)", func() {
 		output, err := setup.RunArtDupl("--quiet", "--threshold", "1")
 		Expect(err).ToNot(HaveOccurred())
 
 		Expect(string(output)).To(ContainSubstring("Found total 0 clone groups"),
-			"differing class strings are markup identity and must not match")
+			"the issue #6 minimal proof must not group at any threshold")
+	})
+
+	It("does not group elements whose class values differ even with identical children", func() {
+		// Same callee everywhere so ONLY the class value differs; the element
+		// composite must not match. The identical nested { expr } statement is
+		// a genuine sub-clone and may appear — but never a group whose preview
+		// is the <p class=...> element itself.
+		err := setup.CreateTestFiles(map[string]string{
+			"a.templ": `package main
+
+templ alpha() {
+	<p class="mt-4 text-sm text-gray-600 dark:text-gray-400">{ i18n.T(ctx, i18n.KeyAlpha) }</p>
+}
+
+templ beta() {
+	<p class="mt-2 text-xs text-gray-500 dark:text-gray-400">{ i18n.T(ctx, i18n.KeyAlpha) }</p>
+}
+`,
+		})
+		Expect(err).NotTo(HaveOccurred())
+
+		output, err := setup.RunArtDupl("--quiet", "--threshold", "1")
+		Expect(err).ToNot(HaveOccurred())
+
+		Expect(string(output)).ToNot(ContainSubstring("<p class="),
+			"element groups whose class values differ must not be reported")
 	})
 
 	It("still groups elements with identical class values", func() {
