@@ -100,6 +100,7 @@ func printStageTimingReport(w io.Writer, stages map[string]time.Duration, before
 
 	for _, stage := range timingStageOrder {
 		d, ok := stages[stage]
+		//art-dupl:accept guard idiom shared across helpers (2026-10-16 self-scan)
 		if !ok {
 			continue
 		}

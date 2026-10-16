@@ -143,6 +143,7 @@ func (a *AcceptedSet) IsAccepted(group domain.ProcessedCloneGroup) bool {
 			if d.Hash == "" || d.Hash == group.Hash {
 				a.recordMatched(clone.Filename, d.Line)
 
+				//art-dupl:accept flag/accumulator assignment idiom (2026-10-16 self-scan)
 				accepted = true
 			}
 		}
@@ -289,6 +290,7 @@ func (a *AcceptedSet) recordNearMiss(filename string, line, groupStart int) {
 // consulted (files with at least one evaluated clone group) are visible here;
 // the set scans lazily per group's clone files.
 func (a *AcceptedSet) DeadDirectives() []DeadDirective {
+	//art-dupl:accept guard idiom shared across helpers (2026-10-16 self-scan)
 	if a == nil {
 		return nil
 	}

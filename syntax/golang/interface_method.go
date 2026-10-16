@@ -59,6 +59,7 @@ func IsInterfaceMethod(info *types.Info, fn *ast.FuncDecl) bool {
 		}
 
 		typeName, ok := scopeObj.(*types.TypeName)
+		//art-dupl:accept guard idiom shared across helpers (2026-10-16 self-scan)
 		if !ok {
 			continue
 		}

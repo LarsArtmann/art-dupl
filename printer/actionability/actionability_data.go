@@ -104,6 +104,7 @@ func containsCallTo(seq []*domain.CloneNode, names ...string) bool {
 // builder pattern chains (a.WithX().WithY().Build()) rather than logic.
 func isChainOfCallsWithDifferentReceivers(seq []*domain.CloneNode) bool {
 	if len(seq) < 2 {
+		//art-dupl:accept repeated terminal returns in distinct helpers (2026-10-16 self-scan)
 		return false
 	}
 

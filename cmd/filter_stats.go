@@ -93,6 +93,7 @@ func (s *FilterStats) Record(result gogenfilter.FilterResult) {
 // output to distinguish how each file was caught.
 func (s *FilterStats) RecordWithSource(result gogenfilter.FilterResult, source FilterSource) {
 	if s == nil {
+		//art-dupl:accept repeated terminal returns in distinct helpers (2026-10-16 self-scan)
 		return
 	}
 

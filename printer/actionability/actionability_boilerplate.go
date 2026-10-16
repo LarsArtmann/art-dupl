@@ -228,12 +228,21 @@ func isTerminalStatement(n *domain.CloneNode) bool {
 }
 
 // caseClauseIsTrivialLabel reports whether a CaseClause/CommClause fragment
-// carries at most one simple body statement. A bare case/default/comm label
-// is switch structure, not extractable logic: identical labels across
-// switches coincide by shape, and nested-statement emission already reports
-// any duplicated body statements as their own token groups (2026-10-16
-// self-scan: ~8 of 44 shown groups were pure label clones).
+// carries at most a trivial body. A bare case/default/comm label is switch
+// structure, not extractable logic: identical labels across switches
+// coincide by shape, and nested-statement emission already reports any
+// duplicated body statements as their own token groups (2026-10-16
+// self-scan: ~8 of 44 shown groups were pure label clones). CommClause keys
+// are receive statements (case <-ch:), so a comm clause allows the key plus
+// one simple body statement; CaseClause keys are expressions and allow only
+// the one body statement.
 func caseClauseIsTrivialLabel(n *domain.CloneNode) bool {
+	maxBodyStmts := 1
+	//art-dupl:accept repeated terminal returns in distinct helpers (2026-10-16 self-scan)
+	if n.BaseType == golang.CommClause {
+		maxBodyStmts = 2
+	}
+
 	bodyStmts := 0
 
 	for _, c := range n.Children {
@@ -242,7 +251,7 @@ func caseClauseIsTrivialLabel(n *domain.CloneNode) bool {
 		}
 
 		bodyStmts++
-		if bodyStmts > 1 || !isTerminalStatement(c) {
+		if bodyStmts > maxBodyStmts || !isTerminalStatement(c) {
 			return false
 		}
 	}

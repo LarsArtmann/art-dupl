@@ -833,3 +833,88 @@ default:
 		t.Fatal("expected at least one case clause in the fat fixture stream")
 	}
 }
+
+// Real-source regression (2026-10-16 self-scan): select comm clauses whose
+// key is a receive statement (case <-ctx.Done():) serialize as CommClause
+// composites; key plus one simple body statement is still trivial switch
+// structure, two body statements are not.
+func TestCommClauseLabelTerminalStatement(t *testing.T) {
+	t.Parallel()
+
+	src := `select {
+case <-ctx.Done():
+	return false
+}`
+	nodes, err := golang.ParseSnippet(
+		golang.SnippetStatements, src, "comm.go", 0, golang.DetectionModeSemantic,
+	)
+	if err != nil {
+		t.Fatalf("ParseSnippet error: %v", err)
+	}
+
+	found := false
+
+	var collect func(n *syntax.Node)
+	collect = func(n *syntax.Node) {
+		if golang.DecodeBaseType(n.Type) != golang.CommClause {
+			for _, c := range n.Children {
+				collect(c)
+			}
+
+			return
+		}
+
+		found = true
+
+		if !isTerminalStatement(cloneNodeFrom(n)) {
+			t.Error("comm clause with receive key and one body statement must be terminal")
+		}
+	}
+
+	for _, n := range nodes {
+		collect(n)
+	}
+
+	if !found {
+		t.Fatal("expected a comm clause in the stream")
+	}
+
+	fatSrc := `select {
+case v := <-ch:
+	a := v + 1
+	b := a * 2
+	return b
+}`
+	fatNodes, err := golang.ParseSnippet(
+		golang.SnippetStatements, fatSrc, "fatcomm.go", 0, golang.DetectionModeSemantic,
+	)
+	if err != nil {
+		t.Fatalf("ParseSnippet error: %v", err)
+	}
+
+	sawFat := false
+
+	collect = func(n *syntax.Node) {
+		if golang.DecodeBaseType(n.Type) != golang.CommClause {
+			for _, c := range n.Children {
+				collect(c)
+			}
+
+			return
+		}
+
+		sawFat = true
+
+		if isTerminalStatement(cloneNodeFrom(n)) {
+			t.Error("comm clause with a multi-statement body must stay actionable")
+		}
+	}
+
+	for _, n := range fatNodes {
+		collect(n)
+	}
+
+	if !sawFat {
+		t.Fatal("expected a fat comm clause in the stream")
+	}
+}

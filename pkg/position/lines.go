@@ -35,6 +35,7 @@ func ByteRangeToLines(content []byte, start, end int) (int, int) {
 // a position at a newline character returns the line that the newline terminates.
 func offsetToLine(content []byte, offset int) int {
 	if offset < 0 || len(content) == 0 {
+		//art-dupl:accept repeated terminal returns in distinct helpers (2026-10-16 self-scan)
 		return 1
 	}
 

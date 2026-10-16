@@ -158,6 +158,7 @@ func (t *STree) update() {
 
 		t.fork(r, end)
 
+		//art-dupl:accept guard idiom shared across helpers (2026-10-16 self-scan)
 		if oldr != t.root {
 			oldr.linkState = r
 		}

@@ -300,8 +300,10 @@ func collectIncrementalResults(
 		}
 
 		if !sendCtx(ctx, schan, result.nodes) {
+			//art-dupl:accept channel send idiom (2026-10-16 self-scan)
 			statsChan <- stats
 
+			//art-dupl:accept cleanup/constructor call idiom (2026-10-16 self-scan)
 			close(schan)
 
 			return
@@ -433,6 +435,7 @@ func countLines(content []byte) int {
 
 	// Count last line if it doesn't end with newline
 	if len(content) > 0 && content[len(content)-1] != '\n' {
+		//art-dupl:accept flag/accumulator assignment idiom (2026-10-16 self-scan)
 		count++
 	}
 

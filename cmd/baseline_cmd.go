@@ -31,6 +31,7 @@ func NewBaselineCommand() *cobra.Command {
 
 	addSharedFlags(cmd)
 	cmd.Flags().String(baselinePathFlag, baseline.DefaultBaselinePath, "path to write the baseline file")
+	//art-dupl:accept cleanup/constructor call idiom (2026-10-16 self-scan)
 	addTestInclusionFlags(cmd)
 
 	return cmd

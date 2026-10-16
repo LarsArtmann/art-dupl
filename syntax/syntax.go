@@ -364,6 +364,7 @@ func countSerializedNodes(n *Node, maxChildren int) int {
 	count := 1
 
 	for i := range n.Children {
+		//art-dupl:accept guard idiom shared across helpers (2026-10-16 self-scan)
 		if i > maxChildren {
 			break
 		}

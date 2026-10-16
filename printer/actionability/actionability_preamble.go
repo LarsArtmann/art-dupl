@@ -117,6 +117,7 @@ func isTrivialSetupStatement(stmt *domain.CloneNode) bool {
 	case golang.AssignStmt, golang.ValueSpec, golang.GenDecl, golang.DeclStmt:
 		return true
 	case golang.ExprStmt:
+		//art-dupl:accept flag/accumulator assignment idiom (2026-10-16 self-scan)
 		call := unwrapExprStmt(stmt)
 
 		if call.BaseType != golang.CallExpr {

@@ -22,6 +22,7 @@ func (d *detector) isCombinedMode() bool {
 // (nil, nil), in which case both passes produce identical results and the
 // generics-pass filter drops everything, leaving the type-aware output.
 func (d *detector) loadCombinedTypeData(files []string) (golang.TypeAwareData, golang.TypeAwareData) {
+	//art-dupl:accept flag/accumulator assignment idiom (2026-10-16 self-scan)
 	goFiles := make([]string, 0, len(files))
 
 	for _, f := range files {

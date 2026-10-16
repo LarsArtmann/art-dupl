@@ -157,6 +157,7 @@ func printCloneGroups(
 			if result == domain.NonActionable {
 				stats.SuppressedActionable++
 
+				//art-dupl:accept guard idiom shared across helpers (2026-10-16 self-scan)
 				if !suppression.ShowSuppressed {
 					continue
 				}
@@ -295,6 +296,7 @@ func minCloneLineCount(group domain.ProcessedCloneGroup) int {
 	result := group.Clones[0].LineCount()
 	for _, c := range group.Clones[1:] {
 		if lc := c.LineCount(); lc < result {
+			//art-dupl:accept flag/accumulator assignment idiom (2026-10-16 self-scan)
 			result = lc
 		}
 	}

@@ -45,6 +45,7 @@ func ClassifyGenericsCandidate(seqs [][]*domain.CloneNode) (bool, string) {
 		return false, ""
 	}
 
+	//art-dupl:accept flag/accumulator assignment idiom (2026-10-16 self-scan)
 	base := flattenCloneNodes(seqs[0])
 
 	var divergences []TypeDivergence

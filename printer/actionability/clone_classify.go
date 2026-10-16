@@ -95,6 +95,7 @@ func templSuggestion(category domain.CloneCategory, fallback string) string {
 		domain.CategoryTestBoilerplate, domain.CategoryTestFixture,
 		domain.CategoryAssignment, domain.CategoryExpression,
 		domain.CategoryReturn, domain.CategoryDefer, domain.CategoryUnknown:
+		//art-dupl:accept repeated terminal returns in distinct helpers (2026-10-16 self-scan)
 		return fallback
 	default:
 		return fallback

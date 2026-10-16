@@ -208,6 +208,7 @@ func (s *BDDTestSetup) CreateAndRunDuplExpectSuccess(
 	}
 
 	if output == nil {
+		//art-dupl:accept guard idiom shared across helpers (2026-10-16 self-scan)
 		if s.T != nil {
 			s.T.Fatal("art-dupl output is nil")
 		}

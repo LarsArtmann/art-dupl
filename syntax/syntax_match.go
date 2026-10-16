@@ -92,6 +92,7 @@ func getUnitsIndexes(nodeSeq []*Node, threshold int) []int {
 			}
 
 			indexes = append(indexes, i)
+			//art-dupl:accept flag/accumulator assignment idiom (2026-10-16 self-scan)
 			i++
 
 			continue

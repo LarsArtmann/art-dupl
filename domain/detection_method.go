@@ -31,6 +31,7 @@ func (m DetectionMethod) String() string { return string(m) }
 func (m DetectionMethod) IsValid() bool {
 	switch m {
 	case MethodArtDupl, MethodHash:
+		//art-dupl:accept enum IsValid bodies; single-token return tables (2026-10-16 self-scan)
 		return true
 	default:
 		return false

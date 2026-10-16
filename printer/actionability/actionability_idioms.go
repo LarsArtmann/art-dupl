@@ -138,6 +138,7 @@ func isEmptyStringGuard(node *domain.CloneNode) bool {
 		}
 
 		if child.BaseType == golang.BlockStmt && blockHasAssign(child) {
+			//art-dupl:accept flag/accumulator assignment idiom (2026-10-16 self-scan)
 			hasAssignBody = true
 		}
 	}

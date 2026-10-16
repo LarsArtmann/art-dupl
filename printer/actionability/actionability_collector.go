@@ -67,6 +67,7 @@ func isAppendCollectorTail(nodeSeqs [][]*domain.CloneNode) bool {
 
 func seqIsCollectorTail(seq []*domain.CloneNode) bool {
 	if len(seq) == 0 || len(seq) > 3 {
+		//art-dupl:accept repeated terminal returns in distinct helpers (2026-10-16 self-scan)
 		return false
 	}
 
@@ -246,6 +247,7 @@ func ifIsCollectorFilter(n *domain.CloneNode) bool {
 	blocks := 0
 
 	for _, child := range n.Children {
+		//art-dupl:accept guard idiom shared across helpers (2026-10-16 self-scan)
 		if child.BaseType == golang.BlockStmt {
 			blocks++
 		}
@@ -266,6 +268,7 @@ func ifIsCollectorFilter(n *domain.CloneNode) bool {
 // only collector statements.
 func blockIsCollectorOnly(n *domain.CloneNode) bool {
 	for _, child := range n.Children {
+		//art-dupl:accept guard idiom shared across helpers (2026-10-16 self-scan)
 		if child.BaseType != golang.BlockStmt {
 			continue
 		}
@@ -315,6 +318,7 @@ var collectorRealLogicTypes = map[int32]bool{ //nolint:gochecknoglobals // stati
 // subtreeHasRealLogic reports whether the subtree contains anything beyond
 // value plumbing: a call outside the allow list or a logic-bearing node.
 func subtreeHasRealLogic(n *domain.CloneNode) bool {
+	//art-dupl:accept guard idiom shared across helpers (2026-10-16 self-scan)
 	if n == nil {
 		return false
 	}
@@ -324,6 +328,7 @@ func subtreeHasRealLogic(n *domain.CloneNode) bool {
 	}
 
 	if n.BaseType == golang.CallExpr {
+		//art-dupl:accept guard idiom shared across helpers (2026-10-16 self-scan)
 		if len(n.Children) == 0 {
 			return true
 		}
@@ -422,6 +427,7 @@ func seqIsOptionApply(seq []*domain.CloneNode) bool {
 			// Target seeding: `cfg := defaultConfig()` or `cfg := Config{...}`
 			// before the apply loop (gap families 2384b605 / 87e6d65d / 754d60f8).
 			if !assignSeedsOptionTarget(root) {
+				//art-dupl:accept repeated terminal returns in distinct helpers (2026-10-16 self-scan)
 				return false
 			}
 		default:

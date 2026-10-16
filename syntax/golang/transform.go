@@ -58,6 +58,7 @@ func (t *transformer) trans(
 
 		for _, stmt := range n.List {
 			child := t.trans(stmt)
+			//art-dupl:accept flag/accumulator assignment idiom (2026-10-16 self-scan)
 			child.Statement = true
 			o.AddChildren(child)
 		}
@@ -506,6 +507,7 @@ func extractReceiverTypeName(recv *ast.FieldList) string {
 func (t *transformer) addBodyStatements(o *syntax.Node, body []ast.Stmt) {
 	for _, stmt := range body {
 		child := t.trans(stmt)
+		//art-dupl:accept flag/accumulator assignment idiom (2026-10-16 self-scan)
 		child.Statement = true
 		o.AddChildren(child)
 	}

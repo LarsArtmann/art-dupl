@@ -237,6 +237,7 @@ func collectResults(
 		select {
 		case achan <- result.ast:
 		case <-ctx.Done():
+			//art-dupl:accept channel send idiom (2026-10-16 self-scan)
 			statsChan <- ParseStats{FilesCount: fileCount, LinesCount: lineCount}
 
 			close(achan)
