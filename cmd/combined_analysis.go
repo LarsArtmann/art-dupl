@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"path/filepath"
+	"time"
 
 	"github.com/LarsArtmann/art-dupl/config"
 	"github.com/LarsArtmann/art-dupl/detection"
@@ -68,7 +69,7 @@ func executeCombinedAnalysis(
 		return nil, job.ParseStats{}, nil, nil, err
 	}
 
-	typeAwareData, erasedData := loadCombinedTypeData(stderr, allFiles)
+	typeAwareData, erasedData := loadCombinedTypeData(ctx, stderr, allFiles)
 
 	resultTa := runCombinedPass(params, allFiles, typeAwareData, passStatus{
 		verbose: "Building suffix tree (type-aware pass)",
@@ -195,6 +196,7 @@ func sendMatch(ctx context.Context, ch chan<- syntax.Match, match syntax.Match) 
 // (nil, nil) on load failure, in which case both passes produce identical
 // syntax-only results and the generics-pass filter drops everything.
 func loadCombinedTypeData(
+	ctx context.Context,
 	stderr io.Writer,
 	allFiles []string,
 ) (golang.TypeAwareData, golang.TypeAwareData) {
@@ -212,7 +214,11 @@ func loadCombinedTypeData(
 
 	fmt.Fprintf(stderr, "🔍 Combined mode: loading type information for %d Go files...\n", len(goFiles))
 
+	typeLoadStart := time.Now()
+
 	typeData, err := golang.LoadTypeAwareData(goFiles, false)
+
+	job.RecordStage(ctx, job.PhaseTypeLoad, time.Since(typeLoadStart))
 	if err != nil {
 		logger.Default.Error("combined mode type loading failed, falling back to syntax-only", "err", err)
 

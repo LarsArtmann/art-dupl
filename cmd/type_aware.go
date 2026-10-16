@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"io"
 	"path/filepath"
+	"time"
 
+	"github.com/LarsArtmann/art-dupl/job"
 	"github.com/LarsArtmann/art-dupl/pkg/logger"
 	"github.com/LarsArtmann/art-dupl/syntax/golang"
 )
@@ -79,7 +81,11 @@ func loadTypeAwareData(
 
 	fmt.Fprintf(stderr, "🔍 %s: loading type information for %d Go files...\n", label, len(goFiles))
 
+	typeLoadStart := time.Now()
+
 	typeData, err := golang.LoadTypeAwareData(goFiles, eraseHash)
+
+	job.RecordStage(ctx, job.PhaseTypeLoad, time.Since(typeLoadStart))
 	if err != nil {
 		logger.Default.Error("type-aware mode failed, falling back to syntax-only", "err", err)
 

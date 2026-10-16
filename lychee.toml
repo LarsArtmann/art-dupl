@@ -1,0 +1,2 @@
+# lychee link-checker config (see buildflow quality/lychee-archived-docs preflight).
+exclude_path = ["docs/brainstorming/archived"]

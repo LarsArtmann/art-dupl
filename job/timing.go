@@ -29,6 +29,11 @@ const (
 // Phase names recorded by the cmd layer. Phases are wall-clock spans and may
 // overlap each other where the pipeline streams concurrently.
 const (
+	// PhaseTypeLoad spans the go/packages type check load performed by
+	// --type-aware, --suggest-generics, and combined mode. It happens inside
+	// the ingest span (after the file channel drains) and routinely dominates
+	// it: type checking is 10-100x slower than parsing.
+	PhaseTypeLoad = "type-load"
 	// PhaseIngest spans crawl + parse + serialize + tree build (all
 	// overlapped) from analysis start until the tree is complete.
 	PhaseIngest = "ingest"
