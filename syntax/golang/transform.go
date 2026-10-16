@@ -186,6 +186,7 @@ func (t *transformer) trans(
 		o.AddChildren(t.trans(n.Name), t.trans(n.Type))
 
 		// Track enclosing return arity for property engine
+		//art-dupl:accept transformer state save/restore prologue; FuncDecl/FuncLit symmetry is the point (2026-10-16 self-scan)
 		savedArity := t.enclosingReturnArity
 		t.enclosingReturnArity = funcReturnArity(n.Type)
 

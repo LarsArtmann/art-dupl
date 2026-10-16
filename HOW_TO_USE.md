@@ -270,9 +270,11 @@ debugging false negatives/positives.
 ### Stage Timing (`--timing`)
 
 Use `--timing` to see where a run spends its time — crawl, parse,
-serialize, tree-build, search, print — plus allocation totals and GC
-pressure. Active stages sum goroutine busy time across workers; wall
-stages include channel waits, so phases may overlap:
+serialize, tree-build, type-load, search, print — plus allocation totals and
+GC pressure. Active stages sum goroutine busy time across workers; wall
+stages include channel waits, so phases may overlap. `type-load` appears only
+with `--type-aware`/`--suggest-generics` and routinely dominates `ingest`
+(go/packages type checking is 10-100x slower than parsing):
 
 ```bash
 art-dupl --timing ./src
