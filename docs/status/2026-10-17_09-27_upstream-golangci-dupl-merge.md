@@ -13,14 +13,14 @@
 2. **Upstream remote added and fetched.** `upstream` → `https://github.com/golangci/dupl.git` (branches `fork`, `master`, `feat/gha` now tracked locally).
 3. **All 6 upstream commits individually audited** (diffs read, not trusted from messages):
 
-   | Upstream commit | Verdict |
-   |---|---|
+   | Upstream commit                                                          | Verdict                                                                                                                                                                                              |
+   | ------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
    | `840c83fd` generics AST (IndexListExpr, TypeParams on FuncType/TypeSpec) | Already present as a strict **superset** — `syntax/golang/transform.go:221,291,388` + dedicated tests (`generics_test.go`), extended by alpha-normalization, instantiation markers, suggest-generics |
-   | `4a1b018f` typo fixes | **Ported** the 2 typos surviving our rewrite; other sites verified gone via grep |
-   | `4c80fbce` README update | N/A — our README is a full rewrite |
-   | `0b73279b` default threshold 15→100 | **Deliberately declined** — our default is 5; noise filtering is done by 41 actionability patterns, not a high threshold |
-   | `9258a89f` HTML output styling | N/A — our HTML printer is a templ-based rewrite |
-   | `c99c5cf5` CI updates | N/A — we have 8 own workflows + a guarded `.golangci.yml` |
+   | `4a1b018f` typo fixes                                                    | **Ported** the 2 typos surviving our rewrite; other sites verified gone via grep                                                                                                                     |
+   | `4c80fbce` README update                                                 | N/A — our README is a full rewrite                                                                                                                                                                   |
+   | `0b73279b` default threshold 15→100                                      | **Deliberately declined** — our default is 5; noise filtering is done by 41 actionability patterns, not a high threshold                                                                             |
+   | `9258a89f` HTML output styling                                           | N/A — our HTML printer is a templ-based rewrite                                                                                                                                                      |
+   | `c99c5cf5` CI updates                                                    | N/A — we have 8 own workflows + a guarded `.golangci.yml`                                                                                                                                            |
 
 4. **Typo port committed** — `915cf9e5` (`suffixtree/dupl.go:114` "find"→"finds", `syntax/syntax_match.go:175` "repetive"→"repetitive"), crediting upstream `4a1b018f`.
 5. **Ours-strategy merge created** — `24d1f74b` merges `upstream/fork` with tree byte-identical to its first parent (`git diff HEAD^1 HEAD` empty); full per-commit audit recorded in the merge message. Future upstream deltas now start from `c99c5cf5`.
@@ -29,7 +29,7 @@
 
 ## b) PARTIALLY DONE
 
-1. **Session memory/documentation.** The recurrence ledger was updated, but the *upstream sync surface* is undocumented in AGENTS.md: the new `upstream` remote, the audit→port→`-s ours` merge recipe, and the API one-liner to verify the compare. Next session would rediscover all of it from this file.
+1. **Session memory/documentation.** The recurrence ledger was updated, but the _upstream sync surface_ is undocumented in AGENTS.md: the new `upstream` remote, the audit→port→`-s ours` merge recipe, and the API one-liner to verify the compare. Next session would rediscover all of it from this file.
 2. **Remote-state confirmation.** The fix (`7e5dd8f9`) is pushed, but **CI result on origin for both `f8724119` (presumably red) and `7e5dd8f9` (should be green) was never checked** — `gh run list` was not run.
 3. **Disposition durability.** The declined-upstream decisions (threshold 100 etc.) live only in the merge commit message; not mirrored into TODO_LIST/AGENTS.md where re-litigation would start.
 4. **Report routing.** Section (f) below is TODO_LIST/ROADMAP fuel per the docs-health contract, but HARVEST was deliberately NOT run (user constraint: report only, then wait).
@@ -91,4 +91,4 @@
 
 ---
 
-*Snapshot only — goes stale. When bringing this report current later, use docs-health ANNOTATE (inline corrections/appendix), never rewrite. Section (f) is HARVEST fuel for TODO_LIST/ROADMAP.*
+_Snapshot only — goes stale. When bringing this report current later, use docs-health ANNOTATE (inline corrections/appendix), never rewrite. Section (f) is HARVEST fuel for TODO_LIST/ROADMAP._
