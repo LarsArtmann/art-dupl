@@ -111,7 +111,7 @@ func (c *contextList) append(c2 *contextList) {
 	}
 }
 
-// FindDuplOver find pairs of maximal duplicities over a threshold
+// FindDuplOver finds pairs of maximal duplicities over a threshold
 // length. The context allows callers to cancel the walk early.
 func (t *STree) FindDuplOver(ctx context.Context, threshold int) <-chan Match {
 	auxTran := &tran{state: t.root}

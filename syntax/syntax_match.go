@@ -172,7 +172,7 @@ func trimSubsumedIndexes(indexes []int, nodes []*Node) []int {
 	return kept
 }
 
-// isCyclic finds out whether there is a repetive pattern in the found clone.
+// isCyclic finds out whether there is a repetitive pattern in the found clone.
 func isCyclic(indexes []int, nodes []*Node) bool {
 	count := len(indexes)
 	if count <= 1 {
