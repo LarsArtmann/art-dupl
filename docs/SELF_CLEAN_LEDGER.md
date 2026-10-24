@@ -338,8 +338,12 @@ at 1283 detected). Both judged; zero harmful duplication found.
   structural skips; gitignore pruning now matches git + provider semantics
   (a negation cannot re-include beneath an excluded dir — pinned by
   `TestCrawlPrunesGitignoredDirs`). Warm crawl 132ms → 74ms; cold crawls
-  lose the ~20x ignored-entry stat multiplier. Detected-group counts
-  byte-identical before/after.
+  lose the ~20x ignored-entry stat multiplier (estimate from entry counts, not
+  a measured cold-cache run). **Shown** groups byte-identical before/after the
+  pruning fix (2 → 2); the DETECTED count moved 1282 → 1290 in the same window
+  because the session also added table-driven test code (new
+  detected-then-suppressed families) — attribution eyeballed from the tree
+  diff, not verified per-family.
 - **Not defects, verified**: `type-load` (17-36s) is the documented single
   shared go/packages load of combined mode (ADR-0026); HTML-to-stdout without
   a notice is the piped-stdout branch of `resolveHTMLOutput` (TTY branch

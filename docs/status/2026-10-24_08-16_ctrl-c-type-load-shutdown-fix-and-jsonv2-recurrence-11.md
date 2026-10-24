@@ -1,0 +1,135 @@
+# Status Report — Ctrl+C Shutdown Fix + jsonv2 Recurrence #11
+
+**Date:** 2026-10-24 08:16 CEST
+**Session scope:** Single bug-fix session on branch `fork`: "Why can't I shutdown during type-load?" → diagnosis → fix → live verification. Plus one boundary-gate catch (jsonv2 recurrence #11).
+**Report scope constraint:** Only this session's run and what it surfaced. No repo-wide research.
+
+---
+
+## Self-Critique First (what you asked: forgotten / better / improve)
+
+1. **My first two SIGINT "verifications" were bogus and I initially believed them.** This shell's `kill` is an unsupported builtin and `$!` returns a virtual job id (`g1`), so **no signal was ever delivered** in my first two live tests. I reported "exit=0 shutdown_after_SIGINT=9.2s" as if shutdown happened — that was actually just a full run completing in syntax-only fallback mode. I only caught it because the output said "found 2 clones" (a canceled run cannot produce results) and the shell printed `kill: unsupported builtin`. Third harness (`timeout --signal=INT`) finally delivered a real signal.
+2. **I almost shipped the fix while it still degraded instead of aborting.** After wiring ctx through, unit tests were green — but the live test revealed the load-error path treated Ctrl+C as "type-aware failed, falling back to syntax-only" and *finished the entire run* (exit 0, degraded results). AGENTS.md process rule #3 ("smoke-test ONE CLI invocation before fanning out") is the only reason this was caught same-session.
+3. **Forgot: no automated CLI-level interrupt test.** My regression test covers `LoadTypeAwareData(ctx,…)` at unit level only. Nothing in the suite pins "SIGINT during type-load → exit 130". Only a manual `timeout --signal=INT` run proves it today.
+4. **Forgot: HARVEST.** Section (f) below must flow into `TODO_LIST.md`/`ROADMAP.md` via docs-health HARVEST — I did not run it (you said "then wait"), so the report is the current tombstone risk.
+5. **Small duplication I created:** the `if ctx.Err() == nil { log fallback }` guard now exists in 4 near-identical places (cmd/type_aware.go, cmd/combined_analysis.go, pkg/artdupl/detector_pipeline.go, pkg/artdupl/combined.go). Defensible (cmd and SDK can't share per arch-lint), but it is a mild split-brain seed.
+6. **Unresolved loose end:** gopls kept reporting `golines: File is not properly formatted` on pkg/artdupl/combined.go:24 all session. The boundary gate (incl. buildflow golangci-lint) passed twice, so I judged it stale gopls lag — but I never re-confirmed with a fresh LSP read after the last edit. Probably noise, not proven.
+
+---
+
+## a) FULLY DONE
+
+| # | Item | Evidence |
+|---|------|----------|
+| 1 | **Root cause: Ctrl+C dead during "loading type information"** — `golang.LoadTypeAwareData` took no context; `packages.Config.Context` unset → full go/packages type check ran under `context.Background()` (10–100x parse cost × N files). fang's `WithNotifySignal(os.Interrupt)` canceled ctx (main.go:94) but nothing observed it until the parse stage. | Diagnosis in session; code read of cmd/type_aware.go, syntax/golang/typeinfo.go:190, main.go:94 |
+| 2 | **Fix: context threading** — `LoadTypeAwareData(ctx, files, eraseHash)` sets `packages.Config.Context` and checks ctx between per-module loads. All 4 production callers updated (cmd/type_aware.go, cmd/combined_analysis.go, pkg/artdupl/detector_pipeline.go, pkg/artdupl/combined.go) + 6 test call sites. | In tree; daemon-committed (60b393a4…93074565 on fork) |
+| 3 | **Fix: abort, don't degrade** — callers check `ctx.Err()` right after the load and return the error (→ exit 130). The "falling back to syntax-only" path is now reserved for real load failures; its stderr log is suppressed when the load was canceled. | cmd/type_aware.go:89, cmd/run_analysis.go:166+236, cmd/combined_analysis.go:72, pkg/artdupl both loaders |
+| 4 | **Regression test** `TestLoadTypeAwareData_CanceledContextAborts` — canceled ctx → `errors.Is(err, context.Canceled)`, nil data, no type check work. | `go test -count=1 ./syntax/golang/` green |
+| 5 | **Live SIGINT verification** — `timeout --signal=INT --preserve-status 1.2 art-dupl --suggest-generics --type-aware …` on go-sse: **exit=130, total 1.217s** (≈17 ms after signal), output `⏹ CANCELED`. Before the fix: run completed degraded, exit 0. | Session transcript (third harness attempt — see critique #1) |
+| 6 | **jsonv2 recurrence #11 caught + restored** — boundary gate red at session start: auto-commit `daf22c5a` (2026-10-17) re-migrated internal/jsonutil, config/config_migrate.go, pkg/enum to direct v2; `93432fd9` (2026-10-18) even reformatted the broken file on top. **Broken and undetected for ~1 week.** Restored verbatim from `7e5dd8f9` (the recurrence-#10 restore — the offending commit's parent was already v2), diff-verified pure reversal. | `internal/jsonv2gate`, config, jsonutil, pkg/enum all green on fresh `-count=1` |
+| 7 | **AGENTS.md updated** — recurrence #11 ledger entry (with the "restore source = last RESTORE commit, not parent" lesson) + new Type-load cancellation convention note. | AGENTS.md (daemon will commit) |
+| 8 | **Gates green twice** — `scripts/check-boundary.sh` fast profile: OK (221s, then 69s after final edits). Fresh `-count=1` on syntax/golang, pkg/artdupl, cmd, internal/jsonutil, internal/jsonv2gate, config, pkg/enum: all ok. | Session transcript |
+
+## b) PARTIALLY DONE
+
+| Item | Works | Open | Effort |
+|------|-------|------|--------|
+| CLI-level interrupt test | Unit-level ctx test exists (a.4) | No automated SIGINT→exit-130 test of the actual binary; likely needs a non-Windows-gated subprocess test (windows lane has no easy SIGINT delivery — same lane that already carries the GOEXPERIMENT crash scoping) | M |
+| Session close-out | Fast boundary gate run twice (task-boundary cadence satisfied) | `--full` close-out race suite + `nix flake check` not run this session (correct per cadence — this task boundary is not a close-out — but the session isn't formally closed either) | M |
+| LSP diagnostic hygiene | Judged golines warning stale via gate-pass inference | Not re-verified after final edit (critique #6); one LSP restart + re-read would settle it | S |
+| Foreign edits respect | Left `cmd/cmd_utils_test.go` (+176) and `cmd/run_crawl.go` (+36) untouched per "never revert others' work" | Not mine, not reviewed, not attributed — they were in the tree during the passing gate runs, so they build and pass, but I don't know their intent or completeness | S (ask) |
+
+## c) NOT STARTED
+
+| Item | Why not started | Still wanted? |
+|------|----------------|---------------|
+| **Structural jsonv2 fix** (daemon exclusion list vs pre-commit jsonv2gate hook) — reported "since session 2", now 11 recurrences | Owner question never answered; touches BuildFlow upstream vs local hook decision | Yes — this is the #1 item in (f) |
+| **docs-health HARVEST** of this report's (f) into TODO_LIST/ROADMAP | You said "then wait for instructions" | Yes, on your go |
+| **Cancellation audit** of other blocking phases — are there more `context.Background()` blocking calls (other go/packages sites, job/ stages)? | Out of this session's scope per your instruction | Candidate; my fix was surgical, not a sweep |
+| docs-health monthly pass | Due **2026-10-28** (4 days) per AGENTS.md cadence | Yes, scheduled |
+| Monthly self-scan (`scripts/self-scan.sh`) + ledger append | Not due yet per cadence as far as this session knows | Scheduled |
+| TODO_LIST #18 (branch-protection required-checks pickup) | Pre-existing, unrelated to session | Pre-existing |
+| Phantom templ whole-file artifact: "drop the File token" candidate fix (CacheVersion bump) | Documented NOT REPRODUCIBLE since 2026-10-11; BDD pin guards it | Only if it reappears |
+
+## d) TOTALLY FUCKED UP
+
+1. **The jsonv2 re-migration class has now fired ELEVEN times, and recurrence #11 sat in the tree for a WEEK — through at least two more daemon commits, one of which reformatted the broken file as if it were healthy.** Severity: any fresh `-count=1` consumer (or a release build running SaveConfig with a timeout) hits the Duration-refusal crash; the class already reached the remote once (#10). Root cause: the auto-commit daemon packages foreign in-flight edits and the only deterministic detector (jsonv2gate + fresh `-count=1`) is pull-based — it only fires when a session happens to run the gate. Mitigation exists (restore-from-parent playbook, ledger), prevention does not. **Nothing structural changed after #11.**
+2. **^C during type-load was a shipped UX failure** (this session's bug): the longest blocking phase of `--type-aware`/combined mode ignored cancellation entirely; a user's ^C silently committed them to minutes of type checking plus a full degraded run. Fixed today; the fuckup was that the phase shipped without any ctx wiring despite the project's own Context-propagation convention.
+3. **My verification process fucked up (own work):** two rounds of fake signal delivery trusted as evidence (critique #1). No user-facing damage (caught in-session), but the pattern — "measurement without stimulus verification" — is exactly how the phantom "SARIF sees 0 groups" class of incidents happens.
+
+## e) WHAT WE SHOULD IMPROVE
+
+1. **Verify the harness delivers the stimulus before trusting any measurement.** In sandboxed/virtual shells, check `kill`, `$!`, PID semantics FIRST. Concrete: one-line `ps -p $PID` probe before any signal test. (Candidate lesson for crush-config `references/lessons.md`.)
+2. **Green unit tests ≠ cancellation behavior fixed.** Cancellation paths need a real-signal integration test (or at minimum a documented manual verification step in the task checklist).
+3. **Kill the 4x duplicated fallback-guard pattern** with a small shared helper per package boundary (cmd-internal helper is fine; SDK mirrors it) — or accept and document it.
+4. **Make jsonv2gate preventive, not detective** — pre-commit hook (runs the existing scanner over staged files, ~sub-second) or BuildFlow daemon exclusion list. Eleven recurrences is eleven too many.
+5. **Run the fast gate before pushing, not only at task boundaries** — #10 reached the remote; this is already written in AGENTS.md but nothing enforces it.
+6. **Type-load progress feedback**: even with cancellation fixed, the "loading type information for N files…" phase gives no progress/ETA. A periodic "still loading (Ns elapsed)" stderr line would make future hangs/hits obvious.
+7. **Restart the LSP client after multi-file signature changes** — stale golines diagnostics cost attention twice this session.
+
+## f) UP TO 50 THINGS TO GET DONE NEXT
+
+*Ranked by impact. First ~15 are concrete; beyond that is brainstorm/ROADMAP fuel per the skill's routing note — HARVEST should apply extra rigor before promoting items 16+ into TODO_LIST.*
+
+| # | Task | Impact | Effort | Category |
+|---|------|--------|--------|----------|
+| 1 | Decide + implement structural jsonv2 fix: pre-commit jsonv2gate hook on staged files (local) OR BuildFlow daemon exclusion list (upstream BuildFlow task) | Critical | M | Quality |
+| 2 | Add real-signal interrupt test: spawn built binary, SIGINT during type-load, assert exit 130 (non-Windows-gated) | High | M | Quality |
+| 3 | Run docs-health HARVEST: pull this report's (f) into TODO_LIST.md / ROADMAP.md | High | S | Documentation |
+| 4 | Run `scripts/check-boundary.sh --full` to close out this session properly | High | M | Quality |
+| 5 | Run `nix flake check` (race + alloc-gate lanes) after the signature change across 4 packages | High | M | Quality |
+| 6 | Audit for other ctx-ignoring blocking calls (grep `packages.Load`, long loops without ctx checks) beyond the type-load fix | High | M | Bug |
+| 7 | docs-health monthly pass — due 2026-10-28 (4 days) | High | L | Documentation |
+| 8 | Confirm golines state of pkg/artdupl/combined.go with a fresh LSP read; restart gopls if still stale | Low | S | Cleanup |
+| 9 | Extract shared load-or-abort helper inside cmd (collapse 2 of the 4 duplicated fallback guards) | Low | S | Cleanup |
+| 10 | Add "still loading (Ns)" periodic stderr progress for the type-load phase (suppressed by --quiet) | Medium | S | Feature |
+| 11 | Verify/attribute foreign edits in cmd/cmd_utils_test.go + cmd/run_crawl.go (whose session? complete?) | Medium | S | Cleanup |
+| 12 | Decide ^C UX detail: exit 130 silently (current) vs stderr notice "interrupted during type load; rerun without --type-aware for faster partial" | Low | S | Feature |
+| 13 | File upstream BuildFlow issue: go-version-auto-configure should respect existing patch-level pins (documented flip war, second rewriter) | Medium | S | Bug |
+| 14 | Update corpus docs if any pin claims type-load duration behavior (determinism unaffected — verify one sorted-group byte-identity run after this change) | Medium | S | Quality |
+| 15 | Record "verify the stimulus before the measurement" as a cross-project lesson in crush-config references/lessons.md (by commit, not in-session write) | Medium | S | Documentation |
+| 16 | Consider `--type-aware-load-timeout` flag (context.WithTimeout) so pathological loads self-abort | Low | S | Feature |
+| 17 | windows Test lane: re-check whether the GOEXPERIMENT crash class persists on current toolchain; update AGENTS.md scoping note | Low | M | Bug |
+| 18 | ADR-0023 scope cut: nested emission for FuncLit bodies (closures under t.Run/defer/go) | Medium | L | Feature |
+| 19 | ADR-0023 scope cut: LabeledStmt interiors | Low | M | Feature |
+| 20 | ADR-0023 scope cut: GenDecl spec-level sharing (var/const blocks with partially-shared specs) | Medium | L | Feature |
+| 21 | Phantom templ artifact candidate: drop the File token from the templ stream (+ CacheVersion bump) IF the BDD pin ever fires | Low | S | Bug |
+| 22 | Re-validate actionability corpus after the ctx change touches nothing detection-side — cheap determinism spot-check, then close | Low | S | Quality |
+| 23 | Template the "restore-from-parent" jsonv2 playbook into a script (given bad commit + known-good ref, diff-verify + restore) so #12 is one command | Medium | S | Quality |
+| 24 | Add jsonv2gate scanner to the auto-commit daemon's own pre-commit path if BuildFlow-side fix is chosen | High | M | Quality |
+| 25 | Extend `job.RecordStage` timing output: surface PhaseTypeLoad in --timing output summary explicitly (verify it already is) | Low | S | Feature |
+| 26 | SDK parity test: combined-mode cancellation in pkg/artdupl returns error rather than empty-syntax fallback | Medium | S | Quality |
+| 27 | gopls: investigate why golines diagnostics went stale after multi-edit signature changes; consider lsp_restart in task checklist | Low | S | Cleanup |
+| 28 | Consider annotating `LoadTypeAwareData` as "10-100x slower" in --help text for --type-aware so users expect the pause | Low | S | Documentation |
+| 29 | CHANGELOG entry for the shutdown fix (user-facing behavior change: ^C now aborts instead of degrading) | Medium | S | Documentation |
+| 30 | FEATURES.md: no entry needed (bug fix), but verify no doc claims "^C falls back gracefully" | Low | S | Documentation |
+| 31 | Sweep: ensure every `logger.Error("… falling back …")` in the tree checks ctx.Err() first (pattern audit, 2 known sites fixed, any others?) | Low | S | Bug |
+| 32 | Baseline doc: re-run the documented determinism check (sorted group sets byte-identical, parallel vs --search-workers 1) post-change for the record | Low | M | Quality |
+| 33 | Unit test: LoadTypeAwareData with pre-canceled ctx AND multiple modules → per-module ctx check fires (current test covers single-module early return) | Low | S | Quality |
+| 34 | Consider ctx parameter ordering lint (ctx first) enforcement — all new signatures follow it; codify in .golangci.yml if a checker exists (revive context-as-argument) | Low | S | Quality |
+| 35 | Update HOW_TO_USE.md signals section (if one exists) with the new ^C behavior | Low | S | Documentation |
+| 36 | Add the interrupt-test harness snippet to TESTING.md as the canonical way to test signal handling in this repo | Low | S | Documentation |
+| 37 | Review whether `collectFiles` should also drain-cancel faster (it checks ctx per file — fine, but document why it can't abort the crawler mid-walk) | Low | S | Documentation |
+| 38 | pkg/artdupl README: document that SDK cancellation now covers the type-load phase (was parse/build only) | Low | S | Documentation |
+| 39 | Gate idea: flag any new `packages.Config` literal missing `Context:` field (AST scanner, sibling of jsonv2gate) | Medium | S | Quality |
+| 40 | Sweep for other `context.Background()` inside cmd/ reachable from command execution (should only be fang.Execute root) | Low | S | Cleanup |
+| 41 | Daemon hygiene: check whether the auto-commit daemon's heuristic can be taught to skip the three v1-only files (cheap stopgap while #1 pending) | Medium | S | Quality |
+| 42 | Post-#1: rewrite the recurrence ledger preamble from "playbook" to "prevented — hook active since <date>" | Low | S | Documentation |
+| 43 | Review `--timing` output includes the type-load stage label users can correlate with the 🔍 message | Low | S | Feature |
+| 44 | Consider printing which module is being type-checked when >1 module (multi-module corpora, the T7 loader case) | Low | S | Feature |
+| 45 | Confirm the alloc-gate/race lanes are unaffected by the signature change (flake check covers it — overlaps #5) | Low | S | Quality |
+| 46 | BDD: add a stdin-mode ^C scenario if the harness supports signals (probably not — document limitation instead) | Low | S | Quality |
+| 47 | Sweep test files for remaining `LoadTypeAwareData(` old-signature stragglers (grep shows 0 — close as verified) | Low | S | Cleanup |
+| 48 | Update docs/DOMAIN_LANGUAGE.md if "type load" / "type-aware pass" terms are defined there (consistency check) | Low | S | Documentation |
+| 49 | Retire /tmp/art-dupl-fix test binary (local hygiene) | Low | S | Cleanup |
+| 50 | Bookkeeping: this report's file itself — daemon will commit; verify it lands with a sane message | Low | S | Documentation |
+
+## g) QUESTIONS I CANNOT FIGURE OUT MYSELF
+
+1. **Structural jsonv2 fix — where does it live?** Pre-commit hook in this repo (fast, local, ~sub-second per commit) vs BuildFlow daemon exclusion list (fleet-wide, upstream BuildFlow task per the buildflow skill's extending-coverage rule). I can't decide whether you want the stopgap (local hook today) or the fleet fix (BuildFlow provider/exclusion upstream) — or both. This is the same question open "since session 2".
+2. **The foreign edits in `cmd/cmd_utils_test.go` (+176) and `cmd/run_crawl.go` (+36):** another session's in-flight work, or abandoned leftovers? They build and pass in my gate runs, but I don't know their intent. Should I leave them strictly alone, verify+own them, or are you able to say which session owns them?
+3. **When ^C lands during type-load, what should the user see?** Current: silent `⏹ CANCELED` + exit 130. Options: (a) keep as-is, (b) one stderr line naming the aborted phase and suggesting `--no-actionability`/lower scope for faster runs, (c) partial-results output. Preference determines whether I add anything beyond what shipped today.
+
+---
+
+*Per the status-report skill: section (f) is the primary input for docs-health HARVEST — say the word and I'll run it. Per the skill's format note: this report is `.md` at your explicit request; the skill's canonical format is styled HTML — not propagated as a new default. Report not manually committed (Crush forbids commits without your explicit "commit"); the auto-commit daemon will pick it up.*
