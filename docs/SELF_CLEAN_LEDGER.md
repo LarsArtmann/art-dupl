@@ -306,3 +306,41 @@ zero warnings on all three.**
   inside `ingest` is now its own row; `--suggest-generics`-only runs now
   label the loading message "Suggest-generics mode" instead of
   "Type-aware mode".
+
+## 2026-10-24 — off-cadence `-t 1 --suggest-generics --type-aware` combined sweep (crawl-pruning session)
+
+**Detected: 1282 / shown: 2** (`art-dupl --sort total-tokens -t 1 --suggest-generics
+--type-aware --html` on art-dupl itself; the user's run showed the same 2 groups
+at 1283 detected). Both judged; zero harmful duplication found.
+
+### Accepted (intentional)
+
+| Clone | Rationale | Suppression |
+| ----- | --------- | ----------- |
+| `setAttributeKey` / `setConstantAttribute` two-statement prologue (`o.Type = Attribute; o.Name = key`, `syntax/templ/transform_node.go:98,150`) | Shared 2-line node-identity init ahead of deliberately divergent encodings (key-only vs key+value). An extraction takes as many parameters as the duplicated code has lines and hides the encode step it would sit next to. | Bare `//art-dupl:accept` on both doc comments (one covered occurrence accepts the group; two for edit-robustness). |
+| `shortRevision` (cmd, truncate at 7) / `truncHash` (printer, truncate at 12) | Truncate-to-N guard idiom with different lengths and different domains (VCS short-hash convention vs group-hash display). No shared change pressure; a cross-package helper would out-param its 4-token body. | Bare `//art-dupl:accept` on both doc comments. No new denylist pattern: a truncation-idiom pattern from a 2-instance corpus is over-suppression risk with zero measured benefit. |
+
+### Follow-up fixes riding the same session
+
+- **Crawl dir pruning (the run's real anomaly)**: the timing report showed
+  `crawl 31.837s` for 440 files. Warm reproduction was 132ms — the user's
+  number was cold-cache inflation of a REAL defect: the CLI walk filtered
+  excluded entries per-stat but never pruned, so `.git` (1.1k files),
+  `website/node_modules` (16k files), `website/dist`, and every gitignored
+  dir were fully traversed. Fixed three-layer: `shouldPruneDir`
+  (dir-level form of `shouldSkipPath` via trailing-slash probe),
+  `handleWalkEntry` returns `filepath.SkipDir` for excluded/ignored dirs, and
+  a new `gitignore.GitignoreMatcher.IsIgnoredDir` (the matcher's dirOnly
+  logic only matched paths UNDER a dir, and `filepath.Rel` strips trailing
+  slashes, so directory-only exclusions could never prune the dir entry —
+  the same latent gap silently disabled the provider crawl's gitignore
+  pruning; fixed there too). File-selection semantics unchanged for
+  structural skips; gitignore pruning now matches git + provider semantics
+  (a negation cannot re-include beneath an excluded dir — pinned by
+  `TestCrawlPrunesGitignoredDirs`). Warm crawl 132ms → 74ms; cold crawls
+  lose the ~20x ignored-entry stat multiplier. Detected-group counts
+  byte-identical before/after.
+- **Not defects, verified**: `type-load` (17-36s) is the documented single
+  shared go/packages load of combined mode (ADR-0026); HTML-to-stdout without
+  a notice is the piped-stdout branch of `resolveHTMLOutput` (TTY branch
+  auto-writes + notices, covered by `cmd/html_pty_test.go`).
