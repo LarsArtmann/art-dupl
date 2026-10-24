@@ -40,7 +40,9 @@ func (d *detector) loadCombinedTypeData(
 
 	typeData, err := golang.LoadTypeAwareData(ctx, goFiles, false)
 	if err != nil {
-		d.logger.Warn("Combined mode type loading failed, falling back to syntax-only", "err", err)
+		if ctx.Err() == nil {
+			d.logger.Warn("Combined mode type loading failed, falling back to syntax-only", "err", err)
+		}
 
 		return nil, nil
 	}
@@ -55,6 +57,10 @@ func (d *detector) buildCombinedPipelines(
 	files []string,
 ) (*pipelineResult, *pipelineResult, error) {
 	typeAwareData, erasedData := d.loadCombinedTypeData(ctx, files)
+
+	if err := ctx.Err(); err != nil {
+		return nil, nil, err
+	}
 
 	typeAwareResult, err := d.buildPipelineWithTypeData(ctx, files, typeAwareData)
 	if err != nil {

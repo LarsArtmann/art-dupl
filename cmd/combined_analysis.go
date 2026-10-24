@@ -71,6 +71,10 @@ func executeCombinedAnalysis(
 
 	typeAwareData, erasedData := loadCombinedTypeData(ctx, stderr, allFiles)
 
+	if err := ctx.Err(); err != nil {
+		return nil, job.ParseStats{}, nil, nil, err
+	}
+
 	resultTa := runCombinedPass(params, allFiles, typeAwareData, passStatus{
 		verbose: "Building suffix tree (type-aware pass)",
 		text:    "    📖 Parsing files and building analysis tree...",
@@ -220,7 +224,9 @@ func loadCombinedTypeData(
 
 	job.RecordStage(ctx, job.PhaseTypeLoad, time.Since(typeLoadStart))
 	if err != nil {
-		logger.Default.Error("combined mode type loading failed, falling back to syntax-only", "err", err)
+		if ctx.Err() == nil {
+			logger.Default.Error("combined mode type loading failed, falling back to syntax-only", "err", err)
+		}
 
 		return nil, nil
 	}

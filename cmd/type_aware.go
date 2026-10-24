@@ -87,7 +87,9 @@ func loadTypeAwareData(
 
 	job.RecordStage(ctx, job.PhaseTypeLoad, time.Since(typeLoadStart))
 	if err != nil {
-		logger.Default.Error("type-aware mode failed, falling back to syntax-only", "err", err)
+		if ctx.Err() == nil {
+			logger.Default.Error("type-aware mode failed, falling back to syntax-only", "err", err)
+		}
 
 		typeData = nil
 	}

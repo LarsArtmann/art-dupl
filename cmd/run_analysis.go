@@ -164,6 +164,11 @@ func buildSuffixTreeIncremental(params buildParams) treeBuildResult {
 
 	if params.cfg.TypeAware || params.cfg.SuggestGenerics {
 		typeInfos, filesChan = loadTypeAwareData(params.ctx, filesChan, params.stderr, params.cfg.SuggestGenerics)
+
+		if err := params.ctx.Err(); err != nil {
+			return treeBuildResult{err: err}
+		}
+
 		incParser.SetTypeAwareData(typeInfos)
 	}
 
@@ -234,6 +239,10 @@ func buildSuffixTreeStandard(params buildParams) treeBuildResult {
 	var typeInfos golang.TypeAwareData
 	if params.cfg.TypeAware || params.cfg.SuggestGenerics {
 		typeInfos, filesChan = loadTypeAwareData(params.ctx, filesChan, params.stderr, params.cfg.SuggestGenerics)
+
+		if err := params.ctx.Err(); err != nil {
+			return treeBuildResult{err: err}
+		}
 	}
 
 	return withGenericDecls(
