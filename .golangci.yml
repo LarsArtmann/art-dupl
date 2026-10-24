@@ -315,6 +315,7 @@ linters:
     wrapcheck:
       ignore-package-globs:
         - github.com/LarsArtmann/art-dupl/pkg/enum
+        - github.com/LarsArtmann/art-dupl/errors
       ignore-sigs:
         - errors.Wrap
         - errors.Wrapf

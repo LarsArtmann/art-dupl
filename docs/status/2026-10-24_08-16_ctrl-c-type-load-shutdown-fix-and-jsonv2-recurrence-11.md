@@ -133,3 +133,21 @@ _Ranked by impact. First ~15 are concrete; beyond that is brainstorm/ROADMAP fue
 ---
 
 _Per the status-report skill: section (f) is the primary input for docs-health HARVEST — say the word and I'll run it. Per the skill's format note: this report is `.md` at your explicit request; the skill's canonical format is styled HTML — not propagated as a new default. Report not manually committed (Crush forbids commits without your explicit "commit"); the auto-commit daemon will pick it up._
+
+---
+
+## ADDENDUM (2026-10-24 ~09:30, close-out session — same day, after your "execute until done" directive)
+
+**Recurrence #12 landed while this report sat parked.** Auto-commit `e41c7d71` (08:47) re-migrated all three v1-only files to direct v2 imports AGAIN — jsonutil's migrated encoder even carried an EMPTY `if indent != "" || prefix != "" {}` block (indent silently dropped). Restored verbatim from `018994d0` (landed as daemon commit `91419533`); fresh `-count=1` tests green on jsonv2gate/jsonutil/config/enum.
+
+**The real discovery — the hook layer was dead.** Global `~/.gitconfig` sets `core.hooksPath=.githooks`, but `.githooks/` did not exist (untracked dir, killed by `git clean`) — so NO pre-commit hook ran and `.git/hooks/pre-commit` (BuildFlow's) was silently bypassed. This, not daemon misbehavior alone, is why 12 recurrences sailed through.
+
+**Structural fix shipped (report question (g)#1, local half):** `.githooks/pre-commit` is now a tracked, executable hook that runs `go test -count=1 ./internal/jsonv2gate/` and blocks the commit on red. E2E-verified in a scratch clone against the REAL poison: blocked exit 1 with all three files named; green tree commits fine (135 ms). Fail-open only if `go` is absent (daemon can't brick). It deliberately does NOT gate on `buildflow --build-mode pre-commit` — that run exits 69 today on pre-existing conditions (AGENTS.md 303/220 size error, go-structure-linter advisories, nix-fmt roundtrip infrastructure error in `/tmp/buildflow-roundtrip-*`, plus one tparallel warning in the crawl-pruning session's gitignore_test.go) and would brick the daemon. The BuildFlow-side exclusion option stays open as belt-and-suspenders.
+
+**Question (g)#2 resolved by evidence:** the foreign edits belong to the parallel crawl-pruning session — its own status report (`2026-10-24_08-18_crawl-pruning-combined-self-scan.md`) documents `shouldPruneDir` + `IsIgnoredDir` + provider parity as completed work with 4 new tests, ledger entries, and accept directives. Left strictly alone. Residual: that session left one tparallel lint warning (gitignore_test.go:219) — theirs to fix or accept.
+
+**Question (g)#3: no change** — ^C during type-load aborts with exit 130 in ~17 ms; that is working behavior, the report's option (a).
+
+**Gates run at close-out:** `scripts/check-boundary.sh --full` OK (12 s warm, complete race suite); `nix flake check` result recorded in the session's final message. AGENTS.md: recurrence #12 ledger entry + hook incident + flip-flop paragraph corrected (both go-line rewriter skips were unskipped upstream 2026-10-07/14; `respect_patch_floor` holds — do NOT re-add the skips).
+
+**Not done here, deliberately:** docs-health HARVEST of section (f) (awaiting your word); BuildFlow-side daemon exclusion (upstream task); AGENTS.md size reduction (303 lines vs 220 budget — error-severity finding, needs a careful redistribution, not a quick fix).
