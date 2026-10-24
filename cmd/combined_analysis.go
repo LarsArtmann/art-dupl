@@ -216,7 +216,7 @@ func loadCombinedTypeData(
 
 	typeLoadStart := time.Now()
 
-	typeData, err := golang.LoadTypeAwareData(goFiles, false)
+	typeData, err := golang.LoadTypeAwareData(ctx, goFiles, false)
 
 	job.RecordStage(ctx, job.PhaseTypeLoad, time.Since(typeLoadStart))
 	if err != nil {

@@ -1,6 +1,7 @@
 package golang
 
 import (
+	"context"
 	"fmt"
 	"go/ast"
 	"go/token"
@@ -77,6 +78,11 @@ func (td TypeAwareData) LookupPreloaded(file string) *PreloadedAST {
 // LoadTypeAwareData loads type information for the given Go files using
 // go/packages. Returns a map from absolute file path to PreloadedAST.
 //
+// The context aborts the load: it is passed to packages.Config.Context (so
+// go/packages cancels the type check) and checked between per-module loads.
+// Without it the full type check blocks for the entire load duration and
+// Ctrl+C appears dead during the "loading type information" phase.
+//
 // When eraseHash is true, each PreloadedAST has EraseHash set so that the
 // transformer populates VarType on nodes without encoding the type into the
 // identifier hash. This is used by --suggest-generics to detect generics-
@@ -94,9 +100,13 @@ func (td TypeAwareData) LookupPreloaded(file string) *PreloadedAST {
 //
 // This is significantly slower than parsing alone (10-100x) because it runs the
 // full Go type checker with import resolution.
-func LoadTypeAwareData(files []string, eraseHash bool) (TypeAwareData, error) {
+func LoadTypeAwareData(ctx context.Context, files []string, eraseHash bool) (TypeAwareData, error) {
 	if len(files) == 0 {
 		return TypeAwareData{}, nil
+	}
+
+	if err := ctx.Err(); err != nil {
+		return nil, err
 	}
 
 	absFiles := make([]string, 0, len(files))
@@ -117,7 +127,11 @@ func LoadTypeAwareData(files []string, eraseHash bool) (TypeAwareData, error) {
 	result := make(TypeAwareData, len(absFiles))
 
 	for moduleDir, moduleFiles := range groupFilesByModule(absFiles) {
-		if err := loadModuleTypeAware(moduleDir, moduleFiles, eraseHash, result); err != nil {
+		if err := ctx.Err(); err != nil {
+			return nil, err
+		}
+
+		if err := loadModuleTypeAware(ctx, moduleDir, moduleFiles, eraseHash, result); err != nil {
 			return nil, err
 		}
 	}
@@ -177,6 +191,7 @@ func nearestModuleDir(dir string) string {
 // of a synthesized command-line-arguments merge. An empty moduleDir keeps the
 // legacy cwd-relative load.
 func loadModuleTypeAware(
+	ctx context.Context,
 	moduleDir string,
 	files []string,
 	eraseHash bool,
@@ -188,7 +203,8 @@ func loadModuleTypeAware(
 	}
 
 	cfg := &packages.Config{
-		Mode: packages.NeedName | packages.NeedSyntax | packages.NeedTypes | packages.NeedTypesInfo,
+		Context: ctx,
+		Mode:    packages.NeedName | packages.NeedSyntax | packages.NeedTypes | packages.NeedTypesInfo,
 	}
 
 	if moduleDir != "" {

@@ -21,7 +21,7 @@ func (d *detector) isCombinedMode() bool {
 // returns both hash dispositions. On load failure it falls back to syntax-only
 // (nil, nil), in which case both passes produce identical results and the
 // generics-pass filter drops everything, leaving the type-aware output.
-func (d *detector) loadCombinedTypeData(files []string) (golang.TypeAwareData, golang.TypeAwareData) {
+func (d *detector) loadCombinedTypeData(ctx context.Context, files []string) (golang.TypeAwareData, golang.TypeAwareData) {
 	//art-dupl:accept flag/accumulator assignment idiom (2026-10-16 self-scan)
 	goFiles := make([]string, 0, len(files))
 
@@ -35,7 +35,7 @@ func (d *detector) loadCombinedTypeData(files []string) (golang.TypeAwareData, g
 		return nil, nil
 	}
 
-	typeData, err := golang.LoadTypeAwareData(goFiles, false)
+	typeData, err := golang.LoadTypeAwareData(ctx, goFiles, false)
 	if err != nil {
 		d.logger.Warn("Combined mode type loading failed, falling back to syntax-only", "err", err)
 
@@ -51,7 +51,7 @@ func (d *detector) buildCombinedPipelines(
 	ctx context.Context,
 	files []string,
 ) (*pipelineResult, *pipelineResult, error) {
-	typeAwareData, erasedData := d.loadCombinedTypeData(files)
+	typeAwareData, erasedData := d.loadCombinedTypeData(ctx, files)
 
 	typeAwareResult, err := d.buildPipelineWithTypeData(ctx, files, typeAwareData)
 	if err != nil {

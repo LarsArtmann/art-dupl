@@ -83,7 +83,7 @@ func loadTypeAwareData(
 
 	typeLoadStart := time.Now()
 
-	typeData, err := golang.LoadTypeAwareData(goFiles, eraseHash)
+	typeData, err := golang.LoadTypeAwareData(ctx, goFiles, eraseHash)
 
 	job.RecordStage(ctx, job.PhaseTypeLoad, time.Since(typeLoadStart))
 	if err != nil {
