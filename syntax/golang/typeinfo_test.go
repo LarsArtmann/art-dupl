@@ -1,6 +1,7 @@
 package golang
 
 import (
+	"context"
 	"go/parser"
 	"go/token"
 	"os"
@@ -139,7 +140,7 @@ func foo(x int) int {
 func TestLoadTypeAwareData_EmptyInputReturnsEmpty(t *testing.T) {
 	t.Parallel()
 
-	result, err := LoadTypeAwareData(nil, false)
+	result, err := LoadTypeAwareData(context.Background(), nil, false)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -343,7 +344,7 @@ func newTypeAwarePair(t *testing.T, srcA, srcB string, eraseHash bool) typeAware
 func parseTypeAwareFile(t *testing.T, file string, eraseHash bool) (*syntax.Node, *PreloadedAST) {
 	t.Helper()
 
-	typeData, err := LoadTypeAwareData([]string{file}, eraseHash)
+	typeData, err := LoadTypeAwareData(context.Background(), []string{file}, eraseHash)
 	if err != nil {
 		t.Fatalf("LoadTypeAwareData %s failed: %v", file, err)
 	}
@@ -413,7 +414,7 @@ func TestWithEraseHash(t *testing.T) {
 	file := filepath.Join(t.TempDir(), "a.go")
 	writeFile(t, file, "package p\n\nfunc f(x int) int { return x }\n")
 
-	typeData, err := LoadTypeAwareData([]string{file}, false)
+	typeData, err := LoadTypeAwareData(context.Background(), []string{file}, false)
 	if err != nil {
 		t.Fatalf("LoadTypeAwareData failed: %v", err)
 	}
