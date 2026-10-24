@@ -94,7 +94,7 @@ func (t *transformer) buildElementNode(
 // setAttributeKey names the attribute node and encodes the key into the node
 // type so differently-named attributes do not collapse (attribute names are
 // API surface, mirroring the Go KeyValueExpr policy).
-//art-dupl:accept shared node-identity prologue before divergent encodings (2026-10-24 self-scan)
+// art-dupl:accept shared node-identity prologue before divergent encodings (2026-10-24 self-scan)
 func (t *transformer) setAttributeKey(o *syntax.Node, key string) {
 	o.Type = Attribute
 	o.Name = key
@@ -147,7 +147,7 @@ func (t *transformer) transformAttribute(attr templparser.Attribute) *syntax.Nod
 // CSS class order carries no meaning (`class="a b"` still matches
 // `class="b a"`); exact mode hashes the value verbatim (Type-1 copy-paste).
 // Structural mode ignores keys and values alike (shape only).
-//art-dupl:accept shared node-identity prologue before divergent encodings (2026-10-24 self-scan)
+// art-dupl:accept shared node-identity prologue before divergent encodings (2026-10-24 self-scan)
 func (t *transformer) setConstantAttribute(o *syntax.Node, key, value string) {
 	o.Type = Attribute
 	o.Name = key

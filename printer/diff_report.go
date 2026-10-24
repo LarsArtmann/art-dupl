@@ -160,7 +160,7 @@ func writeHashEntry(w io.Writer, hash string, format string, args ...any) error 
 	return nil
 }
 
-//art-dupl:accept truncate-to-N guard idiom, distinct domains and lengths (2026-10-24 self-scan)
+// art-dupl:accept truncate-to-N guard idiom, distinct domains and lengths (2026-10-24 self-scan)
 func truncHash(hash string) string {
 	if len(hash) > 12 {
 		return hash[:12]

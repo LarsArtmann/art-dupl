@@ -76,7 +76,7 @@ func resolveBuildInfo(
 
 // shortRevision truncates a full VCS revision to the conventional 7-char
 // short form (hex git hashes are unambiguous at that length).
-//art-dupl:accept truncate-to-N guard idiom, distinct domains and lengths (2026-10-24 self-scan)
+// art-dupl:accept truncate-to-N guard idiom, distinct domains and lengths (2026-10-24 self-scan)
 func shortRevision(rev string) string {
 	if len(rev) > 7 {
 		return rev[:7]
