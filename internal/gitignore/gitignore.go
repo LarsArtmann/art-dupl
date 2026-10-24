@@ -160,6 +160,21 @@ func (m *GitignoreMatcher) IsIgnored(path string) bool {
 	return ignored
 }
 
+// IsIgnoredDir reports whether the DIRECTORY at path is itself excluded.
+// It probes the directory as if a file lived directly beneath it:
+// directory-only patterns ("logs/") match paths that have the directory as a
+// component, but filepath.Rel strips trailing slashes, so the bare directory
+// entry would land as the final (excluded-from-matching) component and never
+// match. Callers use this to prune whole ignored subtrees during a walk (git
+// semantics: nothing beneath an excluded directory can be re-included).
+func (m *GitignoreMatcher) IsIgnoredDir(path string) bool {
+	if m == nil {
+		return false
+	}
+
+	return m.IsIgnored(filepath.Join(path, "\x00"))
+}
+
 // matchGitignorePattern checks if relPath matches a single gitignore pattern.
 func matchGitignorePattern(pat gitignorePattern, relPath string) bool {
 	cleanPath := filepath.ToSlash(relPath)

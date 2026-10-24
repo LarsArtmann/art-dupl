@@ -3,6 +3,7 @@ package cmd
 import (
 	"bytes"
 	"context"
+	"errors"
 	"io"
 	"os"
 	"path/filepath"
@@ -493,6 +494,181 @@ func TestShouldSkipPath(t *testing.T) {
 					tt.path, tt.includeVendor, tt.includeNodeModules, tt.includeExamples, got, tt.want)
 			}
 		})
+	}
+}
+
+func TestShouldPruneDir(t *testing.T) {
+	tests := []struct {
+		name            string
+		path            string
+		includeVendor   bool
+		includeNodeMods bool
+		includeExamples bool
+		want            bool
+	}{
+		{"vendor bare", "vendor", false, false, false, true},
+		{"node_modules bare", "node_modules", false, false, false, true},
+		{"git bare", ".git", false, false, false, true},
+		{"examples bare", "examples", false, false, false, true},
+		{"vendor nested", "project/vendor", false, false, false, true},
+		{"node_modules nested", "website/node_modules", false, false, false, true},
+		{"normal dir", "internal/cmd", false, false, false, false},
+		{"root", ".", false, false, false, false},
+		{"vendor included", "vendor", true, false, false, false},
+		{"node_modules included", "node_modules", false, true, false, false},
+		{"examples included", "examples", false, false, true, false},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := shouldPruneDir(tt.path, tt.includeVendor, tt.includeNodeMods, tt.includeExamples)
+			if got != tt.want {
+				t.Errorf("shouldPruneDir(%q, vendor=%v, node_modules=%v, examples=%v) = %v, want %v",
+					tt.path, tt.includeVendor, tt.includeNodeMods, tt.includeExamples, got, tt.want)
+			}
+		})
+	}
+}
+
+func TestHandleWalkEntryPrunesExcludedDirs(t *testing.T) {
+	tmpDir := t.TempDir()
+	gitignoreContent := "logs/\nscratch.go\n"
+	if err := os.WriteFile(filepath.Join(tmpDir, ".gitignore"), []byte(gitignoreContent), 0o644); err != nil {
+		t.Fatalf("Failed to write .gitignore: %v", err)
+	}
+
+	matcher := LoadGitignore([]string{tmpDir}, io.Discard)
+	if matcher == nil {
+		t.Fatal("LoadGitignore returned nil")
+	}
+
+	newOpts := func() CrawlOptions {
+		f, err := gogenfilter.NewFilter()
+		if err != nil {
+			t.Fatalf("NewFilter() error: %v", err)
+		}
+
+		return CrawlOptions{
+			Ctx:             context.Background(),
+			Filter:          f,
+			IncludeVendor:   false,
+			IncludeNodeMods: false,
+			FileCheck:       isSourceFile,
+			FChan:           make(chan string, 1),
+			Gitignore:       matcher,
+		}
+	}
+
+	tests := []struct {
+		name     string
+		path     string
+		info     os.FileInfo
+		wantSkip bool
+	}{
+		{
+			name:     "root-level .git dir is pruned",
+			path:     ".git",
+			info:     &mockFileInfo{name: ".git", isDir: true},
+			wantSkip: true,
+		},
+		{
+			name:     "nested node_modules dir is pruned",
+			path:     "website/node_modules",
+			info:     &mockFileInfo{name: "node_modules", isDir: true},
+			wantSkip: true,
+		},
+		{
+			name:     "file under excluded dir is not a prune point",
+			path:     "project/vendor/dep.go",
+			info:     &mockFileInfo{name: "dep.go", isDir: false},
+			wantSkip: false,
+		},
+		{
+			name:     "gitignore-ignored dir is pruned",
+			path:     filepath.Join(tmpDir, "logs"),
+			info:     &mockFileInfo{name: "logs", isDir: true},
+			wantSkip: true,
+		},
+		{
+			name:     "gitignore-ignored file is not a prune point",
+			path:     filepath.Join(tmpDir, "scratch.go"),
+			info:     &mockFileInfo{name: "scratch.go", isDir: false},
+			wantSkip: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := handleWalkEntry(newOpts(), tt.path, tt.info)
+
+			if tt.wantSkip && !errors.Is(err, filepath.SkipDir) {
+				t.Errorf("handleWalkEntry(%q) error = %v, want filepath.SkipDir", tt.path, err)
+			}
+
+			if !tt.wantSkip && err != nil {
+				t.Errorf("handleWalkEntry(%q) error = %v, want nil", tt.path, err)
+			}
+		})
+	}
+}
+
+// TestCrawlPrunesGitignoredDirs pins the walk-level contract that an excluded
+// directory's entire subtree is skipped: files beneath it never reach the
+// crawl channel, including files a negation tries to re-include (git semantics:
+// a parent-excluded path cannot be re-included; the provider crawl behaves the
+// same way).
+func TestCrawlPrunesGitignoredDirs(t *testing.T) {
+	tmpDir := t.TempDir()
+
+	files := map[string]string{
+		".gitignore":            "node_modules/\nignored-dir/\n!ignored-dir/keep.go\n",
+		"keep.go":               "package main\n",
+		"node_modules/dep.go":   "package dep\n",
+		"node_modules/keep.go":  "package dep\n",
+		"ignored-dir/hidden.go": "package hidden\n",
+		"ignored-dir/keep.go":   "package hidden\n",
+	}
+
+	for rel, content := range files {
+		path := filepath.Join(tmpDir, rel)
+		if err := os.MkdirAll(filepath.Dir(path), 0o750); err != nil {
+			t.Fatalf("MkdirAll %s: %v", filepath.Dir(path), err)
+		}
+
+		if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
+			t.Fatalf("Failed to create %s: %v", path, err)
+		}
+	}
+
+	f, err := gogenfilter.NewFilter()
+	if err != nil {
+		t.Fatalf("NewFilter() error: %v", err)
+	}
+
+	matcher := LoadGitignore([]string{tmpDir}, io.Discard)
+	if matcher == nil {
+		t.Fatal("LoadGitignore returned nil")
+	}
+
+	got := collectStrings(
+		crawlPaths(
+			context.Background(),
+			[]string{tmpDir},
+			f,
+			nil,
+			generatorIncludes{},
+			false,
+			false,
+			false,
+			matcher,
+			io.Discard,
+		),
+	)
+
+	want := []string{filepath.Join(tmpDir, "keep.go")}
+
+	if len(got) != len(want) || got[0] != want[0] {
+		t.Errorf("crawl emitted %v, want exactly %v (ignored subtrees must be pruned)", got, want)
 	}
 }
 

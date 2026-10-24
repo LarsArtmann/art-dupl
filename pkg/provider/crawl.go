@@ -52,7 +52,7 @@ func collectSourceFiles(root string, ignore *gitignore.GitignoreMatcher) ([]stri
 				return fs.SkipDir
 			}
 
-			if ignore.IsIgnored(path) {
+			if ignore.IsIgnoredDir(path) {
 				return fs.SkipDir
 			}
 

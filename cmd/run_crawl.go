@@ -337,7 +337,11 @@ func handleWalkEntry(opts CrawlOptions, path string, info os.FileInfo) error {
 		return nil
 	}
 
-	if shouldSkipPath(path, opts.IncludeVendor, opts.IncludeNodeMods, opts.IncludeExamples) {
+	if info.IsDir() {
+		if shouldPruneDir(path, opts.IncludeVendor, opts.IncludeNodeMods, opts.IncludeExamples) {
+			return filepath.SkipDir
+		}
+	} else if shouldSkipPath(path, opts.IncludeVendor, opts.IncludeNodeMods, opts.IncludeExamples) {
 		return nil
 	}
 
@@ -345,8 +349,20 @@ func handleWalkEntry(opts CrawlOptions, path string, info os.FileInfo) error {
 		return nil
 	}
 
-	if opts.Gitignore != nil && opts.Gitignore.IsIgnored(path) {
-		return nil
+	if opts.Gitignore != nil {
+		if info.IsDir() {
+			// A match prunes the whole subtree — git semantics, where
+			// nothing beneath an excluded directory can be re-included
+			// (mirrors the provider crawl's dir-level pruning). Without
+			// pruning, cold-cache crawls of repos with large ignored trees
+			// (node_modules, build output) pay a stat per ignored entry and
+			// the crawl stage dominates the run.
+			if opts.Gitignore.IsIgnoredDir(path) {
+				return filepath.SkipDir
+			}
+		} else if opts.Gitignore.IsIgnored(path) {
+			return nil
+		}
 	}
 
 	if !info.IsDir() && passesFileCheck(info.Name(), opts.FileCheck) {
@@ -400,6 +416,17 @@ func shouldSkipPath(path string, includeVendor, includeNodeModules, includeExamp
 	}
 
 	return false
+}
+
+// shouldPruneDir reports whether an entire directory subtree is excluded, so
+// the walk can prune it instead of filtering every entry inside. Directory
+// entries never carry a trailing slash, so the bare root-level forms
+// ("vendor", "node_modules", ".git", "examples") and nested forms
+// ("project/vendor") fail shouldSkipPath's separator checks even though every
+// file beneath them is excluded; appending the slash yields the dir-level
+// match. File selection is unchanged: shouldSkipPath keeps deciding files.
+func shouldPruneDir(path string, includeVendor, includeNodeModules, includeExamples bool) bool {
+	return shouldSkipPath(path+"/", includeVendor, includeNodeModules, includeExamples)
 }
 
 // pathContainsExampleDir reports whether any path component matches a known

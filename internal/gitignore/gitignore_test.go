@@ -215,3 +215,43 @@ func TestParseGitignoreFileOpenError(t *testing.T) {
 		t.Fatalf("expected nil patterns on error, got %v", pats)
 	}
 }
+
+func TestIsIgnoredDir(t *testing.T) {
+	t.Parallel()
+
+	tmpDir := t.TempDir()
+	gitignoreContent := "logs/\nnode_modules/\nbuild\n*.tmp/\n!important.log\n"
+	if err := os.WriteFile(filepath.Join(tmpDir, ".gitignore"), []byte(gitignoreContent), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	matcher := LoadGitignore([]string{tmpDir}, io.Discard)
+	if matcher == nil {
+		t.Fatal("LoadGitignore returned nil")
+	}
+
+	tests := []struct {
+		name string
+		dir  string
+		want bool
+	}{
+		{"dirOnly pattern excludes the dir entry", filepath.Join(tmpDir, "logs"), true},
+		{"plain pattern excludes the dir entry", filepath.Join(tmpDir, "build"), true},
+		{"glob dirOnly pattern excludes the dir entry", filepath.Join(tmpDir, "cache.tmp"), true},
+		{"unrelated dir is not excluded", filepath.Join(tmpDir, "internal"), false},
+		{"negation of a different file does not un-exclude the dir", filepath.Join(tmpDir, "logs"), true},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := matcher.IsIgnoredDir(tt.dir); got != tt.want {
+				t.Errorf("IsIgnoredDir(%q) = %v, want %v", tt.dir, got, tt.want)
+			}
+		})
+	}
+
+	var nilMatcher *GitignoreMatcher
+	if nilMatcher.IsIgnoredDir(filepath.Join(tmpDir, "logs")) {
+		t.Error("nil matcher should not ignore any directory")
+	}
+}
