@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+# art-dupl pre-commit gate: the jsonv2 recurrence blocker.
+#
+# Why this file exists: core.hooksPath=.githooks is set globally in
+# ~/.gitconfig, but this directory had gone missing (untracked paths die to
+# `git clean -fdx`), so .git/hooks/pre-commit (BuildFlow's) was silently
+# bypassed and the auto-commit daemon landed jsonv2 recurrence #12 unchecked
+# (e41c7d71, 2026-10-24). This copy is TRACKED, survives git clean, and is
+# what git actually executes.
+#
+# Scope is deliberately ONE check: recurrences #1-#12 are all the same class
+# (a daemon/foreign edit re-migrates internal/jsonutil,
+# config/config_migrate.go, or pkg/enum to direct encoding/json/v2 imports,
+# which breaks time.Duration config round-trips and deterministic output),
+# and internal/jsonv2gate is the deterministic AST-scanner detector for it.
+# -count=1 defeats the stale-test-cache masking that let recurrences through.
+#
+# This hook does NOT gate on BuildFlow pre-commit mode: its findings gate
+# currently exits non-zero on pre-existing conditions (AGENTS.md size,
+# go-structure-linter advisories, a nix-fmt roundtrip infrastructure error),
+# which would brick the commit daemon. Blocking is reserved for the one
+# class with 12 verified recurrences. `bash scripts/check-boundary.sh` and
+# CI remain the full quality gates. Restore a BuildFlow layer here once its
+# pre-commit run is green (2026-10-24).
+#
+# Fail-open only when the go binary is missing (keeps the daemon from
+# bricking on a bare environment); fail-closed when the gate runs and finds
+# a violation.
+
+set -e
+
+export GOWORK=off
+
+echo "[pre-commit] jsonv2gate: v1-only JSON invariant (recurrences #1-#12)..."
+if command -v go >/dev/null 2>&1; then
+	go test -count=1 ./internal/jsonv2gate/
+else
+	echo "[pre-commit] WARNING: go not in PATH, jsonv2gate SKIPPED" >&2
+fi
+
+echo "[pre-commit] OK"
