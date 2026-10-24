@@ -348,3 +348,28 @@ at 1283 detected). Both judged; zero harmful duplication found.
   shared go/packages load of combined mode (ADR-0026); HTML-to-stdout without
   a notice is the piped-stdout branch of `resolveHTMLOutput` (TTY branch
   auto-writes + notices, covered by `cmd/html_pty_test.go`).
+
+## 2026-10-24 — report.templ accept directive: rendering leak fixed (form swap)
+
+- **Found via a foreign repo**: every `--html` report rendered
+  `<!-- //art-dupl:accept wrapper loops delegate to the shared cloneOccurrence component … -->`
+  into EVERY clone-group body for ANY analyzed repo (spotted in a
+  go-credentials-store scan). The 2026-10-16 wrapper-loop directive was
+  written as a rendering HTML comment because the matcher needs it within 5
+  lines above the clone's LineStart — but templ emits HTML comments into
+  output, so foreign reports carried an accept annotation that belongs to
+  art-dupl's own self-scan (and made actionable groups look accepted).
+- **Fix**: swapped to the plain `//art-dupl:accept …` comment form at the
+  same line (the form already proven by the fileLineText directive at
+  report.templ:153 — non-rendering, still regex-matched). No extraction:
+  the 2026-10-16 accept decision for the wrapper loops stands.
+- **Verified**: generated report_templ.go no longer contains the string
+  write; goldens unaffected (they exercise the diff path only); self-scan
+  `-t 1 --type-aware` still shows 0; A/B proof — `--no-accept-directives`
+  surfaces the wrapper family (report.templ:81-83/94-96), default
+  suppresses it; a go-credentials-store `--html` e2e report contains zero
+  accept-comment hits and the same 10 actionable groups as before.
+- **Not mine / pre-existing**: TestSARIFOutputGolden and
+  printer/finding TestBuilderConversionIsByteIdenticalToLegacyConstruction
+  fail at pre-fix HEAD 889421f5 too (concurrent session's in-flight state;
+  left untouched).
