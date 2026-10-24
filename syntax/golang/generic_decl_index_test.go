@@ -1,6 +1,7 @@
 package golang
 
 import (
+	"context"
 	"path/filepath"
 	"testing"
 )
@@ -13,7 +14,7 @@ func collectForSource(t *testing.T, src string) map[string]int {
 	file := filepath.Join(t.TempDir(), "a.go")
 	writeFile(t, file, src)
 
-	typeData, err := LoadTypeAwareData([]string{file}, true)
+	typeData, err := LoadTypeAwareData(context.Background(), []string{file}, true)
 	if err != nil {
 		t.Fatalf("LoadTypeAwareData failed: %v", err)
 	}

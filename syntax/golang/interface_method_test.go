@@ -1,6 +1,7 @@
 package golang
 
 import (
+	"context"
 	"go/ast"
 	"go/types"
 	"testing"
@@ -253,7 +254,7 @@ func loadTypeInfoForTest(t *testing.T, src string) (*types.Info, *ast.File) {
 	path := dir + "/src.go"
 	writeFile(t, path, src)
 
-	typeData, err := LoadTypeAwareData([]string{path}, false)
+	typeData, err := LoadTypeAwareData(context.Background(), []string{path}, false)
 	if err != nil {
 		t.Fatalf("LoadTypeAwareData failed: %v", err)
 	}
@@ -389,7 +390,7 @@ func (w Worker) Process(data []byte) error {
 	path := dir + "/src.go"
 	writeFile(t, path, src)
 
-	typeData, err := LoadTypeAwareData([]string{path}, false)
+	typeData, err := LoadTypeAwareData(context.Background(), []string{path}, false)
 	if err != nil {
 		t.Fatalf("LoadTypeAwareData failed: %v", err)
 	}

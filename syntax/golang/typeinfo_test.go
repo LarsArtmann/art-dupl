@@ -2,6 +2,7 @@ package golang
 
 import (
 	"context"
+	"errors"
 	"go/parser"
 	"go/token"
 	"os"
@@ -147,6 +148,28 @@ func TestLoadTypeAwareData_EmptyInputReturnsEmpty(t *testing.T) {
 
 	if len(result) != 0 {
 		t.Errorf("expected empty map for nil input, got %d entries", len(result))
+	}
+}
+
+// TestLoadTypeAwareData_CanceledContextAborts verifies a canceled context
+// aborts before the expensive go/packages type check runs (Ctrl+C during the
+// "loading type information" phase must not wait for the full load).
+func TestLoadTypeAwareData_CanceledContextAborts(t *testing.T) {
+	t.Parallel()
+
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+
+	file := filepath.Join(t.TempDir(), "a.go")
+	writeFile(t, file, "package p\n\nfunc f(x int) int { return x }\n")
+
+	typeData, err := LoadTypeAwareData(ctx, []string{file}, false)
+	if !errors.Is(err, context.Canceled) {
+		t.Fatalf("expected context.Canceled, got %v", err)
+	}
+
+	if typeData != nil {
+		t.Errorf("expected nil type data on cancellation, got %d entries", len(typeData))
 	}
 }
 
