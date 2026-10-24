@@ -220,6 +220,7 @@ func TestIsIgnoredDir(t *testing.T) {
 	t.Parallel()
 
 	tmpDir := t.TempDir()
+
 	gitignoreContent := "logs/\nnode_modules/\nbuild\n*.tmp/\n!important.log\n"
 	if err := os.WriteFile(filepath.Join(tmpDir, ".gitignore"), []byte(gitignoreContent), 0o644); err != nil {
 		t.Fatal(err)
