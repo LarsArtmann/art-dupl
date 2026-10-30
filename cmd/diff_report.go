@@ -50,6 +50,7 @@ func runDiffReport(
 
 	groups := printer.BuildCloneGroups(duplChan)
 	groups = printer.EliminateOverlaps(groups)
+	groups = syntax.DeduplicateMemberSets(os.ReadFile, groups)
 	keys := getSortedKeys(groups, config.SortByHash)
 
 	suppression := buildSuppressionConfig(mergedConfig)

@@ -71,6 +71,7 @@ func printDupls(
 
 	groups := printer.BuildCloneGroups(duplChan)
 	groups = printer.EliminateOverlaps(groups)
+	groups = syntax.DeduplicateMemberSets(fread, groups)
 	keys := getSortedKeys(groups, sortBy)
 
 	err := printHeader(p, sortBy, threshold)

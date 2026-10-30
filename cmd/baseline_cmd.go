@@ -11,6 +11,7 @@ import (
 	"github.com/LarsArtmann/art-dupl/internal/utils"
 	"github.com/LarsArtmann/art-dupl/job"
 	"github.com/LarsArtmann/art-dupl/printer"
+	"github.com/LarsArtmann/art-dupl/syntax"
 	"github.com/spf13/cobra"
 )
 
@@ -91,6 +92,7 @@ func runBaseline(c *cobra.Command, arguments []string) error {
 
 	groups := printer.BuildCloneGroups(duplChan)
 	groups = printer.EliminateOverlaps(groups)
+	groups = syntax.DeduplicateMemberSets(os.ReadFile, groups)
 	keys := getSortedKeys(groups, config.SortByHash)
 
 	bf := baseline.NewFile(mergedConfig.Threshold)
@@ -163,6 +165,7 @@ func runCheck(c *cobra.Command, arguments []string) error {
 
 	groups := printer.BuildCloneGroups(duplChan)
 	groups = printer.EliminateOverlaps(groups)
+	groups = syntax.DeduplicateMemberSets(os.ReadFile, groups)
 	keys := getSortedKeys(groups, config.SortByHash)
 
 	jsonOut, _ := c.Flags().GetBool("json")
