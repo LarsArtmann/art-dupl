@@ -27,6 +27,23 @@ import (
 // idiomatic Go style would be silently ignored.
 var acceptDirectiveRe = regexp.MustCompile(`//\s*art-dupl:accept`)
 
+// acceptDirectiveHTMLCommentRe locates the marker inside an HTML comment
+// opener, tolerating optional whitespace between "<!--" and "art-dupl"
+// (issue #9): inside templ markup a line-leading // comment is a templ
+// GoComment that templ drops from the rendered output entirely — the
+// preferred directive form — but users who reach for the HTML-comment form
+// (`<!-- art-dupl:accept ... -->`) must not be forced to nest the // marker
+// inside the comment text just to be recognized. Browsers do not display
+// HTML comments, so this form never leaks into the visible page.
+var acceptDirectiveHTMLCommentRe = regexp.MustCompile(`<!--\s*art-dupl:accept`)
+
+// htmlCommentClose is stripped from the remainder of an HTML-comment-form
+// directive line before the hash/description grammar is applied, so
+// `<!-- art-dupl:accept -->` is a bare accept and
+// `<!-- art-dupl:accept <hex> -->` is a precision directive rather than a
+// prose mention that happens to end with the comment closer.
+const htmlCommentClose = "-->"
+
 // acceptDirectiveScanAbove is the number of lines above clone.LineStart to
 // also check for directives. Users naturally place directives on the line
 // above the code they want to accept, matching every other linter convention
@@ -195,7 +212,7 @@ func (a *AcceptedSet) scanFile(filename string) []AcceptedDirective {
 
 		text := strings.TrimSpace(scanner.Text())
 
-		loc := acceptDirectiveRe.FindStringIndex(text)
+		loc, htmlForm := findAcceptDirective(text)
 		if loc == nil {
 			continue
 		}
@@ -203,6 +220,10 @@ func (a *AcceptedSet) scanFile(filename string) []AcceptedDirective {
 		d := AcceptedDirective{Line: lineNum}
 
 		rest := strings.TrimSpace(text[loc[1]:])
+
+		if htmlForm {
+			rest = strings.TrimSpace(strings.TrimSuffix(rest, htmlCommentClose))
+		}
 
 		// Grammar (suppression behavior is identical for every input — only
 		// dead-directive reporting visibility changes at the edges); the
@@ -232,6 +253,29 @@ func (a *AcceptedSet) scanFile(filename string) []AcceptedDirective {
 	}
 
 	return directives
+}
+
+// findAcceptDirective finds the leftmost accept directive marker on a line.
+// It returns the match span and which form matched: the // comment form or
+// the <!-- HTML comment form. When both markers appear (the legacy
+// `<!-- // art-dupl:accept ... -->` workaround), the HTML form starts first
+// and wins, so the trailing --> closer is stripped from the grammar input.
+func findAcceptDirective(text string) (loc []int, htmlForm bool) {
+	goLoc := acceptDirectiveRe.FindStringIndex(text)
+	htmlLoc := acceptDirectiveHTMLCommentRe.FindStringIndex(text)
+
+	switch {
+	case goLoc == nil && htmlLoc == nil:
+		return nil, false
+	case htmlLoc == nil:
+		return goLoc, false
+	case goLoc == nil:
+		return htmlLoc, true
+	case htmlLoc[0] <= goLoc[0]:
+		return htmlLoc, true
+	default:
+		return goLoc, false
+	}
 }
 
 // isHexToken reports whether s consists solely of hex digits — the only

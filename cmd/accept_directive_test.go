@@ -709,3 +709,131 @@ func TestAcceptedSetNearMissDirectives(t *testing.T) {
 		t.Errorf("accepted directive must not be a near miss, got %+v", got)
 	}
 }
+
+// htmlAcceptMarker assembles an HTML-comment-form directive line without the
+// contiguous marker appearing in this repository's own sources: art-dupl
+// scans its own _test.go files on self-runs, so a literal marker here would
+// accept unrelated groups near this line.
+func htmlAcceptMarker(rest string) string {
+	return "<!-- art-dupl:" + "accept " + rest + " -->"
+}
+
+// goAcceptMarker assembles the templ Go-comment form the same way.
+func goAcceptMarker(rest string) string {
+	if rest == "" {
+		return "// art-dupl:" + "accept"
+	}
+
+	return "// art-dupl:" + "accept " + rest
+}
+
+// TestAcceptedSetHTMLCommentForm (issue #9): templ markup cannot carry a Go
+// // comment mid-markup without rendering issues users worry about, so the
+// directive grammar also recognizes the marker directly inside an HTML
+// comment — `<!-- art-dupl:accept ... -->` without the nested //. The
+// trailing --> closer must not defeat the hash/description grammar.
+func TestAcceptedSetHTMLCommentForm(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name    string
+		line    string
+		hash    string
+		want    bool
+		wantAny bool
+	}{
+		{
+			name:    "bare html comment directive accepts",
+			line:    htmlAcceptMarker(""),
+			want:    true,
+			wantAny: true,
+		},
+		{
+			name:    "html comment with description accepts",
+			line:    htmlAcceptMarker("templ markup conditional-span twin"),
+			want:    true,
+			wantAny: true,
+		},
+		{
+			name:    "html comment with hex hash matches only that group",
+			line:    htmlAcceptMarker("ab12cd34ef56ab12"),
+			hash:    "ab12cd34ef56ab12",
+			want:    true,
+			wantAny: true,
+		},
+		{
+			name:    "html comment with hex hash rejects other hashes",
+			line:    htmlAcceptMarker("ab12cd34ef56ab12"),
+			hash:    "ffffffffffffffff",
+			want:    false,
+			wantAny: false,
+		},
+		{
+			name:    "legacy nested form still accepts",
+			line:    "<!-- // art-dupl:" + "accept legacy workaround -->",
+			want:    true,
+			wantAny: true,
+		},
+		{
+			name:    "html comment with single non-hex token is prose, not a directive",
+			line:    htmlAcceptMarker("docs"),
+			want:    false,
+			wantAny: false,
+		},
+		{
+			name:    "compact html form without spaces accepts",
+			line:    "<!--art-dupl:" + "accept-->",
+			want:    true,
+			wantAny: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			content := "package views\n\n" + tt.line + "\nfunc f() {}\n"
+
+			set := NewAcceptedSet(func(name string) ([]byte, error) {
+				return []byte(content), nil
+			})
+
+			group := domain.ProcessedCloneGroup{
+				Hash:   tt.hash,
+				Clones: []domain.ProcessedClone{{Filename: "page.templ", LineStart: 3, LineEnd: 3}},
+			}
+
+			if got := set.IsAccepted(group); got != tt.want {
+				t.Errorf("IsAccepted() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+// TestAcceptedSetTemplGoCommentForm (issue #9): a line-leading // comment in
+// templ markup is parsed by templ as a GoComment and dropped from the
+// rendered output entirely (templ generator: "Do not render Go comments in
+// the output HTML") — the zero-leak directive form. It must suppress like
+// any other directive line.
+func TestAcceptedSetTemplGoCommentForm(t *testing.T) {
+	t.Parallel()
+
+	content := "package views\n\ntempl pair(n int) {\n" +
+		"\t<span>{ n }</span>\n" +
+		"\t" + goAcceptMarker("conditional span twin") + "\n" +
+		"\t<span>{ n }</span>\n" +
+		"}\n"
+
+	set := NewAcceptedSet(func(name string) ([]byte, error) {
+		return []byte(content), nil
+	})
+
+	group := domain.ProcessedCloneGroup{
+		Hash:   "ab12cd34ef56ab12",
+		Clones: []domain.ProcessedClone{{Filename: "pair.templ", LineStart: 4, LineEnd: 6}},
+	}
+
+	if !set.IsAccepted(group) {
+		t.Error("line-leading templ Go comment directive must suppress")
+	}
+}
