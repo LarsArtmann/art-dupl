@@ -43,13 +43,13 @@ func requireDocContains(t *testing.T, doc, claim string) {
 
 func TestActionabilityPatternCountsMatchDocs(t *testing.T) {
 	total := len(actionability.AllActionabilityPatterns())
-	if total != 41 {
-		t.Fatalf("AllActionabilityPatterns() = %d, want 41 (37 denylist + 4 property-engine); update the docs with the real count", total)
+	if total != 42 {
+		t.Fatalf("AllActionabilityPatterns() = %d, want 42 (37 denylist + 1 shape + 4 property-engine); update the docs with the real count", total)
 	}
 
 	features := readRepoFile(t, "FEATURES.md")
 	requireDocContains(t, features, fmt.Sprintf("%d actionability patterns (plus 4 property-engine labels)", total-4))
-	requireDocContains(t, features, fmt.Sprintf("%d pattern labels (%d denylist + 4 property-engine)", total, total-4))
+	requireDocContains(t, features, fmt.Sprintf("%d pattern labels (%d denylist + 1 shape + 4 property-engine)", total, total-5))
 }
 
 func TestCLIFlagCountMatchesDocs(t *testing.T) {

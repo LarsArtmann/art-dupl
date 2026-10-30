@@ -170,13 +170,18 @@ func noopReadFileForOutputTest(filename string) ([]byte, error) {
 func TestPrintCloneGroups_ShowsAllClonesRegardlessOfGenericsCandidate(t *testing.T) {
 	t.Parallel()
 
-	// Group A: generics candidate (different VarType across instances)
+	// Group A: generics candidate (different VarType across instances).
+	// Two tokens per fragment: the test measures generics candidacy, not
+	// trivial-fragment suppression, so the fragments must not be 1-token
+	// 1-line shapes (issue #11 labels those non-actionable).
 	groupA := [][]*syntax.Node{
 		{
 			{Type: golang.Ident, Name: "k", VarType: "int64", Filename: "a.go", Pos: 1, End: 2},
+			{Type: golang.Ident, Name: "v", Filename: "a.go", Pos: 3, End: 4},
 		},
 		{
 			{Type: golang.Ident, Name: "g", VarType: "string", Filename: "b.go", Pos: 1, End: 2},
+			{Type: golang.Ident, Name: "v", Filename: "b.go", Pos: 3, End: 4},
 		},
 	}
 
@@ -184,9 +189,11 @@ func TestPrintCloneGroups_ShowsAllClonesRegardlessOfGenericsCandidate(t *testing
 	groupB := [][]*syntax.Node{
 		{
 			{Type: golang.Ident, Name: "x", VarType: "int", Filename: "c.go", Pos: 1, End: 2},
+			{Type: golang.Ident, Name: "v", Filename: "c.go", Pos: 3, End: 4},
 		},
 		{
 			{Type: golang.Ident, Name: "y", VarType: "int", Filename: "d.go", Pos: 1, End: 2},
+			{Type: golang.Ident, Name: "v", Filename: "d.go", Pos: 3, End: 4},
 		},
 	}
 

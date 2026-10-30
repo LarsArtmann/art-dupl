@@ -46,6 +46,18 @@ These patterns represent Go idioms that cannot be eliminated without breaking se
 | Option apply loop       | `option-apply-loop`            | Functional-options idiom: `for _, opt := range opts { opt(x) }` optionally + target seeding (`cfg := defaultConfig()` / `cfg := Config{seed: true}`), a lookup guard (`if !ok { return }`), or bare `return x` — the loop body is exactly one call of the range variable on one plumbing argument. Constructors with further logic (defaults, wiring, closures in the seed) do NOT match. Data-backed: 34% of false `--suggest-generics` candidates + 4 measured gap families closed 2026-10-11          | `cfg := defaultConfig()` + `for _, opt := range opts { opt(&cfg) }` |
 | Nil guard after helper  | `nil-guard-after-helper`       | 2–4 statements of canonical early-return prelude: helper-result assignments (`x := H(y)`, plain-value args) + nil guards (`if x == nil { return false }`, either comparison order) + bare/plumbing return. FP guard: guard bodies must return only plumbing — `return tx.Rollback()`, error construction, or state mutation do NOT match. Comma-ok guards deliberately declined. Data-backed: 2 branching-flow accept directives ("canonical IndexIdent+exprName nil-guard prelude", "nil-params guard") | `x := astutil.IndexIdent(i)` + `if x == nil { return false }`       |
 
+## Shape Labels
+
+Shape labels are assigned outside the denylist pattern table: their verdict depends on
+per-instance line counts, which are only known after the printer reads the source files
+(the pattern-table checks see node sequences alone). `printer.ProcessClones` applies them
+after the table run, only when no denylist pattern matched, so a specific boilerplate
+label always wins over the shape verdict.
+
+| Pattern          | Label              | Description                                                                                                                                           | Example                                      |
+| ---------------- | ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------- |
+| Trivial fragment | `trivial-fragment` | A single token spanning a single line in EVERY instance (issue #11): one-line templ expressions, single func params — no extractable logic. `--disable-pattern trivial-fragment` restores | `[]history.WatchTrendDay` at two call sites |
+
 ## Corpus Validation (2026-08-16)
 
 Measured on the three feedback corpora, before → after adding `test-preamble`, `testmain-boilerplate`, `embed-directive`:
