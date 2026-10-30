@@ -305,7 +305,10 @@ func TestFindSyntaxUnitsMixedParserGoParamsRejected(t *testing.T) {
 
 	result := FindSyntaxUnits(data, found, 3)
 	if len(result.Frags) != 0 {
-		t.Fatalf("mixed-parser match with non-statement Go param fragment must be rejected, got %d frags", len(result.Frags))
+		t.Fatalf(
+			"mixed-parser match with non-statement Go param fragment must be rejected, got %d frags",
+			len(result.Frags),
+		)
 	}
 }
 

@@ -83,7 +83,7 @@ func anyFragUnitIsNonStatementGo(data []*Node, m suffixtree.Match, indexes []int
 			}
 
 			node := data[posIdx]
-			if node.Statement || isTemplFile(node.Filename) {
+			if node.Statement || strings.HasSuffix(node.Filename, ".templ") {
 				continue
 			}
 

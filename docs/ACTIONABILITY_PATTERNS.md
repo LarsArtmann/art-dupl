@@ -54,8 +54,8 @@ per-instance line counts, which are only known after the printer reads the sourc
 after the table run, only when no denylist pattern matched, so a specific boilerplate
 label always wins over the shape verdict.
 
-| Pattern          | Label              | Description                                                                                                                                           | Example                                      |
-| ---------------- | ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------- |
+| Pattern          | Label              | Description                                                                                                                                                                               | Example                                     |
+| ---------------- | ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
 | Trivial fragment | `trivial-fragment` | A single token spanning a single line in EVERY instance (issue #11): one-line templ expressions, single func params — no extractable logic. `--disable-pattern trivial-fragment` restores | `[]history.WatchTrendDay` at two call sites |
 
 ## Corpus Validation (2026-08-16)
