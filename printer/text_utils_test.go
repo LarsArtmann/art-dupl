@@ -127,3 +127,36 @@ func TestExtractSortCriteria(t *testing.T) {
 		t.Errorf("ExtractSortCriteria(config.SortByHash) = %v, want config.SortByHash", got)
 	}
 }
+
+// TestRepresentativeClassificationMixedKinds (issue #11): the group-level
+// explain/header classification must come from a non-.templ member when the
+// group mixes file kinds — templ-worded fix advice ("extract to a child templ
+// component") never applies to Go members. Pure-templ groups keep clones[0].
+func TestRepresentativeClassificationMixedKinds(t *testing.T) {
+	t.Parallel()
+
+	templCls := domain.CloneClassification{
+		Category:   domain.CategoryConditional,
+		Suggestion: "Extract the shared markup block to a child templ component",
+	}
+	goCls := domain.CloneClassification{
+		Category:   domain.CategoryExpression,
+		Suggestion: "Consider extracting to shared test utility",
+	}
+
+	mixed := []domain.ProcessedClone{
+		{Filename: "page.templ", Classification: templCls},
+		{Filename: "guard_test.go", Classification: goCls},
+	}
+	if got := representativeClassification(mixed); got.Suggestion != goCls.Suggestion {
+		t.Errorf("mixed group must use the Go member's classification, got %q", got.Suggestion)
+	}
+
+	pureTempl := []domain.ProcessedClone{
+		{Filename: "a.templ", Classification: templCls},
+		{Filename: "b.templ", Classification: templCls},
+	}
+	if got := representativeClassification(pureTempl); got.Suggestion != templCls.Suggestion {
+		t.Errorf("pure templ group must keep clones[0], got %q", got.Suggestion)
+	}
+}

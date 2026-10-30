@@ -97,7 +97,7 @@ func (p *TextPrinter) PrintClones(
 	}
 
 	if p.explain && len(clones) > 0 {
-		if err := p.writeExplanation(clones[0].Classification, len(clones)); err != nil {
+		if err := p.writeExplanation(representativeClassification(clones), len(clones)); err != nil {
 			return duplerrors.Wrap(err, duplerrors.InternalError, "write explanation")
 		}
 	}
@@ -149,7 +149,7 @@ func (p *TextPrinter) writeFileDupeHeader(clones []domain.ProcessedClone) error 
 
 func (p *TextPrinter) writeCloneHeader(clones []domain.ProcessedClone) error {
 	if p.richText && len(clones) > 0 {
-		return p.writeRichGroupHeader(len(clones), clones[0].Classification)
+		return p.writeRichGroupHeader(len(clones), representativeClassification(clones))
 	}
 
 	if _, err := fmt.Fprintf(p.w, "found %d clones:\n", len(clones)); err != nil {
@@ -289,6 +289,22 @@ func plural(word string, n int) string {
 	}
 
 	return word + "s"
+}
+
+// representativeClassification picks the classification shown at GROUP
+// level (explain line, rich header). Templ-worded categories and suggestions
+// ("extract to a child templ component") only apply when EVERY member is a
+// .templ file — a mixed .go+.templ group must not carry templ fix advice for
+// its Go members (issue #11), so the first non-.templ member represents
+// mixed groups. Pure-templ groups keep clones[0].
+func representativeClassification(clones []domain.ProcessedClone) domain.CloneClassification {
+	for i := range clones {
+		if !strings.HasSuffix(clones[i].Filename, ".templ") {
+			return clones[i].Classification
+		}
+	}
+
+	return clones[0].Classification
 }
 
 func (p *TextPrinter) writeRichGroupHeader(count int, cls domain.CloneClassification) error {
