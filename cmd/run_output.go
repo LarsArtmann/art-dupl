@@ -188,6 +188,19 @@ func printCloneGroups(
 			}
 		}
 
+		// Honor the PROCESSED verdict, not just the pattern table's: the
+		// trivial-fragment shape label is assigned in ProcessClones (line
+		// counts require file content the pattern checks never see), so the
+		// early gate above cannot catch it. Same conditions as that gate.
+		if semantic && !suppression.NoActionability &&
+			group.Clones[0].Classification.Actionability == domain.NonActionable {
+			stats.SuppressedActionable++
+
+			if !suppression.ShowSuppressed {
+				continue
+			}
+		}
+
 		stats.Shown++
 
 		err = p.PrintClones(group, sortBy)

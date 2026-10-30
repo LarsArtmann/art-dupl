@@ -191,6 +191,17 @@ func ProcessClones(fread ReadFile, dups [][]*syntax.Node, opts ...ProcessOption)
 	)
 	cloneType := classifyCloneType(dups)
 
+	// Trivial-fragment shape label (issue #11): a single token on a single
+	// line in every instance carries no extractable logic. Applied only when
+	// the pattern table had no opinion (label == none) — a more specific
+	// boilerplate match keeps its label — and never overrides
+	// --disable-pattern trivial-fragment.
+	if label == actionability.PatternNone &&
+		actionability.EvaluateTrivialFragment(clones[0].TokenCount, cloneLineCounts(clones), conf.disabledPatterns) {
+		label = actionability.PatternTrivialFragment
+		verdict = domain.NonActionable
+	}
+
 	// Generics-extraction candidacy is precision-gated: a group qualifies only
 	// when it is NOT recognized boilerplate (any matched actionability pattern
 	// disqualifies — error-propagation, guard-clause, single-call-expression,
@@ -272,6 +283,16 @@ func genericsSuggestion(conf processConfig, seqs [][]*domain.CloneNode) string {
 // find the declaration without the full import path noise).
 func shortDeclName(declKey string) string {
 	return shortenTypeString(declKey)
+}
+
+// cloneLineCounts collects the per-instance line counts of a group.
+func cloneLineCounts(clones []domain.ProcessedClone) []int {
+	counts := make([]int, len(clones))
+	for i := range clones {
+		counts[i] = clones[i].LineCount()
+	}
+
+	return counts
 }
 
 // passesGenericsLineGate reports whether every clone instance in the group

@@ -62,14 +62,24 @@ var actionabilityPatternTable = []patternEntry{ //nolint:gochecknoglobals // sta
 // followed by property-engine labels (assigned by the extractability analysis).
 // All labels are valid arguments to --disable-pattern.
 func AllActionabilityPatterns() []PatternLabel {
-	labels := make([]PatternLabel, 0, len(actionabilityPatternTable)+len(propertyLabels))
+	labels := make([]PatternLabel, 0, len(actionabilityPatternTable)+len(shapeLabels)+len(propertyLabels))
 	for _, entry := range actionabilityPatternTable {
 		labels = append(labels, entry.pattern)
 	}
 
+	labels = append(labels, shapeLabels...)
 	labels = append(labels, propertyLabels...)
 
 	return labels
+}
+
+// shapeLabels are assigned OUTSIDE the actionabilityPatternTable: their
+// verdict depends on per-instance line counts, which are only known after
+// the printer reads the source files (the pattern-table checks see node
+// sequences alone). printer.ProcessClones applies them after the table run.
+// Like table labels, they are valid --disable-pattern arguments.
+var shapeLabels = []PatternLabel{ //nolint:gochecknoglobals // static list
+	PatternTrivialFragment,
 }
 
 // propertyLabels are the labels assigned by the extractability engine's
@@ -206,6 +216,7 @@ const (
 	PatternAppendCollectorTail        PatternLabel = "append-collector-tail"
 	PatternOptionApplyLoop            PatternLabel = "option-apply-loop"
 	PatternNilGuardAfterHelper        PatternLabel = "nil-guard-after-helper"
+	PatternTrivialFragment            PatternLabel = "trivial-fragment"
 )
 
 // EvaluateActionabilityWithLabel returns both the actionability and the
@@ -225,6 +236,32 @@ func EvaluateActionabilityWithLabelAndDisabled(
 	disabled map[PatternLabel]bool,
 ) (PatternLabel, domain.CloneActionability) {
 	return evaluateActionabilityWithDisabled(nodeSeqs, disabled)
+}
+
+// EvaluateTrivialFragment reports whether a clone group is a trivial
+// fragment: a single token spanning a single line in EVERY instance
+// (issue #11). Such fragments — one-line templ expressions, single func
+// params — carry no extractable logic; rating them actionable drowns real
+// findings. It is a shape label, not a pattern-table entry: line counts are
+// only known after the printer reads the sources, so the table (which sees
+// node sequences alone) cannot evaluate it. `disabled` honors
+// --disable-pattern trivial-fragment.
+func EvaluateTrivialFragment(
+	tokens int,
+	lineCounts []int,
+	disabled map[PatternLabel]bool,
+) bool {
+	if disabled[PatternTrivialFragment] || tokens > 1 || len(lineCounts) == 0 {
+		return false
+	}
+
+	for _, lines := range lineCounts {
+		if lines > 1 {
+			return false
+		}
+	}
+
+	return true
 }
 
 func evaluateActionabilityDetailed(nodeSeqs [][]*domain.CloneNode) (PatternLabel, domain.CloneActionability) {

@@ -171,8 +171,14 @@ templ pageLink() {
 	})
 
 	It("does not suppress the children idiom once the pattern is disabled", func() {
+		// trivial-fragment must also be disabled: the bare children pair is
+		// a 1-token/1-line shape, so with only the idiom pattern disabled the
+		// shape label (issue #11) still suppresses it. Disabling a pattern
+		// un-suppresses only what THAT pattern alone caught.
 		output, err := setup.RunArtDupl(
-			"--quiet", "--threshold", "1", "--disable-pattern", "templ-children-idiom",
+			"--quiet", "--threshold", "1",
+			"--disable-pattern", "templ-children-idiom",
+			"--disable-pattern", "trivial-fragment",
 		)
 		Expect(err).ToNot(HaveOccurred())
 
