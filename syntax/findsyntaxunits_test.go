@@ -237,3 +237,108 @@ func TestFindSyntaxUnits_GoNonStatementMatchStillSkipped(t *testing.T) {
 		t.Fatalf("Expected Go non-statement match to be skipped, got %d fragments", len(result.Frags))
 	}
 }
+
+// mixedParserStream builds a token stream containing:
+//   - a templ file fragment of non-statement expression units (owning enough
+//     children to clear the legacy threshold), followed by a statement token
+//     so the templ file also carries statements,
+//   - a Go file with a statement token and a structurally identical
+//     non-statement param fragment (the issue #11 shape: one-line func
+//     params), and
+//   - a second templ fragment identical to the first.
+//
+// Layout (indices):
+//
+//	 0..4  templ expression subtree (root Owns=4, then children)
+//	 5     templ statement token
+//	 6     go statement token
+//	 7..11 go param subtree (root Owns=4 — same Types as the templ subtree)
+//	12..16 second templ expression subtree (identical to the first)
+func mixedParserStream() []*Node {
+	templExpr := func() []*Node {
+		root := &Node{Filename: "page.templ", Type: 2, Owns: 4, Pos: 100, End: 120}
+		for i := int32(1); i <= 4; i++ {
+			root.Children = append(root.Children, &Node{Filename: "page.templ", Type: 10 + i, Pos: 100, End: 120})
+		}
+
+		// Flatten pre-order like a serialized stream.
+		out := []*Node{root}
+		out = append(out, root.Children...)
+
+		return out
+	}
+
+	data := append([]*Node{}, templExpr()...)
+	data = append(data, &Node{Filename: "page.templ", Type: 999, Statement: true, Pos: 130, End: 140})
+	data = append(data, &Node{Filename: "main.go", Type: 998, Statement: true, Pos: 200, End: 210})
+
+	goParam := templExpr()[0]
+	goParam.Filename = "main.go"
+	goParam.Pos, goParam.End = 300, 320
+	data = append(data, goParam)
+	for _, child := range goParam.Children {
+		child.Filename = "main.go"
+		child.Pos, child.End = 300, 320
+		data = append(data, child)
+	}
+
+	data = append(data, templExpr()...)
+
+	return data
+}
+
+// TestFindSyntaxUnitsMixedParserGoParamsRejected (issue #11): when a match's
+// fragments mix parsers, a Go fragment whose unit roots are non-statement
+// nodes (func params) inside a statement-bearing Go file invalidates the
+// whole match — templ participation must never lower the effective unit bar
+// for Go members. The pre-fix code only checked the FIRST fragment, so a
+// templ-first ordering smuggled .go params through.
+func TestFindSyntaxUnitsMixedParserGoParamsRejected(t *testing.T) {
+	data := mixedParserStream()
+
+	// Match the two identical templ expression subtrees (positions 0 and
+	// 12) plus the structurally identical Go param subtree (position 7).
+	found := suffixtree.Match{
+		Ps:  []suffixtree.Pos{0, 7, 12},
+		Len: 5,
+	}
+
+	result := FindSyntaxUnits(data, found, 3)
+	if len(result.Frags) != 0 {
+		t.Fatalf("mixed-parser match with non-statement Go param fragment must be rejected, got %d frags", len(result.Frags))
+	}
+}
+
+// TestFindSyntaxUnitsPureTemplExpressionMatchKept: the same expression
+// match WITHOUT the Go fragment stays a valid group — templ files may use
+// non-statement component/expression units.
+func TestFindSyntaxUnitsPureTemplExpressionMatchKept(t *testing.T) {
+	data := mixedParserStream()
+
+	found := suffixtree.Match{
+		Ps:  []suffixtree.Pos{0, 12},
+		Len: 5,
+	}
+
+	result := FindSyntaxUnits(data, found, 3)
+	if len(result.Frags) == 0 {
+		t.Fatal("pure templ expression match must survive the mixed-parser guard")
+	}
+}
+
+// TestFindSyntaxUnitsGoFirstOrderingAlsoRejected: the Go fragment leads the
+// position list — the historical single-fragment guard already caught this;
+// pins that the new guard did not relax it.
+func TestFindSyntaxUnitsGoFirstOrderingAlsoRejected(t *testing.T) {
+	data := mixedParserStream()
+
+	found := suffixtree.Match{
+		Ps:  []suffixtree.Pos{7, 0, 12},
+		Len: 5,
+	}
+
+	result := FindSyntaxUnits(data, found, 3)
+	if len(result.Frags) != 0 {
+		t.Fatalf("Go-first mixed match with param fragment must be rejected, got %d frags", len(result.Frags))
+	}
+}

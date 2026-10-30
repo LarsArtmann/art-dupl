@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"sort"
 	"strings"
-
-	"github.com/LarsArtmann/art-dupl/pkg/position"
 )
 
 // memberLocation identifies one clone fragment by its DISPLAYED location:
@@ -99,7 +97,7 @@ func computeGroupMembers(
 			members.readable = false
 		}
 
-		lineStart, lineEnd := position.ByteRangeToLines(content, int(first.Pos), int(last.End))
+		lineStart, lineEnd := dedupLinesForRange(content, int(first.Pos), int(last.End))
 		members.locations = append(members.locations, memberLocation{
 			filename:  first.Filename,
 			lineStart: lineStart,
@@ -199,4 +197,45 @@ func richerDuplicate(a, b groupMembers, hashA, hashB string) bool {
 	}
 
 	return hashA < hashB
+}
+
+// dedupLinesForRange converts a byte range to 1-based (startLine, endLine)
+// with the exact semantics of the displayed clone locations: end is
+// exclusive, and a newline at a position belongs to the line it terminates.
+// Local twin of position.ByteRangeToLines — syntax cannot import
+// pkg/position (its tests reach back through testutil into syntax, an
+// import cycle), and the member-set key must match the printed lines
+// byte-for-byte, so the semantics are pinned by TestDeduplicateMemberSets
+// against hand-computed line numbers.
+func dedupLinesForRange(content []byte, start, end int) (int, int) {
+	if len(content) == 0 {
+		return 1, 1
+	}
+
+	lineStart := dedupLineAt(content, start)
+	lineEnd := dedupLineAt(content, max(end-1, start))
+
+	return lineStart, lineEnd
+}
+
+// dedupLineAt returns the 1-based line number of a byte offset: one plus the
+// number of newlines at or before the offset, clamped to the content bounds.
+func dedupLineAt(content []byte, offset int) int {
+	if offset < 0 {
+		return 1
+	}
+
+	if offset >= len(content) {
+		offset = len(content) - 1
+	}
+
+	line := 1
+
+	for i := 0; i <= offset; i++ {
+		if content[i] == '\n' {
+			line++
+		}
+	}
+
+	return line
 }

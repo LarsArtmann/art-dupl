@@ -483,14 +483,20 @@ func FindSyntaxUnits(data []*Node, m suffixtree.Match, threshold int) Match {
 		return Match{}
 	}
 
-	// When this file uses statement-level tokenization but the match falls
-	// entirely in the non-statement portion (structural wrappers like
+	// When a matched file uses statement-level tokenization but the match
+	// falls entirely in the non-statement portion (structural wrappers like
 	// FuncDecl/File), the legacy Owns-based indexes are not meaningful clone
 	// units — skip them. Only applies to Go files; templ files may have
 	// non-statement component declarations that are valid clone units.
+	//
+	// The check must cover EVERY fragment position, not just the first
+	// (issue #11): a match whose first fragment sits in a .templ file used
+	// to admit sibling fragments that are non-statement fragments inside
+	// statement-bearing Go files — one-line func params riding templ
+	// expression fragments into mixed-parser mega-groups. Templ membership
+	// must never lower the effective unit bar for Go members.
 	if len(indexes) > 0 && !firstSeq[indexes[0]].Statement &&
-		fileContainsStatements(data, firstSeq[indexes[0]].Filename) &&
-		!isTemplFile(firstSeq[indexes[0]].Filename) {
+		anyFragUnitIsNonStatementGo(data, m, indexes) {
 		return Match{}
 	}
 

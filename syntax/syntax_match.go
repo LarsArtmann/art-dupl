@@ -49,12 +49,51 @@ func buildMatch(data []*Node, m suffixtree.Match, firstSeq []*Node, indexes []in
 	return match
 }
 
-// fileContainsStatements reports whether any node in the token stream for the
-// given filename is marked as a statement.
-func fileContainsStatements(data []*Node, filename string) bool {
+// statementFiles indexes which files contribute at least one statement token
+// to the stream. Built in a single pass per FindSyntaxUnits call.
+type statementFileSet map[string]bool
+
+// buildStatementFileSet scans the token stream once and records every
+// filename that carries a statement token.
+func buildStatementFileSet(data []*Node) statementFileSet {
+	set := make(statementFileSet)
 	for i := range data {
-		if data[i].Filename == filename && data[i].Statement {
-			return true
+		if data[i].Statement {
+			set[data[i].Filename] = true
+		}
+	}
+
+	return set
+}
+
+// anyFragUnitIsNonStatementGo reports whether ANY fragment of the match has a
+// selected unit root that is a non-statement node inside a Go file which does
+// carry statement tokens (issue #11). Templ files are exempt: they may have
+// non-statement component declarations that are valid clone units. Go files
+// that contain no statements at all (rare: doc-only or embed-only files) stay
+// eligible, mirroring the historical single-fragment guard.
+func anyFragUnitIsNonStatementGo(data []*Node, m suffixtree.Match, indexes []int) bool {
+	var stmtFiles statementFileSet
+
+	for _, pos := range m.Ps {
+		for _, idx := range indexes {
+			posIdx := int(pos) + idx
+			if posIdx >= len(data) {
+				continue
+			}
+
+			node := data[posIdx]
+			if node.Statement || isTemplFile(node.Filename) {
+				continue
+			}
+
+			if stmtFiles == nil {
+				stmtFiles = buildStatementFileSet(data)
+			}
+
+			if stmtFiles[node.Filename] {
+				return true
+			}
 		}
 	}
 
