@@ -13,6 +13,7 @@ import (
 	"github.com/LarsArtmann/art-dupl/job"
 	"github.com/LarsArtmann/art-dupl/printer"
 	"github.com/LarsArtmann/art-dupl/printer/stats"
+	"github.com/LarsArtmann/art-dupl/syntax"
 	"github.com/LarsArtmann/gogenfilter/v3"
 	"github.com/spf13/cobra"
 )

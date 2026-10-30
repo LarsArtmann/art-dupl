@@ -156,6 +156,8 @@ func (d *detector) processCloneGroups(
 	groups map[string][][]*syntax.Node,
 	processFn func(*CloneGroup),
 ) {
+	groups = syntax.DeduplicateMemberSets(d.opts.FileReader, groups)
+
 	hashes := make([]string, 0, len(groups))
 	for hash := range groups {
 		hashes = append(hashes, hash)

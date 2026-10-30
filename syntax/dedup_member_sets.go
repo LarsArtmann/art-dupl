@@ -147,6 +147,7 @@ func chooseDuplicateWinners(
 	membersByHash map[string]groupMembers,
 ) map[string]bool {
 	byKey := make(map[string][]string)
+
 	for hash := range groups {
 		if !membersByHash[hash].readable {
 			continue
@@ -157,13 +158,22 @@ func chooseDuplicateWinners(
 	}
 
 	keep := make(map[string]bool, len(groups))
+
+	for hash := range groups {
+		if !membersByHash[hash].readable {
+			keep[hash] = true
+		}
+	}
+
 	for _, hashes := range byKey {
 		if len(hashes) == 1 {
 			keep[hashes[0]] = true
+
 			continue
 		}
 
 		winner := hashes[0]
+
 		for _, candidate := range hashes[1:] {
 			if richerDuplicate(membersByHash[candidate], membersByHash[winner], candidate, winner) {
 				winner = candidate
