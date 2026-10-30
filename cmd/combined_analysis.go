@@ -101,7 +101,7 @@ func executeCombinedAnalysis(
 	taChan := spawnCloneDetection(ctx, combinedDetector(cfg, resultTa), cfg.Threshold)
 	sgChan := spawnCloneDetection(ctx, combinedDetector(cfg, resultSg), cfg.Threshold)
 
-	merged := mergeCombinedMatches(ctx, taChan, sgChan)
+	merged := mergeCombinedMatches(ctx, taChan, sgChan, cfg.SuggestGenericsMinLines)
 
 	return merged, resultTa.parseStats, filterStats, golang.CollectGenericDecls(typeAwareData), nil
 }
@@ -156,11 +156,21 @@ func runCombinedPass(
 // divergence) or shallow receiver noise (one divergence). Presentation gates —
 // actionability patterns, line minimums, accept directives — apply downstream,
 // identically for both passes.
+//
+// Families that pass the structural gate but have an instance below
+// genericsMinLines are dropped here too (issue #11): they can never carry the
+// generics marker (the printer's candidacy gate rejects sub-min-lines groups),
+// so forwarding them would print cross-type fragments as UNMARKED plain clone
+// groups — the worst of both worlds. The type-aware pass remains the complete
+// same-type base output either way. genericsMinLines <= 0 disables the gate,
+// mirroring printer.passesGenericsLineGate.
 func mergeCombinedMatches(
 	ctx context.Context,
 	typeAwareChan, genericsChan <-chan syntax.Match,
+	genericsMinLines int,
 ) chan syntax.Match {
 	merged := make(chan syntax.Match)
+	lineTables := make(map[string]*sourceLineTable)
 
 	go func() {
 		defer close(merged)
@@ -176,6 +186,10 @@ func mergeCombinedMatches(
 				continue
 			}
 
+			if !passesMergeLineGate(match.Frags, genericsMinLines, lineTables) {
+				continue
+			}
+
 			if !sendMatch(ctx, merged, match) {
 				return
 			}
@@ -183,6 +197,44 @@ func mergeCombinedMatches(
 	}()
 
 	return merged
+}
+
+// passesMergeLineGate mirrors printer.passesGenericsLineGate at the match
+// level: every fragment must span at least minLines source lines, the weakest
+// instance deciding. Line counts use the same end-exclusive semantics as the
+// printer's displayed locations (ByteRangeToLines): a newline at the end
+// offset belongs to the line it terminates.
+func passesMergeLineGate(
+	frags [][]*syntax.Node,
+	minLines int,
+	tables map[string]*sourceLineTable,
+) bool {
+	if minLines <= 0 {
+		return true
+	}
+
+	for _, frag := range frags {
+		if len(frag) == 0 {
+			return false
+		}
+
+		first, last := frag[0], frag[len(frag)-1]
+
+		table, ok := tables[first.Filename]
+		if !ok {
+			table = newSourceLineTable(first.Filename)
+			tables[first.Filename] = table
+		}
+
+		startLine, _ := table.lineCol(first.Pos)
+		endLine, _ := table.lineCol(max(last.End-1, first.Pos))
+
+		if startLine == 0 || int(endLine-startLine+1) < minLines {
+			return false
+		}
+	}
+
+	return true
 }
 
 // sendMatch sends one match honoring context cancellation.
