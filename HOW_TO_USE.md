@@ -715,6 +715,25 @@ The flat `non_actionable_pattern` field stays for backward compatibility; prefer
 - The directive must be on a line within the clone's reported line range.
 - The directive is recognized in any `//` comment: standalone lines, trailing inline comments (`code(); //art-dupl:accept`), and the gofmt-canonical form with a space (`// art-dupl:accept`). Block comments (`/* */`) are not scanned.
 
+### Directives in Templ Markup
+
+In `.templ` files, two directive forms work inside markup (issue #9):
+
+```templ
+templ Badges(label string, n int) {
+	<div class="badges">
+		// art-dupl:accept conditional-span twin (preferred)
+		<span class="badge">{ label }{ fmt.Sprintf("%d", n) }</span>
+		<!-- art-dupl:accept conditional-span twin -->
+		<span class="badge">{ label }{ fmt.Sprintf("%d", n) }</span>
+	</div>
+}
+```
+
+- **`// art-dupl:accept ...` on its own line is the preferred form**: templ parses a line-leading `//` as a Go comment and drops it from the rendered output entirely — the suppression marker never reaches the browser. (A `//` after non-whitespace text on the same line is markup text and renders; keep the directive on its own line.)
+- **`<!-- art-dupl:accept ... -->` is also recognized** (no nested `//` needed): browsers never display HTML comments, so nothing appears on the page. Note templ passes HTML comments through to the HTML source, so the marker text does ship in the page bytes — prefer the Go-comment form when that matters.
+- Both forms support the same grammar: bare accept, `<hex>` hash precision, or a trailing description.
+
 ## Diff Reports
 
 Track clone evolution over time by comparing current results against a baseline:
