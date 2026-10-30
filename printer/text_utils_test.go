@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/LarsArtmann/art-dupl/config"
+	"github.com/LarsArtmann/art-dupl/domain"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
