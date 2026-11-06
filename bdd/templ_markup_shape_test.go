@@ -1,6 +1,8 @@
 package bdd
 
 import (
+	"fmt"
+
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
@@ -78,5 +80,51 @@ var _ = Describe("Templ markup-shape precision", func() {
 
 		Expect(string(stdout)).To(ContainSubstring("found 2 clones"))
 		Expect(string(stdout)).To(ContainSubstring("primary.templ"))
+	})
+})
+
+// Constant CSS property values are markup identity too (CacheVersion 9): two
+// otherwise identical `css` rules that set the same property to different
+// values render differently, so they must not report as clones. A rule block
+// is a statement composite, which is why the difference has to reach the node
+// type hash to be visible at all.
+//
+// The rules must live in SEPARATE files with the SAME css name: the declared
+// css NAME is part of the declaration token (API surface), so two differently
+// named rules in one file diverge for an unrelated reason and the fixture would
+// pass without the value fix (canary-verified).
+const cssRuleTemplate = `package main
+
+css panel() {
+	color: %s;
+	margin: 4px;
+}
+
+templ Card_%s() {
+	<div class="panel">
+		<span>Hello</span>
+	</div>
+}
+`
+
+var _ = Describe("Templ CSS value precision", func() {
+	var setup *testutil.BDDTestSetup
+
+	BeforeEach(func() {
+		setup = CreateBDDTestSetup()
+	})
+
+	It("does not report css rules that differ only in a constant value", func() {
+		Expect(setup.CreateTestFile("red.templ",
+			fmt.Sprintf(cssRuleTemplate, "red", "Red"))).To(Succeed())
+		Expect(setup.CreateTestFile("blue.templ",
+			fmt.Sprintf(cssRuleTemplate, "blue", "Blue"))).To(Succeed())
+
+		stdout, err := setup.RunArtDupl("--threshold", "1", "--show-suppressed")
+		Expect(err).ToNot(HaveOccurred())
+
+		// The shared markup is a legitimate clone; the css blocks are not.
+		Expect(string(stdout)).To(ContainSubstring("Found total 1 clone groups"))
+		Expect(string(stdout)).NotTo(ContainSubstring("css panel() {"))
 	})
 })
