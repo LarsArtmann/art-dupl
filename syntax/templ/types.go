@@ -1,8 +1,9 @@
 // Package templ provides AST parsing for templ files using the official templ parser.
 // It transforms templ template syntax into unified syntax.Node for clone detection.
 //
-// We focus on structural elements: declarations, HTML elements, flow control, attributes.
-// We skip: text content, attribute values, identifiers.
+// We focus on structural elements: declarations, HTML elements, flow control,
+// attributes, and markup text content (text is markup identity, see issue #14).
+// We skip: whitespace and comments.
 package templ
 
 // Node type constants for templ syntax.
@@ -70,4 +71,14 @@ const (
 	// ComponentFallthroughStatement represents a fallthrough in a switch;
 	// previously typed as a case body, making it indistinguishable.
 	ComponentFallthroughStatement = 101
+
+	// TextContent is static markup text inside an element. Text is markup
+	// identity — the same class as a constant attribute value — so it
+	// participates in hashing: `<span>Active</span>` and
+	// `<span>Inactive</span>` render differently and are not clones of each
+	// other (issue #14: parallel-by-design markup collided on shape alone
+	// while every meaning-carrying token differed). Semantic mode collapses
+	// whitespace runs so reflowing a paragraph does not fabricate a clone
+	// difference; structural mode ignores the value (shape only).
+	TextContent = 102
 )

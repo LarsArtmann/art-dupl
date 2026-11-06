@@ -39,8 +39,7 @@ func (t *transformer) transformNode(node templparser.Node) *syntax.Node {
 	case *templparser.StringExpression:
 		return t.transformStringExpression(n)
 	case *templparser.Text:
-		// Skip text content - focus on structure
-		return nil
+		return t.transformText(n)
 	case *templparser.Whitespace:
 		// Skip whitespace
 		return nil
@@ -57,6 +56,34 @@ func (t *transformer) transformNode(node templparser.Node) *syntax.Node {
 	default:
 		return nil
 	}
+}
+
+// transformText converts static markup text into a content node so the text
+// itself participates in matching (issue #14). Text is markup identity, the
+// same class as a constant attribute value: `<span>Active</span>` and
+// `<span>Inactive</span>` render different pages and must not match on shape
+// alone. Semantic mode collapses whitespace runs (reflowing a paragraph is not
+// a clone difference); exact mode hashes the raw value; structural mode ignores
+// the value entirely.
+// art-dupl:accept shared node-identity prologue before divergent encodings (2026-11-06 self-scan)
+func (t *transformer) transformText(txt *templparser.Text) *syntax.Node {
+	if txt == nil {
+		return nil
+	}
+
+	o := t.createNodeFromRange(TextContent, txt.Range)
+	o.Name = txt.Value
+
+	if t.mode.HashesIdentifiers() {
+		value := txt.Value
+		if t.mode.NormalizesLiterals() {
+			value = strings.Join(strings.Fields(value), " ")
+		}
+
+		o.Type = syntax.EncodeSemanticType(TextContent, value, true)
+	}
+
+	return o
 }
 
 // transformElement converts an Element to a syntax.Node.

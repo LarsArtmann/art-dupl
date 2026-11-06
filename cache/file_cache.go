@@ -68,7 +68,11 @@ const (
 	// type hash (markup identity: differing class/id/href values no longer
 	// match; semantic mode sorts class-list tokens). v6 entries would replay
 	// the old value-blind attribute hashes for .templ files.
-	CacheVersion = 7
+	// v7 → v8: static markup text now participates in the node type hash as a
+	// TextContent node (markup identity, issue #14: `<span>Active</span>` no
+	// longer matches `<span>Inactive</span>`; semantic mode collapses
+	// whitespace runs). v7 entries would replay the text-blind streams.
+	CacheVersion = 8
 
 	// Directory permissions.
 	cacheDirPerms = 0o750

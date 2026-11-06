@@ -129,7 +129,62 @@ func TestConstantAttributeSameValueStillClones(t *testing.T) {
 	t.Parallel()
 
 	a := `<p class="mt-4 text-sm">x</p>`
-	b := `<p class="mt-4 text-sm">y</p>`
+	b := `<p class="mt-4 text-sm">x</p>`
+
+	assertStreamsEqual(t, a, b, golang.DetectionModeSemantic)
+}
+
+// --- Static markup text: markup identity (issue #14) ---
+
+func TestTextContentDifferencesPreventClone(t *testing.T) {
+	t.Parallel()
+
+	// Parallel-by-design markup diverges in the text it renders: the shape is
+	// identical, the page content is not. Shape alone is not a clone.
+	a := `<span class="chip">Active</span>`
+	b := `<span class="chip">Inactive</span>`
+
+	assertStreamsDiffer(t, a, b, golang.DetectionModeSemantic)
+}
+
+func TestTextContentReflowStillClones(t *testing.T) {
+	t.Parallel()
+
+	// Semantic mode collapses whitespace runs: re-indenting or rewrapping a
+	// paragraph is not a clone difference.
+	a := `<p class="text-muted">Configure your workspace</p>`
+	b := "<p class=\"text-muted\">Configure\n\t\t\tyour   workspace</p>"
+
+	assertStreamsEqual(t, a, b, golang.DetectionModeSemantic)
+}
+
+func TestTextContentDiffersInExactMode(t *testing.T) {
+	t.Parallel()
+
+	// Exact mode hashes text verbatim (Type-1 copy-paste only): a reflowed
+	// paragraph is not a byte-identical copy.
+	a := `<p>Configure your workspace</p>`
+	b := "<p>Configure\n\t\tyour workspace</p>"
+
+	assertStreamsDiffer(t, a, b, golang.DetectionModeExact)
+}
+
+func TestTextContentInvisibleInStructuralMode(t *testing.T) {
+	t.Parallel()
+
+	// Structural mode matches AST shape only: text content does not
+	// participate (documented scope, mirrors the attribute-value policy).
+	a := `<span class="chip">Active</span>`
+	b := `<span class="chip">Inactive</span>`
+
+	assertStreamsEqual(t, a, b, golang.DetectionModeStructural)
+}
+
+func TestTextContentIdenticalMarkupStillClones(t *testing.T) {
+	t.Parallel()
+
+	a := `<span class="chip">Active</span>`
+	b := `<span class="chip">Active</span>`
 
 	assertStreamsEqual(t, a, b, golang.DetectionModeSemantic)
 }
