@@ -44,7 +44,14 @@ Every term below should mean the **same thing** to everyone who reads it.
 | Provider              | art-dupl's self-registering toolsdk provider; BuildFlow consumes it via blank import     | `pkg/provider/provider.go`                                                  |
 | Advisory Cap          | Provider findings are severity-capped at warning so detector output never fails gates    | v0.7.2 `maxAdvisorySeverity`                                                |
 | Original Severity     | The pre-cap severity preserved in an `original-severity-` metadata tag                   | `pkg/provider` metadata                                                     |
-| Actionability Pattern | Named denylist rule suppressing idiomatic-Go clone groups (33 rules + 4 property labels) | `printer/actionability/`, `docs/ACTIONABILITY_PATTERNS.md`                  |
+| Actionability Pattern | Named denylist rule suppressing idiomatic-Go clone groups (42 total: 37 denylist + 1 shape + 4 property labels) | `printer/actionability/`, `docs/ACTIONABILITY_PATTERNS.md`                  |
+| Markup Identity       | Markup that renders differently is not a clone: text, constant attribute values, and constant CSS values are hashed  | `syntax/templ/` node encoding                                               |
+| Text Content          | Static markup text, emitted as a `TextContent` token (node 102) and whitespace-collapsed in semantic mode          | `syntax/templ/transformText`                                                |
+| Go Snippet            | Node flag marking Go source embedded in a `.templ` file, so classification uses the Go tables and Go fix wording   | `syntax.Node.GoSnippet`                                                     |
+| Cache Version         | Algorithm revision of the serialized token stream; a bump invalidates caches and every recorded baseline hash space | `cache.CacheVersion`                                                        |
+| Hashing Policy        | Fingerprint of the settings that change group hashes (cache version, detection mode, type-aware, suggest-generics, max-children, detector set) | `cmd/analyzerPolicyParts`                                 |
+| Analyzer Identity     | What produced a baseline: binary version (provenance only), cache version, and hashing policy                      | `baseline.AnalyzerIdentity`, baseline JSON `analyzer` block                 |
+| Baseline Split        | A check run's accounting: groups the baseline accepts, groups that are new, groups suppressed elsewhere            | `printer.BaselineSplit`, JSON `baseline` block, text footer                 |
 
 ## Entities
 

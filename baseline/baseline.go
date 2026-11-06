@@ -8,14 +8,25 @@
 //	{
 //	  "version": "1.0",
 //	  "threshold": 15,
-//	  "recorded_at": "2026-06-20T18:30:00Z",
+//	  "recordedAt": "2026-06-20T18:30:00Z",
 //	  "entries": [
 //	    {"hash": "abc123", "files": ["a.go", "b.go"], "tokens": 42}
-//	  ]
+//	  ],
+//	  "analyzer": {
+//	    "version": "0.9.1",
+//	    "cacheVersion": 9,
+//	    "policy": "5f3c1e2a9b7d4c60"
+//	  }
 //	}
 //
 // Matching is by clone-group hash (content fingerprint), so renamed files or
 // moved code that keeps the same structure still matches the baseline.
+//
+// The optional "analyzer" block states which hash space the entries live in
+// (ADR-0029): group hashes are only comparable between runs sharing the same
+// hashing policy and cache version. A baseline without the block cannot be
+// verified; `check --baseline-version-must-match` refuses it, while the
+// default run warns and compares anyway.
 package baseline
 
 import (
