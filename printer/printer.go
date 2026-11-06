@@ -51,6 +51,32 @@ type SuppressionStatsSetter interface {
 	SetSuppressionStats(stats SuppressionStats)
 }
 
+// BaselineSplit is the `check` command's group accounting: groups that matched
+// an entry in the baseline, groups that are new relative to it, and groups
+// suppressed for other reasons (actionability, thresholds, accept directives).
+// Reporting the split makes the CI verdict self-auditing: a reader can tell
+// "green because nothing new was introduced" apart from "green because the
+// baseline absorbed everything" without diffing the report against the
+// baseline JSON (issue #12).
+type BaselineSplit struct {
+	InBaseline int
+	New        int
+	Suppressed int
+}
+
+// Total returns the number of clone groups the check run detected: the sum of
+// baseline-matched, new, and otherwise suppressed groups.
+func (b BaselineSplit) Total() int {
+	return b.InBaseline + b.New + b.Suppressed
+}
+
+// BaselineSplitSetter enables printers to report the baseline split on the
+// summary line. Only the `check` command sets it; every other run keeps its
+// historical footer.
+type BaselineSplitSetter interface {
+	SetBaselineSplit(split BaselineSplit)
+}
+
 type Printer interface {
 	PrintHeader() error
 	PrintClones(group domain.ProcessedCloneGroup, sortBy ...config.SortCriteria) error

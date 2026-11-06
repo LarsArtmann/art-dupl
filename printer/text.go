@@ -30,6 +30,7 @@ type TextPrinter struct {
 	versionFooter    string
 	diffHintFiles    []string
 	suppressionStats SuppressionStats
+	baselineSplit    *BaselineSplit
 }
 
 func (p *TextPrinter) SetHash(hash string) {
@@ -42,6 +43,12 @@ func (p *TextPrinter) SetFileDuplicate(isDupe bool) {
 
 func (p *TextPrinter) SetSuppressionStats(stats SuppressionStats) {
 	p.suppressionStats = stats
+}
+
+// SetBaselineSplit reports the check command's baseline-vs-new accounting on
+// the summary line (issue #12).
+func (p *TextPrinter) SetBaselineSplit(split BaselineSplit) {
+	p.baselineSplit = &split
 }
 
 func (p *TextPrinter) SetRichText(enabled bool) {

@@ -39,14 +39,46 @@ func (t *transformer) newFileNode() *syntax.Node {
 // addChildren processes a slice of nodes and adds them as children to the parent.
 // Each child is marked as Statement=true so serial() fingerprints the entire
 // element subtree into one composite token, matching how Go statements work.
+// Static text is the exception: it participates in the enclosing element's
+// composite fingerprint (markup identity) but is not a statement of its own.
 func (t *transformer) addChildren(parent *syntax.Node, nodes []templparser.Node) {
 	for _, child := range nodes {
 		childNode := t.transformNode(child)
-		if childNode != nil {
-			childNode.Statement = true
-			parent.AddChildren(childNode)
+		if childNode == nil {
+			continue
 		}
+
+		if syntax.DecodeBaseType(childNode.Type) == TextContent {
+			t.appendTextChild(parent, childNode)
+
+			continue
+		}
+
+		childNode.Statement = true
+		parent.AddChildren(childNode)
 	}
+}
+
+// appendTextChild attaches static markup text to parent without marking it as
+// a statement. In semantic mode consecutive text nodes are coalesced first:
+// templ splits text at line breaks ("Configure" + "your workspace" for a
+// reflowed paragraph), so without coalescing a reflowed paragraph would change
+// the fingerprint and fabricate a clone difference that does not exist in the
+// rendered page. Exact mode keeps the parser's node split so a reflowed
+// paragraph stays distinguishable (Type-1 copy-paste semantics).
+func (t *transformer) appendTextChild(parent, textNode *syntax.Node) {
+	last := len(parent.Children) - 1
+	if last >= 0 && syntax.DecodeBaseType(parent.Children[last].Type) == TextContent &&
+		t.mode.NormalizesLiterals() {
+		merged := parent.Children[last].Name + " " + textNode.Name
+
+		t.applyTextContentType(parent.Children[last], merged)
+		parent.Children[last].End = textNode.End
+
+		return
+	}
+
+	parent.AddChildren(textNode)
 }
 
 // transformTemplateFile converts a templ TemplateFile to a unified syntax.Node.

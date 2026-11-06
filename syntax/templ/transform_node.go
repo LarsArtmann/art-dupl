@@ -72,18 +72,27 @@ func (t *transformer) transformText(txt *templparser.Text) *syntax.Node {
 	}
 
 	o := t.createNodeFromRange(TextContent, txt.Range)
-	o.Name = txt.Value
-
-	if t.mode.HashesIdentifiers() {
-		value := txt.Value
-		if t.mode.NormalizesLiterals() {
-			value = strings.Join(strings.Fields(value), " ")
-		}
-
-		o.Type = syntax.EncodeSemanticType(TextContent, value, true)
-	}
+	t.applyTextContentType(o, txt.Value)
 
 	return o
+}
+
+// applyTextContentType encodes a text value into the node type. Semantic mode
+// collapses whitespace runs and trims, so re-indenting or rewrapping markup
+// does not fabricate a clone difference; exact mode hashes the value verbatim;
+// structural mode leaves the type bare (shape only).
+func (t *transformer) applyTextContentType(o *syntax.Node, value string) {
+	o.Name = value
+
+	if !t.mode.HashesIdentifiers() {
+		return
+	}
+
+	if t.mode.NormalizesLiterals() {
+		value = strings.Join(strings.Fields(value), " ")
+	}
+
+	o.Type = syntax.EncodeSemanticType(TextContent, value, true)
 }
 
 // transformElement converts an Element to a syntax.Node.
