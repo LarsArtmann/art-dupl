@@ -240,9 +240,11 @@ func runCheck(c *cobra.Command, arguments []string) error {
 				"Run `art-dupl baseline` to update.\n",
 			filter.newCloneCount, bf.Len())
 
-		// Returning an error makes Cobra/Fang exit with code 1 for CI gates.
-		return duplerrors.NewValidationError(
-			fmt.Sprintf("%d new clone group(s) introduced", filter.newCloneCount), nil,
+		// The gate verdict is not a configuration error: return a typed
+		// ClonesFoundError so CI sees exit 1 (as `check --help` documents),
+		// not exit 2 ("your flags were wrong").
+		return duplerrors.NewClonesFoundError(
+			fmt.Sprintf("%d new clone group(s) introduced", filter.newCloneCount),
 		)
 	}
 

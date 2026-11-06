@@ -572,3 +572,57 @@ func TestDiffReportWarnsOnIncomparableBaseline(t *testing.T) {
 		t.Errorf("diff report must warn about the incomparable baseline, got:\n%s", output)
 	}
 }
+
+// TestCheckNewClonesExitCodeIsOne pins the documented contract: `check` exits
+// 1 when new clones are found, and exit 2 stays reserved for a wrong
+// invocation. The gate verdict used to be a ValidationError (exit 2), which a
+// CI consumer keying on the documented code would misread as misconfiguration.
+func TestCheckNewClonesExitCodeIsOne(t *testing.T) {
+	dir := t.TempDir()
+	writeCheckFixture(t, dir, "a.go", checkFixtureFamilyA)
+	writeCheckFixture(t, dir, "b.go", checkFixtureFamilyB)
+
+	baselinePath := recordCheckBaseline(t, dir)
+
+	writeCheckFixture(t, dir, "c.go", checkFixtureFamilyC)
+	writeCheckFixture(t, dir, "d.go", checkFixtureFamilyD)
+
+	err := runCheckForError(t, []string{
+		binaryName, "check", "--baseline-path", baselinePath,
+		"-t", "3", "--no-actionability", dir,
+	})
+	if err == nil {
+		t.Fatal("expected the gate to report new clones")
+	}
+
+	if got := ExitCodeForError(err); got != ExitGeneralError {
+		t.Errorf("new clones must exit %d, got %d (err: %v)", ExitGeneralError, got, err)
+	}
+
+	// A wrong invocation still exits 2: the two verdicts stay distinguishable.
+	badErr := runCheckForError(t, []string{
+		binaryName, "check", "--baseline-path", filepath.Join(t.TempDir(), "missing.json"),
+		dir,
+	})
+	if badErr == nil {
+		t.Fatal("expected a missing baseline to fail")
+	}
+
+	if got := ExitCodeForError(badErr); got != ExitConfigError {
+		t.Errorf("a missing baseline must exit %d, got %d", ExitConfigError, got)
+	}
+}
+
+// runCheckForError executes a command and returns its error without asserting
+// on the captured output.
+func runCheckForError(t *testing.T, args []string) error {
+	t.Helper()
+
+	rootCmd := NewRootCommand()
+	AddFlags(rootCmd)
+	rootCmd.SetArgs(args[1:])
+
+	_, _, err := testutil.CaptureStdoutStderr(rootCmd.Execute)
+
+	return err
+}

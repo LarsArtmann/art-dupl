@@ -337,13 +337,13 @@ mode, which has lower memory overhead and is easier to profile.
 
 ### Exit Codes
 
-| Code | Meaning                                             |
-| ---- | --------------------------------------------------- |
-| 0    | Success (no errors, clones may or may not be found) |
-| 1    | General error (analysis failure)                    |
-| 2    | Configuration/validation error                      |
-| 3    | Internal error                                      |
-| 130  | Interrupted (Ctrl+C)                                |
+| Code | Meaning                                                                       |
+| ---- | ----------------------------------------------------------------------------- |
+| 0    | Success (no errors, clones may or may not be found)                           |
+| 1    | General error (analysis failure) **or `check` found new clones** (gate verdict) |
+| 2    | Configuration/validation error (bad flag, missing baseline, invalid value)    |
+| 3    | Internal error                                                                |
+| 130  | Interrupted (Ctrl+C)                                                          |
 
 ## CI/CD Integration
 

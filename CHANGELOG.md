@@ -51,6 +51,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **`check` exits 1 when new clones are found, as documented** (2026-11-06): the gate verdict was returned as a
+  validation error, so CI saw exit 2 — the code reserved for "your invocation was wrong". It is now a typed
+  `ClonesFoundError` that exits 1 (matching `check --help` and the README), while a missing baseline or a bad flag
+  still exits 2. Pin: `TestCheckNewClonesExitCodeIsOne`.
 - **`check --json` emits a JSON document again** (2026-11-06): the document is produced by `JSONPrinter.OutputJSON`,
   which only the main analysis path called, so `check --json` wrote nothing at all — a CI job parsing it saw an
   empty stream rather than an empty result set. The document now includes `files_analyzed`, the new clone groups,

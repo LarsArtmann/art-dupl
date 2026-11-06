@@ -17,6 +17,13 @@ const (
 	AnalysisError   ErrorType = "analysis"
 	FileError       ErrorType = "file"
 	CacheError      ErrorType = "cache"
+
+	// ClonesFoundError is the `check` gate's verdict: the run itself
+	// succeeded, and the answer is "new clones exist". It is deliberately NOT
+	// a ValidationError — exit 2 means "your invocation was wrong", and a CI
+	// consumer must not read a code-review failure as a misconfiguration.
+	// cmd.ExitCodeForError leaves it unmapped, so it exits 1 as documented.
+	ClonesFoundError ErrorType = "clones-found"
 )
 
 // DuplError is the main error type with rich context.
@@ -49,6 +56,12 @@ func NewIOError(file, msg string, cause error) *DuplError {
 		File:    file,
 		Cause:   cause,
 	}
+}
+
+// NewClonesFoundError creates the CI gate's "new clones detected" verdict.
+// See ClonesFoundError for why it is not a validation error.
+func NewClonesFoundError(msg string) *DuplError {
+	return newError(ClonesFoundError, msg, nil)
 }
 
 // NewValidationError creates a new validation error.
