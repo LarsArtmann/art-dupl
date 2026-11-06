@@ -1,6 +1,6 @@
 # How to Use art-dupl - A Practical Guide
 
-**Last Updated:** 2026-09-28
+**Last Updated:** 2026-11-06
 
 This guide provides practical examples and workflows for using **art-dupl** effectively in real-world scenarios.
 
@@ -1021,6 +1021,36 @@ git add .art-dupl-baseline.json && git commit -m "chore: update clone baseline"
 ```
 
 The baseline file uses content-hash matching, so renamed files or moved code that keeps the same structure still matches. Use `--json` with `check` for structured output, and `--baseline-path` to customize the file location.
+
+`check` prints the group accounting on its summary line, so you can see where the
+verdict comes from without diffing the report against the baseline JSON:
+
+```text
+Found total 151 clone groups (150 in baseline, 1 new). [art-dupl v0.9.1]
+```
+
+A third component appears only when filters suppressed groups
+(`..., 3 suppressed`), which distinguishes "green because nothing new was
+introduced" from "green because everything was filtered".
+
+Baselines also record the analyzer identity that produced them (binary version,
+algorithm revision, and the hash-affecting detection settings). Add
+`--baseline-version-must-match` to refuse a comparison against a baseline
+recorded under different settings or a different algorithm revision — the case
+where a cross-binary run reports the whole tree as new:
+
+```bash
+art-dupl check . -t 15 --baseline-version-must-match
+# Error: baseline .art-dupl-baseline.json was recorded by art-dupl v0.9.0
+# (algorithm revision 7, hashing policy ...); running art-dupl v0.9.1 ...
+# clone-group hashes are not comparable, re-record the baseline with the
+# running binary or drop --baseline-version-must-match
+```
+
+The binary version alone does not gate compatibility: rebuilding the same
+algorithm under a new version string does not invalidate a baseline. Baselines
+written before identity tracking existed cannot be verified and are refused by
+the flag (drop it to compare unverified).
 
 GitHub Actions and pre-commit hook templates are included in `templates/github-actions-duplicate-check.yml` and `templates/pre-commit-hook.yaml`.
 

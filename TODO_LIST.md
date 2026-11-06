@@ -1,6 +1,6 @@
 # TODO List
 
-**Last Updated:** 2026-10-11
+**Last Updated:** 2026-11-06
 
 Actionable items for the next 2-4 weeks. Completed work lives in `CHANGELOG.md`.
 This file is OPEN work only - no completed, rejected, or resolved items.
@@ -23,6 +23,11 @@ or external by nature.
 ---
 
 ## MEDIUM Priority
+
+- [ ] **Warn when a baseline's analyzer identity differs but `--baseline-version-must-match` is off** (2026-11-06): the strict gate is opt-in, so a default `check` still compares across hash spaces silently. A single stderr note ("baseline recorded by <A>, running <B> — pass --baseline-version-must-match to enforce") would surface the class without changing exit codes. Needs a text/HTML-only format gate like the dead-directive warning.
+- [ ] **`check --json` does not carry the baseline split** (2026-11-06): the split lives on the text footer (`printer.BaselineSplit`). Machine consumers still have to recompute in-baseline vs new from the baseline JSON; add `baseline`/`new`/`suppressed` fields to the JSON document (or an `OutputJSON` supplement) without changing the text wire.
+- [ ] **README.md docs stamp is stale** (2026-11-06): `Last Updated: 2026-09-28`, 39 days behind HEAD. Do NOT bump the stamp alone — verify the feature claims (they are count-gated, but prose drifts) as part of the overdue docs-health pass (due 2026-10-28).
+
 
 - [ ] **`deploy-site.yml` masks website failures** (`continue-on-error: true` on the astro check step, line ~52) - flip to failing so a broken site build cannot deploy; flagged by the 2026-07-13 presence reports, still open 2026-10-05.
 - [x] ~~**Decide `SDK_DESIGN.md`'s fate**~~ DONE 2026-10-11 (M16): the "stale since 2026-07-19" claim is OBSOLETE — the document was already refreshed post-ADR-0025/0026 and every claim verified against code 2026-10-11 (Detector interface at `pkg/artdupl/detector.go:66/145`, Options fields, DefaultThreshold=5 mirror, provider contract incl. the `_test.go` inclusion note, ADR-0026 combined mode). Kept at repo root (README:182 links it). No rewrite/move/trim needed.

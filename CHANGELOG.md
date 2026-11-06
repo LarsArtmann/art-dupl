@@ -9,6 +9,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **`check` reports the baseline split** (2026-11-06, #12): the summary line is now
+  `Found total N clone groups (B in baseline, W new[, S suppressed])` instead of a single count that mixed
+  baseline-accepted groups with newly introduced ones — the only number a CI verdict depends on no longer
+  requires a jq pass over the baseline JSON. Check summaries also stamp the build version.
+- **`check --baseline-version-must-match`** (2026-11-06, #13): baselines now record the analyzer identity that
+  produced them (binary version, algorithm revision, and a hashing-policy fingerprint over detection mode,
+  `--type-aware`, `--suggest-generics`, and serialization width). With the flag, `check` refuses to compare when
+  the recorded policy differs and names both analyzers; without it, a baseline recorded by another build silently
+  lives in a different hash space and reports the whole tree as new. Opt-in: existing baselines and CI keep
+  working unverified, and a rebuild of the same algorithm does not invalidate a baseline.
+- **Static markup text participates in templ detection** (2026-11-06, #14): text inside `.templ` markup is markup
+  identity, not noise — `TextContent` (node type 102) hashes it, so parallel-by-design sections that render
+  different words (`<th>File</th>` vs `<th>Author</th>`) no longer clone. Semantic mode collapses whitespace runs
+  and coalesces the parser's line-break-split text nodes (reflowing a paragraph is not a clone difference); exact
+  mode hashes verbatim; structural mode ignores values. Go-only corpora are unchanged at `-t 1/2/5`; templ-heavy
+  corpora drop only text-divergent groups (DiscordSync `-t 1` 112→93 shown, nsfw-classifier 147→129).
+  See [`docs/benchmarks/templ-text-precision-2026-11-06.md`](docs/benchmarks/templ-text-precision-2026-11-06.md).
+  CacheVersion 7 → 8.
+- **Go snippets in `.templ` files classify as Go** (2026-11-06, #11): nodes parsed from embedded Go carry a
+  `GoSnippet` marker, so category and fix suggestions come from the Go table. A Go parameter fragment inside a
+  templ file was previously rated `conditional` and told to "extract the shared markup block to a child templ
+  component"; it now matches how the same fragment classifies in a `.go` file.
 - **`templ-children-idiom` actionability pattern** (2026-10-16, #7): a bare `{ children... }` slot-injection expression in `.templ` files is templ's composition mechanism — any two wrapper components produced an identical token and a clone group with an inapplicable "extract to component" suggestion. The pattern suppresses such groups (still surfaced by `--show-suppressed`, disable-able via `--disable-pattern templ-children-idiom`); scoped by `.templ` filename because templ node 22 numerically collides with `golang.FuncLit`.
 - **Binary provenance on every text report** (2026-10-16, #8): when release ldflags are absent, `GetVersion()` falls back to `debug.ReadBuildInfo()` — `go install` builds report their module version (`v0.9.0`), checkout builds report `dev-<short vcs.revision>` (commit/date fall back to `vcs.revision`/`vcs.time`). The text report's summary lines stamp the effective version (`Found total N clone groups. [art-dupl <version>]`), so a pasted report names its build without `go version -m` archaeology; `version --json/--short` print the resolved values. Directly-constructed printers keep the historical footer bytes.
 - **Pre-release version-stamp gate** (2026-10-16, #5): `scripts/pre-release-check.sh --version vX.Y.Z` now asserts CHANGELOG.md's newest `## [X.Y.Z]` header equals the pending tag — `flake.nix` derives the stamped version from it, so tagging without the changelog section ships binaries reporting the PREVIOUS version (the v0.7.1/v0.7.2/v0.9.0 drift class).

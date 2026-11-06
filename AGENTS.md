@@ -1,6 +1,6 @@
 # AGENTS.md - art-dupl
 
-**Last Updated:** 2026-10-16
+**Last Updated:** 2026-11-06
 
 Go tool for finding code clones via suffix tree + hash-based detection on ASTs. Multi-method, multi-format output.
 
