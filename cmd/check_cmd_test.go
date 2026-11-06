@@ -8,6 +8,8 @@ import (
 	"testing"
 
 	"github.com/LarsArtmann/art-dupl/config"
+	"github.com/LarsArtmann/art-dupl/internal/testutil"
+	"github.com/LarsArtmann/art-dupl/printer"
 )
 
 // checkFixtureFamilyA/B are two functions with an identical body (one clone
@@ -407,5 +409,91 @@ func TestCheckSummarySuppressedCountDoesNotDoubleCountBaseline(t *testing.T) {
 
 	if !strings.Contains(string(output), "clone groups (1 in baseline, 0 new, 1 suppressed)") {
 		t.Errorf("expected '(1 in baseline, 0 new, 1 suppressed)', got:\n%s", output)
+	}
+}
+
+// runCheckJSON executes `check --json` and decodes its stdout as the JSON
+// document. Assumes args carry absolute paths (no repo-root resolution).
+func runCheckJSON(t *testing.T, args []string) (printer.JSONOutput, error) {
+	t.Helper()
+
+	rootCmd := NewRootCommand()
+	AddFlags(rootCmd)
+	rootCmd.SetArgs(args[1:])
+
+	var parsed printer.JSONOutput
+
+	stdout, stderr, err := testutil.CaptureStdoutStderr(rootCmd.Execute)
+
+	if len(stdout) > 0 {
+		if decodeErr := json.Unmarshal(stdout, &parsed); decodeErr != nil {
+			t.Fatalf("check --json stdout is not a JSON document: %v\ngot: %s\nstderr: %s",
+				decodeErr, stdout, stderr)
+		}
+	}
+
+	return parsed, err
+}
+
+// TestCheckJSONEmitsDocumentAndBaselineSplit (issue #12): `check --json` used
+// to print nothing at all, because the JSON document is produced by
+// OutputJSON and only the main analysis path called it. The document must
+// carry both the new groups and the baseline accounting.
+func TestCheckJSONEmitsDocumentAndBaselineSplit(t *testing.T) {
+	dir := t.TempDir()
+	writeCheckFixture(t, dir, "a.go", checkFixtureFamilyA)
+	writeCheckFixture(t, dir, "b.go", checkFixtureFamilyB)
+
+	baselinePath := recordCheckBaseline(t, dir)
+
+	doc, err := runCheckJSON(t, []string{
+		binaryName, "check", "--baseline-path", baselinePath, "--json",
+		"-t", "3", "--no-actionability", dir,
+	})
+	if err != nil {
+		t.Fatalf("check --json on an unchanged tree failed: %v", err)
+	}
+
+	if doc.Baseline == nil {
+		t.Fatal("check --json must emit a baseline block")
+	}
+
+	if got := *doc.Baseline; got.InBaseline != 1 || got.New != 0 ||
+		got.Suppressed != 0 || got.Total != 1 {
+		t.Errorf("expected {1 0 0 1}, got %+v", got)
+	}
+
+	if len(doc.CloneGroups) != 0 {
+		t.Errorf("an unchanged tree must report no new clone groups, got %d", len(doc.CloneGroups))
+	}
+
+	if doc.FilesAnalyzed == 0 {
+		t.Error("check --json must report the analyzed file count")
+	}
+
+	// Introduce a second family: the new group belongs in clone_groups, and
+	// the split must account for both populations.
+	writeCheckFixture(t, dir, "c.go", checkFixtureFamilyC)
+	writeCheckFixture(t, dir, "d.go", checkFixtureFamilyD)
+
+	doc, err = runCheckJSON(t, []string{
+		binaryName, "check", "--baseline-path", baselinePath, "--json",
+		"-t", "3", "--no-actionability", dir,
+	})
+	if err == nil {
+		t.Fatal("check --json with a new clone family must exit non-zero")
+	}
+
+	if got := *doc.Baseline; got.InBaseline != 1 || got.New != 1 ||
+		got.Suppressed != 0 || got.Total != 2 {
+		t.Errorf("expected {1 1 0 2}, got %+v", got)
+	}
+
+	if len(doc.CloneGroups) != 1 {
+		t.Errorf("expected exactly the new clone group in clone_groups, got %d", len(doc.CloneGroups))
+	}
+
+	if len(doc.CloneGroups) == 1 && doc.CloneGroups[0].Hash == "" {
+		t.Error("new clone group must carry its hash")
 	}
 }

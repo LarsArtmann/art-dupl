@@ -168,7 +168,7 @@ func runCheck(c *cobra.Command, arguments []string) error {
 	ctx, cancel := utils.ApplyTimeout(ctx, mergedConfig.Timeout)
 	defer cancel()
 
-	duplChan, _, _, _, err := executeAnalysis(
+	duplChan, parseStats, _, _, err := executeAnalysis(
 		ctx, mergedConfig, mergedConfig.Paths, config.OutputFormatText, c.ErrOrStderr(),
 	)
 	if err != nil {
@@ -207,9 +207,21 @@ func runCheck(c *cobra.Command, arguments []string) error {
 
 	// Report the baseline-vs-new split on the summary line (issue #12): the
 	// raw group count conflated "accepted long ago" with "introduced now",
-	// which is the only number a CI reader cares about.
+	// which is the only number a CI reader cares about. The text printer
+	// renders it on the footer; the JSON printer carries it as the `baseline`
+	// block and emits the document below.
 	if splitSetter, ok := inner.(printer.BaselineSplitSetter); ok {
 		splitSetter.SetBaselineSplit(filter.Split())
+	}
+
+	// `check --json` previously produced no JSON at all: the document is
+	// emitted by OutputJSON, which only the main analysis path called.
+	setJSONPrinterFilesCount(inner, parseStats.FilesCount)
+
+	err = handleJSONOutput(inner, mergedConfig.Threshold, config.SortByHash,
+		detectionMethodsToString(mergedConfig.DetectionMethods))
+	if err != nil {
+		return duplerrors.Wrap(err, duplerrors.AnalysisError, "check JSON output")
 	}
 
 	footerErr := filter.PrintFooter()

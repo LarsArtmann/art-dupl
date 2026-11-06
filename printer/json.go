@@ -154,6 +154,17 @@ type JSONPrinter struct {
 	cloneGroups []CloneGroup
 	currentHash string
 	explain     bool
+	// baselineSplit is set only by the `check` command; nil everywhere else so
+	// the JSON document keeps its historical shape.
+	baselineSplit *BaselineSplit
+}
+
+// SetBaselineSplit attaches the `check` command's baseline-vs-new accounting
+// (issue #12) to the JSON document. JSONPrinter satisfies
+// printer.BaselineSplitSetter, so cmd wires it through the same type
+// assertion as the text printer.
+func (p *JSONPrinter) SetBaselineSplit(split BaselineSplit) {
+	p.baselineSplit = &split
 }
 
 // SetExplain attaches a structured explanation object to every clone when
@@ -261,6 +272,15 @@ func (p *JSONPrinter) OutputJSON(
 	}
 
 	output.DetectionMethod = detectionMethod
+
+	if p.baselineSplit != nil {
+		output.Baseline = &BaselineSummary{
+			InBaseline: p.baselineSplit.InBaseline,
+			New:        p.baselineSplit.New,
+			Suppressed: p.baselineSplit.Suppressed,
+			Total:      p.baselineSplit.Total(),
+		}
+	}
 
 	data, err := jsonutil.MarshalIndent(&output, "", "  ")
 	if err != nil {

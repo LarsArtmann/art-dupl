@@ -37,6 +37,17 @@ func (p *baselineFilterPrinter) SetSuppressionStats(stats printer.SuppressionSta
 	}
 }
 
+// SetHash forwards the current group hash to the wrapped printer. The embedded
+// Printer interface does not declare SetHash, so without this method the
+// HashSetter assertion in printCloneGroups fails for the wrapper and every
+// forwarded group reaches the inner printer with a stale or empty hash (which
+// made `check --json` emit an empty hash for new groups).
+func (p *baselineFilterPrinter) SetHash(hash string) {
+	if hs, ok := p.Printer.(printer.HashSetter); ok {
+		hs.SetHash(hash)
+	}
+}
+
 // Split returns the baseline-vs-new accounting for the summary line: groups
 // the baseline already accepts, groups that are new (the number the CI verdict
 // hinges on), and groups suppressed elsewhere in the pipeline.
