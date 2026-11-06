@@ -308,6 +308,9 @@ func TestAnalyzerIdentityTracksHashAffectingSettings(t *testing.T) {
 			c.SuggestGenerics = true
 		},
 		"max children": func(c *config.Config) { c.MaxChildrenSerial = 7 },
+		"detection methods": func(c *config.Config) {
+			c.DetectionMethods = append(c.DetectionMethods, config.DetectionMethodHash)
+		},
 	}
 
 	for name, mutate := range mutations {
@@ -318,5 +321,22 @@ func TestAnalyzerIdentityTracksHashAffectingSettings(t *testing.T) {
 				t.Errorf("%s must change the hashing policy, got identical policy %s", name, got)
 			}
 		})
+	}
+}
+
+// TestDetectionMethodsPolicyKeyIsOrderIndependent: the policy keys on the
+// detector SET, not its spelling order.
+func TestDetectionMethodsPolicyKeyIsOrderIndependent(t *testing.T) {
+	t.Parallel()
+
+	a := detectionMethodsPolicyKey([]config.DetectionMethod{
+		config.DetectionMethodArtDupl, config.DetectionMethodHash,
+	})
+	b := detectionMethodsPolicyKey([]config.DetectionMethod{
+		config.DetectionMethodHash, config.DetectionMethodArtDupl,
+	})
+
+	if a != b {
+		t.Errorf("method-set key depends on order: %q vs %q", a, b)
 	}
 }

@@ -2,6 +2,8 @@ package cmd
 
 import (
 	"fmt"
+	"sort"
+	"strings"
 
 	"github.com/LarsArtmann/art-dupl/baseline"
 	"github.com/LarsArtmann/art-dupl/cache"
@@ -14,19 +16,35 @@ import (
 // differs from the one recorded in the baseline (issue #13).
 const baselineVersionMustMatchFlag = "baseline-version-must-match"
 
-// analyzerPolicyParts renders the detection settings that change the
-// serialized token stream, hence the group hashes. Anything that alters
-// hashing belongs here; settings that only affect presentation (sorting,
-// actionability, thresholds for other filters) do not.
+// analyzerPolicyParts renders the detection settings that change the set or
+// the hashes of the reported groups. Anything that alters hashing or which
+// detector produces the group belongs here; settings that only affect
+// presentation (sorting, actionability, thresholds for other filters) do not.
 func analyzerPolicyParts(cfg *config.Config) string {
 	return fmt.Sprintf(
-		"cache=%d;mode=%s;typeAware=%t;suggestGenerics=%t;maxChildren=%d",
+		"cache=%d;mode=%s;typeAware=%t;suggestGenerics=%t;maxChildren=%d;methods=%s",
 		cache.CacheVersion,
 		cfg.DetectionMode.String(),
 		cfg.TypeAware,
 		cfg.SuggestGenerics,
 		cfg.MaxChildrenSerial,
+		detectionMethodsPolicyKey(cfg.DetectionMethods),
 	)
+}
+
+// detectionMethodsPolicyKey renders the detection-method set order-
+// independently: `-m hash,art-dupl` and `-m art-dupl,hash` run the same
+// detectors, but a different detector SET produces different group hashes
+// (hash-detected groups would read as new against an art-dupl-only baseline).
+func detectionMethodsPolicyKey(methods []config.DetectionMethod) string {
+	names := make([]string, 0, len(methods))
+	for _, method := range methods {
+		names = append(names, method.String())
+	}
+
+	sort.Strings(names)
+
+	return strings.Join(names, ",")
 }
 
 // analyzerIdentity describes what produced a run's clone-group hashes: the
