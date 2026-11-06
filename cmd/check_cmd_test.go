@@ -340,3 +340,72 @@ func TestDetectionMethodsPolicyKeyIsOrderIndependent(t *testing.T) {
 		t.Errorf("method-set key depends on order: %q vs %q", a, b)
 	}
 }
+
+// checkFixtureLongFamilyE/F are a LONGER clone family (14 statements, ~15
+// lines) used to separate baseline-matched groups from min-lines-suppressed
+// ones in a single check run.
+const checkFixtureLongFamilyE = `package dup
+
+func epsilon(z int) int {
+	p := z * 2
+	q := p + 7
+	r := q / 2
+	s := r - 9
+	t := s * 3
+	u := t + 11
+	v := u - 13
+	w := v + 17
+	x := w / 2
+	y := x - 19
+	aa := y * 3
+	bb := aa + 23
+	cc := bb - 29
+	return cc
+}
+`
+
+const checkFixtureLongFamilyF = `package dup
+
+func zeta(k int) int {
+	p := k * 2
+	q := p + 7
+	r := q / 2
+	s := r - 9
+	t := s * 3
+	u := t + 11
+	v := u - 13
+	w := v + 17
+	x := w / 2
+	y := x - 19
+	aa := y * 3
+	bb := aa + 23
+	cc := bb - 29
+	return cc
+}
+`
+
+// TestCheckSummarySuppressedCountDoesNotDoubleCountBaseline: with one
+// baseline-matched group and one min-lines-suppressed group, the split must
+// report both truthfully. An earlier formula subtracted the baseline count
+// twice and reported "(1 in baseline, 0 new)" for a two-group run.
+func TestCheckSummarySuppressedCountDoesNotDoubleCountBaseline(t *testing.T) {
+	dir := t.TempDir()
+	writeCheckFixture(t, dir, "a.go", checkFixtureFamilyA)
+	writeCheckFixture(t, dir, "b.go", checkFixtureFamilyB)
+	writeCheckFixture(t, dir, "e.go", checkFixtureLongFamilyE)
+	writeCheckFixture(t, dir, "f.go", checkFixtureLongFamilyF)
+
+	baselinePath := recordCheckBaseline(t, dir)
+
+	output, err := executeTestCommand(t, []string{
+		binaryName, "check", "--baseline-path", baselinePath,
+		"-t", "3", "--no-actionability", "--min-lines", "10", dir,
+	})
+	if err != nil {
+		t.Fatalf("check with min-lines failed: %v\nOutput: %s", err, output)
+	}
+
+	if !strings.Contains(string(output), "clone groups (1 in baseline, 0 new, 1 suppressed)") {
+		t.Errorf("expected '(1 in baseline, 0 new, 1 suppressed)', got:\n%s", output)
+	}
+}

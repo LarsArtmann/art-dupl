@@ -41,7 +41,11 @@ func (p *baselineFilterPrinter) SetSuppressionStats(stats printer.SuppressionSta
 // the baseline already accepts, groups that are new (the number the CI verdict
 // hinges on), and groups suppressed elsewhere in the pipeline.
 func (p *baselineFilterPrinter) Split() printer.BaselineSplit {
-	suppressed := p.stats.DetectedTotal - p.stats.Shown - p.suppressed
+	// Shown counts every group handed to PrintClones, baseline-matched ones
+	// included (they are silently dropped here), so the pipeline-suppressed
+	// count is DetectedTotal - Shown. Subtracting the baseline count again
+	// would double-count it.
+	suppressed := p.stats.DetectedTotal - p.stats.Shown
 	if suppressed < 0 {
 		suppressed = 0
 	}

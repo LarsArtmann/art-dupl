@@ -253,7 +253,7 @@ pkg/enum/   Shared enum helpers (MarshalJSON, UnmarshalJSON, Parse)
   `Found total N clone groups (B in baseline, W new[, S suppressed]).` instead of a single count that conflated
   accepted-with-long-ago with introduced-now. `baselineFilterPrinter` counts baseline-matched (`suppressed`) and new
   groups, forwards `SetSuppressionStats` to the wrapped printer (previously dropped, which is why check showed no
-  suppression summary), and exposes `Split()` (suppressed = `DetectedTotal - Shown - InBaseline`). The inner printer is
+  suppression summary), and exposes `Split()`; the pipeline-suppressed count is `DetectedTotal - Shown` (Shown already counts baseline-matched groups, which the filter drops silently — subtracting `InBaseline` again double-counts it, pinned by `TestCheckSummarySuppressedCountDoesNotDoubleCountBaseline`). The inner printer is
   wired with `VersionFooterSetter` too, so check summaries finally name their build. Pins:
   `TestCheckSummarySplitsBaselineFromNew`, `TestCheckSummaryReportsSuppressedGroups`.
 - **Baseline analyzer identity + `--baseline-version-must-match`** (2026-11-06, issue #13): `baseline.File` records an
