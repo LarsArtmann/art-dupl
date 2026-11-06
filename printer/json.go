@@ -20,6 +20,22 @@ type JSONOutput struct {
 	DetectionMethod string       `json:"detection_method,omitempty"`
 	CloneGroups     []CloneGroup `json:"clone_groups"`
 	Summary         Summary      `json:"summary"`
+
+	// Baseline is present only for `check --json`, which compares against a
+	// recorded baseline instead of reporting every group. In that mode
+	// clone_groups holds the NEW groups only; the counts here account for the
+	// groups the baseline already accepts and the groups suppressed for other
+	// reasons, so total matches what the detector actually found (issue #12).
+	Baseline *BaselineSummary `json:"baseline,omitempty"`
+}
+
+// BaselineSummary is the machine-readable form of the `check` summary line.
+// InBaseline + New + Suppressed is the number of groups the run detected.
+type BaselineSummary struct {
+	InBaseline int `json:"in_baseline"`
+	New        int `json:"new"`
+	Suppressed int `json:"suppressed"`
+	Total      int `json:"total"`
 }
 
 type CloneGroup struct {
