@@ -72,7 +72,10 @@ const (
 	// TextContent node (markup identity, issue #14: `<span>Active</span>` no
 	// longer matches `<span>Inactive</span>`; semantic mode collapses
 	// whitespace runs). v7 entries would replay the text-blind streams.
-	CacheVersion = 8
+	// v8 → v9: constant CSS property VALUES now participate in the node type
+	// hash (markup identity: `color: red` no longer matches `color: blue`).
+	// v8 entries would replay the value-blind CSS property hashes.
+	CacheVersion = 9
 
 	// Directory permissions.
 	cacheDirPerms = 0o750

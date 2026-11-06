@@ -216,6 +216,26 @@ func normalizeConstantAttributeValue(key, value string, semantic bool) string {
 	return strings.Join(tokens, " ")
 }
 
+// setConstantCSSProperty encodes a constant CSS declaration. Both halves are
+// markup identity: `color: red` renders differently from `color: blue` and
+// from `background: red`, so neither the name nor the value may be dropped
+// (the value was hash-invisible before, which made every constant-only rule
+// match a rule with a different value on the same property).
+//
+// Values are whitespace-collapsed in semantic mode but never token-sorted:
+// unlike a class list, CSS shorthand order is semantic (`margin: 1px 2px`).
+// Exact mode hashes the value verbatim; structural mode ignores it.
+func (t *transformer) setConstantCSSProperty(o *syntax.Node, name, value string) {
+	t.setAttributeKey(o, name)
+
+	if !t.mode.HashesIdentifiers() || value == "" {
+		return
+	}
+
+	encoded := name + "\x00" + normalizeConstantAttributeValue(name, value, t.mode.NormalizesLiterals())
+	o.Type = syntax.EncodeSemanticType(Attribute, encoded, true)
+}
+
 // transformConditionalAttribute converts `if cond { attrs } else { attrs }`
 // into a structured node: the condition is parsed as Go and both attribute
 // branches are traversed. Previously the condition and the branch bodies were

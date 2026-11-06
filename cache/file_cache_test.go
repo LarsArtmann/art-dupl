@@ -1102,3 +1102,85 @@ func BenchmarkFileCacheGet(b *testing.B) {
 		}
 	})
 }
+
+// TestFileCache_PreservesNodeClassificationFields guards the gob boundary for
+// every field the printer's classification layer reads. A field missing from
+// the gob wire (or from Node's Clone/serial literals) does not fail the
+// build — it silently degrades detection on cache hits only, which is why the
+// IsAlias and BasicLit.Name bugs survived for months. GoSnippet is the newest
+// member (issue #11), and it decides whether a .templ fragment is classified
+// as markup or as embedded Go.
+func TestFileCache_PreservesNodeClassificationFields(t *testing.T) {
+	tempDir := t.TempDir()
+	contentHash := Key([]byte("classification fields"))
+
+	original := &syntax.Node{
+		Filename:             "page.templ",
+		Type:                 4242,
+		Fingerprint:          77,
+		Owns:                 3,
+		Statement:            true,
+		IsAlias:              true,
+		InterfaceMethod:      true,
+		GoSnippet:            true,
+		VarType:              "time.Time",
+		EnclosingReturnArity: 2,
+		Pos:                  10,
+		End:                  20,
+		Name:                 "value",
+	}
+
+	fc1 := NewFileCache(tempDir)
+	if err := fc1.Set(contentHash, []*syntax.Node{original}); err != nil {
+		t.Fatalf("Set failed: %v", err)
+	}
+
+	// A second instance reads the gob file instead of the in-memory LRU.
+	fc2 := NewFileCache(tempDir)
+
+	got, hit := fc2.Get(contentHash)
+	if !hit {
+		t.Fatal("expected a cache hit from the second instance")
+	}
+
+	if len(got) != 1 {
+		t.Fatalf("expected 1 node, got %d", len(got))
+	}
+
+	if !cmpNodesEqual(t, original, got[0]) {
+		t.Errorf("gob round-trip lost classification fields:\nwant %+v\ngot  %+v", original, got[0])
+	}
+}
+
+// cmpNodesEqual compares every field the classification layer reads.
+func cmpNodesEqual(t *testing.T, want, got *syntax.Node) bool {
+	t.Helper()
+
+	checks := map[string][2]any{
+		"Filename":             {want.Filename, got.Filename},
+		"Type":                 {want.Type, got.Type},
+		"Fingerprint":          {want.Fingerprint, got.Fingerprint},
+		"Owns":                 {want.Owns, got.Owns},
+		"Statement":            {want.Statement, got.Statement},
+		"IsAlias":              {want.IsAlias, got.IsAlias},
+		"InterfaceMethod":      {want.InterfaceMethod, got.InterfaceMethod},
+		"GoSnippet":            {want.GoSnippet, got.GoSnippet},
+		"VarType":              {want.VarType, got.VarType},
+		"EnclosingReturnArity": {want.EnclosingReturnArity, got.EnclosingReturnArity},
+		"Pos":                  {want.Pos, got.Pos},
+		"End":                  {want.End, got.End},
+		"Name":                 {want.Name, got.Name},
+	}
+
+	ok := true
+
+	for field, pair := range checks {
+		if pair[0] != pair[1] {
+			t.Errorf("%s: want %v, got %v", field, pair[0], pair[1])
+
+			ok = false
+		}
+	}
+
+	return ok
+}

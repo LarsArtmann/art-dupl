@@ -569,3 +569,66 @@ func TestGoSnippetNodesCarryMarker(t *testing.T) {
 		t.Error("markup element must not carry the Go-snippet marker")
 	}
 }
+
+// --- Constant CSS property values: markup identity ---
+
+const cssStyleSource = `package main
+
+css panel() {
+%s
+}
+`
+
+// TestConstantCSSPropertyValuePreventsClone: `color: red` renders differently
+// from `color: blue`, so the two rules are not clones. The value was
+// hash-invisible before (only the property name was encoded).
+func TestConstantCSSPropertyValuePreventsClone(t *testing.T) {
+	t.Parallel()
+
+	a := fmt.Sprintf(cssStyleSource, "\tcolor: red;")
+	b := fmt.Sprintf(cssStyleSource, "\tcolor: blue;")
+
+	assertStreamsDiffer(t, a, b, golang.DetectionModeSemantic)
+	assertStreamsDiffer(t, a, b, golang.DetectionModeExact)
+}
+
+// TestConstantCSSPropertyNamePreventsClone: same value, different property.
+func TestConstantCSSPropertyNamePreventsClone(t *testing.T) {
+	t.Parallel()
+
+	a := fmt.Sprintf(cssStyleSource, "\tcolor: red;")
+	b := fmt.Sprintf(cssStyleSource, "\tbackground: red;")
+
+	assertStreamsDiffer(t, a, b, golang.DetectionModeSemantic)
+}
+
+// TestConstantCSSPropertySameValueStillClones: identical rules are clones.
+func TestConstantCSSPropertySameValueStillClones(t *testing.T) {
+	t.Parallel()
+
+	a := fmt.Sprintf(cssStyleSource, "\tcolor: red;")
+
+	assertStreamsEqual(t, a, a, golang.DetectionModeSemantic)
+}
+
+// TestConstantCSSPropertyWhitespaceCollapses: re-indenting a value is not a
+// clone difference in semantic mode.
+func TestConstantCSSPropertyWhitespaceCollapses(t *testing.T) {
+	t.Parallel()
+
+	a := fmt.Sprintf(cssStyleSource, "\tcolor: red;")
+	b := fmt.Sprintf(cssStyleSource, "\tcolor:   red;")
+
+	assertStreamsEqual(t, a, b, golang.DetectionModeSemantic)
+}
+
+// TestConstantCSSPropertyValueInvisibleInStructuralMode: structural mode is
+// shape-only, so values (like names) do not participate.
+func TestConstantCSSPropertyValueInvisibleInStructuralMode(t *testing.T) {
+	t.Parallel()
+
+	a := fmt.Sprintf(cssStyleSource, "\tcolor: red;")
+	b := fmt.Sprintf(cssStyleSource, "\tcolor: blue;")
+
+	assertStreamsEqual(t, a, b, golang.DetectionModeStructural)
+}

@@ -219,8 +219,10 @@ func (t *transformer) transformScriptTemplate(script *templparser.ScriptTemplate
 }
 
 // transformCSSProperty converts a CSSProperty to a syntax.Node. The property
-// NAME is encoded (API surface, mirroring attribute keys), so `color: red`
-// and `background: blue` no longer collapse.
+// NAME and, for constant properties, its VALUE are encoded (markup identity,
+// mirroring attribute keys): `color: red` must not match `color: blue`, and
+// neither must `color: red` match `background: red`. Expression values are
+// parsed as Go and participate as child tokens instead.
 // parentRange is the range of the containing CSSTemplate, used as
 // fallback position for ConstantCSSProperty (which has no Range in upstream).
 func (t *transformer) transformCSSProperty(
@@ -236,7 +238,7 @@ func (t *transformer) transformCSSProperty(
 
 	switch p := prop.(type) {
 	case *templparser.ConstantCSSProperty:
-		t.setAttributeKey(o, p.Name)
+		t.setConstantCSSProperty(o, p.Name, p.Value)
 		// ConstantCSSProperty has no Range in upstream a-h/templ.
 		// Inherit parent CSSTemplate range as best available position.
 		t.setNodePosFromRange(o, parentRange)
