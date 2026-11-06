@@ -195,3 +195,60 @@ func main() {
 		t.Logf("FindClonesStreamResult returned: %v", err)
 	}
 }
+
+// TestDetector_Integration_TemplCSSValues covers the SDK path for templ
+// markup identity: two `.templ` files whose only shared code is a `css` rule
+// setting the same property to different values must report nothing. Before
+// ConstantCSSProperty values joined the hash, the rule block was a clone group
+// (verified against the pre-fix binary), so SDK/props consumers inherited the
+// false positive.
+func TestDetector_Integration_TemplCSSValues(t *testing.T) {
+	t.Parallel()
+
+	dir := t.TempDir()
+
+	paths := make([]string, 0, 2)
+
+	writeTempl := func(name, color, heading, word string) {
+		t.Helper()
+
+		content := "package main\n\ncss panel() {\n\tcolor: " + color +
+			";\n\tmargin: 4px;\n}\n\ntempl " + heading + "() {\n\t<h1>" + word +
+			"</h1>\n}\n"
+
+		path := filepath.Join(dir, name)
+
+		if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
+			t.Fatalf("write %s: %v", name, err)
+		}
+
+		paths = append(paths, path)
+	}
+
+	writeTempl("red.templ", "red", "Alpha", "Alpha")
+	writeTempl("blue.templ", "blue", "Beta", "Beta")
+
+	opts := DefaultOptions()
+	opts.Threshold = 1
+
+	detector, err := NewDetector(opts)
+	if err != nil {
+		t.Fatalf("Failed to create detector: %v", err)
+	}
+
+	t.Cleanup(func() { cleanupDetector(t, detector) })
+
+	result, err := detector.FindClones(t.Context(), paths)
+	if err == nil {
+		if result != nil && len(result.CloneGroups) > 0 {
+			t.Fatalf("expected no clone groups for value-divergent css, got %d: %+v",
+				len(result.CloneGroups), result.CloneGroups)
+		}
+
+		return
+	}
+
+	if !errors.Is(err, ErrNoDuplicatesFound) {
+		t.Fatalf("unexpected error: %v", err)
+	}
+}

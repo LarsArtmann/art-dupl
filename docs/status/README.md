@@ -6,10 +6,16 @@ This directory contains comprehensive status reports for the art-dupl project.
 
 | Date       | Time  | Report                                                                                                         | Key Highlights                                                       |
 | ---------- | ----- | -------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| 2026-11-06 | 08:53 | [Issue follow-up queue](./2026-11-06_08-53_issue-follow-up-queue.md)                                           | nix build repair (stale vendorHash FOD), ADR-0029, check --json, gate exit code, CSS value hashing, corpus-diff |
+| 2026-11-06 | 08:06 | [GitHub issues #9–#14 resolution](./2026-11-06_08-06_github-issues-9-14-resolution.md)                          | Six issues closed with evidence; templ text hashing (CacheVersion 8), GoSnippet, baseline identity |
 | 2026-01-22 | 02:08 | [Comprehensive Reflection & Execution Plan](./2026-01-22_02-08_COMPREHENSIVE_REFLECTION_AND_EXECUTION_PLAN.md) | Critical reflection, 4-phase execution plan, work vs impact analysis |
 | 2026-01-22 | 01:37 | [Session Summary & Next Steps](./2026-01-22_01-37_SESSION_SUMMARY_AND_NEXT_STEPS.md)                           | Session metrics, 7/14 tasks completed, 100% test reliability         |
 | 2026-01-22 | 01:24 | [BDD Test Fixes & Quality Improvements](./2026-01-22_01-24_BDD_TEST_FIXES_AND_QUALITY_IMPROVEMENTS.md)         | Test reliability: 81.5% → 100%, 10 tests fixed                       |
 | 2026-01-22 | 00:34 | [Fang Integration Comprehensive Status](./2026-01-22_00-34_fang-integration-comprehensive-status.md)           | CLI framework integration                                            |
+
+> The rows above are the newest reports; the Feb–Oct 2026 snapshots exist in
+> this directory but are not indexed here yet (tracked in `TODO_LIST.md` as part
+> of the overdue docs-health pass).
 
 ## 📊 Overall Project Status
 

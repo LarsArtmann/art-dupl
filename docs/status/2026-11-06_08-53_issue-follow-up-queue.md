@@ -138,6 +138,14 @@ same-span-but-different-hash groups, category deltas. Documented in
 `docs/benchmarks/README.md` (including the "run `--before X --after X` first"
 stability check) and added as process rule (6) in `AGENTS.md`.
 
+### SDK path pinned too
+
+`pkg/artdupl.TestDetector_Integration_TemplCSSValues` runs the public SDK over
+two templ files whose only shared code is the value-divergent css rule and
+asserts no clone groups. Canary-verified against the value-blind encoder. The
+test had to pass explicit file paths: handing the SDK a **directory** silently
+yields `ErrNoDuplicatesFound` (it is now a TODO item).
+
 ### Cache gob-boundary guard
 
 `cache.TestFileCache_PreservesNodeClassificationFields` round-trips every
@@ -202,6 +210,9 @@ warnings render as the labelled block on both `check` and `--diff-report`;
       the root flag (needs a website flag row).
 - [ ] **Compile-time assertion for printer decorators** (make the empty-hash
       class a build failure).
+- [ ] **SDK `FindClones` accepts directories and silently reports "no
+      duplicates"** — a consumer passing `"."` believes the repo is clean.
+      Reject non-file paths with an actionable error, or crawl them.
 - [ ] **Owner question: threshold + test-inclusion in the analyzer policy?**
       `-t 5` baseline checked at `-t 2` reports a whole tree of "new" groups the
       identity guard cannot see. Also: should `--baseline-version-must-match` be
