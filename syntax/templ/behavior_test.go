@@ -487,3 +487,85 @@ func TestStructuralModeIgnoresConditionsAndNames(t *testing.T) {
 
 	assertStreamsEqual(t, a, b, golang.DetectionModeStructural)
 }
+
+// --- Go snippets inside templ files: domain marker (issue #11) ---
+
+// goSnippetFixture has markup plus Go in three positions: a condition, an
+// expression, and a top-level helper function.
+const goSnippetFixture = `package main
+
+templ Panel(user User) {
+	if user.IsAdmin {
+		<div class="box">{ user.Name }</div>
+	}
+}
+
+func helper(cursor string) string {
+	return cursor
+}
+`
+
+func walkNodes(root *syntax.Node, visit func(*syntax.Node)) {
+	if root == nil {
+		return
+	}
+
+	visit(root)
+
+	for _, child := range root.Children {
+		walkNodes(child, visit)
+	}
+}
+
+func TestGoSnippetNodesCarryMarker(t *testing.T) {
+	t.Parallel()
+
+	root, _, err := ParseBytes("panel.templ", []byte(goSnippetFixture))
+	if err != nil {
+		t.Fatalf("ParseBytes error = %v", err)
+	}
+
+	marked, unmarked := 0, 0
+	helperMarked := false
+	elementMarked := false
+
+	walkNodes(root, func(n *syntax.Node) {
+		if n.GoSnippet {
+			marked++
+		} else {
+			unmarked++
+		}
+
+		if n.GoSnippet {
+			for _, child := range n.Children {
+				if !child.GoSnippet {
+					t.Fatalf("Go-snippet marker must cover the whole subtree, child %q is unmarked", child.Name)
+				}
+			}
+		}
+
+		if syntax.DecodeBaseType(n.Type) == golang.FuncDecl && n.Name == "helper" {
+			helperMarked = n.GoSnippet
+		}
+
+		if n.Name == "div" {
+			elementMarked = n.GoSnippet
+		}
+	})
+
+	if marked == 0 {
+		t.Fatal("Go condition/expression/declaration nodes must be marked as Go snippets")
+	}
+
+	if unmarked == 0 {
+		t.Fatal("markup nodes must stay unmarked; the marker cannot be unconditional")
+	}
+
+	if !helperMarked {
+		t.Error("Go helper function inside a templ file must carry the Go-snippet marker")
+	}
+
+	if elementMarked {
+		t.Error("markup element must not carry the Go-snippet marker")
+	}
+}
