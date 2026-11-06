@@ -57,6 +57,7 @@ type statementFileSet map[string]bool
 // filename that carries a statement token.
 func buildStatementFileSet(data []*Node) statementFileSet {
 	set := make(statementFileSet)
+
 	for i := range data {
 		if data[i].Statement {
 			set[data[i].Filename] = true
@@ -98,11 +99,6 @@ func anyFragUnitIsNonStatementGo(data []*Node, m suffixtree.Match, indexes []int
 	}
 
 	return false
-}
-
-// isTemplFile reports whether a filename has a .templ extension.
-func isTemplFile(filename string) bool {
-	return strings.HasSuffix(filename, ".templ")
 }
 
 func getUnitsIndexes(nodeSeq []*Node, threshold int) []int {

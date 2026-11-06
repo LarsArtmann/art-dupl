@@ -262,7 +262,8 @@ func mixedParserStream() []*Node {
 		}
 
 		// Flatten pre-order like a serialized stream.
-		out := []*Node{root}
+		out := make([]*Node, 0, 1+len(root.Children))
+		out = append(out, root)
 		out = append(out, root.Children...)
 
 		return out
@@ -275,6 +276,7 @@ func mixedParserStream() []*Node {
 	goParam := templExpr()[0]
 	goParam.Filename = "main.go"
 	goParam.Pos, goParam.End = 300, 320
+
 	data = append(data, goParam)
 	for _, child := range goParam.Children {
 		child.Filename = "main.go"

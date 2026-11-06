@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"io"
 	"sort"
 	"strings"
 
@@ -56,6 +57,38 @@ func analyzerIdentity(cfg *config.Config) baseline.AnalyzerIdentity {
 		Version:      GetVersion(),
 		CacheVersion: cache.CacheVersion,
 		Policy:       fmt.Sprintf("%016x", xxh3.HashString(analyzerPolicyParts(cfg))),
+	}
+}
+
+// warnIncomparableBaseline prints a stderr notice when the running analyzer
+// cannot be verified against the baseline's recorded identity, without
+// changing the exit code: the strict gate stays opt-in
+// (--baseline-version-must-match). Silence was the failure mode issue #13
+// reported — a whole tree of "new" clones and no statement about why.
+func warnIncomparableBaseline(
+	w io.Writer,
+	bf *baseline.File,
+	cfg *config.Config,
+	path string,
+) {
+	running := analyzerIdentity(cfg)
+
+	switch {
+	case bf.Analyzer == nil:
+		fmt.Fprintf(
+			w,
+			"warning: baseline %s carries no analyzer identity (recorded before identity tracking); "+
+				"its hashes cannot be verified against %s. Re-record it with `art-dupl baseline`.\n",
+			path, running.String(),
+		)
+	case !bf.Analyzer.CompatibleWith(running):
+		fmt.Fprintf(
+			w,
+			"warning: baseline %s was recorded by %s; running %s: clone-group hashes are not comparable, "+
+				"so every recorded group reads as new. Re-record the baseline with the running binary, "+
+				"or pass --%s to make this an error.\n",
+			path, bf.Analyzer.String(), running.String(), baselineVersionMustMatchFlag,
+		)
 	}
 }
 

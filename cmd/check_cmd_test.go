@@ -497,3 +497,78 @@ func TestCheckJSONEmitsDocumentAndBaselineSplit(t *testing.T) {
 		t.Error("new clone group must carry its hash")
 	}
 }
+
+// TestCheckWarnsOnIncomparableBaselineWithoutFlag (issue #13): the strict gate
+// is opt-in, but silence is not an option — a mismatched hash space must be
+// stated on stderr so a reader can tell "no new clones" from "nothing was
+// comparable".
+func TestCheckWarnsOnIncomparableBaselineWithoutFlag(t *testing.T) {
+	dir := t.TempDir()
+	writeCheckFixture(t, dir, "a.go", checkFixtureFamilyA)
+	writeCheckFixture(t, dir, "b.go", checkFixtureFamilyB)
+
+	baselinePath := recordCheckBaseline(t, dir)
+
+	output, _ := executeTestCommand(t, []string{
+		binaryName, "check", "--baseline-path", baselinePath, "--exact",
+		"-t", "3", "--no-actionability", dir,
+	})
+
+	text := string(output)
+	if !strings.Contains(text, "warning: baseline") {
+		t.Errorf("expected an identity warning, got:\n%s", text)
+	}
+
+	if !strings.Contains(text, "clone-group hashes are not comparable") {
+		t.Errorf("warning must explain the incompatibility, got:\n%s", text)
+	}
+
+	if !strings.Contains(text, "--"+baselineVersionMustMatchFlag) {
+		t.Errorf("warning must name the strict flag, got:\n%s", text)
+	}
+}
+
+// TestCheckWarnsOnLegacyBaselineWithoutFlag: a baseline without identity
+// cannot be verified, which is worth saying even when the strict gate is off.
+func TestCheckWarnsOnLegacyBaselineWithoutFlag(t *testing.T) {
+	dir := t.TempDir()
+	writeCheckFixture(t, dir, "a.go", checkFixtureFamilyA)
+	writeCheckFixture(t, dir, "b.go", checkFixtureFamilyB)
+
+	baselinePath := recordCheckBaseline(t, dir)
+
+	legacyPath := filepath.Join(t.TempDir(), "legacy.json")
+	stripAnalyzerIdentity(t, baselinePath, legacyPath)
+
+	output, err := executeTestCommand(t, []string{
+		binaryName, "check", "--baseline-path", legacyPath,
+		"-t", "3", "--no-actionability", dir,
+	})
+	if err != nil {
+		t.Fatalf("legacy baseline without the strict flag must pass: %v\nOutput: %s", err, output)
+	}
+
+	if !strings.Contains(string(output), "carries no analyzer identity") {
+		t.Errorf("expected a legacy-identity warning, got:\n%s", output)
+	}
+}
+
+// TestDiffReportWarnsOnIncomparableBaseline: the diff report compares hashes
+// too, so it must make the same statement instead of reporting the whole tree
+// as new and every recorded group as resolved.
+func TestDiffReportWarnsOnIncomparableBaseline(t *testing.T) {
+	dir := t.TempDir()
+	writeCheckFixture(t, dir, "a.go", checkFixtureFamilyA)
+	writeCheckFixture(t, dir, "b.go", checkFixtureFamilyB)
+
+	baselinePath := recordCheckBaseline(t, dir)
+
+	output, _ := executeTestCommand(t, []string{
+		binaryName, "--diff-report", baselinePath, "--exact",
+		"-t", "3", "--no-actionability", dir,
+	})
+
+	if !strings.Contains(string(output), "clone-group hashes are not comparable") {
+		t.Errorf("diff report must warn about the incomparable baseline, got:\n%s", output)
+	}
+}

@@ -37,6 +37,14 @@ func runDiffReport(
 		return duplerrors.Wrap(err, duplerrors.IOError, "loading baseline "+baselinePath)
 	}
 
+	// The diff report is only as meaningful as the hash space it compares in:
+	// a baseline from another algorithm revision or detection setting turns
+	// every group into "new" and every recorded group into "resolved". The
+	// text report says so; JSON keeps stdout/stderr machine-clean.
+	if !useJSON {
+		warnIncomparableBaseline(stderr, bf, mergedConfig, baselinePath)
+	}
+
 	duplChan, _, _, _, err := executeAnalysis(
 		ctx, mergedConfig, mergedConfig.Paths, config.OutputFormatText, stderr,
 	)

@@ -260,7 +260,7 @@ func (a *AcceptedSet) scanFile(filename string) []AcceptedDirective {
 // the <!-- HTML comment form. When both markers appear (the legacy
 // `<!-- // art-dupl:accept ... -->` workaround), the HTML form starts first
 // and wins, so the trailing --> closer is stripped from the grammar input.
-func findAcceptDirective(text string) (loc []int, htmlForm bool) {
+func findAcceptDirective(text string) ([]int, bool) {
 	goLoc := acceptDirectiveRe.FindStringIndex(text)
 	htmlLoc := acceptDirectiveHTMLCommentRe.FindStringIndex(text)
 

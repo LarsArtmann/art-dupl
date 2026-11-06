@@ -159,10 +159,17 @@ func runCheck(c *cobra.Command, arguments []string) error {
 		return err
 	}
 
+	jsonOut, _ := c.Flags().GetBool("json")
+
 	if mustMatch, _ := c.Flags().GetBool(baselineVersionMustMatchFlag); mustMatch {
 		if err := ensureBaselineIdentityMatches(bf, mergedConfig, path); err != nil {
 			return err
 		}
+	} else if !jsonOut {
+		// Machine output keeps stderr clean; interactive runs are told why the
+		// comparison may be meaningless (same convention as the accept-directive
+		// warnings).
+		warnIncomparableBaseline(c.ErrOrStderr(), bf, mergedConfig, path)
 	}
 
 	ctx, cancel := utils.ApplyTimeout(ctx, mergedConfig.Timeout)
@@ -179,8 +186,6 @@ func runCheck(c *cobra.Command, arguments []string) error {
 	groups = printer.EliminateOverlaps(groups)
 	groups = syntax.DeduplicateMemberSets(os.ReadFile, groups)
 	keys := getSortedKeys(groups, config.SortByHash)
-
-	jsonOut, _ := c.Flags().GetBool("json")
 
 	inner := printer.NewText(os.Stdout, os.ReadFile)
 	if jsonOut {
