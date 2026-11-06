@@ -25,13 +25,13 @@ is the fix (CacheVersion 9). Corpora are pinned worktrees under
 
 ## Results (groups / clones)
 
-| Corpus                                  | `-t 1`         | `-t 2`         | `-t 5`        |
-| --------------------------------------- | -------------- | -------------- | ------------- |
-| nsfw-classifier@a7cec08a                | 129/343 → same | 86/228 → same  | 9/18 → same   |
-| DiscordSync@4c0502c3                    | 93/231 → same  | 52/140 → same  | 0/0 → same    |
-| go-cqrs-lite@10c9f987                   | 468/1486 → same| 322/779 → same | 1/2 → same    |
-| go-sse@67a16fa                          | 3/7 → same     | 2/5 → same     | 0/0 → same    |
-| webphone (live, 36f0c6f4)               | 43/113 → same  | 24/73 → same   | 0/0 → same    |
+| Corpus                    | `-t 1`          | `-t 2`         | `-t 5`      |
+| ------------------------- | --------------- | -------------- | ----------- |
+| nsfw-classifier@a7cec08a  | 129/343 → same  | 86/228 → same  | 9/18 → same |
+| DiscordSync@4c0502c3      | 93/231 → same   | 52/140 → same  | 0/0 → same  |
+| go-cqrs-lite@10c9f987     | 468/1486 → same | 322/779 → same | 1/2 → same  |
+| go-sse@67a16fa            | 3/7 → same      | 2/5 → same     | 0/0 → same  |
+| webphone (live, 36f0c6f4) | 43/113 → same   | 24/73 → same   | 0/0 → same  |
 
 `scripts/corpus-diff.py` reported "clone counts by category: unchanged" for
 every corpus/threshold pair — no group was removed, added, or rekeyed.

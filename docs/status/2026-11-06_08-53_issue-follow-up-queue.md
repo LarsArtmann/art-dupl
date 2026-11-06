@@ -13,12 +13,12 @@ noticed. This session drained that queue.
 
 ## 1. Tree state at session start
 
-| Check | Result |
-| --- | --- |
-| `git status` | clean at `5ad3bd7a` |
-| `go build ./...` | PASS |
-| `nix build .#art-dupl` | **FAIL** — see below |
-| `go test ./... -count=1` | PASS |
+| Check                    | Result               |
+| ------------------------ | -------------------- |
+| `git status`             | clean at `5ad3bd7a`  |
+| `go build ./...`         | PASS                 |
+| `nix build .#art-dupl`   | **FAIL** — see below |
+| `go test ./... -count=1` | PASS                 |
 
 ### The nix build was broken (undetected by the previous session)
 
@@ -45,13 +45,13 @@ The first successful `nix flake check` failed the `lint` check with 5 findings
 invisible to the devshell's `golangci-lint` (the sandbox runs 2.15.0, the
 devshell lagged):
 
-| File | Finding |
-| --- | --- |
-| `internal/accept/accept.go:263` | `nonamedreturns` — named return `loc []int` |
-| `syntax/findsyntaxunits_test.go:265` | `prealloc` — `out := []*Node{root}` then `append` |
+| File                                 | Finding                                                  |
+| ------------------------------------ | -------------------------------------------------------- |
+| `internal/accept/accept.go:263`      | `nonamedreturns` — named return `loc []int`              |
+| `syntax/findsyntaxunits_test.go:265` | `prealloc` — `out := []*Node{root}` then `append`        |
 | `syntax/findsyntaxunits_test.go:278` | `wsl_v5` — missing blank line above `data = append(...)` |
-| `syntax/syntax_match.go:104` | `unused` — `isTemplFile` had no callers |
-| `syntax/syntax_match.go:60` | `wsl_v5` — missing blank line above a `range` |
+| `syntax/syntax_match.go:104`         | `unused` — `isTemplFile` had no callers                  |
+| `syntax/syntax_match.go:60`          | `wsl_v5` — missing blank line above a `range`            |
 
 All five fixed; `nix develop -c golangci-lint run ./...` → **0 issues**, and a
 full `nix flake check` reports **all checks passed** (12 checks).
@@ -167,31 +167,31 @@ This closes the class that hid the `IsAlias` and `BasicLit.Name` bugs.
 
 ### Docs
 
-| File | Change |
-| --- | --- |
-| `AGENTS.md` | CacheVersion 9 + CSS-value policy; check-split/`--json` upgrade + decorator-forwarding gotcha; identity warning + ADR-0029; gob-boundary test; stale-FOD gotcha; corpus-diff process rule; exit-code verdict |
-| `CHANGELOG.md` | 5 entries (3 fixed, 2 earlier added) under Unreleased |
-| `FEATURES.md` | templ row (CSS values), baseline row (JSON block + default warning) |
-| `HOW_TO_USE.md` | warning block sample, JSON `baseline` block, exit-code table |
-| `docs/DOMAIN_LANGUAGE.md` | markup identity, text content, Go snippet, cache version, hashing policy, analyzer identity, baseline split; fixed the stale "33 patterns" row to 42 |
-| `docs/benchmarks/README.md` | corpus-diff section, CSS sweep row |
-| `TODO_LIST.md` | 2 items closed, 4 added (release, diff-report JSON guard, decorator assertion, threshold-in-policy owner question) |
-| `README.md` | stamp + re-verified claims: 42 pattern labels (was 33+4), LSP row, CSV via `stats`, sorted-slice transitions (was "O(1) map-based") |
+| File                        | Change                                                                                                                                                                                                       |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `AGENTS.md`                 | CacheVersion 9 + CSS-value policy; check-split/`--json` upgrade + decorator-forwarding gotcha; identity warning + ADR-0029; gob-boundary test; stale-FOD gotcha; corpus-diff process rule; exit-code verdict |
+| `CHANGELOG.md`              | 5 entries (3 fixed, 2 earlier added) under Unreleased                                                                                                                                                        |
+| `FEATURES.md`               | templ row (CSS values), baseline row (JSON block + default warning)                                                                                                                                          |
+| `HOW_TO_USE.md`             | warning block sample, JSON `baseline` block, exit-code table                                                                                                                                                 |
+| `docs/DOMAIN_LANGUAGE.md`   | markup identity, text content, Go snippet, cache version, hashing policy, analyzer identity, baseline split; fixed the stale "33 patterns" row to 42                                                         |
+| `docs/benchmarks/README.md` | corpus-diff section, CSS sweep row                                                                                                                                                                           |
+| `TODO_LIST.md`              | 2 items closed, 4 added (release, diff-report JSON guard, decorator assertion, threshold-in-policy owner question)                                                                                           |
+| `README.md`                 | stamp + re-verified claims: 42 pattern labels (was 33+4), LSP row, CSV via `stats`, sorted-slice transitions (was "O(1) map-based")                                                                          |
 
 `scripts/check-docs-freshness.sh` → clean (README stamp was the only stale doc).
 
 ## 4. Verification evidence
 
-| Gate | Result |
-| --- | --- |
-| `go build ./...` | PASS |
-| `go test ./... -count=1` | PASS (all packages) |
-| `go test ./bdd/` | PASS (367 specs; the CSS spec fails only under the canary) |
-| `nix develop -c golangci-lint run ./...` | 0 issues (2.15.0) |
-| `nix build .#art-dupl` | PASS after the vendorHash refresh |
-| `nix flake check` | all 12 checks passed (before the last two changes; re-run at close-out) |
-| `scripts/check-boundary.sh --full` | see close-out |
-| `scripts/corpus-diff.py` (5 corpora × 3 thresholds) | no drift |
+| Gate                                                | Result                                                                  |
+| --------------------------------------------------- | ----------------------------------------------------------------------- |
+| `go build ./...`                                    | PASS                                                                    |
+| `go test ./... -count=1`                            | PASS (all packages)                                                     |
+| `go test ./bdd/`                                    | PASS (367 specs; the CSS spec fails only under the canary)              |
+| `nix develop -c golangci-lint run ./...`            | 0 issues (2.15.0)                                                       |
+| `nix build .#art-dupl`                              | PASS after the vendorHash refresh                                       |
+| `nix flake check`                                   | all 12 checks passed (before the last two changes; re-run at close-out) |
+| `scripts/check-boundary.sh --full`                  | see close-out                                                           |
+| `scripts/corpus-diff.py` (5 corpora × 3 thresholds) | no drift                                                                |
 
 Behavioural smoke tests on the real binary: `check --json` emits the document
 with `files_analyzed`, new-group hashes, and the `baseline` block; identity

@@ -32,7 +32,7 @@ import sys
 from typing import Any
 
 
-def fail(message: str) -> "NoReturn":  # noqa: F821 - string annotation, py3.8 safe
+def fail(message: str) -> NoReturn:  # noqa: F821 - string annotation, py3.8 safe
     print(f"corpus-diff: {message}", file=sys.stderr)
     raise SystemExit(2)
 
@@ -47,7 +47,7 @@ def run_binary(binary: str, corpus: str, extra_args: list[str]) -> dict[str, Any
     env["ARTDUPL_NO_PROGRESS"] = "1"
 
     try:
-        completed = subprocess.run(  # noqa: S603 - operator-supplied binary
+        completed = subprocess.run(
             cmd, capture_output=True, text=True, env=env, check=False
         )
     except OSError as exc:
@@ -126,8 +126,12 @@ def main(argv: list[str]) -> int:
         default="",
         help='extra art-dupl flags for BOTH runs (e.g. "-t 2 --type-aware")',
     )
-    parser.add_argument("--samples", type=int, default=8, help="groups to print per bucket (default 8)")
-    parser.add_argument("--json", dest="json_out", help="write the structured diff to this path")
+    parser.add_argument(
+        "--samples", type=int, default=8, help="groups to print per bucket (default 8)"
+    )
+    parser.add_argument(
+        "--json", dest="json_out", help="write the structured diff to this path"
+    )
     parser.add_argument("corpus", help="directory or file to analyze")
     args = parser.parse_args(argv)
 
@@ -166,7 +170,9 @@ def main(argv: list[str]) -> int:
     if rekeyed:
         print(f"\nsame spans, different hash ({len(rekeyed)}):")
         for entry in rekeyed[: args.samples]:
-            print(f"  {entry['before'] or '?'} -> {entry['after'] or '?'} {entry['members'][0]}")
+            print(
+                f"  {entry['before'] or '?'} -> {entry['after'] or '?'} {entry['members'][0]}"
+            )
 
     categories = sorted(before["categories"].keys() | after["categories"].keys())
     changed = [
@@ -191,7 +197,10 @@ def main(argv: list[str]) -> int:
             "added": added_hashes,
             "rekeyed": rekeyed,
             "categories": {
-                name: {"before": before["categories"][name], "after": after["categories"][name]}
+                name: {
+                    "before": before["categories"][name],
+                    "after": after["categories"][name],
+                }
                 for name in categories
             },
         }

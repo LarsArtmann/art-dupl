@@ -6,7 +6,7 @@
 ## Context
 
 A baseline stores clone-group hashes. A group's hash is an XXH3 digest over the
-serialized token stream, so it is only meaningful *inside one hash space*: the
+serialized token stream, so it is only meaningful _inside one hash space_: the
 same source produces different hashes under a different algorithm revision
 (`cache.CacheVersion`), detection mode, type-aware setting, or detector set.
 
@@ -80,7 +80,7 @@ Record an `AnalyzerIdentity` on every baseline:
 
 - `baseline.File.Analyzer` is additive and `omitempty`: old baselines still
   load, and old readers ignore the new key.
-- A `CacheVersion` bump now has a *stated* consumer cost: every baseline must
+- A `CacheVersion` bump now has a _stated_ consumer cost: every baseline must
   be re-recorded. Release notes must say so (see the CacheVersion 7→8 note in
   `CHANGELOG.md`).
 - `ensureBaselineIdentityMatches` is the single guard; `check` calls it after

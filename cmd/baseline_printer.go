@@ -56,10 +56,7 @@ func (p *baselineFilterPrinter) Split() printer.BaselineSplit {
 	// included (they are silently dropped here), so the pipeline-suppressed
 	// count is DetectedTotal - Shown. Subtracting the baseline count again
 	// would double-count it.
-	suppressed := p.stats.DetectedTotal - p.stats.Shown
-	if suppressed < 0 {
-		suppressed = 0
-	}
+	suppressed := max(p.stats.DetectedTotal-p.stats.Shown, 0)
 
 	return printer.BaselineSplit{
 		InBaseline: p.suppressed,

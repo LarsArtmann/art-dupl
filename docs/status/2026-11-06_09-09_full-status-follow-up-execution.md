@@ -21,7 +21,7 @@ backlog that falls out of it. No new research beyond the session's own work.
    at it. A baseline recorded at `-t 5` and checked at `-t 2` reports a
    whole-tree "new clones" verdict — the exact failure mode issue #13 was
    filed about — and the identity guard I extended this session cannot see it
-   (threshold changes *which* groups exist, not their hashes). I noticed this
+   (threshold changes _which_ groups exist, not their hashes). I noticed this
    while writing `analyzerPolicyParts`, decided it was an owner question, and
    did **not** even add the cheap version of the fix (compare
    `bf.Threshold != cfg.Threshold` → warn). That is the single biggest miss of
@@ -39,7 +39,7 @@ backlog that falls out of it. No new research beyond the session's own work.
 4. **Doc claims I did not re-read while editing neighbours.** I verified README
    counts and `FEATURES`/`HOW_TO_USE` baseline text, but did not audit their
    `--simple-json` claims before changing that format. (Luckily `FEATURES:36`
-   already described the *correct* shape, so my fix made a false claim true —
+   already described the _correct_ shape, so my fix made a false claim true —
    but that was luck, not process.)
 5. **No test for `--all`'s `report.simple-json` content**, only file existence
    (`cmd/cmd_integration_test.go:317`). The new
@@ -54,15 +54,15 @@ backlog that falls out of it. No new research beyond the session's own work.
 
 ### What could I have done better?
 
-| # | Better version | Why it matters |
-| --- | --- | --- |
-| 1 | Grep for **dead exported functions** at session start (`OutputSimpleJSON` had zero callers since inception) | The `--simple-json` defect sat in plain sight; a `grep -rn "func (p \*JSONPrinter) Output" --include=*.go \| xargs` call-site check finds it in seconds |
-| 2 | Run the **"one invocation per documented format"** smoke sweep FIRST, not last | Both the JSON-document bug and the simple-json bug are format-level; format smoke testing found them in 10 seconds once I finally ran it, after ~3 hours of work |
-| 3 | Add compile-time **decorator interface assertions** instead of only documenting the gotcha | `baselineFilterPrinter` silently dropping `SetHash` produced empty hashes in production JSON; a `var _ printer.HashSetter = (*baselineFilterPrinter)(nil)` line turns that class into a build failure |
-| 4 | Compare **`bf.Threshold`** while I was already in `runCheck` touching identity | One `if` and one warning; the highest-value 15 lines in the backlog |
-| 5 | Write the CSS BDD fixture **from the CLI reproduction** instead of inventing a fixture | My first fixture (two differently named css rules in one file) was toothless — the canary caught it, but only after I had written a passing test that proved nothing |
-| 6 | Treat `nix flake check` as the **first** gate of every session, not the last | The repo had been un-buildable via nix since the 2026-11-04 dep sweeps; `go build`/`go test` were green the whole time and hid it |
-| 7 | Verify `golangci-lint` **version parity** between devshell and sandbox | The sandbox (2.15.0) reported 5 findings the devshell did not; the divergence is still unguarded |
+| # | Better version                                                                                              | Why it matters                                                                                                                                                                                        |
+| - | ----------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1 | Grep for **dead exported functions** at session start (`OutputSimpleJSON` had zero callers since inception) | The `--simple-json` defect sat in plain sight; a `grep -rn "func (p \*JSONPrinter) Output" --include=*.go \| xargs` call-site check finds it in seconds                                               |
+| 2 | Run the **"one invocation per documented format"** smoke sweep FIRST, not last                              | Both the JSON-document bug and the simple-json bug are format-level; format smoke testing found them in 10 seconds once I finally ran it, after ~3 hours of work                                      |
+| 3 | Add compile-time **decorator interface assertions** instead of only documenting the gotcha                  | `baselineFilterPrinter` silently dropping `SetHash` produced empty hashes in production JSON; a `var _ printer.HashSetter = (*baselineFilterPrinter)(nil)` line turns that class into a build failure |
+| 4 | Compare **`bf.Threshold`** while I was already in `runCheck` touching identity                              | One `if` and one warning; the highest-value 15 lines in the backlog                                                                                                                                   |
+| 5 | Write the CSS BDD fixture **from the CLI reproduction** instead of inventing a fixture                      | My first fixture (two differently named css rules in one file) was toothless — the canary caught it, but only after I had written a passing test that proved nothing                                  |
+| 6 | Treat `nix flake check` as the **first** gate of every session, not the last                                | The repo had been un-buildable via nix since the 2026-11-04 dep sweeps; `go build`/`go test` were green the whole time and hid it                                                                     |
+| 7 | Verify `golangci-lint` **version parity** between devshell and sandbox                                      | The sandbox (2.15.0) reported 5 findings the devshell did not; the divergence is still unguarded                                                                                                      |
 
 ### What can I still improve?
 
@@ -88,29 +88,29 @@ Everything below is verified on this tree; `go test ./... -count=1`,
 `scripts/check-boundary.sh --full`, `nix develop -c golangci-lint run` (0
 issues), and `nix flake check` (12/12) all pass at `aea30779`.
 
-| # | Item | Evidence |
-| --- | --- | --- |
-| 1 | **nix build repaired** — stale `vendorHash` FOD whose cached content predated the dep sweeps; refreshed to `sha256-AFkwR+czRL1litT7pMz0L1ZeUYfq/H23tACxWzgFn8I=` | `nix build .#art-dupl` builds; `./result/bin/art-dupl version` → `0.9.0`; root cause recorded in `AGENTS.md` |
-| 2 | **5 sandbox-only lint findings fixed** (`nonamedreturns`, `prealloc`, 2× `wsl_v5`, `unused`) | sandbox lint 2.15.0 → `0 issues`; flake `lint` check green |
-| 3 | **ADR-0029** — baseline analyzer identity contract (policy scope, version-as-provenance, legacy nil, opt-in gate) | `docs/adr/0029-baseline-analyzer-identity.md` |
-| 4 | **Default-visible identity warning** on `check` without the strict flag and on text `--diff-report`; labelled `baseline/running/effect/fix` block; `--json` silent; exit codes unchanged | 3 pins: `TestCheckWarnsOnIncomparableBaselineWithoutFlag`, `TestCheckWarnsOnLegacyBaselineWithoutFlag`, `TestDiffReportWarnsOnIncomparableBaseline`; live smoke on the built binary |
-| 5 | **`check --json` emits a document at all** (it emitted nothing) | `TestCheckJSONEmitsDocumentAndBaselineSplit` |
-| 6 | **`check --json` new groups carry their hash** (`baselineFilterPrinter` now forwards `SetHash`) | same test asserts non-empty hash |
-| 7 | **`check --json` carries `baseline: {in_baseline, new, suppressed, total}`** + `files_analyzed` | same test (1/0/0/1 unchanged; 1/1/0/2 after adding a family) |
-| 8 | **`check` exit code matches its documented contract** — new clones now exit 1 via `errors.NewClonesFoundError`; missing baseline still exits 2 | `TestCheckNewClonesExitCodeIsOne`; live binary: `1` / `2` |
-| 9 | **Constant CSS property values join the hash** (`setConstantCSSProperty`), CacheVersion 8 → 9; semantic collapses whitespace but never sorts shorthand | 5 token tests + 1 BDD spec + 1 SDK test, **all canary-verified** (revert → fail) |
-| 10 | **`--simple-json` emits the documented impact array** (`[{hash, score, instances}]`), sorted; discovered it had **no caller at all** | `TestSimpleJSONFormatEmitsImpactArray`; live output inspected |
-| 11 | **Gob cache round-trip guard** for every classification field (`GoSnippet`, `VarType`, `EnclosingReturnArity`, `InterfaceMethod`, `IsAlias`, `Statement`, `Fingerprint`, …) | `cache.TestFileCache_PreservesNodeClassificationFields`, canary-verified by deleting `GoSnippet` from `Clone()` |
-| 12 | **`scripts/corpus-diff.py`** — two binaries, one corpus, added/removed groups + same-span rekeys + category deltas, `--json` output | validated same-binary (empty) and real diff (2→1 groups on the CSS fixture); 5 corpora × `-t 1/2/5` swept |
-| 13 | **CSS corpus report** | `docs/benchmarks/templ-css-value-2026-11-06.md` + index row |
-| 14 | **`DOMAIN_LANGUAGE.md`** extended (markup identity, text content, Go snippet, cache version, hashing policy, analyzer identity, baseline split) and its stale "33 patterns" row corrected to 42 | doc reads; count gate green |
-| 15 | **`baseline` package doc** corrected (`recorded_at` → `recordedAt`) and extended with the `analyzer` block + ADR reference | source read |
-| 16 | **README drift fixed** — 42 pattern labels (was "33+4"), LSP row added, CSV via `stats`, sorted-slice transitions (was "O(1) map-based"), stamp refreshed **after** verifying claims | `scripts/check-docs-freshness.sh` clean; `TestNodeTypesCountsMatchDocs` / `TestActionabilityPatternCountsMatchDocs` / `TestWebsiteFlagsMatchBinary` green |
-| 17 | **`AGENTS.md`** — CacheVersion 9, CSS-value policy, `check --json` + decorator-forwarding gotcha, format-routing branch, identity warning + ADR, gob boundary, stale-FOD gotcha, corpus-diff process rule, exit-code verdict | read against code |
-| 18 | **`CHANGELOG.md`** — 5 entries (simple-json, exit code, check --json, default warning, CSS values) | read |
-| 19 | **`FEATURES.md` / `HOW_TO_USE.md`** — templ row, baseline row, warning sample, JSON `baseline` sample, exit-code table | read |
-| 20 | **`TODO_LIST.md`** — 2 items closed, 5 added (release, diff-report JSON guard, decorator assertions, threshold-in-policy owner question, SDK directory gap) | read |
-| 21 | **Status index** — the two November reports added to `docs/status/README.md` | read |
+| #  | Item                                                                                                                                                                                                                         | Evidence                                                                                                                                                                            |
+| -- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1  | **nix build repaired** — stale `vendorHash` FOD whose cached content predated the dep sweeps; refreshed to `sha256-AFkwR+czRL1litT7pMz0L1ZeUYfq/H23tACxWzgFn8I=`                                                             | `nix build .#art-dupl` builds; `./result/bin/art-dupl version` → `0.9.0`; root cause recorded in `AGENTS.md`                                                                        |
+| 2  | **5 sandbox-only lint findings fixed** (`nonamedreturns`, `prealloc`, 2× `wsl_v5`, `unused`)                                                                                                                                 | sandbox lint 2.15.0 → `0 issues`; flake `lint` check green                                                                                                                          |
+| 3  | **ADR-0029** — baseline analyzer identity contract (policy scope, version-as-provenance, legacy nil, opt-in gate)                                                                                                            | `docs/adr/0029-baseline-analyzer-identity.md`                                                                                                                                       |
+| 4  | **Default-visible identity warning** on `check` without the strict flag and on text `--diff-report`; labelled `baseline/running/effect/fix` block; `--json` silent; exit codes unchanged                                     | 3 pins: `TestCheckWarnsOnIncomparableBaselineWithoutFlag`, `TestCheckWarnsOnLegacyBaselineWithoutFlag`, `TestDiffReportWarnsOnIncomparableBaseline`; live smoke on the built binary |
+| 5  | **`check --json` emits a document at all** (it emitted nothing)                                                                                                                                                              | `TestCheckJSONEmitsDocumentAndBaselineSplit`                                                                                                                                        |
+| 6  | **`check --json` new groups carry their hash** (`baselineFilterPrinter` now forwards `SetHash`)                                                                                                                              | same test asserts non-empty hash                                                                                                                                                    |
+| 7  | **`check --json` carries `baseline: {in_baseline, new, suppressed, total}`** + `files_analyzed`                                                                                                                              | same test (1/0/0/1 unchanged; 1/1/0/2 after adding a family)                                                                                                                        |
+| 8  | **`check` exit code matches its documented contract** — new clones now exit 1 via `errors.NewClonesFoundError`; missing baseline still exits 2                                                                               | `TestCheckNewClonesExitCodeIsOne`; live binary: `1` / `2`                                                                                                                           |
+| 9  | **Constant CSS property values join the hash** (`setConstantCSSProperty`), CacheVersion 8 → 9; semantic collapses whitespace but never sorts shorthand                                                                       | 5 token tests + 1 BDD spec + 1 SDK test, **all canary-verified** (revert → fail)                                                                                                    |
+| 10 | **`--simple-json` emits the documented impact array** (`[{hash, score, instances}]`), sorted; discovered it had **no caller at all**                                                                                         | `TestSimpleJSONFormatEmitsImpactArray`; live output inspected                                                                                                                       |
+| 11 | **Gob cache round-trip guard** for every classification field (`GoSnippet`, `VarType`, `EnclosingReturnArity`, `InterfaceMethod`, `IsAlias`, `Statement`, `Fingerprint`, …)                                                  | `cache.TestFileCache_PreservesNodeClassificationFields`, canary-verified by deleting `GoSnippet` from `Clone()`                                                                     |
+| 12 | **`scripts/corpus-diff.py`** — two binaries, one corpus, added/removed groups + same-span rekeys + category deltas, `--json` output                                                                                          | validated same-binary (empty) and real diff (2→1 groups on the CSS fixture); 5 corpora × `-t 1/2/5` swept                                                                           |
+| 13 | **CSS corpus report**                                                                                                                                                                                                        | `docs/benchmarks/templ-css-value-2026-11-06.md` + index row                                                                                                                         |
+| 14 | **`DOMAIN_LANGUAGE.md`** extended (markup identity, text content, Go snippet, cache version, hashing policy, analyzer identity, baseline split) and its stale "33 patterns" row corrected to 42                              | doc reads; count gate green                                                                                                                                                         |
+| 15 | **`baseline` package doc** corrected (`recorded_at` → `recordedAt`) and extended with the `analyzer` block + ADR reference                                                                                                   | source read                                                                                                                                                                         |
+| 16 | **README drift fixed** — 42 pattern labels (was "33+4"), LSP row added, CSV via `stats`, sorted-slice transitions (was "O(1) map-based"), stamp refreshed **after** verifying claims                                         | `scripts/check-docs-freshness.sh` clean; `TestNodeTypesCountsMatchDocs` / `TestActionabilityPatternCountsMatchDocs` / `TestWebsiteFlagsMatchBinary` green                           |
+| 17 | **`AGENTS.md`** — CacheVersion 9, CSS-value policy, `check --json` + decorator-forwarding gotcha, format-routing branch, identity warning + ADR, gob boundary, stale-FOD gotcha, corpus-diff process rule, exit-code verdict | read against code                                                                                                                                                                   |
+| 18 | **`CHANGELOG.md`** — 5 entries (simple-json, exit code, check --json, default warning, CSS values)                                                                                                                           | read                                                                                                                                                                                |
+| 19 | **`FEATURES.md` / `HOW_TO_USE.md`** — templ row, baseline row, warning sample, JSON `baseline` sample, exit-code table                                                                                                       | read                                                                                                                                                                                |
+| 20 | **`TODO_LIST.md`** — 2 items closed, 5 added (release, diff-report JSON guard, decorator assertions, threshold-in-policy owner question, SDK directory gap)                                                                  | read                                                                                                                                                                                |
+| 21 | **Status index** — the two November reports added to `docs/status/README.md`                                                                                                                                                 | read                                                                                                                                                                                |
 
 **14 new test entry points** (5 cmd, 1 cmd format pin, 1 cache, 1 BDD spec, 5 templ token tests, 1 SDK).
 
@@ -118,17 +118,17 @@ issues), and `nix flake check` (12/12) all pass at `aea30779`.
 
 ## b) PARTIALLY DONE
 
-| # | Item | What is there | What is missing |
-| --- | --- | --- | --- |
-| 1 | **`--diff-report` identity guard** | Text mode warns; JSON stays silent by design | No strict mode. The requested `--baseline-version-must-match`-equivalent for diff-report does not exist (needs a root-level flag + website doc row) |
-| 2 | **Threshold/test-inclusion awareness** | Documented as an owner question; the warning only fires for policy/cache mismatch | `bf.Threshold` vs `cfg.Threshold` is never compared, so a threshold mismatch is still a silent whole-tree false alarm |
-| 3 | **Docs-health pass** | README stamp + claims re-verified; status index updated; freshness script clean | The overdue monthly pass (due 2026-10-28) is not executed: no HARVEST of Feb–Oct status reports into TODO, no ANNOTATE, no archive gate run |
-| 4 | **`docs/status/README.md`** | Two new rows at the top | The "Overall Project Status" table below them still carries **January 2026** numbers (~181 lint violations, 65–75% coverage, 15–20% duplication) — now visually adjacent to fresh rows |
-| 5 | **Combined/type-aware parity of the CSS change** | Semantic/exact/structural token tests; CacheVersion 9 invalidates `ta`/`sg` entries | No end-to-end combined-mode run on a templ corpus after the change |
-| 6 | **`scripts/corpus-diff.py`** | Working, documented, used for 15 measurements | No test, no CI wiring, not referenced from `flake.nix` |
-| 7 | **Exit-code change** | Behaviour matches `--help`/README; documented in AGENTS/CHANGELOG/HOW_TO_USE | No ADR-0013 amendment; no decision on whether the verdict deserves its own code |
-| 8 | **Decorator-forwarding defence** | Gotcha documented in `AGENTS.md`; bug fixed | No compile-time assertion, no lint rule — the next decorator can repeat it |
-| 9 | **`--all` path coverage** | `report.simple-json` is produced | Content is untested (existence only), so a regression there would pass CI |
+| # | Item                                             | What is there                                                                       | What is missing                                                                                                                                                                        |
+| - | ------------------------------------------------ | ----------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1 | **`--diff-report` identity guard**               | Text mode warns; JSON stays silent by design                                        | No strict mode. The requested `--baseline-version-must-match`-equivalent for diff-report does not exist (needs a root-level flag + website doc row)                                    |
+| 2 | **Threshold/test-inclusion awareness**           | Documented as an owner question; the warning only fires for policy/cache mismatch   | `bf.Threshold` vs `cfg.Threshold` is never compared, so a threshold mismatch is still a silent whole-tree false alarm                                                                  |
+| 3 | **Docs-health pass**                             | README stamp + claims re-verified; status index updated; freshness script clean     | The overdue monthly pass (due 2026-10-28) is not executed: no HARVEST of Feb–Oct status reports into TODO, no ANNOTATE, no archive gate run                                            |
+| 4 | **`docs/status/README.md`**                      | Two new rows at the top                                                             | The "Overall Project Status" table below them still carries **January 2026** numbers (~181 lint violations, 65–75% coverage, 15–20% duplication) — now visually adjacent to fresh rows |
+| 5 | **Combined/type-aware parity of the CSS change** | Semantic/exact/structural token tests; CacheVersion 9 invalidates `ta`/`sg` entries | No end-to-end combined-mode run on a templ corpus after the change                                                                                                                     |
+| 6 | **`scripts/corpus-diff.py`**                     | Working, documented, used for 15 measurements                                       | No test, no CI wiring, not referenced from `flake.nix`                                                                                                                                 |
+| 7 | **Exit-code change**                             | Behaviour matches `--help`/README; documented in AGENTS/CHANGELOG/HOW_TO_USE        | No ADR-0013 amendment; no decision on whether the verdict deserves its own code                                                                                                        |
+| 8 | **Decorator-forwarding defence**                 | Gotcha documented in `AGENTS.md`; bug fixed                                         | No compile-time assertion, no lint rule — the next decorator can repeat it                                                                                                             |
+| 9 | **`--all` path coverage**                        | `report.simple-json` is produced                                                    | Content is untested (existence only), so a regression there would pass CI                                                                                                              |
 
 ---
 
@@ -154,15 +154,15 @@ issues), and `nix flake check` (12/12) all pass at `aea30779`.
 
 ### Fixed (was badly broken before this session)
 
-| Defect | Blast radius |
-| --- | --- |
-| **`nix build` broken repo-wide** since 2026-11-04 | Every nix consumer, CI's nix lane, the release path — invisible to `go build`/`go test` |
-| **`check --json` emitted zero bytes** | A CI job parsing it saw an empty stream and could read it as "no clones" — the worst possible silent failure for a gate |
-| **`check --json` new groups had `"hash": ""`** | Any consumer grouping/deduping by hash would collapse distinct groups |
-| **`--simple-json` was byte-identical to `--json`** | A documented format never existed; `OutputSimpleJSON` was dead code since inception |
-| **`check` exited 2 for new clones** while docs said 1 | Scripts branching on the documented codes misclassify a review failure as a config failure |
-| **Sandbox lint red (5 findings)** while devshell said "0 issues" | The repo's lint gate was failing for anyone building in nix |
-| **`color: red` cloned with `color: blue`** (templ css) | False-positive clone groups on any templ file with constant CSS |
+| Defect                                                           | Blast radius                                                                                                            |
+| ---------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| **`nix build` broken repo-wide** since 2026-11-04                | Every nix consumer, CI's nix lane, the release path — invisible to `go build`/`go test`                                 |
+| **`check --json` emitted zero bytes**                            | A CI job parsing it saw an empty stream and could read it as "no clones" — the worst possible silent failure for a gate |
+| **`check --json` new groups had `"hash": ""`**                   | Any consumer grouping/deduping by hash would collapse distinct groups                                                   |
+| **`--simple-json` was byte-identical to `--json`**               | A documented format never existed; `OutputSimpleJSON` was dead code since inception                                     |
+| **`check` exited 2 for new clones** while docs said 1            | Scripts branching on the documented codes misclassify a review failure as a config failure                              |
+| **Sandbox lint red (5 findings)** while devshell said "0 issues" | The repo's lint gate was failing for anyone building in nix                                                             |
+| **`color: red` cloned with `color: blue`** (templ css)           | False-positive clone groups on any templ file with constant CSS                                                         |
 
 ### Still fucked up (known, not fixed)
 
@@ -306,7 +306,7 @@ issues), and `nix flake check` (12/12) all pass at `aea30779`.
 
 43. Re-run the 7-corpus sweep for #11/#12/#13-affecting changes (they shipped
     without a sweep; only #14 and the CSS change have reports).
-44. Evaluate whether CSS *expression* values need the same treatment (they are
+44. Evaluate whether CSS _expression_ values need the same treatment (they are
     parsed as Go already — verify with a fixture).
 45. Check whether templ constant attribute values and text should also be
     sorted/coalesced in `--exact` mode (currently verbatim by design — confirm
@@ -346,16 +346,16 @@ issues), and `nix flake check` (12/12) all pass at `aea30779`.
 
 ## Verification log (this tree, `aea30779`)
 
-| Gate | Command | Result |
-| --- | --- | --- |
-| Build | `go build ./...` | PASS |
-| Suite | `go test ./... -count=1` | PASS (all packages) |
-| Boundary (fast) | `scripts/check-boundary.sh` | OK, 17–20 s |
-| Boundary (full) | `scripts/check-boundary.sh --full` | OK (48 s cold / 17 s warm) |
-| Sandbox lint | `nix develop -c golangci-lint run ./...` (2.15.0) | 0 issues |
-| Nix package | `nix build .#art-dupl` | PASS after vendorHash refresh |
-| Full nix CI | `nix flake check` | all 12 checks passed |
-| Docs freshness | `scripts/check-docs-freshness.sh` | clean |
-| Docs count gates | `TestNodeTypes…`, `TestActionabilityPattern…`, `TestCLIFlag…`, `TestWebsiteFlagsMatchBinary` | PASS |
-| Corpus drift | `scripts/corpus-diff.py`, 5 corpora × `-t 1/2/5` | no drift |
-| Canaries | CSS token test, BDD CSS spec, SDK CSS test, gob field test | each FAILS when the fix is reverted |
+| Gate             | Command                                                                                      | Result                              |
+| ---------------- | -------------------------------------------------------------------------------------------- | ----------------------------------- |
+| Build            | `go build ./...`                                                                             | PASS                                |
+| Suite            | `go test ./... -count=1`                                                                     | PASS (all packages)                 |
+| Boundary (fast)  | `scripts/check-boundary.sh`                                                                  | OK, 17–20 s                         |
+| Boundary (full)  | `scripts/check-boundary.sh --full`                                                           | OK (48 s cold / 17 s warm)          |
+| Sandbox lint     | `nix develop -c golangci-lint run ./...` (2.15.0)                                            | 0 issues                            |
+| Nix package      | `nix build .#art-dupl`                                                                       | PASS after vendorHash refresh       |
+| Full nix CI      | `nix flake check`                                                                            | all 12 checks passed                |
+| Docs freshness   | `scripts/check-docs-freshness.sh`                                                            | clean                               |
+| Docs count gates | `TestNodeTypes…`, `TestActionabilityPattern…`, `TestCLIFlag…`, `TestWebsiteFlagsMatchBinary` | PASS                                |
+| Corpus drift     | `scripts/corpus-diff.py`, 5 corpora × `-t 1/2/5`                                             | no drift                            |
+| Canaries         | CSS token test, BDD CSS spec, SDK CSS test, gob field test                                   | each FAILS when the fix is reverted |

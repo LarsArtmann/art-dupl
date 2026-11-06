@@ -19,23 +19,23 @@ text-content change (`detected / shown` from the summary footer). Corpora:
 pinned worktrees under `~/projects/.corpus-pins/` plus the two live consumer
 repos at their heads (`webphone` 36f0c6f4, `nsfw-classifier` a7cec08a).
 
-| Corpus                       | `-t` | detected before → after | shown before → after |
-| ---------------------------- | ---- | ----------------------- | -------------------- |
-| art-dupl (self)              | 1    | 1379 → 1379             | 10 → 10              |
-| art-dupl (self)              | 2    | 425 → 425               | 5 → 5                |
-| art-dupl (self)              | 5    | 62 → 62                 | 0 → 0                |
-| webphone (templ-heavy)       | 1    | 1589 → 1587             | 44 → 43              |
-| webphone (templ-heavy)       | 2    | 443 → 441               | 24 → 24              |
-| webphone (templ-heavy)       | 5    | 62 → 60                 | 0 → 0                |
-| nsfw-classifier              | 1    | 2263 → 2239             | 147 → 129            |
-| nsfw-classifier              | 2    | 725 → 722               | 87 → 86              |
-| nsfw-classifier              | 5    | 103 → 103               | 9 → 9                |
-| DiscordSync                  | 1    | 3753 → 3729             | 112 → 93             |
-| DiscordSync                  | 2    | 1486 → 1485             | 53 → 52              |
-| DiscordSync                  | 5    | 348 → 348               | 0 → 0                |
-| go-cqrs-lite (Go-only)       | 1/2/5| 8697/3975/993 → identical | 468/322/1 → identical |
-| branching-flow (Go-only)     | 1/2/5| 1042/335/51 → identical | 6/3/0 → identical    |
-| go-paperless (Go-only)       | 1/2/5| 220/76/17 → identical   | 9/8/1 → identical    |
+| Corpus                   | `-t`  | detected before → after   | shown before → after  |
+| ------------------------ | ----- | ------------------------- | --------------------- |
+| art-dupl (self)          | 1     | 1379 → 1379               | 10 → 10               |
+| art-dupl (self)          | 2     | 425 → 425                 | 5 → 5                 |
+| art-dupl (self)          | 5     | 62 → 62                   | 0 → 0                 |
+| webphone (templ-heavy)   | 1     | 1589 → 1587               | 44 → 43               |
+| webphone (templ-heavy)   | 2     | 443 → 441                 | 24 → 24               |
+| webphone (templ-heavy)   | 5     | 62 → 60                   | 0 → 0                 |
+| nsfw-classifier          | 1     | 2263 → 2239               | 147 → 129             |
+| nsfw-classifier          | 2     | 725 → 722                 | 87 → 86               |
+| nsfw-classifier          | 5     | 103 → 103                 | 9 → 9                 |
+| DiscordSync              | 1     | 3753 → 3729               | 112 → 93              |
+| DiscordSync              | 2     | 1486 → 1485               | 53 → 52               |
+| DiscordSync              | 5     | 348 → 348                 | 0 → 0                 |
+| go-cqrs-lite (Go-only)   | 1/2/5 | 8697/3975/993 → identical | 468/322/1 → identical |
+| branching-flow (Go-only) | 1/2/5 | 1042/335/51 → identical   | 6/3/0 → identical     |
+| go-paperless (Go-only)   | 1/2/5 | 220/76/17 → identical     | 9/8/1 → identical     |
 
 Go-only corpora are byte-identical at every threshold: the change is scoped to
 `.templ` markup. Templ-heavy corpora lose groups only where the rendered text
