@@ -1052,6 +1052,29 @@ algorithm under a new version string does not invalidate a baseline. Baselines
 written before identity tracking existed cannot be verified and are refused by
 the flag (drop it to compare unverified).
 
+Without the flag, the same mismatch is still announced on stderr (exit code
+unchanged), so a green verdict cannot hide an incomparable comparison:
+
+```text
+warning: baseline .art-dupl-baseline.json was recorded by art-dupl v0.9.0
+(algorithm revision 8, hashing policy ...); running art-dupl v0.9.1 (...):
+clone-group hashes are not comparable, so every recorded group reads as new.
+Re-record the baseline with the running binary, or pass
+--baseline-version-must-match to make this an error.
+```
+
+`--diff-report` prints the same warning for text output. `check --json` stays
+silent on stderr and instead carries the accounting machine-readably:
+
+```json
+"baseline": {"in_baseline": 150, "new": 1, "suppressed": 0, "total": 151}
+```
+
+Here `clone_groups` holds the NEW groups only, and `total` is what the detector
+found. Anything that changes hashing (an algorithm revision bump, `--exact`,
+`--type-aware`, a different detector set) puts the baseline in a different hash
+space; re-record it after upgrading.
+
 GitHub Actions and pre-commit hook templates are included in `templates/github-actions-duplicate-check.yml` and `templates/pre-commit-hook.yaml`.
 
 ## Troubleshooting
