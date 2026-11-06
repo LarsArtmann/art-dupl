@@ -279,6 +279,12 @@ type ClassificationInput struct {
 	NodeType int32
 	Tokens   int
 	Lines    int
+	// GoSnippet reports that the fragment is Go source embedded in a .templ
+	// file rather than template markup. Both languages assign their node-type
+	// enums independently, so file kind alone cannot pick the right category
+	// table (a Go Field is 18, the same value as a templ
+	// ConditionalAttributeIfStatement).
+	GoSnippet bool
 }
 
 // CloneClassification provides metadata about a code clone for actionable reports.

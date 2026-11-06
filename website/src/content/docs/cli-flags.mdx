@@ -106,10 +106,12 @@ art-dupl stats [flags] [paths...]
 art-dupl baseline [flags] [paths...]
 ```
 
-Records current clones to `.art-dupl-baseline.json`.
+Records current clones to `.art-dupl-baseline.json`. The file records the
+analyzer identity that produced it (binary version, algorithm revision, and
+hash-affecting detection settings).
 
-| Flag             | Default | Description                                        |
-| ---------------- | ------- | -------------------------------------------------- |
+| Flag              | Default | Description                                             |
+| ----------------- | ------- | ------------------------------------------------------- |
 | `--baseline-path` | ``      | Baseline file path (default: `.art-dupl-baseline.json`) |
 
 ## Check Subcommand
@@ -118,9 +120,18 @@ Records current clones to `.art-dupl-baseline.json`.
 art-dupl check [flags] [paths...]
 ```
 
-Reports only clones NOT in the baseline. Exits 1 if new clones found.
+Reports only clones NOT in the baseline. Exits 1 if new clones found. The
+summary line splits the detected groups into baseline-accepted and new, so a CI
+reader never has to diff the report against the baseline JSON.
 
-Also honors `--baseline-path` (shared with the baseline subcommand).
+| Flag                             | Default | Description                                                                                                                                       |
+| -------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--baseline-path`                | ``      | Baseline file path (default: `.art-dupl-baseline.json`)                                                                                            |
+| `--baseline-version-must-match`  | `false` | Refuse the comparison when the baseline was recorded by a different analyzer identity (algorithm revision + hash-affecting detection settings) |
+
+Without `--baseline-version-must-match`, a baseline recorded by another build
+silently compares hashes from a different hash space and reports the whole tree
+as new; the flag turns that into an explicit error naming both analyzers.
 
 ## Version Subcommand
 

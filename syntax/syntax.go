@@ -110,6 +110,15 @@ type Node struct {
 	// actionability layer uses this to distinguish re-export shims (aliases,
 	// non-actionable) from named type definitions (potentially actionable).
 	IsAlias bool
+
+	// GoSnippet marks nodes produced from Go source embedded in a .templ file
+	// (component signatures, script bodies, embedded expressions) rather than
+	// from the template markup itself. The golang and templ node-type enums
+	// overlap numerically, so file kind alone cannot tell a Go Field (18) from
+	// a templ ConditionalAttributeIfStatement (18); classification uses this
+	// flag to pick the right table and to avoid templ fix suggestions on Go
+	// members (issue #11).
+	GoSnippet bool
 }
 
 func NewNode() *Node {
@@ -142,6 +151,7 @@ func (n *Node) Clone() *Node {
 		Statement:            n.Statement,
 		InterfaceMethod:      n.InterfaceMethod,
 		IsAlias:              n.IsAlias,
+		GoSnippet:            n.GoSnippet,
 	}
 	if len(n.Children) > 0 {
 		clone.Children = make([]*Node, len(n.Children))
@@ -253,6 +263,7 @@ func (s *nodeSerializer) serial(n *Node, maxChildren int) int {
 		Statement:            n.Statement,
 		InterfaceMethod:      n.InterfaceMethod,
 		IsAlias:              n.IsAlias,
+		GoSnippet:            n.GoSnippet,
 	}
 	s.stream = append(s.stream, node)
 

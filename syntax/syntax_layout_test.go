@@ -49,6 +49,7 @@ func TestNodeScalarFieldsInOneCacheLine(t *testing.T) {
 		{"Statement", unsafe.Offsetof(Node{}.Statement), unsafe.Sizeof(Node{}.Statement)},
 		{"InterfaceMethod", unsafe.Offsetof(Node{}.InterfaceMethod), unsafe.Sizeof(Node{}.InterfaceMethod)},
 		{"IsAlias", unsafe.Offsetof(Node{}.IsAlias), unsafe.Sizeof(Node{}.IsAlias)},
+		{"GoSnippet", unsafe.Offsetof(Node{}.GoSnippet), unsafe.Sizeof(Node{}.GoSnippet)},
 	}
 
 	minOffset := scalarFields[0].offset

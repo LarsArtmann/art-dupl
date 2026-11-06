@@ -172,10 +172,11 @@ func ProcessClones(fread ReadFile, dups [][]*syntax.Node, opts ...ProcessOption)
 			TokenCount:  tokens,
 			FileSize:    len(fileInfo.Content),
 			Classification: actionability.ClassifyClone(domain.ClassificationInput{
-				Filename: fileInfo.Filename,
-				NodeType: golang.DecodeBaseType(nstart.Type),
-				Tokens:   tokens,
-				Lines:    lines,
+				Filename:  fileInfo.Filename,
+				NodeType:  golang.DecodeBaseType(nstart.Type),
+				Tokens:    tokens,
+				Lines:     lines,
+				GoSnippet: nstart.GoSnippet,
 			}),
 		}
 	}

@@ -1,6 +1,7 @@
 package actionability
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/LarsArtmann/art-dupl/domain"
@@ -439,5 +440,50 @@ func TestClonePriorityAccessors(t *testing.T) {
 
 	for _, tt := range tests {
 		testClonePriority(t, tt.name, tt.getValue, tt.expected)
+	}
+}
+
+// TestClassifyCloneGoSnippetInTemplFile (issue #11): Go source embedded in a
+// .templ file must classify through the Go table, not the templ table. The
+// node-type enums overlap numerically — golang.Field and
+// templ.ConditionalAttributeIfStatement are both 18 — so file kind alone
+// previously gave Go parameter fragments a markup category plus a templ fix
+// suggestion.
+func TestClassifyCloneGoSnippetInTemplFile(t *testing.T) {
+	t.Parallel()
+
+	const ambiguousNodeType = int32(templpkg.ConditionalAttributeIfStatement)
+	if ambiguousNodeType != int32(golang.Field) {
+		t.Fatalf("fixture assumption broken: templ conditional attr = %d, golang Field = %d",
+			ambiguousNodeType, golang.Field)
+	}
+
+	markup := ClassifyClone(domain.ClassificationInput{
+		Filename: "page.templ",
+		NodeType: ambiguousNodeType,
+		Tokens:   2,
+		Lines:    1,
+	})
+	if markup.Category != domain.CategoryConditional {
+		t.Fatalf("markup conditional attr classified as %v, want conditional", markup.Category)
+	}
+
+	if !strings.Contains(markup.Suggestion, "templ component") {
+		t.Errorf("markup fragment should keep the templ suggestion, got %q", markup.Suggestion)
+	}
+
+	goSnippet := ClassifyClone(domain.ClassificationInput{
+		Filename:  "page.templ",
+		NodeType:  ambiguousNodeType,
+		Tokens:    2,
+		Lines:     1,
+		GoSnippet: true,
+	})
+	if goSnippet.Category == domain.CategoryConditional {
+		t.Error("Go snippet in a .templ file must not inherit the templ conditional category")
+	}
+
+	if strings.Contains(goSnippet.Suggestion, "templ component") {
+		t.Errorf("Go snippet must not get a templ fix suggestion, got %q", goSnippet.Suggestion)
 	}
 }

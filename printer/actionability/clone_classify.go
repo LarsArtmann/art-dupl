@@ -56,12 +56,14 @@ const (
 )
 
 func ClassifyClone(input domain.ClassificationInput) domain.CloneClassification {
-	category := nodeTypeToCategory(input.NodeType, strings.HasSuffix(input.Filename, ".templ"))
+	isMarkup := strings.HasSuffix(input.Filename, ".templ") && !input.GoSnippet
+
+	category := nodeTypeToCategory(input.NodeType, isMarkup)
 	isTest := strings.HasSuffix(input.Filename, "_test.go")
 	priority := calculatePriority(category, isTest, input.Tokens, input.Lines)
 	suggestion := getSuggestion(category, isTest, input.Tokens)
 
-	if strings.HasSuffix(input.Filename, ".templ") {
+	if isMarkup {
 		suggestion = templSuggestion(category, suggestion)
 	}
 
