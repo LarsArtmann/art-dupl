@@ -24,6 +24,37 @@ go test ./suffixtree/... ./syntax/... ./syntax/golang/... -bench=. -benchmem -co
 benchstat baseline-2026-08-10.txt /tmp/bench_current.txt
 ```
 
+## How to Compare Two Builds on a Corpus
+
+`scripts/corpus-diff.py` replaces the hand-written analyzer every
+detection-change session used to rewrite. It runs a reference and a new binary
+over the same corpus with `--json` and reports the three things that matter:
+
+- **groups** added / removed,
+- **member sets** whose displayed spans (`file:start-end`) are identical but
+  whose group hash changed (a granularity/identity change, not a fixed clone),
+- **clone counts by category**, i.e. where the change landed.
+
+```bash
+go build -o /tmp/art-dupl-new ./cmd/art-dupl
+scripts/corpus-diff.py --before ./result/bin/art-dupl --after /tmp/art-dupl-new \
+  --args "-t 2" --json /tmp/diff.json ~/projects/.corpus-pins/DiscordSync@4c0502c3
+```
+
+Use pinned corpus worktrees (`~/projects/.corpus-pins/<repo>@<hash>`, created
+with `git worktree add --detach`): live consumer repos drift under their own
+daemons, and drift invalidates before/after comparisons. Run the same script
+with `--before X --after X` first — the output must be empty, otherwise the
+corpus is moving, not the detector.
+
+## Before/After Corpus Reports
+
+`templ-text-precision-2026-11-06.md` (issue #14, markup text) and
+`templ-css-value-2026-11-06.md` (constant CSS property values) are the two
+sweeps for the markup-identity work. Both record the exact command, the pinned
+corpus revisions, and the removed groups, so a later session can tell an
+intended precision change from a regression.
+
 ## Timing Benchmarks: Pin the Cores (Required)
 
 The dev machine (AMD Ryzen AI MAX+ 395) is thermally noisy and has 2 L3 domains.
