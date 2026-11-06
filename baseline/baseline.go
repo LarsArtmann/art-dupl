@@ -52,12 +52,60 @@ type Entry struct {
 	Tokens int      `json:"tokens"`
 }
 
+// AnalyzerIdentity records which analyzer produced a baseline (issue #13).
+// Group hashes are only comparable between runs that share the same hashing
+// POLICY: the algorithm revision plus the detection settings that change the
+// serialized token stream. Without this, a `check` run under a different
+// analyzer build silently compares today's groups against hashes from another
+// algorithm revision, and the whole tree appears to regress with no code
+// change.
+//
+// Version is provenance for humans and error messages; it deliberately does
+// NOT participate in compatibility. Rebuilding the same algorithm under a
+// different version string (a routine toolchain upgrade) must not invalidate a
+// baseline.
+type AnalyzerIdentity struct {
+	Version      string `json:"version,omitempty"`
+	CacheVersion int    `json:"cacheVersion"`
+	Policy       string `json:"policy"`
+}
+
+// String renders the identity for error messages and logs.
+func (a AnalyzerIdentity) String() string {
+	version := a.Version
+	if version == "" {
+		version = "unknown"
+	}
+
+	return fmt.Sprintf(
+		"art-dupl %s (algorithm revision %d, hashing policy %s)",
+		version, a.CacheVersion, a.Policy,
+	)
+}
+
+// CompatibleWith reports whether hashes recorded by `recorded` can be compared
+// with hashes produced by this analyzer: same hashing policy, therefore same
+// hash space. A baseline without a recorded policy (written before identity
+// tracking) is never compatible — callers decide whether that is an error.
+func (a AnalyzerIdentity) CompatibleWith(recorded AnalyzerIdentity) bool {
+	if recorded.Policy == "" || a.Policy == "" {
+		return false
+	}
+
+	return a.Policy == recorded.Policy && a.CacheVersion == recorded.CacheVersion
+}
+
 // File is the on-disk baseline representation.
 type File struct {
 	Version    string    `json:"version"`
 	Threshold  int       `json:"threshold"`
 	RecordedAt time.Time `json:"recordedAt"`
 	Entries    []Entry   `json:"entries"`
+
+	// Analyzer records the binary and hashing policy that produced this
+	// baseline. Nil for baselines written before identity tracking existed,
+	// and those cannot be verified (see AnalyzerIdentity.CompatibleWith).
+	Analyzer *AnalyzerIdentity `json:"analyzer,omitempty"`
 
 	// hashes is a lookup index built by indexHashes for O(1) Has() calls.
 	hashes map[string]bool
@@ -72,6 +120,14 @@ func NewFile(threshold int) *File {
 		Entries:    []Entry{},
 		hashes:     make(map[string]bool),
 	}
+}
+
+// SetAnalyzer records the analyzer identity in the baseline, replacing any
+// previous value. The identity is copied so later caller mutation cannot
+// corrupt the file.
+func (bf *File) SetAnalyzer(identity AnalyzerIdentity) {
+	copied := identity
+	bf.Analyzer = &copied
 }
 
 // Add records a clone group in the baseline. Duplicate hashes are ignored.

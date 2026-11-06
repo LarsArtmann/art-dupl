@@ -169,12 +169,19 @@ func (p *TextPrinter) writeCloneHeader(clones []domain.ProcessedClone) error {
 func (p *TextPrinter) PrintFooter() error {
 	s := p.suppressionStats
 
-	if s.DetectedTotal > s.Shown && s.DetectedTotal > 0 {
+	switch {
+	case p.baselineSplit != nil:
+		if err := p.writeBaselineSummary(*p.baselineSplit); err != nil {
+			return err
+		}
+	case s.DetectedTotal > s.Shown && s.DetectedTotal > 0:
 		if err := p.writeSuppressionSummary(s); err != nil {
 			return err
 		}
-	} else if _, err := fmt.Fprintf(p.w, "\nFound total %d clone groups.%s\n", p.cnt, p.versionSuffix()); err != nil {
-		return err
+	default:
+		if _, err := fmt.Fprintf(p.w, "\nFound total %d clone groups.%s\n", p.cnt, p.versionSuffix()); err != nil {
+			return err
+		}
 	}
 
 	if len(p.diffHintFiles) >= 2 {
@@ -184,6 +191,23 @@ func (p *TextPrinter) PrintFooter() error {
 		if _, err := fmt.Fprintf(p.w, "\n\u2192 diff %s %s\n", file1, file2); err != nil {
 			return err
 		}
+	}
+
+	return nil
+}
+
+// writeBaselineSummary prints the check command's baseline split: how many
+// detected groups the baseline already accepts, how many are new (the number
+// the CI verdict hinges on), and how many were suppressed for other reasons.
+func (p *TextPrinter) writeBaselineSummary(split BaselineSplit) error {
+	detail := fmt.Sprintf("%d in baseline, %d new", split.InBaseline, split.New)
+	if split.Suppressed > 0 {
+		detail += fmt.Sprintf(", %d suppressed", split.Suppressed)
+	}
+
+	if _, err := fmt.Fprintf(p.w, "\nFound total %d clone groups (%s).%s\n",
+		split.Total(), detail, p.versionSuffix()); err != nil {
+		return err
 	}
 
 	return nil

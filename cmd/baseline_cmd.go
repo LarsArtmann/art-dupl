@@ -55,6 +55,10 @@ func NewCheckCommand() *cobra.Command {
 	addSharedFlags(cmd)
 	cmd.Flags().String(baselinePathFlag, baseline.DefaultBaselinePath, "path to the baseline file")
 	cmd.Flags().Bool("json", false, "output new clones as JSON")
+	cmd.Flags().Bool(baselineVersionMustMatchFlag, false,
+		"refuse to compare when the baseline was recorded by a different analyzer identity "+
+			"(algorithm revision + hash-affecting detection settings); protects CI from "+
+			"whole-tree false alarms after an analyzer upgrade")
 	addTestInclusionFlags(cmd)
 
 	return cmd
@@ -96,6 +100,8 @@ func runBaseline(c *cobra.Command, arguments []string) error {
 	keys := getSortedKeys(groups, config.SortByHash)
 
 	bf := baseline.NewFile(mergedConfig.Threshold)
+	bf.SetAnalyzer(analyzerIdentity(mergedConfig))
+
 	recorder := newBaselineRecorderPrinter(bf)
 
 	// When recording a baseline, bypass accept directives so the baseline
@@ -175,6 +181,10 @@ func runCheck(c *cobra.Command, arguments []string) error {
 		inner = printer.NewJSON(os.Stdout, os.ReadFile)
 	}
 
+	if vfs, ok := inner.(printer.VersionFooterSetter); ok {
+		vfs.SetVersionFooter(GetVersion())
+	}
+
 	filter := newBaselineFilterPrinter(inner, bf)
 
 	err = printHeader(filter, config.SortByHash, mergedConfig.Threshold)
@@ -187,6 +197,13 @@ func runCheck(c *cobra.Command, arguments []string) error {
 		buildSuppressionConfig(mergedConfig))
 	if err != nil {
 		return duplerrors.Wrap(err, duplerrors.AnalysisError, "check output")
+	}
+
+	// Report the baseline-vs-new split on the summary line (issue #12): the
+	// raw group count conflated "accepted long ago" with "introduced now",
+	// which is the only number a CI reader cares about.
+	if splitSetter, ok := inner.(printer.BaselineSplitSetter); ok {
+		splitSetter.SetBaselineSplit(filter.Split())
 	}
 
 	footerErr := filter.PrintFooter()

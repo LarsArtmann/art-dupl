@@ -18,10 +18,39 @@ type baselineFilterPrinter struct {
 	baseline      *baseline.File
 	newCloneCount int
 	suppressed    int
+	stats         printer.SuppressionStats
 }
 
 func newBaselineFilterPrinter(inner printer.Printer, bf *baseline.File) *baselineFilterPrinter {
 	return &baselineFilterPrinter{Printer: inner, baseline: bf}
+}
+
+// SetSuppressionStats keeps the counts the analysis pipeline reports and
+// forwards them to the wrapped printer, so the summary line stays accurate
+// when a check run suppresses groups for reasons other than the baseline
+// (actionability, thresholds, accept directives).
+func (p *baselineFilterPrinter) SetSuppressionStats(stats printer.SuppressionStats) {
+	p.stats = stats
+
+	if setter, ok := p.Printer.(printer.SuppressionStatsSetter); ok {
+		setter.SetSuppressionStats(stats)
+	}
+}
+
+// Split returns the baseline-vs-new accounting for the summary line: groups
+// the baseline already accepts, groups that are new (the number the CI verdict
+// hinges on), and groups suppressed elsewhere in the pipeline.
+func (p *baselineFilterPrinter) Split() printer.BaselineSplit {
+	suppressed := p.stats.DetectedTotal - p.stats.Shown - p.suppressed
+	if suppressed < 0 {
+		suppressed = 0
+	}
+
+	return printer.BaselineSplit{
+		InBaseline: p.suppressed,
+		New:        p.newCloneCount,
+		Suppressed: suppressed,
+	}
 }
 
 func (p *baselineFilterPrinter) PrintClones(
