@@ -159,6 +159,12 @@ func runCheck(c *cobra.Command, arguments []string) error {
 		return err
 	}
 
+	if mustMatch, _ := c.Flags().GetBool(baselineVersionMustMatchFlag); mustMatch {
+		if err := ensureBaselineIdentityMatches(bf, mergedConfig, path); err != nil {
+			return err
+		}
+	}
+
 	ctx, cancel := utils.ApplyTimeout(ctx, mergedConfig.Timeout)
 	defer cancel()
 

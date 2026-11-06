@@ -120,3 +120,99 @@ func TestExists(t *testing.T) {
 		t.Error("Exists should be true for present file")
 	}
 }
+
+func TestAnalyzerIdentityRoundTrip(t *testing.T) {
+	t.Parallel()
+
+	path := filepath.Join(t.TempDir(), "baseline.json")
+	identity := AnalyzerIdentity{Version: "v1.2.3", CacheVersion: 8, Policy: "0123456789abcdef"}
+
+	original := NewFile(5)
+	original.Add("abc", []string{"a.go", "b.go"}, 42)
+	original.SetAnalyzer(identity)
+
+	if err := original.Save(path); err != nil {
+		t.Fatalf("Save: %v", err)
+	}
+
+	loaded, err := Load(path)
+	if err != nil {
+		t.Fatalf("Load: %v", err)
+	}
+
+	if loaded.Analyzer == nil {
+		t.Fatal("loaded baseline lost its analyzer identity")
+	}
+
+	if *loaded.Analyzer != identity {
+		t.Errorf("loaded Analyzer = %+v, want %+v", *loaded.Analyzer, identity)
+	}
+}
+
+func TestAnalyzerIdentityAbsentInLegacyBaseline(t *testing.T) {
+	t.Parallel()
+
+	path := filepath.Join(t.TempDir(), "legacy.json")
+
+	legacy := NewFile(5)
+	if err := legacy.Save(path); err != nil {
+		t.Fatalf("Save: %v", err)
+	}
+
+	loaded, err := Load(path)
+	if err != nil {
+		t.Fatalf("Load: %v", err)
+	}
+
+	if loaded.Analyzer != nil {
+		t.Errorf("baseline saved without SetAnalyzer must load with nil Analyzer, got %+v", *loaded.Analyzer)
+	}
+}
+
+func TestAnalyzerIdentityCompatibleWith(t *testing.T) {
+	t.Parallel()
+
+	running := AnalyzerIdentity{Version: "v2.0.0", CacheVersion: 8, Policy: "aaa"}
+
+	tests := []struct {
+		name     string
+		recorded AnalyzerIdentity
+		want     bool
+	}{
+		{
+			name:     "same policy and revision",
+			recorded: AnalyzerIdentity{Version: "v1.0.0", CacheVersion: 8, Policy: "aaa"},
+			want:     true,
+		},
+		{
+			name:     "different version but same hash space",
+			recorded: AnalyzerIdentity{Version: "v1.0.0-dev", CacheVersion: 8, Policy: "aaa"},
+			want:     true,
+		},
+		{
+			name:     "different policy",
+			recorded: AnalyzerIdentity{Version: "v2.0.0", CacheVersion: 8, Policy: "bbb"},
+			want:     false,
+		},
+		{
+			name:     "different algorithm revision",
+			recorded: AnalyzerIdentity{Version: "v2.0.0", CacheVersion: 7, Policy: "aaa"},
+			want:     false,
+		},
+		{
+			name:     "unrecorded policy",
+			recorded: AnalyzerIdentity{},
+			want:     false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			if got := running.CompatibleWith(tt.recorded); got != tt.want {
+				t.Errorf("CompatibleWith(%+v) = %v, want %v", tt.recorded, got, tt.want)
+			}
+		})
+	}
+}
