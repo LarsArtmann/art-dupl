@@ -1,6 +1,6 @@
 # art-dupl
 
-**Last Updated:** 2026-09-28
+**Last Updated:** 2026-11-06 (claims re-verified against the binary: actionability pattern totals, node-type counts, output formats, transition layout)
 
 [![CI](https://github.com/LarsArtmann/art-dupl/actions/workflows/ci.yml/badge.svg)](https://github.com/LarsArtmann/art-dupl/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-e8a020.svg)](LICENSE)
@@ -47,7 +47,7 @@ Full documentation: **[art-dupl.lars.software](https://art-dupl.lars.software)**
 | CI baseline gating       | No                    | `baseline` + `check` subcommands                                                                                                               |
 | Diff visualization       | No                    | Side-by-side and inline diffs in HTML                                                                                                          |
 | Clone classification     | No                    | Type 1 / 2 / 3 labels + extractability scores                                                                                                  |
-| Actionability filtering  | No                    | Suppresses 33 boilerplate patterns + 4 property-engine labels (test scaffolding, error wrapping, Lock+Defer, etc.) - only in `--semantic` mode |
+| Actionability filtering  | No                    | Suppresses 42 pattern labels (37 boilerplate rules + 1 shape label + 4 property-engine labels: test scaffolding, error wrapping, Lock+Defer, etc.) - only in `--semantic` mode |
 | Parallel parsing         | No                    | Worker pool with auto-detect                                                                                                                   |
 | Programmatic SDK         | No                    | `pkg/artdupl` - Detector interface with streaming                                                                                              |
 
@@ -84,8 +84,11 @@ Controlled with `-m` / `--detection-methods`:
 | Simple JSON | `--simple-json`     | Lightweight JSON with impact scores                   |
 | SARIF       | `--sarif`           | GitHub Advanced Security / CodeQL integration         |
 | Plumbing    | `--plumbing` / `-p` | Machine-readable `file:startLine-endLine` for scripts |
+| LSP         | `--lsp`             | Per-file `publishDiagnostics`-style JSON              |
 
 Generate all formats at once: `art-dupl --all --output-dir ./reports`
+
+`stats` additionally emits CSV: `art-dupl stats --format csv`.
 
 Sort results: `--sort size` (default), `occurrence`, `hash`, `total-tokens`
 
@@ -225,7 +228,7 @@ Parsing (go/parser + templ parser)     ← parallel worker pool
     ↓
 AST Serialization → unified syntax.Node[]
     ↓
-Suffix Tree (Ukkonen's algorithm)      ← O(1) map-based transitions
+Suffix Tree (Ukkonen's algorithm)      ← sorted transition slices (ADR-0022)
     ↓
 Duplicate Search → syntax.Match
     ↓
@@ -236,7 +239,7 @@ Output Formatting (text, HTML, JSON, SARIF, plumbing, rich-text)
 
 | Package         | Purpose                                                 |
 | --------------- | ------------------------------------------------------- |
-| `suffixtree/`   | Ukkonen's suffix tree with O(1) map-based transitions   |
+| `suffixtree/`   | Ukkonen's suffix tree, sorted slice transitions (ADR-0022) |
 | `syntax/`       | AST handling, Go and Templ parsers, alpha-normalization |
 | `detection/`    | Multi-method detection coordination via goroutines      |
 | `hash/`         | XXH3 rolling hash-based detection                       |

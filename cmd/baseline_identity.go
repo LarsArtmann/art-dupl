@@ -65,6 +65,10 @@ func analyzerIdentity(cfg *config.Config) baseline.AnalyzerIdentity {
 // changing the exit code: the strict gate stays opt-in
 // (--baseline-version-must-match). Silence was the failure mode issue #13
 // reported — a whole tree of "new" clones and no statement about why.
+//
+// The notice is a labelled block rather than one long sentence: "recorded by"
+// and "running" are two 90-character identities, and a reader needs to compare
+// them line by line, not parse them.
 func warnIncomparableBaseline(
 	w io.Writer,
 	bf *baseline.File,
@@ -73,23 +77,30 @@ func warnIncomparableBaseline(
 ) {
 	running := analyzerIdentity(cfg)
 
-	switch {
-	case bf.Analyzer == nil:
-		fmt.Fprintf(
-			w,
-			"warning: baseline %s carries no analyzer identity (recorded before identity tracking); "+
-				"its hashes cannot be verified against %s. Re-record it with `art-dupl baseline`.\n",
+	if bf.Analyzer == nil {
+		fmt.Fprintf(w,
+			"warning: baseline %s carries no analyzer identity (recorded before identity tracking)\n"+
+				"  running: %s\n"+
+				"  effect : its hashes cannot be verified against this analyzer\n"+
+				"  fix    : re-record with `art-dupl baseline`, or accept an unverified comparison\n",
 			path, running.String(),
 		)
-	case !bf.Analyzer.CompatibleWith(running):
-		fmt.Fprintf(
-			w,
-			"warning: baseline %s was recorded by %s; running %s: clone-group hashes are not comparable, "+
-				"so every recorded group reads as new. Re-record the baseline with the running binary, "+
-				"or pass --%s to make this an error.\n",
-			path, bf.Analyzer.String(), running.String(), baselineVersionMustMatchFlag,
-		)
+
+		return
 	}
+
+	if bf.Analyzer.CompatibleWith(running) {
+		return
+	}
+
+	fmt.Fprintf(w,
+		"warning: baseline %s and the running analyzer are not comparable\n"+
+			"  baseline: %s\n"+
+			"  running : %s\n"+
+			"  effect  : clone-group hashes are not comparable, so every recorded group reads as new\n"+
+			"  fix     : re-record with `art-dupl baseline`, or pass --%s to make this an error\n",
+		path, bf.Analyzer.String(), running.String(), baselineVersionMustMatchFlag,
+	)
 }
 
 // ensureBaselineIdentityMatches refuses to compare against a baseline whose

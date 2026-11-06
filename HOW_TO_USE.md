@@ -1056,11 +1056,11 @@ Without the flag, the same mismatch is still announced on stderr (exit code
 unchanged), so a green verdict cannot hide an incomparable comparison:
 
 ```text
-warning: baseline .art-dupl-baseline.json was recorded by art-dupl v0.9.0
-(algorithm revision 8, hashing policy ...); running art-dupl v0.9.1 (...):
-clone-group hashes are not comparable, so every recorded group reads as new.
-Re-record the baseline with the running binary, or pass
---baseline-version-must-match to make this an error.
+warning: baseline .art-dupl-baseline.json and the running analyzer are not comparable
+  baseline: art-dupl v0.9.0 (algorithm revision 8, hashing policy d973d75f6075aa52)
+  running : art-dupl v0.9.1 (algorithm revision 9, hashing policy 1882541478cec25f)
+  effect  : clone-group hashes are not comparable, so every recorded group reads as new
+  fix     : re-record with `art-dupl baseline`, or pass --baseline-version-must-match to make this an error
 ```
 
 `--diff-report` prints the same warning for text output. `check --json` stays
