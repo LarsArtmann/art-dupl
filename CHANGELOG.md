@@ -51,6 +51,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **`check --json` emits a JSON document again** (2026-11-06): the document is produced by `JSONPrinter.OutputJSON`,
+  which only the main analysis path called, so `check --json` wrote nothing at all — a CI job parsing it saw an
+  empty stream rather than an empty result set. The document now includes `files_analyzed`, the new clone groups,
+  and a `baseline` block (`in_baseline`, `new`, `suppressed`, `total`) so machine consumers get the same accounting
+  the text footer prints.
+- **Baseline mismatches are announced by default** (2026-11-06): `check` without `--baseline-version-must-match`
+  (and every text `--diff-report` run) prints a stderr warning naming both analyzer identities and the remedy when
+  the baseline came from a different hashing policy, or predates identity tracking. Exit codes are unchanged, and
+  `--json` runs stay quiet.
+- **templ constant CSS property values participate in fingerprints** (2026-11-06): `color: red` and `color: blue`
+  in otherwise identical `css` blocks produced identical tokens, so unrelated rules grouped as clones. Values now
+  fold into the property hash (markup identity, same class as attributes and text): semantic mode collapses
+  whitespace runs but never token-sorts (CSS shorthand order is semantic), exact mode hashes verbatim, structural
+  mode ignores the value. CacheVersion 8 → 9; corpora at `-t 1/2/5` unchanged, minimal reproduction 2 groups → 1
+  (see [`docs/benchmarks/templ-css-value-2026-11-06.md`](docs/benchmarks/templ-css-value-2026-11-06.md)).
 - **templ constant attribute values participate in fingerprints** (2026-10-16, #6): `<p class="mt-4 …">` and `<p class="mt-2 …">` previously produced identical tokens — constant attribute values were dropped from the hash, so unrelated elements grouped as `[type-1]` exact clones. Values now fold into the attribute hash (markup identity, mirroring the Go KeyValueExpr field-name policy): differing `class`/`id`/`href` values no longer match; semantic mode sorts `class`-list tokens first, so `class="a b"` still matches `class="b a"` (CSS class order carries no meaning); exact mode hashes values verbatim; structural mode ignores them as before. CacheVersion 6 → 7 (v6 entries would replay value-blind hashes).
 - **`--disable-pattern` now disables the pattern everywhere** (2026-10-11): the flag previously only stopped group suppression; the recorded `non_actionable_pattern` label still named the pattern and generics candidacy stayed vetoed, so disabling `append-collector-tail` did not restore the suppressed TRUE-family hints. `printer.WithDisabledPatterns` threads the disabled set into `ProcessClones`'s label evaluation (run + diff-report paths), so a disabled pattern neither labels the group nor disqualifies candidacy. Pinned by `TestProcessClones_DisabledPatternRestoresCandidacy` and verified end-to-end (`--disable-pattern append-collector-tail` restores art-dupl's `17b5f676` family).
 - **`append-collector-tail` was production-inert until 2026-10-11** (plan T12, session 3): the original matcher read `Children[0]` of `AssignStmt` as the assignment target, but serialization emits `[rhs..., lhs...]` — the pattern never fired on real clones, and hand-built test fixtures used target-first order so they passed. Session 2's measured "surgical −7" was `option-apply-loop` alone (cqrs 54→46); the fixed matcher reaches 33. The rewritten tests parse real source via `golang.ParseSnippet` (unit), exercise the CLI end-to-end with `--show-suppressed --explain` label attribution (BDD), and the corpus sweep re-validated all 6 repos.
