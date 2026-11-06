@@ -146,6 +146,18 @@ asserts no clone groups. Canary-verified against the value-blind encoder. The
 test had to pass explicit file paths: handing the SDK a **directory** silently
 yields `ErrNoDuplicatesFound` (it is now a TODO item).
 
+### `--simple-json` was a lie (found during format smoke testing)
+
+Smoke-testing every output shape revealed that `--simple-json` emitted
+byte-identical FULL JSON: `OutputSimpleJSON` had no caller at all, so the
+documented "lightweight JSON with impact scores" format never existed on the
+CLI. Root cause is a shape shared with the `check --json` bug — the printer is
+chosen in one place (`newPrinterForFormat`) and the document in another
+(`handleJSONOutput`), which only knew one document. `handleJSONOutput` now
+takes the format and branches, `OutputSimpleJSON` sorts like every other
+output, and `TestSimpleJSONFormatEmitsImpactArray` pins the array shape with
+`{hash, score, instances}`.
+
 ### Cache gob-boundary guard
 
 `cache.TestFileCache_PreservesNodeClassificationFields` round-trips every

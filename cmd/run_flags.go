@@ -225,6 +225,7 @@ func runStandardAnalysis(
 		os.ReadFile,
 		duplChan,
 		config.SortCriteria(sortBy),
+		mergedConfig.OutputFormat,
 		mergedConfig.Threshold,
 		detectionMethodsToString(mergedConfig.DetectionMethods),
 		mergedConfig.DetectionMode.IsSemantic(),

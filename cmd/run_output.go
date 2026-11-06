@@ -60,6 +60,7 @@ func printDupls(
 	fread printer.ReadFile,
 	duplChan <-chan syntax.Match,
 	sortBy config.SortCriteria,
+	format config.OutputFormat,
 	threshold int,
 	detectionMethod string,
 	semantic bool,
@@ -85,7 +86,7 @@ func printDupls(
 		return fmt.Errorf("print clone groups (fread: %v, sortBy: %s): %w", fread, sortBy.String(), err)
 	}
 
-	err = handleJSONOutput(p, threshold, sortBy, detectionMethod)
+	err = handleJSONOutput(p, format, threshold, sortBy, detectionMethod)
 	if err != nil {
 		return fmt.Errorf("json output (threshold: %d, sortBy: %s, detection: %s): %w",
 			threshold, sortBy.String(), detectionMethod, err)
@@ -219,6 +220,7 @@ func printCloneGroups(
 
 func handleJSONOutput(
 	p printer.Printer,
+	format config.OutputFormat,
 	threshold int,
 	sortBy config.SortCriteria,
 	detectionMethod string,
@@ -226,6 +228,13 @@ func handleJSONOutput(
 	jsonPrinter, ok := p.(*printer.JSONPrinter)
 	if !ok {
 		return nil
+	}
+
+	// `--simple-json` builds the same printer but a different document. Without
+	// this branch it emitted byte-identical FULL JSON, so the documented
+	// "lightweight impact scores" format never existed on the CLI.
+	if format == config.OutputFormatSimpleJSON {
+		return jsonPrinter.OutputSimpleJSON(sortBy)
 	}
 
 	err := jsonPrinter.OutputJSON(threshold, sortBy, detectionMethod)

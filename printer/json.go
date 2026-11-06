@@ -296,7 +296,12 @@ func (p *JSONPrinter) OutputJSON(
 	return writeFormattedOutput(p.w, data, "JSON output")
 }
 
-func (p *JSONPrinter) OutputSimpleJSON() error {
+// OutputSimpleJSON emits the lightweight impact-score shape (a bare array of
+// `{hash, score, instances}`). It sorts first so the document is stable across
+// runs, mirroring OutputJSON.
+func (p *JSONPrinter) OutputSimpleJSON(sortBy config.SortCriteria) error {
+	SortCloneGroups(p.cloneGroups, sortBy)
+
 	simpleOutput := make(simpleJSONOutput, 0, len(p.cloneGroups))
 
 	for _, group := range p.cloneGroups {

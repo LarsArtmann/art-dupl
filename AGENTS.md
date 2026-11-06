@@ -266,6 +266,12 @@ only a `nix build`/`nix flake check` surfaces it.
   suppression summary), and exposes `Split()`; the pipeline-suppressed count is `DetectedTotal - Shown` (Shown already counts baseline-matched groups, which the filter drops silently — subtracting `InBaseline` again double-counts it, pinned by `TestCheckSummarySuppressedCountDoesNotDoubleCountBaseline`). The inner printer is
   wired with `VersionFooterSetter` too, so check summaries finally name their build. Pins:
   `TestCheckSummarySplitsBaselineFromNew`, `TestCheckSummaryReportsSuppressedGroups`.
+- **Format routing lives in ONE branch** (2026-11-06): `printer.NewJSON` backs both `--json` and
+  `--simple-json`, so the DOCUMENT choice happens in `cmd/run_output.go::handleJSONOutput`, which takes the
+  `config.OutputFormat` and calls `OutputJSON` or `OutputSimpleJSON(sortBy)`. Before that branch existed,
+  `--simple-json` emitted byte-identical full JSON (dead `OutputSimpleJSON`) — the documented impact-score shape
+  never reached the CLI (pin: `TestSimpleJSONFormatEmitsImpactArray`). Adding a format that shares a printer must
+  add its document branch here, not a second printer.
 - **`check --json` emits a document** (2026-11-06): the JSON document is produced by `JSONPrinter.OutputJSON`, which
   only the main analysis path called — so `check --json` printed **nothing at all**. `runCheck` now calls
   `handleJSONOutput` (plus `setJSONPrinterFilesCount`, otherwise `files_analyzed` is 0) and `JSONPrinter` implements

@@ -51,6 +51,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **`--simple-json` emits the documented lightweight format** (2026-11-06): the flag produced byte-identical FULL
+  JSON because `OutputSimpleJSON` had no caller — the "lightweight JSON with impact scores" shape (`[{hash, score,
+  instances}]`) never reached the CLI. The output layer now branches on the format and the simple document sorts
+  like every other output. Pin: `TestSimpleJSONFormatEmitsImpactArray`.
 - **`check` exits 1 when new clones are found, as documented** (2026-11-06): the gate verdict was returned as a
   validation error, so CI saw exit 2 — the code reserved for "your invocation was wrong". It is now a typed
   `ClonesFoundError` that exits 1 (matching `check --help` and the README), while a missing baseline or a bad flag

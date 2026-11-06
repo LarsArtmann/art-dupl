@@ -223,7 +223,7 @@ func runCheck(c *cobra.Command, arguments []string) error {
 	// emitted by OutputJSON, which only the main analysis path called.
 	setJSONPrinterFilesCount(inner, parseStats.FilesCount)
 
-	err = handleJSONOutput(inner, mergedConfig.Threshold, config.SortByHash,
+	err = handleJSONOutput(inner, config.OutputFormatJSON, mergedConfig.Threshold, config.SortByHash,
 		detectionMethodsToString(mergedConfig.DetectionMethods))
 	if err != nil {
 		return duplerrors.Wrap(err, duplerrors.AnalysisError, "check JSON output")

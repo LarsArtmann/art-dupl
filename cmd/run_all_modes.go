@@ -183,6 +183,7 @@ func writeFormatFile(
 		os.ReadFile,
 		matchChan,
 		sortByEnum,
+		format,
 		cfg.Threshold,
 		detectionMethodStr,
 		cfg.DetectionMode.IsSemantic(),

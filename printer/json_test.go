@@ -5,6 +5,7 @@ import (
 	"encoding/json/v2"
 	"testing"
 
+	"github.com/LarsArtmann/art-dupl/config"
 	"github.com/LarsArtmann/art-dupl/domain"
 	"github.com/LarsArtmann/art-dupl/internal/testutil"
 	"github.com/LarsArtmann/art-dupl/syntax"
@@ -309,7 +310,7 @@ func TestJSONPrinter_OutputSimpleJSON(t *testing.T) {
 	}
 	jp.totalClones = 2
 
-	err := jp.OutputSimpleJSON()
+	err := jp.OutputSimpleJSON(config.SortBySize)
 	if err != nil {
 		t.Fatalf("OutputSimpleJSON() error: %v", err)
 	}
@@ -338,7 +339,7 @@ func TestJSONPrinter_OutputSimpleJSON_Empty(t *testing.T) {
 	p := NewJSON(&buf, mockReadFile(""))
 	jp := p.(*JSONPrinter)
 
-	err := jp.OutputSimpleJSON()
+	err := jp.OutputSimpleJSON(config.SortBySize)
 	if err != nil {
 		t.Fatalf("OutputSimpleJSON(empty) error: %v", err)
 	}
