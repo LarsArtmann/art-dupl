@@ -8,6 +8,7 @@
 
 ### This Session (2026-06-12)
 
+<!-- check-rows:ledger -->
 | # | Task                                                                                   | Files Changed                                            | Impact                                                                                                           |
 | - | -------------------------------------------------------------------------------------- | -------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
 | 1 | **Add `IsValid()/String()` to `CloneCategory`, `ClonePriority`, `CloneActionability`** | `domain/processed_clone.go`, `domain/analysis_errors.go` | All 6 domain enum types now have consistent validation + stringer. 3 new error sentinels added.                  |
@@ -26,6 +27,7 @@
 
 ### Project Totals
 
+<!-- check-rows:ledger -->
 | Metric            | Value                     |
 | ----------------- | ------------------------- |
 | Go files          | 229                       |
@@ -44,9 +46,9 @@
 
 | Item                      | Status       | What's Left                                                                                                                                                                                                                                                                               |
 | ------------------------- | ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Unify enum patterns**   | Partial      | `CloneSeverity`/`HealthScore` have manual `MarshalJSON`/`UnmarshalJSON`; `CloneCategory`/`ClonePriority`/`CloneActionability` have `IsValid()/String()` but no JSON marshaling. Config's generic `marshalStringType`/`unmarshalStringType` helpers exist but aren't used by domain types. |
-| **Memory optimization**   | Not started  | TODO_LIST item about SIMD-friendly layouts and string interning — SIMD dead code was removed but no real optimization done. The project is pure Go, no SIMD. This TODO is stale/misleading.                                                                                               |
-| **TODO/Legacy detectors** | Defined-only | Fully implemented in `detection/todos.go` with comprehensive tests. Wired through `MultiDetector` registry. But not exposed via CLI — no `--method todos` flag.                                                                                                                           |
+| ~~**Unify enum patterns**~~ done — the pkg/enum shared helpers are adopted across the domain enums (AGENTS.md Enum pattern) | ~~Partial~~ | ~~`CloneSeverity`/`HealthScore` have manual `MarshalJSON`/`UnmarshalJSON`; `CloneCategory`/`ClonePriority`/`CloneActionability` have `IsValid()/String()` but no JSON marshaling. Config's generic `marshalStringType`/`unmarshalStringType` helpers exist but aren't used by domain types.~~ |
+| ~~**Memory optimization**~~ won't implement — alloc budgets own memory work (ADR-0022); the pure-Go project has no SIMD | ~~Not started~~ | ~~TODO_LIST item about SIMD-friendly layouts and string interning — SIMD dead code was removed but no real optimization done. The project is pure Go, no SIMD. This TODO is stale/misleading.~~ |
+| ~~**TODO/Legacy detectors**~~ superseded — the TODO/Legacy detectors were deleted; only the art-dupl and hash methods remain | ~~Defined-only~~ | ~~Fully implemented in `detection/todos.go` with comprehensive tests. Wired through `MultiDetector` registry. But not exposed via CLI — no `--method todos` flag.~~ |
 
 ---
 
@@ -56,12 +58,12 @@ From TODO_LIST.md (still open):
 
 | Priority  | Item                                                              | Effort                                     | Impact                              |
 | --------- | ----------------------------------------------------------------- | ------------------------------------------ | ----------------------------------- |
-| 🔴 HIGH   | Introduce ProcessedClone DTO to decouple Printer from syntax.Node | Large (111 test call sites)                | High — enables printer independence |
-| 🔴 HIGH   | Consolidate three parallel Clone types                            | Large                                      | High — reduces confusion            |
+| ~~🔴 HIGH~~ **done — domain.ProcessedClone landed; PrintClones consumes it (printer/printer.go:82)** | ~~Introduce ProcessedClone DTO to decouple Printer from syntax.Node~~ | ~~Large (111 test call sites)~~ | ~~High — enables printer independence~~ |
+| ~~🔴 HIGH~~ **done — CloneRef consolidation landed across every clone-bearing type (AGENTS.md)** | ~~Consolidate three parallel Clone types~~ | ~~Large~~ | ~~High — reduces confusion~~ |
 | ~~🔴 HIGH~~ **done — ADR-0022 []TokenValue layout** | ~~Implement TokenValue type with validation~~ | ~~Medium~~ |
-| 🟡 MEDIUM | Unify enum patterns (domain ↔ config generic helpers)             | Medium                                     | Medium — consistency                |
-| 🟢 LOW    | Refactor `syntax/golang/transform.go` (369L, 300L switch)         | Medium                                     | Low — readability                   |
-| 🟢 LOW    | Fix remaining LSP hints (unused params, unnecessary type args)    | Low                                        | Low — hygiene                       |
+| ~~🟡 MEDIUM~~ **done — the pkg/enum shared helpers are adopted (AGENTS.md Enum pattern)** | ~~Unify enum patterns (domain ↔ config generic helpers)~~ | ~~Medium~~ | ~~Medium — consistency~~ |
+| ~~🟢 LOW~~ **struck — tracked on ROADMAP (Architecture: transform.go table-driven handlers)** | ~~Refactor `syntax/golang/transform.go` (369L, 300L switch)~~ | ~~Medium~~ | ~~Low — readability~~ |
+| ~~🟢 LOW~~ **done — the gopls findings were closed in the 2026-09-29 pass (AGENTS.md)** | ~~Fix remaining LSP hints (unused params, unnecessary type args)~~ | ~~Low~~ | ~~Low — hygiene~~ |
 | ~~🟢 LOW~~ **done 2026-10 — native fuzz targets + the seed-corpus gate (cmd/fuzz_seed_gate_test.go)** | ~~Add fuzz tests for templ parser edge cases~~ | ~~Medium~~ |
 
 ---
@@ -70,6 +72,7 @@ From TODO_LIST.md (still open):
 
 Nothing is broken. But here's what's **misleading or wrong**:
 
+<!-- check-rows:ledger -->
 | Issue                                  | Severity                        | Detail                                                                                                                                        |
 | -------------------------------------- | ------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
 | **CHANGELOG had 3 lies**               | HIGH — was fixed this session   | (1) "Semantic OFF by default" → it's ON. (2) "SIMD optimizations" → dead code deleted. (3) "String interning" → never existed. All fixed now. |
@@ -93,7 +96,7 @@ Nothing is broken. But here's what's **misleading or wrong**:
 
 ### Codebase Hygiene
 
-5. **No code-generated stringer**: All domain enums are hand-written constants. `go generate` with `stringer` would ensure exhaustive switch coverage at compile time.
+~~5. **No code-generated stringer**: All domain enums are hand-written constants. `go generate` with `stringer` would ensure exhaustive switch coverage at compile time.~~ superseded — the exhaustive linter enforces switch coverage (AGENTS.md Linter Pareto); a codegen stringer was never needed
 
 ~~6. **`Memory optimization` TODO is stale**: References SIMD and string interning that never existed. Should be reworded or removed.~~ done — stale SIMD/interning TODO purged; real work shipped (ADR-0022 + InternFilename)
 
@@ -123,19 +126,19 @@ Nothing is broken. But here's what's **misleading or wrong**:
 
 | #  | Task                                                              | Impact                                                                | Effort | Rationale                                                             |
 | -- | ----------------------------------------------------------------- | --------------------------------------------------------------------- | ------ | --------------------------------------------------------------------- |
-| 6  | **Implement TokenValue type with validation**                     | MEDIUM                                                                | M      | Type safety at suffix tree boundary.                                  |
-| 7  | **Add fuzz tests for templ parser edge cases**                    | MEDIUM                                                                | M      | Templ parser handles 28 node types, fuzz coverage would catch panics. |
+| ~~6~~ **done — ADR-0022 []TokenValue layout** | ~~**Implement TokenValue type with validation**~~ | ~~MEDIUM~~ | ~~M~~ | ~~Type safety at suffix tree boundary.~~ |
+| ~~7~~ **done 2026-10 — native fuzz targets + the seed-corpus gate (cmd/fuzz_seed_gate_test.go)** | ~~**Add fuzz tests for templ parser edge cases**~~ | ~~MEDIUM~~ | ~~M~~ | ~~Templ parser handles 28 node types, fuzz coverage would catch panics.~~ |
 | ~~8~~ **struck — tracked on ROADMAP (Architecture: transform.go table-driven handlers)** | ~~**Refactor `syntax/golang/transform.go` to table-driven**~~ | ~~LOW~~ | ~~M~~ |
-| 9  | **Generate stringer for domain enums**                            | LOW                                                                   | S      | Compile-time exhaustive switch enforcement.                           |
+| ~~9~~ **superseded — the exhaustive linter enforces switch coverage (AGENTS.md); a codegen stringer was never needed** | ~~**Generate stringer for domain enums**~~ | ~~LOW~~ | ~~S~~ | ~~Compile-time exhaustive switch enforcement.~~ |
 | ~~10~~ **done — printer/pipeline_integration_test.go exercises parse→serialize→suffix-tree→actionability end-to-end (AGENTS.md)** | ~~**Add integration test: end-to-end clone detection + stats + output**~~ | ~~MEDIUM~~ | ~~M~~ |
-| 11 | **Fix remaining LSP hints: unused params, unnecessary type args** | LOW                                                                   | S      | Hygiene.                                                              |
+| ~~11~~ **done — the gopls findings were closed in the 2026-09-29 pass (AGENTS.md)** | ~~**Fix remaining LSP hints: unused params, unnecessary type args**~~ | ~~LOW~~ | ~~S~~ | ~~Hygiene.~~ |
 | ~~12~~ **superseded — the TODO/Legacy detectors were deleted; only the art-dupl and hash methods remain** | ~~**Add `--method todos` CLI flag and BDD test**~~ | ~~MEDIUM~~ | ~~S~~ |
 
 ### Tier 3: Documentation & Process
 
 | #  | Task | Impact                                                | Effort | Rationale |
 | -- | ---- | ----------------------------------------------------- | ------ | --------- |
-| ~~13~~ **done — ROADMAP.md exists and is maintained by the docs-health cadence** | ~~**Create ROADMAP.md** from scattered status reports   | ~~LOW~~    | ~~S~~         |
+| ~~13~~ **done — ROADMAP.md exists and is maintained by the docs-health cadence** | ~~**Create ROADMAP.md** from scattered status reports~~   | ~~LOW~~    | ~~S~~         |
 | ~~14~~ **done — domain.ProcessedClone landed; PrintClones consumes it (printer/printer.go:82)** | ~~**Add ADR for ProcessedClone DTO migration**~~ | ~~LOW~~ | ~~S~~ |
 | ~~15~~ **done — HOW_TO_USE.md covers CLI and SDK usage** | ~~**Write HOW_TO_USE.md examples for SDK**~~              | ~~MEDIUM~~ | ~~M~~         |
 | ~~16~~ **done — the examples SDK demo ships with real tests** | ~~**Clean up `examples/` — add real runnable examples**~~ | ~~LOW~~    | ~~S~~         |
@@ -147,7 +150,7 @@ Nothing is broken. But here's what's **misleading or wrong**:
 | -- | ------------------------------------------------------------------- | --------------------------------------------------------------------------- | ------ | -------------------------------------- |
 | ~~18~~ **done — `art-dupl version [--json]` ships (cmd/version_cmd.go; AGENTS.md)** | ~~**Add `--version` JSON output format**~~                                      | ~~LOW~~    | ~~S~~         |
 | ~~19~~ **fixed — lint is 106-linter clean since 2026-09-29 (AGENTS.md); the flaky os.Exit tests were fixed** | ~~**Add git hook for pre-push lint check**~~ | ~~LOW~~ | ~~S~~ |
-| 20 | **Benchmark: suffix tree vs hash detection performance comparison** | LOW                                                                         | M      | Data-driven method selection guidance. |
+| ~~20~~ **done — docs/benchmarks/ baselines + the CI Performance gate carry method comparisons (AGENTS.md)** | ~~**Benchmark: suffix tree vs hash detection performance comparison**~~ | ~~LOW~~ | ~~M~~ | ~~Data-driven method selection guidance.~~ |
 | ~~21~~ **done — `--quiet`/`-q` sets cfg.Quiet and suppresses progress output (AGENTS.md)** | ~~**Add `--quiet` flag for CI mode**~~                                          | ~~LOW~~    | ~~S~~         |
 | ~~22~~ **done — the templ semantic pipeline shipped (syntax/templ; AGENTS.md)** | ~~**Templ semantic mode**~~ | ~~MEDIUM~~ | ~~L~~ |
 | ~~23~~ **done — CSV is an OutputFormat value (config enums; stats + run output paths)** | ~~**CSV output for clone groups (not just stats)**~~ | ~~LOW~~ | ~~M~~ |
@@ -171,6 +174,7 @@ This is a product owner / architect decision. The codebase could support either 
 
 ## Health Dashboard
 
+<!-- check-rows:ledger -->
 | Area         | Status     | Detail                                                                   |
 | ------------ | ---------- | ------------------------------------------------------------------------ |
 | Build        | ✅ GREEN   | `go build ./...` — 0 errors                                              |

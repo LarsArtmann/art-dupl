@@ -2,8 +2,6 @@
 
 > **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 8 items verified resolved, 2 open (T1-T24 shipped (ADR-0023/0007); nested-scope shadowing open in ROADMAP).
 
-> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 8 items verified resolved, 2 open (T1-T24 shipped (ADR-0023/0007); nested-scope shadowing open in ROADMAP).
-
 **Date:** 2026-06-20 18:23
 **Branch:** fork
 **Head:** `b86e7de`
@@ -18,6 +16,7 @@ This session completed the foundation tier of the Superb Clone Detection Engine 
 
 ## Completed This Session
 
+<!-- check-rows:ledger -->
 | Task                               | Commit    | Impact                                                                                                                                                     |
 | ---------------------------------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **T6** — Clone Type Classification | `359f3d7` | `classifyCloneType()` compares Name fields across fragment subtrees; emits `clone_type` (type-1/2/3) in JSON, SARIF, and `--rich-text`.                    |
@@ -37,6 +36,7 @@ Now, semantic mode **alpha-normalizes** local identifiers before hashing. Two fu
 
 ### Dogfooding Validation (art-dupl on itself, `-t 20`)
 
+<!-- check-rows:ledger -->
 | Mode                     | Clone Groups | type-1 | type-2 |
 | ------------------------ | ------------ | ------ | ------ |
 | `--semantic` (default)   | 7            | 3      | **4**  |
@@ -73,6 +73,7 @@ The old `semantic bool` threaded through `job.Parse` is replaced by `golang.Dete
 
 ## Coverage
 
+<!-- check-rows:ledger -->
 | Package       | Before | After                              |
 | ------------- | ------ | ---------------------------------- |
 | domain        | 58.6%  | **100%**                           |
@@ -85,12 +86,12 @@ The old `semantic bool` threaded through `job.Parse` is replaced by `golang.Dete
 
 | Task                        | Status                     | Notes                                           |
 | --------------------------- | -------------------------- | ----------------------------------------------- |
-| ~~                          | T10 — Baseline/CI Mode     | Next                                            |
-| ~~                          | T11 — Extractability Score | Pending                                         |
-| ~~                          | T17 — Property Tests       | Pending                                         |
-| T1 — Statement Tokenization | Deferred                   | High risk; `serial()` still inflates thresholds |
-| ~~                          | T12-T16 — Architecture     | Pending                                         |
-| ~~                          | T20-T24 — Ecosystem        | Pending                                         |
+| ~~T10 — Baseline/CI Mode~~ done — T1-T24 shipped (ADR-0023/0007; the report header resolution) | ~~Next~~ | ~~—~~ |
+| ~~T11 — Extractability Score~~ done — the extractability engine ships (printer/extractability_engine.go; AGENTS.md) | ~~Pending~~ | ~~—~~ |
+| ~~T17 — Property Tests~~ done — T1-T24 shipped (ADR-0023/0007; the report header resolution) | ~~Pending~~ | ~~—~~ |
+| ~~T1 — Statement Tokenization~~ done — root cause fixed by statement-level tokenization (ADR-0023) | ~~Deferred~~ | ~~High risk; `serial()` still inflates thresholds~~ |
+| ~~T12-T16 — Architecture~~ done — T1-T24 shipped (ADR-0023/0007; the report header resolution) | ~~Pending~~ | ~~—~~ |
+| ~~T20-T24 — Ecosystem~~ done — T1-T24 shipped (ADR-0023/0007; the report header resolution) | ~~Pending~~ | ~~—~~ |
 
 ---
 
