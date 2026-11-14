@@ -1,0 +1,218 @@
+# art-dupl — Comprehensive Status Report
+
+> **Live remainder:** archived 2026-11-14 (cadence wave); every item in this report is struck or routed, and open work is owned by TODO_LIST.md and ROADMAP.md.
+
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 24 items verified resolved, 3 open (simd deleted; releases cut; clone types open).
+
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 24 items verified resolved, 3 open (simd deleted; releases cut; clone types open).
+
+**Date:** 2026-05-20 04:26\
+**Branch:** fork\
+**Head:** a8f166c `refactor: modernize config merge, test helpers, and actionability constants`\
+**Uncommitted Changes:** `cmd/flags.go` — moved `--only` flag from root-only to shared flags (fixes `art-dupl stats --only templ`)
+
+---
+
+## Executive Summary
+
+The project is in **excellent health**. All 23 packages compile clean, 0 lint issues, all 253 BDD specs green, average test coverage ~85%. The just-completed session fixed a flag availability bug where `--only` was unavailable on the `stats` subcommand. The codebase has been through a major modernization pass (2026-04-30 to 2026-05-17) that resolved 5 critical architecture issues, introduced semantic-as-default, and eliminated significant technical debt.
+
+**One session change:** `--only` flag moved to shared flags so `art-dupl stats --only templ` works.
+
+---
+
+## a) FULLY DONE ✅
+
+### Session Fix (2026-05-20)
+
+- **`--only` flag on stats subcommand** — Moved from root-only (`AddFlags`) to shared flags (`addSharedFlags`) in `cmd/flags.go`. The config builder (`applyChangedStringFlags`) already handled it. Stats now accepts `--only go` or `--only templ`.
+
+### Architecture Modernization (2026-04-30 — 2026-05-17)
+
+- **Semantic-as-default** — `DefaultConfig.Semantic` changed from `false` to `true`. `--structural` disables it. First-use noise reduced by 68%.
+- **Reflection-based config merge** — `mergeConfig()` reduced from 170-line manual field list to 30-line reflection-based merge. New Config fields no longer require touching merge code.
+- **Pipeline unification** — CLI and SDK share `detection.MultiDetector`. Fixed critical bug where SDK rebuilt suffix tree from scratch (double CPU/memory).
+- **Config extraction** — `DetectionConfig` extracted from `config.Config`. `MethodDetector` interface for pluggable detectors.
+- **Printer cleanup** — Deleted `printer/format.go` (moved `ParseFormat` to `config`), deleted `printer/sort_type.go` (moved `SortBy` to `config.SortCriteria`). Printer interface uses `config.SortCriteria`.
+
+### File Splits & Size Reduction (2026-04-30 — 2026-05-03)
+
+- `printer/html.go` 1484L → 4 files (365L, 523L, 315L, 302L)
+- `detection/todos.go` 352L → 3 files
+- `config/config.go` 344L → 3 files
+- `cmd/run_analysis.go` 450L → 3 files
+
+### Code Quality (2026-04-30 — 2026-05-17)
+
+- **Domain cleanup** — Removed 6 unused types (TokenCount, FileCount, CloneCount, Threshold, BytePosition) and 15 dead error variables
+- **Error modernization** — `errors.As` → `errors.AsType` (Go 1.24+). All `//nolint:err113` replaced with typed errors
+- **Config builder safety** — Replaced `panic(err)` in `cmd/config_builder.go` with proper error returns
+- **Config.Only typed as FileType** — Uses `FileType.Matches()` instead of hand-rolled matcher
+- **Timestamps as time.Time** — `domain.Analysis.CreatedAt` from `string` to `time.Time`
+- **Changed() tracking** — Eliminated FlagValues split brain; `--semantic`/`--structural` mutual exclusion handled properly
+
+### CI & Infrastructure
+
+- Lint: **0 issues** (golangci-lint)
+- Build: **clean** (just build)
+- Tests: **all 23 packages pass**
+- BDD: **253 specs all green**
+- Nix flake: **functional** with private dependency pattern for gogenfilter
+
+---
+
+## b) PARTIALLY DONE 🟡
+
+### CSV Output
+
+- **Stats CSV:** Works via `art-dupl stats --format csv`
+- **General clone CSV:** Uses manual `strings.Builder` formatting, not `encoding/csv`. Won't handle edge cases (commas in paths, quotes).
+
+### TODO/Legacy Detection Methods
+
+- **Implemented** in `detection/todos.go` (split into 3 files)
+- ~~**Wired** through `MultiDetector` and accessible via `-m` flag~~ **superseded — the TodoDetector/LegacyDetector were later deleted; only the art-dupl and hash methods remain.**
+- **Not documented** as user-facing features in README or HOW_TO_USE
+- **Status in FEATURES.md:** `DEFINED_ONLY` — may need user docs or deliberate `EXPERIMENTAL` labeling
+
+### `docs/status/` Archive
+
+- **334 files** accumulated. TODO_LIST says "archive old files, keep last 30 days" but it keeps growing. Not urgent but messy.
+
+---
+
+## c) NOT STARTED ⬜
+
+### From TODO_LIST.md
+
+| Priority | Item                                                      | Notes                                                         |
+| -------- | --------------------------------------------------------- | ------------------------------------------------------------- |
+| ~~HIGH~~ done — TokenValue is the suffix tree token type (ADR-0022) | ~~Implement TokenValue type with validation~~ | ~~Refactor suffixtree/syntax to use it~~ |
+| ~~MEDIUM~~ **Won't implement — won't implement — the SIMD code was deleted; alloc budgets own memory work.** | ~~Optimize memory layouts for SIMD-friendly data structures~~ | ~~+ string interning~~ |
+| ~~MEDIUM~~ done — CSV is an OutputFormat value (config enums; stats + run output paths) | ~~Implement CSV output using `encoding/csv`~~ | ~~General clone CSV, not stats~~ |
+| ~~MEDIUM~~ done — the pkg/enum shared helpers are adopted (AGENTS.md Enum pattern) | ~~Unify enum patterns~~ | ~~Domain enums → config's generic helpers~~ |
+| ~~MEDIUM~~ done — domain.ProcessedClone landed; PrintClones consumes it | ~~Introduce ProcessedClone DTO~~ | ~~Decouple Printer from syntax.Node (111 test call sites!)~~ |
+| ~~MEDIUM~~ done — CloneRef consolidation landed (AGENTS.md) | ~~Consolidate three parallel Clone types~~ | ~~`printer.clone`, `pkg/artdupl.Clone`, `domain.ProcessedClone`~~ |
+| ~~LOW~~ done — struck — tracked on ROADMAP (Architecture: transform.go table-driven handlers) | ~~Refactor `syntax/golang/transform.go`~~ | ~~355L, 300L switch statement~~ |
+| ~~LOW~~ done — fixed 2026-11-14 — the archive ritual is running (cadence gate) | ~~Archive old docs/status/ files~~ | ~~334 files~~ |
+| ~~LOW~~ done — fixed — the gopls findings were closed in the 2026-09-29 pass (AGENTS.md) | ~~Fix remaining LSP hints~~ | ~~Unused params, unnecessary type args~~ |
+| ~~LOW~~ **Won't implement — won't implement — the SIMD code was deleted; no TODOs remain.** | ~~Implement SIMD TODOs~~ | ~~6 items — though xxh3 already has SIMD built-in~~ |
+
+### Not on TODO_LIST but Notable
+
+- Multi-language support (blocked by `printer/clone_classify.go` importing `syntax/golang` directly)
+- Release automation (GoReleaser config exists but had multiple fixup commits — may need validation)
+- SDK documentation (pkg/artdupl exists but no dedicated docs)
+
+---
+
+## d) TOTALLY FUCKED UP 💥
+
+### Nothing is critically broken right now.
+
+All tests pass, lint is clean, build is clean. But here's what's fragile or regrettable:
+
+### `internal/simd/` — Dead Code
+
+- `Available()` always returns `false`. `Hash()` returns `nil`. `HashSlice()` returns `nil`.
+- Only 2 real TODOs left in the codebase are both in this package.
+- xxh3 already provides SIMD-optimized hashing natively — this abstraction adds zero value.
+- `hashSeqSIMD()` in `syntax/hash_simd.go` is just dead indirection calling `hashSeqFallback()`.
+- **Verdict:** Delete the entire package. Replace any call sites with direct xxh3 usage.
+
+### `docs/status/` — 334 Files
+
+- This is a mess. Most are session-generated. Should be archived aggressively.
+
+### Printer ↔ syntax.Node Coupling
+
+- `Printer.PrintClones(dups [][]*syntax.Node)` forces all 6 implementations to depend on AST internals.
+- Each printer independently calls `ProcessNodeRange()` and `extractContent()`.
+- Fix requires ProcessedClone DTO — touches **111 test call sites**. Deferred multiple times but the debt grows.
+
+---
+
+## e) WHAT WE SHOULD IMPROVE 🔧
+
+### Immediate Quality Gains
+
+1. **Delete `internal/simd/`** — Pure dead code. Zero risk, removes 163 lines and 2 stale TODOs.
+2. **Domain test coverage (67.2%)** — Lowest production package. New `ProcessedClone`/`ProcessedCloneGroup` types need tests.
+3. **`cmd/` coverage (72.2%)** — Test the new `--only` on stats. Test flag combinations.
+4. **CSV proper implementation** — Replace manual formatting with `encoding/csv`. Edge cases will bite eventually.
+5. **Archive `docs/status/`** — 334 files is absurd. Keep last 10, archive the rest.
+
+### Architecture Improvements
+
+6. **ProcessedClone DTO** — Decouple Printer from syntax.Node. This is the #1 architecture debt. 111 test call sites makes it scary but every session that passes makes it worse.
+7. **Consolidate Clone types** — `printer.clone`, `pkg/artdupl.Clone`, `domain.ProcessedClone` are 3 parallel representations. Unify.
+8. **`config/detection_method.go` (426L)** — God file holding DetectionMethod, OutputFormat, SortBy, DiffMode, FileType all in one. Split by concern.
+9. **`syntax/golang/transform.go` (355L)** — 300L switch statement. Could be table-driven.
+10. **Printer package size (44 files)** — Natural split: formatters (text, html, json, plumbing, sarif) vs processing (diff, classify, build).
+
+### Process Improvements
+
+11. **ADR discipline** — Only 1 ADR exists (0001-map-based-transition). Major decisions like semantic-as-default, reflection merge, ProcessedClone DTO should have ADRs.
+12. **BDD coverage for edge cases** — Stats subcommand with `--only`, config file + CLI flag interaction, incremental mode edge cases.
+13. **Error handling consistency** — `cmd/` uses structured `duplerrors.Wrap*`, most other packages use bare `fmt.Errorf`. Pick one and standardize.
+14. **`//nolint:` audit** — 71 directives. Some may be stale after refactoring.
+
+---
+
+## f) Top #25 Things We Should Get Done Next
+
+<!-- check-rows:ledger -->
+| #  | Item                                                                                          | Impact | Effort            | Priority       |
+| -- | --------------------------------------------------------------------------------------------- | ------ | ----------------- | -------------- |
+| ~~1~~ done — internal/simd was deleted entirely | ~~Delete `internal/simd/` package (dead code)~~ | ~~Low~~ | ~~Tiny~~ | ~~Quick win~~ |
+| ~~2~~ done — syntax/hash_simd.go was deleted with the dead indirection | ~~Delete `hashSeqSIMD()` dead indirection in syntax/hash_simd.go~~ | ~~Low~~ | ~~Tiny~~ | ~~Quick win~~ |
+| ~~3~~ done — fixed 2026-11-14 — the archive ritual is running (cadence gate) | ~~Archive `docs/status/` — keep last 10, move rest to `docs/status/archive/`~~ | ~~Medium~~ | ~~Small~~ | ~~Cleanup~~ |
+| ~~4~~ done — the domain package test suite shipped (cross_package_alias_test.go et al.) | ~~Add tests for `domain/` — target 80%+ coverage (currently 67.2%)~~ | ~~Medium~~ | ~~Medium~~ | ~~Quality~~ |
+| ~~5~~ done — the --only stats coverage lives in bdd/stats_command_test.go:511 | ~~Add BDD test for `art-dupl stats --only templ` and `--only go`~~ | ~~Medium~~ | ~~Small~~ | ~~Coverage~~ |
+| ~~6~~ done — bdd/stats_command_test.go:258 runs stats --format csv | ~~Add BDD test for `art-dupl stats --format csv`~~ | ~~Low~~ | ~~Small~~ | ~~Coverage~~ |
+| ~~7~~ done — CSV is an OutputFormat value (config enums; stats + run output paths) | ~~Implement CSV output using `encoding/csv` (general clone CSV)~~ | ~~Medium~~ | ~~Small~~ | ~~Correctness~~ |
+| ~~8~~ done — CloneRef consolidation landed (AGENTS.md) | ~~Consolidate three parallel Clone types into unified hierarchy~~ | ~~High~~ | ~~Large~~ | ~~Architecture~~ |
+| ~~9~~ done — domain.ProcessedClone landed; PrintClones consumes it (printer/printer.go:82) | ~~Introduce ProcessedClone DTO — decouple Printer from syntax.Node~~ | ~~High~~ | ~~Large (111 sites)~~ | ~~Architecture~~ |
+| ~~10~~ done — the config enums are split per type (diff_mode.go, sort_criteria.go, et al.) | ~~Split `config/detection_method.go` (426L) — separate FileType, OutputFormat, SortBy, DiffMode~~ | ~~Medium~~ | ~~Medium~~ | ~~Code quality~~ |
+| ~~11~~ done — struck — tracked on ROADMAP (Architecture: transform.go table-driven handlers) | ~~Refactor `syntax/golang/transform.go` — table-driven 300L switch~~ | ~~Medium~~ | ~~Medium~~ | ~~Code quality~~ |
+| ~~12~~ done — printer is split into sub-packages (printer/actionability/, printer/stats/, printer/finding/) | ~~Split printer/ into sub-packages (formatters vs processing)~~ | ~~Medium~~ | ~~Large~~ | ~~Architecture~~ |
+| ~~13~~ done — the typed errors/ wrapping convention holds (AGENTS.md) | ~~Standardize error handling — structured errors everywhere or bare fmt.Errorf~~ | ~~Medium~~ | ~~Medium~~ | ~~Consistency~~ |
+| ~~14~~ done — TokenValue is the suffix tree token type (ADR-0022) | ~~Implement TokenValue type with validation~~ | ~~Medium~~ | ~~Medium~~ | ~~Type safety~~ |
+| ~~15~~ done — the pkg/enum shared helpers are adopted (AGENTS.md Enum pattern) | ~~Unify enum patterns — domain enums → config's generic helpers~~ | ~~Low~~ | ~~Medium~~ | ~~Consistency~~ |
+| ~~16~~ done — docs/adr/0002-semantic-as-default.md | ~~Add ADR for semantic-as-default decision~~ | ~~Low~~ | ~~Tiny~~ | ~~Documentation~~ |
+| ~~17~~ done — docs/adr/0003-reflection-based-config-merge.md | ~~Add ADR for reflection-based config merge~~ | ~~Low~~ | ~~Tiny~~ | ~~Documentation~~ |
+| ~~18~~ done — SDK documentation lives in SDK_DESIGN.md + the README SDK section | ~~Write SDK documentation for `pkg/artdupl/`~~ | ~~Medium~~ | ~~Medium~~ | ~~Documentation~~ |
+| ~~19~~ **Won't implement — won't implement — the nolint set is curated via the lint config; no separate audit was needed.** | ~~Audit 71 `//nolint:` directives — remove stale ones~~ | ~~Low~~ | ~~Small~~ | ~~Cleanup~~ |
+| ~~20~~ done — superseded — the TODO/Legacy detectors were deleted; only the art-dupl and hash methods remain | ~~Document TODO/Legacy detection methods as experimental or remove DEFINED_ONLY status~~ | ~~Low~~ | ~~Small~~ | ~~Documentation~~ |
+| ~~21~~ done — fixed — the gopls findings were closed in the 2026-09-29 pass (AGENTS.md) | ~~Fix LSP hints: unused params, unnecessary type args in tests~~ | ~~Low~~ | ~~Small~~ | ~~Polish~~ |
+| ~~22~~ done — canonical filename interning lives in syntax/intern.go | ~~Implement string interning for AST processing memory optimization~~ | ~~Medium~~ | ~~Large~~ | ~~Performance~~ |
+| ~~23~~ **Won't implement — won't implement — the SIMD code was deleted; alloc budgets own memory work.** | ~~Optimize memory layouts for SIMD-friendly data structures~~ | ~~Medium~~ | ~~Large~~ | ~~Performance~~ |
+| ~~24~~ done — .goreleaser.yaml ships with the release lane | ~~Validate GoReleaser release config — had 5+ fixup commits~~ | ~~Medium~~ | ~~Small~~ | ~~Infrastructure~~ |
+| ~~25~~ done — the lib/ package was removed from the tree | ~~Remove `lib/` legacy package (listed as "being phased out" in AGENTS.md)~~ | ~~Low~~ | ~~Small~~ | ~~Cleanup~~ |
+
+---
+
+## g) Top #1 Question I Cannot Figure Out Myself
+
+**Should `internal/simd/` be deleted entirely, or is there a genuine future plan for ARM64/architecture-specific SIMD beyond what xxh3 already provides?**
+
+The package has been a stub since creation. xxh3 already ships with runtime SIMD detection for amd64 and arm64. The only caller (`syntax/hash_simd.go`) immediately falls through to the xxh3 fallback. Two TODOs reference ARM64 SIMD but the code path is never reached. If there's no plan for custom SIMD operations beyond hashing, this entire package (163 lines + 2 TODOs) is dead weight.
+
+---
+
+## Scorecard
+
+<!-- check-rows:ledger -->
+| Metric              | Value                            | Trend                        |
+| ------------------- | -------------------------------- | ---------------------------- |
+| Build               | ✅ Clean                         | Stable                       |
+| Lint                | ✅ 0 issues                      | Stable                       |
+| Tests               | ✅ 253 specs green               | Stable                       |
+| Avg Coverage        | ~85%                             | Stable                       |
+| Packages below 80%  | 3 (domain 67%, cmd 72%, job 77%) | Slightly worse (cmd was 75%) |
+| Open TODOs          | 2 (both in dead simd/)           | Stable                       |
+| Direct Dependencies | 8                                | Lean                         |
+| Dead Code           | `internal/simd/` (163L)          | Unchanged                    |
+| Files > 300L        | ~6 prod files                    | Improved (was more)          |
+| docs/status/ files  | 334                              | Growing                      |
+| ADRs                | 1                                | Stale                        |

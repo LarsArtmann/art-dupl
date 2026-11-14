@@ -1,6 +1,6 @@
 # Roadmap
 
-**Last Updated:** 2026-10-11
+**Last Updated:** 2026-11-14 (docs-gates pass 3 sweep; the pass-2 rows below cover all surfaced candidates)
 
 **No timeline.** Aspirational items for future consideration. Items graduate to `TODO_LIST.md` when they become actionable.
 

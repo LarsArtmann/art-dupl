@@ -4,13 +4,14 @@ Point-in-time snapshots (status reports, plans) whose items are fully resolved
 or explicitly routed. Archived ≠ deleted: every file here is a historical
 record; nothing in it is re-litigated.
 
-**Last counted: 2026-10-05 (post-pass recount) — 376 snapshots: 57 regime A,
-23 regime A-lite, 296 regime B.** Counts are computed, never asserted:
+**Last counted: 2026-11-14 (docs-gates pass 3 wave) — 536 snapshots: 273 regime A,
+23 regime A-lite, 240 regime B.** Counts are computed, never asserted:
 
 ```bash
 cd docs/status/archived
-STRUCK=$(grep -l '~~' *.md | sort); BANNER=$(grep -l 'Resolution (2026-10-05)' *.md | sort)
-# A = |STRUCK|, A-lite = |BANNER \ STRUCK|, B = snapshots − A − A-lite
+SNAP=$(ls *.md | grep -v '^README.md$' | grep -v '^MANIFEST-' )
+STRUCK=$(grep -l '~~' $SNAP | sort); BANNER=$(grep -l 'Resolution (2026-10-05)' $SNAP | sort)
+# A = |STRUCK|, A-lite = |BANNER \ STRUCK|, B = |snapshots| − A − A-lite
 ```
 
 `README.md` (this file) and `MANIFEST-*.md` are excluded from the snapshot

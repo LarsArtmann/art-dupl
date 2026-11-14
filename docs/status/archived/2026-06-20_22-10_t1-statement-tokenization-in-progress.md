@@ -193,8 +193,8 @@ All Tier S/A/B/C/D/E tasks from the comprehensive plan (`docs/planning/2026-06-2
 | ~~19~~ done — root `--diff-report` flag ( `cmd/flags.go` ), pinned by `bdd/diff_report_test.go` | ~~**`check --diff` flag** (show what changed since baseline)~~ | ~~Medium~~ | ~~30min~~ | ~~Low~~ | ~~—~~ |
 | ~~20~~ NOT-DO — re-running `art-dupl baseline` re-snapshots ( `cmd/baseline_cmd.go` help text); merge flag never adopted | ~~**`baseline --update` flag** (merge new clones)~~ | ~~Medium~~ | ~~30min~~ | ~~Low~~ | ~~—~~ |
 | ~~21~~ done — SDK `Options.DetectionMethods []DetectionMethod` ( `pkg/artdupl/types.go` ); no Semantic bool ever shipped | ~~**SDK: expose DetectionMode** (replace Semantic bool)~~ | ~~Medium~~ | ~~30min~~ | ~~Low~~ | ~~—~~ |
-| ~~22~~ superseded — DTO decoupling landed instead ( `docs/status/2026-07-01_04-59_post-dto-decoupling.md` ); no ReadOnlyNode interface | ~~**Printer decoupling** (ReadOnlyNode interface)~~ | ~~Medium~~ | ~~80min~~ | ~~Medium~~ | ~~—~~ |
-| ~~23~~ done at `e505886e` (concurrent commit, per `docs/status/2026-07-24_19-48_clone-type-consolidation-status.md`) | ~~**Clone type consolidation** (CloneLocation shared type)~~ | ~~Medium~~ | ~~90min~~ | ~~Medium~~ | ~~#22~~ |
+| ~~22~~ superseded — DTO decoupling landed instead ( `docs/status/archived/2026-07-01_04-59_post-dto-decoupling.md` ); no ReadOnlyNode interface | ~~**Printer decoupling** (ReadOnlyNode interface)~~ | ~~Medium~~ | ~~80min~~ | ~~Medium~~ | ~~—~~ |
+| ~~23~~ done at `e505886e` (concurrent commit, per `docs/status/archived/2026-07-24_19-48_clone-type-consolidation-status.md`) | ~~**Clone type consolidation** (CloneLocation shared type)~~ | ~~Medium~~ | ~~90min~~ | ~~Medium~~ | ~~#22~~ |
 | ~~24~~ done — type-aware mode ( `--type-aware`, `pkg/artdupl` Options.TypeAware, AGENTS.md) | ~~**go/types normalizer upgrade** (precise scope resolution)~~ | ~~Medium~~ | ~~60min~~ | ~~Medium~~ | ~~#2~~ |
 | 25 | **Performance: profile normalizer overhead** | Medium | 20min | Low | #2 |
 

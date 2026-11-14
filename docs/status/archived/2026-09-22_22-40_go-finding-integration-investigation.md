@@ -1,0 +1,112 @@
+# Status Report: go-finding Integration Investigation Session
+
+> **Live remainder:** archived 2026-11-14 (cadence wave); every item in this report is struck or routed, and open work is owned by TODO_LIST.md and ROADMAP.md.
+
+**Date:** 2026-09-22 22:40 CEST
+**Session scope:** Two turns, read-only. Turn 1: answer "why doesn't art-dupl use go-finding and its ecosystem?". Turn 2: this report. Zero production code touched; zero repo mutations by this session (auto-commit daemon may have picked up nothing).
+
+---
+
+## Self-Critique (what I forgot / could have done better)
+
+1. **Assertion-before-verification (process lapse, claims were correct).** In turn 1 I asserted two facts sourced from `docs/status/2026-09-19_08-33_go-finding-gap2-adapter-status.md` without opening code: (a) "no test pipes art-dupl's real SARIF bytes through `FindingsFromSARIF`", (b) "three interchange guarantees pinned by tests". I only verified both in turn 2 (`printer/finding/finding_test.go:384` — `TestSARIFRoundTripPreservesGroupID` does `report.ToSARIF()` → `FindingsFromSARIF`, i.e. go-finding's own serializer, NOT art-dupl's hand-rolled CLI SARIF). Both claims true, but the verification debt was paid one turn late. This is exactly the `verify-external-claims` anti-pattern (inbound flavor: status reports are external claims too).
+2. **Never read the adapter source.** All adapter behavior claims (metadata keys, 254 lines, GroupID contract) came from the 2026-09-19 status report and AGENTS.md. I never opened `printer/finding/finding.go`. Correct outcome, lucky process.
+3. **Never ran the tests.** I cited "pinned by tests" without executing `go test ./printer/finding/...` once this session.
+4. **TODO_LIST.md unchecked.** I reported "three known gaps" without confirming whether they are already tracked as TODO_LIST tasks — risk of re-surfacing queued work as if new.
+5. **Dead-end call:** `mcp_qmd_get` with relative path `../go-finding/...` failed (QMD collections don't cover the sibling repo) — wasted call; `view` worked immediately after.
+6. **Noisy shell:** first combined bash command exited 1 (final grep in a chain found no matches → non-zero exit, indistinguishable from failure at a glance). Re-ran split. Same again on the ADR-dir grep.
+7. **Soft close:** ended turn 1 with an open offer ("Want me to close any of those three?") instead of a decisive recommended next action. Acceptable while waiting for instructions, but less useful than a ranked recommendation.
+
+---
+
+## a) FULLY DONE (this session)
+
+| # | Item                                                                                                                                                                                                                                                                                                                                                                     | Evidence                                                                          |
+| - | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------- |
+| ~~1~~ done — verified — session record | ~~Root-cause answer delivered: art-dupl DOES use go-finding — as output/interchange layer at the boundary, by deliberate decision, not oversight~~ | ~~go.mod:88 (`go-finding v1.12.0` direct dep), `printer/finding/finding.go` adapter~~ |
+| ~~2~~ done — verified — session record | ~~Located and fully read the governing decision doc: `go-finding/docs/feedback/2026-06-05_art-dupl-integration-evaluation.md` (373 lines) — verdict: adopt as consumer-side output layer, NEVER internal representation; appendix records the rejected alternative (domain mismatch: findings = single issue/position, art-dupl = clone groups = N-location relationships)~~ | ~~Read lines 1-373~~ |
+| ~~3~~ done — verified — session record | ~~Verified production wiring state: adapter is wired at **constant level only** — `printer/sarif.go` imports it for `SARIFPropGroupID`; `ToFindings`/`ToReport`/`GroupIDOf` have **zero production callers** (grep across `printer/`, `cmd/`, tests excluded)~~ | ~~grep, 2026-09-22~~ |
+| ~~4~~ done — verified — session record | ~~Confirmed NO ADR exists for the go-finding adoption decision (`docs/adr/` stops at 0024-json-v1-api-behind-canonical-marshaler) — the status report's item 23 remains open~~ | ~~`ls docs/adr/`~~ |
+| ~~5~~ done — verified — session record | ~~Verified test-suite shape (turn 2): 17 test functions in `finding_test.go`, incl. the three interchange guarantees (SARIF round-trip :384, LSP round-trip :435, Report.GroupFindings reconstruction :336) and 10 ToFindings behavior tests~~ | ~~grep + view~~ |
+| ~~6~~ done — verified — session record | ~~Answer included the three known gaps with an offer of follow-up (user then requested this report instead)~~ | ~~turn-1 reply~~ |
+
+## b) PARTIALLY DONE (project-level work surfaced by this session — none of it authored this session)
+
+| #  | Item                   | State                                                                                                                                           |
+| -- | ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| ~~1~~ done — provider LIVE in BuildFlow since 2026-09-25 (ADR-0025, ADR-0028) | ~~go-finding adoption overall~~ |
+| ~~2~~ done — GroupID round-trips pinned by tests (AGENTS.md go-finding guarantees) | ~~GroupID identity~~ |
+| ~~3~~ done — local copy at docs/feedback/2026-06-05_art-dupl-integration-evaluation.md | ~~Evaluation-doc linkage~~ | ~~The verdict doc lives only in the go-finding repo; art-dupl readers following its path hit a dead end (status item 24). Not fixed this session.~~ |
+| ~~4~~ done — ADR-0025 + ADR-0028 formalize the adoption | ~~Adoption decision formalization~~ |
+
+## c) NOT STARTED (untouched this session; known-open from the 2026-09-19 report)
+
+1. ~~**ADR for the go-finding adoption + GroupID=hash contract** (former item 23; ADR-0024 slot was taken by the JSON marshaler).~~ resolved by alternative — AGENTS verdict + ADR-0025 SDK-surface decision
+2. ~~**Integration test piping art-dupl's REAL `--sarif` CLI bytes through `FindingsFromSARIF`** (former item 10) — the existing round-trip test exercises go-finding's own `ToSARIF`, so art-dupl's hand-rolled SARIF emitter is import-verified only by a one-off live CLI run, not a committed test.~~ done — bdd/sarif_gofinding_integration_test.go pipes real CLI SARIF bytes
+3. ~~**Local copy or summary of the evaluation doc** inside art-dupl (former item 24).~~ done — copied to docs/feedback/2026-06-05_art-dupl-integration-evaluation.md
+~~4. **CLI `--output finding` format** — not started **by decision** (rejected as YAGNI; SARIF is the wire format). Listed because "not started" ≠ "forgotten": it remains the most plausible full-adoption completion if product intent changes.~~ won't implement — YAGNI-rejected 2026-09-19; ADR-0025 keeps CLI classification-only
+5. ~~Everything else in the broader project backlog (out of scope per user instruction; not researched this session).~~ done — moot — backlog out of scope
+
+## d) TOTALLY FUCKED UP
+
+**Nothing.** This session was read-only: no production code, no docs, no git state touched. No breakage possible, none found.
+
+The honest worst-candidate is the self-critique item 1: I stated two unverified claims in turn 1. No damage resulted (both claims verified true in turn 2), but the discipline slipped. That is a process lapse, not wreckage — recording it here so the pattern is visible.
+
+## e) WHAT WE SHOULD IMPROVE
+
+1. ~~**Verify at assertion time, not next turn.** Any claim sourced from a status report, AGENTS.md, or feedback doc gets a 10-second code grep before it is spoken. Status reports are external claims.~~ done — moot — process lesson, recorded
+2. ~~**Run the tests you cite.** "Pinned by tests" requires having executed them (or at minimum reading the test body — which I only did in turn 2).~~ done — moot — process lesson, recorded
+3. ~~**Read the source, not the report about the source**, when the source is 254 lines and one `view` away.~~ done — moot — process lesson, recorded
+4. ~~**Check TODO_LIST.md before declaring gaps untracked** — avoids re-reporting queued work.~~ done — moot — process lesson, recorded
+5. ~~**Avoid grep-at-the-end-of-chained-bash** — a no-match exit code reads as tool failure. Separate find-greps from verification-greps.~~ done — moot — process lesson, recorded
+6. ~~**Close with a ranked recommendation, not an open menu** — even when waiting for instructions, "I would do X first" costs one line.~~ done — moot — process lesson, recorded
+7. ~~**Skip QMD for sibling-repo paths** — collections here don't index `~/projects/go-finding`; go straight to `view`.~~ done — moot — process lesson, recorded
+
+## f) Next Tasks (up to 50 — brainstorm, ROADMAP fuel; prioritized by impact)
+
+**P0 — closes real verification/wiring gaps**
+
+1. ~~Committed integration test: run the actual CLI with `--sarif` on a synthetic duplicate, pipe the emitted bytes through `FindingsFromSARIF`, assert GroupIDs restore (closes the import-side gap; converts the 2026-09-19 one-off live proof into a permanent gate).~~ done — bdd/sarif_gofinding_integration_test.go
+   2. ~~Decision + ADR: is the adapter's library-only surface final, or does a production path (SDK `Detector.Report()` / CLI flag) come? Record either way as an ADR (frees the stale "item 23").~~ resolved by alternative — production path shipped (pkg/provider toolsdk Detector); ADR-0025
+2. ~~Run `go test ./printer/finding/...` this session's successor — confirm all 17 green on current HEAD (never executed this session).~~ done — verified — printer/finding suite runs green in the default suite
+3. ~~Copy or summarize the integration-evaluation doc into art-dupl docs; fix the dead path cited by issue #1.~~ done — docs/feedback copy exists
+   5. ~~Verify the three known gaps exist in TODO_LIST.md; add any that are missing (HARVEST from this report).~~ done — TODO_LIST harvest tracks issues #2/#4, detector, dependabot
+
+**P1 — reduces drift / duplication**
+6. ~~Three-names-one-concept: add a cross-reference table (SARIF property ↔ JSON field ↔ Finding field) to AGENTS.md or FEATURES.md.~~ done — AGENTS GroupID contract + FEATURES adapter row document the mappings
+7. ~~Evaluate go-finding's `Template` builder API (`WithGroupID`) to replace hand-construction in `toFinding` (former item 19).~~ done — Template builder with WithGroupID (printer/finding/finding.go)
+8. ~~Consider go-finding `Tags` (`duplicate`, `type-1`/`type-2`) instead of/in addition to metadata keys (former item 47).~~ done — cloneTags emitted via WithTags (printer/finding/finding.go)
+9. ~~Wire `Report.Summary` (`FilesScanned`, `DurationMs`) if/when any CLI wiring exists — currently unused (former item 38).~~ **Superseded — tracked in TODO_LIST T07b (coverage-evidence channel).**
+10. ~~Drop local `SARIFPropGroupID` if go-finding upstream exports the SARIF property key (former item 25).~~ **Won't implement — dropped — local SARIFPropGroupID constant retained.**
+11. ~~Add `printer → finding-output → go-finding` edge to the architecture-understanding component diagram (former item 45).~~ done — finding-output is an arch-lint component (AGENTS.md)
+12. ~~Add `go-finding` to `.github/dependabot.yml` (former item 32; BuildFlow has a step).~~ done — .github/dependabot.yml exists
+13. ~~Record the "latest stable, core-API-diff-checked" go-finding upgrade policy in AGENTS.md (former item 33).~~ done — upgrade policy in AGENTS.md (go-finding upgrade policy, 2026-10-05)
+
+**P2 — hygiene surfaced by this session**
+14. ~~Verify FEATURES.md reflects that the adapter is library-only (update if the P0-2 decision says so).~~ resolved by alternative — FEATURES documents adapter + shipped provider
+15. ~~Check adapter test coverage of `NonActionablePattern`/`--explain` metadata keys (are they exercised in `finding_test.go`?).~~ done — finding_test.go exercises MetadataKeyNonActionablePattern
+16. ~~Diagnose the LSP cross-repo lying (`golangci_lint_ls` reported "no required module provides package go-finding" while in go.mod; gopls likely outside devShell env) — former known issue, root cause undiagnosed.~~ done — moot — LSP environment issue, undiagnosed and unused since
+17. ~~Reconcile the concurrent session's TODO_LIST edits against this backlog (former item 22).~~ done — moot — superseded by TODO_LIST as the single ledger
+18. ~~Watch-item: upstream decision D8 — revisit `RelatedRef.Metadata` when a SECOND consumer needs per-relationship metadata.~~ done — moot — watch-item; no second consumer to date
+19. ~~Watch-item: go-finding `GroupID` validation evolution (128-byte/machine-safe rules) — our 16-hex hashes are far inside; pin a test only if upstream tightens.~~ done — moot — watch-item; upstream never tightened
+
+**P3 — ROADMAP fuel (deliberately not scheduled)**
+~~20. Native `--output finding` CLI format (rejected as YAGNI 2026-09-19; revisit only with a named consumer).~~ won't implement — YAGNI-rejected 2026-09-19; ADR-0025 reaffirms
+21. ~~SDK streaming findings surface (`Options` flag emitting `iter.Seq[finding.Finding]`).~~ resolved by alternative — pkg/provider Detect ships; LIVE in BuildFlow 2026-09-25
+22. ~~HTML report perm-links carrying GroupID anchors (today: `groupAnchorID` from hash; could unify with finding GroupID).~~ **Won't implement — dropped — anchors remain hash-based.**
+23. ~~Baseline/check subcommands emitting findings (they currently bypass the adapter entirely).~~ **Won't implement — dropped — baseline/check bypass the adapter by design.**
+24. ~~Evaluate `go-error-family` (transitive via go-finding) for a direct-use policy or stay transitive-only.~~ **Won't implement — dropped — stays transitive-only.**
+~~25. LSP diagnostic server fed by `ToLSP()` — evaluated and rejected in the evaluation doc; revisit only if IDE demand materializes.~~ won't implement — rejected in the go-finding evaluation; revisit only with IDE demand
+
+(Stopped at 25 substantive items; padding to 50 would fabricate work. The status-report skill notes: larger N is a brainstorm, not a commitment list.)
+
+## g) Questions I cannot figure out from the repo
+
+1. ~~**Product intent:** Is a native go-finding output surface (CLI flag or SDK method) planned, or is "adapter as public library API, SARIF as the wire" the final architecture? This single answer decides P0-2, item 20, and item 21.~~ done — decided — library-only is final (ADR-0028)
+2. ~~**Downstream consumer:** Is another of your tools actually waiting to consume art-dupl findings right now? If yes, P0-1 + P0 wiring jump the queue; if no, the library-only ratification path is cheaper.~~ done — decided — BuildFlow consumes it (LIVE 2026-09-25, ADR-0025)
+3. ~~**Doc strategy for the dead-path evaluation doc:** copy it into art-dupl `docs/` (duplicates content, fork risk) or write a summary + link (rot risk if upstream moves it)? Both are defensible; I need your preference.~~ done — decided — local copy at docs/feedback/2026-06-05_art-dupl-integration-evaluation.md
+
+---
+
+**Verdict:** Session goal (answer the go-finding question) fully achieved with evidence. Zero mutations. Two process lapses (late verification, unexecuted cited tests) — both self-caught in this report's preparation. Awaiting instructions.
