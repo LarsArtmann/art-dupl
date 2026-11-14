@@ -6,7 +6,6 @@ import (
 	"os"
 	"path/filepath"
 )
-
 // validateInputs checks that inputs are valid for analysis.
 func (d *detector) validateInputs(ctx context.Context, files []string) error {
 	if len(files) == 0 {
@@ -32,6 +31,7 @@ func (d *detector) validateInputs(ctx context.Context, files []string) error {
 		if err != nil {
 			continue
 		}
+
 		if !info.Mode().IsRegular() {
 			return fmt.Errorf(
 				"%w: %s is a directory; pass individual source files instead (the SDK analyzes explicit file lists, it does not crawl)",

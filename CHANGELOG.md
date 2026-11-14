@@ -51,6 +51,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **SDK rejects directory inputs instead of reporting a clean repo** (2026-11-14): `FindClones`/`FindClonesStreamResult`
+  accepted directory paths, parsed them to zero files, and returned `ErrNoDuplicatesFound` — a consumer passing `"."`
+  believed the repo was clean. Existing-but-non-regular inputs (directories, fifos, sockets) are now rejected up front
+  with `ErrNotARegularFile` naming the path; nonexistent paths keep skip-with-warning semantics.
+- **`astro check` blocks the website deploy again** (2026-11-14): the deploy workflow carried `continue-on-error: true`
+  on the check step since 2026-07-13, which silently absorbed a real failure — a 2026-09-11 dependency sweep installed
+  TypeScript 7 while `astro check` requires TS 6. `website` typescript is pinned back to `^6.0.3` (check: 30 files,
+  0 errors; build green) and the step now fails the workflow, so a broken site cannot deploy.
 - **`--simple-json` emits the documented lightweight format** (2026-11-06): the flag produced byte-identical FULL
   JSON because `OutputSimpleJSON` had no caller — the "lightweight JSON with impact scores" shape (`[{hash, score,
   instances}]`) never reached the CLI. The output layer now branches on the format and the simple document sorts

@@ -49,7 +49,6 @@ jobs:
         continue-on-error: true
 
       - run: pnpm exec astro check
-        continue-on-error: true
 
       - run: pnpm run build
 
