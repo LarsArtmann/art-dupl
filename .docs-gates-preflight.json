@@ -1,6 +1,6 @@
 {
-  "recorded": "2026-11-14T11:22:49Z",
+  "recorded": "2026-11-14T11:47:34Z",
   "lines": [
-    "- 2026-11-14 docs-health pass: cleared all five red docs-gates (annotate, audit-all, cadence, freshness, routing) — every open report item annotated with inline evidence, stale reports archived to docs/status/archived/, and the README/docs stamps refreshed."
+    "- [x] ~~**README.md docs stamp is stale**~~ DONE 2026-11-14: the overdue docs-health pass ran — the stamp is bumped to 2026-11-14 and the feature claims re-verified (the count gates in cmd/docs_health_counts_test.go are green)."
   ]
 }
