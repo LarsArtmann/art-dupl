@@ -113,3 +113,16 @@ func (p *baselineRecorderPrinter) PrintClones(
 }
 
 func (p *baselineRecorderPrinter) PrintFooter() error { return nil }
+
+// Compile-time assertions pin the decorator forwarding contract: the embedded
+// printer.Printer does NOT declare the optional setter interfaces, so a
+// refactor that drops a forwarding method (SetHash was silently lost once,
+// emitting empty hashes on every forwarded group) used to compile cleanly.
+// These make the next dropped forwarder a compile error instead.
+var (
+	_ printer.Printer                = (*baselineFilterPrinter)(nil)
+	_ printer.HashSetter             = (*baselineFilterPrinter)(nil)
+	_ printer.SuppressionStatsSetter = (*baselineFilterPrinter)(nil)
+
+	_ printer.Printer = (*baselineRecorderPrinter)(nil)
+)
