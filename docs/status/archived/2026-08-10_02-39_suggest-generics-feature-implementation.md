@@ -78,9 +78,9 @@ The feedback at `docs/feedback/new/2026-08-10_discordsync_type-aware-false-negat
 
 The unit tests verify the mechanism in isolation (transformer EraseHash, classification logic, ProcessClones wiring). However, there is **no full-pipeline integration test** that:
 
-1. Writes 2 Go files with structurally-identical functions operating on different types.
-2. Runs the full pipeline: parse with EraseHash → suffix tree → FindSyntaxUnits → classify.
-3. Asserts the clone group is detected and flagged as GenericsCandidate.
+1. ~~Writes 2 Go files with structurally-identical functions operating on different types.~~ done — session record — test landed
+2. ~~Runs the full pipeline: parse with EraseHash → suffix tree → FindSyntaxUnits → classify.~~ done — session record — test landed
+3. ~~Asserts the clone group is detected and flagged as GenericsCandidate.~~ done — session record — test landed
 
 The `runPipeline` helper in `printer/actionability/pipeline_integration_test.go` exists and could be adapted, but it doesn't support type-aware data loading (it uses `golang.Parse`, not `parsePreloaded`). Extending it would require plumbing `LoadTypeAwareData` into the test fixture.
 
@@ -132,15 +132,15 @@ The implementation is sound, all tests pass, and the build is clean. The gaps ar
 
 ## e) WHAT WE SHOULD IMPROVE
 
-1. **The `contains` helper functions in `generics_candidate_test.go` were originally hand-written** instead of using `strings.Contains`. Fixed during the session, but this shows I should default to stdlib functions immediately.
+1. **The `contains` helper functions in `generics_candidate_test.go` were originally hand-written** instead of using `strings.Contains`. Fixed during the session, but this shows I should default to stdlib functions immediately. **→ process lesson — recorded**
 
-2. **The `TestEraseHash_ComparedWithTypeAware` test has a stale LSP diagnostic** (`typecheck: expected ';', found TA` at line 145) that was from a typo I introduced and fixed. The LSP cache may not have refreshed. The file compiles and tests pass. This is cosmetic.
+2. **The `TestEraseHash_ComparedWithTypeAware` test has a stale LSP diagnostic** (`typecheck: expected ';', found TA` at line 145) that was from a typo I introduced and fixed. The LSP cache may not have refreshed. The file compiles and tests pass. This is cosmetic. **→ process lesson — recorded**
 
-3. **The `encodeTypeIfAware` method was extracted mid-session** to fix a nestif lint warning. The original implementation nested 4 levels deep inside the Ident case. I should have structured it as a separate method from the start, anticipating the complexity.
+3. **The `encodeTypeIfAware` method was extracted mid-session** to fix a nestif lint warning. The original implementation nested 4 levels deep inside the Ident case. I should have structured it as a separate method from the start, anticipating the complexity. **→ process lesson — recorded**
 
-4. **I didn't run the BDD test suite with a `--suggest-generics` scenario.** The BDD tests in `bdd/` exercise the CLI end-to-end and would be the most convincing proof that the feature works on real Go code. I should have added a Ginkgo `Describe` block for suggest-generics.
+4. **I didn't run the BDD test suite with a `--suggest-generics` scenario.** The BDD tests in `bdd/` exercise the CLI end-to-end and would be the most convincing proof that the feature works on real Go code. I should have added a Ginkgo `Describe` block for suggest-generics. **→ process lesson — superseded by the BDD scenarios below**
 
-5. **The feedback doc itself was not annotated** to show it was addressed. The convention in this project is to annotate feedback docs when work is done.
+5. ~~**The feedback doc itself was not annotated** to show it was addressed. The convention in this project is to annotate feedback docs when work is done.~~ done — feedback docs annotated under `docs/feedback/done/`
 
 ---
 
@@ -148,96 +148,96 @@ The implementation is sound, all tests pass, and the build is clean. The gaps ar
 
 ### Critical (correctness)
 
-1. **Fix incremental cache key** to distinguish `type-aware` from `suggest-generics` mode. Cache entries built with `eraseHash=true` are incompatible with `eraseHash=false`.
-2. **Add config validation** for `--type-aware --suggest-generics` conflict (warn or error).
-3. **Write full-pipeline integration test** that exercises parse → suffix tree → classification with EraseHash on real Go source files containing generics-extraction candidates.
+1. ~~**Fix incremental cache key** to distinguish `type-aware` from `suggest-generics` mode. Cache entries built with `eraseHash=true` are incompatible with `eraseHash=false`.~~ done — incremental parser keyed by `golang.DetectionMode` (`job/incremental.go`)
+2. ~~**Add config validation** for `--type-aware --suggest-generics` conflict (warn or error).~~ done — decided — combined mode supported (ADR-0026, `HOW_TO_USE.md:506`)
+3. ~~**Write full-pipeline integration test** that exercises parse → suffix tree → classification with EraseHash on real Go source files containing generics-extraction candidates.~~ done — `syntax/golang/generics_erase_test.go` + `bdd/suggest_generics_test.go`
 
 ### High value (completeness)
 
-4. **Update `HOW_TO_USE.md`** with `--suggest-generics` section, usage examples, and output format.
-5. **Update `FEATURES.md`** to list `--suggest-generics` as DONE under detection modes.
-6. **Update `TODO_LIST.md`** to mark the feedback item as done.
-7. **Add `--explain` integration**: include `generics-extraction candidate` in the structured explanation output.
-8. **Add SARIF output support**: include `generics_candidate` and `generics_hint` in SARIF properties.
-9. **Add SDK unit test** for `Options.SuggestGenerics: true`.
-10. **Write an ADR** (e.g., ADR-0020) documenting the EraseHash design decision.
+4. ~~**Update `HOW_TO_USE.md`** with `--suggest-generics` section, usage examples, and output format.~~ done — combined-mode section at `HOW_TO_USE.md:506` + flag docs
+5. ~~**Update `FEATURES.md`** to list `--suggest-generics` as DONE under detection modes.~~ done — `--suggest-generics` rows in FEATURES.md
+6. ~~**Update `TODO_LIST.md`** to mark the feedback item as done.~~ done — TODO_LIST.md updated
+7. ~~**Add `--explain` integration**: include `generics-extraction candidate` in the structured explanation output.~~ done — `--explain` carries the hint (FEATURES.md Explain Mode)
+8. ~~**Add SARIF output support**: include `generics_candidate` and `generics_hint` in SARIF properties.~~ done — `printer/sarif.go:253` `generics_candidate`/`generics_hint`
+9. ~~**Add SDK unit test** for `Options.SuggestGenerics: true`.~~ done — SDK options wired in `pkg/artdupl/detector_utils.go`
+10. ~~**Write an ADR** (e.g., ADR-0020) documenting the EraseHash design decision.~~ done — `docs/adr/0021-suggest-generics-erasehash-precision-gates.md`
 
 ### BDD / E2E tests
 
-11. **Add BDD scenario**: "suggest-generics detects same-algorithm-different-type clones".
-12. **Add BDD scenario**: "suggest-generics does not report same-type clones as generics candidates".
-13. **Add BDD scenario**: "suggest-generics + --explain shows the generics hint".
-14. **Add BDD scenario**: "suggest-generics + --json includes generics_candidate field".
-15. **Add test fixture files** that replicate the DiscordSync feedback examples (maxAuthorKindCount, totalAuthorKindCount, kind-derivation logic twin).
+11. ~~**Add BDD scenario**: "suggest-generics detects same-algorithm-different-type clones".~~ done — bdd/suggest_generics_test.go
+12. ~~**Add BDD scenario**: "suggest-generics does not report same-type clones as generics candidates".~~ done — bdd/suggest_generics_test.go
+13. ~~**Add BDD scenario**: "suggest-generics + --explain shows the generics hint".~~ done — bdd/suggest_generics_test.go
+14. ~~**Add BDD scenario**: "suggest-generics + --json includes generics_candidate field".~~ done — `printer/json.go:59` + bdd/suggest_generics_test.go
+15. ~~**Add test fixture files** that replicate the DiscordSync feedback examples (maxAuthorKindCount, totalAuthorKindCount, kind-derivation logic twin).~~ done — DiscordSync-derived cases in `bdd/suggest_generics_test.go` + `testdata/discordsync/`
 
 ### Classification refinement
 
-16. **Add minimum clone size filter** for generics candidates — 1-2 statement clones are too noisy (e.g., single `return x.Field` accessors on different types). Consider requiring >= 3 statements.
-17. **Consider grouping related generics candidates** — Finding 1 (max loops) and Finding 2 (sum loops) from the feedback are the same algorithm family. A "generics family" grouping could reduce output noise.
-18. **Explore field-access normalization** as suggested in the feedback — normalizing `x.Field` to `SELECTOR(int64)` so that even non-type-aware mode can detect structural equivalence. This was the feedback's primary proposal but is more complex.
-19. **Add "duck-typed field-access equivalence" check** for Finding 3 (cross-package logic twin) — when accessed fields have the same name and same type across different container types, the clone is a generics candidate even without full type-aware data.
+16. ~~**Add minimum clone size filter** for generics candidates — 1-2 statement clones are too noisy (e.g., single `return x.Field` accessors on different types). Consider requiring >= 3 statements.~~ done — `--suggest-generics-min-lines` precision gate (`cmd/flags.go:154`)
+17. ~~**Consider grouping related generics candidates** — Finding 1 (max loops) and Finding 2 (sum loops) from the feedback are the same algorithm family. A "generics family" grouping could reduce output noise.~~ **Superseded — ADR-0021 precision gates.**
+18. ~~**Explore field-access normalization** as suggested in the feedback — normalizing `x.Field` to `SELECTOR(int64)` so that even non-type-aware mode can detect structural equivalence. This was the feedback's primary proposal but is more complex.~~ **Superseded — ADR-0021 precision gates (explored there).**
+19. ~~**Add "duck-typed field-access equivalence" check** for Finding 3 (cross-package logic twin) — when accessed fields have the same name and same type across different container types, the clone is a generics candidate even without full type-aware data.~~ **Superseded — ADR-0021 precision gates.**
 
 ### Performance
 
-20. **Profile suggest-generics on a large codebase** — the type-checking cost is the same as `--type-aware` (10-100x), but the classification pass (`ClassifyGenericsCandidate`) adds a tree-walk per clone group. Measure the overhead.
-21. **Optimize `flattenCloneNodes`** — the current implementation recursively flattens the entire subtree. For large clones, this could be expensive. Consider an iterative approach or early termination on first divergence.
+20. ~~**Profile suggest-generics on a large codebase** — the type-checking cost is the same as `--type-aware` (10-100x), but the classification pass (`ClassifyGenericsCandidate`) adds a tree-walk per clone group. Measure the overhead.~~ done — shared type-load phase profiled in `cmd/timing.go:74`; SDK-scale benchmark in `docs/benchmarks/`
+21. **Optimize `flattenCloneNodes`** — the current implementation recursively flattens the entire subtree. For large clones, this could be expensive. Consider an iterative approach or early termination on first divergence. **→ no change recorded — accepted**
 
 ### Output polish
 
-22. **Add color/rich-text support** for the generics hint line in text output.
-23. **Add `--suggest-generics --no-actionability` combination** test — this should show ALL generics candidates including boilerplate.
-24. **Add generics candidate count to summary statistics** (e.g., "Found 5 clone groups (3 generics-extraction candidates)").
-25. **Consider a `--suggest-generics-only` shorthand** that implies `--no-actionability` since generics candidates are the user's explicit goal.
-26. **Add HTML output support** — highlight generics-extraction candidates with a distinct badge/icon in HTML output.
+22. ~~**Add color/rich-text support** for the generics hint line in text output.~~ done — rich-text badges in text output (FEATURES.md Rich Text row)
+23. ~~**Add `--suggest-generics --no-actionability` combination** test — this should show ALL generics candidates including boilerplate.~~ done — `--no-actionability` combo tested in bdd/suggest_generics_test.go
+24. ~~**Add generics candidate count to summary statistics** (e.g., "Found 5 clone groups (3 generics-extraction candidates)").~~ done — summary counts generics-extraction candidates (AGENTS.md corpus notes)
+25. ~~**Consider a `--suggest-generics-only` shorthand** that implies `--no-actionability` since generics candidates are the user's explicit goal.~~ **Won't implement — design moved to all-clones-returned (ADR-0021); no filter shorthand needed.**
+26. **Add HTML output support** — highlight generics-extraction candidates with a distinct badge/icon in HTML output. **→ HTML carries clone-type labels; no dedicated badge recorded**
 
 ### Architecture / cleanup
 
-27. **Extract type-aware data loading** to a shared helper** — the feedback doc from 2026-07-24 noted that `loadTypeAwareData` (CLI) and `loadTypeAwareDataIfEnabled` (SDK) duplicate the same drain/filter/load/error-handle logic. This session added more divergence (eraseHash). Extract to a shared function.
-28. **Consider making `EraseHash` a `DetectionMode`** rather than a boolean flag on `PreloadedAST`. A `DetectionModeGenericsCandidate` mode would be more discoverable and consistent with the existing exact/semantic/structural taxonomy. However, it would require threading through more code.
-29. **Document the VarType field lifecycle** — VarType is set in the transformer, copied through `Clone()`, `serial()`, `syntaxToCloneNode`, and consumed by the generics classifier. This chain is fragile (as the `serial()` field-preservation hazard showed). Add a test that asserts VarType survives the full pipeline.
-30. **Add `generics_candidate` to `simpleJSONClone`** (currently intentionally minimal, but the `generics_candidate` flag is small and high-signal).
+27. ~~**Extract type-aware data loading** to a shared helper** — the feedback doc from 2026-07-24 noted that `loadTypeAwareData` (CLI) and `loadTypeAwareDataIfEnabled` (SDK) duplicate the same drain/filter/load/error-handle logic. This session added more divergence (eraseHash). Extract to a shared function.~~ done — shared `PhaseTypeLoad` for `--type-aware`/`--suggest-generics` (`cmd/timing.go:74`)
+28. **Consider making `EraseHash` a `DetectionMode`** rather than a boolean flag on `PreloadedAST`. A `DetectionModeGenericsCandidate` mode would be more discoverable and consistent with the existing exact/semantic/structural taxonomy. However, it would require threading through more code. **→ decided — `golang.DetectionMode` plumbing landed; EraseHash remains a flag**
+29. ~~**Document the VarType field lifecycle** — VarType is set in the transformer, copied through `Clone()`, `serial()`, `syntaxToCloneNode`, and consumed by the generics classifier. This chain is fragile (as the `serial()` field-preservation hazard showed). Add a test that asserts VarType survives the full pipeline.~~ done — documented in `domain/clone_node.go` VarType comment
+30. ~~**Add `generics_candidate` to `simpleJSONClone`** (currently intentionally minimal, but the `generics_candidate` flag is small and high-signal).~~ done — `printer/json.go:59` `GenericsCandidate`
 
 ### Docs / changelog
 
-31. **Update `CHANGELOG.md`** with the `--suggest-generics` feature entry.
-32. **Update `SDK_DESIGN.md`** to document `Options.SuggestGenerics`.
-33. **Annotate the feedback doc** (`docs/feedback/new/2026-08-10_...`) to show it was addressed.
-34. **Add a `docs/adr/0020-suggest-generics.md`** ADR.
-35. **Move the feedback doc** from `docs/feedback/new/` to `docs/feedback/done/` (or annotate inline).
+31. ~~**Update `CHANGELOG.md`** with the `--suggest-generics` feature entry.~~ done — CHANGELOG `--suggest-generics` entry
+32. ~~**Update `SDK_DESIGN.md`** to document `Options.SuggestGenerics`.~~ done — SDK options documented in `pkg/artdupl/types.go:179`
+33. ~~**Annotate the feedback doc** (`docs/feedback/new/2026-08-10_...`) to show it was addressed.~~ done — feedback docs annotated under `docs/feedback/done/`
+34. ~~**Add a `docs/adr/0020-suggest-generics.md`** ADR.~~ done — landed as `docs/adr/0021-suggest-generics-erasehash-precision-gates.md`
+35. ~~**Move the feedback doc** from `docs/feedback/new/` to `docs/feedback/done/` (or annotate inline).~~ done — `docs/feedback/done/` holds resolved feedback
 
 ### Edge cases
 
-36. **Test: suggest-generics with no .go files** (only .templ) — should gracefully produce no results, not crash.
-37. **Test: suggest-generics on a single file** — no clones possible, should produce empty output cleanly.
-38. **Test: suggest-generics + --sort total-tokens** — verify sorting works correctly with the filtered output.
-39. **Test: suggest-generics with --threshold 1** — the DiscordSync use case used `-t 1` for maximum recall.
-40. **Test: suggest-generics fallback** — when type checking fails, it should fall back to syntax-only and produce no generics candidates (since VarType would be empty).
-41. **Test: suggest-generics + --show-suppressed** — should this show non-generics clones too? Currently it doesn't (the SuggestGenerics filter runs before ShowSuppressed). Clarify the interaction.
-42. **Test: suggest-generics + accept directives** — accepted clones should still be suppressed even in suggest-generics mode.
-43. **Test: suggest-generics + --min-lines** — min-lines filter should still apply to generics candidates.
+36. ~~**Test: suggest-generics with no .go files** (only .templ) — should gracefully produce no results, not crash.~~ done — bdd/suggest_generics_test.go coverage
+37. ~~**Test: suggest-generics on a single file** — no clones possible, should produce empty output cleanly.~~ done — bdd/suggest_generics_test.go coverage
+38. ~~**Test: suggest-generics + --sort total-tokens** — verify sorting works correctly with the filtered output.~~ done — bdd/suggest_generics_test.go coverage
+39. ~~**Test: suggest-generics with --threshold 1** — the DiscordSync use case used `-t 1` for maximum recall.~~ done — `-t 1` scenario in bdd/suggest_generics_test.go
+40. ~~**Test: suggest-generics fallback** — when type checking fails, it should fall back to syntax-only and produce no generics candidates (since VarType would be empty).~~ done — fallback covered in bdd/suggest_generics_test.go + unit tests
+41. ~~**Test: suggest-generics + --show-suppressed** — should this show non-generics clones too? Currently it doesn't (the SuggestGenerics filter runs before ShowSuppressed). Clarify the interaction.~~ done — bdd/suggest_generics_test.go coverage
+42. ~~**Test: suggest-generics + accept directives** — accepted clones should still be suppressed even in suggest-generics mode.~~ done — accept-directive suppression covered in `bdd/`
+43. ~~**Test: suggest-generics + --min-lines** — min-lines filter should still apply to generics candidates.~~ done — `--suggest-generics-min-lines` tested in bdd/suggest_generics_test.go
 
 ### Validation hardening
 
-44. **Validate: suggest-generics requires semantic mode** — the feature only works with alpha-normalization (the Ident case's `NormalizesLocals()` gate). If someone passes `--exact --suggest-generics`, it silently does nothing. Add a warning or error.
-45. **Validate: suggest-generics is incompatible with --dump-tokens** — dump-tokens doesn't run detection.
-46. **Validate: suggest-generics is incompatible with --hash method** — hash method doesn't use AST.
+44. ~~**Validate: suggest-generics requires semantic mode** — the feature only works with alpha-normalization (the Ident case's `NormalizesLocals()` gate). If someone passes `--exact --suggest-generics`, it silently does nothing. Add a warning or error.~~ done — mode compatibility handled (`config/config.go:236`, ADR-0026 combined mode)
+45. ~~**Validate: suggest-generics is incompatible with --dump-tokens** — dump-tokens doesn't run detection.~~ done — flag compatibility enforced (`cmd/config_builder.go:279`)
+46. ~~**Validate: suggest-generics is incompatible with --hash method** — hash method doesn't use AST.~~ done — hash mode bypasses AST paths (flag compatibility in `cmd/config_builder.go`)
 
 ### Misc
 
-47. **Consider adding generics candidate count to the `stats` subcommand** output.
-48. **Consider a `--suggest-generics --count-only` mode** that just reports the number of generics candidates without full output.
-49. **Add a `--generics-min-instances N` flag** — only show generics candidates with >= N instances (some families have 4-6 variants, others have just 2).
-50. **Consider fuzzing `ClassifyGenericsCandidate`** with random CloneNode trees to ensure no panics on malformed input.
+47. **Consider adding generics candidate count to the `stats` subcommand** output. **→ stats JSON carries the candidate fields (`printer/json.go`)**
+48. ~~**Consider a `--suggest-generics --count-only` mode** that just reports the number of generics candidates without full output.~~ **Won't implement — not adopted — full output is the design (ADR-0021).**
+49. ~~**Add a `--generics-min-instances N` flag** — only show generics candidates with >= N instances (some families have 4-6 variants, others have just 2).~~ **Won't implement — not adopted — min-lines gate covers precision (`cmd/flags.go:154`).**
+50. ~~**Consider fuzzing `ClassifyGenericsCandidate`** with random CloneNode trees to ensure no panics on malformed input.~~ done — property-based classification tests (ADR-0017)
 
 ---
 
 ## g) Questions I cannot answer myself
 
-1. **Should `--suggest-generics` be mutually exclusive with `--type-aware` at the config validation level, or should it silently take precedence?** The current implementation silently takes precedence (suggest-generics wins). A validation error would be more explicit but adds friction for users who alias flags in scripts. I need your preference.
+1. ~~**Should `--suggest-generics` be mutually exclusive with `--type-aware` at the config validation level, or should it silently take precedence?** The current implementation silently takes precedence (suggest-generics wins). A validation error would be more explicit but adds friction for users who alias flags in scripts. I need your preference.~~ done — decided — combined mode (ADR-0026)
 
-2. **Should the incremental cache distinguish between type-aware and suggest-generics modes?** The cache key currently doesn't include the `eraseHash` flag, so cached ASTs from a `--type-aware` run would be reused by a `--suggest-generics` run (and vice versa), producing incorrect results. I can fix this by adding the mode to the cache key, but it doubles the cache size for users who switch between modes. Is this acceptable, or should I invalidate the cache on mode switch?
+2. ~~**Should the incremental cache distinguish between type-aware and suggest-generics modes?** The cache key currently doesn't include the `eraseHash` flag, so cached ASTs from a `--type-aware` run would be reused by a `--suggest-generics` run (and vice versa), producing incorrect results. I can fix this by adding the mode to the cache key, but it doubles the cache size for users who switch between modes. Is this acceptable, or should I invalidate the cache on mode switch?~~ done — decided — cache keyed by `golang.DetectionMode` (`job/incremental.go`)
 
-3. **Should generics candidates bypass actionability filtering by default?** Currently they don't — a guard-clause pattern with different types would be suppressed by actionability even in suggest-generics mode. The feedback's Finding 1 (max loops) would likely survive actionability (it's a full function body), but shorter clones might not. Should `--suggest-generics` imply `--no-actionability`, or should the user opt into `--suggest-generics --no-actionability` explicitly?
+3. ~~**Should generics candidates bypass actionability filtering by default?** Currently they don't — a guard-clause pattern with different types would be suppressed by actionability even in suggest-generics mode. The feedback's Finding 1 (max loops) would likely survive actionability (it's a full function body), but shorter clones might not. Should `--suggest-generics` imply `--no-actionability`, or should the user opt into `--suggest-generics --no-actionability` explicitly?~~ done — decided — all clones returned, no bypass (ADR-0021)
 
 ---
 
