@@ -21,6 +21,7 @@ Successfully flipped the default behavior so `.templ` files are **included** in 
 
 ### Core Source Changes (11 files, +117/-59 lines)
 
+<!-- check-rows:ledger -->
 | File                             | Change                                                                        | Status |
 | -------------------------------- | ----------------------------------------------------------------------------- | ------ |
 | `config/config.go:92`            | `IncludeTempl` default flipped `false` → `true`                               | ✓      |
@@ -35,6 +36,7 @@ Successfully flipped the default behavior so `.templ` files are **included** in 
 
 ### BDD Test Updates (5 files)
 
+<!-- check-rows:ledger -->
 | File                                | Changes                                                                                              | Status |
 | ----------------------------------- | ---------------------------------------------------------------------------------------------------- | ------ |
 | `bdd/templ_clone_detection_test.go` | Removed `--include-templ`, added `--exclude-templ` for exclusion test                                | ✓      |
@@ -122,7 +124,7 @@ Nothing. The change was clean with no regressions. The two bugs found were in ex
 
 13. **Introduce ProcessedClone DTO** — Break Printer ↔ syntax.Node coupling.
 14. **Consolidate Clone types** — Unify `printer.clone`, `pkg/artdupl.Clone`, `CloneGroup`.
-15. **Extract responsibilities from `cmd/run_analysis.go`** — Split the god file.
+~~15. **Extract responsibilities from `cmd/run_analysis.go`** — Split the god file.~~ done — 2026-10 — runCmd split: parseOutputFormat + runStandardAnalysis live in cmd/run_flags.go (gocyclo under threshold; AGENTS.md Critical Conventions)
 16. **Move `printer/clone_classify.go` language-specific code** — Break direct syntax/golang import.
 17. **Review all `//nolint` directives** — Ensure they're still warranted.
 18. **Add integration test for full CLI flag matrix** — All flag combinations tested.
@@ -135,7 +137,7 @@ Nothing. The change was clean with no regressions. The two bugs found were in ex
 22. **Review verbose output** for all filter flags — Consistency pass.
 23. **Consider deprecation warning** if someone passes `--include-templ` (backward compat).
 24. **Review `MIGRATION_GUIDE.md`** — Add entry for this flag rename.
-25. **Run `just ci`** — Full CI pipeline including lint, format, race tests.
+~~25. **Run `just ci`** — Full CI pipeline including lint, format, race tests.~~ **Won't implement — won't implement — justfile is deprecated fleet-wide; the CI equivalent is nix flake check (lint + format + race + alloc-gate).**
 
 ---
 

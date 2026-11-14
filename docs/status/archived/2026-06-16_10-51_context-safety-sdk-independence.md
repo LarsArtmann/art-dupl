@@ -18,16 +18,16 @@ Executed the **next tier of the TODO sprint** from the planning document (`docs/
 
 | #  | Change | Files                                                                                                           | Impact                                                                                                                                            |
 | -- | ------ | --------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| ~~ | 1      | **Fixed empty Frags guard bug**: `[][]*Node{{}}` was passing `len(Frags) > 0` check                             | `detection/multidetector.go`, `detection/issue_helpers.go`                                                                                        |
-| ~~ | 2      | **Removed `Frags: [][]*Node{{}}` from `createIssueMatch`** — now nil                                            | `detection/issue_helpers.go`, `detection/detection_test.go`                                                                                       |
-| ~~ | 3      | **Set default `Actionability` in `ClassifyClone`** — `Actionable` for normal clones, `NonActionable` for idioms | `printer/clone_classify.go`                                                                                                                       |
-| ~~ | 4      | **Moved `processOrderMethodName` test constant** from production to test file                                   | `printer/actionability.go` → `printer/actionability_test.go`                                                                                      |
-| ~~ | 5      | **Added `context.Context` to all detection goroutines** (M6 complete)                                           | `detection/multidetector.go`, `detection/issue_helpers.go`, `detection/todo_detector.go`, `detection/legacy_detector.go`, `detection/detector.go` |
-| ~~ | 6      | **Updated all callers** of context-aware detection methods                                                      | `cmd/run_analysis.go`, `pkg/artdupl/detector_pipeline.go`, `pkg/artdupl/detector_uncovered_test.go`                                               |
-| ~~ | 7      | **Broke SDK `DetectionMethod` type alias** — now independent `type DetectionMethod string`                      | `pkg/artdupl/types.go`, `pkg/artdupl/detector_utils.go`                                                                                           |
-| ~~ | 8      | **Broke SDK `Logger` type alias** — now independent interface with `noOpLogger` default                         | `pkg/artdupl/types.go`                                                                                                                            |
-| ~~ | 9      | **Refactored `FindDuplOver` complexity** — extracted `runMultiMethodDetection` + `streamMatches` helpers        | `detection/multidetector.go`                                                                                                                      |
-| ~~ | 10     | **Fixed all test assertions** for type-alias break                                                              | `pkg/artdupl/detector_validation_test.go`                                                                                                         |
+| ~~1~~ done — landed with this session's branch (historical fix record) | ~~**Fixed empty Frags guard bug**: `[][]*Node{{}}` was passing `len(Frags) > 0` check~~ | ~~`detection/multidetector.go`, `detection/issue_helpers.go`~~ |
+| ~~2~~ done — landed with this session's branch (historical fix record) | ~~**Removed `Frags: [][]*Node{{}}` from `createIssueMatch`** — now nil~~ | ~~`detection/issue_helpers.go`, `detection/detection_test.go`~~ |
+| ~~3~~ done — landed with this session's branch (historical fix record) | ~~**Set default `Actionability` in `ClassifyClone`** — `Actionable` for normal clones, `NonActionable` for idioms~~ | ~~`printer/clone_classify.go`~~ |
+| ~~4~~ done — landed with this session's branch (historical fix record) | ~~**Moved `processOrderMethodName` test constant** from production to test file~~ | ~~`printer/actionability.go` → `printer/actionability_test.go`~~ |
+| ~~5~~ done — landed with this session's branch (historical fix record) | ~~**Added `context.Context` to all detection goroutines** (M6 complete)~~ | ~~`detection/multidetector.go`, `detection/issue_helpers.go`, `detection/todo_detector.go`, `detection/legacy_detector.go`, `detection/detector.go`~~ |
+| ~~6~~ done — landed with this session's branch (historical fix record) | ~~**Updated all callers** of context-aware detection methods~~ | ~~`cmd/run_analysis.go`, `pkg/artdupl/detector_pipeline.go`, `pkg/artdupl/detector_uncovered_test.go`~~ |
+| ~~7~~ done — landed with this session's branch (historical fix record) | ~~**Broke SDK `DetectionMethod` type alias** — now independent `type DetectionMethod string`~~ | ~~`pkg/artdupl/types.go`, `pkg/artdupl/detector_utils.go`~~ |
+| ~~8~~ done — landed with this session's branch (historical fix record) | ~~**Broke SDK `Logger` type alias** — now independent interface with `noOpLogger` default~~ | ~~`pkg/artdupl/types.go`~~ |
+| ~~9~~ done — landed with this session's branch (historical fix record) | ~~**Refactored `FindDuplOver` complexity** — extracted `runMultiMethodDetection` + `streamMatches` helpers~~ | ~~`detection/multidetector.go`~~ |
+| ~~10~~ done — landed with this session's branch (historical fix record) | ~~**Fixed all test assertions** for type-alias break~~ | ~~`pkg/artdupl/detector_validation_test.go`~~ |
 
 ### Previously Completed (Prior Commits, Still on This Branch)
 
@@ -109,23 +109,23 @@ Executed the **next tier of the TODO sprint** from the planning document (`docs/
 
 ### Architecture Specific
 
-~~1. **Activate `MethodDetector` interface (M10)**: The interface exists (`detection/detector.go`) but is unused. `MultiDetector.FindDuplOver` still uses an if-chain. Creating adapters for each detector and dispatching via a loop would eliminate the if-chain and make the system extensible.~~ done — adapters.go loop dispatch (see (c) M10)
+1. ~~**Activate `MethodDetector` interface (M10)**: The interface exists (`detection/detector.go`) but is unused. `MultiDetector.FindDuplOver` still uses an if-chain. Creating adapters for each detector and dispatching via a loop would eliminate the if-chain and make the system extensible.~~ done — adapters.go loop dispatch (see (c) M10)
 
-~~2. **Route issue-type detections separately**: TODO and legacy detectors produce code-quality findings (single-line issues), not code clones. They need their own output channel type, not the `syntax.Match` clone channel. The MethodDetector pipeline should distinguish between "clone matches" and "issue matches."~~ done@decided-against — TODO/Legacy detectors deleted 2026-06-17; (g) question moot
+2. ~~**Route issue-type detections separately**: TODO and legacy detectors produce code-quality findings (single-line issues), not code clones. They need their own output channel type, not the `syntax.Match` clone channel. The MethodDetector pipeline should distinguish between "clone matches" and "issue matches."~~ done@decided-against — TODO/Legacy detectors deleted 2026-06-17; (g) question moot
 
-~~3. **Split `printer/` package**: 50 files is too many. Natural seams: `printer/stats/`, `printer/html/`, `printer/json/`, `printer/text/`, `printer/sarif/`, `printer/diff/`.~~ done — actionability/stats leaf packages (CHANGELOG 0.5.0)
+3. ~~**Split `printer/` package**: 50 files is too many. Natural seams: `printer/stats/`, `printer/html/`, `printer/json/`, `printer/text/`, `printer/sarif/`, `printer/diff/`.~~ done — actionability/stats leaf packages (CHANGELOG 0.5.0)
 
-~~4. **Type-strengthen `ProcessedClone` fields**: `Filename string` → `domain.Filepath`, `LineStart/LineEnd int` → `domain.LineNumber`. The domain types exist for exactly this — they validate at construction.~~ done@decided-against — Filepath/LineNumber removed as dead code (CHANGELOG 0.4.0)
+4. ~~**Type-strengthen `ProcessedClone` fields**: `Filename string` → `domain.Filepath`, `LineStart/LineEnd int` → `domain.LineNumber`. The domain types exist for exactly this — they validate at construction.~~ done@decided-against — Filepath/LineNumber removed as dead code (CHANGELOG 0.4.0)
 
-~~5. **Add `TokenCount` typed integer**: `type TokenCount int` — prevents mixing token counts with byte counts at the type level. The mutation bug we fixed earlier would have been impossible with this.~~ done — domain.TokenCount
+5. ~~**Add `TokenCount` typed integer**: `type TokenCount int` — prevents mixing token counts with byte counts at the type level. The mutation bug we fixed earlier would have been impossible with this.~~ done — domain.TokenCount
 
 ### Code Quality
 
-~~6. **Extract `everySequenceMatch` helper in actionability.go**: Multiple `is*` functions repeat the "check every sequence" pattern. DRY opportunity.~~ done — extracted in printer (see (c) M9)
+6. ~~**Extract `everySequenceMatch` helper in actionability.go**: Multiple `is*` functions repeat the "check every sequence" pattern. DRY opportunity.~~ done — extracted in printer (see (c) M9)
 
-~~7. **Create ADR for actionability system**: The pattern detection logic in `actionability.go` (558 lines) is complex and undocumented. An ADR would preserve institutional knowledge.~~ done — docs/ACTIONABILITY_PATTERNS.md table + split pattern files carry the knowledge
+7. ~~**Create ADR for actionability system**: The pattern detection logic in `actionability.go` (558 lines) is complex and undocumented. An ADR would preserve institutional knowledge.~~ done — docs/ACTIONABILITY_PATTERNS.md table + split pattern files carry the knowledge
 
-~~8. **Unify enum patterns**: Domain enums (`ClonePriority`, `CloneCategory`, etc.) each have their own `IsValid()`/`String()` implementations. Config package has generic helpers. Consolidate.~~ done — pkg/enum (see (c) M13)
+8. ~~**Unify enum patterns**: Domain enums (`ClonePriority`, `CloneCategory`, etc.) each have their own `IsValid()`/`String()` implementations. Config package has generic helpers. Consolidate.~~ done — pkg/enum (see (c) M13)
 
 ---
 
@@ -135,46 +135,46 @@ Executed the **next tier of the TODO sprint** from the planning document (`docs/
 
 | # | Task                                                                                | Impact                              | Effort |
 | - | ----------------------------------------------------------------------------------- | ----------------------------------- | ------ |
-| 1 | **Route issue detections separately** — TODO/legacy need their own output path      | Correctness — currently zero output | M      |
-| 2 | **Activate `MethodDetector` interface** (M10) — replace if-chain with loop dispatch | Extensibility, enables #1           | M      |
-| 3 | **Type-strengthen `ProcessedClone`**: `Filepath` + `LineNumber` fields              | Compile-time safety                 | M      |
-| 4 | **Add `TokenCount` typed integer** to prevent unit mixing                           | Prevents mutation bug class         | S      |
-| 5 | **Add `ProcessedCloneGroup.Validate()`** — validate group invariants                | Data integrity                      | S      |
+| ~~1~~ **NOT-DO — NOT-DO — the TODO/Legacy issue detectors were dropped from detection/ entirely; it now holds only hash + suffix-tree MethodDetector adapters (AGENTS.md:167). | ~~**Route issue detections separately** — TODO/legacy need their own output path~~ | ~~Correctness — currently zero output~~ | ~~M~~ |
+| ~~2~~ done — detection/adapters.go dispatches via MethodDetector (AGENTS.md:215) | ~~**Activate `MethodDetector` interface** (M10) — replace if-chain with loop dispatch~~ | ~~Extensibility, enables #1~~ | ~~M~~ |
+| ~~3~~ done — CloneRef carries Filename + LineStart/LineEnd (domain/clone_ref.go) | ~~**Type-strengthen `ProcessedClone`**: `Filepath` + `LineNumber` fields~~ | ~~Compile-time safety~~ | ~~M~~ |
+| ~~4~~ **NOT-DO — NOT-DO — TokenCount stays a plain int; unit-mixing prevented by validation instead (domain/analysis_errors.go ErrTokenCountMismatch). | ~~**Add `TokenCount` typed integer** to prevent unit mixing~~ | ~~Prevents mutation bug class~~ | ~~S~~ |
+| ~~5~~ done — domain/processed_clone.go:393 ProcessedCloneGroup.Validate | ~~**Add `ProcessedCloneGroup.Validate()`** — validate group invariants~~ | ~~Data integrity~~ | ~~S~~ |
 
 ### 🟠 High Impact
 
 | #  | Task                                                                    | Impact                                                 | Effort                   |
 | -- | ----------------------------------------------------------------------- | ------------------------------------------------------ | ------------------------ |
-| 6  | **Extract `everySequenceMatch` helper** in actionability.go (M9)        | Code quality — DRY                                     | S                        |
-| 7  | **Move actionability behind interface** (no `syntax.Node` in printer)   | Decoupling                                             | M                        |
-| 8  | **Split `printer/` into sub-packages**                                  | Module boundaries, testability                         | L                        |
-| 9  | **Consolidate Clone DTOs** — single canonical type or generated mappers | Eliminates manual conversion                           | L                        |
+| ~~6~~ done — extracted to printer/actionability/actionability.go:117 | ~~**Extract `everySequenceMatch` helper** in actionability.go (M9)~~ | ~~Code quality — DRY~~ | ~~S~~ |
+| ~~7~~ done — printers consume domain.ProcessedCloneGroup; residual coupling documented in AGENTS.md (printer ↔ syntax.Node note) | ~~**Move actionability behind interface** (no `syntax.Node` in printer)~~ | ~~Decoupling~~ | ~~M~~ |
+| ~~8~~ done — printer/actionability/ and printer/stats/ sub-packages exist | ~~**Split `printer/` into sub-packages**~~ | ~~Module boundaries, testability~~ | ~~L~~ |
+| ~~9~~ done — domain.ProcessedClone is canonical (domain/processed_clone.go:321); SDK types in docs/api/ | ~~**Consolidate Clone DTOs** — single canonical type or generated mappers~~ | ~~Eliminates manual conversion~~ | ~~L~~ |
 | 10 | **Hide `syntax/golang` + `syntax/templ` behind `syntax` facade** (M12)  | Clean module boundary                                  | M                        |
-| ~~ | 11                                                                      | **Add `--suppress-test-low` flag** (M11)               | UX for noisy test clones |
-| ~~ | 12                                                                      | **Separate test/production threshold** (M11)           | UX precision             |
-| ~~ | 13                                                                      | **Unify enum patterns** across domain and config (M13) | Consistency              |
+| ~~11~~ done — suppress-test-low flag (cmd/flags.go:140) | ~~**Add `--suppress-test-low` flag** (M11)~~ | ~~UX for noisy test clones~~ |
+| ~~12~~ done — test-threshold (cmd/flags.go:142) | ~~**Separate test/production threshold** (M11)~~ | ~~UX precision~~ |
+| ~~13~~ done — shared pkg/enum helpers (AGENTS.md enum section) | ~~**Unify enum patterns** across domain and config (M13)~~ | ~~Consistency~~ |
 
 ### 🟡 Medium Impact
 
 | #  | Task | Impact                                                              | Effort                    |
 | -- | ---- | ------------------------------------------------------------------- | ------------------------- |
-| ~~ | 14   | **Add `context.Context` to `suffixtree.FindDuplOver`**              | Goroutine leak prevention |
-| ~~ | 15   | **Create ADR for actionability pattern detection** (M9)             | Knowledge preservation    |
-| ~~ | 16   | **Extract `validateLocation` helper** in todo/legacy detectors (M9) | Code quality — DRY        |
-| ~~ | 17   | **Break SDK error sentinels** from internal `errors` package        | SDK independence          |
-| ~~ | 18   | **Add fuzz tests** for templ parser + suffix tree invariants        | Robustness                |
-| ~~ | 19   | **Refactor `syntax/golang/transform.go`** (369L, 300L switch)       | Maintainability           |
-| ~~ | 20   | **Refactor `printer/actionability.go`** (558L)                      | Maintainability           |
+| ~~14~~ done — suffixtree/dupl.go:116 FindDuplOver takes ctx | ~~**Add `context.Context` to `suffixtree.FindDuplOver`**~~ | ~~Goroutine leak prevention~~ |
+| ~~15~~ done — docs/adr/0004-actionability-pattern-detection.md | ~~**Create ADR for actionability pattern detection** (M9)~~ | ~~Knowledge preservation~~ |
+| ~~16~~ **NOT-DO — NOT-DO — moot: todo/legacy detectors no longer exist in detection/. | ~~**Extract `validateLocation` helper** in todo/legacy detectors (M9)~~ | ~~Code quality — DRY~~ |
+| ~~17~~ done — pkg/artdupl/errors.go has SDK-specific sentinels | ~~**Break SDK error sentinels** from internal `errors` package~~ | ~~SDK independence~~ |
+| ~~18~~ done — suffixtree/fuzz_test.go + syntax/templ/fuzz_test.go | ~~**Add fuzz tests** for templ parser + suffix tree invariants~~ | ~~Robustness~~ |
+| ~~19~~ **NOT-DO — NOT-DO — transform.go remains the single 53-case dispatch point; the docs-health count gate verifiably scans it (cmd/docs_health_counts_test.go). | ~~**Refactor `syntax/golang/transform.go`** (369L, 300L switch)~~ | ~~Maintainability~~ |
+| ~~20~~ done — actionability split into ~30 focused files under printer/actionability/ | ~~**Refactor `printer/actionability.go`** (558L)~~ | ~~Maintainability~~ |
 
 ### 🟢 Polish
 
 | #  | Task | Impact                                                                        | Effort                         |
 | -- | ---- | ----------------------------------------------------------------------------- | ------------------------------ |
-| ~~ | 21   | **Add `DescribeTable` detection pattern**                                     | Feature enhancement            |
-| ~~ | 22   | **Add builder/callback detection pattern**                                    | Feature enhancement            |
-| ~~ | 23   | **Implement hybrid slice/map transition storage** for small transition counts | Performance micro-optimization |
-| ~~ | 24   | **Implement string interning** for node filenames                             | Performance                    |
-| ~~ | 25   | **Add property-based tests for suffix tree**                                  | Testing robustness             |
+| ~~21~~ done — describe-table pattern (printer/actionability/actionability.go:190) | ~~**Add `DescribeTable` detection pattern**~~ | ~~Feature enhancement~~ |
+| ~~22~~ done — builder-callback pattern (printer/actionability/actionability.go:191) | ~~**Add builder/callback detection pattern**~~ | ~~Feature enhancement~~ |
+| ~~23~~ done — small-count linear-scan transition search (suffixtree/findtran.go) | ~~**Implement hybrid slice/map transition storage** for small transition counts~~ | ~~Performance micro-optimization~~ |
+| ~~24~~ done — syntax/intern.go | ~~**Implement string interning** for node filenames~~ | ~~Performance~~ |
+| ~~25~~ done — suffixtree/dupl_property_test.go | ~~**Add property-based tests for suffix tree**~~ | ~~Testing robustness~~ |
 
 ---
 
