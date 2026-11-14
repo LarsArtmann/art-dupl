@@ -20,6 +20,7 @@ Over multiple sessions, the semantic clone detection pipeline was overhauled acr
 
 **Final measured results at default threshold 5 (semantic mode):**
 
+<!-- check-rows:ledger -->
 | Project             | Before all work | After all work | Reduction                          |
 | ------------------- | :-------------: | :------------: | ---------------------------------- |
 | SwettySwipperWeb    | 31 clone groups |     **5**      | **-84%**                           |
@@ -38,6 +39,7 @@ All remaining clones across all projects are **real, actionable duplication** �
 
 ### Go Semantic Mode Fixes (3 root-cause bugs fixed)
 
+<!-- check-rows:ledger -->
 | Commit    | Fix                                                                                                                                                                                                                                    | Impact                                                                               |
 | --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
 | `930b91a` | **Node.Fingerprint field** — `serial()` was overwriting `node.Type` with fingerprint hash, breaking ALL actionability pattern matching for statement-level clones. Added separate `Fingerprint int32` field. `Val()` routes correctly. | Fixed 15+ actionability patterns that were silently broken                           |
@@ -47,6 +49,7 @@ All remaining clones across all projects are **real, actionable duplication** �
 
 ### Templ Semantic Mode (implemented from scratch)
 
+<!-- check-rows:ledger -->
 | Commit    | Phase       | What                                                                                                                                                                                                                                                                    | Impact                                                                                    |
 | --------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
 | `268e3bb` | **Phase 1** | Encode HTML element tag names (`<a>`, `<div>`, `<button>`) and attribute names (`href`, `class`, `hx-get`) into node Types via `syntax.EncodeSemanticType()`. Extracted shared helper to `syntax/semantic.go`.                                                          | `<a href>` no longer matches `<div class>`. DiscordSync: 10 → 6 groups.                   |
@@ -54,12 +57,14 @@ All remaining clones across all projects are **real, actionable duplication** �
 
 ### Actionability Pattern Added
 
+<!-- check-rows:ledger -->
 | Commit    | Pattern           | Description                                                                                                                                                                         |
 | --------- | ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `930b91a` | Lock+Defer Unlock | `m.Lock(); defer m.Unlock()` and `m.RLock(); defer m.RUnlock()` 2-statement pattern now suppressed as idiomatic Go. Added `RUnlock` to cleanup methods, `isAcquireMethod()` helper. |
 
 ### Tests Added (15+ test cases across 5 files)
 
+<!-- check-rows:ledger -->
 | File                                           | Tests                                                                                                 |
 | ---------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
 | `syntax/fingerprint_test.go`                   | Fingerprint field behavior, serialization idempotency, non-statement Val(), Clone()                   |
@@ -70,12 +75,14 @@ All remaining clones across all projects are **real, actionable duplication** �
 
 ### BDD Test Updates
 
+<!-- check-rows:ledger -->
 | Commit    | What                                                                                                                                                                                                |
 | --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `bbfb1c5` | Adjusted 5 templ BDD tests for statement-level tokenization model. Updated fixtures to use multi-element components. Relaxed assertions for tiny synthetic fixtures (known suffix tree limitation). |
 
 ### Documentation
 
+<!-- check-rows:ledger -->
 | Commit    | What                                                      |
 | --------- | --------------------------------------------------------- |
 | `23c5fd5` | Pareto plan for templ semantic mode with mermaid graph    |
@@ -85,6 +92,7 @@ All remaining clones across all projects are **real, actionable duplication** �
 
 ### Pre-existing Refactoring (committed, not authored this session)
 
+<!-- check-rows:ledger -->
 | Commit    | What                                                                                                         |
 | --------- | ------------------------------------------------------------------------------------------------------------ |
 | `bb43810` | 8 files of clean refactoring (extracting helper methods in cache, filtertest, errors, printer, syntax/templ) |
@@ -163,76 +171,76 @@ Threshold 5 is confirmed correct across all 7 tested projects. Threshold 3 adds 
 
 | #  | Task                                                        | Impact                                    | Effort | Status       |
 | -- | ----------------------------------------------------------- | ----------------------------------------- | ------ | ------------ |
-| 1  | ~~Delete all archived status docs (283 files)~~             | ~~-283 files of dead weight~~             | 5 min  | **REJECTED** |
-| 2  | Run against 10+ external projects and document FP/FN rates  | Validate real quality                     | 30 min | **DONE**     |
-| 3  | Add `--test-threshold` flag                                 | Feedback #1 request                       | 1h     | Pending      |
-| 4  | Fix pre-existing `assertionMethodNames` global lint         | Lint hygiene                              | 5 min  | Pending      |
-| 5  | Fix `isErrorWrappingBody` per-call map allocation           | Perf                                      | 10 min | Pending      |
-| 6  | Encode struct field names in KeyValueExpr                   | Prevent `Point{X:1}` matching `Size{W:1}` | 30 min | Pending      |
-| 7  | Verify race safety with `-race` flag on all tests           | Safety                                    | 10 min | Pending      |
-| 8  | Document templ semantic mode in website docs                | User communication                        | 30 min | Pending      |
-| 9  | Update AGENTS.md with templ semantic mode details           | Dev context                               | 15 min | Pending      |
-| 10 | Add `--dump-tokens` debug flag for inspecting token streams | Debugging                                 | 30 min | Pending      |
+| ~~1~~ **not-do — rejected by the user; all status docs stay (recorded in the report header)** | ~~Delete all archived status docs (283 files)~~             | ~~-283 files of dead weight~~             |~~5 min~~|~~**REJECTED**~~|
+| ~~2~~ **done — the corpus validations run per release (AGENTS.md actionability bullet)** |~~Run against 10+ external projects and document FP/FN rates~~|~~Validate real quality~~|~~30 min~~|~~**DONE**~~|
+| ~~3~~ **done — --test-threshold ships (AGENTS.md Test Threshold)** |~~Add `--test-threshold` flag~~|~~Feedback #1 request~~|~~1h~~|~~Pending~~|
+| ~~4~~ **done — lint is 106-linter clean (AGENTS.md Linter Pareto)** |~~Fix pre-existing `assertionMethodNames` global lint~~|~~Lint hygiene~~|~~5 min~~|~~Pending~~|
+| ~~5~~ **superseded — the actionability engine now lives in printer/actionability/ (AGENTS.md)** |~~Fix `isErrorWrappingBody` per-call map allocation~~|~~Perf~~|~~10 min~~|~~Pending~~|
+| ~~6~~ **done — KeyValueExpr field names are encoded (AGENTS.md operator-token encoding policy)** |~~Encode struct field names in KeyValueExpr~~|~~Prevent `Point{X:1}` matching `Size{W:1}`~~|~~30 min~~|~~Pending~~|
+| ~~7~~ **done — go test -race ./... runs on every nix flake check (AGENTS.md -race cadence)** |~~Verify race safety with `-race` flag on all tests~~|~~Safety~~|~~10 min~~|~~Pending~~|
+| ~~8~~ **struck — website content work; the website itself ships (website/)** |~~Document templ semantic mode in website docs~~|~~User communication~~|~~30 min~~|~~Pending~~|
+| ~~9~~ **done — AGENTS.md carries the expression-aware templ bullet** |~~Update AGENTS.md with templ semantic mode details~~|~~Dev context~~|~~15 min~~|~~Pending~~|
+| ~~10~~ **done — --dump-tokens ships with source positions (AGENTS.md)** |~~Add `--dump-tokens` debug flag for inspecting token streams~~|~~Debugging~~|~~30 min~~|~~Pending~~|
 
 ### Tier 2: High Impact, Medium Effort
 
 | #  | Task                                                     | Impact                           | Effort |
 | -- | -------------------------------------------------------- | -------------------------------- | ------ |
-| 11 | Prototype `go/types` opt-in mode                         | Eliminate biggest FP source      | 4h+    |
-| 12 | Add `--type-aware` CLI flag                              | User control                     | 1h     |
-| 13 | Implement templ Phase 3 (expression normalization)       | More true positives              | 2h     |
-| 14 | Add BDD tests for templ semantic mode (multi-element)    | Test coverage                    | 1h     |
-| 15 | Consolidate clone types (7 → 2-3)                        | Architecture debt                | 4h+    |
-| 16 | Add `--min-lines` flag                                   | Complementary filter             | 1h     |
-| 17 | Improve `containsTRunCall` to match `t.Run` specifically | Fix false test pattern detection | 15 min |
-| 18 | Verify cobra detection checks parent Ident               | Fix imprecise pattern            | 15 min |
+| ~~11~~ **done — --type-aware ships go/types opt-in (AGENTS.md type-aware detection)** |~~Prototype `go/types` opt-in mode~~|~~Eliminate biggest FP source~~|~~4h+~~|
+| ~~12~~ **done — the --type-aware CLI flag ships (AGENTS.md)** |~~Add `--type-aware` CLI flag~~|~~User control~~|~~1h~~|
+| ~~13~~ **done — expression-aware templ landed 2026-10-04 (AGENTS.md)** |~~Implement templ Phase 3 (expression normalization)~~|~~More true positives~~|~~2h~~|
+| ~~14~~ **done — the templ BDD tests landed (syntax/templ/behavior_test.go; AGENTS.md)** |~~Add BDD tests for templ semantic mode (multi-element)~~|~~Test coverage~~|~~1h~~|
+| ~~15~~ **done — CloneRef consolidation landed (AGENTS.md clone type consolidation)** |~~Consolidate clone types (7 → 2-3)~~|~~Architecture debt~~|~~4h+~~|
+| ~~16~~ **done — --min-lines ships (AGENTS.md Min Lines)** |~~Add `--min-lines` flag~~|~~Complementary filter~~|~~1h~~|
+| ~~17~~ **done — the test-framework-call pattern covers it (AGENTS.md)** |~~Improve `containsTRunCall` to match `t.Run` specifically~~|~~Fix false test pattern detection~~|~~15 min~~|
+| ~~18~~ **done — the cobra-boilerplate pattern covers it (AGENTS.md)** |~~Verify cobra detection checks parent Ident~~|~~Fix imprecise pattern~~|~~15 min~~|
 
 ### Tier 3: Medium Impact, Low Effort
 
 | #  | Task                                                               | Impact                | Effort |
 | -- | ------------------------------------------------------------------ | --------------------- | ------ |
-| 19 | Add benchmark comparing semantic vs exact vs structural            | Perf visibility       | 30 min |
-| 20 | Unify Type/Fingerprint model (remove `DecodeBaseType`)             | Code clarity          | 2h     |
-| 21 | Remove import cycle workaround in `fingerprint_test.go`            | Test hygiene          | 15 min |
-| 22 | Add property-based/fuzz test for normalization pipeline            | Edge case discovery   | 1h     |
-| 23 | Add benchmark for literal Kind.String() call                       | Perf regression guard | 15 min |
-| 24 | Add `.art-duplignore` config file support                          | User flexibility      | 2h     |
-| 25 | Add pattern-aware weighting (not binary actionable/non-actionable) | Nuance                | 4h+    |
+| ~~19~~ **done — docs/benchmarks/ carries the baselines (AGENTS.md)** |~~Add benchmark comparing semantic vs exact vs structural~~|~~Perf visibility~~|~~30 min~~|
+| ~~20~~ **won't implement — DecodeBaseType stays the consumer contract (AGENTS.md semantic encoding layout)** |~~Unify Type/Fingerprint model (remove `DecodeBaseType`)~~|~~Code clarity~~|~~2h~~|
+| ~~21~~ **superseded — the fingerprint tests settled in syntax/ (syntax/fingerprint_test.go)** |~~Remove import cycle workaround in `fingerprint_test.go`~~|~~Test hygiene~~|~~15 min~~|
+| ~~22~~ **done — native fuzz targets + the seed-corpus gate (AGENTS.md fuzz gate)** |~~Add property-based/fuzz test for normalization pipeline~~|~~Edge case discovery~~|~~1h~~|
+| ~~23~~ **done — the alloc-gate guards serialization allocations (AGENTS.md)** |~~Add benchmark for literal Kind.String() call~~|~~Perf regression guard~~|~~15 min~~|
+| ~~24~~ **not-do — never landed; --exclude-pattern and .gitignore honoring cover the need (AGENTS.md)** |~~Add `.art-duplignore` config file support~~|~~User flexibility~~|~~2h~~|
+| ~~25~~ **not-do — the binary actionable/non-actionable split stands (AGENTS.md actionability patterns)** |~~Add pattern-aware weighting (not binary actionable/non-actionable)~~|~~Nuance~~|~~4h+~~|
 
 ### Tier 4: Medium Impact, Medium Effort
 
 | #  | Task                                                | Impact              | Effort |
 | -- | --------------------------------------------------- | ------------------- | ------ |
-| 26 | Improve error wrapping detection (2-stmt bodies)    | More FP suppression | 30 min |
-| 27 | Lower builder callback threshold from 3 to 2 calls  | More FP suppression | 15 min |
-| 28 | Add clone refactoring suggestions in output         | User value          | 1h     |
-| 29 | Add SARIF rule metadata for actionability           | CI integration      | 30 min |
-| 30 | Improve data dominance ratio for small clones       | FP reduction        | 30 min |
-| 31 | Add HTML report grouping by actionability status    | UX                  | 1h     |
-| 32 | Cache versioning for serialization format changes   | Cache safety        | 1h     |
-| 33 | Add `--since` flag for git-ref-based file filtering | CI speed            | 2h     |
+| ~~26~~ **done — error-wrapping + error-guard-fallthrough patterns shipped (AGENTS.md)** |~~Improve error wrapping detection (2-stmt bodies)~~|~~More FP suppression~~|~~30 min~~|
+| ~~27~~ **not-do — the builder-callback pattern stands as written (AGENTS.md)** |~~Lower builder callback threshold from 3 to 2 calls~~|~~More FP suppression~~|~~15 min~~|
+| ~~28~~ **done — --explain shows the suggestion per group (AGENTS.md --explain flag)** |~~Add clone refactoring suggestions in output~~|~~User value~~|~~1h~~|
+| ~~29~~ **done — SARIF carries rule metadata + go-finding properties (AGENTS.md SARIF wire conventions)** |~~Add SARIF rule metadata for actionability~~|~~CI integration~~|~~30 min~~|
+| ~~30~~ **done — the data-dominated pattern shipped (AGENTS.md)** |~~Improve data dominance ratio for small clones~~|~~FP reduction~~|~~30 min~~|
+| ~~31~~ **superseded — the HTML report ships with stable anchors and permalinks (AGENTS.md)** |~~Add HTML report grouping by actionability status~~|~~UX~~|~~1h~~|
+| ~~32~~ **done — CacheVersion is 9 with a bump history (AGENTS.md cache key isolation)** |~~Cache versioning for serialization format changes~~|~~Cache safety~~|~~1h~~|
+| ~~33~~ **struck — tracked on ROADMAP (UX and Defaults: --since <ref> scan scope)** |~~Add `--since` flag for git-ref-based file filtering~~|~~CI speed~~|~~2h~~|
 
 ### Tier 5: Lower Priority / Future
 
 | #  | Task                                                                |
 | -- | ------------------------------------------------------------------- |
-| 34 | Implement nested-scope shadowing in normalizer                      |
-| 35 | Add generics constraint normalization (`T any` vs `T comparable`)   |
-| 36 | Add multi-language actionability for templ                          |
-| 37 | Add LSP integration for real-time detection                         |
-| 38 | Add WASM target for browser-based detection                         |
-| 39 | Parallel suffix tree construction                                   |
-| 40 | Machine-learning-based actionability classification                 |
-| 41 | Add diff mode (compare two codebases)                               |
-| 42 | Add `--json-schema` flag                                            |
-| 43 | Improve suffix tree memory for large codebases                      |
-| 44 | Add pre-commit hook improvement (exit non-zero only for actionable) |
-| 45 | Add stats FP rate estimate                                          |
-| 46 | Add website detection-methods guide with Type-2 examples            |
-| 47 | Add performance optimization guide                                  |
-| 48 | Add CI/CD integration guide for templ projects                      |
-| 49 | Add templ-specific actionability patterns (htmx boilerplate)        |
-| 50 | Add composite literal array detection for test fixtures             |
+| ~~34~~ **struck — tracked on ROADMAP (nested-scope shadowing; the 2026-06-20 report header)** |~~Implement nested-scope shadowing in normalizer~~|
+| ~~35~~ **not-do — constraint text is not part of the canonical name (AGENTS.md alpha-normalization)** |~~Add generics constraint normalization (`T any` vs `T comparable`)~~|
+| ~~36~~ **done — templ-rendering-idiom + templ-children-idiom patterns shipped (AGENTS.md)** |~~Add multi-language actionability for templ~~|
+| ~~37~~ **not-do — no LSP integration landed** |~~Add LSP integration for real-time detection~~|
+| ~~38~~ **not-do — no WASM target landed** |~~Add WASM target for browser-based detection~~|
+| ~~39~~ **won't implement — Ukkonen construction is inherently sequential; parallel SEARCH shipped instead (AGENTS.md)** |~~Parallel suffix tree construction~~|
+| ~~40~~ **not-do — the pattern engine is a deterministic denylist (AGENTS.md actionability patterns)** |~~Machine-learning-based actionability classification~~|
+| ~~41~~ **done — --diff-report compares baseline runs (AGENTS.md baseline analyzer identity)** |~~Add diff mode (compare two codebases)~~|
+| ~~42~~ **not-do — no --json-schema flag landed** |~~Add `--json-schema` flag~~|
+| ~~43~~ **done — the ADR-0022 memory-compact layout shipped (AGENTS.md)** |~~Improve suffix tree memory for large codebases~~|
+| ~~44~~ **superseded — art-dupl check owns the CI gate contract with typed exit codes (AGENTS.md)** |~~Add pre-commit hook improvement (exit non-zero only for actionable)~~|
+| ~~45~~ **not-do — no stats FP-rate estimate landed** |~~Add stats FP rate estimate~~|
+| ~~46~~ **struck — website content work (website/ ships; presence tracked in ROADMAP)** |~~Add website detection-methods guide with Type-2 examples~~|
+| ~~47~~ **done — docs/benchmarks/ + CPU_TOPOLOGY.md carry the perf analysis (AGENTS.md)** |~~Add performance optimization guide~~|
+| ~~48~~ **not-do — no templ CI guide landed; art-dupl check is the CI entry (AGENTS.md)** |~~Add CI/CD integration guide for templ projects~~|
+| ~~49~~ **done — the templ-rendering-idiom and templ-children-idiom patterns shipped (AGENTS.md)** |~~Add templ-specific actionability patterns (htmx boilerplate)~~|
+| ~~50~~ **not-do — composite-literal array detection never landed** |~~Add composite literal array detection for test fixtures~~|
 
 ---
 

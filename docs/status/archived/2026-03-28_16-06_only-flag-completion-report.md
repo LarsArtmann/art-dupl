@@ -104,7 +104,7 @@ Nothing is broken. All identified bugs have been fixed, all tests pass, and the 
 1. ~~Hash-only detection path bypassed the `--only` filter~~ ✅ FIXED
 2. ~~Single file paths bypassed the filter~~ ✅ FIXED
 3. ~~Config merge didn't preserve `--only` value~~ ✅ FIXED
-4. ~~100+ lines of code duplication~~ ✅ REFACTORED
+4. ~~100+ lines of code duplication~~ fixed — refactored
 
 ---
 

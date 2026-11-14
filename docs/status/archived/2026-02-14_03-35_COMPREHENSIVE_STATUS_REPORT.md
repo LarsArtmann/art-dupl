@@ -98,7 +98,7 @@
 
 - [x] ~~Fuzz testing integration~~ done — fuzz tests in `suffixtree/`, `syntax/templ/`
 - [x] ~~Property-based testing expansion~~ done — property tests (ADR-0017)
-- [x] ~~Chaos testing for error paths~~ routed — error-path coverage via exit-code tests
+- [x] ~~Chaos testing for error paths~~ struck — error-path coverage rides the typed exit-code tests (AGENTS.md typed exit codes)
 
 ---
 

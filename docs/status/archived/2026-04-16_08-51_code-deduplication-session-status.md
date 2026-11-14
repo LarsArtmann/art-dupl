@@ -150,7 +150,7 @@ Verified: these fail identically without our 6 commits applied.
 | # | What | Files | Impact | Effort |
 | --- | ------------------------------------------------------------------------ | ------------------ | -------------------- | ------ | --- |
 | ~~21~~ **Won't implement — kept in `internal/` — bdd/ and module-root tests reach it fine.** | ~~Move `internal/testutil` to `pkg/testutil` to break import cycle barrier~~ | ~~All test files~~ | ~~HIGH~~ | ~~HIGH~~ |
-| ~~22~~ done — "Check for new clones" gate in CI | ~~Add CI gate for clone count (`art-dupl -t 15~~ | ~~grep -c "^found"`)~~ | ~~`.github/workflows/`~~ | ~~Medium~~ | ~~Low~~ |
+| ~~22~~ done — the Clone Detection gate runs in CI (AGENTS.md CI table) | ~~Add CI gate for clone count (art-dupl check exit-code gate)~~ | ~~`.github/workflows/`~~ | ~~Medium~~ | ~~Low~~ |
 | ~~23~~ done at `c0261563` | ~~Fix `gopls unusedparams` diagnostics across codebase~~ | ~~Multiple files~~ | ~~Low~~ | ~~Low~~ |
 | ~~24~~ done — CI green (Lint/Test/Coverage jobs) | ~~Run `just ci` to full green (currently blocked by BDD failures)~~ | ~~All~~ | ~~HIGH~~ | ~~Medium~~ |
 | ~~25~~ done — both `FEATURES.md` and `CHANGELOG.md` exist | ~~Create `FEATURES.md` or `CHANGELOG.md` documenting recent improvements~~ | ~~Root~~ | ~~Low~~ | ~~Low~~ |

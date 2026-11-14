@@ -251,7 +251,7 @@ if err := clone.IsValid(); err != nil {
 
 ### Removed
 
-- ~~`github.com/samber/mo v1.16.0`~~ ✅
+- ~~`github.com/samber/mo v1.16.0`~~ done — removed from go.mod (verified 2026-11-14: zero samber/mo references)
 
 ### Current Key Dependencies
 

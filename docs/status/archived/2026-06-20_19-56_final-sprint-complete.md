@@ -103,7 +103,7 @@ Nothing. No regressions, no broken builds, no reverted changes.
 
 1. ~~**`serial()` is still the elephant in the room.** T1 addresses it but was deferred. The 6 completed filter tasks (T3/T4/T7/T8/T9) are post-hoc filters on top of node-level tokenization. Eventually T1 must be done or thresholds will always be inflated.~~ done — T1 shipped: nested emission (ADR-0023), CacheVersion 4
 
-2. ~~**Normalizer is heuristic** — flat per-function symbol table (no nested-scope shadowing resolution). `go/types` would give precise scope resolution but adds type-checking overhead.~~ parked — ROADMAP "Nested-scope shadowing in alpha-normalization"
+2. ~~**Normalizer is heuristic** — flat per-function symbol table (no nested-scope shadowing resolution). `go/types` would give precise scope resolution but adds type-checking overhead.~~ struck — tracked on ROADMAP (Nested-scope shadowing in alpha-normalization, ROADMAP.md:65)
 
 3. ~~**3 parallel Clone types** — `domain.ProcessedClone`, `printer.CloneGroup`, `pkg/artdupl.Clone`. Consolidation (T14) is pending.~~ resolved by alternative — CloneRef embedded across types; format DTOs deliberate
 

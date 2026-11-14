@@ -45,7 +45,7 @@
 ### T2.2 — Pinned timing annotation (blocked, then deferred)
 
 - The handoff's `/tmp/bench_pinned_t2.txt` (captured 10:13) is **uniformly slower than the unpinned v3 baseline (04:19) across all benchmarks including `seq`** — which pinning cannot affect. Verdict: machine-state difference 6h apart, not a pinning effect. A pinned-vs-unpinned claim from these two files would violate the project's own compare-like-with-like rule.
-- ~~Correct procedure defined: interleaved A/B runs (pinned, unpinned, pinned, unpinned) once the machine is free. Deferred behind the 40-min flake check (now done).~~ Executed 2026-09-22: interleaved A/B landed (`docs/benchmarks/pinned-unpinned-2026-09-22.txt`, CHANGELOG 0.7.1).
+- ~~Correct procedure defined: interleaved A/B runs (pinned, unpinned, pinned, unpinned) once the machine is free. Deferred behind the 40-min flake check (now done).~~ done 2026-09-22 — the interleaved A/B landed (docs/benchmarks/pinned-unpinned-2026-09-22.txt; verified 2026-11-14).
 
 ## c) Not Started
 

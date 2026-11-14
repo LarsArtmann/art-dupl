@@ -38,7 +38,7 @@
    - Multiple configuration systems (CLI, JSON, env vars) overlapping
 
 5. **Feature Flags for Unfinished Features:**
-   - ~~`--profile` flag exists but implementation incomplete~~ --profile implemented (job.StartProfile, cmd/flags.go).
+   - ~~`--profile` flag exists but implementation incomplete~~ done — the flag ships (cmd/flags.go:23; AGENTS.md hidden-flag count).
    - `--timeout` flag exists but implementation incomplete
    - Semantic detection is opt-in when it should be default
 

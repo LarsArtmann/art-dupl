@@ -119,4 +119,4 @@ Audited every `sync`/`atomic` usage in production code:
 - `go test ./cmd/ ./job/ ./cache/` — green
 - `go test -race ./...` — **green (all packages)**
 - `nix flake check` — **red**: `disabled-linters` (tagliatelle); fix is next session's first action
-- Lint — not yet re-run this session (~~gopls stdversion warnings are the known false positives~~ OBSOLETE 2026-09-23: the Go 1.27.1 upgrade eliminated the stdversion false-positive class entirely, see AGENTS.md `GOEXPERIMENT=jsonv2` note; `golangci-lint` run pending after tagliatelle fix)
+- Lint — not yet re-run this session (~~gopls stdversion warnings are the known false positives~~ resolved 2026-09-23: the Go 1.27.1 upgrade eliminated the stdversion false-positive class entirely (AGENTS.md GOEXPERIMENT note); lint is 106-clean since 2026-09-29)

@@ -108,7 +108,7 @@ Nothing is totally fucked up. All previously identified bugs have been fixed:
 - ~~"Zero config required"~~ → Fixed to "Works out of the box"
 - ~~Pipeline missing formats~~ → Fixed with all 7 listed
 - ~~copyInstall() no feedback~~ → Fixed with toast + checkmark
-- ~~Google Fonts display=swap~~ → Was already present in URL
+- ~~Google Fonts display=swap~~ verified — already present in the URL
 - ~~No main landmark~~ → Fixed with `<main id="main">`
 - ~~No ARIA roles~~ → Fixed with full tablist pattern
 - ~~No focus styles~~ → Fixed with `:focus-visible`
