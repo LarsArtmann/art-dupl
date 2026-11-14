@@ -170,7 +170,7 @@ No regressions, no broken tests, no data loss. All 29 test packages pass clean.
 41. Add ADR for LRU layer architecture (lock ordering, clone semantics, eviction policy)
 42. Update `HOW_TO_USE.md` with `--memory-cache-entries` flag (once implemented)
 43. Update `TESTING.md` with cache test conventions (LRU testing patterns)
-44. Add `docs/CACHE_ARCHITECTURE.md` with diagrams (disk + LRU + singleflight interaction)
+44. ~~Add `docs/CACHE_ARCHITECTURE.md` with diagrams (disk + LRU + singleflight interaction)~~ NOT-DO — absorbed: the cache architecture (LRU layer, eviction hysteresis, key isolation) is documented in AGENTS.md; no standalone ADR was demanded in the three months since
     ~~45. Update `FEATURES.md` with "In-memory LRU cache layer" feature entry~~ done — FEATURES "In-Memory LRU Cache | FULLY_FUNCTIONAL" row
 
 ### Code Quality

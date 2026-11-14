@@ -44,8 +44,8 @@
 | printer             | 76.5%    | ⚠️                |
 | cmd                 | 75.1%    | ⚠️                |
 | job                 | 72.1%    | ⚠️                |
-| domain              | 66.2%    | 🔴               |
-| detection           | 61.8%    | 🔴               |
+| domain              | ~~66.2%~~ | ~~🔴~~ superseded — 2026-06 snapshot; coverage is tracked by the CI Coverage job now |
+| detection           | ~~61.8%~~ | ~~🔴~~ superseded — 2026-06 snapshot; coverage is tracked by the CI Coverage job now |
 | internal/filtertest | 50.0%    | 🔴 (test infra)  |
 | examples            | 0.0%     | — (demo package) |
 | cmd/art-dupl        | 0.0%     | — (main package) |

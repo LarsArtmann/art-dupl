@@ -138,7 +138,7 @@ The hook's `templ-fmt` repair step reformatted `printer/report_templ.go` (22 lin
 21. **Install go-licenses in devShell** — License verification currently fails
 22. **Add a "docs sync" CI job** — Cross-validate pattern counts, feature tables, SDK options across all doc files
 ~~23. **Consider `--no-verify` escape hatch documentation** — When BuildFlow binaries are missing, document how to bypass~~ resolved by alternative — hook path fixed via skip_steps; ritual gone
-24. **Update plan doc** — Mark tasks 10-14 as completed/blocked in `docs/planning/2026-08-10_07-05_docs-health-gap-fix-sprint.md`
+24. ~~**Update plan doc** — Mark tasks 10-14 as completed/blocked in `docs/planning/2026-08-10_07-05_docs-health-gap-fix-sprint.md`~~ resolved — the referenced doc was a status report, now fully annotated and archived at `docs/status/archived/2026-08-10_07-05_docs-health-gap-fix-sprint.md` with every task carrying its verdict
 ~~25. **Review whether tagliatelle should actually be enabled** — Maybe the codebase CAN conform to a single JSON convention; ADR-0016 decided "mixed is fine" but that was a choice, not a constraint~~ resolved by alternative — banned outright with auto-remove guard
 
 ---

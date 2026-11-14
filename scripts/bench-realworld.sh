@@ -111,7 +111,7 @@ fi
 			[[ -n "$v" ]] && medians+=("$v")
 		done
 		if [[ ${#medians[@]} -gt 0 ]]; then
-			sorted=($(printf '%s\n' "${medians[@]}" | sort))
+			mapfile -t sorted < <(printf '%s\n' "${medians[@]}" | sort)
 			echo "| $stage | ${sorted[$((${#sorted[@]} / 2))]} |"
 		fi
 	done

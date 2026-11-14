@@ -90,7 +90,7 @@ func (t *transformer) transformCallTemplateExpression(cte *templparser.CallTempl
 | ~~ | 5b                                                             | Run validation on templ-components (the FP source)                 | —                                           |
 | 5c | Run validation on all 15 projects                              | —                                                                  | 10min                                       |
 | ~~ | 6a                                                             | Run `golangci-lint run --timeout 5m ./syntax/templ/...`            | —                                           |
-| ~~ | 7a                                                             | Update `docs/status/2026-07-16_semantic-validation-15-projects.md` | docs                                        |
+| ~~ | 7a                                                             | Update `docs/status/archived/2026-07-16_semantic-validation-15-projects.md` | docs                                        |
 | ~~ | 8a                                                             | `git add` + `git commit` with detailed message                     | —                                           |
 | 8b | `git push`                                                     | —                                                                  | 2min                                        |
 

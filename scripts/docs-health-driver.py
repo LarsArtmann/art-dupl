@@ -146,7 +146,7 @@ def move(block):
         return True
     dst.parent.mkdir(parents=True, exist_ok=True)
     r = subprocess.run(
-        ["git", "mv", str(f), str(dst)], cwd=ROOT, capture_output=True, text=True
+        ["git", "mv", str(f), str(dst)], check=False, cwd=ROOT, capture_output=True, text=True
     )
     if r.returncode != 0:
         print(f"  MOVE-FAIL: {r.stderr.strip()}")
@@ -159,7 +159,7 @@ def main():
     blocks = parse(sys.argv[1])
     tmpdir = pathlib.Path("/tmp/dh-specs")
     tmpdir.mkdir(exist_ok=True)
-    n_ok = n_fail = n_skip = 0
+    n_ok = n_fail = 0
     for b in blocks:
         f = ROOT / b["file"]
         if not f.exists():
@@ -171,6 +171,7 @@ def main():
         if spec:
             r = subprocess.run(
                 ["python3", str(ANNO), str(f), str(spec)],
+                check=False,
                 cwd=ROOT,
                 capture_output=True,
                 text=True,
@@ -179,9 +180,6 @@ def main():
                 print(
                     f"STRIKE-SKIP {b['file']} (banner fallback): {r.stdout.strip()[:120]}"
                 )
-            strikes_ok = True
-        else:
-            strikes_ok = True
         # 2. headline fixes
         if b["fix"] and not do_fixes(f, b["fix"]):
             print(f"FIX-FAIL {b['file']}")
@@ -205,10 +203,14 @@ def main():
         elif b.get("banner"):
             do_banner(f, b["banner"])
         # 4. archive move only when fully resolved
-        if apply and b["class"] == "ARCHIVE" and b["move"] != "none":
-            if not move(b):
-                n_fail += 1
-                continue
+        if (
+            apply
+            and b["class"] == "ARCHIVE"
+            and b["move"] != "none"
+            and not move(b)
+        ):
+            n_fail += 1
+            continue
         n_ok += 1
         print(
             f"OK {'ARCHIVED' if apply and b['class'] == 'ARCHIVE' and b['move'] != 'none' else b['class']:9s} {b['file']}"

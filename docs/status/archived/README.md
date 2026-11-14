@@ -23,7 +23,7 @@ count by design — a manifest lives inside the dir it documents.
 Every numbered item in the file carries an inline verdict:
 
 ```markdown
-12. ~~Fix warmup store pollution~~ done at `a7b8159`
+12. ~~Fix warmup store pollution~~ done at `91419533`
 ```
 
 Variants: `done at <hash/date — evidence>`, `Won't implement — <reason>`,
