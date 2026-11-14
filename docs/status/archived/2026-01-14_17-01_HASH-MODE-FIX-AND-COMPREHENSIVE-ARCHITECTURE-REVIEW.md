@@ -276,7 +276,7 @@ Use `config.DefaultDetectionMethod().String()` instead of hardcoded "art-dupl"
 13. ~~**Consolidate string literals** - Create constants for magic strings~~ done — addressed via goconst settings + test-constant extraction
 14. ~~**Review error types** - Ensure centralized error handling~~ done — typed errors centralized in `errors/`
 15. ~~**Split `domain/clone.go`** - 440 lines by functionality~~ done — `domain/clone.go` split (clone_node.go, clone_ref.go, processed_clone.go)
-16. **Split `config/config_test.go`** - 409 lines by test groups **→ `config/config_test.go` still 628L — accepted size**
+16. ~~**Split `config/config_test.go`** - 409 lines by test groups~~ Won't implement — file remains 628L, accepted size
 17. ~~**Implement plugin architecture** - For detection methods~~ **Won't implement — adapters in `detection/adapters.go` cover method composition; no plugin system adopted.**
 18. ~~**Add performance benchmarks** - For detection methods~~ done — benchmark suite (`syntax/syntax_bench_test.go`, `.github/workflows/performance.yml`)
 19. ~~**Review domain types** - For impossible states~~ **Superseded — ADR-0005 split-brain type unification.**
@@ -284,7 +284,7 @@ Use `config.DefaultDetectionMethod().String()` instead of hardcoded "art-dupl"
 
 ### 🟢 LOW PRIORITY (Low Impact, High Effort - Future Work)
 
-21. **Split remaining large files** - All files >350 lines **→ some large files remain by design (`cmd/run_analysis.go` 543L)**
+21. ~~**Split remaining large files** - All files >350 lines~~ Won't implement — some large files remain by design (`cmd/run_analysis.go` 543L)
 22. ~~**Implement generics** - Where appropriate to reduce duplication~~ done — generics adopted (`config/enum_helpers.go`, `pkg/enum/enum.go`, ADR-0021)
 23. ~~**Add fuzz testing** - For detection algorithms~~ done — fuzz tests in `suffixtree/` and `syntax/templ/`
 24. ~~**Refactor with DDD** - Enhance domain model~~ **Superseded — AGENTS.md architecture sections.**
