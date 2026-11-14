@@ -8,6 +8,7 @@ Config extraction, dead code elimination, detector wiring, and file splitting. S
 
 ## ✅ COMPLETED (this session)
 
+<!-- check-rows:ledger -->
 | # | Task                                                                                                                   | Commit    | Impact                                    |
 | - | ---------------------------------------------------------------------------------------------------------------------- | --------- | ----------------------------------------- |
 | 1 | **Commit staged changes** — previous session's config/printer/detection refactoring                                    | `508236e` | 41 files, -62 net lines                   |
@@ -74,9 +75,9 @@ cmd/
 
 | Priority | Task   |
 | -------- | ------ |
-| ~~       | HIGH   |
-| ~~       | MEDIUM |
-| ~~       | MEDIUM |
-| ~~       | LOW    |
-| ~~       | LOW    |
-| ~~       | LOW    |
+| ~~HIGH~~ **done — TokenValue int32 shipped (ADR-0022; AGENTS.md suffix-tree layout)** | ~~Implement TokenValue type with validation~~ |
+| ~~MEDIUM~~ **done — the CloneNode/ProcessedClone DTO landed (domain.CloneNode; AGENTS.md)** | ~~Introduce ProcessedClone DTO to decouple Printer from syntax.Node~~ |
+| ~~MEDIUM~~ **done — CloneRef embedding landed across clone-bearing types; remaining DTOs intentional (AGENTS.md)** | ~~Consolidate three parallel Clone types~~ |
+| ~~LOW~~ **won't implement — superseded by the ADR-0022 sorted []tran layout** | ~~Refactor syntax/golang/transform.go (355L switch)~~ |
+| ~~LOW~~ **won't implement — hand-written SIMD was deleted (FEATURES N/A row)** | ~~Implement SIMD TODOs~~ |
+| ~~LOW~~ **done — the archive ritual is running (cadence gate; docs/status/archived/)** | ~~Archive old docs/status/ files~~ |

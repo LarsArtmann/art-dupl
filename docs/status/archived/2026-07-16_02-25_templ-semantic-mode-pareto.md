@@ -30,6 +30,7 @@ Token stream for `<div hx-get="..." hx-target="#x">text</div>`:
 
 ## Current measured noise
 
+<!-- check-rows:ledger -->
 | Project          | t=5 total | t=5 templ % | t=3 total | t=3 templ % |
 | ---------------- | :-------: | :---------: | :-------: | :---------: |
 | SwettySwipperWeb |    31     |     82%     |    57     |     65%     |
@@ -106,12 +107,12 @@ These are **different tokens**. `<a href...>` only matches other `<a href...>`.
 
 | Task | Phase                                                    | Files   | Effort                                   |
 | ---- | -------------------------------------------------------- | ------- | ---------------------------------------- |
-| ~~   | Extract `encodeSemanticType` to shared `syntax/` package | Prep    | `syntax/semantic.go`                     |
-| ~~   | Add `semantic bool` to templ transformer                 | 1       | `syntax/templ/parser.go`                 |
-| ~~   | Encode element tag names                                 | 1       | `syntax/templ/transform_node.go`         |
-| ~~   | Encode attribute names                                   | 1       | `syntax/templ/transform_node.go`         |
-| ~~   | Wire detection mode through templ parse path             | 1       | `job/parse.go`, `syntax/templ/parser.go` |
-| ~~   | Mark element children as Statement=true                  | 2       | `syntax/templ/transform_node.go`         |
-| ~~   | Mark component children as Statement=true                | 2       | `syntax/templ/transform_components.go`   |
-| ~~   | Verify against SwettySwipperWeb + DiscordSync            | Measure | -                                        |
-| ~~   | Write Pareto planning doc                                | Done    | `docs/planning/`                         |
+| ~~Extract `encodeSemanticType` to shared `syntax/` package~~ done — EncodeSemanticType lives in syntax/semantic.go:30 | ~~Prep~~ | ~~`syntax/semantic.go`~~ |
+| ~~Add `semantic bool` to templ transformer~~ done — modes thread as golang.DetectionMode (AGENTS.md) | ~~1~~ | ~~`syntax/templ/parser.go`~~ |
+| ~~Encode element tag names~~ done — element type hashing landed (AGENTS.md expression-aware templ) | ~~1~~ | ~~`syntax/templ/transform_node.go`~~ |
+| ~~Encode attribute names~~ done — constant attribute values fold into the type hash (2026-10-16; AGENTS.md) | ~~1~~ | ~~`syntax/templ/transform_node.go`~~ |
+| ~~Wire detection mode through templ parse path~~ done — modes thread as golang.DetectionMode (AGENTS.md arch note) | ~~1~~ | ~~`job/parse.go`, `syntax/templ/parser.go`~~ |
+| ~~Mark element children as Statement=true~~ done — statement marking landed (AGENTS.md) | ~~2~~ | ~~`syntax/templ/transform_node.go`~~ |
+| ~~Mark component children as Statement=true~~ done — statement marking landed (AGENTS.md) | ~~2~~ | ~~`syntax/templ/transform_components.go`~~ |
+| ~~Verify against SwettySwipperWeb + DiscordSync~~ done — the corpus validations run per release (AGENTS.md actionability bullet) | ~~Measure~~ | ~~--~~ |
+| ~~Write Pareto planning doc~~ verified 2026-11-14 — docs/planning/ carries the plan docs | ~~Done~~ | ~~`docs/planning/`~~ |
