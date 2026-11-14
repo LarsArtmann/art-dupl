@@ -174,7 +174,7 @@ All changes are clean, tested, and backwards compatible. No regressions introduc
 | 20 | Investigate `config` package coverage (70.4%) — close to threshold          | Low    | Low     |
 | 21 | Investigate `job` package coverage (76.7%) — close to threshold             | Low    | Low     |
 | 22 | Add integration test for `pipeline/pipeline.go` (original bug report file)  | Low    | Medium  |
-| 23 | Review and clean up `docs/status/` — 200+ status reports is excessive       | Low    | Low     |
+| ~~23~~ **struck — the cadence gate owns the docs/status archive wave (in flight)** |~~Review and clean up `docs/status/` — 200+ status reports is excessive~~|~~Low~~|~~Low~~|
 | 24 | Add `CHANGELOG.md` entry for line number bug fix                            | Low    | Trivial |
 | 25 | Consider version bump for bug fix release                                   | Low    | Trivial |
 

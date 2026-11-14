@@ -198,7 +198,7 @@ Implement two ROADMAP items:
 17. Design per-file position offset map to eliminate the flat `[]*syntax.Node` in `BuildTree`
 18. Prototype suffix array construction (DC3/skew) as alternative to Ukkonen's for parallelism
 19. Investigate whether the hash-based detector (`hashAdapter`) could also benefit from parallel search
-20. Design a `StreamingDetector` interface that processes files one-at-a-time without buffering
+~~20. Design a `StreamingDetector` interface that processes files one-at-a-time without buffering~~ not-do — the interface was never designed
 
 ### Code Quality
 
@@ -236,9 +236,9 @@ Implement two ROADMAP items:
 
 ### Polish
 
-40. Add `STree.Len()` as a public alias for `DataLen()` for API ergonomics
+~~40. Add `STree.Len()` as a public alias for `DataLen()` for API ergonomics~~ not-do — no Len alias landed (DataLen stands)
 41. Consider adding `STree.NumStates()` for observability/debugging
-42. Add a `ParallelSearchEnabled()` method to `MultiDetector` for introspection
+~~42. Add a `ParallelSearchEnabled()` method to `MultiDetector` for introspection~~ not-do — no introspection method landed
 43. Consider whether `--search-workers` should auto-default to `runtime.NumCPU()` when `>1` is set but no explicit count given (like `--workers` does for parsing)
 44. Add error message when `--search-workers` is set but `--hash` mode is used (hash mode doesn't use the suffix tree, so parallel search has no effect)
 45. Review the ROADMAP items for the streaming approach and add a new item reflecting the architectural constraint (`FindSyntaxUnits` needs flat slice)

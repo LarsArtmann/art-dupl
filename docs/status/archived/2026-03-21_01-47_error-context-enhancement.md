@@ -149,8 +149,8 @@ The linter config was reformatted from 2-space to 4-space indentation. This is a
 ### Priority 4: Code Quality
 
 15. **Review .golangci.yml changes** - Confirm reformatting
-16. **Add missing test coverage** - For error paths
-17. **Refactor duplicate error patterns** - DRY principle
+~~16. **Add missing test coverage** - For error paths~~ done — the error paths are tested across the suite (go test ./...)
+~~17. **Refactor duplicate error patterns** - DRY principle~~ done — the single DuplError struct + sentinel convention landed (AGENTS.md)
 18. **Add integration tests** - For error message quality
 19. **Create error message templates** - For consistency
 

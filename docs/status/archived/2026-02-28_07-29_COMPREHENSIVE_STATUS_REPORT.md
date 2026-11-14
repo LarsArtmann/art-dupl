@@ -241,8 +241,8 @@ The project is in excellent shape. No blocking issues, no broken builds, no fail
 | -- | ------------------------------------ | ------ | ------ |
 | 22 | Create CONTRIBUTING.md               | 1 hour | Medium |
 | 23 | Add architecture diagram             | 1 hour | Medium |
-| 24 | Generate API documentation           | 30 min | Low    |
-| 25 | Clean up old status reports in docs/ | 30 min | Low    |
+| ~~24~~ **done — godoc carries the API documentation** |~~Generate API documentation~~|~~30 min~~|~~Low~~|
+| ~~25~~ **struck — the cadence gate owns the docs/status archive wave (in flight)** |~~Clean up old status reports in docs/~~|~~30 min~~|~~Low~~|
 
 ---
 

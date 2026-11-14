@@ -160,7 +160,7 @@ migration/migration.go:132: parameter name 'b' is too short
 
 ### High Priority (Documentation)
 
-6. Add package comment to `cmd/art-dupl/main.go`
+~~6. Add package comment to `cmd/art-dupl/main.go`~~ not-do — main.go still lacks a package comment (verified 2026-11-14)
 7. Add godoc to `Analysis.IsValid()` method
 8. Add godoc to `Clone.IsValid()` method
 9. Add godoc to exported constants in `config/detectionmethod.go`
@@ -171,7 +171,7 @@ migration/migration.go:132: parameter name 'b' is too short
 11. Rename `cache.CacheKey` to `cache.Key` (revive stuttering)
 12. Fix exhaustruct in `cache/file_cache.go` (6 occurrences)
 13. Fix exhaustruct in `cmd/run_analysis.go` (4 occurrences)
-14. Add nolint or fix wrapcheck in `cmd/run_analysis.go:243`
+~~14. Add nolint or fix wrapcheck in `cmd/run_analysis.go:243`~~ done — wrapcheck is configured with ignore-package-globs (AGENTS.md lint config)
 15. Fix nonamedreturns in `cache/file_cache.go:236`
 
 ### Lower Priority (Style & Polish)

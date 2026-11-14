@@ -108,7 +108,7 @@ Sorted by **Impact × Feasibility**:
 | 2 | Fix `unused` warning — remove `assertStringEqual` from `html_test.go`  | Low    | Low    |
 | 3 | Fix `nolintlint` — remove stale nolint directives                      | Low    | Low    |
 | 4 | Fix `errchkjson` — check `json.Marshal` error in `config_enum_test.go` | Low    | Low    |
-| 5 | Fix `prealloc` — preallocate `baseLines` in `html_test.go`             | Low    | Low    |
+| ~~5~~ **done — lint is 106-linter clean (AGENTS.md)** |~~Fix `prealloc` — preallocate `baseLines` in `html_test.go`~~|~~Low~~|~~Low~~|
 | 6 | Run `gofmt` / `golines` on flagged files                               | Low    | Low    |
 | 7 | Add `//nolint:exhaustruct` where needed or fix struct init             | Low    | Low    |
 

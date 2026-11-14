@@ -118,7 +118,7 @@ Nothing! All changes compiled successfully and build passes.
 ### Priority 3: Code Quality (5 items)
 
 11. ⬜ Run full lint check and fix remaining warnings
-12. ⬜ Add benchmarks for critical paths
+~~12. ⬜ Add benchmarks for critical paths~~ done — the alloc-gate guards the hot paths (AGENTS.md)
 13. ⬜ Profile memory usage in large codebases
 14. ⬜ Review and optimize channel usage
 15. ⬜ Update documentation for refactored functions
@@ -129,7 +129,7 @@ Nothing! All changes compiled successfully and build passes.
 17. ⬜ Increase BDD test coverage
 18. ⬜ Add fuzz tests for edge cases
 19. ⬜ Create integration tests for refactored modules
-20. ⬜ Verify >80% coverage maintained
+~~20. ⬜ Verify >80% coverage maintained~~ superseded — the CI Coverage job tracks coverage (AGENTS.md)
 
 ### Priority 5: Future Improvements (5 items)
 

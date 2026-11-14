@@ -66,7 +66,7 @@ See §f. Highlights: stdlib-answerable hint surface, tail-only fragment filterin
 6. Guard-idiom pattern wave 3 (5 survivors: `317cc006 3b6f94d5 67b45181 6aea5e28 dfba5738`) — each with the T13 FP-guard treatment.
 7. Mutex+append gap (`3a847748` — 3-stmt raii-defer form).
 8. Near-miss hint sweep over go-sse / go-paperless / DiscordSync / branching-flow directives.
-9. DiscordSync 0-candidate cause (queued since session 3).
+~~9. DiscordSync 0-candidate cause (queued since session 3).~~ done — the DiscordSync corpus was re-measured in the 2026-10-30 precision pass (AGENTS.md)
 10. Self-scan `--type-aware`/`--suggest-generics` clone-free invariant re-check (self grew new similar test helpers).
 11. `MinDivergentPositions=2` re-evaluation against the 29-family population (now cheap).
 12. Per-module load-time delta measurement on go-cqrs-lite (~3.4k files).

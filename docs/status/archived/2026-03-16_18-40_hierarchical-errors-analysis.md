@@ -131,7 +131,7 @@ Should suppress:
 | 6  | Create typed errors for cache package           | Medium | Medium | 15min |
 | 7  | Create typed errors for config package          | Medium | Medium | 15min |
 | 8  | Add nolint comments for idiomatic patterns      | Low    | Low    | 5min  |
-| 9  | Review examples/sdk_demo.go silent swallows     | Low    | Low    | 10min |
+| ~~9~~ **superseded — examples/sdk_demo.go no longer exists (verified 2026-11-14)** |~~Review examples/sdk_demo.go silent swallows~~|~~Low~~|~~Low~~|~~10min~~|
 | 10 | Document acceptable error patterns in AGENTS.md | Medium | Low    | 10min |
 | 11 | Create error handling style guide               | Medium | Medium | 20min |
 | 12 | Add integration test for error scenarios        | Medium | Medium | 15min |

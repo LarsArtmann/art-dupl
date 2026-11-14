@@ -248,9 +248,9 @@ issues), and `nix flake check` (12/12) all pass at `aea30779`.
 16. Run the overdue docs-health pass (HARVEST Feb–Oct status reports into TODO).
 17. Replace the January-2026 status table in `docs/status/README.md` with
     measured numbers, or delete it.
-18. Index the Feb–Oct status reports in `docs/status/README.md`.
+~~18. Index the Feb–Oct status reports in `docs/status/README.md`.~~ done — docs/status/README.md indexes the reports (verified 2026-11-14)
 19. Add ADR-0013 amendment for the `check` verdict exit code.
-20. Document `corpus-diff.py` in `CONTRIBUTING.md` (it is only in
+~~20. Document `corpus-diff.py` in `CONTRIBUTING.md` (it is only in~~ not-do — CONTRIBUTING.md still lacks the corpus-diff note (verified 2026-11-14)
     `docs/benchmarks/README.md`).
 21. Add a "markup identity" subsection to `HOW_TO_USE.md` covering text,
     attributes, and CSS values together with the CacheVersion history.
@@ -264,7 +264,7 @@ issues), and `nix flake check` (12/12) all pass at `aea30779`.
 
 ### Testing
 
-25. Test `scripts/corpus-diff.py` (same-binary empty; fixture diff; JSON skip).
+~~25. Test `scripts/corpus-diff.py` (same-binary empty; fixture diff; JSON skip).~~ not-do — no scripted test for corpus-diff.py
 26. Add a BDD spec for `check --json` (currently cmd-level only).
 27. Add a test that a `-t` mismatch produces the (item 1) warning.
 28. Add a fuzz seed or property test for `normalizeConstantAttributeValue` /

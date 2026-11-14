@@ -859,7 +859,7 @@ file, err := os.Create(filename)
 - **Files:** internal/enum/marshal.go, suffixtree/suffixtree.go
 - **Action:**
 ~~  1. Review ParseEnum design decision~~ not-do — the design review never happened
-  2. Review At method design decision
+  ~~2. Review At method design decision~~ not-do — the design review never happened
   3. Decide if concrete types should be used
   4. Add nolint:ireturn comments if design is intentional
 - **Time:** 30 minutes

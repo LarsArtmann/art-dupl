@@ -138,7 +138,7 @@ Deep audit of every factual claim on the landing page against the actual Go sour
 | 9  | Self-host Google Fonts (3 files: Syne, DM Sans, IBM Plex Mono)          | 30 min | 🟡 Medium |
 | 10 | Inline critical above-the-fold CSS                                      | 30 min | 🟡 Medium |
 | 11 | Add `Cache-Control` immutable headers for font files in `firebase.json` | 5 min  | 🟡 Medium |
-| 12 | Add `<meta name="article:modified_time">`                               | 2 min  | 🟢 Low    |
+| ~~12~~ **not-do — the meta tag never landed** |~~Add `<meta name="article:modified_time">`~~|~~2 min~~|~~🟢 Low~~|
 | 13 | Submit sitemap to Google Search Console                                 | 5 min  | 🟢 Low    |
 
 ### Tier 3: Accessibility & Testing

@@ -84,7 +84,7 @@
 23. art-dupl: self-scan (`scripts/self-scan.sh -t 1 --type-aware`) post-column changes; ledger decisions.
 24. art-dupl: benchstat vs baseline for the column O(line) scan (alloc-gate unaffected; timing unconfirmed).
 25. CLI SARIF: relatedLocations + region snippet (ledger candidate).
-26. CLI SARIF: drop the empty-string `category` property (wire change — deliberate decision needed).
+~~26. CLI SARIF: drop the empty-string `category` property (wire change — deliberate decision needed).~~ done — the category property emits only when non-empty (AGENTS.md SARIF wire conventions)
 27. Consider registering art-dupl in go-finding's LinterRegistry (`RegisterLinterCategory`) for other consumers.
 28. Re-verify upstream go-finding analysis/pipeline tags when T07b lands (working copy was ahead of v1.13.0).
 29. Migrate `.goreleaser.yaml` signs block to cosign `--bundle` style, then unpin cosign (or keep the pin forever — the pin is also supply-chain hygiene).
@@ -99,7 +99,7 @@
 38. Fleet jsonv2 audit (#14) + filepath.Separator audit (#15) — unchanged.
 39. Branch protection #18 — owner action, 5th reminder (three CI reds tonight were each caught BECAUSE pushes+checks ran).
 40. Website: check whether the pnpm-built docs site needs a v0.9.0 release-note page update (changelog.mdx highlight exists; verify rendering).
-41. `docs/status/README.md` (lifecycle explainer for humans) — docs-health P4 #49.
+~~41. `docs/status/README.md` (lifecycle explainer for humans) — docs-health P4 #49.~~ done — docs/status/README.md carries the lifecycle explainer (verified 2026-11-14)
 42. Consider whether the daemon's heuristic commit messages on gate-relevant files (jsonutil, go.sum, flake.nix) should trigger a notification — half of tonight's d-section exists because they don't.
 43. HOW_TO_USE: mention `tool_options`/threshold consumer story (BuildFlow) in the provider section (currently README-only).
 44. TODO_LIST: strike/annotate the session-3 NEXT items now done (this report is the harvest source for the monthly pass — due 2026-10-28).

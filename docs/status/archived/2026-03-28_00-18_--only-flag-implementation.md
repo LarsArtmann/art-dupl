@@ -155,7 +155,7 @@ The feature is documented in the CLI help but not in:
 ### Code Quality
 
 11. **Extract file type constants** (".go", ".templ") to package-level constants
-12. **Add unit tests** for `matchesOnlyFilter()` function
+~~12. **Add unit tests** for `matchesOnlyFilter()` function~~ not-do — no dedicated matchesOnlyFilter unit test landed
 13. **Refactor filter package** to support file type filtering natively
 14. **Improve error messages** with more context and suggestions
 15. **Add integration test** with mixed `.go` and `.templ` files

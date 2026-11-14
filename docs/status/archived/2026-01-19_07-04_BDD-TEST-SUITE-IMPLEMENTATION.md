@@ -346,13 +346,13 @@ Successfully implemented comprehensive BDD (Behavior-Driven Development) test su
 
 16. **Optimize test execution speed** (reduce from 1.5s to <500ms)
 17. **Enable parallel test execution** where safe
-18. **Add benchmarks** for performance regression detection
+~~18. **Add benchmarks** for performance regression detection~~ done — the alloc-gate guards the hot paths (AGENTS.md)
 19. **Mock art-dupl execution** for faster unit tests
 20. **Add test data fixtures** for consistent testing
 
 ### Priority 5 - Documentation & CI/CD
 
-21. **Document BDD test structure** and patterns
+~~21. **Document BDD test structure** and patterns~~ done — AGENTS.md BDD bullet + TESTING.md document the suite (verified 2026-11-14)
 22. **Create guide for adding new BDD tests**
 23. **Add BDD tests to CI pipeline** (GitHub Actions)
 24. **Configure test coverage thresholds** in CI

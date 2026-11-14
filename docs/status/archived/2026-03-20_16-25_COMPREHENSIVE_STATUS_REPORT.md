@@ -325,7 +325,7 @@ FilterFunc[T any] func  // Should be: type FilterFunc[T any] func
 
 ### Priority 4: Architecture & Refactoring
 
-14. **Split cli.go (847 lines) into 4 focused files**
+~~14. **Split cli.go (847 lines) into 4 focused files**~~ superseded — no cli.go exists in the tree (verified 2026-11-14)
 15. **Split stats.go (727 lines) into 6 files**
 16. **Fix type safety in FindSyntaxUnits**
 17. **Implement TokenValue type with validation**

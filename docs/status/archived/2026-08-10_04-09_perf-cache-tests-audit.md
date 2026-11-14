@@ -125,7 +125,7 @@
 | 11 | MED      | Benchmark `testAndSplit` with `start <= end` path (transition split)                                         |
 | 12 | LOW      | Add `CacheStats` method to `IncrementalParser` for programmatic hit/miss/size query                          |
 | 13 | LOW      | Document `TypeAwareData` invariant: all entries share the same `EraseHash`                                   |
-| 14 | LOW      | Run BDD semantic performance benchmarks and compare with baseline                                            |
+| ~~14~~ **not-do — no BDD perf benchmark landed** |~~LOW~~|~~Run BDD semantic performance benchmarks and compare with baseline~~|
 | 15 | LOW      | Add cache size metric to `--profile` output (disk bytes used by cache)                                       |
 | 16 | LOW      | Consider `sync.Pool` for `[]byte` buffers in gob serialization                                               |
 | 17 | LOW      | Add `cache.KeyWithParams` to the SDK boundary (`pkg/artdupl`) if incremental caching is ever exposed there   |

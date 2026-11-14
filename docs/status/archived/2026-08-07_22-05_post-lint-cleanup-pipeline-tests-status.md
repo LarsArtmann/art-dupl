@@ -206,7 +206,7 @@ Nothing this session. All changes were verified: build, test (919 tests), vet, a
 
 41. Update `TESTING.md` with the new pipeline integration test pattern
 42. Document the `runPipeline` helper in the testing guide so future tests follow the pattern
-43. Add an ADR for the `serial()` field-preservation testing strategy
+~~43. Add an ADR for the `serial()` field-preservation testing strategy~~ superseded — AGENTS.md carries the serial() field-preservation contract + regression guards
 44. Consider documenting the full actionability pipeline architecture (parse → serialize → suffix tree → FindSyntaxUnits → CloneNode → patterns → property engine) in a single diagram
 45. Document the relationship between `syntax.Node`, `domain.CloneNode`, and the serialization/conversion bridges
 46. Update `docs/ACTIONABILITY_PATTERNS.md` with the new `productionSuggestions` map structure

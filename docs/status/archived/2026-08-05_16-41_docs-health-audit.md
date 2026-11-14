@@ -254,7 +254,7 @@ Build passes. The two issues are:
 ### Testing (MEDIUM)
 
 16. Run `go test ./...` to confirm no regressions from doc changes.
-17. Run `go test -race ./...` for the full race-detector pass.
+~~17. Run `go test -race ./...` for the full race-detector pass.~~ done — go test -race ./... runs on every nix flake check (AGENTS.md -race cadence)
 18. Add `FuzzFindDuplOverParallel` fuzz test (TODO_LIST item).
 19. Parameterize property tests for parallel search (TODO_LIST item).
 20. Add BDD test for `--search-workers` (TODO_LIST item).
@@ -272,7 +272,7 @@ Build passes. The two issues are:
 
 ### FEATURES.md Polish (LOW)
 
-29. Verify all status labels are accurate (spot-check 5 FULLY_FUNCTIONAL).
+~~29. Verify all status labels are accurate (spot-check 5 FULLY_FUNCTIONAL).~~ done — the docs-health count gate re-derives the doc numbers (AGENTS.md)
 30. Consider whether Property-Based Extractability Engine should be
     upgraded from PARTIALLY_DONE based on recent calibration work.
 31. Update "Tuned on real-world Go projects" line with updated file counts

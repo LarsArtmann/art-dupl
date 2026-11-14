@@ -153,14 +153,14 @@ Sorted by **Impact × Ease** (highest first):
 | 8  | Add aria-expanded on mobile toggle + close on outside click   | MED    | 10min  | A11y     |
 | 9  | Add aria-hidden="true" on hero canvas                         | MED    | 2min   | A11y     |
 | 10 | Add Open Graph + Twitter Card meta tags                       | HIGH   | 15min  | SEO      |
-| 11 | Add favicon (generate from "AD" mark)                         | MED    | 10min  | SEO      |
-| 12 | Add canonical URL + theme-color meta                          | MED    | 5min   | SEO      |
+| ~~11~~ **not-do — no favicon landed** |~~Add favicon (generate from "AD" mark)~~|~~MED~~|~~10min~~|~~SEO~~|
+| ~~12~~ **not-do — canonical URL never landed** |~~Add canonical URL + theme-color meta~~|~~MED~~|~~5min~~|~~SEO~~|
 | 13 | Fix Google Fonts `&display=swap`                              | MED    | 2min   | Perf     |
 | 14 | Fix copyInstall() — add visual feedback + error handling      | MED    | 10min  | UX       |
 | 15 | Add ARIA roles on format tabs (tablist/tab/tabpanel)          | HIGH   | 15min  | A11y     |
 | 16 | Add "Why art-dupl?" comparison section vs original dupl       | HIGH   | 30min  | Content  |
 | 17 | Add CI/CD integration section (GitHub Actions, pre-commit)    | HIGH   | 20min  | Content  |
-| 18 | Add SARIF format to output tabs                               | MED    | 15min  | Content  |
+| ~~18~~ **not-do — no SARIF output tab landed** |~~Add SARIF format to output tabs~~|~~MED~~|~~15min~~|~~Content~~|
 | 19 | Add Homebrew install method alongside go install              | MED    | 5min   | Content  |
 | 20 | Add benchmark section (23.7% faster on Prometheus)            | MED    | 20min  | Content  |
 | 21 | Add stats health score showcase (A-F grading)                 | MED    | 15min  | Content  |

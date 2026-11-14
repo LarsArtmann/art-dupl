@@ -187,7 +187,7 @@ Sorted by impact × effort (highest ROI first):
 | ~~16~~ done — now 337L with extracted modules | ~~Split `config/config.go` (391L)~~ | ~~Low~~ | ~~30min~~ | ~~★★~~ |
 | ~~17~~ **Superseded — docs-health archival pass 2026-11.** | ~~Archive old docs/status/ (304 files → ~10)~~ | ~~Low~~ | ~~15min~~ | ~~★~~ |
 | ~~18~~ done — SIMD design documented in `hash/` notes + ADR-0019/0022 | ~~Resolve/document 6 SIMD TODOs~~ | ~~Low~~ | ~~30min~~ | ~~★~~ |
-| 19 | Split `cmd/run_analysis.go` (447L)                             | Low    | 60min  | ★     |
+| ~~19~~ **done — runCmd was split under the gocyclo threshold (AGENTS.md)** |~~Split `cmd/run_analysis.go` (447L)~~|~~Low~~|~~60min~~|~~★~~|
 | 20 | Split `syntax/golang/transform.go` (355L switch)               | Low    | 120min | ★     |
 | ~~21~~ done — `suffixtree/suffixtree.go` `TokenValue` | ~~Implement TokenValue type (TODO #1 in TODO_LIST)~~ | ~~High~~ | ~~180min~~ | ~~★~~ |
 | ~~22~~ **Won't implement — Nix flake + BuildFlow are the adopted tooling; no justfile.** | ~~Add justfile recipe for vendor hash updates~~ | ~~Medium~~ | ~~15min~~ | ~~★~~ |

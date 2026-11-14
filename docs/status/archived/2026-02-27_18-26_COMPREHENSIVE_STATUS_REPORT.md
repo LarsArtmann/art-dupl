@@ -214,8 +214,8 @@ ERROR: --cache-dir and --clear-cache require --incremental mode
 | 10 | Document TestCyclicDupl expected behavior | P2       | Low    | Medium |
 | 11 | Fix revive exported const comments (50)   | P2       | Low    | Low    |
 | 12 | Reduce godox TODO markers (6)             | P3       | Low    | Low    |
-| 13 | Fix prealloc issues (11)                  | P3       | Low    | Low    |
-| 14 | Fix unparam issues (9)                    | P3       | Low    | Low    |
+| ~~13~~ **done — lint is 106-linter clean (AGENTS.md)** |~~Fix prealloc issues (11)~~|~~P3~~|~~Low~~|~~Low~~|
+| ~~14~~ **done — lint is 106-linter clean (AGENTS.md)** |~~Fix unparam issues (9)~~|~~P3~~|~~Low~~|~~Low~~|
 | 15 | Fix nonamedreturns issues (7)             | P3       | Low    | Low    |
 | 16 | Add SIMD benchmarks                       | P3       | Medium | Medium |
 | 17 | Memory profiling for large codebases      | P3       | Medium | Medium |

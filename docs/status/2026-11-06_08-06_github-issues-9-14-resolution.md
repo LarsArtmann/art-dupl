@@ -110,7 +110,7 @@ after = `v0.9.1-0.20261106063509-1ce6a7b3f64e`.
 
 1. Run `nix flake check` on `ab043dbf` and fix anything it surfaces.
 2. Cut a release (minor) with the CacheVersion bump; note the mandatory consumer baseline re-record.
-3. Add `baseline`/`new`/`suppressed` to `check --json` output.
+~~3. Add `baseline`/`new`/`suppressed` to `check --json` output.~~ done — the baseline split ships on the check --json document (AGENTS.md issue #12)
 4. Default-on stderr notice when the baseline identity differs (no exit-code change).
 5. Wire the identity guard into `--diff-report`.
 6. Write the ADR for baseline identity (policy scope, legacy handling, version-string decision).

@@ -63,7 +63,7 @@ See §f — the queued list from sessions 2–3 (DiscordSync 0-candidate cause, 
 6. Mutex+append family `3a847748` — raii-defer gap (3-statement form).
 7. Filter+collect `8635e4c4` — deliberately spared class; revisit only with maintainer data.
 8. Near-miss hint sweep over go-sse/paperless/DiscordSync/branching-flow directive placements.
-9. DiscordSync 0-candidate cause (queued since session 3).
+~~9. DiscordSync 0-candidate cause (queued since session 3).~~ done — the DiscordSync corpus was re-measured in the 2026-10-30 precision pass (AGENTS.md)
 10. Self-scan `--type-aware`/`--suggest-generics` clone-free invariant re-check.
 11. `MinDivergentPositions=2` re-evaluation against the 29-family population.
 12. Per-module load-time delta measurement on go-cqrs-lite.

@@ -212,7 +212,7 @@ All major issues have been resolved. The codebase is in good shape.
 | 9  | Implement TokenValue type         | Medium | Medium | 🔥    |
 | 10 | Generic SortStrategy[T] interface | Medium | Medium | 🔥    |
 | 11 | Memory layout optimization        | Medium | High   | 🔥    |
-| 12 | Remove CloneID from Clone struct  | Low    | Low    | 🔥    |
+| ~~12~~ **superseded — CloneID is gone from domain (verified 2026-11-14)** |~~Remove CloneID from Clone struct~~|~~Low~~|~~Low~~|~~🔥~~|
 
 ### Priority 4: Future Consideration
 
@@ -228,7 +228,7 @@ All major issues have been resolved. The codebase is in good shape.
 | 20 | Add Git integration for change detection      | Medium | High      |
 | 21 | Create VS Code extension                      | Low    | High      |
 | 22 | Add GitHub Action                             | Medium | Low       |
-| 23 | Create Homebrew formula                       | Low    | Low       |
+| ~~23~~ **not-do — no Homebrew formula landed** |~~Create Homebrew formula~~|~~Low~~|~~Low~~|
 | 24 | Add more language support (JS, TS, Python)    | High   | Very High |
 | 25 | Create web UI for reports                     | Medium | Very High |
 

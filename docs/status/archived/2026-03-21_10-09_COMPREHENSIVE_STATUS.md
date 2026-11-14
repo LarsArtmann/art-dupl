@@ -206,7 +206,7 @@ Currently at ~80%. Goal: 85%+ for critical packages.
 
 | # | Task                      | Effort | Impact | Status          |
 | - | ------------------------- | ------ | ------ | --------------- |
-| 1 | Commit this status report | 2min   | Low    | In Progress     |
+| ~~1~~ **done — the report is committed (auto-commit daemon)** |~~Commit this status report~~|~~2min~~|~~Low~~|~~In Progress~~|
 | 2 | Push to origin            | 1min   | Medium | Pending         |
 | 3 | Clarify release workflow  | 5min   | High   | Blocked on user |
 
@@ -326,7 +326,7 @@ cb3c4e9 fix(tests): add missing testing import and cleanup nolint directives
 
 ### Immediate Next Actions
 
-1. Commit this status report
+~~1. Commit this status report~~ done — the report is committed (auto-commit daemon)
 2. Push to origin
 3. **AWAIT USER INSTRUCTIONS** on release workflow
 

@@ -200,7 +200,7 @@ The `cmd/` package has **107 test functions**, of which **60+ call `t.Parallel()
 36. **godox finding in `suppression_config_test.go:10`** — pre-existing TODO/BUG comment flagged by linter, not my change
 37. **gopls `stdversion` warnings** — 9 warnings about `json.Marshal`/`json.Unmarshal`/`jsontext` requiring go1.27 while files are go1.26. This is the `GOEXPERIMENT=jsonv2` migration — the warnings may be expected or may indicate a version mismatch
 38. **`go.mod`/`go.sum`/`flake.nix`/`flake.lock` uncommitted changes** — pre-existing in working tree, purpose unknown
-39. **`docs/feedback/new/2026-07-29_*.md` modified** — pre-existing, unexamined
+~~39. **`docs/feedback/new/2026-07-29_*.md` modified** — pre-existing, unexamined~~ superseded — the feedback docs were harvested by the docs-health passes
 40. **`.golangci.yml` modified** — pre-existing, unexamined
 
 ### Future-Proofing
@@ -212,8 +212,8 @@ The `cmd/` package has **107 test functions**, of which **60+ call `t.Parallel()
 45. **Add a CI check that runs `go test -race` on the exact Nix build** (not just local `go test`) to catch environment-specific races
 46. **Consider test-tags** — `//go:build integration` for tests that need capture/serial execution, separating them from fast parallel unit tests
 47. **Profile the test suite** — identify the slowest 5 tests; if capture-based serial tests are among them, prioritize writer injection
-48. **Review whether `executeTestCommand` should use `cobra.Command.SetArgs` + `SetOut/SetErr` instead of global capture** — `cmd_integration_test.go` already does this pattern
-49. **Add a CONTRIBUTING.md note** about the serial-test rule for new contributors
+~~48. **Review whether `executeTestCommand` should use `cobra.Command.SetArgs` + `SetOut/SetErr` instead of global capture** — `cmd_integration_test.go` already does this pattern~~ not-do — the global-capture pattern stands
+~~49. **Add a CONTRIBUTING.md note** about the serial-test rule for new contributors~~ not-do — no serial-test note landed in CONTRIBUTING.md
 50. **Consider renaming `CaptureStdoutStderr` to `CaptureStdoutStderr_Serial`** or `UnsafeCaptureGlobalStdoutStderr` to make the danger obvious at call sites
 
 ---

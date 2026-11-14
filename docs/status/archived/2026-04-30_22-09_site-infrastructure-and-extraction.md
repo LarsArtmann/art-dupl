@@ -110,14 +110,14 @@ Completed site infrastructure: extracted CSS/JS to external files, added Firebas
 | 14 | Add CSS/JS minification to deploy workflow  | LOW    | 10min  | Perf     |
 | 15 | Run Lighthouse audit on deployed site       | MED    | 10min  | Quality  |
 | 16 | Setup custom domain DNS                     | MED    | 30min  | Deploy   |
-| 17 | Add Plausible/Fathom analytics              | LOW    | 10min  | Tracking |
+| ~~17~~ **not-do — no analytics landed** |~~Add Plausible/Fathom analytics~~|~~LOW~~|~~10min~~|~~Tracking~~|
 | 18 | Build interactive live demo (Cloud Run)     | HIGH   | 4hr    | Feature  |
-| 19 | Add `sitemap.xml` to `robots.txt`           | DONE   | —      | —        |
+| ~~19~~ **done — the row records the sitemap landing** |~~Add `sitemap.xml` to `robots.txt`~~|~~DONE~~|~~—~~|~~—~~|
 | 20 | Verify W3C HTML validation                  | MED    | 10min  | Quality  |
 | 21 | Add preconnect hints for fonts              | LOW    | 2min   | Perf     |
-| 22 | Add `manifest.json` for PWA                 | LOW    | 10min  | Feature  |
+| ~~22~~ **not-do — no manifest.json landed** |~~Add `manifest.json` for PWA~~|~~LOW~~|~~10min~~|~~Feature~~|
 | 23 | Add Apple Touch Icon                        | LOW    | 5min   | iOS      |
-| 24 | Test on real mobile devices                 | MED    | 15min  | QA       |
+| ~~24~~ **not-do — no device QA pass recorded** |~~Test on real mobile devices~~|~~MED~~|~~15min~~|~~QA~~|
 | 25 | Run axe-core accessibility audit            | MED    | 15min  | A11y     |
 
 ## G) TOP #1 QUESTION

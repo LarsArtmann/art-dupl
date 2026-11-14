@@ -154,7 +154,7 @@ None. All modified packages compile. Unit tests pass. The removed code was clean
 16. Audit `printer/html.go` for remaining `Finding` references (1484 lines, noted in AGENTS.md as overweight)
 17. Remove `TestDetectionMethods` hardcoded count assertion (currently asserts `len(methods) == 2`) — fragile
 18. Add `//go:build` integration test tags for slower BDD tests
-19. Standardize test helper naming (`createTestNode` vs `setupXxx` vs `mustXxx`)
+~~19. Standardize test helper naming (`createTestNode` vs `setupXxx` vs `mustXxx`)~~ not-do — helper naming stays heterogeneous by design
 20. Run `go vet ./...` and fix any shadow or unreachable warnings
 
 ### Medium Impact / Medium Effort

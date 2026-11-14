@@ -177,8 +177,8 @@ All previous blocking issues have been resolved:
 
 ### Short Term (Next 2 Weeks)
 
-6. **Split `cmd/cmd_test.go`** - 1156 lines is too large
-7. **Split `pkg/artdupl/detector_test.go`** - 1323 lines needs modularization
+~~6. **Split `cmd/cmd_test.go`** - 1156 lines is too large~~ not-do — the test file stayed whole
+~~7. **Split `pkg/artdupl/detector_test.go`** - 1323 lines needs modularization~~ not-do — the test file stayed whole
 8. **Split `domain/coverage_test.go`** - 1348 lines, group by feature
 9. **Address `exhaustruct` issues** - 50 warnings, add missing fields
 10. **Review `revive` warnings** - 50 issues, mostly style

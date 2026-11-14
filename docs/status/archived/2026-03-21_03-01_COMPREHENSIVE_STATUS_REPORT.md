@@ -186,7 +186,7 @@ Several linters are disabled in `.golangci.yml`:
 
 ### Priority 3: Testing (Next 2 Weeks)
 
-11. Add BDD tests for `--structural` flag functionality
+~~11. Add BDD tests for `--structural` flag functionality~~ not-do — no structural-mode BDD scenario landed
 12. Increase test coverage for semantic detection
 13. Add edge case tests for incremental parser with semantic=false
 14. Test parallel parsing with semantic flag variations
@@ -198,13 +198,13 @@ Several linters are disabled in `.golangci.yml`:
 17. Split `runCmd` into smaller, testable functions
 18. Review and consolidate duplicate test helpers
 19. Consider extracting domain types into separate package
-20. Optimize `syntax/golang/identifier_hash.go` if needed
+~~20. Optimize `syntax/golang/identifier_hash.go` if needed~~ done — the hashing path was optimized in the ADR-0022 era (AGENTS.md)
 
 ### Priority 5: Documentation & Tooling (Next Quarter)
 
 21. Update AGENTS.md with semantic detection architecture
 22. Create architecture decision records (ADRs) for major changes
-23. Document the semantic vs structural detection modes
+~~23. Document the semantic vs structural detection modes~~ done — HOW_TO_USE.md documents the modes (verified 2026-11-14)
 24. Add performance benchmarks for detection methods
 25. Create migration guide for v1.0 release
 

@@ -90,7 +90,7 @@ found it in (for this dimension).
 
 1. Decide how to handle the concurrent auto-committing agent (see Q1) — this is blocking every durable fix.
 2. Re-remove `exhaustruct` + `tagliatelle` from `.golangci.yml` (3 blocks: lines 43, 110, 154) **only after** the racing-agent problem is solved.
-3. Run `nix flake check` and get it to exit 0.
+~~3. Run `nix flake check` and get it to exit 0.~~ done — nix flake check gates every CI run (AGENTS.md CI table)
 4. Add `scripts/check-disabled-linters.sh` to the **pre-commit hook** (not just flake check) so the re-add can't land in the first place.
 5. Fix `cmd/run_analysis.go:165` `nlreturn` (blank line before the `return`).
 6. Triage `detection/config.go:20` godoclint hit — likely add `//nolint:godoclint` on the directive line or teach godoclint to ignore `//art-dupl:` directives.

@@ -159,8 +159,8 @@ The AGENTS.md explicitly says: "Never use bare `bool/int/int` for suppression, a
 1. Add `Assign` field to `syntax.Node` + `domain.CloneNode` to fix the type-alias-block false-negative risk
 2. Re-run calibration to verify precision improvement (target: 91%+)
 3. Commit the 87 labeled clone groups as a regression dataset
-4. Write a CI test that runs on the regression dataset and asserts no precision regression
-5. Add `test_plugin/` and `test_temp/` to `exampleDirNames`
+~~4. Write a CI test that runs on the regression dataset and asserts no precision regression~~ not-do — no regression-dataset CI test landed
+~~5. Add `test_plugin/` and `test_temp/` to `exampleDirNames`~~ not-do — exampleDirNames never gained the entries
 6. Add `isTerminalStatement` ExprStmt(UnaryExpr) test case
 7. Document the type-alias-block alias-vs-named-type limitation in a code comment
 
@@ -191,14 +191,14 @@ The AGENTS.md explicitly says: "Never use bare `bool/int/int` for suppression, a
 ### Architecture / Refactoring
 
 26. Consider making actionability patterns extensible via plugins (the pattern table is now 25 entries)
-27. Move `exampleDirNames` from a global var to a config field
+~~27. Move `exampleDirNames` from a global var to a config field~~ superseded — the example-dir handling moved to the crawl pruning path (AGENTS.md)
 28. Consider a `SkipConfig` or `CrawlFilter` struct that bundles all skip-related fields
 29. Extract `pathContainsExampleDir` and vendor/node_modules checks into a unified `pathFilter` type
 30. Consider whether the 4 bools in `CrawlOptions` (IncludeVendor, IncludeNodeMods, IncludeExamples, and potentially more) should be a nested `IncludeConfig` struct
 
 ### Testing
 
-31. Add test for `pathContainsExampleDir` with nested paths (`pkg/examples/sub/file.go`)
+~~31. Add test for `pathContainsExampleDir` with nested paths (`pkg/examples/sub/file.go`)~~ not-do — no nested-path test landed
 32. Add test for `isPackageTypeAlias` with `Ident` type references (no SelectorExpr — should NOT match)
 33. Add fuzz test for actionability pattern evaluation (never panics on arbitrary CloneNode trees)
 34. Add test verifying `--show-suppressed` surfaces non-actionable groups

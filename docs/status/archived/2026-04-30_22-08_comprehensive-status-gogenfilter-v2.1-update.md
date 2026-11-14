@@ -155,7 +155,7 @@ From TODO_LIST.md and FEATURES.md:
 
 ### High (P1)
 
-5. Split `printer/html.go` (1484 lines) into 3-4 focused files
+~~5. Split `printer/html.go` (1484 lines) into 3-4 focused files~~ superseded — the HTML printer was rebuilt since (printer/report.templ)
 6. Implement `TokenValue` type with validation (TODO_LIST HIGH)
 7. Update `FEATURES.md` to reflect current state (3 months stale)
 8. Create `CHANGELOG.md` with recent release history
@@ -167,7 +167,7 @@ From TODO_LIST.md and FEATURES.md:
 11. Update README with semantic detection defaults
 12. Implement proper CSV output via `encoding/csv`
 13. Split `printer/stats.go` (727 lines)
-14. Split `domain/clone.go` (495 lines)
+~~14. Split `domain/clone.go` (495 lines)~~ superseded — domain/clone.go no longer exists
 15. Increase `internal/filtertest` coverage above 80%
 16. Increase `bdd` coverage above 80%
 17. Archive old `docs/status/` reports (>30 days)

@@ -97,7 +97,7 @@
 24. Monthly self-scan due **2026-10-22** (`scripts/self-scan.sh`, ledger append).
 25. docs-health cadence pass due **2026-10-28** (HARVEST → annotate → archive; also the A-lite→A re-keying follow-up).
 26. gopls restart habit after daemon commits (AGENTS.md already says it; I skipped it).
-27. `TestVersionFunctions/GetVersion_with_dev` environment-coupling hardening (e-9).
+~~27. `TestVersionFunctions/GetVersion_with_dev` environment-coupling hardening (e-9).~~ done — version resolution is pure and unit-tested (AGENTS.md version embedding)
 
 **Infrastructure / upstream:**
 28. BuildFlow `go-version-auto-configure` upstream fix (respect patch pins — never rewrite down); tracked since 2026-09-29.

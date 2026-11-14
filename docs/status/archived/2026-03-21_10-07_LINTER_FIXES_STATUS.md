@@ -129,7 +129,7 @@
 | - | ------------------------ | ------ | ------ | ----------- |
 | 1 | Commit current changes   | 2min   | Medium | In Progress |
 | 2 | Push to origin           | 1min   | Medium | Pending     |
-| 3 | Write this status report | 5min   | Low    | Done        |
+| ~~3~~ **done — this report exists and is committed** |~~Write this status report~~|~~5min~~|~~Low~~|~~Done~~|
 
 ### Priority 6-10: This Week
 

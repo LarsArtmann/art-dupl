@@ -92,16 +92,16 @@
 3. Add a justfile recipe for `update-vendor-hash` to automate hash recomputation
 4. Update AGENTS.md with the private dependency flake pattern documentation
 5. Push changes to remote and verify CI passes
-6. Extract the dummy go.mod into a Nix `let` binding to reduce maintenance burden
+~~6. Extract the dummy go.mod into a Nix `let` binding to reduce maintenance burden~~ not-do — the dummy go.mod stayed as-is
 7. Add CI check for flake.lock staleness (GitHub Action)
 8. Verify cross-platform builds (at minimum `nix flake check --all-systems`)
 9. Ensure CI has SSH key configured for gogenfilter private repo access
 
 ### Medium Priority (Code Quality)
 
-10. Run `just ci` (format, lint, test) to verify Go codebase is clean
+~~10. Run `just ci` (format, lint, test) to verify Go codebase is clean~~ superseded — justfile is deprecated; nix flake check owns it (AGENTS.md)
 11. Run `just check-coverage` to verify 80%+ threshold
-12. Clean up old status reports in `docs/status/` — there are 200+ files, many stale
+~~12. Clean up old status reports in `docs/status/` — there are 200+ files, many stale~~ struck — the cadence gate owns the archive wave (in flight)
 13. Review `flake.nix` for any other improvements (e.g., `proxyVendor = true` for faster builds)
 14. Add `nix run .#test` as a convenience app for running tests via Nix
 15. Document the two-phase dummy/replace pattern in a Nix-specific doc

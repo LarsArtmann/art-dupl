@@ -107,7 +107,7 @@ clean and functional. The auto-git daemon committed everything correctly.
 ### Code Quality
 
 27. Consider extracting interface scanning into a reusable `PackageInterfaceIndex` type
-28. The `interfaceHasMethod` function could be a method on a `PackageInterfaceIndex`
+~~28. The `interfaceHasMethod` function could be a method on a `PackageInterfaceIndex`~~ not-do — the refactor never happened
 29. Consider whether `InterfaceMethod` should be `InterfaceMethodSource` (enum: none/stdlib/type-aware) for richer `--explain` output
 30. Verify `.go-arch-lint.yml` constraints aren't violated by new field
 31. Check if `InterfaceMethod` needs to be in the SDK's `CloneNode` equivalent (if any)
@@ -132,7 +132,7 @@ clean and functional. The auto-git daemon committed everything correctly.
 41. Remove the `commonInterfaceMethodNames` comment that says "A deeper type-aware variant using `go/types` is tracked in ROADMAP" — it's now implemented
 42. The ROADMAP entry for "Interface-aware suppression" should link to ADR-0018
 43. Consider adding ADR-0018 to a docs/adr/README.md index if one exists
-44. The `docs/status/2026-08-05_06-03_bool-guard-format-specifier-hardening.md` was auto-committed by the daemon — verify it's accurate
+~~44. The `docs/status/2026-08-05_06-03_bool-guard-format-specifier-hardening.md` was auto-committed by the daemon — verify it's accurate~~ done — the report is committed in the tree (verified 2026-11-14)
 45. Verify the auto-git daemon's commit messages accurately describe the changes (commit `7e4c3a11` includes bool-guard and format-specifier work that was pre-existing staged changes, not from this session)
 
 ### Verification

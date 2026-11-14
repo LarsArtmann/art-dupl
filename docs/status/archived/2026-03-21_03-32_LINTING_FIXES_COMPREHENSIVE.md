@@ -86,7 +86,7 @@ Successfully fixed 417+ linting violations across 19 files by applying targeted 
 
 The following violations remain but are acceptable:
 
-1. **funlen** - printer/html.go:849 (PrintFooter is 87 lines, limit is 80)
+~~1. **funlen** - printer/html.go:849 (PrintFooter is 87 lines, limit is 80)~~ superseded — the HTML printer was rebuilt since (printer/report.templ)
 2. **gocognit** - syntax/golang/transform.go:11 (complexity 37, limit is 35)
 3. **gocyclo** - printer/html.go:559 (complexity 16, limit is 15)
 4. **goprintffuncname** - printer/stats.go:194,209,214,219,229 (printLine should be printLinef)
@@ -117,7 +117,7 @@ The following violations remain but are acceptable:
 
 ### High Priority
 
-1. **Refactor printer/html.go** - Split PrintFooter and writeDiffView into smaller functions
+~~1. **Refactor printer/html.go** - Split PrintFooter and writeDiffView into smaller functions~~ superseded — the HTML printer was rebuilt since (printer/report.templ)
 2. **Refactor syntax/golang/transform.go** - Break down trans() function (cognitive complexity 37)
 3. **Add proper error sentinel** - Fix nilnil violation in config/config.go:242
 
@@ -139,7 +139,7 @@ The following violations remain but are acceptable:
 
 ### Critical (1-5)
 
-1. Refactor printer/html.go PrintFooter to be under 80 lines
+~~1. Refactor printer/html.go PrintFooter to be under 80 lines~~ superseded — the HTML printer was rebuilt since (printer/report.templ)
 2. Refactor printer/html.go writeDiffView to reduce cyclomatic complexity
 3. Refactor syntax/golang/transform.go trans() to reduce cognitive complexity
 4. Fix nilnil violation in config/config.go (use sentinel error)
@@ -165,7 +165,7 @@ The following violations remain but are acceptable:
 18. Address thelper violations (t.Helper() calls)
 19. Fix nonamedreturns in domain types test
 20. Add bounds checking for slice operations (gosec G602)
-21. Fix ireturn violation in pkg/logger/logger.go
+~~21. Fix ireturn violation in pkg/logger/logger.go~~ done — lint is 106-linter clean (AGENTS.md)
 22. Address nestif violations in other files
 23. Fix gosmopolitan violations (if not intentional)
 24. Add comprehensive comments for exported functions (revive)
