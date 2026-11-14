@@ -59,7 +59,7 @@
 
 1. ~~Drive the annotate gate to zero~~ struck 2026-11-14: 69 → 0 this pass (18 files; wrapped-row rebuilds + git archaeology on 05-03).
 2. ~~Drive the audit-all gate to zero~~ struck 2026-11-14: 383 → 0 this pass (~96 files, four content-anchored waves).
-3. ~~Run the cadence archive wave~~ struck 2026-11-14: 169 → 10 unarchived, oldest 21d; 160 `git mv`s + banners + MANIFEST rows + README recount.
+3. ~~Run the cadence archive wave~~ struck 2026-11-14: 169 → 10 unarchived, oldest 21d; 160 `git mv` moves + banners + MANIFEST rows + README recount.
 4. ~~Extend MANIFEST-2026-11-14.md with the wave~~ struck 2026-11-14: 160 ARCHIVE rows appended from the staged rename set.
 5. ~~Recompute the archived README count~~ struck 2026-11-14: 536 snapshots (273 A / 23 A-lite / 240 B), formula updated in place.
 6. ~~Strike the README-stamp TODO row~~ struck 2026-11-14: premise corrected (stamp was bumped 2026-11-06 with verification); count gate green today.

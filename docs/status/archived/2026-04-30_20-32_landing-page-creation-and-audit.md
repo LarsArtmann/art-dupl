@@ -163,7 +163,7 @@ Sorted by **Impact × Ease** (highest first):
 | ~~18~~ **not-do — no SARIF output tab landed** |~~Add SARIF format to output tabs~~|~~MED~~|~~15min~~|~~Content~~|
 | 19 | Add Homebrew install method alongside go install              | MED    | 5min   | Content  |
 | 20 | Add benchmark section (23.7% faster on Prometheus)            | MED    | 20min  | Content  |
-| 21 | Add stats health score showcase (A-F grading)                 | MED    | 15min  | Content  |
+| ~~21~~ **not-do — no stats health-score showcase landed on the site; the A-F grading itself ships in stats output (domain.HealthScore)** |~~Add stats health score showcase (A-F grading)~~|~~MED~~|~~15min~~|~~Content~~|
 | 22 | Add diff visualization feature mention                        | MED    | 10min  | Content  |
 | 23 | Extract CSS to external file for caching                      | MED    | 10min  | Perf     |
 | 24 | Debounce canvas resize handler                                | LOW    | 5min   | Perf     |
