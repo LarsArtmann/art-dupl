@@ -81,16 +81,16 @@ Executed 38 tasks from the comprehensive Pareto roadmap (`docs/planning/2026-07-
 
 | ID  | Task                                       | Why Skipped                                |
 | --- | ------------------------------------------ | ------------------------------------------ |
-| T4  | BDD tests for templ semantic mode          | Would need significant fixture setup       |
-| T5  | Property-based/fuzz test for normalizer    | Requires fuzzing framework setup           |
-| T6  | Integration test: synthetic templ project  | Needs multi-file fixture                   |
-| W1  | Website visual QA                          | Cannot run browser preview in CLI session  |
-| W2  | OG image generation                        | Requires image creation tooling            |
-| W3  | OG meta tags                               | Depends on OG image                        |
-| W4  | `pnpm dlx astro check` + TS fixes          | Website is in subdirectory, separate build |
-| CQ9 | Unify Type/Fingerprint model               | MEDIUM risk, deferred (needs ADR first)    |
-| I10 | Cache versioning for serialization changes | MEDIUM risk, deferred                      |
-| I11 | Store Fingerprint in incremental cache     | MEDIUM risk, deferred                      |
+| ~~T4~~ done — bdd/templ_clone_detection_test.go + templ BDD suite | ~~BDD tests for templ semantic mode~~ | ~~Would need significant fixture setup~~ |
+| ~~T5~~ **Superseded — fuzzing landed on the parser (syntax/templ/fuzz_test.go); normalizer covered by unit/BDD tests.** | ~~Property-based/fuzz test for normalizer~~ | ~~Requires fuzzing framework setup~~ |
+| ~~T6~~ done — bdd/templ_* multi-file fixtures | ~~Integration test: synthetic templ project~~ | ~~Needs multi-file fixture~~ |
+| ~~W1~~ **Superseded — covered by the public-presence QA sessions (resolution banner above).** | ~~Website visual QA~~ | ~~Cannot run browser preview in CLI session~~ |
+| ~~W2~~ done — website/public/og/home.png | ~~OG image generation~~ | ~~Requires image creation tooling~~ |
+| ~~W3~~ done — LandingLayout.astro og:image tags | ~~OG meta tags~~ | ~~Depends on OG image~~ |
+| ~~W4~~ done — astro check runs in .github/workflows/deploy-site.yml | ~~`pnpm dlx astro check` + TS fixes~~ | ~~Website is in subdirectory, separate build~~ |
+| ~~CQ9~~ **Superseded — ADR-0023 settled the Type vs Fingerprint split (DecodeBaseType retained by design).** | ~~Unify Type/Fingerprint model~~ | ~~MEDIUM risk, deferred (needs ADR first)~~ |
+| ~~I10~~ done — CacheVersion ledger in cache/file_cache.go (9 bumps) | ~~Cache versioning for serialization changes~~ | ~~MEDIUM risk, deferred~~ |
+| ~~I11~~ done — Fingerprint round-trips through the incremental cache (AGENTS.md gob boundary) | ~~Store Fingerprint in incremental cache~~ | ~~MEDIUM risk, deferred~~ |
 
 ### Entire P3 category NOT started (60 tasks):
 
@@ -115,11 +115,11 @@ All P3 tasks from the roadmap were skipped. Key ones:
 
 **However, two things I should be honest about:**
 
-1. **The `--test-threshold` "task" was already done** — I spent agent time discovering it was already implemented. The roadmap listed it as P1 work, but the code was already there. This means the roadmap task estimation was wrong — it overcounted by 1h.
+1. ~~**The `--test-threshold` "task" was already done** — I spent agent time discovering it was already implemented. The roadmap listed it as P1 work, but the code was already there. This means the roadmap task estimation was wrong — it overcounted by 1h.~~ done — moot — roadmap estimation lesson
 
-2. **The `--min-lines` LineCount() call may be wrong** — I used `group.Clones[0].LineCount()` for the min-lines check, but `LineCount()` is defined on `CloneRef` and returns `LineEnd - LineStart + 1`. This only checks the FIRST clone in the group, not all of them. If different clones in the same group have different line spans (which is possible with partial matches), this could under-filter. **This needs verification.**
+2. ~~**The `--min-lines` LineCount() call may be wrong** — I used `group.Clones[0].LineCount()` for the min-lines check, but `LineCount()` is defined on `CloneRef` and returns `LineEnd - LineStart + 1`. This only checks the FIRST clone in the group, not all of them. If different clones in the same group have different line spans (which is possible with partial matches), this could under-filter. **This needs verification.**~~ done — resolved — min-lines checks all clones via minCloneLineCount() (05:49 session, ADR-0011)
 
-3. **KeyValueExpr encoding reads raw AST, not normalized children** — The encoding uses `n.Key.(*ast.Ident).Name` directly from the Go AST, NOT from the already-normalized child Ident node. This means that if a variable named `x` is used as a field key (which would be unusual but syntactically valid), it would NOT be alpha-normalized. This is actually correct behavior (field names are API surface), but I didn't write a test for this specific edge case.
+3. ~~**KeyValueExpr encoding reads raw AST, not normalized children** — The encoding uses `n.Key.(*ast.Ident).Name` directly from the Go AST, NOT from the already-normalized child Ident node. This means that if a variable named `x` is used as a field key (which would be unusual but syntactically valid), it would NOT be alpha-normalized. This is actually correct behavior (field names are API surface), but I didn't write a test for this specific edge case.~~ done — documented in AGENTS.md (KeyValueExpr field name encoding)
 
 ---
 
@@ -127,29 +127,29 @@ All P3 tasks from the roadmap were skipped. Key ones:
 
 ### Process improvements:
 
-1. **Verify task isn't already done before estimating** — The `--test-threshold` task wasted ~10 minutes of agent time discovering existing code. Should grep first.
+1. ~~**Verify task isn't already done before estimating** — The `--test-threshold` task wasted ~10 minutes of agent time discovering existing code. Should grep first.~~ done — moot — process lesson, recorded in the 05:49 session learnings
 
-2. **The `--min-lines` implementation needs a test** — I added the feature but didn't write a test for it. This violates the testing mandate.
+2. ~~**The `--min-lines` implementation needs a test** — I added the feature but didn't write a test for it. This violates the testing mandate.~~ done — backfilled by the 05:49 session
 
-3. **The `--dump-tokens` flag needs a test** — Same issue. No test was written for the dump-tokens output.
+3. ~~**The `--dump-tokens` flag needs a test** — Same issue. No test was written for the dump-tokens output.~~ done — backfilled by the 05:49 session
 
-4. **Error wrapping 2-stmt detection needs a test** — Extended `isReturnOrWrappedReturn` but didn't add a test for the new pattern.
+4. ~~**Error wrapping 2-stmt detection needs a test** — Extended `isReturnOrWrappedReturn` but didn't add a test for the new pattern.~~ done — backfilled by the 05:49 session
 
-5. **cobra detection fix needs a test** — Added `hasCommandReceiver` but didn't test it.
+5. ~~**cobra detection fix needs a test** — Added `hasCommandReceiver` but didn't test it.~~ done — backfilled by the 05:49 session
 
-6. **containsTRunCall fix needs a test** — Added `hasTestingReceiver` but didn't test it.
+6. ~~**containsTRunCall fix needs a test** — Added `hasTestingReceiver` but didn't test it.~~ done — backfilled by the 05:49 session
 
-7. **Missing tests is a pattern** — I wrote tests for KeyValueExpr (3 tests) but skipped tests for 5 other code changes. This is a discipline problem.
+7. ~~**Missing tests is a pattern** — I wrote tests for KeyValueExpr (3 tests) but skipped tests for 5 other code changes. This is a discipline problem.~~ done — moot — discipline lesson recorded
 
 ### Technical debt remaining:
 
-8. **The LSP shows stale `assertionMethodNames` gochecknoglobals warning** — The code was changed but the LSP diagnostic is cached. `golangci-lint run` itself passes (verified by BuildFlow).
+8. ~~**The LSP shows stale `assertionMethodNames` gochecknoglobals warning** — The code was changed but the LSP diagnostic is cached. `golangci-lint run` itself passes (verified by BuildFlow).~~ **Superseded — LSP cache issue, golangci-lint passes.**
 
-9. **The `dump_tokens.go` file has lint warnings** — `perfsprint` (fmt.Sprintf can be faster), `errcheck` (unchecked fmt.Fprintln/Fprintf). These are in the LSP but BuildFlow passed them (likely disabled in golangci-lint config or `//nolint` not needed since they're stderr writes).
+9. ~~**The `dump_tokens.go` file has lint warnings** — `perfsprint` (fmt.Sprintf can be faster), `errcheck` (unchecked fmt.Fprintln/Fprintf). These are in the LSP but BuildFlow passed them (likely disabled in golangci-lint config or `//nolint` not needed since they're stderr writes).~~ done — resolved — 106 linters, 0 findings today
 
-10. **HOW_TO_USE.md still references old threshold values in prose** — The table was updated but surrounding text may say things like "threshold of 15 is recommended" elsewhere.
+10. ~~**HOW_TO_USE.md still references old threshold values in prose** — The table was updated but surrounding text may say things like "threshold of 15 is recommended" elsewhere.~~ done — resolved — HOW_TO_USE threshold guidance rewritten (ADR-0009)
 
-11. **CHANGELOG date footer was already fixed in prior commit** — The session didn't need to touch it, but the footer date should say 2026-07-16.
+11. ~~**CHANGELOG date footer was already fixed in prior commit** — The session didn't need to touch it, but the footer date should say 2026-07-16.~~ done — moot — footer maintained since
 
 ---
 
@@ -157,71 +157,71 @@ All P3 tasks from the roadmap were skipped. Key ones:
 
 ### Missing Tests (CRITICAL — do first):
 
-1. Write test for `--min-lines` filtering (clone group with < N lines suppressed)
-2. Write test for `--dump-tokens` output format
-3. Write test for 2-stmt error wrapping detection (`log.Print(err); return err`)
-4. Write test for `hasCommandReceiver` (cobra/fang receiver verification)
-5. Write test for `hasTestingReceiver` (t/tt/tc receiver verification)
-6. Write test for `isAssertionMethod` switch function
-7. Write test for `isWrappingCallName` switch function
-8. Write test for `isLoggingMethod` switch function
-9. Write test for builder callback threshold=2 (2-call chain detected)
-10. Write test for KeyValueExpr with non-Ident key (edge case)
+1. ~~Write test for `--min-lines` filtering (clone group with < N lines suppressed)~~ done — backfilled by the 2026-07-16 05:49 session (docs/status/2026-07-16_05-49_missing-test-coverage-bugfix.md)
+2. ~~Write test for `--dump-tokens` output format~~ done — backfilled by the 2026-07-16 05:49 session (docs/status/2026-07-16_05-49_missing-test-coverage-bugfix.md)
+3. ~~Write test for 2-stmt error wrapping detection (`log.Print(err); return err`)~~ done — backfilled by the 2026-07-16 05:49 session (docs/status/2026-07-16_05-49_missing-test-coverage-bugfix.md)
+4. ~~Write test for `hasCommandReceiver` (cobra/fang receiver verification)~~ done — backfilled by the 2026-07-16 05:49 session (docs/status/2026-07-16_05-49_missing-test-coverage-bugfix.md)
+5. ~~Write test for `hasTestingReceiver` (t/tt/tc receiver verification)~~ done — backfilled by the 2026-07-16 05:49 session (docs/status/2026-07-16_05-49_missing-test-coverage-bugfix.md)
+6. ~~Write test for `isAssertionMethod` switch function~~ done — backfilled by the 2026-07-16 05:49 session (docs/status/2026-07-16_05-49_missing-test-coverage-bugfix.md)
+7. ~~Write test for `isWrappingCallName` switch function~~ done — backfilled by the 2026-07-16 05:49 session (docs/status/2026-07-16_05-49_missing-test-coverage-bugfix.md)
+8. ~~Write test for `isLoggingMethod` switch function~~ done — backfilled by the 2026-07-16 05:49 session (docs/status/2026-07-16_05-49_missing-test-coverage-bugfix.md)
+9. ~~Write test for builder callback threshold=2 (2-call chain detected)~~ done — backfilled by the 2026-07-16 05:49 session (docs/status/2026-07-16_05-49_missing-test-coverage-bugfix.md)
+10. ~~Write test for KeyValueExpr with non-Ident key (edge case)~~ done — backfilled by the 2026-07-16 05:49 session (docs/status/2026-07-16_05-49_missing-test-coverage-bugfix.md)
 
 ### P2 Remaining (Detection & DX):
 
-11. BDD tests for templ semantic mode (multi-element, callee encoding)
-12. Fuzz test for normalization pipeline
-13. Integration test: synthetic templ project with known clones
-14. Unify Type/Fingerprint model (remove DecodeBaseType complexity) — needs ADR first
-15. Cache versioning for serialization format changes
-16. Store Fingerprint field in incremental cache serialization
+11. ~~BDD tests for templ semantic mode (multi-element, callee encoding)~~ done — bdd/templ_clone_detection_test.go
+12. ~~Fuzz test for normalization pipeline~~ **Superseded — parser fuzzing landed (syntax/templ/fuzz_test.go).**
+13. ~~Integration test: synthetic templ project with known clones~~ done — bdd/templ_* fixtures
+14. ~~Unify Type/Fingerprint model (remove DecodeBaseType complexity) — needs ADR first~~ **Superseded — ADR-0023 settled Type vs Fingerprint.**
+15. ~~Cache versioning for serialization format changes~~ done — CacheVersion ledger (cache/file_cache.go)
+16. ~~Store Fingerprint field in incremental cache serialization~~ done — Fingerprint round-trips via Clone() (AGENTS.md gob boundary)
 
 ### P2 Remaining (Website):
 
-17. Website visual QA (landing + 3 doc pages)
-18. Generate OG image for social sharing
-19. Add OG image meta tags to LandingLayout
-20. Run `pnpm dlx astro check` + fix TS errors
-21. Run HTML validation on dist output
+17. ~~Website visual QA (landing + 3 doc pages)~~ **Superseded — public-presence QA sessions covered it (resolution banner above).**
+18. ~~Generate OG image for social sharing~~ done — website/public/og/home.png
+19. ~~Add OG image meta tags to LandingLayout~~ done — LandingLayout.astro og:image
+20. ~~Run `pnpm dlx astro check` + fix TS errors~~ done — astro check in .github/workflows/deploy-site.yml
+21. ~~Run HTML validation on dist output~~ done — website/.htmlvalidate.json
 22. Remove `continue-on-error: true` from deploy-site.yml CI
-23. Run Lighthouse audit + fix issues
-24. Test mobile responsive layout
-25. Add "Edit this page" links in Starlight config
-26. Verify sidebar links resolve
-27. Add structured data (schema.org) to docs pages
-28. Submit sitemap to Google Search Console
-29. Consider canonical URL from web.app → lars.software
+23. ~~Run Lighthouse audit + fix issues~~ **Superseded — Lighthouse CI still open in ROADMAP.md.**
+24. ~~Test mobile responsive layout~~ **Won't implement — dropped — no recorded mobile QA.**
+25. ~~Add "Edit this page" links in Starlight config~~ **Won't implement — dropped — editUrl not configured.**
+26. ~~Verify sidebar links resolve~~ **Won't implement — dropped — no recorded link audit.**
+27. ~~Add structured data (schema.org) to docs pages~~ done — JSON-LD schema.org in LandingLayout.astro
+28. ~~Submit sitemap to Google Search Console~~ **Superseded — tracked in ROADMAP.md (Search Console submission).**
+29. ~~Consider canonical URL from web.app → lars.software~~ done — canonical to lars.software (LandingLayout.astro)
 
 ### P2 Remaining (Docs):
 
-30. Verify website docs accuracy (flag defaults vs cmd/flags.go)
-31. Compile-test SDK code examples in docs
-32. Write website docs for templ semantic mode + literal normalization
-33. Resolve output format count discrepancy (README vs FEATURES)
-34. Audit SDK_DESIGN.md for drift against pkg/artdupl/ API
-35. Audit SMART_FILTERING.md for drift
-36. Audit USAGE.md, PARTS.md, WHAT_THIS_PROJECT_IS_NOT.md
-37. Verify node type counts (45 Go, 28 Templ) against code
-38. Verify flag count, suggestion constants, categories against code
-39. Audit TROUBLESHOOTING.md for stale commands
-40. Add cross-links between doc pages
+30. ~~Verify website docs accuracy (flag defaults vs cmd/flags.go)~~ done — docs-health count gate pins flag counts (cmd/docs_health_counts_test.go)
+31. ~~Compile-test SDK code examples in docs~~ **Won't implement — dropped — no doc-example compile gate recorded.**
+32. ~~Write website docs for templ semantic mode + literal normalization~~ done — website/src/content/docs/guides/detection-methods.mdx
+33. ~~Resolve output format count discrepancy (README vs FEATURES)~~ done — docs-health count gate pins output-format counts
+34. ~~Audit SDK_DESIGN.md for drift against pkg/artdupl/ API~~ **Superseded — SDK_DESIGN.md removed from the doc set.**
+35. ~~Audit SMART_FILTERING.md for drift~~ done — docs/SMART_FILTERING.md actively maintained (accept-directive update)
+36. ~~Audit USAGE.md, PARTS.md, WHAT_THIS_PROJECT_IS_NOT.md~~ **Superseded — USAGE/PARTS/WHAT_THIS_PROJECT_IS_NOT removed from the doc set.**
+37. ~~Verify node type counts (45 Go, 28 Templ) against code~~ done — count gate pins AST dispatch counts (53 Go / 29 templ)
+38. ~~Verify flag count, suggestion constants, categories against code~~ done — count gate pins pattern and flag counts
+39. ~~Audit TROUBLESHOOTING.md for stale commands~~ **Superseded — docs/ TROUBLESHOOTING.md maintained with the doc set.**
+40. ~~Add cross-links between doc pages~~ **Won't implement — dropped — no cross-link pass recorded.**
 
 ### P3 Items (Code Quality):
 
-41. Move `evaluateActionabilityDetailed` pattern table to package-level var
-42. Extract `patternLabelConfigs` to dedicated file
-43. Review actionability pattern check functions for duplication
-44. Review clone_classify.go suggestion strings → typed constants
-45. Remove import cycle workaround in fingerprint_test.go
-46. Dead code check in printer/ after refactoring
+41. ~~Move `evaluateActionabilityDetailed` pattern table to package-level var~~ done — pattern table is package-level in printer/actionability
+42. ~~Extract `patternLabelConfigs` to dedicated file~~ done — patternLabelConfigs lives in printer/actionability/clone_classify.go
+43. ~~Review actionability pattern check functions for duplication~~ **Won't implement — dropped — no recorded duplication review.**
+44. ~~Review clone_classify.go suggestion strings → typed constants~~ done — productionSuggestions typed map in clone_classify.go
+45. ~~Remove import cycle workaround in fingerprint_test.go~~ done — syntax/fingerprint_test.go at package level
+46. ~~Dead code check in printer/ after refactoring~~ done — 106 linters, 0 findings (AGENTS.md lint config)
 
 ### P3 Items (Infrastructure):
 
-47. Pin golangci-lint version in flake.nix
+47. ~~Pin golangci-lint version in flake.nix~~ done — golangci-lint pinned via flake.lock (2.15.0 bump note in AGENTS.md)
 48. Run statix on flake.nix
-49. Review .go-arch-lint.yml for enforcement gaps
-50. Add Dependabot config for website pnpm deps
+49. ~~Review .go-arch-lint.yml for enforcement gaps~~ done — arch-lint actively enforced (AGENTS.md components)
+50. ~~Add Dependabot config for website pnpm deps~~ **Superseded — tracked in ROADMAP.md (Dependabot for website deps).**
 
 ---
 
