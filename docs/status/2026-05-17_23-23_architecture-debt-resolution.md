@@ -202,7 +202,7 @@ Nothing totally fucked up. All changes compile and pass tests. However:
 | -- | ------------------------------------------------------------------------ | ------ | ------ |
 | 21 | Benchmark reflection-based merge vs old manual merge                     | Low    | 30min  |
 | 22 | Consider `sync.Pool` for syntax.Node to amortize `Name` field allocation | Low    | 1h     |
-| 23 | String pool integration for `syntax.Node.Name` field                     | Low    | 1h     |
+| ~~23~~ done — identifier/filename interning landed as syntax/intern.go (2026-08) | ~~String pool integration for `syntax.Node.Name` field~~ | ~~Low~~ | ~~1h~~ |
 | 24 | Profile memory impact of `Name string` on large codebases                | Medium | 1h     |
 | 25 | Add `golangci-lint` `exhaustruct` check for `CloneClassification`        | Low    | 15min  |
 

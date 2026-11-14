@@ -190,7 +190,7 @@ Instead of one massive 52-file commit, break into:
 
 3. **Create `internal/testutil/gomega_helpers.go`** — Wrap common gomega patterns like `g.Expect(string(X)).To(gomega.Equal(Y))` and `g.Expect(X.Err()).ToNot(gomega.HaveOccurred())` to break G5, G17.
 
-4. **Add `AssertLen` to more files** — `html_test.go:633`, `text_test.go:328` still have `if len(clones) != 1 { t.Fatalf(...) }` that could use `testutil.AssertLen` (need to verify import availability).
+~~4. **Add `AssertLen` to more files** — `html_test.go:633`, `text_test.go:328` still have `if len(clones) != 1 { t.Fatalf(...) }` that could use `testutil.AssertLen` (need to verify import availability).~~ **Won't implement — won't implement — printer tests keep inline len checks; syntax cannot import internal/testutil (import cycle documented in-file).**
 
 5. **Add `AssertFatalNoError` to testutil** — Like `AssertNoError` but calls `t.Fatalf` instead of `t.Errorf`. Would safely replace `if err != nil { t.Fatalf(...) }` patterns without losing the fatal behavior.
 
@@ -220,7 +220,7 @@ Instead of one massive 52-file commit, break into:
 
 16. **Create `testutil.AssertLenNotEqual`** — For `if len(X) != N { t.Errorf("Expected N, got %d", len(X)) }` with different format strings.
 
-17. **Extract `mockSARIFReadFile` pattern** — G23 (n=3) has identical `NewSARIFWithConfig(...)` setup. Extract to helper.
+~~17. **Extract `mockSARIFReadFile` pattern** — G23 (n=3) has identical `NewSARIFWithConfig(...)` setup. Extract to helper.~~ **Won't implement — won't implement — never extracted; the BDD runners own SARIF setup now (internal/testutil/bdd.go).**
 
 18. **Rename `keys` in `groups_test.go`** — G25 (n=3) uses `keys[0]` pattern. Rename to `sortKeys` or `resultKeys` per test.
 

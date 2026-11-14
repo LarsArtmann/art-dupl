@@ -168,7 +168,7 @@ All tests pass, lint is clean, build is clean. But here's what's fragile or regr
 | 3  | Archive `docs/status/` — keep last 10, move rest to `docs/status/archive/`                    | Medium | Small             | Cleanup        |
 | 4  | Add tests for `domain/` — target 80%+ coverage (currently 67.2%)                              | Medium | Medium            | Quality        |
 | 5  | Add BDD test for `art-dupl stats --only templ` and `--only go`                                | Medium | Small             | Coverage       |
-| 6  | Add BDD test for `art-dupl stats --format csv`                                                | Low    | Small             | Coverage       |
+| ~~6~~ done — bdd/stats_command_test.go:258 runs stats --format csv | ~~Add BDD test for `art-dupl stats --format csv`~~ | ~~Low~~ | ~~Small~~ | ~~Coverage~~ |
 | 7  | Implement CSV output using `encoding/csv` (general clone CSV)                                 | Medium | Small             | Correctness    |
 | 8  | Consolidate three parallel Clone types into unified hierarchy                                 | High   | Large             | Architecture   |
 | 9  | Introduce ProcessedClone DTO — decouple Printer from syntax.Node                              | High   | Large (111 sites) | Architecture   |
@@ -178,7 +178,7 @@ All tests pass, lint is clean, build is clean. But here's what's fragile or regr
 | 13 | Standardize error handling — structured errors everywhere or bare fmt.Errorf                  | Medium | Medium            | Consistency    |
 | 14 | Implement TokenValue type with validation                                                     | Medium | Medium            | Type safety    |
 | 15 | Unify enum patterns — domain enums → config's generic helpers                                 | Low    | Medium            | Consistency    |
-| 16 | Add ADR for semantic-as-default decision                                                      | Low    | Tiny              | Documentation  |
+| ~~16~~ done — docs/adr/0002-semantic-as-default.md | ~~Add ADR for semantic-as-default decision~~ | ~~Low~~ | ~~Tiny~~ | ~~Documentation~~ |
 | 17 | Add ADR for reflection-based config merge                                                     | Low    | Tiny              | Documentation  |
 | 18 | Write SDK documentation for `pkg/artdupl/`                                                    | Medium | Medium            | Documentation  |
 | 19 | Audit 71 `//nolint:` directives — remove stale ones                                           | Low    | Small             | Cleanup        |

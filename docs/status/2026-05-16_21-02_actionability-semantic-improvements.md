@@ -213,7 +213,7 @@ Nothing. All tests pass, all builds clean, all changes are minimal and focused.
 
 Current design has TWO overlapping systems:
 
-1. **Actionability** (this PR) — is this clone group _possible_ to dedup?
+~~1. **Actionability** (this PR) — is this clone group _possible_ to dedup?~~ done — moot — narrative definition, not an open task; actionability shipped (printer/actionability/, 42 patterns per AGENTS.md)
 2. **Priority** (existing) — how _important_ is this clone to address?
 
 A `FuncDecl` interface signature gets `Priority: Medium` (from existing logic) but `Actionability: NonActionable` (from new logic). This is correct — it's "medium importance to know about" but "impossible to fix."

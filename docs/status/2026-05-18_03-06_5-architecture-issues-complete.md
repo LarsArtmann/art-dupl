@@ -145,7 +145,7 @@ Nothing.
 | 7  | NodeCategory field on syntax.Node for language-agnostic actionability | Medium | 2h     |
 | 8  | Remove actionability.go import of syntax/golang                       | Medium | 1h     |
 | 9  | Benchmark Name field memory impact on large project                   | Low    | 30min  |
-| 10 | Add exhaustruct linter check back with Config whitelist               | Low    | 15min  |
+| ~~10~~ **Won't implement — won't implement — exhaustruct is deliberately banned (AGENTS.md Lint Config Guard auto-removes it).** | ~~Add exhaustruct linter check back with Config whitelist~~ | ~~Low~~ | ~~15min~~ |
 
 ### P2 — Quality
 
@@ -163,7 +163,7 @@ Nothing.
 | -- | ------------------------------------------------------------------- | ------ | ------ |
 | 16 | Update CHANGELOG.md with semantic default breaking change           | Medium | 30min  |
 | 17 | MIGRATION_GUIDE.md section: v1→v2 semantic default change           | Medium | 30min  |
-| 18 | README screenshot/asciinema with new default behavior               | Low    | 30min  |
+| ~~18~~ done — struck — tracked on ROADMAP (Quality and Intelligence: README before/after example) | ~~README screenshot/asciinema with new default behavior~~ | ~~Low~~ | ~~30min~~ |
 | 19 | Deprecation warning for --structural (suggest it's power-user mode) | Low    | 15min  |
 | 20 | Config file template: semantic: true for new users                  | Low    | 15min  |
 
@@ -173,9 +173,9 @@ Nothing.
 | -- | ------------------------------------------------------ | ------ | ------ |
 | 21 | Profile: where is Name string allocation heaviest?     | Medium | 30min  |
 | 22 | Consider arena allocation for syntax.Node in transform | Low    | 2h     |
-| 23 | SIMD-optimized string comparison for Name matching     | Low    | 2h     |
+| ~~23~~ **Won't implement — won't implement — the SIMD code was deleted; no SIMD paths exist.** | ~~SIMD-optimized string comparison for Name matching~~ | ~~Low~~ | ~~2h~~ |
 | 24 | Parallel transform.go (per-file goroutines)            | Medium | 2h     |
-| 25 | Memory-mapped AST cache for incremental mode           | Low    | 4h     |
+| ~~25~~ done — superseded — the file-based cache with in-memory LRU shipped (cache/); mmap not needed | ~~Memory-mapped AST cache for incremental mode~~ | ~~Low~~ | ~~4h~~ |
 
 ---
 

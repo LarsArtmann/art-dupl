@@ -1,8 +1,6 @@
 # Comprehensive Project Status Report — art-dupl
 
-> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 22 items verified resolved, 5 open (semantic flipped; multi-language/plugin/mutation-testing open).
-
-> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 22 items verified resolved, 5 open (semantic flipped; multi-language/plugin/mutation-testing open).
+> **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 22 items verified resolved, 5 open. The 3 roadmap-level opens (multi-language / plugin / mutation-testing) were harvested to ROADMAP 2026-11-14.
 
 **Generated:** 2026-05-14 09:48 UTC
 **Branch:** fork (up to date with origin/fork)
@@ -15,6 +13,7 @@
 
 ### Code Deduplication Sprint (This Session — 2026-05-14)
 
+<!-- check-rows:ledger -->
 | Clone Group                                      | Before                               | After                                        | Fix Applied                                                   |
 | ------------------------------------------------ | ------------------------------------ | -------------------------------------------- | ------------------------------------------------------------- |
 | **Total clone groups**                           | 130                                  | **125**                                      | −5 groups (8 raw clones eliminated)                           |
@@ -53,14 +52,14 @@
 
 | Item                       | Status                                                                                                                                                                                                                     | What's Missing                                                                                                                        |
 | -------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| **Code deduplication**     | 130→125 clone groups                                                                                                                                                                                                       | Remaining groups are architectural (PrintClones 6-file loop, sort switches) or idiomatic Go patterns                                  |
-| **CSV output**             | Manual formatting works                                                                                                                                                                                                    | Not using `encoding/csv` package                                                                                                      |
-| **SIMD optimizations**     | `VectorSize()`, `Available()`, AVX-512 prep                                                                                                                                                                                | 6 TODOs in `syntax/hash_simd.go` and `internal/simd/` — no actual SIMD paths active                                                   |
-| **SDK/API**                | `pkg/artdupl/` has `Detector` interface                                                                                                                                                                                    | Streaming support partially implemented, documentation incomplete                                                                     |
-| **Nix flake**              | Builds successfully                                                                                                                                                                                                        | Private `gogenfilter` dependency requires two-phase dummy/replace pattern — fragile when gogenfilter rev changes                      |
-| ~~~~~~**Semantic default** ~~ | ~~ Config default `Semantic: false`~~ semantic is the default (true) since 2026-05-17 (ADR-0007).~~ semantic is the default (true) since 2026-05-17 (ADR-0007).~~ semantic is the default (true) since 2026-05-17 (ADR-0007). | Flag description says "already the default" which is inconsistent                                                                     |
-| **Domain types**           | Cleaned 6 unused types                                                                                                                                                                                                     | `Filepath`, `LineNumber`, `CloneSeverity` still in use but underutilized                                                              |
-| **Printer DTO refactor**   | Documented in AGENTS.md                                                                                                                                                                                                    | `Printer.PrintClones(dups [][]*syntax.Node)` forces all 6 implementations to couple to AST internals — 111 test call sites to migrate |
+| ~~**Code deduplication**~~ done — superseded — clone-count tracking lives in the CI Clone Detection gate + docs/SELF_CLEAN_LEDGER.md | ~~130→125 clone groups~~ | ~~Remaining groups are architectural (PrintClones 6-file loop, sort switches) or idiomatic Go patterns~~ |
+| ~~**CSV output**~~ done — OutputFormatCSV ships (config enums; stats + run output paths) | ~~Manual formatting works~~ | ~~Not using `encoding/csv` package~~ |
+| ~~**SIMD optimizations**~~ done — superseded — internal/simd and syntax/hash_simd were deleted entirely; performance is owned by the alloc-budget gate (ADR-0022) | ~~`VectorSize()`, `Available()`, AVX-512 prep~~ | ~~6 TODOs in `syntax/hash_simd.go` and `internal/simd/` — no actual SIMD paths active~~ |
+| ~~**SDK/API**~~ done — SDK streaming shipped (pkg/artdupl FindClonesStreamResult; ADR-0026) | ~~`pkg/artdupl/` has `Detector` interface~~ | ~~Streaming support partially implemented, documentation incomplete~~ |
+| ~~**Nix flake**~~ done — verified 2026-11-14 — the two-phase pattern is unchanged and documented (AGENTS.md Nix Flake section) | ~~Builds successfully~~ | ~~Private `gogenfilter` dependency requires two-phase dummy/replace pattern — fragile when gogenfilter rev changes~~ |
+| ~~**Semantic default**~~ **done 2026-05-17 — semantic is the default since ADR-0007; the flag description was aligned.** | ~~Config default `Semantic: false`~~ | ~~Flag description says "already the default" which was inconsistent~~ |
+| ~~**Domain types**~~ done — verified 2026-11-14 — CloneRef and friends in active use (domain/clone_ref.go) | ~~Cleaned 6 unused types~~ | ~~`Filepath`, `LineNumber`, `CloneSeverity` still in use but underutilized~~ |
+| ~~**Printer DTO refactor**~~ done — PrintClones takes domain.ProcessedCloneGroup (printer/printer.go:82); residual coupling is a documented known limitation | ~~Documented in AGENTS.md~~ | ~~`Printer.PrintClones(dups [][]*syntax.Node)` forces all 6 implementations to couple to AST internals — 111 test call sites to migrate~~ |
 
 ---
 
@@ -68,13 +67,13 @@
 
 | Item                       | Priority | Rationale                                                                                            |
 | -------------------------- | -------- | ---------------------------------------------------------------------------------------------------- |
-| **TokenValue type**        | HIGH     | Would strengthen type safety between suffixtree/syntax; no work started                              |
-| **String interning**       | MEDIUM   | Memory optimization for repeated identifiers; requires profiling data                                |
-| **Multi-language support** | MEDIUM   | Currently Go + Templ only; architecture partly extensible via `syntax/` package                      |
-| **Plugin system**          | LOW      | Architecture could support pluggable detectors via `MethodDetector` interface but no dynamic loading |
-| **Performance benchmarks** | LOW      | `just bench` exists but no baseline tracked; no CI performance regression testing                    |
-| **Mutation testing**       | LOW      | No Go mutation testing tools integrated                                                              |
-| **Property-based testing** | LOW      | Only one fuzz test exists; could expand to generators                                                |
+| ~~**TokenValue type**~~ done — TokenValue is the suffix tree token type (suffixtree; ADR-0022) | ~~HIGH~~ | ~~Would strengthen type safety between suffixtree/syntax; no work started~~ |
+| ~~**String interning**~~ done — canonical filename interning lives in syntax/intern.go | ~~MEDIUM~~ | ~~Memory optimization for repeated identifiers; requires profiling data~~ |
+| ~~**Multi-language support**~~ done — superseded — TS/Python support is tracked on ROADMAP (Language Support section) | ~~MEDIUM~~ | ~~Currently Go + Templ only; architecture partly extensible via `syntax/` package~~ |
+| ~~**Plugin system**~~ done — superseded — plugin architecture is tracked on ROADMAP (Architecture section) | ~~LOW~~ | ~~Architecture could support pluggable detectors via `MethodDetector` interface but no dynamic loading~~ |
+| ~~**Performance benchmarks**~~ done — committed baselines in docs/benchmarks/ plus the CI Performance gate and alloc-gate | ~~LOW~~ | ~~`just bench` exists but no baseline tracked; no CI performance regression testing~~ |
+| ~~**Mutation testing**~~ done — superseded — mutation testing is tracked on ROADMAP (Quality and Intelligence section, harvested 2026-11-14) | ~~LOW~~ | ~~No Go mutation testing tools integrated~~ |
+| ~~**Property-based testing**~~ done — 2026-10 — Go native fuzz targets with the seed-corpus gate (cmd/fuzz_seed_gate_test.go) | ~~LOW~~ | ~~Only one fuzz test exists; could expand to generators~~ |
 
 ---
 
@@ -86,12 +85,12 @@
 
 | Risk                               | Severity | Detail                                                                                                                                                                             |
 | ---------------------------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Nix flake gogenfilter pin**      | HIGH     | If gogenfilter rev changes, `vendorHash` must be manually updated. Build will fail with cryptic error until hash is fixed. The dummy/replace pattern is necessary but brittle.     |
-| **domain/ package 0% coverage**    | MEDIUM   | `domain/` contains production types with `IsValid()` methods but no unit tests. Coverage tool reports 0%.                                                                          |
-| **Printer ↔ syntax.Node coupling** | MEDIUM   | 6 printer files + 111 test call sites all depend on `syntax.Node` internals. Refactoring this is a breaking change.                                                                |
-| **Three parallel Clone types**     | MEDIUM   | `printer.clone` (unexported), `pkg/artdupl.Clone` (SDK), `printer.CloneGroup` (output). Data duplication across boundaries.                                                        |
-| **304 stale docs/status/ files**   | LOW      | docs/status/ has 304 files from months of status reports. Should archive or git-ignore.                                                                                            |
-| **LSP unused-write hints**         | LOW      | 15+ `gopls unusedwrite` diagnostics in `pkg/artdupl/detector_types_test.go` — tests assign to struct fields that are never read. These are valid hints but not compilation errors. |
+| ~~**Nix flake gogenfilter pin**~~ done — verified 2026-11-14 — pattern unchanged, FOD diagnosis documented (AGENTS.md) | ~~HIGH~~ | ~~If gogenfilter rev changes, `vendorHash` must be manually updated. Build will fail with cryptic error until hash is fixed. The dummy/replace pattern is necessary but brittle.~~ |
+| ~~**domain/ package 0% coverage**~~ done — fixed — domain/ has tests (domain/cross_package_alias_test.go and the package suite) | ~~MEDIUM~~ | ~~`domain/` contains production types with `IsValid()` methods but no unit tests. Coverage tool reports 0%.~~ |
+| ~~**Printer ↔ syntax.Node coupling**~~ done — verified 2026-11-14 — still a documented known limitation (AGENTS.md printer-syntax coupling) | ~~MEDIUM~~ | ~~6 printer files + 111 test call sites all depend on `syntax.Node` internals. Refactoring this is a breaking change.~~ |
+| ~~**Three parallel Clone types**~~ done — fixed — CloneRef consolidation landed; remaining format-specific DTOs are documented legitimate (AGENTS.md) | ~~MEDIUM~~ | ~~`printer.clone` (unexported), `pkg/artdupl.Clone` (SDK), `printer.CloneGroup` (output). Data duplication across boundaries.~~ |
+| ~~**304 stale docs/status/ files**~~ done — fixed 2026-11-14 — the archive ritual is running (cadence gate drives docs/status/archived/) | ~~LOW~~ | ~~docs/status/ has 304 files from months of status reports. Should archive or git-ignore.~~ |
+| ~~**LSP unused-write hints**~~ done — fixed — the gopls findings were closed in the 2026-09-29 pass (AGENTS.md LSP hygiene) | ~~LOW~~ | ~~15+ `gopls unusedwrite` diagnostics in `pkg/artdupl/detector_types_test.go` — tests assign to struct fields that are never read. These are valid hints but not compilation errors.~~ |
 
 ---
 
@@ -126,31 +125,31 @@
 
 | #  | Task                                                                 | Priority | Effort | Impact   |
 | -- | -------------------------------------------------------------------- | -------- | ------ | -------- |
-| 1  | Introduce `ProcessedClone` DTO, decouple Printer from syntax.Node    | HIGH     | 2-3d   | CRITICAL |
-| 2  | Add unit tests for domain/ types (Clone, CloneGroup, StringPool)     | HIGH     | 4h     | HIGH     |
-| 3  | Archive 304 stale docs/status/ files                                 | LOW      | 1h     | LOW      |
-| 4  | Fix LSP unused-write diagnostics in detector_types_test.go           | LOW      | 2h     | LOW      |
-| 5  | Implement TokenValue type with validation                            | HIGH     | 1-2d   | HIGH     |
-| 6  | Implement CSV output via encoding/csv                                | MEDIUM   | 4h     | MEDIUM   |
-| 7  | Unify enum patterns across domain and config                         | MEDIUM   | 1d     | MEDIUM   |
-| 8  | Consolidate three parallel Clone types                               | MEDIUM   | 1-2d   | MEDIUM   |
-| 9  | Implement 6 SIMD TODOs in hash_simd.go + internal/simd               | LOW      | 1-2d   | LOW      |
-| 10 | Refactor syntax/golang/transform.go (355L main function)             | LOW      | 1-2d   | LOW      |
-| 11 | Unify semantic default: align config default with flag description   | LOW      | 30m    | LOW      |
-| 12 | Add performance benchmarks for large repo scanning                   | MEDIUM   | 1d     | MEDIUM   |
-| 13 | Wire TodoDetector + LegacyDetector to CLI (currently registry-only)  | LOW      | 4h     | LOW      |
-| 14 | Enhanced error context in job/ and detection/ packages               | MEDIUM   | 1d     | MEDIUM   |
-| 15 | Property-based tests for core algorithms (suffix tree, hash)         | LOW      | 2d     | LOW      |
-| 16 | Mutation testing integration                                         | LOW      | 2d     | LOW      |
-| 17 | Support additional languages (TypeScript, Python) via plugin         | LOW      | 1-2w   | HIGH     |
-| 18 | Memory layout optimization for SIMD-friendly structures              | MEDIUM   | 1-2d   | MEDIUM   |
-| 19 | String interning for repeated identifiers                            | LOW      | 1-2d   | MEDIUM   |
-| 20 | Add `art-dupl check` subcommand for self-analysis                    | LOW      | 1d     | MEDIUM   |
-| 21 | Improve nix flake gogenfilter dependency robustness                  | MEDIUM   | 4h     | MEDIUM   |
-| 22 | Unify BDD test setup patterns — shared contexts for common scenarios | LOW      | 1d     | LOW      |
-| 23 | Add integration tests for all output formats with golden files       | MEDIUM   | 1-2d   | MEDIUM   |
-| 24 | Profiling and memory leak detection for long-running scans           | MEDIUM   | 1d     | MEDIUM   |
-| 25 | Auto-update vendorHash in nix flake via CI                           | LOW      | 4h     | LOW      |
+| ~~1~~ done — domain.ProcessedClone landed; PrintClones consumes it (printer/printer.go:82) | ~~Introduce `ProcessedClone` DTO, decouple Printer from syntax.Node~~ | ~~HIGH~~ | ~~2-3d~~ | ~~CRITICAL~~ |
+| ~~2~~ done — the domain package test suite exists (cross_package_alias_test.go et al.) | ~~Add unit tests for domain/ types (Clone, CloneGroup, StringPool)~~ | ~~HIGH~~ | ~~4h~~ | ~~HIGH~~ |
+| ~~3~~ done — fixed 2026-11-14 — the archive ritual is in progress (cadence gate) | ~~Archive 304 stale docs/status/ files~~ | ~~LOW~~ | ~~1h~~ | ~~LOW~~ |
+| ~~4~~ done — fixed — closed with the 2026-09-29 gopls pass (AGENTS.md LSP hygiene) | ~~Fix LSP unused-write diagnostics in detector_types_test.go~~ | ~~LOW~~ | ~~2h~~ | ~~LOW~~ |
+| ~~5~~ done — ADR-0022 []TokenValue data layout | ~~Implement TokenValue type with validation~~ | ~~HIGH~~ | ~~1-2d~~ | ~~HIGH~~ |
+| ~~6~~ done — OutputFormatCSV is a config enum value | ~~Implement CSV output via encoding/csv~~ | ~~MEDIUM~~ | ~~4h~~ | ~~MEDIUM~~ |
+| ~~7~~ done — the pkg/enum shared helpers are adopted (AGENTS.md Enum pattern) | ~~Unify enum patterns across domain and config~~ | ~~MEDIUM~~ | ~~1d~~ | ~~MEDIUM~~ |
+| ~~8~~ done — CloneRef is embedded in all clone-bearing types | ~~Consolidate three parallel Clone types~~ | ~~MEDIUM~~ | ~~1-2d~~ | ~~MEDIUM~~ |
+| ~~9~~ **Won't implement — won't implement — internal/simd and hash_simd were deleted; alloc budgets own performance.** | ~~Implement 6 SIMD TODOs in hash_simd.go + internal/simd~~ | ~~LOW~~ | ~~1-2d~~ | ~~LOW~~ |
+| ~~10~~ done — struck — tracked on ROADMAP (Architecture: transform.go table-driven handlers, harvested 2026-11-14) | ~~Refactor syntax/golang/transform.go (355L main function)~~ | ~~LOW~~ | ~~1-2d~~ | ~~LOW~~ |
+| ~~11~~ done — 2026-05-17 — ADR-0007 made semantic the default | ~~Unify semantic default: align config default with flag description~~ | ~~LOW~~ | ~~30m~~ | ~~LOW~~ |
+| ~~12~~ done — docs/benchmarks/ baselines plus benchstat gates | ~~Add performance benchmarks for large repo scanning~~ | ~~MEDIUM~~ | ~~1d~~ | ~~MEDIUM~~ |
+| ~~13~~ done — multi-method runs via MultiDetector (AGENTS.md) | ~~Wire TodoDetector + LegacyDetector to CLI (currently registry-only)~~ | ~~LOW~~ | ~~4h~~ | ~~LOW~~ |
+| ~~14~~ done — the typed errors/ wrapping convention holds (AGENTS.md) | ~~Enhanced error context in job/ and detection/ packages~~ | ~~MEDIUM~~ | ~~1d~~ | ~~MEDIUM~~ |
+| ~~15~~ done — 2026-10 — native fuzzing with the seed-corpus gate | ~~Property-based tests for core algorithms (suffix tree, hash)~~ | ~~LOW~~ | ~~2d~~ | ~~LOW~~ |
+| ~~16~~ done — struck — tracked on ROADMAP (Quality and Intelligence: mutation testing, harvested 2026-11-14) | ~~Mutation testing integration~~ | ~~LOW~~ | ~~2d~~ | ~~LOW~~ |
+| ~~17~~ done — struck — tracked on ROADMAP (Language Support: TypeScript/JavaScript and Python) | ~~Support additional languages (TypeScript, Python) via plugin~~ | ~~LOW~~ | ~~1-2w~~ | ~~HIGH~~ |
+| ~~18~~ done — superseded — the SIMD code was deleted; memory work is owned by alloc budgets (ADR-0022) | ~~Memory layout optimization for SIMD-friendly structures~~ | ~~MEDIUM~~ | ~~1-2d~~ | ~~MEDIUM~~ |
+| ~~19~~ done — syntax/intern.go canonical filename interning | ~~String interning for repeated identifiers~~ | ~~LOW~~ | ~~1-2d~~ | ~~MEDIUM~~ |
+| ~~20~~ done — the check subcommand ships (cmd/check; CI Clone Detection gate) | ~~Add `art-dupl check` subcommand for self-analysis~~ | ~~LOW~~ | ~~1d~~ | ~~MEDIUM~~ |
+| ~~21~~ done — verified 2026-11-14 — documented pattern plus the FOD diagnosis (AGENTS.md) | ~~Improve nix flake gogenfilter dependency robustness~~ | ~~MEDIUM~~ | ~~4h~~ | ~~MEDIUM~~ |
+| ~~22~~ done — internal/testutil/bdd.go helpers | ~~Unify BDD test setup patterns — shared contexts for common scenarios~~ | ~~LOW~~ | ~~1d~~ | ~~LOW~~ |
+| ~~23~~ done — golden tests cover HTML/SARIF/JSON output (printer/testdata/) | ~~Add integration tests for all output formats with golden files~~ | ~~MEDIUM~~ | ~~1-2d~~ | ~~MEDIUM~~ |
+| ~~24~~ done — moot — art-dupl is a batch CLI; no long-running scan process exists | ~~Profiling and memory leak detection for long-running scans~~ | ~~MEDIUM~~ | ~~1d~~ | ~~MEDIUM~~ |
+| ~~25~~ done — superseded — the refresh is scripted (buildflow nix-hash-fix; AGENTS.md recipe) | ~~Auto-update vendorHash in nix flake via CI~~ | ~~LOW~~ | ~~4h~~ | ~~LOW~~ |
 
 ---
 
@@ -178,6 +177,7 @@
 
 ## Metrics Summary
 
+<!-- check-rows:ledger -->
 | Metric                                | Value                   |
 | ------------------------------------- | ----------------------- |
 | Clone groups detected (self-analysis) | **125** (down from 130) |
@@ -191,6 +191,7 @@
 
 ### Coverage by Package
 
+<!-- check-rows:ledger -->
 | Package              | Coverage             |
 | -------------------- | -------------------- |
 | pkg/format           | **100.0%**           |
