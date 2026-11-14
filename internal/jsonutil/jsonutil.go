@@ -31,7 +31,12 @@ import (
 func MarshalIndent(v any, prefix, indent string) ([]byte, error) {
 	var buf bytes.Buffer
 
-	enc := jsontext.NewEncoder(&buf, jsontext.EscapeForHTML(false), jsontext.WithIndentPrefix(prefix), jsontext.WithIndent(indent))
+	enc := jsontext.NewEncoder(
+		&buf,
+		jsontext.EscapeForHTML(false),
+		jsontext.WithIndentPrefix(prefix),
+		jsontext.WithIndent(indent),
+	)
 
 	if indent != "" || prefix != "" {
 	}
