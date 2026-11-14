@@ -24,6 +24,10 @@ or external by nature.
 
 ## MEDIUM Priority
 
+- [ ] **statix + govet lanes for `flake.nix`**: statix sweep plus a govet static-check lane.
+- [ ] **`cmd/run_suppression.go` carve-out**: suppression/output assembly leaves the analysis command file.
+- [ ] **FEATURES.md "6,000+ files" claim re-count**: `git ls-files` count vs the printed claim.
+
 - [x] ~~**Warn when a baseline's analyzer identity differs but `--baseline-version-must-match` is off**~~ DONE 2026-11-06: `cmd/baseline_identity.go::warnIncomparableBaseline` prints the notice (both identities + the remedy) on `check` without the flag and on every text `--diff-report`; `--json` stays silent, exit codes unchanged. Pins: `TestCheckWarnsOnIncomparableBaselineWithoutFlag`, `TestCheckWarnsOnLegacyBaselineWithoutFlag`, `TestDiffReportWarnsOnIncomparableBaseline`.
 - [x] ~~**`check --json` does not carry the baseline split**~~ DONE 2026-11-06: `JSONPrinter` implements `SetBaselineSplit` and the document carries `baseline: {in_baseline, new, suppressed, total}`. Along the way `check --json` was found to emit NO document at all (`OutputJSON` was only called on the main analysis path) and `baselineFilterPrinter` dropped the group hash (`SetHash` is not part of the embedded `Printer` interface) — both fixed. Pin: `TestCheckJSONEmitsDocumentAndBaselineSplit`.
 

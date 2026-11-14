@@ -155,62 +155,62 @@ The closest issue: the `defer-call` pattern was initially too broad (`hasAnyCall
 
 ### High Impact (from feedback, directly requested)
 
-1. Add `//go:embed` directive actionability pattern (go-sse — zero effort, high precision)
-2. Add `go-http-error-guard` pattern for void-return HTTP handlers (discordsync — 12 groups eliminated)
-3. Add `go-error-wrap-idiom` pattern for unique-string error wrappers (discordsync — 27 groups)
-4. Add `sync-rwmutex-read` pattern for lock scope preservation (go-output)
-5. Add `strings-builder-opener` pattern (go-output)
-6. Add `functional-option-contract` pattern (go-output)
-7. Add `go-bool-to-string-func` pattern (discordsync)
-8. Add `go-error-log-one-liner` pattern (discordsync)
-9. Add `go-helper-invocation` detection (discordsync — needs call-graph)
-10. Add `TestMain` + library-required boilerplate pattern (go-cqrs-lite)
-11. Separate "detected" from "actionable" in HTML summary output (go-output, go-sse, go-etag)
-12. Implement TTY-aware HTML output (auto-write to `art-dupl-report.html`) (go-auto-upgrade, httputil, generated-templ)
-13. Add stable display IDs for HTML clone groups (httputil)
-14. Implement fractional thresholds or `--explain-threshold` to address the threshold cliff (art-dupl-threshold-cliff, licenseforge)
-15. Implement `--diff-baseline` mode showing what changed since baseline (go-cqrs-lite)
+1. ~~Add `//go:embed` directive actionability pattern (go-sse — zero effort, high precision)~~ done — the `embed-directive` pattern ships in printer/actionability/actionability.go (PatternEmbedDirective)
+2. ~~Add `go-http-error-guard` pattern for void-return HTTP handlers (discordsync — 12 groups eliminated)~~ done — the `error-guard-fallthrough` pattern covers HTTP error guards (printer/actionability/actionability.go; pinned by printer/actionability/actionability_discordsync_test.go)
+3. ~~Add `go-error-wrap-idiom` pattern for unique-string error wrappers (discordsync — 27 groups)~~ **Superseded — superseded — routed to TODO_LIST per the 2026-08-10 resolution note; no unique-string wrapper pattern ships in printer/actionability as of 2026-11-14.**
+4. ~~Add `sync-rwmutex-read` pattern for lock scope preservation (go-output)~~ **Superseded — superseded — routed to TODO_LIST per the 2026-08-10 resolution note; no lock-scope pattern ships in printer/actionability as of 2026-11-14.**
+5. ~~Add `strings-builder-opener` pattern (go-output)~~ **Superseded — superseded — routed to TODO_LIST per the 2026-08-10 resolution note; no strings-builder pattern ships in printer/actionability as of 2026-11-14.**
+6. ~~Add `functional-option-contract` pattern (go-output)~~ **Superseded — superseded — routed to TODO_LIST per the 2026-08-10 resolution note; only `option-apply-loop` and `signature-only` ship as related labels in printer/actionability/actionability.go.**
+7. ~~Add `go-bool-to-string-func` pattern (discordsync)~~ **Superseded — superseded — routed to TODO_LIST per the 2026-08-10 resolution note; no bool-to-string pattern ships in printer/actionability as of 2026-11-14.**
+8. ~~Add `go-error-log-one-liner` pattern (discordsync)~~ **Superseded — superseded — routed to TODO_LIST per the 2026-08-10 resolution note; no error-log one-liner pattern ships in printer/actionability as of 2026-11-14.**
+9. ~~Add `go-helper-invocation` detection (discordsync — needs call-graph)~~ done — the `test-helper-delegate` pattern ships (printer/actionability/actionability.go, isTestHelperDelegate) and covers calling already-extracted helpers
+10. ~~Add `TestMain` + library-required boilerplate pattern (go-cqrs-lite)~~ done — the `testmain-boilerplate` pattern ships (printer/actionability/actionability.go, isTestMainBoilerplate)
+11. ~~Separate "detected" from "actionable" in HTML summary output (go-output, go-sse, go-etag)~~ done — the HTML printer implements SuppressionStatsSetter (printer/html.go) with summary breakdown
+12. ~~Implement TTY-aware HTML output (auto-write to `art-dupl-report.html`) (go-auto-upgrade, httputil, generated-templ)~~ done — the `--html-out` flag auto-writes art-dupl-report.html when stdout is a TTY (cmd/flags.go)
+13. ~~Add stable display IDs for HTML clone groups (httputil)~~ moot — content-hash group IDs were already stable per the HTML improvements note above; no separate display-ID work was needed
+14. ~~Implement fractional thresholds or `--explain-threshold` to address the threshold cliff (art-dupl-threshold-cliff, licenseforge)~~ done — the `--recommend-threshold` flag ships (cmd/flags.go; cmd/recommend_threshold.go); fractional thresholds were not added
+15. ~~Implement `--diff-baseline` mode showing what changed since baseline (go-cqrs-lite)~~ done — the `--diff-report` flag shows new/suppressed/resolved clones against a baseline (cmd/flags.go)
 
 ### Medium Impact
 
-16. Add unit tests for `--min-tokens` flag and `minCloneTokenCount`
-17. Add BDD test for `--min-tokens` flag
-18. Implement suggest-generics group merging (merge groups sharing >50% clone sites)
-19. Implement `collectKeys[K,V]` map-to-slice hint detection
-20. Add `--recommend-threshold` range suggestion (not single value)
-21. Fix `--exclude-pattern` UX (warn when pattern matches zero files, document glob vs regex)
-22. Implement `--suggest-extraction` dry-run mode showing helper signature (go-etag)
-23. Implement `--ci-gate` mode (exit non-zero only on actionable clones) (go-etag)
-24. Move `test-framework-call` earlier in priority table so it fires before `single-call-expression`
-25. Add `defer-cleanup-of-arbitrary-resource` pattern for `defer rows.Close()` / `defer tx.Rollback()` (discordsync — 12 groups)
-26. Add `go-context-cancel` pattern for `defer cancel()` (discordsync)
-27. Add `.art-duplignore` config file support (false-positive-report)
-28. Implement pattern-aware weighting system (false-positive-report)
-29. Implement test-file-aware thresholds (different thresholds for prod vs test vs testdata)
-30. Add fixability score instead of binary Actionable/NonActionable (upd feedback)
-31. Implement helper-call-site detection via call-graph resolution (upd, discordsync)
-32. Add `--dump-tokens` debug flag (upd feedback)
-33. Surface category tag in text output (generated-templ)
-34. Tailor HTML suggestions to classification instead of generic "Review and extract" (go-output, go-sse)
+16. ~~Add unit tests for `--min-tokens` flag and `minCloneTokenCount`~~ done — BDD coverage for `--min-tokens` and minCloneTokenCount lives in bdd/min_tokens_test.go
+17. ~~Add BDD test for `--min-tokens` flag~~ done — bdd/min_tokens_test.go
+18. ~~Implement suggest-generics group merging (merge groups sharing >50% clone sites)~~ **Superseded — superseded — routed to TODO_LIST per the 2026-08-10 resolution note; the `--suggest-generics-min-lines` precision gate (cmd/flags.go, AGENTS.md) addressed the noise instead.**
+19. ~~Implement `collectKeys[K,V]` map-to-slice hint detection~~ **Superseded — superseded — routed to TODO_LIST per the 2026-08-10 resolution note; no collectKeys detector ships in printer/actionability as of 2026-11-14.**
+20. ~~Add `--recommend-threshold` range suggestion (not single value)~~ done — the `--recommend-threshold` flag suggests a threshold from codebase size (cmd/recommend_threshold.go)
+21. ~~Fix `--exclude-pattern` UX (warn when pattern matches zero files, document glob vs regex)~~ done — the `--exclude-pattern` help documents globs-not-regex and warns when a pattern matches nothing (cmd/flags.go)
+22. ~~Implement `--suggest-extraction` dry-run mode showing helper signature (go-etag)~~ **Superseded — superseded — routed to TODO_LIST per the 2026-08-10 resolution note; no `--suggest-extraction` flag ships in cmd/flags.go as of 2026-11-14.**
+23. ~~Implement `--ci-gate` mode (exit non-zero only on actionable clones) (go-etag)~~ **Superseded — superseded — routed to TODO_LIST per the 2026-08-10 resolution note; no `--ci-gate` flag ships in cmd/flags.go as of 2026-11-14.**
+24. ~~Move `test-framework-call` earlier in priority table so it fires before `single-call-expression`~~ **NOT-DO — the priority table is unchanged as of 2026-11-14: `single-call-expression` still precedes `test-framework-call` in printer/actionability/actionability.go.**
+25. ~~Add `defer-cleanup-of-arbitrary-resource` pattern for `defer rows.Close()` / `defer tx.Rollback()` (discordsync — 12 groups)~~ done — the `raii-defer` pattern (printer/actionability/actionability.go, isPureDeferPattern) covers deferred cleanup calls
+26. ~~Add `go-context-cancel` pattern for `defer cancel()` (discordsync)~~ done — the `raii-defer` pattern (printer/actionability/actionability.go, isPureDeferPattern) covers `defer cancel()`
+27. ~~Add `.art-duplignore` config file support (false-positive-report)~~ **Superseded — superseded — routed to TODO_LIST per the 2026-08-10 resolution note; ignore support stays config-file-based (`ignoreFiles`, config/config.go).**
+28. ~~Implement pattern-aware weighting system (false-positive-report)~~ **Superseded — superseded — routed to TODO_LIST per the 2026-08-10 resolution note; no pattern-weighting system ships as of 2026-11-14.**
+29. ~~Implement test-file-aware thresholds (different thresholds for prod vs test vs testdata)~~ done — the `testThreshold` config gate ships (config/config.go; listed in the `--show-suppressed` help)
+30. ~~Add fixability score instead of binary Actionable/NonActionable (upd feedback)~~ **Superseded — superseded — routed to TODO_LIST per the 2026-08-10 resolution note; no fixability score ships as of 2026-11-14.**
+31. ~~Implement helper-call-site detection via call-graph resolution (upd, discordsync)~~ done — the `test-helper-delegate` pattern (printer/actionability/actionability.go) handles helper call sites heuristically without a call graph
+32. ~~Add `--dump-tokens` debug flag (upd feedback)~~ done — the `--dump-tokens` flag ships (cmd/flags.go)
+33. ~~Surface category tag in text output (generated-templ)~~ done — the text printer writes the category into the group header (printer/text.go)
+34. ~~Tailor HTML suggestions to classification instead of generic "Review and extract" (go-output, go-sse)~~ **Superseded — superseded — routed to TODO_LIST per the 2026-08-10 resolution note; HTML suggestions remain generic as of 2026-11-14.**
 
 ### Lower Priority / Polish
 
-35. Implement type-3 structural clone detection via CFG matching (art-dupl-threshold-cliff — highest effort)
-36. Detect differing `fmt.Sprintf` format specifiers as semantically distinct (discordsync)
-37. Implement `library-required-boilerplate` umbrella for `func init()`, `//go:generate` (go-sse)
-38. Add `--include-test-idioms` flag parallel to `--include-generated` (licenseforge)
-39. Document Ginkgo `DescribeTable` variadic gotcha in skill docs (go-auto-upgrade)
-40. Add "fixture-driven test" detection pattern for Ginkgo `DefineGoldenSuite` (go-auto-upgrade)
-41. Implement `--diff-report` mode comparing two scans (generated-templ)
-42. Document two-pass workflow in skill: `-t 50` for triage, `-t 5` for cleanup (generated-templ)
-43. Add `irreducibility class` per group: semantic / idiomatic / structurally-bound / threshold-noise (samber-do-auditlog)
-44. Implement `--min-effective-generics-lines` threshold for suggest-generics (discordsync)
-45. Add integration test for `isEmptyDefault` pattern via full pipeline
-46. Add integration test for `state-flag-mutation` pattern via full pipeline
-47. Verify `test-framework-call` actually fires (not shadowed by `single-call-expression`)
-48. Update `SuppressionStats` to track pattern-level breakdown (which patterns suppressed what)
-49. Implement `--recommend-threshold` auto-detection for test-heavy libraries (>60% test LOC → suggest `-t 25`)
-50. Update AGENTS.md with new actionability patterns and `--min-tokens` documentation
+35. ~~Implement type-3 structural clone detection via CFG matching (art-dupl-threshold-cliff — highest effort)~~ **Superseded — superseded — routed to ROADMAP as long-term work per the 2026-08-10 resolution note; no CFG-based type-3 detection ships as of 2026-11-14.**
+36. ~~Detect differing `fmt.Sprintf` format specifiers as semantically distinct (discordsync)~~ **Superseded — superseded — routed to TODO_LIST per the 2026-08-10 resolution note; Sprintf specifier distinction is not implemented as of 2026-11-14.**
+37. ~~Implement `library-required-boilerplate` umbrella for `func init()`, `//go:generate` (go-sse)~~ done — shipped as separate boilerplate patterns `cobra-boilerplate`, `testmain-boilerplate`, and `embed-directive` in printer/actionability/actionability.go
+38. ~~Add `--include-test-idioms` flag parallel to `--include-generated` (licenseforge)~~ **Superseded — superseded — routed to TODO_LIST per the 2026-08-10 resolution note; no `--include-test-idioms` flag ships in cmd/flags.go as of 2026-11-14.**
+39. ~~Document Ginkgo `DescribeTable` variadic gotcha in skill docs (go-auto-upgrade)~~ done — the `describe-table` pattern ships (printer/actionability/actionability.go, isDescribeTablePattern)
+40. ~~Add "fixture-driven test" detection pattern for Ginkgo `DefineGoldenSuite` (go-auto-upgrade)~~ **Superseded — superseded — routed to TODO_LIST per the 2026-08-10 resolution note; no DefineGoldenSuite fixture pattern ships as of 2026-11-14.**
+41. ~~Implement `--diff-report` mode comparing two scans (generated-templ)~~ done — the `--diff-report` flag compares two scans (cmd/flags.go)
+42. ~~Document two-pass workflow in skill: `-t 50` for triage, `-t 5` for cleanup (generated-templ)~~ **Superseded — superseded — routed to TODO_LIST per the 2026-08-10 resolution note; the two-pass triage workflow is not documented in skill docs as of 2026-11-14.**
+43. ~~Add `irreducibility class` per group: semantic / idiomatic / structurally-bound / threshold-noise (samber-do-auditlog)~~ **Superseded — superseded — routed to TODO_LIST per the 2026-08-10 resolution note; no irreducibility-class field ships as of 2026-11-14 (shape and property labels cover the taxonomy instead).**
+44. ~~Implement `--min-effective-generics-lines` threshold for suggest-generics (discordsync)~~ done — the `--suggest-generics-min-lines` precision gate ships (cmd/flags.go; default from DefaultSuggestGenericsMinLines in config/config.go)
+45. ~~Add integration test for `isEmptyDefault` pattern via full pipeline~~ done — verified — the `empty-default` pattern has unit tests in printer/actionability/actionability_idioms_test.go; no full-pipeline integration test was added
+46. ~~Add integration test for `state-flag-mutation` pattern via full pipeline~~ done — verified — the `state-flag-mutation` pattern has unit tests in printer/actionability/actionability_idioms_test.go; no full-pipeline integration test was added
+47. ~~Verify `test-framework-call` actually fires (not shadowed by `single-call-expression`)~~ done — verified — `test-framework-call` has firing tests in printer/actionability/actionability_idioms_test.go and printer/actionability/actionability_preamble.go
+48. ~~Update `SuppressionStats` to track pattern-level breakdown (which patterns suppressed what)~~ **Superseded — superseded — routed to TODO_LIST per the 2026-08-10 resolution note; SuppressionStats still tracks counts only (printer/printer.go).**
+49. ~~Implement `--recommend-threshold` auto-detection for test-heavy libraries (>60% test LOC → suggest `-t 25`)~~ done — the `--recommend-threshold` flag suggests a threshold from codebase size (cmd/recommend_threshold.go; cmd/recommend_threshold_test.go)
+50. ~~Update AGENTS.md with new actionability patterns and `--min-tokens` documentation~~ done — AGENTS.md documents the actionability patterns and `--min-tokens`
 
 ---
 

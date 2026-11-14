@@ -14,11 +14,15 @@
 
 ## IDE and Tooling
 
+- **`art-dupl init` scaffold**: generate `.art-dupl-baseline.json` starter + recommended config block.
+
 - **LSP server mode**: Run art-dupl as a Language Server, surfacing clones as diagnostics in VS Code / GoLand. Would enable real-time clone detection during development.
 - **Watch mode**: Continuous monitoring with incremental detection. Re-run only on changed files. Would pair with `--incremental` caching.
 - **Web UI dashboard**: Compile to WASM for in-browser clone detection with an interactive report interface.
 
 ## Architecture
+
+- **`syntax/golang/transform.go` table-driven handlers**: the 53-case transformer switch becomes a handler map.
 
 - **Plugin architecture for detection methods**: Allow third-party detectors beyond suffix-tree and hash. The `detection.MethodDetector` interface supports this but is not documented as a public extension point.
 - **Suffix Array + LCP as alternative to Ukkonen's**: Implement SA-IS construction + Kasai LCP array + maximal-repeat scan as a new `MethodDetector`. Scientifically superior for this use case: 30-44% less memory (contiguous int arrays vs pointer-heavy tree), 2-5x faster search (cache locality), parallelizable construction (impossible with Ukkonen's), and simpler code (~150 lines vs ~250). Requires alphabet remapping pass (TokenValue int32 range -> compact [0,sigma)). Migration is low-risk via `MethodDetector` interface - both detectors can coexist for A/B benchmarking. See ADR-0020 and `docs/research/algorithmic-alternatives-for-clone-detection.md`.
@@ -50,6 +54,8 @@ Shipped 2026-09-14: nested-block statements (loop/if/switch/select bodies, else-
 - **Irreducible `-t 1` residue**: after the 2026-09-18 self-clean (47→44, re-measured at 40 shown groups on 2026-09-19), remaining groups are idioms or deliberate mirrors marked `//art-dupl:accept`; revisit only when new patterns land.
 
 ## Quality and Intelligence
+
+- **Mutation testing (gremlins/go-mutesting) behind a flake check**: mutation-test `suffixtree/` first.
 
 - **Interface-aware suppression (cross-package)**: Same-package interface detection via `go/types` is implemented (the `interface-method` pattern). Cross-package and stdlib interfaces still rely on the static name list (`commonInterfaceMethodNames`). Full call-graph analysis remains future work.
 - **Configurable actionability patterns**: `--disable-pattern <label>` and `--list-patterns` implemented. 30 denylist patterns + 4 property-engine labels currently active.
@@ -95,6 +101,8 @@ From the public-presence sprints (`docs/status/2026-07-13_21-18`, `_22-14`) - st
 - **Dependabot for website deps** (Astro/pnpm are manually bumped).
 
 ## Documentation and Adoption
+
+- **v1.0 release-notes doc**: CacheVersion migration notes for the awesome-go submission.
 
 - **SARIF output validation**: Validate emitted SARIF JSON against GitHub's official schema validator library in CI.
 - **Performance optimization guide**: Document `--workers`, `--search-workers`, `--incremental`, `--cache-dir` tuning for different codebase sizes.

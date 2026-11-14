@@ -1,6 +1,12 @@
 {
-  "recorded": "2026-11-14T11:47:34Z",
+  "recorded": "2026-11-14T13:28:04Z",
   "lines": [
-    "- [x] ~~**README.md docs stamp is stale**~~ DONE 2026-11-14: the overdue docs-health pass ran — the stamp is bumped to 2026-11-14 and the feature claims re-verified (the count gates in cmd/docs_health_counts_test.go are green)."
+    "- **Mutation testing (gremlins/go-mutesting) behind a flake check**: mutation-test `suffixtree/` first.",
+    "- **v1.0 release-notes doc**: CacheVersion migration notes for the awesome-go submission.",
+    "- **`art-dupl init` scaffold**: generate `.art-dupl-baseline.json` starter + recommended config block.",
+    "- **`syntax/golang/transform.go` table-driven handlers**: the 53-case transformer switch becomes a handler map.",
+    "- **statix + govet lanes for `flake.nix`**: statix sweep plus a govet static-check lane.",
+    "- **`cmd/run_suppression.go` carve-out**: suppression/output assembly leaves the analysis command file.",
+    "- **FEATURES.md \"6,000+ files\" claim re-count**: `git ls-files` count vs the printed claim."
   ]
 }
