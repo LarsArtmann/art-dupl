@@ -223,35 +223,35 @@ The 4 property labels (`PatternPropertyEngine`, `PatternPropertyControlFlow`, et
 
 ## e) WHAT WE SHOULD IMPROVE
 
-1. **Build the real regression corpus.** Without `testdata/discordsync/` fixtures, every claim about FP reduction is anecdotal. This is the #1 priority.
+1. ~~**Build the real regression corpus.** Without `testdata/discordsync/` fixtures, every claim about FP reduction is anecdotal. This is the #1 priority.~~ done — `testdata/discordsync/` corpus landed
 
-2. **Actually do M04.** Rewrite `isWrappingCall` to use structural matching (`callReferencesIdent(call, "err")`) instead of the name allowlist. The allowlist is fundamentally fragile.
+2. ~~**Actually do M04.** Rewrite `isWrappingCall` to use structural matching (`callReferencesIdent(call, "err")`) instead of the name allowlist. The allowlist is fundamentally fragile.~~ done — structural matching in `printer/actionability/actionability_patterns_expanded.go` (`errorVarNameFromComparison`)
 
-3. **Fix the AGENTS.md lies.** The type-aware bullet still says "NOT compatible with --incremental". The pattern count is wrong (says 21, actual 22).
+3. ~~**Fix the AGENTS.md lies.** The type-aware bullet still says "NOT compatible with --incremental". The pattern count is wrong (says 21, actual 22).~~ done — AGENTS.md bullet fixed in successor session `2026-07-27_16-45_extractability-engine-completion-session.md`
 
-4. **Wire confidence into printers.** The `LowConfidence` tier exists in the domain model but `printer/text.go`, `printer/json.go`, and `printer/html_templ.go` don't show it. Users will never see a "low-confidence" tag.
+4. ~~**Wire confidence into printers.** The `LowConfidence` tier exists in the domain model but `printer/text.go`, `printer/json.go`, and `printer/html_templ.go` don't show it. Users will never see a "low-confidence" tag.~~ done — `printer/text.go` `LowConfidence` case, `printer/json.go` confidence field, `printer/html_views.go` confidence bar
 
-5. **Decide property label architecture.** Either register property labels in `AllActionabilityPatterns()` (so `--list-patterns` shows them) or document that they're internal-only.
+5. ~~**Decide property label architecture.** Either register property labels in `AllActionabilityPatterns()` (so `--list-patterns` shows them) or document that they're internal-only.~~ done — decided — property labels surfaced via `AllActionabilityPatterns()` (`printer/actionability/actionability.go`) and documented in `docs/ACTIONABILITY_PATTERNS.md`
 
-6. **The `bool-guard` test fixture is fragile.** `mustAssignWithBoolGuard` hardcodes `Name: "ok"` — what if a codebase uses `found` or `exists` instead of `ok`? The `findOkVarName` helper only matches the literal string "ok".
+6. ~~**The `bool-guard` test fixture is fragile.** `mustAssignWithBoolGuard` hardcodes `Name: "ok"` — what if a codebase uses `found` or `exists` instead of `ok`? The `findOkVarName` helper only matches the literal string "ok".~~ done — `isBoolGuardVarName` matches any bool var (`printer/actionability/actionability_boilerplate.go`)
 
-7. **`checkParameterizability` relies on `BasicLit.Name` being populated.** In semantic mode, BasicLit values are normalized to KIND (STRING, INT, FLOAT). The `Name` field on BasicLit may not carry the original value — it depends on whether the transformer populates it. Need to verify this works end-to-end with real parsed code, not just hand-crafted test trees.
+7. ~~**`checkParameterizability` relies on `BasicLit.Name` being populated.** In semantic mode, BasicLit values are normalized to KIND (STRING, INT, FLOAT). The `Name` field on BasicLit may not carry the original value — it depends on whether the transformer populates it. Need to verify this works end-to-end with real parsed code, not just hand-crafted test trees.~~ done — verified — `printer/actionability/extractability_integration_test.go` exercises real parsed code
 
-8. **The property engine confidence values are arbitrary.** 0.9, 0.85, 0.75 — these are guesses, not calibrated probabilities. They should be tuned against real data.
+8. ~~**The property engine confidence values are arbitrary.** 0.9, 0.85, 0.75 — these are guesses, not calibrated probabilities. They should be tuned against real data.~~ done — calibrated in `docs/calibration/confidence-calibration-large-2026-08-05.md`
 
-9. **`subtreeHasNodeType` walks the entire subtree for every check.** For large clones this could be O(n²). Consider caching or early-exit.
+9. ~~**`subtreeHasNodeType` walks the entire subtree for every check.** For large clones this could be O(n²). Consider caching or early-exit.~~ done — early-exit on first match in `printer/actionability/extractability_engine.go`
 
-10. **No integration test runs the full pipeline with `--type-aware` and checks that `VarType` is populated end-to-end.** The unit tests verify pieces but not the full flow.
+10. ~~**No integration test runs the full pipeline with `--type-aware` and checks that `VarType` is populated end-to-end.** The unit tests verify pieces but not the full flow.~~ done — `job/incremental_typeaware_test.go`
 
-11. **The `containsLenCall` helper in `actionability_templ.go` checks `child.Name == "len"` but doesn't verify it's a builtin call (not a user-defined function named `len`).** Edge case, but technically wrong.
+11. ~~**The `containsLenCall` helper in `actionability_templ.go` checks `child.Name == "len"` but doesn't verify it's a builtin call (not a user-defined function named `len`).** Edge case, but technically wrong.~~ done — moot — `containsLenCall` helper no longer exists in the codebase
 
-12. **The `isFormatSpecifierDifference` function is too simplistic.** It only checks if the character right after `%` differs. It doesn't handle `%%` (literal percent), width specifiers (`%5d` vs `%3d`), or argument indices (`%[1]d`).
+12. ~~**The `isFormatSpecifierDifference` function is too simplistic.** It only checks if the character right after `%` differs. It doesn't handle `%%` (literal percent), width specifiers (`%5d` vs `%3d`), or argument indices (`%[1]d`).~~ done — `printer/actionability/extractability_format_test.go` covers `%%`, width specifiers, argument indices
 
-13. **The `tparallel` lint warning on `TestExtractabilityModel` was never fixed** — the subtests don't call `t.Parallel()`.
+13. ~~**The `tparallel` lint warning on `TestExtractabilityModel` was never fixed** — the subtests don't call `t.Parallel()`.~~ done — `t.Parallel()` present in `domain/extractability_analysis_test.go`
 
-14. **The `intrange` lint warnings on bench tests were never fixed** — `for i := 0; i < b.N; i++` should be `for i := range b.N`.
+14. ~~**The `intrange` lint warnings on bench tests were never fixed** — `for i := 0; i < b.N; i++` should be `for i := range b.N`.~~ done — `for range b.N` in `printer/actionability/extractability_bench_test.go`
 
-15. **No `--explain` output was actually tested.** The plan said to update `--explain` to show per-property analysis breakdown (F091), but this was never done.
+15. ~~**No `--explain` output was actually tested.** The plan said to update `--explain` to show per-property analysis breakdown (F091), but this was never done.~~ done — `--explain` prints extractability breakdown (FEATURES.md Explain Mode row)
 
 ---
 
@@ -259,65 +259,65 @@ The 4 property labels (`PatternPropertyEngine`, `PatternPropertyControlFlow`, et
 
 ### Critical (blocks the vision)
 
-1. Build `testdata/discordsync/` with real `.go` fixtures (82 clone groups)
-2. Write `TestDiscordSyncBaseline` — runs full pipeline, records FP/FN
-3. Write `TestDiscordSyncNoFalseNegatives` — asserts 2 true-positives reported
-4. Actually do M04 — rewrite `isWrappingCall` to structural matching
-5. Measure before/after FP rate on the corpus
+1. ~~Build `testdata/discordsync/` with real `.go` fixtures (82 clone groups)~~ done — `testdata/discordsync/` fixtures landed
+2. ~~Write `TestDiscordSyncBaseline` — runs full pipeline, records FP/FN~~ done — `TestDiscordSync_*` cases in `printer/actionability/actionability_discordsync_test.go`
+3. ~~Write `TestDiscordSyncNoFalseNegatives` — asserts 2 true-positives reported~~ done — `TestDiscordSync_*` cases in `printer/actionability/actionability_discordsync_test.go`
+4. ~~Actually do M04 — rewrite `isWrappingCall` to structural matching~~ done — structural rewrite in `printer/actionability/actionability_patterns_expanded.go`
+5. ~~Measure before/after FP rate on the corpus~~ done — DiscordSync results table in `ROADMAP.md`
 
 ### High Priority
 
-6. Fix AGENTS.md — remove "NOT compatible with --incremental", fix pattern count to 22
-7. Wire `LowConfidence` tier into `printer/text.go` (show `[low-confidence]` tag)
-8. Wire `confidence` field into `printer/json.go` output
-9. Wire confidence bar into `printer/html_templ.go`
-10. Update `--explain` to show per-property analysis breakdown
-11. Update `docs/ACTIONABILITY_PATTERNS.md` with property engine section
-12. Update `FEATURES.md` with "Type-aware extractability analysis"
-13. Update `ROADMAP.md` — mark items as in-progress/done
-14. Update `TODO_LIST.md` with property-engine follow-up items
-15. Fix `tparallel` lint on `TestExtractabilityModel`
-16. Fix `intrange` lint on benchmark tests
+6. ~~Fix AGENTS.md — remove "NOT compatible with --incremental", fix pattern count to 22~~ done — AGENTS.md fixed in successor session `2026-07-27_16-45`
+7. ~~Wire `LowConfidence` tier into `printer/text.go` (show `[low-confidence]` tag)~~ done — `printer/text.go` `LowConfidence` case
+8. ~~Wire `confidence` field into `printer/json.go` output~~ done — `printer/json.go` confidence field
+9. ~~Wire confidence bar into `printer/html_templ.go`~~ done — confidence wired via `printer/html_views.go` / `printer/report.templ`
+10. ~~Update `--explain` to show per-property analysis breakdown~~ done — FEATURES.md Explain Mode row
+11. ~~Update `docs/ACTIONABILITY_PATTERNS.md` with property engine section~~ done — `docs/ACTIONABILITY_PATTERNS.md` property section
+12. ~~Update `FEATURES.md` with "Type-aware extractability analysis"~~ done — FEATURES.md "Property-Based Extractability Engine" row
+13. ~~Update `ROADMAP.md` — mark items as in-progress/done~~ done — `ROADMAP.md` reflects current state
+14. ~~Update `TODO_LIST.md` with property-engine follow-up items~~ **Superseded — `TODO_LIST.md` (living ledger).**
+15. ~~Fix `tparallel` lint on `TestExtractabilityModel`~~ done — `t.Parallel()` present
+16. ~~Fix `intrange` lint on benchmark tests~~ done — `for range b.N` present
 
 ### Medium Priority
 
-17. Add `Extractability` field to `pkg/artdupl.Clone` (SDK parity)
-18. Add `Confidence` field to `pkg/artdupl.CloneGroup`
-19. Write SDK integration test for extractability
-20. Run on 1-2 real OSS Go projects, document FP/FN
-21. Add `-race` integration test for incremental + type-aware
-22. Add cache-hit-with-type-data integration test
-23. Mark deprecated patterns with code comments
-24. Write migration guide for `--disable-pattern` users
-25. Link `docs/WORKFLOW.md` from `HOW_TO_USE.md`
-26. Calibrate confidence values against real data
-27. Broaden `findOkVarName` to accept any bool variable (not just "ok")
-28. Verify `checkParameterizability` works with real parsed code (BasicLit.Name population)
-29. Fix `isFormatSpecifierDifference` to handle `%%`, width specifiers, argument indices
-30. Add property label visibility to `--list-patterns` (or document as internal)
+17. ~~Add `Extractability` field to `pkg/artdupl.Clone` (SDK parity)~~ done — `pkg/artdupl/types.go` `Analysis` field
+18. ~~Add `Confidence` field to `pkg/artdupl.CloneGroup`~~ done — `pkg/artdupl/types.go` `Confidence` field
+19. ~~Write SDK integration test for extractability~~ **Superseded — `docs/status/2026-07-27_16-45_extractability-engine-completion-session.md` item 21.**
+20. ~~Run on 1-2 real OSS Go projects, document FP/FN~~ done — `docs/calibration/` FP/FN reports + `ROADMAP.md` DiscordSync table
+21. ~~Add `-race` integration test for incremental + type-aware~~ done — CI runs `go test -race` (`.github/workflows/ci.yml`) over `job/incremental_typeaware_test.go`
+22. ~~Add cache-hit-with-type-data integration test~~ done — cache-dir type-aware test in `job/incremental_typeaware_test.go`
+23. ~~Mark deprecated patterns with code comments~~ done — `docs/DENYLIST_DEPRECATION.md`
+24. ~~Write migration guide for `--disable-pattern` users~~ done — `docs/DENYLIST_DEPRECATION.md` migration guidance
+25. ~~Link `docs/WORKFLOW.md` from `HOW_TO_USE.md`~~ done — `HOW_TO_USE.md` links `docs/WORKFLOW.md`
+26. ~~Calibrate confidence values against real data~~ done — `docs/calibration/confidence-calibration-large-2026-08-05.md`
+27. ~~Broaden `findOkVarName` to accept any bool variable (not just "ok")~~ done — `isBoolGuardVarName` broadened matching
+28. ~~Verify `checkParameterizability` works with real parsed code (BasicLit.Name population)~~ done — verified — `printer/actionability/extractability_integration_test.go`
+29. ~~Fix `isFormatSpecifierDifference` to handle `%%`, width specifiers, argument indices~~ done — `printer/actionability/extractability_format_test.go`
+30. ~~Add property label visibility to `--list-patterns` (or document as internal)~~ done — decided — property labels exposed via `AllActionabilityPatterns()` and documented internal-only
 
 ### Lower Priority
 
-31. Optimize `subtreeHasNodeType` with caching or early-exit
+31. ~~Optimize `subtreeHasNodeType` with caching or early-exit~~ done — early-exit on first match in `printer/actionability/extractability_engine.go`
 32. Write v1.0 release notes
-33. Consider whether property engine should replace denylist entirely (architecture decision)
-34. Add `--explain` output quality test
-35. Benchmark type-aware vs syntax-only actionability overhead (M17 partially done)
+33. ~~Consider whether property engine should replace denylist entirely (architecture decision)~~ done — decided — ADR-0017 + `docs/DENYLIST_DEPRECATION.md` (deprecation, not removal)
+34. ~~Add `--explain` output quality test~~ done — `--explain` covered by BDD (`bdd/collector_patterns_test.go`) and FEATURES.md
+35. ~~Benchmark type-aware vs syntax-only actionability overhead (M17 partially done)~~ done — `BenchmarkEvaluateActionability_SyntaxOnly` in `printer/actionability/extractability_bench_test.go`
 36. Add threshold recommendation from property analysis (M22 enhancement)
-37. Document the `EnclosingReturnArity` computation for nested FuncLit
-38. Consider `VarType` interning for memory efficiency on large codebases
-39. Add property engine debug mode (`--debug-extractability` flag)
-40. Test templ rendering idiom on real `.templ` fixtures
-41. Consider cross-package type matching for property 2
-42. Add property engine metrics to `printer/stats/`
-43. Document the confidence tier thresholds as configurable
-44. Add `--confidence-threshold` CLI flag for custom tier boundaries
-45. Consider ML-based confidence calibration (ROADMAP item, future)
-46. Add property engine to SDK `Detect()` results
-47. Write property engine design blog post / docs page
-48. Consider property engine for templ-specific analysis
-49. Add property engine performance regression test
-50. Tag `ROADMAP.md` vision items as graduated to TODO
+37. ~~Document the `EnclosingReturnArity` computation for nested FuncLit~~ done — `funcReturnArity` documented in `syntax/golang/parse.go`
+38. ~~Consider `VarType` interning for memory efficiency on large codebases~~ **Superseded — `docs/status/2026-07-27_16-45_extractability-engine-completion-session.md` item 32 (filename interning landed in `syntax/intern.go` instead).**
+39. ~~Add property engine debug mode (`--debug-extractability` flag)~~ **Superseded — `docs/status/2026-07-27_16-45_extractability-engine-completion-session.md` item 11.**
+40. ~~Test templ rendering idiom on real `.templ` fixtures~~ done — templ idiom coverage in `printer/actionability/actionability_templ_idioms.go` + sessions `2026-07-27_20-55`/`21-12`
+41. ~~Consider cross-package type matching for property 2~~ **Superseded — `docs/adr/0018-type-aware-interface-method.md` (cross-package matching tracked there).**
+42. ~~Add property engine metrics to `printer/stats/`~~ **Superseded — `docs/status/2026-07-27_16-45_extractability-engine-completion-session.md` item 20.**
+43. ~~Document the confidence tier thresholds as configurable~~ **Superseded — `docs/status/2026-07-27_16-45_extractability-engine-completion-session.md` item 35.**
+44. ~~Add `--confidence-threshold` CLI flag for custom tier boundaries~~ **Superseded — `docs/status/2026-07-27_16-45_extractability-engine-completion-session.md` item 22.**
+45. ~~Consider ML-based confidence calibration (ROADMAP item, future)~~ **Superseded — `ROADMAP.md` future vision (ML calibration).**
+46. ~~Add property engine to SDK `Detect()` results~~ done — `pkg/artdupl/types.go` `Analysis` field on `Clone`
+47. ~~Write property engine design blog post / docs page~~ **Superseded — `docs/adr/0017-property-based-classification.md` documents the design.**
+48. ~~Consider property engine for templ-specific analysis~~ **Superseded — `docs/adr/0027-expression-aware-templ-detection.md`.**
+49. ~~Add property engine performance regression test~~ done — `printer/actionability/extractability_bench_test.go` benchmarks (37ns/42ns, 0 allocs)
+50. ~~Tag `ROADMAP.md` vision items as graduated to TODO~~ done — `ROADMAP.md` maintained with graduated status
 
 ---
 
