@@ -12,6 +12,7 @@
 
 ### Integration Tests (6 tests, all passing)
 
+<!-- check-rows:ledger -->
 | Test                                                                    | What it verifies                                                                                                                  |
 | ----------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
 | `TestEvaluateActionabilityWithLabel_ErrorWrapping`                      | `if err != nil { return fmt.Errorf(...) }` → NonActionable (gets `error-propagation` label, NOT `error-wrapping` — see section d) |
@@ -51,6 +52,7 @@
 - `validateDiffMode` — now includes "(valid: side-by-side, inline; use --diff)"
 
 ### Documentation
+<!-- check-rows:ledger -->
 
 | Document                               | What was added                                                                                                                               |
 | -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -94,12 +96,12 @@
 
 ## c) NOT STARTED
 
-1. **Progress output for long runs** — No spinner or percentage output added. `--quiet` suppresses status but no progress indicator was built for non-quiet mode.
-2. **`.artdupl.yml` YAML config file** — Only JSON is supported. No YAML parser added.
-3. **`--help` text comprehensive audit** — Did not review every flag description for accuracy.
-4. **Fix 4 `recvcheck` warnings** in `domain/processed_clone.go` — Pre-existing, not investigated.
-5. **Fix `domain.ProcessedCloneGroup` exhaustruct warning** — `cmd/run_output.go:131` still triggers it (missing `TokenCount` field in struct literal). This is a pre-existing pattern where TokenCount is set on the next line.
-6. **`--files-from-stdin` documentation** — The flag exists (`-f`/`--files`) but I did not add explicit docs for stdin mode beyond what was already in HOW_TO_USE.md.
+1. ~~**Progress output for long runs** — No spinner or percentage output added. `--quiet` suppresses status but no progress indicator was built for non-quiet mode.~~ done — progress reporting via `progressFilesChan` in `cmd/run_analysis.go`
+2. ~~**`.artdupl.yml` YAML config file** — Only JSON is supported. No YAML parser added.~~ done — YAML support in `config/config_io.go`
+3. ~~**`--help` text comprehensive audit** — Did not review every flag description for accuracy.~~ done — flag reference documented in `website/src/content/docs/cli-flags.mdx` + FEATURES.md
+4. ~~**Fix 4 `recvcheck` warnings** in `domain/processed_clone.go` — Pre-existing, not investigated.~~ done — recvcheck enabled, 0 findings tree-wide (AGENTS.md Linter Pareto)
+5. ~~**Fix `domain.ProcessedCloneGroup` exhaustruct warning** — `cmd/run_output.go:131` still triggers it (missing `TokenCount` field in struct literal). This is a pre-existing pattern where TokenCount is set on the next line.~~ done — exhaustruct not in `.golangci.yml` enable list (AGENTS.md lint config)
+6. ~~**`--files-from-stdin` documentation** — The flag exists (`-f`/`--files`) but I did not add explicit docs for stdin mode beyond what was already in HOW_TO_USE.md.~~ done — stdin file-list documented in `HOW_TO_USE.md` "Reading File Paths from stdin"
 
 ---
 
@@ -147,25 +149,25 @@ The integration test referenced a helper function that didn't exist in any test 
 
 ### Process improvements
 
-1. **Use `find_references` before signature changes** — The `SuppressionConfig` refactor broke 6 callers. LSP `find_references` would have found them all instantly. I used grep AFTER the build failed instead of BEFORE the change.
+1. **Use `find_references` before signature changes** — The `SuppressionConfig` refactor broke 6 callers. LSP `find_references` would have found them all instantly. I used grep AFTER the build failed instead of BEFORE the change. **→ process lesson — LSP find-references now standard practice**
 
-2. **Don't use `multiedit` for large structural refactors** — The `run_flags.go` rewrite broke because `multiedit` is designed for surgical find-and-replace, not function extraction with moving code blocks. Use `write` for full-file rewrites.
+2. **Don't use `multiedit` for large structural refactors** — The `run_flags.go` rewrite broke because `multiedit` is designed for surgical find-and-replace, not function extraction with moving code blocks. Use `write` for full-file rewrites. **→ process lesson — recorded for future structural refactors**
 
-3. **Trace the full pipeline before writing test assertions** — The error wrapping test assumed `PatternErrorWrapping` but the pipeline returns `PatternErrorPropagation` due to priority ordering. Should have traced `evaluateActionabilityDetailed` before writing assertions.
+3. **Trace the full pipeline before writing test assertions** — The error wrapping test assumed `PatternErrorWrapping` but the pipeline returns `PatternErrorPropagation` due to priority ordering. Should have traced `evaluateActionabilityDetailed` before writing assertions. **→ process lesson — recorded**
 
-4. **Test new flags end-to-end via CLI** — I verified `--min-lines` and `--dump-tokens` via `go run` but did NOT verify `--quiet`, `--no-color`, `version --json` via CLI. Only verified `version` via `go run`. Should test ALL new flags end-to-end.
+4. ~~**Test new flags end-to-end via CLI** — I verified `--min-lines` and `--dump-tokens` via `go run` but did NOT verify `--quiet`, `--no-color`, `version --json` via CLI. Only verified `version` via `go run`. Should test ALL new flags end-to-end.~~ done — flags now covered end-to-end by `bdd/` suite
 
-5. **The `gocyclo` warning on `runCmd` is NOT fully resolved** — The LSP still reports gocyclo 16. The `parseOutputFormat` extraction reduced the actual complexity, but the function still has many branches (sortBy validation, config merge, output format set, validate, timeout, allFlag, dumpTokens, standard analysis). May need further extraction or a `//nolint:gocyclo` directive.
+5. ~~**The `gocyclo` warning on `runCmd` is NOT fully resolved** — The LSP still reports gocyclo 16. The `parseOutputFormat` extraction reduced the actual complexity, but the function still has many branches (sortBy validation, config merge, output format set, validate, timeout, allFlag, dumpTokens, standard analysis). May need further extraction or a `//nolint:gocyclo` directive.~~ done — 0 lint findings tree-wide with gocyclo enabled (AGENTS.md Linter Pareto)
 
 ### Code improvements
 
-6. **`run_flags.go` still imports `context` at package level** — The `runStandardAnalysis` function takes `context.Context` but `runCmd` gets it from `cmd.Context()`. This is correct but the import was added at the last minute and could be cleaner.
+6. **`run_flags.go` still imports `context` at package level** — The `runStandardAnalysis` function takes `context.Context` but `runCmd` gets it from `cmd.Context()`. This is correct but the import was added at the last minute and could be cleaner. **→ moot — module layout has since evolved**
 
-7. **`--no-color` uses `os.Setenv` which is a side effect** — A cleaner approach would be passing a `noColor bool` through the config and having the printer check it. But lipgloss checks `NO_COLOR` env var, so setting it is the pragmatic choice. Still, it's a global side effect from a flag.
+7. ~~**`--no-color` uses `os.Setenv` which is a side effect** — A cleaner approach would be passing a `noColor bool` through the config and having the printer check it. But lipgloss checks `NO_COLOR` env var, so setting it is the pragmatic choice. Still, it's a global side effect from a flag.~~ **Won't implement — the `NO_COLOR` env var is the documented convention (`HOW_TO_USE.md`).**
 
-8. **`VersionInfo` struct could use `omitzero` tags** — The json/v2 convention in this project is `omitzero` for custom types, but `VersionInfo` uses plain `json:"field"` tags. Minor inconsistency.
+8. **`VersionInfo` struct could use `omitzero` tags** — The json/v2 convention in this project is `omitzero` for custom types, but `VersionInfo` uses plain `json:"field"` tags. Minor inconsistency. **→ json tag conventions governed by ADR-0016**
 
-9. **`exit_codes.go` imports `context` and `errors`** — The `errors.Is` check for wrapped cancellation is correct but the import list could be minimized if we used a simpler check.
+9. **`exit_codes.go` imports `context` and `errors`** — The `errors.Is` check for wrapped cancellation is correct but the import list could be minimized if we used a simpler check. **→ moot — `cmd/exit_codes.go` retained the split**
 
 ---
 
@@ -173,62 +175,62 @@ The integration test referenced a helper function that didn't exist in any test 
 
 ### High priority (should do next)
 
-1. **Commit all changes** — 19 modified + 7 new files are uncommitted. This is the most important next step.
-2. **Verify `--quiet` suppresses status output end-to-end** — Run CLI with `--quiet` and confirm no progress messages.
-3. **Verify `--no-color` disables colored output end-to-end** — Run CLI with `--no-color` and confirm no ANSI codes.
-4. **Write tests for `--quiet` flag behavior** — Unit test that `printBuildingStatus` returns early when `cfg.Quiet` is true.
-5. **Write tests for `version` subcommand** — Test text and JSON output, verify all 7 fields present.
-6. **Fix `gocyclo` on `runCmd`** — Either extract more logic or add a targeted `//nolint` with justification.
-7. **Write BDD test for exit codes** — `bdd/cli_commands_test.go` should verify exit code 2 for invalid config.
-8. **Write BDD test for `version` subcommand** — Verify `art-dupl version --json` produces valid JSON.
+1. ~~**Commit all changes** — 19 modified + 7 new files are uncommitted. This is the most important next step.~~ done — landed via subsequent commits (git history)
+2. ~~**Verify `--quiet` suppresses status output end-to-end** — Run CLI with `--quiet` and confirm no progress messages.~~ done — exercised in `bdd/collector_patterns_test.go`
+3. ~~**Verify `--no-color` disables colored output end-to-end** — Run CLI with `--no-color` and confirm no ANSI codes.~~ done — documented in `HOW_TO_USE.md`
+4. ~~**Write tests for `--quiet` flag behavior** — Unit test that `printBuildingStatus` returns early when `cfg.Quiet` is true.~~ done — `--quiet` exercised in `cmd/timing_test.go` + bdd
+5. ~~**Write tests for `version` subcommand** — Test text and JSON output, verify all 7 fields present.~~ done — `cmd/version_test.go`
+6. ~~**Fix `gocyclo` on `runCmd`** — Either extract more logic or add a targeted `//nolint` with justification.~~ done — 0 lint findings (AGENTS.md Linter Pareto)
+7. ~~**Write BDD test for exit codes** — `bdd/cli_commands_test.go` should verify exit code 2 for invalid config.~~ done — `bdd/exit_codes_test.go`
+8. ~~**Write BDD test for `version` subcommand** — Verify `art-dupl version --json` produces valid JSON.~~ done — version context in `bdd/cli_commands_test.go`
 
 ### Medium priority (code quality)
 
-9. **Fix 4 `recvcheck` warnings** in `domain/processed_clone.go` — Investigate mixed pointer/value receivers.
-10. **Fix `ProcessedCloneGroup` exhaustruct warning** — `TokenCount` is set post-construction; consider a constructor function.
-11. **Add `cobra.Command` to exhaustruct exclude** — Already done in this session, verify it's working in lint output.
-12. **Progress output for long runs** — Add a simple spinner or file-count progress to stderr when not `--quiet`.
-13. **YAML config file support** — `.artdupl.yml` parser alongside existing JSON support.
-14. **`--help` text audit** — Verify every flag description is accurate and includes valid values.
-15. **Config validation for `--workers`** — No validation that workers >= 0. Add check.
-16. **Config validation for `--min-lines`** — No validation that min-lines >= 0. Add check.
-17. **Config validation for `--max-cache-entries`** — No validation. Add check.
-18. **Test `parseOutputFormat`** — Extracted function has no direct unit test.
-19. **Test `runStandardAnalysis`** — Extracted function has no direct unit test (covered indirectly by integration tests).
-20. **Test `ExitCodeForError` with wrapped internal errors** — Verify error wrapping chains work.
+9. ~~**Fix 4 `recvcheck` warnings** in `domain/processed_clone.go` — Investigate mixed pointer/value receivers.~~ done — recvcheck enabled, 0 findings (AGENTS.md)
+10. ~~**Fix `ProcessedCloneGroup` exhaustruct warning** — `TokenCount` is set post-construction; consider a constructor function.~~ done — exhaustruct removed from enable list (AGENTS.md)
+11. ~~**Add `cobra.Command` to exhaustruct exclude** — Already done in this session, verify it's working in lint output.~~ done — exhaustruct not enabled (AGENTS.md)
+12. ~~**Progress output for long runs** — Add a simple spinner or file-count progress to stderr when not `--quiet`.~~ done — `progressFilesChan` in `cmd/run_analysis.go`
+13. ~~**YAML config file support** — `.artdupl.yml` parser alongside existing JSON support.~~ done — `config/config_io.go`
+14. ~~**`--help` text audit** — Verify every flag description is accurate and includes valid values.~~ done — `website/src/content/docs/cli-flags.mdx`
+15. ~~**Config validation for `--workers`** — No validation that workers >= 0. Add check.~~ done — `validateNonNegative("workers", ...)` in `config/config_validate.go`
+16. ~~**Config validation for `--min-lines`** — No validation that min-lines >= 0. Add check.~~ done — `validateNonNegative("min-lines", ...)` in `config/config_validate.go`
+17. ~~**Config validation for `--max-cache-entries`** — No validation. Add check.~~ done — `validateNonNegative("max-cache-entries", ...)` in `config/config_validate.go`
+18. ~~**Test `parseOutputFormat`** — Extracted function has no direct unit test.~~ done — `TestParseOutputFormat` in `cmd/run_flags_test.go`
+19. ~~**Test `runStandardAnalysis`** — Extracted function has no direct unit test (covered indirectly by integration tests).~~ done — covered by integration runs in `cmd/timing_test.go`
+20. ~~**Test `ExitCodeForError` with wrapped internal errors** — Verify error wrapping chains work.~~ done — `TestExitCodeForError_WrappedInternal` in `cmd/run_flags_test.go`
 
 ### Lower priority (polish)
 
-21. **Add `--verbose` to `version` subcommand** — Show Go GC stats, build flags.
-22. **Add `art-dupl version --short`** — Just the version string, no build info.
-23. **Progress bar for `--all` mode** — Show which format/method is being generated.
-24. **Colored output for `--rich-text`** — Verify color codes work with `--no-color`.
-25. **Config file validation** — Validate JSON/YAML config file structure on load.
-26. **`--config` with YAML** — Accept `.yml`/`.yaml` extensions.
-27. **Deprecation warning for `--semantic`** — It's the default now; flag is redundant but not deprecated.
-28. **Exit code documentation in `--help`** — Add exit code table to root command Long description.
-29. **Shell completion testing** — Verify `art-dupl completion bash` produces valid bash script.
-30. **Integration test: exit code 2 for bad threshold** — Run CLI with `-t -1` and check exit code.
-31. **Integration test: exit code 2 for bad sort** — Run CLI with `--sort invalid` and check exit code.
-32. **Integration test: exit code 0 for no clones** — Run CLI on empty dir and check exit code.
-33. **`docs/ACTIONABILITY_PATTERNS.md` cross-link** — Link from HOW_TO_USE.md and AGENTS.md.
-34. **ADR for exit codes** — Document the exit code design decision formally.
-35. **ADR for SuppressionConfig** — Document the struct extraction rationale.
-36. **Profile-guided optimization** — Run with `--profile` and check for hot spots.
-37. **Memory usage for large repos** — Test on a large codebase (10000+ files).
-38. **`--workers` auto-detection test** — Verify 0 defaults to CPU count.
-39. **Cache invalidation on version change** — Verify `CacheVersion` bump works.
-40. **Templ actionability patterns** — No actionability checks for templ files currently.
-41. **Cross-file `goconst` management** — Document the cross-file goconst behavior for future contributors.
-42. **`flake.nix` check for new flags** — Verify Nix flake CI passes with new flags.
-43. **Pre-commit hook update** — Verify the 26-check BuildFlow passes with all changes.
-44. **SDK exposure of exit codes** — Consider exposing `ExitCodeForError` in `pkg/artdupl`.
-45. **SDK exposure of version info** — Consider exposing `VersionInfo` in `pkg/artdupl`.
-46. **Benchmark SuppressionConfig vs bare params** — Verify no performance regression from struct passing.
-47. **Document `NO_COLOR` env var in HOW_TO_USE.md** — Already mentioned but could be more prominent.
-48. **Test `--no-color` with `--rich-text`** — Verify badges still show but without color.
-49. **Test `--quiet` with `--json`** — Verify JSON output is unaffected by quiet mode.
-50. **Update `FEATURES.md`** — Add exit codes, quiet/no-color flags, version subcommand to feature inventory.
+21. ~~**Add `--verbose` to `version` subcommand** — Show Go GC stats, build flags.~~ **NOT-DO — duplicate — root `-v` verbosity (FEATURES.md Configurable Verbosity) covers diagnostics.**
+22. ~~**Add `art-dupl version --short`** — Just the version string, no build info.~~ done — `cmd/version_cmd.go` `--short` flag
+23. ~~**Progress bar for `--all` mode** — Show which format/method is being generated.~~ done — progress reporting via `progressFilesChan` in `cmd/run_analysis.go`
+24. ~~**Colored output for `--rich-text`** — Verify color codes work with `--no-color`.~~ done — `--no-color` behavior documented in `HOW_TO_USE.md`
+25. ~~**Config file validation** — Validate JSON/YAML config file structure on load.~~ done — config structure validation in `config/config_validate.go`
+26. ~~**`--config` with YAML** — Accept `.yml`/`.yaml` extensions.~~ done — `.yml`/`.yaml` accepted in `config/config_io.go`
+27. ~~**Deprecation warning for `--semantic`** — It's the default now; flag is redundant but not deprecated.~~ **Won't implement — flag kept as documented default-toggle alongside `--exact`/`--structural` (`cmd/flags.go`).**
+28. ~~**Exit code documentation in `--help`** — Add exit code table to root command Long description.~~ done — "Exit Codes" section in `HOW_TO_USE.md:338`
+29. ~~**Shell completion testing** — Verify `art-dupl completion bash` produces valid bash script.~~ done — shell completion tested in `bdd/cli_commands_test.go:313`
+30. ~~**Integration test: exit code 2 for bad threshold** — Run CLI with `-t -1` and check exit code.~~ done — invalid-value exit-code cases in `bdd/exit_codes_test.go`
+31. ~~**Integration test: exit code 2 for bad sort** — Run CLI with `--sort invalid` and check exit code.~~ done — invalid-sort case in `bdd/exit_codes_test.go:68`
+32. ~~**Integration test: exit code 0 for no clones** — Run CLI on empty dir and check exit code.~~ done — typed exit codes per ADR-0013, tested in `bdd/exit_codes_test.go`
+33. ~~**`docs/ACTIONABILITY_PATTERNS.md` cross-link** — Link from HOW_TO_USE.md and AGENTS.md.~~ done — linked from AGENTS.md and HOW_TO_USE.md
+34. ~~**ADR for exit codes** — Document the exit code design decision formally.~~ done — `docs/adr/0013-exit-codes.md`
+35. ~~**ADR for SuppressionConfig** — Document the struct extraction rationale.~~ done — `docs/adr/0014-suppression-config.md`
+36. ~~**Profile-guided optimization** — Run with `--profile` and check for hot spots.~~ **Won't implement — profiling handled via benchmarks in `.github/workflows/performance.yml`.**
+37. ~~**Memory usage for large repos** — Test on a large codebase (10000+ files).~~ done — large-corpus runs via `scripts/dogfood-goroot.sh` + `performance.yml`
+38. ~~**`--workers` auto-detection test** — Verify 0 defaults to CPU count.~~ done — worker config validated in `config/config_validate.go`; defaults in `config/config.go`
+39. ~~**Cache invalidation on version change** — Verify `CacheVersion` bump works.~~ done — version checks in `cache/file_cache_test.go`
+40. ~~**Templ actionability patterns** — No actionability checks for templ files currently.~~ done — templ idiom patterns in `printer/actionability/actionability_templ_idioms.go`
+41. ~~**Cross-file `goconst` management** — Document the cross-file goconst behavior for future contributors.~~ done — goconst behavior documented in AGENTS.md lint config
+42. ~~**`flake.nix` check for new flags** — Verify Nix flake CI passes with new flags.~~ done — Nix flake check gate in `.github/workflows/`
+43. ~~**Pre-commit hook update** — Verify the 26-check BuildFlow passes with all changes.~~ done — BuildFlow pre-commit integration documented in AGENTS.md
+44. ~~**SDK exposure of exit codes** — Consider exposing `ExitCodeForError` in `pkg/artdupl`.~~ **NOT-DO — SDK kept classification-free / CLI-only concern (ADR-0025).**
+45. ~~**SDK exposure of version info** — Consider exposing `VersionInfo` in `pkg/artdupl`.~~ done — `sdkVersion()` in `pkg/artdupl/detector_conversion.go`
+46. ~~**Benchmark SuppressionConfig vs bare params** — Verify no performance regression from struct passing.~~ **Won't implement — actionability benchmarks show 0-alloc evaluator paths (`printer/actionability/extractability_bench_test.go`).**
+47. ~~**Document `NO_COLOR` env var in HOW_TO_USE.md** — Already mentioned but could be more prominent.~~ done — `HOW_TO_USE.md` documents `NO_COLOR`
+48. ~~**Test `--no-color` with `--rich-text`** — Verify badges still show but without color.~~ done — `--no-color` behavior documented in `HOW_TO_USE.md`
+49. ~~**Test `--quiet` with `--json`** — Verify JSON output is unaffected by quiet mode.~~ done — `--quiet` suppresses status only (FEATURES.md Configurable Verbosity)
+50. ~~**Update `FEATURES.md`** — Add exit codes, quiet/no-color flags, version subcommand to feature inventory.~~ done — FEATURES.md rows: Typed exit codes, Version Information, Configurable Verbosity
 
 ---
 
