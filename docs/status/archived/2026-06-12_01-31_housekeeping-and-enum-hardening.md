@@ -115,7 +115,7 @@ Nothing is broken. But here's what's **misleading or wrong**:
 | -- | ---- | --------------------------------------------------------------------------- | ------ | ---------------- |
 | ~~1~~ **done — domain.ProcessedClone landed; PrintClones consumes it (printer/printer.go:82)** | ~~**Wire ProcessedClone DTO through printer pipeline**~~ | ~~HIGH~~ | ~~L (2-3 sessions)~~ |
 | ~~2~~ **done — CloneRef consolidation + printer/actionability/ landed (AGENTS.md, ADR-0027)** | ~~**Consolidate Clone types to use ProcessedClone/ProcessedCloneGroup**~~ | ~~HIGH~~ | ~~L~~ |
-| ~~ | 3    | **Add JSON marshaling to CloneCategory, ClonePriority, CloneActionability** | MEDIUM | S (30min)        |
+| ~~3~~ **done — the pkg/enum shared helpers own enum marshaling (AGENTS.md Enum pattern)** | ~~**Add JSON marshaling to CloneCategory, ClonePriority, CloneActionability**~~ | ~~MEDIUM~~ | ~~S (30min)~~ |
 | ~~4~~ **done — the pkg/enum shared helpers are adopted (AGENTS.md Enum pattern)** | ~~**Unify enum patterns: use config generic helpers in domain**~~ | ~~MEDIUM~~ | ~~M (2h)~~ |
 | ~~5~~ **superseded — the TODO/Legacy detectors were deleted; only the art-dupl and hash methods remain** | ~~**Wire TODO/Legacy detectors to CLI (`--method todos`)**~~ | ~~MEDIUM~~ | ~~S (1h)~~ |
 
@@ -127,32 +127,32 @@ Nothing is broken. But here's what's **misleading or wrong**:
 | 7  | **Add fuzz tests for templ parser edge cases**                    | MEDIUM                                                                | M      | Templ parser handles 28 node types, fuzz coverage would catch panics. |
 | ~~8~~ **struck — tracked on ROADMAP (Architecture: transform.go table-driven handlers)** | ~~**Refactor `syntax/golang/transform.go` to table-driven**~~ | ~~LOW~~ | ~~M~~ |
 | 9  | **Generate stringer for domain enums**                            | LOW                                                                   | S      | Compile-time exhaustive switch enforcement.                           |
-| ~~ | 10                                                                | **Add integration test: end-to-end clone detection + stats + output** | MEDIUM | M                                                                     |
+| ~~10~~ **done — printer/pipeline_integration_test.go exercises parse→serialize→suffix-tree→actionability end-to-end (AGENTS.md)** | ~~**Add integration test: end-to-end clone detection + stats + output**~~ | ~~MEDIUM~~ | ~~M~~ |
 | 11 | **Fix remaining LSP hints: unused params, unnecessary type args** | LOW                                                                   | S      | Hygiene.                                                              |
-| ~~ | 12                                                                | **Add `--method todos` CLI flag and BDD test**                        | MEDIUM | S                                                                     |
+| ~~12~~ **superseded — the TODO/Legacy detectors were deleted; only the art-dupl and hash methods remain** | ~~**Add `--method todos` CLI flag and BDD test**~~ | ~~MEDIUM~~ | ~~S~~ |
 
 ### Tier 3: Documentation & Process
 
 | #  | Task | Impact                                                | Effort | Rationale |
 | -- | ---- | ----------------------------------------------------- | ------ | --------- |
-| ~~ | 13   | **Create ROADMAP.md** from scattered status reports   | LOW    | S         |
+| ~~13~~ **done — ROADMAP.md exists and is maintained by the docs-health cadence** | ~~**Create ROADMAP.md** from scattered status reports   | ~~LOW~~    | ~~S~~         |
 | ~~14~~ **done — domain.ProcessedClone landed; PrintClones consumes it (printer/printer.go:82)** | ~~**Add ADR for ProcessedClone DTO migration**~~ | ~~LOW~~ | ~~S~~ |
-| ~~ | 15   | **Write HOW_TO_USE.md examples for SDK**              | MEDIUM | M         |
-| ~~ | 16   | **Clean up `examples/` — add real runnable examples** | LOW    | S         |
-| ~~ | 17   | **Archive completed status reports**                  | LOW    | S         |
+| ~~15~~ **done — HOW_TO_USE.md covers CLI and SDK usage** | ~~**Write HOW_TO_USE.md examples for SDK**~~              | ~~MEDIUM~~ | ~~M~~         |
+| ~~16~~ **done — the examples SDK demo ships with real tests** | ~~**Clean up `examples/` — add real runnable examples**~~ | ~~LOW~~    | ~~S~~         |
+| ~~17~~ **fixed 2026-11-14 — the archive ritual is running (cadence gate)** | ~~**Archive completed status reports**~~                  | ~~LOW~~    | ~~S~~         |
 
 ### Tier 4: Nice-to-Have
 
 | #  | Task                                                                | Impact                                                                      | Effort | Rationale                              |
 | -- | ------------------------------------------------------------------- | --------------------------------------------------------------------------- | ------ | -------------------------------------- |
-| ~~ | 18                                                                  | **Add `--version` JSON output format**                                      | LOW    | S                                      |
+| ~~18~~ **done — `art-dupl version [--json]` ships (cmd/version_cmd.go; AGENTS.md)** | ~~**Add `--version` JSON output format**~~                                      | ~~LOW~~    | ~~S~~         |
 | ~~19~~ **fixed — lint is 106-linter clean since 2026-09-29 (AGENTS.md); the flaky os.Exit tests were fixed** | ~~**Add git hook for pre-push lint check**~~ | ~~LOW~~ | ~~S~~ |
 | 20 | **Benchmark: suffix tree vs hash detection performance comparison** | LOW                                                                         | M      | Data-driven method selection guidance. |
-| ~~ | 21                                                                  | **Add `--quiet` flag for CI mode**                                          | LOW    | S                                      |
+| ~~21~~ **done — `--quiet`/`-q` sets cfg.Quiet and suppresses progress output (AGENTS.md)** | ~~**Add `--quiet` flag for CI mode**~~                                          | ~~LOW~~    | ~~S~~         |
 | ~~22~~ **done — the templ semantic pipeline shipped (syntax/templ; AGENTS.md)** | ~~**Templ semantic mode**~~ | ~~MEDIUM~~ | ~~L~~ |
 | ~~23~~ **done — CSV is an OutputFormat value (config enums; stats + run output paths)** | ~~**CSV output for clone groups (not just stats)**~~ | ~~LOW~~ | ~~M~~ |
-| ~~ | 24                                                                  | **Config validation: reject conflicting flag combinations**                 | LOW    | S                                      |
-| ~~ | 25                                                                  | **Add `art-dupl check` subcommand (CI exit code: 0=clean, 1=clones found)** | MEDIUM | M                                      |
+| ~~24~~ **done — validateCacheFlags rejects conflicting flags (--cache-dir/--clear-cache require --incremental; config/config_validate.go:123)** | ~~**Config validation: reject conflicting flag combinations**~~                 | ~~LOW~~    | ~~S~~         |
+| ~~25~~ **done — the check subcommand ships with typed exit codes (cmd/baseline_cmd.go:43; AGENTS.md)** | ~~**Add `art-dupl check` subcommand (CI exit code: 0=clean, 1=clones found)**~~ | ~~MEDIUM~~ | ~~M~~         |
 
 ---
 
