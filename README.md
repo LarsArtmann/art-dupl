@@ -174,13 +174,21 @@ art-dupl -c dupl.json         # CLI flags override config; config overrides defa
 ```go
 import "github.com/LarsArtmann/art-dupl/pkg/artdupl"
 
-detector, err := artdupl.New(artdupl.Options{
-    Threshold: 10,
-    Paths:     []string{"./src"},
-})
-// ...
-result, err := detector.FindClones(ctx)
+opts := artdupl.DefaultOptions()
+opts.Threshold = 10
+
+detector, err := artdupl.NewDetector(opts)
+if err != nil {
+    return err
+}
+defer detector.Close()
+
+result, err := detector.FindClones(ctx, []string{"./src/parser.go", "./src/util.go"})
 ```
+
+`FindClones` takes an explicit FILE list - it never crawls. A path that is not
+a regular file (a directory, fifo, socket) is rejected with
+`artdupl.ErrNotARegularFile` instead of silently reporting a clean repo.
 
 The SDK has zero imports of `config/` or `errors/` - fully independent types. See [SDK Design](SDK_DESIGN.md) and [pkg.go.dev](https://pkg.go.dev/github.com/LarsArtmann/art-dupl/pkg/artdupl).
 
