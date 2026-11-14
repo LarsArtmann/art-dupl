@@ -22,7 +22,7 @@ Successfully fixed **CRITICAL BUG** where `--detection-methods/-m` flag was defi
 
 ### a) FULLY DONE ✅
 
-1. **Critical Bug Fix: --detection-methods Flag** ✅
+1. ~~**Critical Bug Fix: --detection-methods Flag** ✅~~ done — landed this session (report section a)
    - **Issue:** Flag was defined in `cmd/flags.go:19` but never read in `runCmd`
    - **Impact:** Hash mode completely broken despite implementation being complete
    - **Solution:**
@@ -35,20 +35,20 @@ Successfully fixed **CRITICAL BUG** where `--detection-methods/-m` flag was defi
      - Combined mode (hash,art-dupl): ✓
    - **Commit:** `e6e0625` - fix(cmd): Read and parse --detection-methods flag
 
-2. **Multi-Detector Architecture** ✅
+2. ~~**Multi-Detector Architecture** ✅~~ done — landed this session (report section a)
    - `MultiDetector` correctly handles multiple detection methods
    - Hash detection properly finds SHA-256 based exact file duplicates
    - Art-dupl detection uses suffix tree algorithms
    - Results properly combined into single channel
    - All detection methods configurable via CLI
 
-3. **Type Safety Foundation** ✅
+3. ~~**Type Safety Foundation** ✅~~ done — landed this session (report section a)
    - Strong typed `DetectionMethod` enum with validation
    - `DetectionMethods` slice type with useful methods (`Contains`, `IsDefault`, `IsEmpty`)
    - JSON marshal/unmarshal with validation
    - Parse function with error handling
 
-4. **Test Infrastructure** ✅
+4. ~~**Test Infrastructure** ✅~~ done — landed this session (report section a)
    - Config tests pass (`config_test.go`)
    - Detection method validation works
    - Integration tests pass
@@ -56,14 +56,14 @@ Successfully fixed **CRITICAL BUG** where `--detection-methods/-m` flag was defi
 
 ### b) PARTIALLY DONE 🟡
 
-1. **Hash Detection Implementation** 🟡
+1. ~~**Hash Detection Implementation** 🟡~~ done — hash detection completed in later sessions (`syntax/hash_seq.go`, `hash/`)
    - **Done:** File-level SHA-256 hashing works correctly
    - **Done:** Exact duplicate detection works
    - **Done:** Threshold filtering implemented
    - **Partial:** No duplicate filtering within same file
    - **Missing:** Advanced hash-based fragment detection (different from exact file duplicates)
 
-2. **CLI Flag System** 🟡
+2. ~~**CLI Flag System** 🟡~~ done — flag system rebuilt (`cmd/flags.go`)
    - **Done:** Most flags properly read and parsed
    - **Done:** Error handling for invalid flags
    - **Partial:** Timeout flag not implemented (TODO exists)
@@ -71,13 +71,13 @@ Successfully fixed **CRITICAL BUG** where `--detection-methods/-m` flag was defi
 
 ### c) NOT STARTED ⚪
 
-1. **Timeout Context Propagation** ⚪
+1. ~~**Timeout Context Propagation** ⚪~~ done — `--timeout` wired to context; timeout exit code per ADR-0013
    - Location: `cmd/run.go:147`, `cli.go:513`
    - Issue: Context created but not passed to `executeAnalysis`
    - Impact: Timeout configuration ignored during analysis
    - TODO: `// TODO: Pass context to executeAnalysis for proper timeout handling`
 
-2. **Multi-Detection Method Support in pkg/artdupl** ⚪
+2. ~~**Multi-Detection Method Support in pkg/artdupl** ⚪~~ done — combined modes in `pkg/artdupl/detector_combined.go`
    - Location: `pkg/artdupl/detector.go:224, 273`
    - Issue: TODO comments for multi-detection method support
    - Impact: Unclear if this code is legacy or needs implementation
@@ -118,10 +118,10 @@ func Run() int { // nolint:cyclop,funlen
 
 **Immediate Action Required:**
 
-1. Delete `cli.go` entirely (605 lines of dead code)
-2. Remove `cli/` package if it only supports old implementation
-3. Update any tests that import `cli` package
-4. Update documentation to remove references to old CLI
+1. ~~Delete `cli.go` entirely (605 lines of dead code)~~ done — `cli/` package removed from the repo
+2. ~~Remove `cli/` package if it only supports old implementation~~ done — `cli/` package removed from the repo
+3. ~~Update any tests that import `cli` package~~ done — moot — `cli` package gone
+4. ~~Update documentation to remove references to old CLI~~ done — current docs (AGENTS.md, HOW_TO_USE.md) describe the cobra CLI only
 
 #### 2. **Type Safety Violation: Hardcoded String Literal** 🔴
 
@@ -152,16 +152,16 @@ Use `config.DefaultDetectionMethod().String()` instead of hardcoded "art-dupl"
 
 | File                            | Lines | Action Required                              |
 | ------------------------------- | ----- | -------------------------------------------- |
-| `domain/domain_types_test.go`   | 1,353 | 🔴 CRITICAL - Split into multiple test files |
-| `bdd/bdd_test.go`               | 742   | 🔴 URGENT - Split by scenario                |
-| `cli.go`                        | 605   | 🔴 DELETE - Dead code                        |
-| `domain/domain_types.go`        | 548   | 🟡 Split into domain files                   |
-| `pkg/artdupl/detector.go`       | 528   | 🟡 Split by responsibility                   |
-| `cmd/run.go`                    | 489   | 🟡 Split into functions/commands             |
-| `domain/clone.go`               | 440   | 🟡 Split by functionality                    |
-| `config/config_test.go`         | 409   | 🟡 Split by test groups                      |
-| `suffixtree/suffixtree_test.go` | 294   | 🟡 Split by test type                        |
-| `syntax/golang/golang.go`       | 361   | 🟡 Split by concern                          |
+| ~~`domain/domain_types_test.go`~~ done — split across `domain/*_test.go` | ~~1,353~~ | ~~CRITICAL - Split into multiple test files~~ |
+| ~~`bdd/bdd_test.go`~~ done — ~50 scenario files in `bdd/` | ~~742~~ | ~~URGENT - Split by scenario~~ |
+| ~~`cli.go`~~ done — deleted | ~~605~~ | ~~DELETE - Dead code~~ |
+| ~~`domain/domain_types.go`~~ done — split by concern | ~~548~~ | ~~Split into domain files~~ |
+| ~~`pkg/artdupl/detector.go`~~ done — split (detector_pipeline.go etc.) | ~~528~~ | ~~Split by responsibility~~ |
+| ~~`cmd/run.go`~~ done — run_analysis/run_flags/run_output/run_crawl | ~~489~~ | ~~Split into functions/commands~~ |
+| ~~`domain/clone.go`~~ done — clone_node.go/clone_ref.go/processed_clone.go | ~~440~~ | ~~Split by functionality~~ |
+| ~~`config/config_test.go`~~ routed — still 628L, accepted | ~~409~~ | ~~Split by test groups~~ |
+| ~~`suffixtree/suffixtree_test.go`~~ done — split (fuzz_test.go etc.) | ~~294~~ | ~~Split by test type~~ |
+| ~~`syntax/golang/golang.go`~~ done — reorganized (`transform.go`, `parse.go`) | ~~361~~ | ~~Split by concern~~ |
 
 **Impact:**
 
@@ -177,75 +177,75 @@ Use `config.DefaultDetectionMethod().String()` instead of hardcoded "art-dupl"
 
 #### Type Safety & Strong Types
 
-1. **Consolidate String Literals**
+1. ~~**Consolidate String Literals**~~ done — addressed via lint passes and test-constant extraction (AGENTS.md lint config)
    - Replace all hardcoded strings with typed constants
    - Default values should reference typed defaults
    - Create constants for all magic strings
 
-2. **Error Type Consistency**
+2. ~~**Error Type Consistency**~~ done — typed errors centralized in `errors/` package
    - All errors should use centralized error package
    - Implement typed errors with well-defined interfaces
    - Use sentinel errors for common cases
 
-3. **Domain Types**
+3. ~~**Domain Types**~~ **Superseded — ADR-0005 split-brain type unification.**
    - Review domain types for impossible states
    - Ensure strong typing prevents invalid configurations
    - Consider builder pattern for complex types
 
 #### Architecture
 
-1. **Separation of Concerns**
+1. ~~**Separation of Concerns**~~ **Superseded — AGENTS.md architecture sections.**
    - Split large files by responsibility
    - Create clear package boundaries
    - Define proper interfaces
 
-2. **Plugin Architecture Evaluation**
+2. ~~**Plugin Architecture Evaluation**~~ **Won't implement — adapters in `detection/adapters.go` cover method composition; no plugin system adopted.**
    - Detection methods already implement same interface pattern
    - Consider making detection truly pluggable
    - Allow external detection methods
 
-3. **Context Propagation**
+3. ~~**Context Propagation**~~ done — context threaded through the pipeline (`cmd/run_analysis.go`, ADR-0013)
    - Implement proper context cancellation
    - Pass context through entire call chain
    - Handle timeout and cancellation gracefully
 
 #### Code Quality
 
-1. **Remove Dead Code**
+1. ~~**Remove Dead Code**~~ done — dead code eliminated across 2026 sessions (0 lint findings, AGENTS.md)
    - Delete `cli.go` and related unused code
    - Remove TODO comments that won't be addressed
    - Clean up unused imports
 
-2. **Testing Improvements**
+2. ~~**Testing Improvements**~~ done — BDD suite (50 files in `bdd/`) + property tests (ADR-0017)
    - Split mega-test files
    - Add BDD tests for critical paths
    - Increase coverage for detection methods
 
-3. **Documentation**
+3. ~~**Documentation**~~ done — AGENTS.md, HOW_TO_USE.md, FEATURES.md, `website/src/content/docs/`
    - Update docs to reflect current architecture
    - Remove references to old CLI
    - Document detection method behavior
 
 #### Domain-Driven Design
 
-1. **Rich Domain Models**
+1. ~~**Rich Domain Models**~~ **Superseded — ADR-0005 split-brain type unification.**
    - Review `domain/` package for completeness
    - Ensure domain types capture business rules
    - Consider value objects for key concepts
 
-2. **Ubiquitous Language**
+2. ~~**Ubiquitous Language**~~ **Superseded — AGENTS.md architecture sections.**
    - Ensure terminology consistency
    - Align naming with domain concepts
    - Document domain model in docs
 
 #### Generics Usage
 
-1. **Type Parameters**
+1. ~~**Type Parameters**~~ done — generic helpers in `config/enum_helpers.go`, `pkg/enum/enum.go`
    - Review where generics could reduce duplication
    - Consider generic printer adapters
    - Generic file processors
 
-2. **Constraint Usage**
+2. ~~**Constraint Usage**~~ done — generic enum constraints in `pkg/enum/enum.go`
    - Use type constraints for better API design
    - Consider generic collection utilities
 
@@ -255,40 +255,40 @@ Use `config.DefaultDetectionMethod().String()` instead of hardcoded "art-dupl"
 
 ### 🚨 CRITICAL (Do Immediately - High Impact, Low Effort)
 
-1. **DELETE `cli.go`** - Remove 605 lines of dead code
-2. **Fix type safety violation** - Replace hardcoded "art-dupl" with constant
-3. **Implement timeout context** - Connect timeout flag to actual timeout
-4. **Remove TODO comments** - Either implement or delete
+1. ~~**DELETE `cli.go`** - Remove 605 lines of dead code~~ done — `cli/` package removed
+2. **Fix type safety violation** - Replace hardcoded "art-dupl" with constant **→ cosmetic — literal app name remains in `cmd/root.go`**
+3. ~~**Implement timeout context** - Connect timeout flag to actual timeout~~ done — `--timeout` wired to context (ADR-0013)
+4. **Remove TODO comments** - Either implement or delete **→ remaining TODOs are tracked notes only**
 
 ### 🔴 HIGH PRIORITY (High Impact, Medium Effort)
 
-5. **Split `domain/domain_types_test.go`** - 1,353 lines into multiple test files
-6. **Split `bdd/bdd_test.go`** - 742 lines by scenario
-7. **Split `domain/domain_types.go`** - 548 lines by domain concern
-8. **Split `pkg/artdupl/detector.go`** - 528 lines by responsibility
-9. **Split `cmd/run.go`** - 489 lines into functions/command structs
-10. **Add BDD tests for detection methods** - Behavior-driven testing
-11. **Update all documentation** - Remove references to old CLI
-12. **Test integration** - End-to-end tests for all detection methods
+5. ~~**Split `domain/domain_types_test.go`** - 1,353 lines into multiple test files~~ done — domain tests split across focused files (`domain/*_test.go`)
+6. ~~**Split `bdd/bdd_test.go`** - 742 lines by scenario~~ done — BDD suite split into ~50 scenario files (`bdd/`)
+7. ~~**Split `domain/domain_types.go`** - 548 lines by domain concern~~ done — `domain/` now split by concern (clone_node.go, clone_ref.go, ...)
+8. ~~**Split `pkg/artdupl/detector.go`** - 528 lines by responsibility~~ done — `pkg/artdupl/` split by responsibility (detector.go, detector_pipeline.go, ...)
+9. ~~**Split `cmd/run.go`** - 489 lines into functions/command structs~~ done — `cmd/run.go` split (run_analysis.go, run_flags.go, run_output.go, run_crawl.go)
+10. ~~**Add BDD tests for detection methods** - Behavior-driven testing~~ done — BDD coverage in `bdd/` (e.g. `bdd/combined_mode_test.go`)
+11. ~~**Update all documentation** - Remove references to old CLI~~ done — current docs describe the cobra CLI only
+12. ~~**Test integration** - End-to-end tests for all detection methods~~ done — BDD end-to-end suite (`bdd/`)
 
 ### 🟡 MEDIUM PRIORITY (Medium Impact, Medium Effort)
 
-13. **Consolidate string literals** - Create constants for magic strings
-14. **Review error types** - Ensure centralized error handling
-15. **Split `domain/clone.go`** - 440 lines by functionality
-16. **Split `config/config_test.go`** - 409 lines by test groups
-17. **Implement plugin architecture** - For detection methods
-18. **Add performance benchmarks** - For detection methods
-19. **Review domain types** - For impossible states
-20. **Add integration tests** - For complete workflows
+13. ~~**Consolidate string literals** - Create constants for magic strings~~ done — addressed via goconst settings + test-constant extraction
+14. ~~**Review error types** - Ensure centralized error handling~~ done — typed errors centralized in `errors/`
+15. ~~**Split `domain/clone.go`** - 440 lines by functionality~~ done — `domain/clone.go` split (clone_node.go, clone_ref.go, processed_clone.go)
+16. **Split `config/config_test.go`** - 409 lines by test groups **→ `config/config_test.go` still 628L — accepted size**
+17. ~~**Implement plugin architecture** - For detection methods~~ **Won't implement — adapters in `detection/adapters.go` cover method composition; no plugin system adopted.**
+18. ~~**Add performance benchmarks** - For detection methods~~ done — benchmark suite (`syntax/syntax_bench_test.go`, `.github/workflows/performance.yml`)
+19. ~~**Review domain types** - For impossible states~~ **Superseded — ADR-0005 split-brain type unification.**
+20. ~~**Add integration tests** - For complete workflows~~ done — BDD end-to-end suite (`bdd/`)
 
 ### 🟢 LOW PRIORITY (Low Impact, High Effort - Future Work)
 
-21. **Split remaining large files** - All files >350 lines
-22. **Implement generics** - Where appropriate to reduce duplication
-23. **Add fuzz testing** - For detection algorithms
-24. **Refactor with DDD** - Enhance domain model
-25. **Add observability** - Metrics, tracing, logging
+21. **Split remaining large files** - All files >350 lines **→ some large files remain by design (`cmd/run_analysis.go` 543L)**
+22. ~~**Implement generics** - Where appropriate to reduce duplication~~ done — generics adopted (`config/enum_helpers.go`, `pkg/enum/enum.go`, ADR-0021)
+23. ~~**Add fuzz testing** - For detection algorithms~~ done — fuzz tests in `suffixtree/` and `syntax/templ/`
+24. ~~**Refactor with DDD** - Enhance domain model~~ **Superseded — AGENTS.md architecture sections.**
+25. ~~**Add observability** - Metrics, tracing, logging~~ **Won't implement — no metrics/tracing adopted; `--timing` and stats output cover observability.**
 
 ---
 
@@ -309,18 +309,18 @@ Is `pkg/artdupl/` package LEGACY CODE that should be removed, or is it the INTEN
 
 **Why I Can't Answer:**
 
-1. We have TWO implementations of art-dupl detection:
+1. ~~We have TWO implementations of art-dupl detection:~~ done — resolved — `pkg/artdupl` is the public SDK (`SDK_DESIGN.md`, ADR-0025)
    - `suffixtree.STree.FindDuplOver()` (used in `cmd/run.go` via `MultiDetector`)
    - `pkg/artdupl.Detector.FindDuplOver()` (has TODOs, unclear if used)
 
-2. Both seem to do similar things:
+2. ~~Both seem to do similar things:~~ done — resolved — SDK wraps the core engines (ADR-0025)
    - Both work on `[]*syntax.Node`
    - Both return `<-chan syntax.Match`
    - Both use threshold parameter
 
-3. Documentation doesn't clarify which is correct
+3. ~~Documentation doesn't clarify which is correct~~ done — resolved — SDK documented in `SDK_DESIGN.md` + AGENTS.md
 
-4. Tests might use one or both (unclear without deeper investigation)
+4. ~~Tests might use one or both (unclear without deeper investigation)~~ done — resolved — SDK tests in `pkg/artdupl/`
 
 **Impact of Wrong Decision:**
 
@@ -330,17 +330,17 @@ Is `pkg/artdupl/` package LEGACY CODE that should be removed, or is it the INTEN
 
 **What I Need To Know:**
 
-1. Which implementation does `cmd/run.go` actually use?
-2. Do any tests rely on `pkg/artdupl`?
-3. Was this a migration that was never completed?
-4. What's the architectural intent behind having two packages?
+1. ~~Which implementation does `cmd/run.go` actually use?~~ done — resolved — cmd uses `detection/` + suffixtree; SDK wraps them (AGENTS.md)
+2. ~~Do any tests rely on `pkg/artdupl`?~~ done — resolved — `pkg/artdupl` has its own test suite
+3. ~~Was this a migration that was never completed?~~ done — resolved — SDK completed 2026 (ADR-0025, ADR-0028)
+4. ~~What's the architectural intent behind having two packages?~~ done — resolved — `pkg/artdupl` is the versioned public SDK
 
 **My Recommendation:**
 
-1. Audit all usages of `pkg/artdupl` across codebase
-2. Check if it's imported in `cmd/run.go` or `detection/multidetector.go`
-3. Review git history to see if there was a migration plan
-4. Make decision based on findings
+1. ~~Audit all usages of `pkg/artdupl` across codebase~~ done — resolved — `pkg/artdupl` is the SDK (AGENTS.md)
+2. ~~Check if it's imported in `cmd/run.go` or `detection/multidetector.go`~~ done — resolved — composition documented in AGENTS.md
+3. ~~Review git history to see if there was a migration plan~~ done — resolved — SDK history in git (ADR-0025)
+4. ~~Make decision based on findings~~ done — resolved — kept as the public SDK
 
 ---
 
@@ -416,24 +416,24 @@ Is `pkg/artdupl/` package LEGACY CODE that should be removed, or is it the INTEN
 
 ### Immediate Actions (This Session)
 
-1. ✅ Fix hash mode flag reading - **DONE**
-2. Delete `cli.go` (605 lines dead code)
-3. Fix type safety violation in flags.go
-4. Implement timeout context propagation
+1. ~~✅ Fix hash mode flag reading - **DONE**~~ done — hash mode flag fix landed (this session)
+2. ~~Delete `cli.go` (605 lines dead code)~~ done — `cli/` package removed
+3. Fix type safety violation in flags.go **→ cosmetic — literal app name remains in `cmd/root.go`**
+4. ~~Implement timeout context propagation~~ done — `--timeout` wired to context (ADR-0013)
 
 ### Short-Term (Next Week)
 
-1. Split largest test files
-2. Clarify `pkg/artdupl` status
-3. Add BDD tests for detection methods
-4. Update documentation
+1. ~~Split largest test files~~ done — `bdd/` split into ~50 scenario files
+2. ~~Clarify `pkg/artdupl` status~~ done — resolved — `pkg/artdupl` is the public SDK (ADR-0025)
+3. ~~Add BDD tests for detection methods~~ done — BDD coverage in `bdd/`
+4. ~~Update documentation~~ done — current docs (AGENTS.md, HOW_TO_USE.md, website)
 
 ### Long-Term (This Month)
 
-1. Split all files >350 lines
-2. Implement plugin architecture
-3. Enhance domain model with DDD
-4. Add comprehensive observability
+1. Split all files >350 lines **→ some large files remain by design**
+2. ~~Implement plugin architecture~~ **Won't implement — adapters in `detection/adapters.go`; no plugin system adopted.**
+3. ~~Enhance domain model with DDD~~ **Superseded — AGENTS.md architecture sections.**
+4. ~~Add comprehensive observability~~ **Won't implement — `--timing` and stats output cover observability.**
 
 ---
 
@@ -471,12 +471,12 @@ Is `pkg/artdupl/` package LEGACY CODE that should be removed, or is it the INTEN
 
 **Next Steps:**
 
-1. Commit and push hash mode fix
-2. Delete dead code (`cli.go`)
-3. Fix type safety violations
-4. Implement timeout context
-5. Split large files
-6. Clarify `pkg/artdupl` architecture
+1. ~~Commit and push hash mode fix~~ done — hash mode fix committed (session record)
+2. ~~Delete dead code (`cli.go`)~~ done — `cli/` package removed
+3. Fix type safety violations **→ cosmetic — literal app name remains in `cmd/root.go`**
+4. ~~Implement timeout context~~ done — `--timeout` wired to context (ADR-0013)
+5. Split large files **→ some large files remain by design**
+6. ~~Clarify `pkg/artdupl` architecture~~ done — resolved — `pkg/artdupl` is the public SDK (ADR-0025)
 
 ---
 

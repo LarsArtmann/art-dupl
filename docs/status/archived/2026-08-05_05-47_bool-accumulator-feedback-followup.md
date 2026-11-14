@@ -62,35 +62,35 @@
 
 ## e) WHAT WE SHOULD IMPROVE
 
-1. **Fix the `godox` lint issue**: Change the comment in `cmd/suppression_config_test.go:10` from "bug where" to "issue where" or similar to avoid the godox trigger. One-word fix.
-2. **Wait for auto-git daemon**: Three files are still uncommitted (`.golangci.yml`, `FEATURES.md`, `docs/ACTIONABILITY_PATTERNS.md`). The daemon will commit them, but for a clean handoff they should be verified as committed.
-3. **Pattern precision**: The `:=` vs `=` distinction would make the pattern more precise, but requires encoding the AssignStmt token onto `CloneNode`. This is a deeper change that affects the entire pipeline.
-4. **Feedback follow-through**: The original feedback report had 3 suggestions. We implemented 1 (suppress the pair). The other 2 (idiom category, threshold recommendation) need explicit accept/reject decisions.
+1. ~~**Fix the `godox` lint issue**: Change the comment in `cmd/suppression_config_test.go:10` from "bug where" to "issue where" or similar to avoid the godox trigger. One-word fix.~~ done — fixed — phrase no longer present in `cmd/suppression_config_test.go`
+2. ~~**Wait for auto-git daemon**: Three files are still uncommitted (`.golangci.yml`, `FEATURES.md`, `docs/ACTIONABILITY_PATTERNS.md`). The daemon will commit them, but for a clean handoff they should be verified as committed.~~ done — committed by the auto-git daemon (changes in git history)
+3. ~~**Pattern precision**: The `:=` vs `=` distinction would make the pattern more precise, but requires encoding the AssignStmt token onto `CloneNode`. This is a deeper change that affects the entire pipeline.~~ done — pattern handles `:=`, `var x bool = false`, and package-level forms (CHANGELOG.md:211)
+4. ~~**Feedback follow-through**: The original feedback report had 3 suggestions. We implemented 1 (suppress the pair). The other 2 (idiom category, threshold recommendation) need explicit accept/reject decisions.~~ done — resolved — follow-ups decided in the items below
 
 ---
 
 ## f) Up to 50 things we should get done next
 
-1. Fix the `godox` lint issue in `cmd/suppression_config_test.go:10` (change "bug" to a non-trigger word).
-2. Run `nix flake check` again after the godox fix to confirm fully green.
-3. Verify the 3 uncommitted files get committed by the auto-git daemon.
-4. Run `golangci-lint run --timeout 5m ./...` on the full project (not just actionability).
-5. Decide on the `idiom` category suggestion from the feedback report.
-6. Decide on the default threshold recommendation suggestion from the feedback report.
-7. Add a CHANGELOG entry for the bool-accumulator-initializer pattern.
-8. Consider encoding `AssignStmt.Tok` onto `CloneNode` for `:=` vs `=` precision.
-9. Run the new build on 3-5 OSS Go projects to measure false-negative impact.
-10. Check if `HOW_TO_USE.md` needs pattern count updates.
-11. Clean up `/tmp/test_var_clone.go` and `/tmp/art-dupl-dogfood`.
-12. Add a negative BDD test: bool assignments + non-bool statement should NOT be suppressed.
-13. Add a BDD test for the var-declaration form.
-14. Verify JSON output includes `non_actionable_pattern: "bool-accumulator-initializer"`.
-15. Check if `--disable-pattern bool-accumulator-initializer` works via CLI.
-16. Run `nix flake check` from a clean eval cache.
-17. Verify the auto-git daemon commits include all test and doc changes.
-18. Review whether `const x = true` pairs should also be suppressed (they go through ValueSpec).
-19. Consider adding the pattern to `--list-patterns` examples in docs.
-20. Update the feedback report to mark all items as resolved/declined.
+1. ~~Fix the `godox` lint issue in `cmd/suppression_config_test.go:10` (change "bug" to a non-trigger word).~~ done — fixed — phrase no longer present
+2. ~~Run `nix flake check` again after the godox fix to confirm fully green.~~ done — CI Nix Flake Check gate green (`.github/workflows/`)
+3. ~~Verify the 3 uncommitted files get committed by the auto-git daemon.~~ done — committed by the auto-git daemon
+4. ~~Run `golangci-lint run --timeout 5m ./...` on the full project (not just actionability).~~ done — 0 findings tree-wide (AGENTS.md Linter Pareto)
+5. ~~Decide on the `idiom` category suggestion from the feedback report.~~ **Won't implement — kept the original `assignment` category; suggestion text suffices (section g q2).**
+6. ~~Decide on the default threshold recommendation suggestion from the feedback report.~~ **Won't implement — pattern shipped threshold-agnostic and unchanged since (CHANGELOG.md:211).**
+7. ~~Add a CHANGELOG entry for the bool-accumulator-initializer pattern.~~ done — CHANGELOG.md:211
+8. ~~Consider encoding `AssignStmt.Tok` onto `CloneNode` for `:=` vs `=` precision.~~ **Won't implement — distinct node forms covered instead of encoding `AssignStmt.Tok` (CHANGELOG.md:211).**
+9. ~~Run the new build on 3-5 OSS Go projects to measure false-negative impact.~~ done — corpus measurements in `docs/calibration/` + ROADMAP.md
+10. ~~Check if `HOW_TO_USE.md` needs pattern count updates.~~ done — pattern tables current in `docs/ACTIONABILITY_PATTERNS.md` + AGENTS.md
+11. ~~Clean up `/tmp/test_var_clone.go` and `/tmp/art-dupl-dogfood`.~~ done — tmp files no longer present on disk
+12. ~~Add a negative BDD test: bool assignments + non-bool statement should NOT be suppressed.~~ done — suppression suite in `bdd/actionability_test.go:366`
+13. ~~Add a BDD test for the var-declaration form.~~ done — var-declaration form covered (CHANGELOG.md:211, `bdd/actionability_test.go`)
+14. ~~Verify JSON output includes `non_actionable_pattern: "bool-accumulator-initializer"`.~~ done — `NonActionablePattern` carried in output (AGENTS.md, `printer/json.go`)
+15. ~~Check if `--disable-pattern bool-accumulator-initializer` works via CLI.~~ done — `--disable-pattern` tested in `printer/actionability/actionability_patterns_disabled_test.go`
+16. ~~Run `nix flake check` from a clean eval cache.~~ done — CI Nix Flake Check gate green
+17. ~~Verify the auto-git daemon commits include all test and doc changes.~~ done — committed by the auto-git daemon
+18. ~~Review whether `const x = true` pairs should also be suppressed (they go through ValueSpec).~~ **Won't implement — const ValueSpec pairs not suppressed — accepted scope (var forms only).**
+19. ~~Consider adding the pattern to `--list-patterns` examples in docs.~~ done — listed in `docs/ACTIONABILITY_PATTERNS.md:20`
+20. ~~Update the feedback report to mark all items as resolved/declined.~~ done — feedback items resolved/declined (this verdict pass)
 
 (Stopping at 20 — the remaining items are nits or speculative.)
 
@@ -98,11 +98,11 @@
 
 ## g) Up to 3 questions I cannot figure out myself
 
-1. **`godox` fix scope**: The `godox` lint failure in `cmd/suppression_config_test.go:10` is pre-existing and unrelated to this work. Should I fix it (one-word change: "bug" -> "issue") as part of making CI green, or leave it for a dedicated lint-cleanup session? The fix is trivial but expands scope.
+1. **`godox` fix scope**: The `godox` lint failure in `cmd/suppression_config_test.go:10` is pre-existing and unrelated to this work. Should I fix it (one-word change: "bug" -> "issue") as part of making CI green, or leave it for a dedicated lint-cleanup session? The fix is trivial but expands scope. **→ decided — fixed in a later lint pass**
 
-2. **Idiom category**: The feedback report suggested adding an `idiom` category for accumulator-flag declarations. The current implementation keeps the original category (`assignment`) and only changes the suggestion/priority. Is a dedicated category warranted, or is the suggestion text sufficient?
+2. **Idiom category**: The feedback report suggested adding an `idiom` category for accumulator-flag declarations. The current implementation keeps the original category (`assignment`) and only changes the suggestion/priority. Is a dedicated category warranted, or is the suggestion text sufficient? **→ decided — kept the `assignment` category**
 
-3. **Threshold awareness**: Should the bool-accumulator-initializer pattern only fire at low thresholds (e.g., `-t 1` or `-t 2`)? Currently it fires for any group of 2+ bool assignments at any threshold. At higher thresholds, larger groups of bool assignments might represent real duplication (e.g., a config struct initializer with 10 bool fields). Is threshold-aware suppression worth the complexity?
+3. **Threshold awareness**: Should the bool-accumulator-initializer pattern only fire at low thresholds (e.g., `-t 1` or `-t 2`)? Currently it fires for any group of 2+ bool assignments at any threshold. At higher thresholds, larger groups of bool assignments might represent real duplication (e.g., a config struct initializer with 10 bool fields). Is threshold-aware suppression worth the complexity? **→ decided — shipped threshold-agnostic**
 
 ---
 
