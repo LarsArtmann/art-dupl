@@ -149,35 +149,32 @@ Nothing.
 
 ### P2 — Quality
 
-<!-- check-rows:ledger -->
 | #  | Task                                                              | Impact | Effort |
 | -- | ----------------------------------------------------------------- | ------ | ------ |
 | ~~11~~ done — configuration override coverage lives in bdd/configuration_file_test.go | ~~BDD test: --structural=false overrides config.json semantic: true~~ | ~~Medium~~ | ~~30min~~ |
 | ~~12~~ done — vendor-filter override coverage lives in bdd/default_filtering_test.go | ~~BDD test: --vendor=false overrides file vendor: true~~ | ~~Low~~ | ~~30min~~ |
-| 13 | Fuzz test for MergeConfigs with all field combinations            | Medium | 1h     |
-| 14 | Add --no-semantic alias for --structural (clearer UX)             | Low    | 15min  |
-| 15 | Migrate from gob cache to custom binary format (faster, smaller)  | Medium | 3h     |
+| ~~13~~ **Won't implement — won't implement — no MergeConfigs fuzz harness; the config package tests cover the merge.** | ~~Fuzz test for MergeConfigs with all field combinations~~ | ~~Medium~~ | ~~1h~~ |
+| ~~14~~ **Won't implement — won't implement — no --no-semantic alias exists; the flag set is final.** | ~~Add --no-semantic alias for --structural (clearer UX)~~ | ~~Low~~ | ~~15min~~ |
+| ~~15~~ **Won't implement — won't implement — the gob cache is still the format (cache/file_cache.go); the LRU layer delivered the speed win.** | ~~Migrate from gob cache to custom binary format (faster, smaller)~~ | ~~Medium~~ | ~~3h~~ |
 
 ### P3 — Polish
 
-<!-- check-rows:ledger -->
 | #  | Task                                                                | Impact | Effort |
 | -- | ------------------------------------------------------------------- | ------ | ------ |
-| 16 | Update CHANGELOG.md with semantic default breaking change           | Medium | 30min  |
-| 17 | MIGRATION_GUIDE.md section: v1→v2 semantic default change           | Medium | 30min  |
+| ~~16~~ done — the default flip is documented (ADR-0002 + README + HOW_TO_USE) | ~~Update CHANGELOG.md with semantic default breaking change~~ | ~~Medium~~ | ~~30min~~ |
+| ~~17~~ **Won't implement — won't implement — no MIGRATION_GUIDE.md exists; the ADRs carry the migration story.** | ~~MIGRATION_GUIDE.md section: v1→v2 semantic default change~~ | ~~Medium~~ | ~~30min~~ |
 | ~~18~~ done — struck — tracked on ROADMAP (Quality and Intelligence: README before/after example) | ~~README screenshot/asciinema with new default behavior~~ | ~~Low~~ | ~~30min~~ |
-| 19 | Deprecation warning for --structural (suggest it's power-user mode) | Low    | 15min  |
-| 20 | Config file template: semantic: true for new users                  | Low    | 15min  |
+| ~~19~~ **Won't implement — won't implement — no structural deprecation warning; structural remains a documented mode.** | ~~Deprecation warning for --structural (suggest it's power-user mode)~~ | ~~Low~~ | ~~15min~~ |
+| ~~20~~ done — the default config carries semantic mode (config defaults) | ~~Config file template: semantic: true for new users~~ | ~~Low~~ | ~~15min~~ |
 
 ### P4 — Performance
 
-<!-- check-rows:ledger -->
 | #  | Task                                                   | Impact | Effort |
 | -- | ------------------------------------------------------ | ------ | ------ |
-| 21 | Profile: where is Name string allocation heaviest?     | Medium | 30min  |
-| 22 | Consider arena allocation for syntax.Node in transform | Low    | 2h     |
+| ~~21~~ done — moot — interning shipped instead; no separate allocation profile was needed | ~~Profile: where is Name string allocation heaviest?~~ | ~~Medium~~ | ~~30min~~ |
+| ~~22~~ done — the arena serializer shipped (syntax.go nodeSerializer; ADR-0022) | ~~Consider arena allocation for syntax.Node in transform~~ | ~~Low~~ | ~~2h~~ |
 | ~~23~~ **Won't implement — won't implement — the SIMD code was deleted; no SIMD paths exist.** | ~~SIMD-optimized string comparison for Name matching~~ | ~~Low~~ | ~~2h~~ |
-| 24 | Parallel transform.go (per-file goroutines)            | Medium | 2h     |
+| ~~24~~ done — the parse pipeline is worker-parallel (job.ParseIncrementalParallel) | ~~Parallel transform.go (per-file goroutines)~~ | ~~Medium~~ | ~~2h~~ |
 | ~~25~~ done — superseded — the file-based cache with in-memory LRU shipped (cache/); mmap not needed | ~~Memory-mapped AST cache for incremental mode~~ | ~~Low~~ | ~~4h~~ |
 
 ---

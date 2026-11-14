@@ -69,9 +69,7 @@ The project is in **excellent health**. All 23 packages compile clean, 0 lint is
 ### TODO/Legacy Detection Methods
 
 - **Implemented** in `detection/todos.go` (split into 3 files)
-- ```**Wired** through `MultiDetector` and accessible via `-m` flag~~ TodoDetector/LegacyDetector were later deleted; only art-dupl and hash methods remain.~~ TodoDetector/LegacyDetector were later deleted; only art-dupl and hash methods remain.~~ TodoDetector/LegacyDetector were later deleted; only art-dupl and hash methods remain.
-  ```
-  ```
+- ~~**Wired** through `MultiDetector` and accessible via `-m` flag~~ **superseded — the TodoDetector/LegacyDetector were later deleted; only the art-dupl and hash methods remain.**
 - **Not documented** as user-facing features in README or HOW_TO_USE
 - **Status in FEATURES.md:** `DEFINED_ONLY` — may need user docs or deliberate `EXPERIMENTAL` labeling
 
@@ -164,31 +162,31 @@ All tests pass, lint is clean, build is clean. But here's what's fragile or regr
 <!-- check-rows:ledger -->
 | #  | Item                                                                                          | Impact | Effort            | Priority       |
 | -- | --------------------------------------------------------------------------------------------- | ------ | ----------------- | -------------- |
-| 1  | Delete `internal/simd/` package (dead code)                                                   | Low    | Tiny              | Quick win      |
-| 2  | Delete `hashSeqSIMD()` dead indirection in syntax/hash_simd.go                                | Low    | Tiny              | Quick win      |
-| 3  | Archive `docs/status/` — keep last 10, move rest to `docs/status/archive/`                    | Medium | Small             | Cleanup        |
-| 4  | Add tests for `domain/` — target 80%+ coverage (currently 67.2%)                              | Medium | Medium            | Quality        |
-| 5  | Add BDD test for `art-dupl stats --only templ` and `--only go`                                | Medium | Small             | Coverage       |
+| ~~1~~ done — internal/simd was deleted entirely | ~~Delete `internal/simd/` package (dead code)~~ | ~~Low~~ | ~~Tiny~~ | ~~Quick win~~ |
+| ~~2~~ done — syntax/hash_simd.go was deleted with the dead indirection | ~~Delete `hashSeqSIMD()` dead indirection in syntax/hash_simd.go~~ | ~~Low~~ | ~~Tiny~~ | ~~Quick win~~ |
+| ~~3~~ done — fixed 2026-11-14 — the archive ritual is running (cadence gate) | ~~Archive `docs/status/` — keep last 10, move rest to `docs/status/archive/`~~ | ~~Medium~~ | ~~Small~~ | ~~Cleanup~~ |
+| ~~4~~ done — the domain package test suite shipped (cross_package_alias_test.go et al.) | ~~Add tests for `domain/` — target 80%+ coverage (currently 67.2%)~~ | ~~Medium~~ | ~~Medium~~ | ~~Quality~~ |
+| ~~5~~ done — the --only stats coverage lives in bdd/stats_command_test.go:511 | ~~Add BDD test for `art-dupl stats --only templ` and `--only go`~~ | ~~Medium~~ | ~~Small~~ | ~~Coverage~~ |
 | ~~6~~ done — bdd/stats_command_test.go:258 runs stats --format csv | ~~Add BDD test for `art-dupl stats --format csv`~~ | ~~Low~~ | ~~Small~~ | ~~Coverage~~ |
-| 7  | Implement CSV output using `encoding/csv` (general clone CSV)                                 | Medium | Small             | Correctness    |
-| 8  | Consolidate three parallel Clone types into unified hierarchy                                 | High   | Large             | Architecture   |
-| 9  | Introduce ProcessedClone DTO — decouple Printer from syntax.Node                              | High   | Large (111 sites) | Architecture   |
-| 10 | Split `config/detection_method.go` (426L) — separate FileType, OutputFormat, SortBy, DiffMode | Medium | Medium            | Code quality   |
-| 11 | Refactor `syntax/golang/transform.go` — table-driven 300L switch                              | Medium | Medium            | Code quality   |
-| 12 | Split printer/ into sub-packages (formatters vs processing)                                   | Medium | Large             | Architecture   |
-| 13 | Standardize error handling — structured errors everywhere or bare fmt.Errorf                  | Medium | Medium            | Consistency    |
-| 14 | Implement TokenValue type with validation                                                     | Medium | Medium            | Type safety    |
-| 15 | Unify enum patterns — domain enums → config's generic helpers                                 | Low    | Medium            | Consistency    |
+| ~~7~~ done — CSV is an OutputFormat value (config enums; stats + run output paths) | ~~Implement CSV output using `encoding/csv` (general clone CSV)~~ | ~~Medium~~ | ~~Small~~ | ~~Correctness~~ |
+| ~~8~~ done — CloneRef consolidation landed (AGENTS.md) | ~~Consolidate three parallel Clone types into unified hierarchy~~ | ~~High~~ | ~~Large~~ | ~~Architecture~~ |
+| ~~9~~ done — domain.ProcessedClone landed; PrintClones consumes it (printer/printer.go:82) | ~~Introduce ProcessedClone DTO — decouple Printer from syntax.Node~~ | ~~High~~ | ~~Large (111 sites)~~ | ~~Architecture~~ |
+| ~~10~~ done — the config enums are split per type (diff_mode.go, sort_criteria.go, et al.) | ~~Split `config/detection_method.go` (426L) — separate FileType, OutputFormat, SortBy, DiffMode~~ | ~~Medium~~ | ~~Medium~~ | ~~Code quality~~ |
+| ~~11~~ done — struck — tracked on ROADMAP (Architecture: transform.go table-driven handlers) | ~~Refactor `syntax/golang/transform.go` — table-driven 300L switch~~ | ~~Medium~~ | ~~Medium~~ | ~~Code quality~~ |
+| ~~12~~ done — printer is split into sub-packages (printer/actionability/, printer/stats/, printer/finding/) | ~~Split printer/ into sub-packages (formatters vs processing)~~ | ~~Medium~~ | ~~Large~~ | ~~Architecture~~ |
+| ~~13~~ done — the typed errors/ wrapping convention holds (AGENTS.md) | ~~Standardize error handling — structured errors everywhere or bare fmt.Errorf~~ | ~~Medium~~ | ~~Medium~~ | ~~Consistency~~ |
+| ~~14~~ done — TokenValue is the suffix tree token type (ADR-0022) | ~~Implement TokenValue type with validation~~ | ~~Medium~~ | ~~Medium~~ | ~~Type safety~~ |
+| ~~15~~ done — the pkg/enum shared helpers are adopted (AGENTS.md Enum pattern) | ~~Unify enum patterns — domain enums → config's generic helpers~~ | ~~Low~~ | ~~Medium~~ | ~~Consistency~~ |
 | ~~16~~ done — docs/adr/0002-semantic-as-default.md | ~~Add ADR for semantic-as-default decision~~ | ~~Low~~ | ~~Tiny~~ | ~~Documentation~~ |
-| 17 | Add ADR for reflection-based config merge                                                     | Low    | Tiny              | Documentation  |
-| 18 | Write SDK documentation for `pkg/artdupl/`                                                    | Medium | Medium            | Documentation  |
-| 19 | Audit 71 `//nolint:` directives — remove stale ones                                           | Low    | Small             | Cleanup        |
-| 20 | Document TODO/Legacy detection methods as experimental or remove DEFINED_ONLY status          | Low    | Small             | Documentation  |
-| 21 | Fix LSP hints: unused params, unnecessary type args in tests                                  | Low    | Small             | Polish         |
-| 22 | Implement string interning for AST processing memory optimization                             | Medium | Large             | Performance    |
-| 23 | Optimize memory layouts for SIMD-friendly data structures                                     | Medium | Large             | Performance    |
-| 24 | Validate GoReleaser release config — had 5+ fixup commits                                     | Medium | Small             | Infrastructure |
-| 25 | Remove `lib/` legacy package (listed as "being phased out" in AGENTS.md)                      | Low    | Small             | Cleanup        |
+| ~~17~~ done — docs/adr/0003-reflection-based-config-merge.md | ~~Add ADR for reflection-based config merge~~ | ~~Low~~ | ~~Tiny~~ | ~~Documentation~~ |
+| ~~18~~ done — SDK documentation lives in SDK_DESIGN.md + the README SDK section | ~~Write SDK documentation for `pkg/artdupl/`~~ | ~~Medium~~ | ~~Medium~~ | ~~Documentation~~ |
+| ~~19~~ **Won't implement — won't implement — the nolint set is curated via the lint config; no separate audit was needed.** | ~~Audit 71 `//nolint:` directives — remove stale ones~~ | ~~Low~~ | ~~Small~~ | ~~Cleanup~~ |
+| ~~20~~ done — superseded — the TODO/Legacy detectors were deleted; only the art-dupl and hash methods remain | ~~Document TODO/Legacy detection methods as experimental or remove DEFINED_ONLY status~~ | ~~Low~~ | ~~Small~~ | ~~Documentation~~ |
+| ~~21~~ done — fixed — the gopls findings were closed in the 2026-09-29 pass (AGENTS.md) | ~~Fix LSP hints: unused params, unnecessary type args in tests~~ | ~~Low~~ | ~~Small~~ | ~~Polish~~ |
+| ~~22~~ done — canonical filename interning lives in syntax/intern.go | ~~Implement string interning for AST processing memory optimization~~ | ~~Medium~~ | ~~Large~~ | ~~Performance~~ |
+| ~~23~~ **Won't implement — won't implement — the SIMD code was deleted; alloc budgets own memory work.** | ~~Optimize memory layouts for SIMD-friendly data structures~~ | ~~Medium~~ | ~~Large~~ | ~~Performance~~ |
+| ~~24~~ done — .goreleaser.yaml ships with the release lane | ~~Validate GoReleaser release config — had 5+ fixup commits~~ | ~~Medium~~ | ~~Small~~ | ~~Infrastructure~~ |
+| ~~25~~ done — the lib/ package was removed from the tree | ~~Remove `lib/` legacy package (listed as "being phased out" in AGENTS.md)~~ | ~~Low~~ | ~~Small~~ | ~~Cleanup~~ |
 
 ---
 

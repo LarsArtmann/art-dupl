@@ -200,11 +200,11 @@ Nothing totally fucked up. All changes compile and pass tests. However:
 
 | #  | Task                                                                     | Impact | Effort |
 | -- | ------------------------------------------------------------------------ | ------ | ------ |
-| 21 | Benchmark reflection-based merge vs old manual merge                     | Low    | 30min  |
-| 22 | Consider `sync.Pool` for syntax.Node to amortize `Name` field allocation | Low    | 1h     |
+| ~~21~~ done — moot — the reflection merge won; no comparative benchmark was needed | ~~Benchmark reflection-based merge vs old manual merge~~ | ~~Low~~ | ~~30min~~ |
+| ~~22~~ **Won't implement — won't implement — pooling was measured NO-GO for the stream slices (ADR-0022 era); Node pooling was never justified.** | ~~Consider `sync.Pool` for syntax.Node to amortize `Name` field allocation~~ | ~~Low~~ | ~~1h~~ |
 | ~~23~~ done — identifier/filename interning landed as syntax/intern.go (2026-08) | ~~String pool integration for `syntax.Node.Name` field~~ | ~~Low~~ | ~~1h~~ |
-| 24 | Profile memory impact of `Name string` on large codebases                | Medium | 1h     |
-| 25 | Add `golangci-lint` `exhaustruct` check for `CloneClassification`        | Low    | 15min  |
+| ~~24~~ done — moot — interning shipped instead; no separate memory profile was needed | ~~Profile memory impact of `Name string` on large codebases~~ | ~~Medium~~ | ~~1h~~ |
+| ~~25~~ **Won't implement — won't implement — exhaustruct is deliberately banned (AGENTS.md Lint Config Guard auto-removes it).** | ~~Add `golangci-lint` `exhaustruct` check for `CloneClassification`~~ | ~~Low~~ | ~~15min~~ |
 
 ---
 
@@ -240,6 +240,7 @@ ok  github.com/LarsArtmann/art-dupl/printer       0.011s
 
 ## Files Changed This Session
 
+<!-- check-rows:ledger -->
 | File                     | Lines Changed | Description                                                 |
 | ------------------------ | ------------- | ----------------------------------------------------------- |
 | `config/config.go`       | +5/-5         | Semantic default true, updated docs                         |
