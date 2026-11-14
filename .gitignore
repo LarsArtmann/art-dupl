@@ -117,3 +117,4 @@ cython_debug/
 htmlcov/
 # <<< buildflow-managed (.gitignore) <<<
 .check-intent
+.docs-gates-preflight.json
