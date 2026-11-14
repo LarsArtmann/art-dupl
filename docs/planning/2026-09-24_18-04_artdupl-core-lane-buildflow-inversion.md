@@ -162,7 +162,7 @@ All fine tasks, sorted by parent priority then execution order. Each is independ
 | A6.7  | Remove `config_cmd*` references (init template, validate, display)                           | 10m |
 | A6.8  | Fix install hints: `doctor_cmd.go:226` + `flake.nix:543` → `github.com/LarsArtmann/art-dupl` | 8m  |
 | A6.9  | Delete `language.ToolDupl` + `tool_paths` doc example referencing `"dupl"`                   | 8m  |
-| A6.10 | Fleet grep for `dupl-check` in `.buildflow.yml`s → deprecatedToolAliases decision            | 12m |
+| A6.10 | Fleet grep for `dupl-check` in the `.buildflow.yml` files → deprecatedToolAliases decision            | 12m |
 
 ### A7 — E2E verification (⚠AUTH)
 

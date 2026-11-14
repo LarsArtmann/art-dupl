@@ -205,7 +205,7 @@ import (
 The provider runs the SDK in semantic mode at the default threshold
 (5 statements, overridable via the declared toolsdk `threshold` option) over
 Go + templ files, honors `.gitignore`, skips
-vendor/generated/dot-directories, and emits go-finding `Finding`s with a
+vendor/generated/dot-directories, and emits go-finding `Finding` values with a
 deterministic `GroupID` per clone group. `ErrNoDuplicatesFound` from the SDK
 maps to an empty finding list - a clean repo is success, not an error.
 Classification metadata (actionability, clone type) is intentionally

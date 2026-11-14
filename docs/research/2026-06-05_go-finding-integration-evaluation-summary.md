@@ -23,7 +23,7 @@ deduplication, baseline matching, and HTML rendering all rely on.
 
 All implementable gaps shipped; GAP-3 (per-relationship metadata) deliberately
 deferred — `Finding.Metadata` is the escape hatch. The integration now runs both
-ways: art-dupl's `printer/finding` adapter converts `domain.ProcessedCloneGroup`s
+ways: art-dupl's `printer/finding` adapter converts `domain.ProcessedCloneGroup` values
 into findings, and go-finding's dedup passes consume art-dupl reports directly.
 
 | Gap                                   | Status                   | art-dupl touchpoint                                                                                                            |
@@ -40,7 +40,7 @@ into findings, and go-finding's dedup passes consume art-dupl reports directly.
 
 ## What art-dupl ships on top (see `printer/finding/` + ADR-0025)
 
-- `printer/finding.ToFindings` converts `domain.ProcessedCloneGroup`s; classification
+- `printer/finding.ToFindings` converts `domain.ProcessedCloneGroup` values; classification
   metadata travels in `Metadata` under the `art-dupl/` namespace, and the SDK provider
   (`pkg/provider`, BuildFlow core lane) is classification-free per ADR-0025.
 - Severity mapping mirrors the SARIF level ladder from `Options.Threshold`

@@ -67,7 +67,7 @@ derivable as `data[tr.start]`** — no key field is stored. Consequences:
   table plus one `*tran` per edge; edges are stored by value.
 - `findTran(data, c)` linearly scans ≤ `linearScanMax` (8) entries and
   binary-searches above that (root-scale fanout).
-- `addTran` binary-searches the insert position and `slices.Insert`s.
+- `addTran` binary-searches the insert position and calls `slices.Insert`.
 - `walkTrans` iterates the slice directly in deterministic key order —
   no key extraction, no sort, no map re-lookup. `parallelWalkRoot` walks
   the root slice directly (its `rootKeys` allocation disappeared).

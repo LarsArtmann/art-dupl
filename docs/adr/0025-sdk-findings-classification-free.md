@@ -5,7 +5,7 @@
 
 ## Context
 
-The toolsdk provider (`pkg/provider`) emits go-finding `Finding`s through the
+The toolsdk provider (`pkg/provider`) emits go-finding `Finding` values through the
 shared `printer/finding` adapter, so GroupID, severity, positions, snippets,
 and `clone-of` links are identical to the CLI's finding output. The
 classification metadata keys (`art-dupl/clone-type`, `-category`,

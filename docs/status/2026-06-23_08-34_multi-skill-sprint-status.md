@@ -198,7 +198,7 @@ The project gitignores all `*.html` files (line 22 of `.gitignore`). This makes 
 
 ...are all invisible to git. The D2/SVG diagrams ARE tracked (not HTML). The existing `.html` files in `docs/` (e.g., `docs/research/SPLIT-BRAIN.html`) were force-added at some point.
 
-**Should I add a negation rule like `!docs/**/\*.html`to`.gitignore` so review reports are tracked?\*\* Or is the intentional design that HTML reports are ephemeral on-disk artifacts (like build output) that shouldn't be in version control? This determines whether future skill outputs are committable.
+**Should I add a negation rule like `!docs/**/\*.html` to `.gitignore` so review reports are tracked?\*\* Or is the intentional design that HTML reports are ephemeral on-disk artifacts (like build output) that shouldn't be in version control? This determines whether future skill outputs are committable.
 
 ---
 

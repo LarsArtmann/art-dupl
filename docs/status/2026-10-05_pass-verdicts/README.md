@@ -35,7 +35,7 @@ dir is the vow kept).
 
 - Pass report: `docs/status/2026-10-06_01-42_docs-health-pass-self-review.md`
 - Archive manifest: `docs/status/archived/MANIFEST-2026-10-05.md`
-- Sweep commits: `d34aad4b` (194 files: annotations + 55 `git mv`s),
+- Sweep commits: `d34aad4b` (194 files: annotations + 55 `git mv` operations),
   `cc67cf0a` (living docs + manifest)
 
 ## Status

@@ -6,7 +6,7 @@
 ## Context
 
 The go-finding adapter (`printer/finding/finding.go`, shipped with #1)
-converts `domain.ProcessedCloneGroup`s into `gofinding.Finding`s. Source-level
+converts `domain.ProcessedCloneGroup` values into `gofinding.Finding` values. Source-level
 survey (2026-09-22, re-verified 2026-10-16): it has **zero production callers**
 — `printer/sarif.go` imports the package only for the `SARIFPropGroupID`
 constant name. Consumers reach findings through art-dupl's SARIF output
@@ -32,7 +32,7 @@ surface for zero consumers.
 ## Decision
 
 **Ratify library-only.** The adapter is a library surface for embedders
-(in-process SDK/tool consumers constructing `Finding`s or `Report`s) and the
+(in-process SDK/tool consumers constructing `Finding` or `Report` values) and the
 constant home of the GroupID interchange contract. It is NOT wired into the
 CLI: there is no `--output finding` format, and none is planned.
 

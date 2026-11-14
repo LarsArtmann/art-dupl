@@ -159,7 +159,7 @@ Sajnani, Saini, Svajlenko et al. (2016). Information-retrieval approach with fil
 ### 5.1 Input characteristics
 
 - **Token count**: 100K-500K for large Go codebases (1000+ files x ~200-500 nodes/file)
-- **Alphabet**: 100-500 unique `TokenValue`s (AST node types + statement fingerprints)
+- **Alphabet**: 100-500 unique `TokenValue` values (AST node types + statement fingerprints)
 - **Alphabet is NOT contiguous** — values span `int32` range (node types 1-100, fingerprints are FNV hashes, sentinels from `MinInt32/2`)
 - **Batch construction is fine** — the pipeline drains all files before searching. Online/incremental is a nice-to-have for latency, not a hard requirement.
 - **Output requirement**: ALL maximal repeats above threshold (lossless)

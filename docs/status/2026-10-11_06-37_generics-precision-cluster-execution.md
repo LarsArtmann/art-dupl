@@ -59,7 +59,7 @@
 
 ### T9 — Instantiation hint naming
 
-- `allInstantiationPairs` + `splitInstantiation` (via newly exported `golang.StripQualifierPrefixes`) + `formatInstantiationOnlyHint`: when EVERY divergence is a type-argument pair of one base type, the hint becomes `differs only in generic instantiation:`X`vs`Y``.
+- `allInstantiationPairs` + `splitInstantiation` (via newly exported `golang.StripQualifierPrefixes`) + `formatInstantiationOnlyHint`: when EVERY divergence is a type-argument pair of one base type, the hint becomes `differs only in generic instantiation` naming the two types (`X` vs `Y`).
 - No JSON/SARIF schema change (hint carries it); every suite that pins hint strings is green; HOW_TO_USE updated.
 
 ### Incident response: jsonv2 recurrence #7

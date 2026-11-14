@@ -106,7 +106,7 @@ provider in `pkg/provider` shows the pattern: `.gitignore`-aware walk over
 ```
 
 **`printer/finding` (CLI output adapter)**: converts
-`domain.ProcessedCloneGroup`s into go-finding `Finding`s via the validated
+`domain.ProcessedCloneGroup` values into go-finding `Finding` values via the validated
 `Builder` + `Template`. Carries the
 `GroupID` contract (group content hash, 16-char lowercase hex — the same id
 as JSON `clone_groups[].hash`, the SARIF `go-finding/groupId` property, and

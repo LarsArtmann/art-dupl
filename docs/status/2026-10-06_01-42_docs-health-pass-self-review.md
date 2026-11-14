@@ -2,7 +2,7 @@
 
 **Date:** 2026-10-06 01:42 CEST
 **Session:** 2026-10-05 ~19:30 - 2026-10-06 ~00:30 CEST (one session, docs-health skill, user-directed early run ahead of the 2026-10-28 cadence)
-**Branch:** `fork` - pass committed as `cc67cf0a` (living docs + manifest); the sweep itself landed via daemon `d34aad4b` (194 files: annotations + 55 archive `git mv`s). Two later daemon commits (`17b5ee4e`, `b6af3f41` - pnpm lockfile, concurrent session) are NOT this pass.
+**Branch:** `fork` - pass committed as `cc67cf0a` (living docs + manifest); the sweep itself landed via daemon `d34aad4b` (194 files: annotations + 55 archive `git mv` operations). Two later daemon commits (`17b5ee4e`, `b6af3f41` - pnpm lockfile, concurrent session) are NOT this pass.
 **Scope:** every unarchived `**/2026-0*` file (205 `.md` across status/planning/reviews/feedback/analysis/research + ~30 generated `.html/.d2/.svg/.mmd`), the six living docs, ANNOTATE + ARCHIVE + HARVEST + VERIFY, gates, manifest.
 
 ---
