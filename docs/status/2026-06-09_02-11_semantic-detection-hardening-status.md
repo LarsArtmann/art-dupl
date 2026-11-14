@@ -49,7 +49,7 @@
 | Item        | Status                  | What's Missing                                                                            |
 | ----------- | ----------------------- | ----------------------------------------------------------------------------------------- |
 | `nix build` | `vendorHash` stale      | Need to update hash in flake.nix: set `vendorHash=""`, run `nix build`, copy correct hash |
-| ~~          | Semantic mode for Templ | No encoding applied                                                                       |
+|| ~~Semantic mode for Templ~~ **superseded — 2026-06 snapshot** | ~~No encoding applied~~ |
 | SDK docs    | `SDK_DESIGN.md` exists  | No usage examples, no godoc rendering                                                     |
 
 ---
@@ -146,31 +146,31 @@ Sorted by impact × effort (Pareto ordering):
 
 | #  | Task                                                       | Impact                                                             | Effort | Category     |
 | -- | ---------------------------------------------------------- | ------------------------------------------------------------------ | ------ | ------------ |
-| ~~ | 1                                                          | **Fix nix vendorHash** — set `""`, build, copy hash                | HIGH   | 5min         |
-| ~~ | 2                                                          | **Suppress test-only low-priority clones** in output               | HIGH   | 30min        |
-| ~~ | 3                                                          | **Add hashSeq unit tests** (currently zero)                        | HIGH   | 30min        |
-| ~~ | 4                                                          | **Decouple clone_classify from syntax/golang** via interface       | HIGH   | 2h           |
-| ~~ | 5                                                          | **ProcessedClone DTO** — decouple printer from syntax.Node         | HIGH   | 4h           |
-| ~~ | 6                                                          | **Consolidate three Clone types** into one                         | HIGH   | 3h           |
-| ~~ | 7                                                          | **Implement TokenValue type with validation**                      | MED    | 1h           |
-| ~~ | 8                                                          | **Test-table pattern detection** in classification                 | MED    | 1h           |
-| ~~ | 9                                                          | **Cross-reference with existing helpers** detection                | MED    | 4h           |
+|| ~~1~~ **superseded — 2026-06 snapshot** | ~~**Fix nix vendorHash** — set `""`, build, copy hash~~ | ~~HIGH~~ | ~~5min~~ |
+|| ~~2~~ **superseded — 2026-06 snapshot** | ~~**Suppress test-only low-priority clones** in output~~ | ~~HIGH~~ | ~~30min~~ |
+|| ~~3~~ **superseded — 2026-06 snapshot** | ~~**Add hashSeq unit tests** (currently zero)~~ | ~~HIGH~~ | ~~30min~~ |
+| ~~~~~~4~~ **done — CloneRef consolidation + printer/actionability/ landed (AGENTS.md, ADR-0027)**~~ **done — CloneRef consolidation + printer/actionability/ landed (AGENTS.md, ADR-0027)**~~ **done — CloneRef consolidation + printer/actionability/ landed (AGENTS.md, ADR-0027)** | ~~~~~~**Decouple clone_classify from syntax/golang** via interface~~~~~~ | ~~~~~~HIGH~~~~~~ | ~~~~~~2h~~~~~~ |
+| ~~~~~~5~~ **done — domain.ProcessedClone landed; PrintClones consumes it (printer/printer.go:82)**~~ **done — domain.ProcessedClone landed; PrintClones consumes it (printer/printer.go:82)**~~ **done — domain.ProcessedClone landed; PrintClones consumes it (printer/printer.go:82)** | ~~~~~~**ProcessedClone DTO** — decouple printer from syntax.Node~~~~~~ | ~~~~~~HIGH~~~~~~ | ~~~~~~4h~~~~~~ |
+| ~~~~~~6~~ **done — CloneRef consolidation + printer/actionability/ landed (AGENTS.md, ADR-0027)**~~ **done — CloneRef consolidation + printer/actionability/ landed (AGENTS.md, ADR-0027)**~~ **done — CloneRef consolidation + printer/actionability/ landed (AGENTS.md, ADR-0027)** | ~~~~~~**Consolidate three Clone types** into one~~~~~~ | ~~~~~~HIGH~~~~~~ | ~~~~~~3h~~~~~~ |
+| ~~~~~~7~~ **done — ADR-0022 []TokenValue layout**~~ **done — ADR-0022 []TokenValue layout**~~ **done — ADR-0022 []TokenValue layout** | ~~~~~~**Implement TokenValue type with validation**~~~~~~ | ~~~~~~MED~~~~~~ | ~~~~~~1h~~~~~~ |
+|| ~~8~~ **superseded — 2026-06 snapshot** | ~~**Test-table pattern detection** in classification~~ | ~~MED~~ | ~~1h~~ |
+|| ~~9~~ **superseded — 2026-06 snapshot** | ~~**Cross-reference with existing helpers** detection~~ | ~~MED~~ | ~~4h~~ |
 | 10 | **Semantic mode for Templ** — identifier/operator encoding | MED                                                                | 3h     | Feature      |
-| ~~ | 11                                                         | **Fix 3 godoclint warnings** — duplicate package docs              | LOW    | 10min        |
-| ~~ | 12                                                         | **Fix bufio scanner `sc.Err()` check** in run_crawl.go             | LOW    | 5min         |
+| ~~~~~~11~~ **fixed — lint is 106-linter clean since 2026-09-29 (AGENTS.md); the flaky os.Exit tests were fixed**~~ **fixed — lint is 106-linter clean since 2026-09-29 (AGENTS.md); the flaky os.Exit tests were fixed**~~ **fixed — lint is 106-linter clean since 2026-09-29 (AGENTS.md); the flaky os.Exit tests were fixed** | ~~~~~~**Fix 3 godoclint warnings** — duplicate package docs~~~~~~ | ~~~~~~LOW~~~~~~ | ~~~~~~10min~~~~~~ |
+|| ~~12~~ **superseded — 2026-06 snapshot** | ~~**Fix bufio scanner `sc.Err()` check** in run_crawl.go~~ | ~~LOW~~ | ~~5min~~ |
 | 13 | **Migrate fang v1 → fang/v2**                              | LOW                                                                | 1h     | Dependencies |
-| ~~ | 14                                                         | **Replace SHA-1 in file_cache.go** with SHA-256                    | LOW    | 15min        |
-| ~~ | 15                                                         | **CSV output using encoding/csv**                                  | MED    | 2h           |
-| ~~ | 16                                                         | **`--output-file` flag for stats subcommand**                      | LOW    | 30min        |
-| ~~ | 17                                                         | **Split printer/stats_test.go** (975L → 3 files)                   | LOW    | 30min        |
+|| ~~14~~ **superseded — 2026-06 snapshot** | ~~**Replace SHA-1 in file_cache.go** with SHA-256~~ | ~~LOW~~ | ~~15min~~ |
+| ~~~~~~15~~ **done — CSV is an OutputFormat value (config enums; stats + run output paths)**~~ **done — CSV is an OutputFormat value (config enums; stats + run output paths)**~~ **done — CSV is an OutputFormat value (config enums; stats + run output paths)** | ~~~~~~**CSV output using encoding/csv**~~~~~~ | ~~~~~~MED~~~~~~ | ~~~~~~2h~~~~~~ |
+|| ~~16~~ **superseded — 2026-06 snapshot** | ~~**`--output-file` flag for stats subcommand**~~ | ~~LOW~~ | ~~30min~~ |
+| ~~~~~~17~~ **done — printer sub-packages + CloneRef + the sort comparator factory landed (AGENTS.md)**~~ **done — printer sub-packages + CloneRef + the sort comparator factory landed (AGENTS.md)**~~ **done — printer sub-packages + CloneRef + the sort comparator factory landed (AGENTS.md)** | ~~~~~~**Split printer/stats_test.go** (975L → 3 files)~~~~~~ | ~~~~~~LOW~~~~~~ | ~~~~~~30min~~~~~~ |
 | 18 | **Refactor syntax/golang/transform.go** (369L switch)      | LOW                                                                | 2h     | Quality      |
-| ~~ | 19                                                         | **Create domain.HealthScore typed enum**                           | LOW    | 15min        |
-| ~~ | 20                                                         | **Unify enum patterns** across codebase                            | LOW    | 1h           |
-| ~~ | 21                                                         | **Write SDK documentation** with examples                          | MED    | 2h           |
-| ~~ | 22                                                         | **BDD tests for `--only templ`, `--only go`, `--include-generic`** | MED    | 1h           |
-| ~~ | 23                                                         | **Fuzz tests for templ parser**                                    | MED    | 2h           |
+|| ~~19~~ **superseded — 2026-06 snapshot** | ~~**Create domain.HealthScore typed enum**~~ | ~~LOW~~ | ~~15min~~ |
+| ~~~~~~20~~ **done — the pkg/enum shared helpers are adopted (AGENTS.md Enum pattern)**~~ **done — the pkg/enum shared helpers are adopted (AGENTS.md Enum pattern)**~~ **done — the pkg/enum shared helpers are adopted (AGENTS.md Enum pattern)** | ~~~~~~**Unify enum patterns** across codebase~~~~~~ | ~~~~~~LOW~~~~~~ | ~~~~~~1h~~~~~~ |
+|| ~~21~~ **superseded — 2026-06 snapshot** | ~~**Write SDK documentation** with examples~~ | ~~MED~~ | ~~2h~~ |
+|| ~~22~~ **superseded — 2026-06 snapshot** | ~~**BDD tests for `--only templ`, `--only go`, `--include-generic`**~~ | ~~MED~~ | ~~1h~~ |
+| ~~~~~~23~~ **done 2026-10 — native fuzz targets + the seed-corpus gate (cmd/fuzz_seed_gate_test.go)**~~ **done 2026-10 — native fuzz targets + the seed-corpus gate (cmd/fuzz_seed_gate_test.go)**~~ **done 2026-10 — native fuzz targets + the seed-corpus gate (cmd/fuzz_seed_gate_test.go)** | ~~~~~~**Fuzz tests for templ parser**~~~~~~ | ~~~~~~MED~~~~~~ | ~~~~~~2h~~~~~~ |
 | 24 | **Watch mode** — re-run on file changes                    | HIGH                                                               | 4h     | Feature      |
-| ~~ | 25                                                         | **Performance baseline benchmarks** — CI regression tracking       | MED    | 2h           |
+| ~~~~~~25~~ **done — docs/benchmarks/ baselines + the Performance gate + alloc-gate**~~ **done — docs/benchmarks/ baselines + the Performance gate + alloc-gate**~~ **done — docs/benchmarks/ baselines + the Performance gate + alloc-gate** | ~~~~~~**Performance baseline benchmarks** — CI regression tracking~~~~~~ | ~~~~~~MED~~~~~~ | ~~~~~~2h~~~~~~ |
 
 ---
 

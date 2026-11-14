@@ -125,7 +125,7 @@ No regressions, no broken tests, no data loss. All 29 test packages pass clean.
 8. Add direct LRU eviction test (check `fc.mem.entries` map, not indirect via disk removal)
 ~~9. Consider `GetShared` method that returns the canonical pointer (no clone) for cases where caller will clone anyway (singleflight double-check)~~ won't implement — shared-Get documented UNSAFE (stampFilename mutates in place)
 10. Consider memory budget (bytes) instead of entry count for LRU eviction
-11. Add `lruStats` to `Stats` struct: `MemHits`, `MemSize`, `MemCapacity`
+~~11. Add `lruStats` to `Stats` struct: `MemHits`, `MemSize`, `MemCapacity`~~ done — the LRU stats land in run-scoped cache stats (MemHits, hit_rate_pct; AGENTS.md T11 bullet)
 12. Consider `sync.Map` for LRU entries map (read-heavy workload) — benchmark first
 13. Add LRU eviction callback hook (for logging/metrics)
 14. Consider 2Q or ARC eviction policy instead of LRU (better scan resistance)
@@ -138,7 +138,7 @@ No regressions, no broken tests, no data loss. All 29 test packages pass clean.
 18. Add `FileCache.Compact()` that removes orphaned entries (version mismatches, corrupt files)
 19. Add cache integrity check: verify gob deserialization on startup for a sample of entries
 20. Consider content-addressed storage: use the hash as the content, not just the filename
-21. Add `FileCache.Stats().HitRate()` helper method
+~~21. Add `FileCache.Stats().HitRate()` helper method~~ done — the hit-rate surface ships via RunCacheStats (stats output hit_rate_pct; AGENTS.md)
 22. Consider per-file-type cache buckets (Go vs templ) for better eviction granularity
 23. Add `--clear-cache` subcommand (currently only `--clear-cache` flag on main command)
 24. Add cache size limit in bytes (not just entry count) — `Config.MaxCacheBytes`

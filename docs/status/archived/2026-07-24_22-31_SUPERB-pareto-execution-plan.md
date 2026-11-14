@@ -87,21 +87,21 @@ Sorted by: Impact (descending) > Effort (ascending) > Customer Value (descending
 | M23 | Deprecation warning for `--semantic`           | UX                              | Low      | 15min  | Low            | -          |
 | M24 | SDK `Options.TypeAware` field                  | SDK                             | Medium   | 60min  | Medium         | -          |
 | M25 | "unknown" category to AST type fallback        | UX                              | Medium   | 45min  | Medium         | -          |
-| ~~  | M26                                            | YAML config file support        | Feature  | Medium | 90min          | Medium     |
-| ~~  | M27                                            | `--diff-report <baseline>` mode | Feature  | Medium | 90min          | Medium     |
-| ~~  | M28                                            | `--explain` flag                | Feature  | Medium | 60min          | Medium     |
-| ~~  | M29                                            | HTML report improvements        | Feature  | Low    | 60min          | Low        |
-| ~~  | M30                                            | `--recommend-threshold`         | Feature  | Low    | 45min          | Low        |
+|| ~~M26~~ **done 2026-07-24 — executed in the sprint** | ~~YAML config file support~~ | ~~Feature~~ | ~~Medium~~ | ~~90min~~ | ~~Medium~~ |
+|| ~~M27~~ **done 2026-07-24 — executed in the sprint** | ~~`--diff-report <baseline>` mode~~ | ~~Feature~~ | ~~Medium~~ | ~~90min~~ | ~~Medium~~ |
+|| ~~M28~~ **done 2026-07-24 — executed in the sprint** | ~~`--explain` flag~~ | ~~Feature~~ | ~~Medium~~ | ~~60min~~ | ~~Medium~~ |
+|| ~~M29~~ **done 2026-07-24 — executed in the sprint** | ~~HTML report improvements~~ | ~~Feature~~ | ~~Low~~ | ~~60min~~ | ~~Low~~ |
+|| ~~M30~~ **done 2026-07-24 — executed in the sprint** | ~~`--recommend-threshold`~~ | ~~Feature~~ | ~~Low~~ | ~~45min~~ | ~~Low~~ |
 
 **Deferred / Architecturally Constrained (not scheduled):**
 
 | #  | Task | Blocker                                 |
 | -- | ---- | --------------------------------------- |
-| ~~ | D01  | Split `printer/` into sub-packages      |
-| ~~ | D02  | Branded `NodeType int32`                |
-| ~~ | D03  | Hide `syntax/golang` behind facade      |
-| ~~ | D04  | Hybrid slice/map transition storage     |
-| ~~ | D05  | Templ Phase 3: expression normalization |
+|| ~~D01~~ **done 2026-07-24 — executed in the sprint** | ~~Split `printer/` into sub-packages~~ |
+|| ~~D02~~ **done 2026-07-24 — executed in the sprint** | ~~Branded `NodeType int32`~~ |
+|| ~~D03~~ **done 2026-07-24 — executed in the sprint** | ~~Hide `syntax/golang` behind facade~~ |
+| ~~~~D04~~ **won't implement — never built; the findings surface settled on SARIF + the provider**~~ **won't implement — never built; the findings surface settled on SARIF + the provider** | ~~~~Hybrid slice/map transition storage~~~~ |
+|| ~~D05~~ **done 2026-07-24 — executed in the sprint** | ~~Templ Phase 3: expression normalization~~ |
 
 ---
 

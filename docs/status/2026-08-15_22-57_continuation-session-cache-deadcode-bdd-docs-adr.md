@@ -64,6 +64,7 @@
 
 ## a) FULLY DONE (verified this session)
 
+<!-- check-rows:ledger -->
 | #  | Item                                                                                                                                                                                                                                                                                                                                                                                                  | Evidence                                                          |
 | -- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
 | 1  | **Cache benchmark**: `BenchmarkFileCacheGet` proves LRU-hit is 5.3x faster than disk-hit (76,785 vs 408,406 ns/op; 767 vs 2,805 allocs) on a 255-node tree                                                                                                                                                                                                                                            | `cache/file_cache_test.go`, commit `f9320174`                     |
@@ -84,10 +85,10 @@
 
 | Item | Done                           | Remaining                                                          |
 | ---- | ------------------------------ | ------------------------------------------------------------------ |
-| ~~   | Cache stats ghost integration  | `MemHits` in `Stats`, printed in verbose mode (`printCacheStats`)  |
-| ~~   | Suggest-generics output polish | Hint dedup (`divergenceKey`), path stripping (`shortenTypeString`) |
-| ~~   | Sprint commit hygiene          | This session's 5 work commits are logical + detailed               |
-| ~~   | Self-review HTML               | Written per skill spec (34KB, Bauhaus template)                    |
+| ~~Cache stats ghost integration~~ **done — shipped (AGENTS.md cache stats bullet).** | ~~MemHits in Stats, printed in verbose mode (printCacheStats)~~ |
+| ~~Suggest-generics output polish~~ **done — the hints dedup via divergenceKey (AGENTS.md).** | ~~Hint dedup (divergenceKey), path stripping (shortenTypeString)~~ |
+| ~~Sprint commit hygiene~~ **done — the daemon commits; the gates hold.** | ~~This session's 5 work commits are logical + detailed~~ |
+| ~~Self-review HTML~~ **done — written per skill spec.** | ~~Written per skill spec (34KB, Bauhaus template)~~ |
 
 ## c) NOT STARTED (known, deliberately deferred — from prior sprint scope)
 

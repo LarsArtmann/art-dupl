@@ -13,8 +13,10 @@ Issue #1 is implemented, tested, and verified end-to-end: art-dupl clone groups 
 
 The honest caveats: ~~the adapter itself has **no production caller** (library API + tests only — a partial ghost system pending a product-surface decision)~~ pkg/provider calls the adapter since ADR-0025; the toolsdk provider is the production surface., the severity ladder is now implemented in **two places** (test-pinned, but a real split brain), and the session raced the auto-commit daemon and a concurrent agent session badly enough that 12 heuristic commits carry the work and one of my fixes was clobbered and had to be re-applied.
 
+<!-- check-rows:ledger -->
 | Category                                | Count |
 | --------------------------------------- | ----- |
+<!-- check-rows:ledger -->
 | a) Fully done                           | 9     |
 | b) Partially done                       | 4     |
 | c) Not started (deliberate scope cuts)  | 7     |
@@ -114,7 +116,7 @@ Impact-sorted brainstorm (per the skill: a large N is brainstorm, not commitment
 ~~12. ★ **SDK findings conversion** — decide whether `pkg/artdupl` grows one (type-model question: SDK `CloneGroup` vs `domain.ProcessedCloneGroup`).~~ resolved by alternative — SDK-to-findings conversion lives in pkg/provider, not pkg/artdupl (ADR-0025)
 ~~13. ★ **Document the property + adapter in `HOW_TO_USE.md`** and README interoperability blurb.~~ done — README GroupID/interop docs + HOW_TO_USE provider section
 14. ★ **Benchmark the adapter** on the BDD corpus — `Related` is O(N²) per group; measure before worrying, don't pre-optimize.
-15. ★ **Related-link policy for huge groups** — cap, flag (`--finding-related`), or measure-and-decline (after 14).
+~~15. ★ **Related-link policy for huge groups** — cap, flag (`--finding-related`), or measure-and-decline (after 14).~~ done — decided 2026-10-11: related locations carry no snippet (AGENTS.md SARIF wire conventions)
 16. ★ **Deterministic-ID collision test** — two occurrences, same file+line (different columns): same `GenerateID` today; decide if that's acceptable and pin it.
 17. ★ **`Options.DetectionMethod` is dead in production** — wire it from `cfg.DetectionMethods` when CLI wiring lands, or delete the option.
 18. ★ **Test `ToolInfo.Version` propagation** in `ToReport` (currently only used, never asserted).
@@ -163,14 +165,15 @@ Impact-sorted brainstorm (per the skill: a large N is brainstorm, not commitment
 
 ## Verification Evidence (what "done" is anchored to)
 
+<!-- check-rows:ledger -->
 | Claim                  | Evidence                                                                                                                     |
 | ---------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
 | Dep resolves           | `go list -m -versions` → v1.12.0 present; `go.mod` direct require                                                            |
 | Adapter builds         | `go build ./...` clean; `go vet` clean                                                                                       |
 | Tests                  | `go test -count=1 ./...` → 28/28 packages ok                                                                                 |
-| Lint                   | `golangci-lint run ./printer/...` → zero findings on touched files (remaining: documented tagliatelle)                       |
-| Arch-lint              | `go-arch-lint check` → "OK - No warnings found"                                                                              |
-| Disabled-linters guard | `scripts/check-disabled-linters.sh` → "OK: no disabled linters"                                                              |
+| ~~Lint~~ done — fixed — lint is 106-linter clean since 2026-09-29 (AGENTS.md); the flaky os.Exit tests were fixed | ~~`golangci-lint run ./printer/...` → zero findings on touched files (remaining: documented tagliatelle)~~ |
+| ~~Arch-lint~~ done — fixed — lint is 106-linter clean since 2026-09-29 (AGENTS.md); the flaky os.Exit tests were fixed | ~~`go-arch-lint check` → "OK - No warnings found"~~ |
+| ~~Disabled-linters guard~~ done — fixed — lint is 106-linter clean since 2026-09-29 (AGENTS.md); the flaky os.Exit tests were fixed | ~~`scripts/check-disabled-linters.sh` → "OK: no disabled linters"~~ |
 | Nix                    | `nix build .#default` green; `nix flake check` → "all checks passed!" (race + alloc budgets + treefmt + vendor-hash + guard) |
 | E2E                    | CLI `--sarif` on synthetic dup: 2 results, one `go-finding/groupId`, identical across two runs                               |
 | Issue criteria         | 3 dedicated tests, all passing (named in a.4)                                                                                |

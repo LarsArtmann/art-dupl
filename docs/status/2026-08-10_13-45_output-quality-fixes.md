@@ -120,8 +120,8 @@ Nothing. All changes are clean, tested, and build successfully.
 ### High Priority (Directly related to this session's work)
 
 ~~1. Add regression test: `--suggest-generics --show-suppressed` shows non-generics clones~~ resolved by alternative — TestPrintCloneGroups_ShowsAllClonesRegardlessOfGenericsCandidate guards all-clones-shown
-2. Add regression test: generics candidate `Classification.Suggestion == "Extract to generic function"`
-3. Add test: `tokenLineSummary(1, 1)` returns "1 token, 1 line"
+~~2. Add regression test: generics candidate `Classification.Suggestion == "Extract to generic function"`~~ done — printer/generics_reuse_test.go:166 pins the suggestion string
+~~3. Add test: `tokenLineSummary(1, 1)` returns "1 token, 1 line"~~ **Won't implement — won't implement — no dedicated unit test; the text output is golden-pinned.**
 4. Add BDD test: full `--suggest-generics --explain` pipeline output
 ~~5. Refactor `PrintFooter` to fix `nestif` complexity warning (extract suppression stats formatting)~~ done — writeSuppressionSummary helper extracted (printer/text.go)
 ~~6. Consider redesigning `--suggest-generics` as an enhancer rather than a filter (breaking change, needs ADR)~~ done — filter-to-enhancer redesign shipped, documented in docs/adr/0021

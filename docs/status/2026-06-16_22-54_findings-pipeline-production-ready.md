@@ -184,31 +184,31 @@ BuildFlow flags 4 untracked binaries: `art-dupl`, `dist/art-dupl`, `result`, `bd
 
 | #  | Task                                                               | Impact   | Effort | Priority |
 | -- | ------------------------------------------------------------------ | -------- | ------ | -------- |
-| 1  | **Fix BDD test suite timeout** (profile goroutine leaks)           | Critical | Medium | P0       |
-| 2  | **HOW_TO_USE.md**: Add detection-methods + findings sections       | High     | Low    | P0       |
-| 3  | **README.md**: Add todos/legacy to detection methods table         | High     | Low    | P0       |
-| 4  | **Add BDD spec for findings** (verify todos output in all formats) | High     | Low    | P1       |
-| 5  | **Rich text findings** (group by file, priority badges)            | Medium   | Low    | P1       |
-| 6  | **Add goleak** to unit tests                                       | Medium   | Low    | P1       |
-| 7  | **printDupls struct refactor** (11 params → config struct)         | Medium   | Medium | P2       |
-| 8  | **Type-strengthen ProcessedClone** (Filepath, LineNumber)          | Medium   | Medium | P2       |
-| 9  | **Break syntax import cycle** (extract Node to shared types)       | High     | High   | P2       |
-| 10 | **Consolidate 3 Clone types** into 1 canonical                     | High     | High   | P2       |
-| 11 | **Decouple actionability.go from syntax.Node**                     | High     | High   | P2       |
-| 12 | **Split printer/ package** into sub-packages                       | Medium   | High   | P2       |
-| 13 | **Templ semantic mode** (identifier/operator hashing)              | Medium   | High   | P2       |
-| 14 | **Benchmark findings pipeline overhead**                           | Medium   | Low    | P2       |
-| 15 | **Add `--findings-only` flag** (skip clone detection)              | Medium   | Low    | P3       |
-| 16 | **Add severity filtering** (`--min-priority medium`)               | Medium   | Low    | P3       |
-| 17 | **Custom TODO patterns** (`--todo-patterns "BUG,PERF"`)            | Medium   | Medium | P3       |
-| 18 | **Custom legacy patterns** (`--legacy-patterns "pkg.OldFunc"`)     | Medium   | Medium | P3       |
-| 19 | **Cache findings** in incremental mode                             | Low      | Medium | P3       |
+| ~~1~~ done — fixed — the BDD suite is green and race-lane covered | ~~**Fix BDD test suite timeout** (profile goroutine leaks)~~ | ~~Critical~~ | ~~Medium~~ | ~~P0~~ |
+| ~~2~~ done — the detection modes are documented (HOW_TO_USE) | ~~**HOW_TO_USE.md**: Add detection-methods + findings sections~~ | ~~High~~ | ~~Low~~ | ~~P0~~ |
+| ~~3~~ done — superseded — the TODO/Legacy detectors were deleted; only the art-dupl and hash methods remain | ~~**README.md**: Add todos/legacy to detection methods table~~ | ~~High~~ | ~~Low~~ | ~~P0~~ |
+| ~~4~~ done — format coverage lives in bdd (all_format_generation_test.go, detection_methods_test.go) | ~~**Add BDD spec for findings** (verify todos output in all formats)~~ | ~~High~~ | ~~Low~~ | ~~P1~~ |
+| ~~5~~ done — the --rich-text flag ships | ~~**Rich text findings** (group by file, priority badges)~~ | ~~Medium~~ | ~~Low~~ | ~~P1~~ |
+| ~~6~~ done — won't implement — goleak was never added; the race lane covers leaks | ~~**Add goleak** to unit tests~~ | ~~Medium~~ | ~~Low~~ | ~~P1~~ |
+| ~~7~~ done — SuppressionConfig struct landed (AGENTS.md) | ~~**printDupls struct refactor** (11 params → config struct)~~ | ~~Medium~~ | ~~Medium~~ | ~~P2~~ |
+| ~~8~~ done — won't implement — branded value types are PARKED (TODO_LIST Architecturally constrained) | ~~**Type-strengthen ProcessedClone** (Filepath, LineNumber)~~ | ~~Medium~~ | ~~Medium~~ | ~~P2~~ |
+| ~~9~~ done — won't implement — the AST-constant dependency is deliberate and documented (AGENTS.md known limitation) | ~~**Break syntax import cycle** (extract Node to shared types)~~ | ~~High~~ | ~~High~~ | ~~P2~~ |
+| ~~10~~ done — CloneRef consolidation + printer/actionability/ landed (AGENTS.md, ADR-0027) | ~~**Consolidate 3 Clone types** into 1 canonical~~ | ~~High~~ | ~~High~~ | ~~P2~~ |
+| ~~11~~ done — won't implement — the AST-constant dependency is deliberate and documented (AGENTS.md known limitation) | ~~**Decouple actionability.go from syntax.Node**~~ | ~~High~~ | ~~High~~ | ~~P2~~ |
+| ~~12~~ done — printer sub-packages + CloneRef + the sort comparator factory landed (AGENTS.md) | ~~**Split printer/ package** into sub-packages~~ | ~~Medium~~ | ~~High~~ | ~~P2~~ |
+| ~~13~~ done — the templ semantic pipeline shipped (syntax/templ; AGENTS.md) | ~~**Templ semantic mode** (identifier/operator hashing)~~ | ~~Medium~~ | ~~High~~ | ~~P2~~ |
+| ~~14~~ done — docs/benchmarks/ baselines + the Performance gate + alloc-gate | ~~**Benchmark findings pipeline overhead**~~ | ~~Medium~~ | ~~Low~~ | ~~P2~~ |
+| ~~15~~ done — won't implement — never built; the findings surface settled on SARIF + the provider | ~~**Add `--findings-only` flag** (skip clone detection)~~ | ~~Medium~~ | ~~Low~~ | ~~P3~~ |
+| ~~16~~ done — won't implement — never built; the findings surface settled on SARIF + the provider | ~~**Add severity filtering** (`--min-priority medium`)~~ | ~~Medium~~ | ~~Low~~ | ~~P3~~ |
+| ~~17~~ done — won't implement — never built; the findings surface settled on SARIF + the provider | ~~**Custom TODO patterns** (`--todo-patterns "BUG,PERF"`)~~ | ~~Medium~~ | ~~Medium~~ | ~~P3~~ |
+| ~~18~~ done — won't implement — never built; the findings surface settled on SARIF + the provider | ~~**Custom legacy patterns** (`--legacy-patterns "pkg.OldFunc"`)~~ | ~~Medium~~ | ~~Medium~~ | ~~P3~~ |
+| ~~19~~ done — won't implement — never built; the findings surface settled on SARIF + the provider | ~~**Cache findings** in incremental mode~~ | ~~Low~~ | ~~Medium~~ | ~~P3~~ |
 | ~~20~~ done — stats carries severity/priority distributions (AGENTS.md stats bullet) | ~~**Findings in stats output** (count by type/priority)~~ | ~~Low~~ | ~~Low~~ | ~~P3~~ |
-| 21 | **Hybrid slice/map transition storage**                            | Low      | Medium | P3       |
-| 22 | **Refactor actionability.go** into sub-files                       | Low      | Medium | P3       |
-| 23 | **Add ADR-0005** for Findings pipeline architecture                | Low      | Low    | P3       |
-| 24 | **LegacyIssue Tags field** for consistency                         | Low      | Low    | P3       |
-| 25 | **Improve SARIF finding-level mapping** for legacy                 | Low      | Low    | P3       |
+| ~~21~~ done — won't implement — never built; the findings surface settled on SARIF + the provider | ~~**Hybrid slice/map transition storage**~~ | ~~Low~~ | ~~Medium~~ | ~~P3~~ |
+| ~~22~~ done — printer/actionability/ is the multi-file package | ~~**Refactor actionability.go** into sub-files~~ | ~~Low~~ | ~~Medium~~ | ~~P3~~ |
+| ~~23~~ done — the ADR series covers the pipeline (ADR-0005/0028) | ~~**Add ADR-0005** for Findings pipeline architecture~~ | ~~Low~~ | ~~Low~~ | ~~P3~~ |
+| ~~24~~ done — won't implement — never built; the findings surface settled on SARIF + the provider | ~~**LegacyIssue Tags field** for consistency~~ | ~~Low~~ | ~~Low~~ | ~~P3~~ |
+| ~~25~~ done — the SARIF wire conventions landed (AGENTS.md SARIF bullet) | ~~**Improve SARIF finding-level mapping** for legacy~~ | ~~Low~~ | ~~Low~~ | ~~P3~~ |
 
 ---
 

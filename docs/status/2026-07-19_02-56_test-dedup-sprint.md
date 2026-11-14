@@ -46,6 +46,7 @@ All extracted duplication was real maintenance burden. All accepted duplication 
 
 ### Accepted duplication (3 groups, rationale recorded)
 
+<!-- check-rows:ledger -->
 | Group | File                                        | Why accepted                                                                                                                                            |
 | ----- | ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 6     | `printer/semantic_precision_test.go:60-116` | The literal Go source IS the test data — Lock/Unlock vs RLock/RUnlock. Inline visibility required.                                                      |

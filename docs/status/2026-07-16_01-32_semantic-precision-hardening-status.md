@@ -50,6 +50,7 @@ These patterns were ALL broken for statement-level clones because `BaseType` was
 
 ### Tests added (15 new test cases across 4 files)
 
+<!-- check-rows:ledger -->
 | File                                           | Tests | Purpose                                                                                                         |
 | ---------------------------------------------- | ----- | --------------------------------------------------------------------------------------------------------------- |
 | `syntax/fingerprint_test.go`                   | 4     | Fingerprint field behavior, serialization idempotency, non-statement Val(), Clone()                             |
@@ -60,6 +61,7 @@ These patterns were ALL broken for statement-level clones because `BaseType` was
 
 ### Library research completed
 
+<!-- check-rows:ledger -->
 | Library                      | Verdict                        | Reason                                                                                                  |
 | ---------------------------- | ------------------------------ | ------------------------------------------------------------------------------------------------------- |
 | `go/types`                   | **Yes, as opt-in future mode** | Eliminates `a.String()` vs `b.String()` FP class. 10-100x slower. Highest-impact improvement available. |

@@ -28,6 +28,7 @@
 
 ### 86 New Test Subtests Across 4 New Files
 
+<!-- check-rows:ledger -->
 | File                                   | Tests | Subtests | Coverage Target                                                                                               |
 | -------------------------------------- | ----- | -------- | ------------------------------------------------------------------------------------------------------------- |
 | `cmd/run_output_test.go`               | 2     | 10       | `shouldSuppressGroup` + `minCloneLineCount`                                                                   |
@@ -37,12 +38,13 @@
 
 ### Verification
 
+<!-- check-rows:ledger -->
 | Check                                                                | Result   |
 | -------------------------------------------------------------------- | -------- |
 | `go build ./...`                                                     | PASS     |
 | `go test ./...` (24 non-empty packages)                              | ALL PASS |
 | `go test -race -count=1 ./cmd/... ./printer/... ./job/... ./pkg/...` | ALL PASS |
-| `golangci-lint` — no NEW issues in changed files                     | PASS     |
+| ~~`golangci-lint` — no NEW issues in changed files~~ done — fixed — lint is 106-linter clean since 2026-09-29 (AGENTS.md); the flaky os.Exit tests were fixed | ~~PASS~~ |
 
 ---
 

@@ -1,3 +1,0 @@
-docs/status/2026-07-11_14-27_post-buildflow-recovery.md	44	v	fixed — lint is 106-linter clean since 2026-09-29 (AGENTS.md); the flaky os.Exit tests were fixed
-docs/status/2026-07-11_14-27_post-buildflow-recovery.md	45	v	won't implement — pooling was measured NO-GO for the stream slices (ADR-0022 era)
-docs/status/2026-07-11_14-27_post-buildflow-recovery.md	47	v	fixed — lint is 106-linter clean since 2026-09-29 (AGENTS.md); the flaky os.Exit tests were fixed

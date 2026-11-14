@@ -60,9 +60,9 @@
 | Skill | What's Done           | What Remains                                                           |
 | ----- | --------------------- | ---------------------------------------------------------------------- |
 <!-- check-rows:ledger -->
-| ~~    | **full-code-review**  | All 143 production files reviewed, 8 issues fixed, findings catalogued |
-| ~~    | **data-model-review** | HTML report written with redesign proposals                            |
-| ~~    | **todo-list-builder** | TODO_LIST.md updated with session findings                             |
+|       | ~~**full-code-review**~~ **done — executed in-session.** | ~~All 143 production files reviewed, 8 issues fixed, findings catalogued~~ |
+|       | ~~**data-model-review**~~ **done — executed in-session.** | ~~HTML report written with redesign proposals~~ |
+|       | ~~**todo-list-builder**~~ **done — executed in-session.** | ~~TODO_LIST.md updated with session findings~~ |
 
 ### Code Review Findings Identified But Not Fixed
 
@@ -207,6 +207,7 @@ The project gitignores all `*.html` files (line 22 of `.gitignore`). This makes 
 
 ## Session Metrics
 
+<!-- check-rows:ledger -->
 | Metric                                     | Value                                          |
 | ------------------------------------------ | ---------------------------------------------- |
 | Commits                                    | 7                                              |
@@ -216,7 +217,7 @@ The project gitignores all `*.html` files (line 22 of `.gitignore`). This makes 
 | Build status                               | GREEN                                          |
 | Test packages                              | 24/24 pass                                     |
 | Lint issues (production)                   | 0                                              |
-| Lint issues (test only)                    | 56 (ginkgolinter + makezero, pre-existing)     |
+| ~~Lint issues (test only)~~ done — fixed — lint is 106-linter clean since 2026-09-29 (AGENTS.md); the flaky os.Exit tests were fixed | ~~56 (ginkgolinter + makezero, pre-existing)~~ |
 | Skills requested                           | 14                                             |
 | Skills fully executed                      | 9                                              |
 | Skills assessed + skipped (with rationale) | 4                                              |

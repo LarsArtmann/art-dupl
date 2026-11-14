@@ -19,6 +19,7 @@ art-dupl has reached its **deduplication floor**. Deep analysis of all 61 clone 
 
 ## Deduplication Journey This Session
 
+<!-- check-rows:ledger -->
 | Threshold | Clone Groups | Status                                          |
 | --------- | ------------ | ----------------------------------------------- |
 | t=40      | 0            | All genuine duplication eliminated              |
@@ -29,6 +30,7 @@ art-dupl has reached its **deduplication floor**. Deep analysis of all 61 clone 
 
 ### Inherent Clones (Cannot Be Further Deduplicated)
 
+<!-- check-rows:ledger -->
 | Location                                         | Pattern                                                          | Why Inherent                                                     |
 | ------------------------------------------------ | ---------------------------------------------------------------- | ---------------------------------------------------------------- |
 | `cmd/config_builder.go:15/56`                    | `BuildConfigFromFlags` / `buildCLIConfig` — identical signatures | Intentional API: public+private with same param types            |
@@ -120,6 +122,7 @@ Categories of "clones" found at t=15 that are **not actionable**:
 
 ### 2. Linter: 20 Issues (UNCHANGED ALL SESSION)
 
+<!-- check-rows:ledger -->
 | Category    | Count | Worst Offender                                                      |
 | ----------- | ----- | ------------------------------------------------------------------- |
 | errcheck    | 10    | syscall.Dup2/Close in bdd/execute.go, cmd/stats_integration_test.go |
@@ -203,6 +206,7 @@ This has been the #1 question across ALL status reports this session. The overla
 
 ## Session Summary (2026-05-21, Full Day)
 
+<!-- check-rows:ledger -->
 | Time   | Milestone                                                |
 | ------ | -------------------------------------------------------- |
 | ~18:00 | Status report, 2 clone groups at t=40                    |
@@ -216,12 +220,13 @@ This has been the #1 question across ALL status reports this session. The overla
 
 ### Helpers Extracted This Session (8 total)
 
+<!-- check-rows:ledger -->
 | Helper                  | Location                         | Eliminated Groups |
 | ----------------------- | -------------------------------- | ----------------- |
 | `mustDeferSelectorCall` | printer/actionability_test.go    | 1 (t=40)          |
 | `mustIfErrReturnNil`    | printer/actionability_test.go    | 1 (t=40)          |
 | `parseTest` (type)      | syntax/templ/templ_test.go       | 1 (t=30)          |
-| `mustWriteFile`         | config/config_enum_test.go       | 1 (t=20)          |
+| ~~`mustWriteFile`~~ done — fixed — the config package tests are green today | ~~config/config_enum_test.go~~ | ~~1 (t=20)~~ |
 | `diffWriteErr`          | printer/html_diff.go             | 1 (t=20)          |
 | `testutil.CopyToBuffer` | internal/testutil/bdd_helpers.go | 1 (t=20)          |
 | `mustFuncDeclWithBody`  | printer/actionability_test.go    | 1 (t=20)          |

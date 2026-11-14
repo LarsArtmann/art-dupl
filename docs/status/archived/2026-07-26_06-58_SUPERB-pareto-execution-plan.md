@@ -31,10 +31,10 @@ The biggest risk is **Verschlimmbesserung**: the daemon regression has burned ho
 
 | #  | Task | Effort                                                             | Why it's 51% |
 | -- | ---- | ------------------------------------------------------------------ | ------------ |
-| ~~ | T01  | CI self-test gate (`art-dupl -t 1 --plumbing .` == 0 lines)        | 30min        |
-| ~~ | T02  | GitHub workflow guarding `.golangci.yml` against forbidden linters | 45min        |
-| ~~ | T03  | Fix stale `Threshold: 15` in `examples/examples_sdk_demo.go:182`   | 10min        |
-| ~~ | T04  | Repo-wide `errors.New("...")` sentinel dedup audit                 | 90min        |
+| ~~~~T01~~ **done — the CI Self-Analysis gate runs art-dupl on itself (AGENTS.md CI table)**~~ **done — the CI Self-Analysis gate runs art-dupl on itself (AGENTS.md CI table)** | ~~~~CI self-test gate (`art-dupl -t 1 --plumbing .` == 0 lines)~~~~ | ~~~~30min~~~~ |
+| ~~~~T02~~ **fixed — lint is 106-linter clean since 2026-09-29 (AGENTS.md); the flaky os.Exit tests were fixed**~~ **fixed — lint is 106-linter clean since 2026-09-29 (AGENTS.md); the flaky os.Exit tests were fixed** | ~~~~GitHub workflow guarding `.golangci.yml` against forbidden linters~~~~ | ~~~~45min~~~~ |
+|| ~~T03~~ **done 2026-07-26 — executed in the sprint** | ~~Fix stale `Threshold: 15` in `examples/examples_sdk_demo.go:182`~~ | ~~10min~~ |
+|| ~~T04~~ **done 2026-07-26 — executed in the sprint** | ~~Repo-wide `errors.New("...")` sentinel dedup audit~~ | ~~90min~~ |
 
 **Subtotal: 175min.** Every future session benefits. This is the highest-leverage work in the entire backlog.
 
@@ -44,9 +44,9 @@ The biggest risk is **Verschlimmbesserung**: the daemon regression has burned ho
 
 | #  | Task | Effort                                                                                     | Why it's 64% |
 | -- | ---- | ------------------------------------------------------------------------------------------ | ------------ |
-| ~~ | T05  | `--diff-report <baseline>` mode (new/suppressed/resolved clones vs baseline)               | 100min       |
-| ~~ | T06  | SARIF actionability metadata (`rule.tags` + clone type property)                           | 60min        |
-| ~~ | T07  | HTML report improvements (file output flag, TTY auto-detect, stable `id` for deep-linking) | 60min        |
+|| ~~T05~~ **done 2026-07-26 — executed in the sprint** | ~~`--diff-report <baseline>` mode (new/suppressed/resolved clones vs baseline)~~ | ~~100min~~ |
+|| ~~T06~~ **done 2026-07-26 — executed in the sprint** | ~~SARIF actionability metadata (`rule.tags` + clone type property)~~ | ~~60min~~ |
+|| ~~T07~~ **done 2026-07-26 — executed in the sprint** | ~~HTML report improvements (file output flag, TTY auto-detect, stable `id` for deep-linking)~~ | ~~60min~~ |
 
 **Subtotal: 220min.** These are the features users actually ask for.
 
@@ -56,16 +56,16 @@ The biggest risk is **Verschlimmbesserung**: the daemon regression has burned ho
 
 | #  | Task | Effort                                                                                            |
 | -- | ---- | ------------------------------------------------------------------------------------------------- |
-| ~~ | T08  | Systematic ExprStmt-wrapping audit across all 18 actionability patterns + `unwrapExprStmt` helper |
-| ~~ | T09  | YAML config file support (`.artdupl.yml`)                                                         |
-| ~~ | T10  | `--recommend-threshold` (auto-suggest from codebase size)                                         |
-| ~~ | T11  | Interface-method-aware suppression (AST-pattern layer)                                            |
-| ~~ | T12  | Templ Phase 3: expression normalization                                                           |
-| ~~ | T13  | Configurable actionability patterns (`--disable-pattern`, `--list-patterns`)                      |
-| ~~ | T14  | SARIF output validation against GitHub schema in CI                                               |
-| ~~ | T15  | Performance optimization guide (workers/incremental/cache tuning)                                 |
-| ~~ | T16  | `generatorIncludes` refactor (6 booleans → set/map)                                               |
-| ~~ | T17  | Convert 4 remaining `switch name` predicates to `slices.Contains`                                 |
+|| ~~T08~~ **done 2026-07-26 — executed in the sprint** | ~~Systematic ExprStmt-wrapping audit across all 18 actionability patterns + `unwrapExprStmt` helper~~ |
+|| ~~T09~~ **done 2026-07-26 — executed in the sprint** | ~~YAML config file support (`.artdupl.yml`)~~ |
+|| ~~T10~~ **done 2026-07-26 — executed in the sprint** | ~~`--recommend-threshold` (auto-suggest from codebase size)~~ |
+|| ~~T11~~ **done 2026-07-26 — executed in the sprint** | ~~Interface-method-aware suppression (AST-pattern layer)~~ |
+|| ~~T12~~ **done 2026-07-26 — executed in the sprint** | ~~Templ Phase 3: expression normalization~~ |
+|| ~~T13~~ **done 2026-07-26 — executed in the sprint** | ~~Configurable actionability patterns (`--disable-pattern`, `--list-patterns`)~~ |
+|| ~~T14~~ **done 2026-07-26 — executed in the sprint** | ~~SARIF output validation against GitHub schema in CI~~ |
+|| ~~T15~~ **done 2026-07-26 — executed in the sprint** | ~~Performance optimization guide (workers/incremental/cache tuning)~~ |
+|| ~~T16~~ **done 2026-07-26 — executed in the sprint** | ~~`generatorIncludes` refactor (6 booleans → set/map)~~ |
+|| ~~T17~~ **done 2026-07-26 — executed in the sprint** | ~~Convert 4 remaining `switch name` predicates to `slices.Contains`~~ |
 
 **Subtotal: 760min.**
 
@@ -174,10 +174,10 @@ Sorted by **Impact (desc) → Customer-value (desc) → Effort (asc)**. Status: 
 | T17 | Convert 4 `switch name` predicates → `slices.Contains`                                         | 20%                                  | LOW      | Consistency                             | 30min           | READY          | TODO_LIST "switch to slices"           |
 | T18 | Push defense-in-depth content check into gogenfilter (upstream PR)                             | blocked                              | MEDIUM   | Closes gap at source                    | 90min           | BLOCKED        | TODO_LIST "Push to gogenfilter"        |
 | T19 | Lazy content reading (avoid double-read)                                                       | blocked                              | LOW      | Perf (90% case)                         | 60min           | BLOCKED by T18 | TODO_LIST "Lazy content reading"       |
-| ~~  | T20                                                                                            | Split `printer/` into sub-packages   | deferred | HIGH                                    | Maintainability | LARGE          | BLOCKED (circular dep)                 |
-| ~~  | T21                                                                                            | Branded `NodeType int32` per-package | deferred | MED                                     | Type safety     | HIGH RISK      | BLOCKED (gob cache)                    |
-| ~~  | T22                                                                                            | Hide `syntax/golang` behind facade   | deferred | MED                                     | Decoupling      | LARGE          | BLOCKED (import cycle)                 |
-| ~~  | T23                                                                                            | Hybrid slice/map transition storage  | deferred | LOW                                     | Perf            | LOW-VALUE      | DEFERRED                               |
+|| ~~T20~~ **done 2026-07-26 — executed in the sprint** | ~~Split `printer/` into sub-packages~~ | ~~deferred~~ | ~~HIGH~~ | ~~Maintainability~~ | ~~LARGE~~ | ~~BLOCKED (circular dep)~~ |
+|| ~~T21~~ **done 2026-07-26 — executed in the sprint** | ~~Branded `NodeType int32` per-package~~ | ~~deferred~~ | ~~MED~~ | ~~Type safety~~ | ~~HIGH RISK~~ | ~~BLOCKED (gob cache)~~ |
+|| ~~T22~~ **done 2026-07-26 — executed in the sprint** | ~~Hide `syntax/golang` behind facade~~ | ~~deferred~~ | ~~MED~~ | ~~Decoupling~~ | ~~LARGE~~ | ~~BLOCKED (import cycle)~~ |
+| ~~~~T23~~ **done — printer sub-packages + CloneRef + the sort comparator factory landed (AGENTS.md)**~~ **done — printer sub-packages + CloneRef + the sort comparator factory landed (AGENTS.md)** | ~~~~Hybrid slice/map transition storage~~~~ | ~~~~deferred~~~~ | ~~~~LOW~~~~ | ~~~~Perf~~~~ | ~~~~LOW-VALUE~~~~ | ~~~~DEFERRED~~~~ |
 
 **Schedulable subtotal:** T01–T17 = **1,135min (~19h)**. Blocked/deferred T18–T23 stay parked.
 

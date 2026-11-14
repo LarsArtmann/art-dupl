@@ -20,6 +20,7 @@ This session addressed 6 gaps from the previous session's self-review. All code 
 
 ## A) FULLY DONE (and verified)
 
+<!-- check-rows:ledger -->
 | # | Gap from previous report                     | What was done                                                                                                                                                                                                                                                  | Verification                                                      |
 | - | -------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
 | 1 | `doc.go:31` stale `Threshold: 15`            | Changed to `artdupl.DefaultThreshold` in godoc example                                                                                                                                                                                                         | `rg "Threshold:\s+15" pkg/artdupl/` returns 0 results             |
@@ -27,7 +28,7 @@ This session addressed 6 gaps from the previous session's self-review. All code 
 | 3 | `SourceBreakdown()` dead code                | Fully wired into stats output: new `SetFilterSourceStats` method on `StatsPrinter` interface, new `FilterSourceBreakdown` field in `StatsView` + `StatsConfig`, rendered in both text ("Filter Source:" section) and JSON (`filterSourceBreakdown` key) output | Build passes, `nix flake check` passes, existing tests pass       |
 | 4 | CHANGELOG.md not updated                     | Added entries for `DefaultThreshold` constant, filter source tracking, progress `io.Writer` injection, `//nolint:exhaustruct` cleanup, threshold consistency, type-aware fallback test hardening                                                               | Reviewed against actual changes                                   |
 | 5 | Race detector never run                      | `CGO_ENABLED=1 go test -race ./...` — all 27 packages pass with zero data races                                                                                                                                                                                | Full output captured in session                                   |
-| 6 | `nix flake check` never run                  | All 9 checks pass (fmt, lint, test, race, bench, disabled-linters, build, etc.)                                                                                                                                                                                | Required 2 fixes: gofmt on struct alignment + `wsl_v5` blank line |
+| ~~6~~ done — fixed — lint is 106-linter clean since 2026-09-29 (AGENTS.md); the flaky os.Exit tests were fixed | ~~`nix flake check` never run~~ | ~~All 9 checks pass (fmt, lint, test, race, bench, disabled-linters, build, etc.)~~ | ~~Required 2 fixes: gofmt on struct alignment + `wsl_v5` blank line~~ |
 
 ### Previous session Q1 answered
 
@@ -160,7 +161,7 @@ Missing blank line between consecutive `if` blocks inside `fillJSONOverview`. My
 37. **Add CSV support for filter breakdowns**: Currently CSV only shows raw filtered count
 38. **Review `DefaultThreshold` naming**: `DefaultThreshold` vs `DefaultCloneThreshold`?
 39. **Consolidate test helpers**: Extract shared setup to testutil
-40. **Add contract test between gogenfilter and art-dupl**: Verify filter behavior matches
+~~40. **Add contract test between gogenfilter and art-dupl**: Verify filter behavior matches~~ done — TestMarkersMatchGogenfilter cross-validates the markers (AGENTS.md)
 41. **Review `t.Context()` usage**: Go 1.24+ feature consistency
 42. **Audit `io.Discard` vs capture**: Consider capturing progress output for failed test debugging
 43. **Review error handling in `shouldIncludeFile`**: `os.ReadFile` error returns `true` (include)

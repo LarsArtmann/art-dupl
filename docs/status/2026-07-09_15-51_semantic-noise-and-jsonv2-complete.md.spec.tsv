@@ -1,8 +1,0 @@
-docs/status/2026-07-09_15-51_semantic-noise-and-jsonv2-complete.md	24	v	struck — tracked on ROADMAP (Architecture: transform.go table-driven handlers)
-docs/status/2026-07-09_15-51_semantic-noise-and-jsonv2-complete.md	51	v	done — the living docs are maintained continuously (docs-health cadence)
-docs/status/2026-07-09_15-51_semantic-noise-and-jsonv2-complete.md	54	v	done — CSV is an OutputFormat value (config enums; stats + run output paths)
-docs/status/2026-07-09_15-51_semantic-noise-and-jsonv2-complete.md	121	v	done — the living docs are maintained continuously (docs-health cadence)
-docs/status/2026-07-09_15-51_semantic-noise-and-jsonv2-complete.md	136	v	done — the living docs are maintained continuously (docs-health cadence)
-docs/status/2026-07-09_15-51_semantic-noise-and-jsonv2-complete.md	148	v	fixed — lint is 106-linter clean since 2026-09-29 (AGENTS.md); the flaky os.Exit tests were fixed
-docs/status/2026-07-09_15-51_semantic-noise-and-jsonv2-complete.md	169	v	done — docs/benchmarks/ baselines + the Performance gate + alloc-gate
-docs/status/2026-07-09_15-51_semantic-noise-and-jsonv2-complete.md	181	v	fixed — lint is 106-linter clean since 2026-09-29 (AGENTS.md); the flaky os.Exit tests were fixed

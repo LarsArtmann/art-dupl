@@ -18,6 +18,7 @@
 
 ## a) FULLY DONE
 
+<!-- check-rows:ledger -->
 | # | Item                                                                                                                                                                                                                          | Evidence                                                                                   |
 | - | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
 | 1 | Issue **#1 verified and closed as completed** — it was OPEN despite the 2026-09-19 report declaring it implemented; all three "To verify" criteria green as committed tests on current HEAD (`eabe5f77`)                      | Evidence comment: https://github.com/LarsArtmann/art-dupl/issues/1#issuecomment-5784060679 |
@@ -31,10 +32,10 @@
 
 | #  | Item                            | State                                                                                                               |
 | -- | ------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
-| 1  | Issue **#2** (integration test) | Filed with design checklist; not implemented. Converts the 2026-09-19 one-off live CLI proof into a permanent gate. |
-| ~~ | 2                               | Issue **#3** (surface decision + ADR)                                                                               |
-| 3  | Issue **#4** (dead path)        | Filed; copy-vs-summary choice blocked on preference (report №1's Q3, still unanswered — embedded in the issue).     |
-| ~~ | 4                               | Report №1 → tracker linkage                                                                                         |
+| ~~1~~ **won't implement — the SARIF round-trip test superseded it (bdd/sarif_gofinding_integration_test.go).** | ~~Issue **#2** (integration test)~~ | ~~Filed with design checklist; not implemented.~~ |
+| ~~2~~ **decided — ADR-0028 settled the surface (library-only).** | ~~Issue **#3** (surface decision + ADR)~~ | ~~Filed.~~ |
+| ~~3~~ **superseded — the surface settled via ADR-0028; the preference question is moot.** | ~~Issue **#4** (dead path)~~ | ~~Filed; copy-vs-summary choice blocked on preference.~~ |
+| ~~4~~ **done — the reports cross-reference the tracker.** | ~~Report №1 → tracker linkage~~ | ~~Linked.~~ |
 
 ## c) NOT STARTED
 

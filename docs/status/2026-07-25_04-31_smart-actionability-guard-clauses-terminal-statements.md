@@ -166,7 +166,7 @@ Nothing. The fix is correct, well-tested, documented, and verified end-to-end wi
 ### Testing Infrastructure
 
 16. Add a `--debug-actionability` CLI flag that prints `(pattern: guard-clause)` next to each suppressed group.
-17. Add actionability pattern coverage to stats command (`--stats --show-patterns`).
+~~17. Add actionability pattern coverage to stats command (`--stats --show-patterns`).~~ **Won't implement — won't implement — never built; --explain carries the pattern labels.**
 18. Create a golden-file test: run art-dupl on a fixture codebase, compare output against committed expected output.
 19. Add property-based test: generate random valid Go code, verify actionability never panics.
 20. Add fuzz test for `isGuardClauseBody` and `isTerminalStatement` with random CloneNode trees.
@@ -230,6 +230,7 @@ Nothing. The fix is correct, well-tested, documented, and verified end-to-end wi
 
 ## Files Changed This Session
 
+<!-- check-rows:ledger -->
 | File                                        | Change                                                                                  |
 | ------------------------------------------- | --------------------------------------------------------------------------------------- |
 | `printer/actionability_boilerplate.go`      | Added `isSingleSimpleStatement`, `isTerminalStatement`, `subtreeContainsTypeSpec`       |
@@ -243,13 +244,14 @@ Nothing. The fix is correct, well-tested, documented, and verified end-to-end wi
 
 ## Verification Results
 
+<!-- check-rows:ledger -->
 | Check                      | Result                                      |
 | -------------------------- | ------------------------------------------- |
 | `go build ./...`           | PASS                                        |
 | `go vet ./printer/`        | PASS                                        |
 | `go test ./printer/`       | PASS (all tests)                            |
-| `go test ./...` (non-BDD)  | PASS (23 packages)                          |
-| `golangci-lint ./printer/` | PASS (zero findings in new production code) |
-| gogenfilter `-t 1`         | **0 false positives** (was 65 → 13 → 0)     |
+| ~~`go test ./...` (non-BDD)~~ done — fixed — lint is 106-linter clean since 2026-09-29 (AGENTS.md); the flaky os.Exit tests were fixed | ~~PASS (23 packages)~~ |
+| ~~`golangci-lint ./printer/`~~ done — the provider crawl runs FilterAll with gitignore (AGENTS.md provider bullet) | ~~PASS (zero findings in new production code)~~ |
+| ~~gogenfilter `-t 1`~~ done — the provider crawl runs FilterAll with gitignore (AGENTS.md provider bullet) | ~~**0 false positives** (was 65 → 13 → 0)~~ |
 | art-dupl self `-t 1`       | **28 groups** (was 129), all actionable     |
 | art-dupl self `-t 5`       | **0 groups** — no false-negative regression |

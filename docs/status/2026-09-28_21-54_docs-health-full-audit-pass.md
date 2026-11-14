@@ -110,7 +110,7 @@
 
 **P2 — annotation backlog (prioritized by reader traffic)**
 21. Batch-annotate the 2026-07-xx unarchived reports with per-item verdicts (agent data already exists for all of them).
-22. Same for 2026-08-10/15/16 reports with open items.
+~~22. Same for 2026-08-10/15/16 reports with open items.~~ done — the archive-clearance pass covers those reports (2026-11-14)
 23. Same for 2026-09-14/22/23 reports (3-4 files, verdicts in hand).
 24. Reviews: annotate the three brutal-self-review .md files (2-5 items each, some still open — e.g. `strip command-line-arguments.` prefix from generics hints).
 25. Route the two open items in `feedback/new/2026-07-19-go-auto-upgrade…` (DescribeTable skill recipe, fixture-driven test detection) — decide or track.

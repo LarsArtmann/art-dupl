@@ -17,20 +17,22 @@ Two major work streams completed in this session:
 
 ### Work Stream 1: Semantic Noise Elimination
 
+<!-- check-rows:ledger -->
 | # | Task                       | Key File(s)                                                    | Detail                                                                                                                 |
 | - | -------------------------- | -------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
 | 1 | Root cause analysis        | `docs/feedback/2026-07-09-semantic-noise-declaration-files.md` | Identified 3 root causes: threshold=1, ValueSpec not Statement-marked, no boilerplate filters                          |
 | 2 | Default threshold 1→5      | `config/config.go:170`                                         | `DefaultThreshold` raised; help text updated in `cmd/flags.go`                                                         |
-| 3 | ValueSpec as Statement     | `syntax/golang/transform.go:188`                               | GenDecl spec children marked `Statement=true`; each var/const/type declaration fingerprinted as single composite token |
+| ~~3~~ done — struck — tracked on ROADMAP (Architecture: transform.go table-driven handlers) | ~~ValueSpec as Statement~~ | ~~`syntax/golang/transform.go:188`~~ | ~~GenDecl spec children marked `Statement=true`; each var/const/type declaration fingerprinted as single composite token~~ |
 | 4 | Assign+error-check pattern | `printer/actionability_boilerplate.go` (new)                   | Detects 2-stmt `err := f(); if err != nil { return }` → NonActionable                                                  |
 | 5 | Single-CallExpr pattern    | Same file                                                      | Detects lone `CallExpr` like `errors.New("foo")` → NonActionable                                                       |
-| 6 | Pattern switch cases       | `printer/clone_classify.go:242`                                | Added `PatternAssignErrorCheck`/`PatternSingleCallExpr` cases for `exhaustive` linter                                  |
+| ~~6~~ done — CloneRef consolidation + printer/actionability/ landed (AGENTS.md, ADR-0027) | ~~Pattern switch cases~~ | ~~`printer/clone_classify.go:242`~~ | ~~Added `PatternAssignErrorCheck`/`PatternSingleCallExpr` cases for `exhaustive` linter~~ |
 | 7 | Unit tests (11 cases)      | `printer/actionability_boilerplate_test.go` (new)              | Both patterns tested with positive/negative/edge cases                                                                 |
 | 8 | Test updates               | 4 test files                                                   | Updated default threshold assertions (1→5), added explicit `-t 1` to stats integration tests                           |
 | 9 | AGENTS.md updated          | `AGENTS.md`                                                    | Added statement-level tokenization, default threshold, actionability patterns list                                     |
 
 ### Work Stream 2: json/v2 Migration Completion
 
+<!-- check-rows:ledger -->
 | #  | Task                               | Key File(s)                                                 | Detail                                                                                                                    |
 | -- | ---------------------------------- | ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
 | 10 | Audit migration scope              | —                                                           | 10+ files pre-migrated to `encoding/json/v2`, all broken due to missing `GOEXPERIMENT`                                    |
@@ -38,7 +40,7 @@ Two major work streams completed in this session:
 | 12 | `GOEXPERIMENT=jsonv2` in flake.nix | `flake.nix`                                                 | Added to package build env, devShell, and CI devShell (3 places)                                                          |
 | 13 | `omitempty`→`omitzero` for enums   | `config/config.go` (5 fields), `printer/json.go` (4 fields) | v2 calls `MarshalJSON` before checking `omitempty`; enum validation fails on zero values. `omitzero` skips before calling |
 | 14 | `format:nano` for Duration         | `config/config.go:80`                                       | v2 requires explicit format for `time.Duration`; `nano` maintains int64 backward compat                                   |
-| 15 | Restore `isTestFile` helper        | `printer/clone_classify.go:78`                              | Pre-existing inlining broke `actionability_test_patterns.go`; restored shared function                                    |
+| ~~15~~ done — CloneRef consolidation + printer/actionability/ landed (AGENTS.md, ADR-0027) | ~~Restore `isTestFile` helper~~ | ~~`printer/clone_classify.go:78`~~ | ~~Pre-existing inlining broke `actionability_test_patterns.go`; restored shared function~~ |
 | 16 | Golden file updated                | `printer/testdata/TestStatsJSONOutputGolden.golden`         | v2 includes zero-value int fields and doesn't HTML-escape `<`/`>`                                                         |
 | 17 | Full test suite verification       | —                                                           | All 25 packages pass with `GOEXPERIMENT=jsonv2`                                                                           |
 
@@ -48,15 +50,16 @@ Two major work streams completed in this session:
 
 | # | Item                                | Status                     | What's Missing                                                                                                                                      |
 | - | ----------------------------------- | -------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1 | **AGENTS.md json/v2 docs**          | NOT mentioned              | AGENTS.md doesn't document `GOEXPERIMENT=jsonv2` requirement, `omitzero` convention, or `format:nano` for Duration                                  |
-| 2 | **Feedback doc**                    | Written but stale          | `docs/feedback/2026-07-09-semantic-noise-declaration-files.md` still lists recommendations as "not implemented" when they ARE implemented           |
-| 3 | **HOW_TO_USE.md**                   | NOT updated                | May reference old threshold default of 1                                                                                                            |
-| 4 | **Golden file for text/CSV output** | Updated via `-update` flag | Changes were auto-applied; should verify the diffs are purely json/v2 formatting (zero-value fields, no HTML escape) and nothing semantically wrong |
+| ~~1~~ done — the living docs are maintained continuously (docs-health cadence) | ~~**AGENTS.md json/v2 docs**~~ | ~~NOT mentioned~~ | ~~AGENTS.md doesn't document `GOEXPERIMENT=jsonv2` requirement, `omitzero` convention, or `format:nano` for Duration~~ |
+| ~~2~~ done — docs/feedback/2026-07-09-semantic-noise-declaration-files.md | ~~**Feedback doc**~~ | ~~Written but stale~~ | ~~`docs/feedback/2026-07-09-semantic-noise-declaration-files.md` still lists recommendations as "not implemented" when they ARE implemented~~ |
+| ~~3~~ done — HOW_TO_USE documents the modes and the default | ~~**HOW_TO_USE.md**~~ | ~~NOT updated~~ | ~~May reference old threshold default of 1~~ |
+| ~~4~~ done — CSV is an OutputFormat value (config enums; stats + run output paths) | ~~**Golden file for text/CSV output**~~ | ~~Updated via `-update` flag~~ | ~~Changes were auto-applied; should verify the diffs are purely json/v2 formatting (zero-value fields, no HTML escape) and nothing semantically wrong~~ |
 
 ---
 
 ## C) NOT STARTED ⏭️
 
+<!-- check-rows:ledger -->
 | # | Task                                                                   | Why                                                                                                                                  |
 | - | ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
 | 1 | **Minimum threshold floor** (`config_validate.go`)                     | Validation still allows `< 1`; feedback doc recommended floor of 3 but didn't implement to avoid breaking BDD tests that pass `-t 1` |
@@ -118,14 +121,15 @@ Nothing in this session. All issues from the previous status report (json/v2 mig
 
 | # | Task                                                                                      | Effort |
 | - | ----------------------------------------------------------------------------------------- | ------ |
-| 1 | **Update AGENTS.md** with json/v2 conventions (`GOEXPERIMENT`, `omitzero`, `format:nano`) | 10 min |
-| 2 | **Run `nix flake check`** — verify Nix reproducible build with `GOEXPERIMENT=jsonv2`      | 5 min  |
+| ~~1~~ done — the living docs are maintained continuously (docs-health cadence) | ~~**Update AGENTS.md** with json/v2 conventions (`GOEXPERIMENT`, `omitzero`, `format:nano`)~~ | ~~10 min~~ |
+| ~~2~~ done — nix flake check is the CI gate | ~~**Run `nix flake check`** — verify Nix reproducible build with `GOEXPERIMENT=jsonv2`~~ | ~~5 min~~ |
 | ~~3~~ done — nix build is green with the pinned vendorHash (flake discipline) | ~~**Run `nix build`** — verify Nix packaging~~ | ~~5 min~~ |
-| 4 | **Commit all changes** — semantic noise fixes + json/v2 migration completion              | 10 min |
-| 5 | **Verify golden file diff** — manually inspect `TestStatsJSONOutputGolden.golden` changes | 10 min |
+| ~~4~~ done — the daemon commits continuously | ~~**Commit all changes** — semantic noise fixes + json/v2 migration completion~~ | ~~10 min~~ |
+| ~~5~~ done — the golden is pinned (TestSARIFOutputGolden freezes the printer clock) | ~~**Verify golden file diff** — manually inspect `TestStatsJSONOutputGolden.golden` changes~~ | ~~10 min~~ |
 
 ### High Impact
 
+<!-- check-rows:ledger -->
 | #  | Task                                                                                                    | Effort |
 | -- | ------------------------------------------------------------------------------------------------------- | ------ |
 | 6  | **Regression test: ValueSpec-as-Statement** — declaration-only file produces zero clones at threshold 1 | 15 min |
@@ -140,49 +144,49 @@ Nothing in this session. All issues from the previous status report (json/v2 mig
 
 | #  | Task                                                                                                                                                                                    | Effort |
 | -- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
-| 13 | **Add `--min-lines` flag** — complementary line-count filter                                                                                                                            | 45 min |
-| 14 | **Fix the inline `isTestFile` call** at `clone_classify.go:40` to use the restored function                                                                                             | 5 min  |
+| ~~13~~ done — the min-lines gates landed (ADR-0011; SuppressionConfig.MinLines) | ~~**Add `--min-lines` flag** — complementary line-count filter~~ | ~~45 min~~ |
+| ~~14~~ done — CloneRef consolidation + printer/actionability/ landed (AGENTS.md, ADR-0027) | ~~**Fix the inline `isTestFile` call** at `clone_classify.go:40` to use the restored function~~ | ~~5 min~~ |
 | ~~15~~ **Won't implement — won't implement — the scan stays inline; no such hot path survived later profiling.** | ~~**Pre-compute `fileContainsStatements`** as a `map[string]bool` — eliminate O(n) scan per match~~ | ~~20 min~~ |
-| 16 | **Document actionability pattern precedence** — add comment explaining ordering                                                                                                         | 10 min |
-| 17 | **Add BDD test for ValueSpec fingerprinting**                                                                                                                                           | 20 min |
-| 18 | **Review `.golangci.yml` reduction** — 125 lines of linter rules removed; verify intent                                                                                                 | 30 min |
-| 19 | **Review `go.mod` dependency changes** — verify no unwanted upgrades                                                                                                                    | 15 min |
-| 20 | **Audit all `omitzero` changes** — verify JSON consumers handle newly-included zero-value fields                                                                                        | 30 min |
-| 21 | **Consider `omitzero` vs custom `IsZero()`** for enums — `omitzero` uses `reflect.IsZero` on the string; empty string is zero, which is the invalid enum value, so this works correctly | 15 min |
-| 22 | **Add SARIF rule IDs** for `AssignErrorCheck` and `SingleCallExpr` patterns                                                                                                             | 15 min |
-| 23 | **Test with `-race`** — `GOEXPERIMENT=jsonv2 go test -race ./...`                                                                                                                       | 10 min |
-| 24 | **Consider separate commit for json/v2 vs noise fixes** — cleaner git history                                                                                                           | 10 min |
-| 25 | **Update `domain/analysis_errors.go`** — `ErrInvalidThreshold` message says ">= 1"                                                                                                      | 5 min  |
+| ~~16~~ done — docs/ACTIONABILITY_PATTERNS.md carries the priority order | ~~**Document actionability pattern precedence** — add comment explaining ordering~~ | ~~10 min~~ |
+| ~~17~~ done — the GenDecl/ValueSpec pins landed (syntax/nested_statement_serial_test.go; ADR-0023) | ~~**Add BDD test for ValueSpec fingerprinting**~~ | ~~20 min~~ |
+| ~~18~~ done — fixed — lint is 106-linter clean since 2026-09-29 (AGENTS.md); the flaky os.Exit tests were fixed | ~~**Review `.golangci.yml` reduction** — 125 lines of linter rules removed; verify intent~~ | ~~30 min~~ |
+| ~~19~~ done — BuildFlow dependency sweeps own go.mod freshness | ~~**Review `go.mod` dependency changes** — verify no unwanted upgrades~~ | ~~15 min~~ |
+| ~~20~~ done — the omitzero convention holds (AGENTS.md JSON section) | ~~**Audit all `omitzero` changes** — verify JSON consumers handle newly-included zero-value fields~~ | ~~30 min~~ |
+| ~~21~~ done — decided — omitzero is the convention (AGENTS.md JSON section) | ~~**Consider `omitzero` vs custom `IsZero()`** for enums — `omitzero` uses `reflect.IsZero` on the string; empty string is zero, which is the invalid enum value, so this works correctly~~ | ~~15 min~~ |
+| ~~22~~ done — the SARIF rules carry ids (printer/sarif.go; the golden pins the wire) | ~~**Add SARIF rule IDs** for `AssignErrorCheck` and `SingleCallExpr` patterns~~ | ~~15 min~~ |
+| ~~23~~ done — the race lane runs the full suite on every flake check (AGENTS.md 2026-08-16) | ~~**Test with `-race`** — `GOEXPERIMENT=jsonv2 go test -race ./...`~~ | ~~10 min~~ |
+| ~~24~~ done — moot — process note; the daemon handles atomic commits | ~~**Consider separate commit for json/v2 vs noise fixes** — cleaner git history~~ | ~~10 min~~ |
+| ~~25~~ done — the sentinel convention lives in domain (AGENTS.md) | ~~**Update `domain/analysis_errors.go`** — `ErrInvalidThreshold` message says ">= 1"~~ | ~~5 min~~ |
 
 ### Lower Priority
 
 | #  | Task                                                                                             | Effort   |
 | -- | ------------------------------------------------------------------------------------------------ | -------- |
-| 26 | **Profile performance** of ValueSpec fingerprinting — more fingerprinting = more CPU             | 15 min   |
-| 27 | **Consider hash collision risk** in `fingerprintSubtree` — int32 FNV hash with more fingerprints | 20 min   |
-| 28 | **Add `--explain` flag** — show WHY a group is actionable/non-actionable                         | 45 min   |
-| 29 | **Consider `--no-boilerplate-filter` flag** — power users may want ALL matches                   | 20 min   |
-| 30 | **Add `--aggressive`/`--sensitive` preset flags** — convenience for threshold + mode             | 30 min   |
-| 31 | **Document suffix tree partial-match behavior** — users should understand prefix matching        | 15 min   |
-| 32 | **Consider `--max-occurrences` flag** — filter groups with too many occurrences                  | 20 min   |
-| 33 | **Test with real-world repos** — Kubernetes, Go stdlib to validate noise reduction               | 1 hour   |
-| 34 | **Benchmark detection speed** at threshold 5 vs 1                                                | 15 min   |
-| 35 | **Write ADR for json/v2 migration** — document `GOEXPERIMENT` decision                           | 20 min   |
+| ~~26~~ done — alloc budgets cover the serialization path (ADR-0022) | ~~**Profile performance** of ValueSpec fingerprinting — more fingerprinting = more CPU~~ | ~~15 min~~ |
+| ~~27~~ done — decided — XXH3 24-bit + base-type encoding is the accepted design (AGENTS.md semantic encoding) | ~~**Consider hash collision risk** in `fingerprintSubtree` — int32 FNV hash with more fingerprints~~ | ~~20 min~~ |
+| ~~28~~ done — the --explain flag ships (AGENTS.md) | ~~**Add `--explain` flag** — show WHY a group is actionable/non-actionable~~ | ~~45 min~~ |
+| ~~29~~ done — superseded — the opt-out surface settled on --no-actionability + --disable-pattern | ~~**Consider `--no-boilerplate-filter` flag** — power users may want ALL matches~~ | ~~20 min~~ |
+| ~~30~~ done — struck — tracked on ROADMAP (Quality and Intelligence: recurring design debts lists the presets) | ~~**Add `--aggressive`/`--sensitive` preset flags** — convenience for threshold + mode~~ | ~~30 min~~ |
+| ~~31~~ done — HOW_TO_USE documents the threshold and matching semantics | ~~**Document suffix tree partial-match behavior** — users should understand prefix matching~~ | ~~15 min~~ |
+| ~~32~~ done — won't implement — never built | ~~**Consider `--max-occurrences` flag** — filter groups with too many occurrences~~ | ~~20 min~~ |
+| ~~33~~ done — the pinned corpora (go-cqrs-lite, go-sse, branching-flow) are the real-world validation | ~~**Test with real-world repos** — Kubernetes, Go stdlib to validate noise reduction~~ | ~~1 hour~~ |
+| ~~34~~ done — docs/benchmarks/ baselines + the Performance gate + alloc-gate | ~~**Benchmark detection speed** at threshold 5 vs 1~~ | ~~15 min~~ |
+| ~~35~~ done — docs/adr/0010-json-v2-migration.md | ~~**Write ADR for json/v2 migration** — document `GOEXPERIMENT` decision~~ | ~~20 min~~ |
 | ~~36~~ done — docs/adr/0009-default-threshold-change.md | ~~**Write ADR for threshold change** — document 1→5 decision~~ | ~~20 min~~ |
-| 37 | **Consider `format:units` for Duration** — human-readable ("5s") instead of nanoseconds          | 15 min   |
-| 38 | **Audit `HandleMarshalingError`** — verify `SemanticError` mapping is sufficient for all callers | 15 min   |
-| 39 | **Consider `--threshold-mode` flag** — `statements` vs `tokens` vs `lines`                       | 1 hour+  |
-| 40 | **Fix `isCyclic` filter** — may produce false negatives for legitimate repeated patterns         | 20 min   |
-| 41 | **Review `spansMultipleFiles`** — verify cross-file clone detection works                        | 15 min   |
-| 42 | **Consider machine-learning-based actionability** — train on labeled clone groups                | 4 hours+ |
-| 43 | **Add `--diff-threshold` flag** — only report clones whose diff < N% of size                     | 45 min   |
-| 44 | **Update `CloneClassification` JSON tags** — domain struct has no json tags; may need `omitzero` | 15 min   |
-| 45 | **Verify templ files unaffected** by GenDecl Statement change                                    | 15 min   |
-| 46 | **Consider separate `encoding/json/v2` import grouping** — linter may complain about ordering    | 10 min   |
-| 47 | **Add CI check for `GOEXPERIMENT`** — fail if not set in dev environment                         | 15 min   |
-| 48 | **Test JSON output backward compatibility** — verify external consumers aren't broken            | 30 min   |
-| 49 | **Consider `jsonv2` stabilization tracking** — add TODO for Go 1.27 migration                    | 10 min   |
-| 50 | **Clean up `docs/status/` old reports** — remove or archive stale status files                   | 15 min   |
+| ~~37~~ done — won't implement — Go 1.27 removed the v2 struct-tag grammar (AGENTS.md) | ~~**Consider `format:units` for Duration** — human-readable ("5s") instead of nanoseconds~~ | ~~15 min~~ |
+| ~~38~~ done — internal/jsonutil is v1-only and mechanically gated (jsonv2gate) | ~~**Audit `HandleMarshalingError`** — verify `SemanticError` mapping is sufficient for all callers~~ | ~~15 min~~ |
+| ~~39~~ done — won't implement — never built | ~~**Consider `--threshold-mode` flag** — `statements` vs `tokens` vs `lines`~~ | ~~1 hour+~~ |
+| ~~40~~ done — superseded — the isCyclic filter is gone from the tree | ~~**Fix `isCyclic` filter** — may produce false negatives for legitimate repeated patterns~~ | ~~20 min~~ |
+| ~~41~~ done — EliminateOverlaps + member-set dedup landed (AGENTS.md 2026-10-30) | ~~**Review `spansMultipleFiles`** — verify cross-file clone detection works~~ | ~~15 min~~ |
+| ~~42~~ done — struck — tracked on ROADMAP (Quality and Intelligence: ML-based actionability classification) | ~~**Consider machine-learning-based actionability** — train on labeled clone groups~~ | ~~4 hours+~~ |
+| ~~43~~ done — won't implement — never built | ~~**Add `--diff-threshold` flag** — only report clones whose diff < N% of size~~ | ~~45 min~~ |
+| ~~44~~ done — non_actionable_pattern is serialized (AGENTS.md --explain bullet) | ~~**Update `CloneClassification` JSON tags** — domain struct has no json tags; may need `omitzero`~~ | ~~15 min~~ |
+| ~~45~~ done — the templ statement composites shipped (AGENTS.md templ bullets) | ~~**Verify templ files unaffected** by GenDecl Statement change~~ | ~~15 min~~ |
+| ~~46~~ done — fixed — lint is 106-linter clean since 2026-09-29 (AGENTS.md); the flaky os.Exit tests were fixed | ~~**Consider separate `encoding/json/v2` import grouping** — linter may complain about ordering~~ | ~~10 min~~ |
+| ~~47~~ done — superseded — GOEXPERIMENT is optional since ADR-0024; the jsonv2gate owns the invariant | ~~**Add CI check for `GOEXPERIMENT`** — fail if not set in dev environment~~ | ~~15 min~~ |
+| ~~48~~ done — the golden pins the wire | ~~**Test JSON output backward compatibility** — verify external consumers aren't broken~~ | ~~30 min~~ |
+| ~~49~~ done — superseded — stabilized: Go 1.27.1 ships the engine importable (ADR-0024) | ~~**Consider `jsonv2` stabilization tracking** — add TODO for Go 1.27 migration~~ | ~~10 min~~ |
+| ~~50~~ done — fixed 2026-11-14 — the archive ritual is running (cadence gate) | ~~**Clean up `docs/status/` old reports** — remove or archive stale status files~~ | ~~15 min~~ |
 
 ---
 

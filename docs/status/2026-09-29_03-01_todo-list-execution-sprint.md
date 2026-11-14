@@ -180,7 +180,7 @@ theirs; their §4 sequence is the path when you give the go.
    settings; red CI sat unnoticed for 4 days earlier in September.
 7. **Windows `TestExitCodes_Process` root-cause (#4)** — needs a windows runner
    experiment; logic covered by `TestExitCodeForError` meanwhile.
-8. **go-paperless tag + release (#20)** — other repo, go-release flow.
+~~8. **go-paperless tag + release (#20)** — other repo, go-release flow.~~ done — moot — go-paperless is an external repo; the decision stays with its owner
 9. **BuildFlow upstream disposition fixes** (go-version-auto-configure ↔
    go-mod-normalize alignment; lint-auto-configure "respect ban lists") — both
    worked around locally via `skip_steps`; upstream changes are BuildFlow-repo
@@ -314,7 +314,7 @@ theirs; their §4 sequence is the path when you give the go.
 12. Re-run `buildflow -s nix-hash-fix --fix` on BuildFlow once its dep changes settle; commit the vendorHash.
 13. Push BuildFlow master (budget + flake hint + tidy'd sums) on the next release train.
 14. Re-verify go-structure-linter's false "unknown field" errors after the SystemNix profile swap installs the fresh buildflow binary.
-15. Add the pre-push local gate (`scripts/pre-push.sh`: windows-vet + gofumpt + single-step lint).
+~~15. Add the pre-push local gate (`scripts/pre-push.sh`: windows-vet + gofumpt + single-step lint).~~ **Won't implement — won't implement — the task-boundary fast gate covers the pre-push slot.**
 16. Settle the AGENTS.md nested-vs-flat CloneRef-init ruling (one line).
 17. Add a TESTING.md windows-lane authoring checklist section.
 18. Run `scripts/go-env-doctor.sh` in every open session's shell to find the go-line flip source (a pre-1.27.1 toolchain running `go mod tidy`).

@@ -29,6 +29,7 @@
 
 ### 3. Three race-clean tests (`cmd/run_crawl_stdin_test.go`)
 
+<!-- check-rows:ledger -->
 | Test                                  | What it verifies                                                                       |
 | ------------------------------------- | -------------------------------------------------------------------------------------- |
 | `TestStdinFeed_CancelUnblocksScanner` | Idle pipe + cancel ctx → channel closes within 2s timeout (would hang without the fix) |

@@ -103,7 +103,7 @@
 18. gogenfilter: sweep the 9 skipped consumers still on ≤v3.6.0 (existing TODO item; go-filewatcher's SQLC test failure flagged as the first check). **→ gogenfilter sweep — external repos (TODO_LIST)**
 19. Fleet `filepath.Separator` sweep (existing TODO #15). **→ fleet filepath sweep — TODO #15**
 20. Branch-protection checklist for the repos flagged in TODO (#18). **→ branch protection — TODO #18, still open**
-21. go-paperless release decision (#20). **→ go-paperless release decision — TODO #20, still open**
+21. ~~go-paperless release decision (#20)~~ **moot — go-paperless is an external repo; the decision stays with its owner. The trailing arrow-note was a stale echo.**
 22. Windows exe-start probe (#4). **→ Windows exe-start probe — TODO #4, still open**
 23. Check whether any fleet `.buildflow.yml` still carries `dupl_threshold:` (now an honest unknown-key warning) and clean them. **→ fleet config cleanup — external repos**
 24. Announce the lane split in the BuildFlow docs site (provider count changed; the duplication story changed materially). **→ BuildFlow docs site — external repo**

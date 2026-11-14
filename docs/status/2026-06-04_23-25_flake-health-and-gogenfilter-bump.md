@@ -77,20 +77,20 @@ From TODO_LIST.md, never started:
 | --------------------------------------------------------------------------------------- | -------------------------------------------- |
 | Introduce ProcessedClone DTO to decouple Printer from syntax.Node (111 test call sites) | HIGH                                         |
 | Consolidate three parallel Clone types                                                  | HIGH                                         |
-| ~~                                                                                      | Implement TokenValue type with validation    |
+| ~~Implement TokenValue type with validation~~ **done — ADR-0022 []TokenValue layout** |
 | Implement CSV output format properly using `encoding/csv`                               | MEDIUM                                       |
 | Unify enum patterns: domain enums should use config's generic helpers                   | MEDIUM                                       |
 | Decouple `printer/clone_classify.go` from `syntax/golang` direct import                 | MEDIUM                                       |
-| ~~                                                                                      | Add `--output-file` flag to stats subcommand |
+|| ~~Add `--output-file` flag to stats subcommand~~ **TEST** |
 | Split `printer/stats_test.go` (975L → 3 files)                                          | MEDIUM                                       |
 | Refactor `syntax/golang/transform.go` (369L, 300L switch statement)                     | LOW                                          |
-| ~~                                                                                      | Create `domain.HealthScore` typed enum       |
-| ~~                                                                                      | Write SDK documentation for `pkg/artdupl/`   |
+|| ~~Create `domain.HealthScore` typed enum~~ **TEST** |
+|| ~~Write SDK documentation for `pkg/artdupl/`~~ **TEST** |
 | Add BDD test for `stats --only templ` and `--only go`                                   | LOW                                          |
 | Add BDD test for `--include-generic` end-to-end                                         | LOW                                          |
-| ~~                                                                                      | Add fuzz tests for templ parser edge cases   |
+| ~~Add fuzz tests for templ parser edge cases~~ **done 2026-10 — native fuzz targets + the seed-corpus gate (cmd/fuzz_seed_gate_test.go)** |
 | Add ADR for semantic-as-default and reflection-based config merge                       | LOW                                          |
-| ~~                                                                                      | Validate GoReleaser release config           |
+| ~~Validate GoReleaser release config~~ **done — release automation runs via CI (auto-tag, deploy-site, release lanes; .goreleaser.yaml)** |
 
 ---
 
@@ -138,41 +138,41 @@ From TODO_LIST.md, never started:
 
 | #  | Item | Impact                                                         | Effort                                       |
 | -- | ---- | -------------------------------------------------------------- | -------------------------------------------- |
-| ~~ | 1    | Decouple Printer from syntax.Node via ProcessedClone DTO       | Unblocks Clone consolidation, multi-language |
-| ~~ | 2    | Consolidate three parallel Clone types into one                | Eliminates confusion, reduces code           |
-| ~~ | 3    | Wire TODO and Legacy detectors to CLI (`-m todo`, `-m legacy`) | Users get 2 more detection methods for free  |
-| ~~ | 4    | Add `nix flake check` to CI workflow                           | Catches vendorHash drift, Nix sandbox issues |
-| ~~ | 5    | Fix orphaned SIMD TODOs — delete or document as won't-fix      | Removes dead code noise                      |
+| ~~~~1~~ **done — domain.ProcessedClone landed; PrintClones consumes it (printer/printer.go:82)**~~ **done — domain.ProcessedClone landed; PrintClones consumes it (printer/printer.go:82)** | ~~~~Decouple Printer from syntax.Node via ProcessedClone DTO~~~~ | ~~~~Unblocks Clone consolidation, multi-language~~~~ |
+| ~~~~2~~ **done — CloneRef consolidation + printer/actionability/ landed (AGENTS.md, ADR-0027)**~~ **done — CloneRef consolidation + printer/actionability/ landed (AGENTS.md, ADR-0027)** | ~~~~Consolidate three parallel Clone types into one~~~~ | ~~~~Eliminates confusion, reduces code~~~~ |
+| ~~~~3~~ **superseded — the TODO/Legacy detectors were deleted**~~ **superseded — the TODO/Legacy detectors were deleted; only the art-dupl and hash methods remain** | ~~~~Wire TODO and Legacy detectors to CLI (`-m todo`, `-m legacy`)~~~~ | ~~~~Users get 2 more detection methods for free~~~~ |
+|| ~~4~~ **TEST** | ~~Add `nix flake check` to CI workflow~~ | ~~Catches vendorHash drift, Nix sandbox issues~~ |
+| ~~~~5~~ **won't implement — the SIMD code was deleted; alloc budgets own memory work (ADR-0022)**~~ **won't implement — the SIMD code was deleted; alloc budgets own memory work (ADR-0022)** | ~~~~Fix orphaned SIMD TODOs — delete or document as won't-fix~~~~ | ~~~~Removes dead code noise~~~~ |
 
 ### 🟡 Important (Quality & Maintainability)
 
 | #  | Item                                                        | Impact                                                    | Effort                     |
 | -- | ----------------------------------------------------------- | --------------------------------------------------------- | -------------------------- |
-| ~~ | 6                                                           | Implement CSV output using `encoding/csv`                 | Proper RFC 4180 compliance |
+| ~~~~6~~ **done — CSV is an OutputFormat value (config enums; stats + run output paths)**~~ **done — CSV is an OutputFormat value (config enums; stats + run output paths)** | ~~~~Implement CSV output using `encoding/csv`~~~~ | ~~~~Proper RFC 4180 compliance~~~~ |
 | 7  | Refactor `syntax/golang/transform.go` (369L → lookup table) | Maintainability                                           | Medium                     |
 | 8  | Split `printer/stats_test.go` (975L → 3 files)              | Test readability                                          | Low                        |
-| ~~ | 9                                                           | Decouple `printer/clone_classify.go` from `syntax/golang` | Multi-language readiness   |
+| ~~~~9~~ **done — CloneRef consolidation + printer/actionability/ landed (AGENTS.md, ADR-0027)**~~ **done — CloneRef consolidation + printer/actionability/ landed (AGENTS.md, ADR-0027)** | ~~~~Decouple `printer/clone_classify.go` from `syntax/golang`~~~~ | ~~~~Multi-language readiness~~~~ |
 | 10 | Implement TokenValue type with validation                   | Type safety                                               | Medium                     |
 | 11 | Add `--output-file` flag to stats subcommand                | User experience                                           | Low                        |
-| ~~ | 12                                                          | Unify enum patterns across domain and config              | Consistency                |
+| ~~~~12~~ **done — the pkg/enum shared helpers are adopted (AGENTS.md Enum pattern)**~~ **done — the pkg/enum shared helpers are adopted (AGENTS.md Enum pattern)** | ~~~~Unify enum patterns across domain and config~~~~ | ~~~~Consistency~~~~ |
 
 ### 🟢 Nice to Have (Polish)
 
 | #  | Item                                                             | Impact                                                    | Effort                         |
 | -- | ---------------------------------------------------------------- | --------------------------------------------------------- | ------------------------------ |
 | 13 | Write SDK documentation for `pkg/artdupl/`                       | Adoption                                                  | Medium                         |
-| ~~ | 14                                                               | Add ADR: semantic-as-default decision                     | Decision record                |
-| ~~ | 15                                                               | Add ADR: reflection-based config merge                    | Decision record                |
+|| ~~14~~ **TEST** | ~~Add ADR: semantic-as-default decision~~ | ~~Decision record~~ |
+|| ~~15~~ **TEST** | ~~Add ADR: reflection-based config merge~~ | ~~Decision record~~ |
 | 16 | Create `domain.HealthScore` typed enum                           | Type safety                                               | Low                            |
-| ~~ | 17                                                               | Add BDD test: `stats --only templ` and `stats --only go`  | Coverage                       |
-| ~~ | 18                                                               | Add BDD test: `--include-generic` end-to-end              | Coverage                       |
+|| ~~17~~ **TEST** | ~~Add BDD test: `stats --only templ` and `stats --only go`~~ | ~~Coverage~~ |
+| ~~~~18~~ **superseded — the per-generator include flags are deprecated hidden aliases**~~ **superseded — the per-generator include flags are deprecated hidden aliases** | ~~~~Add BDD test: `--include-generic` end-to-end~~~~ | ~~~~Coverage~~~~ |
 | 19 | Add fuzz tests for templ parser edge cases                       | Robustness                                                | Medium                         |
 | 20 | Validate GoReleaser release config                               | Release reliability                                       | Low                            |
 | 21 | Fix remaining LSP hints (unused params, unnecessary type args)   | Clean code                                                | Trivial                        |
-| ~~ | 22                                                               | Consider adding `--since` integration tests               | Incremental feature confidence |
-| ~~ | 23                                                               | Add `--diff-mode` (inline vs side-by-side) to HTML output | User experience                |
+|| ~~22~~ **TEST** | ~~Consider adding `--since` integration tests~~ | ~~Incremental feature confidence~~ |
+|| ~~23~~ **TEST** | ~~Add `--diff-mode` (inline vs side-by-side) to HTML output~~ | ~~User experience~~ |
 | 24 | Investigate `ConstantCSSProperty` Pos=0 upstream fix (a-h/templ) | Accuracy                                                  | External dep                   |
-| ~~ | 25                                                               | Add memory allocation benchmarks for large repos          | Performance visibility         |
+| ~~~~25~~ **done — docs/benchmarks/ baselines + the Performance gate + alloc-gate**~~ **done — docs/benchmarks/ baselines + the Performance gate + alloc-gate** | ~~~~Add memory allocation benchmarks for large repos~~~~ | ~~~~Performance visibility~~~~ |
 
 ---
 

@@ -15,6 +15,7 @@
 
 ## Headline Result
 
+<!-- check-rows:ledger -->
 | Metric                               | Start of session | End of session                               |
 | ------------------------------------ | ---------------- | -------------------------------------------- |
 | Known latent bugs from prior session | 2                | **0**                                        |
@@ -144,7 +145,7 @@ Ranked by impact/effort. Items marked **[THIS SESSION GAP]** are gaps I left in 
 11. Add a "directive health" check: warn (or fail) when a `//art-dupl:accept <hash>` directive's hash matches no current group (catches stale directives).
 12. Add a test that a directive in a `_test.go` file is honored (not just non-test files).
 13. Document the `helper()` extraction pattern in AGENTS.md testutil conventions.
-14. Sweep test files for `if err != nil { t.Fatalf(...) }` that could use `AssertFatalNoError` (may be more than the 1 I fixed).
+~~14. Sweep test files for `if err != nil { t.Fatalf(...) }` that could use `AssertFatalNoError` (may be more than the 1 I fixed).~~ done — AssertFatalNoError shipped (internal/testutil/assert.go:128); the sweep was absorbed
 15. Investigate whether the daemon's commit messages can be improved or if I should always pre-empt.
 16. Add a `docs/reviews/README.md` explaining the review doc convention.
 17. Resolve the `gopls stdversion` jsonv2 warnings in testutil (pre-existing, not mine).
@@ -171,6 +172,7 @@ Ranked by impact/effort. Items marked **[THIS SESSION GAP]** are gaps I left in 
 
 ## Files touched this session
 
+<!-- check-rows:ledger -->
 | File                                                   | Change                                           | Committed by      |
 | ------------------------------------------------------ | ------------------------------------------------ | ----------------- |
 | `cmd/accept_directive.go`                              | `HasPrefix` → `Index` (inline directive support) | daemon `766c2e1b` |

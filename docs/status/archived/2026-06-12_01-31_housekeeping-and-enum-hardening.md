@@ -58,11 +58,11 @@ From TODO_LIST.md (still open):
 | --------- | ----------------------------------------------------------------- | ------------------------------------------ | ----------------------------------- |
 | 🔴 HIGH   | Introduce ProcessedClone DTO to decouple Printer from syntax.Node | Large (111 test call sites)                | High — enables printer independence |
 | 🔴 HIGH   | Consolidate three parallel Clone types                            | Large                                      | High — reduces confusion            |
-| ~~        | 🔴 HIGH                                                           | Implement TokenValue type with validation  | Medium                              |
+| ~~🔴 HIGH~~ **done — ADR-0022 []TokenValue layout** | ~~Implement TokenValue type with validation~~ | ~~Medium~~ |
 | 🟡 MEDIUM | Unify enum patterns (domain ↔ config generic helpers)             | Medium                                     | Medium — consistency                |
 | 🟢 LOW    | Refactor `syntax/golang/transform.go` (369L, 300L switch)         | Medium                                     | Low — readability                   |
 | 🟢 LOW    | Fix remaining LSP hints (unused params, unnecessary type args)    | Low                                        | Low — hygiene                       |
-| ~~        | 🟢 LOW                                                            | Add fuzz tests for templ parser edge cases | Medium                              |
+| ~~🟢 LOW~~ **done 2026-10 — native fuzz targets + the seed-corpus gate (cmd/fuzz_seed_gate_test.go)** | ~~Add fuzz tests for templ parser edge cases~~ | ~~Medium~~ |
 
 ---
 
@@ -113,11 +113,11 @@ Nothing is broken. But here's what's **misleading or wrong**:
 
 | #  | Task | Impact                                                                      | Effort | Rationale        |
 | -- | ---- | --------------------------------------------------------------------------- | ------ | ---------------- |
-| ~~ | 1    | **Wire ProcessedClone DTO through printer pipeline**                        | HIGH   | L (2-3 sessions) |
-| ~~ | 2    | **Consolidate Clone types to use ProcessedClone/ProcessedCloneGroup**       | HIGH   | L                |
+| ~~1~~ **done — domain.ProcessedClone landed; PrintClones consumes it (printer/printer.go:82)** | ~~**Wire ProcessedClone DTO through printer pipeline**~~ | ~~HIGH~~ | ~~L (2-3 sessions)~~ |
+| ~~2~~ **done — CloneRef consolidation + printer/actionability/ landed (AGENTS.md, ADR-0027)** | ~~**Consolidate Clone types to use ProcessedClone/ProcessedCloneGroup**~~ | ~~HIGH~~ | ~~L~~ |
 | ~~ | 3    | **Add JSON marshaling to CloneCategory, ClonePriority, CloneActionability** | MEDIUM | S (30min)        |
-| ~~ | 4    | **Unify enum patterns: use config generic helpers in domain**               | MEDIUM | M (2h)           |
-| ~~ | 5    | **Wire TODO/Legacy detectors to CLI (`--method todos`)**                    | MEDIUM | S (1h)           |
+| ~~4~~ **done — the pkg/enum shared helpers are adopted (AGENTS.md Enum pattern)** | ~~**Unify enum patterns: use config generic helpers in domain**~~ | ~~MEDIUM~~ | ~~M (2h)~~ |
+| ~~5~~ **superseded — the TODO/Legacy detectors were deleted; only the art-dupl and hash methods remain** | ~~**Wire TODO/Legacy detectors to CLI (`--method todos`)**~~ | ~~MEDIUM~~ | ~~S (1h)~~ |
 
 ### Tier 2: Quality & Safety
 
@@ -125,7 +125,7 @@ Nothing is broken. But here's what's **misleading or wrong**:
 | -- | ----------------------------------------------------------------- | --------------------------------------------------------------------- | ------ | --------------------------------------------------------------------- |
 | 6  | **Implement TokenValue type with validation**                     | MEDIUM                                                                | M      | Type safety at suffix tree boundary.                                  |
 | 7  | **Add fuzz tests for templ parser edge cases**                    | MEDIUM                                                                | M      | Templ parser handles 28 node types, fuzz coverage would catch panics. |
-| ~~ | 8                                                                 | **Refactor `syntax/golang/transform.go` to table-driven**             | LOW    | M                                                                     |
+| ~~8~~ **struck — tracked on ROADMAP (Architecture: transform.go table-driven handlers)** | ~~**Refactor `syntax/golang/transform.go` to table-driven**~~ | ~~LOW~~ | ~~M~~ |
 | 9  | **Generate stringer for domain enums**                            | LOW                                                                   | S      | Compile-time exhaustive switch enforcement.                           |
 | ~~ | 10                                                                | **Add integration test: end-to-end clone detection + stats + output** | MEDIUM | M                                                                     |
 | 11 | **Fix remaining LSP hints: unused params, unnecessary type args** | LOW                                                                   | S      | Hygiene.                                                              |
@@ -136,7 +136,7 @@ Nothing is broken. But here's what's **misleading or wrong**:
 | #  | Task | Impact                                                | Effort | Rationale |
 | -- | ---- | ----------------------------------------------------- | ------ | --------- |
 | ~~ | 13   | **Create ROADMAP.md** from scattered status reports   | LOW    | S         |
-| ~~ | 14   | **Add ADR for ProcessedClone DTO migration**          | LOW    | S         |
+| ~~14~~ **done — domain.ProcessedClone landed; PrintClones consumes it (printer/printer.go:82)** | ~~**Add ADR for ProcessedClone DTO migration**~~ | ~~LOW~~ | ~~S~~ |
 | ~~ | 15   | **Write HOW_TO_USE.md examples for SDK**              | MEDIUM | M         |
 | ~~ | 16   | **Clean up `examples/` — add real runnable examples** | LOW    | S         |
 | ~~ | 17   | **Archive completed status reports**                  | LOW    | S         |
@@ -146,11 +146,11 @@ Nothing is broken. But here's what's **misleading or wrong**:
 | #  | Task                                                                | Impact                                                                      | Effort | Rationale                              |
 | -- | ------------------------------------------------------------------- | --------------------------------------------------------------------------- | ------ | -------------------------------------- |
 | ~~ | 18                                                                  | **Add `--version` JSON output format**                                      | LOW    | S                                      |
-| ~~ | 19                                                                  | **Add git hook for pre-push lint check**                                    | LOW    | S                                      |
+| ~~19~~ **fixed — lint is 106-linter clean since 2026-09-29 (AGENTS.md); the flaky os.Exit tests were fixed** | ~~**Add git hook for pre-push lint check**~~ | ~~LOW~~ | ~~S~~ |
 | 20 | **Benchmark: suffix tree vs hash detection performance comparison** | LOW                                                                         | M      | Data-driven method selection guidance. |
 | ~~ | 21                                                                  | **Add `--quiet` flag for CI mode**                                          | LOW    | S                                      |
-| ~~ | 22                                                                  | **Templ semantic mode**                                                     | MEDIUM | L                                      |
-| ~~ | 23                                                                  | **CSV output for clone groups (not just stats)**                            | LOW    | M                                      |
+| ~~22~~ **done — the templ semantic pipeline shipped (syntax/templ; AGENTS.md)** | ~~**Templ semantic mode**~~ | ~~MEDIUM~~ | ~~L~~ |
+| ~~23~~ **done — CSV is an OutputFormat value (config enums; stats + run output paths)** | ~~**CSV output for clone groups (not just stats)**~~ | ~~LOW~~ | ~~M~~ |
 | ~~ | 24                                                                  | **Config validation: reject conflicting flag combinations**                 | LOW    | S                                      |
 | ~~ | 25                                                                  | **Add `art-dupl check` subcommand (CI exit code: 0=clean, 1=clones found)** | MEDIUM | M                                      |
 

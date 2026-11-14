@@ -111,7 +111,7 @@
 33. BuildFlow Build Gate failure triage (see 32 — may be config-validation, not build). **→ BuildFlow repo concern; not actionable in art-dupl**
 34. gogenfilter fleet sweep (9 consumers on ≤v3.6.0). **→ fleet sweep is cross-repo work (gogenfilter consumers)**
 35. Windows exe-start ProcessState nil (TODO #4) — CLI un-blocked by windows lane evidence? **→ tracked as TODO #4 in TODO_LIST.md**
-36. go-paperless tag+release decision (TODO #20).
+~~36. go-paperless tag+release decision (TODO #20).~~ done — moot — go-paperless is an external repo; the decision stays with its owner
 37. Branch protection with required checks (TODO #18 — the oldest process gap).
 38. ~~Rich-text preview E2E test (struck-open in two July reports; still real).~~ done — rich-text E2E coverage (`bdd/actionability_test.go` badges test)
 39. ~~previewFromFile bufio.Scanner early-exit (same).~~ done — rewritten — reads via `ReadFile` and indexes lines (`printer/text.go:294`)

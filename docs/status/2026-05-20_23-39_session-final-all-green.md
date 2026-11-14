@@ -14,6 +14,7 @@
 
 ### Bugs Fixed (6 total)
 
+<!-- check-rows:ledger -->
 | # | Bug                                                      | File                       | Commit    |
 | - | -------------------------------------------------------- | -------------------------- | --------- |
 | 1 | File root End = node count, not byte length              | `transform.go`             | `ab92d64` |
@@ -25,6 +26,7 @@
 
 ### Tests Added (6 unit + 2 BDD)
 
+<!-- check-rows:ledger -->
 | Test                                     | Purpose                                            | Commit    |
 | ---------------------------------------- | -------------------------------------------------- | --------- |
 | `TestFileRootNodeBytePosition`           | File root End must equal content byte length       | `ab92d64` |
@@ -71,16 +73,16 @@ From TODO_LIST.md (priority order):
 
 | #  | Task                                                                    | Impact                 |
 | -- | ----------------------------------------------------------------------- | ---------------------- |
-| 1  | ProcessedClone DTO — decouple Printer from syntax.Node (111 test sites) | Unblocks multi-lang    |
-| 2  | Consolidate 3 parallel Clone types                                      | Eliminates split brain |
-| 3  | printer/clone_classify.go decouple from syntax/golang                   | Multi-language prep    |
-| 4  | TokenValue type with validation                                         | Type safety            |
-| 5  | CSV output via encoding/csv                                             | Format compliance      |
-| 6  | SIMD hash implementations (6 TODOs)                                     | Performance            |
-| 7  | Memory layout optimization                                              | Performance            |
-| 8  | Unify enum patterns                                                     | Consistency            |
-| 9  | Refactor syntax/golang/transform.go (355L)                              | Readability            |
-| 10 | Archive old docs/status/ (304 files)                                    | Repo hygiene           |
+| ~~1~~ done — domain.ProcessedClone landed; PrintClones consumes it (printer/printer.go:82) | ~~ProcessedClone DTO — decouple Printer from syntax.Node (111 test sites)~~ | ~~Unblocks multi-lang~~ |
+| ~~2~~ done — CloneRef consolidation + printer/actionability/ landed (AGENTS.md, ADR-0027) | ~~Consolidate 3 parallel Clone types~~ | ~~Eliminates split brain~~ |
+| ~~3~~ done — CloneRef consolidation + printer/actionability/ landed (AGENTS.md, ADR-0027) | ~~printer/clone_classify.go decouple from syntax/golang~~ | ~~Multi-language prep~~ |
+| ~~4~~ done — ADR-0022 []TokenValue layout | ~~TokenValue type with validation~~ | ~~Type safety~~ |
+| ~~5~~ done — CSV is an OutputFormat value (config enums; stats + run output paths) | ~~CSV output via encoding/csv~~ | ~~Format compliance~~ |
+| ~~6~~ done — won't implement — the SIMD code was deleted; alloc budgets own memory work (ADR-0022) | ~~SIMD hash implementations (6 TODOs)~~ | ~~Performance~~ |
+| ~~7~~ done — won't implement — alloc budgets own memory work (ADR-0022) | ~~Memory layout optimization~~ | ~~Performance~~ |
+| ~~8~~ done — the pkg/enum shared helpers are adopted (AGENTS.md Enum pattern) | ~~Unify enum patterns~~ | ~~Consistency~~ |
+| ~~9~~ done — struck — tracked on ROADMAP (Architecture: transform.go table-driven handlers) | ~~Refactor syntax/golang/transform.go (355L)~~ | ~~Readability~~ |
+| ~~10~~ done — fixed 2026-11-14 — the archive ritual is running (cadence gate) | ~~Archive old docs/status/ (304 files)~~ | ~~Repo hygiene~~ |
 
 ---
 
@@ -107,33 +109,33 @@ From TODO_LIST.md (priority order):
 
 | # | Task                                                              | Effort |
 | - | ----------------------------------------------------------------- | ------ |
-| 1 | Archive old docs/status/ (304 → keep 30 days)                     | S      |
-| 2 | Fix pre-commit hook: allowlist for existing TODOs and gitleaks FP | S      |
-| 3 | Dogfood: run art-dupl on itself, publish results                  | S      |
+| ~~1~~ done — fixed 2026-11-14 — the archive ritual is running (cadence gate) | ~~Archive old docs/status/ (304 → keep 30 days)~~ | ~~S~~ |
+| ~~2~~ done — .githooks/pre-commit runs the jsonv2gate (2026-10-24) | ~~Fix pre-commit hook: allowlist for existing TODOs and gitleaks FP~~ | ~~S~~ |
+| ~~3~~ done — the CI Self-Analysis gate runs art-dupl on itself | ~~Dogfood: run art-dupl on itself, publish results~~ | ~~S~~ |
 
 ### P1 — Architecture (high impact)
 
 | #  | Task                                                      | Effort |
 | -- | --------------------------------------------------------- | ------ |
-| 4  | Introduce ProcessedClone DTO                              | L      |
-| 5  | Consolidate 3 Clone types → single type                   | M      |
-| 6  | Decouple printer/clone_classify.go from syntax/golang     | M      |
-| 7  | Change Printer interface → []ProcessedCloneGroup          | M      |
-| 8  | Update 111 test call sites                                | L      |
-| 9  | Implement TokenValue type with validation                 | M      |
+| ~~4~~ done — domain.ProcessedClone landed; PrintClones consumes it (printer/printer.go:82) | ~~Introduce ProcessedClone DTO~~ | ~~L~~ |
+| ~~5~~ done — CloneRef consolidation + printer/actionability/ landed (AGENTS.md, ADR-0027) | ~~Consolidate 3 Clone types → single type~~ | ~~M~~ |
+| ~~6~~ done — CloneRef consolidation + printer/actionability/ landed (AGENTS.md, ADR-0027) | ~~Decouple printer/clone_classify.go from syntax/golang~~ | ~~M~~ |
+| ~~7~~ done — PrintClones takes domain.ProcessedCloneGroup (printer/printer.go:82) | ~~Change Printer interface → []ProcessedCloneGroup~~ | ~~M~~ |
+| ~~8~~ done — the call sites migrated with the DTO | ~~Update 111 test call sites~~ | ~~L~~ |
+| ~~9~~ done — ADR-0022 []TokenValue layout | ~~Implement TokenValue type with validation~~ | ~~M~~ |
 | ~~10~~ done — the pkg/enum shared helpers are adopted (AGENTS.md Enum pattern) | ~~Unify enum patterns~~ | ~~S~~ |
-| 11 | Refactor syntax/golang/transform.go — extract switch arms | M      |
-| 12 | Fix remaining LSP hints                                   | S      |
+| ~~11~~ done — struck — tracked on ROADMAP (Architecture: transform.go table-driven handlers) | ~~Refactor syntax/golang/transform.go — extract switch arms~~ | ~~M~~ |
+| ~~12~~ done — fixed — the gopls findings were closed in the 2026-09-29 pass (AGENTS.md) | ~~Fix remaining LSP hints~~ | ~~S~~ |
 
 ### P2 — Features
 
 | #  | Task                                        | Effort |
 | -- | ------------------------------------------- | ------ |
-| 13 | CSV output via encoding/csv                 | S      |
-| 14 | Wire TodoDetector through CLI (-m todos)    | S      |
-| 15 | Wire LegacyDetector through CLI (-m legacy) | S      |
-| 16 | SIMD hash implementations                   | M      |
-| 17 | Memory layout optimization                  | M      |
+| ~~13~~ done — CSV is an OutputFormat value (config enums; stats + run output paths) | ~~CSV output via encoding/csv~~ | ~~S~~ |
+| ~~14~~ done — superseded — the TODO/Legacy detectors were deleted; only the art-dupl and hash methods remain | ~~Wire TodoDetector through CLI (-m todos)~~ | ~~S~~ |
+| ~~15~~ done — superseded — the TODO/Legacy detectors were deleted; only the art-dupl and hash methods remain | ~~Wire LegacyDetector through CLI (-m legacy)~~ | ~~S~~ |
+| ~~16~~ done — won't implement — the SIMD code was deleted; alloc budgets own memory work (ADR-0022) | ~~SIMD hash implementations~~ | ~~M~~ |
+| ~~17~~ done — won't implement — alloc budgets own memory work (ADR-0022) | ~~Memory layout optimization~~ | ~~M~~ |
 
 ### P2 — Infrastructure
 

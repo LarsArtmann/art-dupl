@@ -9,8 +9,8 @@
 
 ## Executive Summary
 
-||| Metric | Value | Status |
-|||--------|-------|--------|
+|| Metric | Value | Status |
+||--------|-------|--------|
 | ~~**Build**~~ done — verified — 2026-02-25 snapshot, historical | ~~Passing~~ | ~~✅~~ |
 | ~~**Test Packages**~~ done — verified — 2026-02-25 snapshot, historical | ~~33/33 passing~~ | ~~✅~~ |
 | ~~**Commits This Session**~~ done — verified — 2026-02-25 snapshot, historical | ~~4~~ | ~~✅~~ |

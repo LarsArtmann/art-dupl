@@ -136,7 +136,7 @@ Nothing is broken in the shipped path: all gates green, no regressions. The dama
 30. Add combined-mode section to TESTING.md inventory.
 31. Verify next docs-health monthly pass (due 2026-10-28) picks up this report + ADR-0026.
 32. Confirm gopls diagnostics on `pkg/artdupl/combined.go` are clean post-restart (the "unused" warnings were stale all session despite builds proving usage).
-33. Run `nix flake check` (full CI mirror) in background at next convenience.
+~~33. Run `nix flake check` (full CI mirror) in background at next convenience.~~ done — the gate runs green
 34. Add a "wiring checklist" (timing/profile/stats/filter-warnings) to AGENTS.md for anyone adding a new analysis path sibling to `executeAnalysis`.
 35. Consider a README one-liner for SDK combined mode (README currently doesn't mention either flag).
 

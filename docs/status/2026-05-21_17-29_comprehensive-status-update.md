@@ -112,13 +112,13 @@ The project is in **strong shape** with 23/25 packages fully passing, 72% total 
 
 | Item                                     | Priority | Complexity                 | Notes                                |
 | ---------------------------------------- | -------- | -------------------------- | ------------------------------------ |
-| `ProcessedClone` DTO                     | MEDIUM   | High (111 test call sites) | Decouples Printer from `syntax.Node` |
-| Consolidate 3 Clone types                | MEDIUM   | High                       | Blocked by ProcessedClone DTO        |
-| `TokenValue` type with validation        | HIGH     | Medium                     | Refactor suffixtree/syntax           |
-| Unify enum patterns                      | MEDIUM   | Medium                     | Domain → config generic helpers      |
-| Refactor `transform.go` 355L/300L switch | LOW      | Medium                     | Extract visitors or table-driven     |
-| Archive old `docs/status/` files (304)   | LOW      | Low                        | Move to `docs/status/archive/`       |
-| String interning                         | MEDIUM   | Low                        | Memory optimization                  |
+| ~~`ProcessedClone` DTO~~ done — domain.ProcessedClone landed; PrintClones consumes it (printer/printer.go:82) | ~~MEDIUM~~ | ~~High (111 test call sites)~~ | ~~Decouples Printer from `syntax.Node`~~ |
+| ~~Consolidate 3 Clone types~~ done — CloneRef consolidation + printer/actionability/ landed (AGENTS.md, ADR-0027) | ~~MEDIUM~~ | ~~High~~ | ~~Blocked by ProcessedClone DTO~~ |
+| ~~`TokenValue` type with validation~~ done — ADR-0022 []TokenValue layout | ~~HIGH~~ | ~~Medium~~ | ~~Refactor suffixtree/syntax~~ |
+| ~~Unify enum patterns~~ done — the pkg/enum shared helpers are adopted (AGENTS.md Enum pattern) | ~~MEDIUM~~ | ~~Medium~~ | ~~Domain → config generic helpers~~ |
+| ~~Refactor `transform.go` 355L/300L switch~~ done — struck — tracked on ROADMAP (Architecture: transform.go table-driven handlers) | ~~LOW~~ | ~~Medium~~ | ~~Extract visitors or table-driven~~ |
+| ~~Archive old `docs/status/` files (304)~~ done — fixed 2026-11-14 — the archive ritual is running (cadence gate) | ~~LOW~~ | ~~Low~~ | ~~Move to `docs/status/archive/`~~ |
+| ~~String interning~~ done — canonical filename interning lives in syntax/intern.go | ~~MEDIUM~~ | ~~Low~~ | ~~Memory optimization~~ |
 
 ---
 
@@ -190,31 +190,31 @@ This is misleading for anyone reading project docs.
 
 | #  | Item                                                               | Impact   | Effort | Category     |
 | -- | ------------------------------------------------------------------ | -------- | ------ | ------------ |
-| 1  | Fix `os.Exit(1)` in `statError()` → return error                   | Critical | Small  | Bug fix      |
+| ~~1~~ done — fixed — lint is 106-linter clean since 2026-09-29 (AGENTS.md); the flaky os.Exit tests were fixed | ~~Fix `os.Exit(1)` in `statError()` → return error~~ | ~~Critical~~ | ~~Small~~ | ~~Bug fix~~ |
 | ~~2~~ done — version info ships via the version subcommand + buildinfo fallback (cmd/version.go, 2026-10-16) | ~~Move `--version` flag to `NewRootCommand()`~~ | ~~Critical~~ | ~~Small~~ | ~~Bug fix~~ |
-| 3  | Update `docs/status/README.md` with real metrics                   | High     | Small  | Docs         |
-| 4  | Implement `TokenValue` type with validation                        | High     | Medium | Architecture |
-| 5  | Create `ProcessedClone` DTO for printer decoupling                 | High     | High   | Architecture |
-| 6  | Consolidate 3 Clone types into unified types                       | High     | High   | Architecture |
-| 7  | Move `clone_classify.go` language maps behind interface            | Medium   | Medium | Architecture |
-| 8  | Archive old `docs/status/` files (304)                             | Medium   | Small  | Cleanup      |
-| 9  | Add `ConstantCSSProperty` position tracking upstream issue         | Medium   | Small  | Upstream     |
-| 10 | Unify enum patterns across config/                                 | Medium   | Medium | Refactor     |
-| 11 | Refactor `transform.go` 300-line switch to table-driven            | Medium   | Medium | Refactor     |
-| 12 | Implement remaining 6 SIMD optimizations                           | Medium   | Medium | Performance  |
-| 13 | Use `encoding/csv` for clone CSV output                            | Low      | Small  | Quality      |
-| 14 | String interning for suffix tree tokens                            | Medium   | Medium | Performance  |
-| 15 | Add integration test for `--all` flag with multiple output formats | Medium   | Small  | Testing      |
-| 16 | Add fuzz tests for templ parser edge cases                         | Medium   | Small  | Testing      |
-| 17 | Wire TODO/Legacy detectors to CLI flags (if still desired)         | Low      | Small  | Feature      |
-| 18 | Fix remaining LSP hints (unused params, unnecessary type args)     | Low      | Small  | Quality      |
-| 19 | Add benchmark comparison: in-process vs subprocess BDD execution   | Medium   | Small  | Testing      |
-| 20 | Profile memory usage during large repo analysis                    | Medium   | Medium | Performance  |
-| 21 | Consider `go:embed` for HTML template instead of const             | Low      | Small  | Quality      |
+| ~~3~~ done — the living docs are maintained continuously (docs-health cadence) | ~~Update `docs/status/README.md` with real metrics~~ | ~~High~~ | ~~Small~~ | ~~Docs~~ |
+| ~~4~~ done — ADR-0022 []TokenValue layout | ~~Implement `TokenValue` type with validation~~ | ~~High~~ | ~~Medium~~ | ~~Architecture~~ |
+| ~~5~~ done — domain.ProcessedClone landed; PrintClones consumes it (printer/printer.go:82) | ~~Create `ProcessedClone` DTO for printer decoupling~~ | ~~High~~ | ~~High~~ | ~~Architecture~~ |
+| ~~6~~ done — CloneRef consolidation + printer/actionability/ landed (AGENTS.md, ADR-0027) | ~~Consolidate 3 Clone types into unified types~~ | ~~High~~ | ~~High~~ | ~~Architecture~~ |
+| ~~7~~ done — CloneRef consolidation + printer/actionability/ landed (AGENTS.md, ADR-0027) | ~~Move `clone_classify.go` language maps behind interface~~ | ~~Medium~~ | ~~Medium~~ | ~~Architecture~~ |
+| ~~8~~ done — fixed 2026-11-14 — the archive ritual is running (cadence gate) | ~~Archive old `docs/status/` files (304)~~ | ~~Medium~~ | ~~Small~~ | ~~Cleanup~~ |
+| ~~9~~ done — verified 2026-11-14 — inherited parent range mitigates it; templ pinned (AGENTS.md) | ~~Add `ConstantCSSProperty` position tracking upstream issue~~ | ~~Medium~~ | ~~Small~~ | ~~Upstream~~ |
+| ~~10~~ done — the pkg/enum shared helpers are adopted (AGENTS.md Enum pattern) | ~~Unify enum patterns across config/~~ | ~~Medium~~ | ~~Medium~~ | ~~Refactor~~ |
+| ~~11~~ done — struck — tracked on ROADMAP (Architecture: transform.go table-driven handlers) | ~~Refactor `transform.go` 300-line switch to table-driven~~ | ~~Medium~~ | ~~Medium~~ | ~~Refactor~~ |
+| ~~12~~ done — won't implement — the SIMD code was deleted; alloc budgets own memory work (ADR-0022) | ~~Implement remaining 6 SIMD optimizations~~ | ~~Medium~~ | ~~Medium~~ | ~~Performance~~ |
+| ~~13~~ done — CSV is an OutputFormat value (config enums; stats + run output paths) | ~~Use `encoding/csv` for clone CSV output~~ | ~~Low~~ | ~~Small~~ | ~~Quality~~ |
+| ~~14~~ done — canonical filename interning lives in syntax/intern.go | ~~String interning for suffix tree tokens~~ | ~~Medium~~ | ~~Medium~~ | ~~Performance~~ |
+| ~~15~~ done — bdd/all_format_generation_test.go covers the output formats | ~~Add integration test for `--all` flag with multiple output formats~~ | ~~Medium~~ | ~~Small~~ | ~~Testing~~ |
+| ~~16~~ done — 2026-10 — native fuzz targets + the seed-corpus gate (cmd/fuzz_seed_gate_test.go) | ~~Add fuzz tests for templ parser edge cases~~ | ~~Medium~~ | ~~Small~~ | ~~Testing~~ |
+| ~~17~~ done — superseded — the TODO/Legacy detectors were deleted; only the art-dupl and hash methods remain | ~~Wire TODO/Legacy detectors to CLI flags (if still desired)~~ | ~~Low~~ | ~~Small~~ | ~~Feature~~ |
+| ~~18~~ done — fixed — the gopls findings were closed in the 2026-09-29 pass (AGENTS.md) | ~~Fix remaining LSP hints (unused params, unnecessary type args)~~ | ~~Low~~ | ~~Small~~ | ~~Quality~~ |
+| ~~19~~ done — docs/benchmarks/ baselines + the Performance gate + alloc-gate | ~~Add benchmark comparison: in-process vs subprocess BDD execution~~ | ~~Medium~~ | ~~Small~~ | ~~Testing~~ |
+| ~~20~~ done — docs/benchmarks/ baselines + the Performance gate + alloc-gate | ~~Profile memory usage during large repo analysis~~ | ~~Medium~~ | ~~Medium~~ | ~~Performance~~ |
+| ~~21~~ done — report.templ generates the HTML (printer/report.templ) | ~~Consider `go:embed` for HTML template instead of const~~ | ~~Low~~ | ~~Small~~ | ~~Quality~~ |
 | ~~22~~ done — the SARIF round-trip is pinned (bdd/sarif_gofinding_integration_test.go) | ~~Add SARIF output integration test~~ | ~~Low~~ | ~~Small~~ | ~~Testing~~ |
-| 23 | Document `syscall.Dup2` pattern in `bdd/execute.go` with comments  | Low      | Small  | Docs         |
-| 24 | Evaluate `a-h/templ` v3 for `ConstantCSSProperty` Range field      | Low      | Small  | Upstream     |
-| 25 | Create GitHub release workflow (tag → binary → release)            | Medium   | Medium | CI/CD        |
+| ~~23~~ done — superseded — the BDD runner design settled (internal/testutil/bdd_runners.go) | ~~Document `syscall.Dup2` pattern in `bdd/execute.go` with comments~~ | ~~Low~~ | ~~Small~~ | ~~Docs~~ |
+| ~~24~~ done — verified 2026-11-14 — inherited parent range mitigates it; templ pinned (AGENTS.md) | ~~Evaluate `a-h/templ` v3 for `ConstantCSSProperty` Range field~~ | ~~Low~~ | ~~Small~~ | ~~Upstream~~ |
+| ~~25~~ done — release automation runs via CI (auto-tag, deploy-site, release lanes; .goreleaser.yaml) | ~~Create GitHub release workflow (tag → binary → release)~~ | ~~Medium~~ | ~~Medium~~ | ~~CI/CD~~ |
 
 ---
 
@@ -264,6 +264,7 @@ PASS  syntax/templ  (84.6% coverage)
 
 ### Coverage by Package (Notable)
 
+<!-- check-rows:ledger -->
 | Package       | Coverage  |
 | ------------- | --------- |
 | syntax/golang | 94.6%     |

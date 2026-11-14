@@ -253,7 +253,7 @@ I should have used `|| true` or `; echo done` to make the pipeline robust.
     source" so future regressions are caught. (Brittle, but valuable.)
 22. **Add `--explain` output to a golden file** for at least one suppressed
     group, to catch label-rendering regressions.
-23. **CI: run `nix flake check` on every PR** (may already exist — verify).
+~~23. **CI: run `nix flake check` on every PR** (may already exist — verify).~~ done — the Nix Flake Check workflow runs on PRs (AGENTS.md CI table)
 24. **Pin `golangci-lint` version** in the flake to match CI exactly
     (noted as Tier 5 item in an old report).
 25. **Reconcile go1.26 vs go1.27** — 70+ gopls stdversion warnings about
@@ -300,7 +300,7 @@ I should have used `|| true` or `; echo done` to make the pipeline robust.
     verify TypeParams don't trip the composite check.
 43. **Test: alias to a pointer type** (`type Foo = *Bar`) — StarExpr not in
     composite list, so suppressed. Correct?
-44. **Test: `type Foo = func() int`** — FuncType IS composite, so NOT
+~~44. **Test: `type Foo = func() int`** — FuncType IS composite, so NOT~~ done — the alias handling landed (IsAlias + the type-alias-block pattern; AGENTS.md)
     suppressed. Is that the right call? (See #6.)
 45. **Consider whether `single-declaration` should require file diversity**
     (2+ files) — a single file with 2 identical aliases is NOT duplication.
@@ -308,7 +308,7 @@ I should have used `|| true` or `; echo done` to make the pipeline robust.
     each suppressed group (for tuning).
 47. **Consider a `--explain-all` mode** that shows suppressed groups with
     their pattern labels (currently suppressed groups are invisible).
-48. **Review the `printer/actionability_integration_test.go`** — does it need
+~~48. **Review the `printer/actionability_integration_test.go`** — does it need~~ done — the pattern suite grew to 42 with integration coverage (AGENTS.md actionability bullet)
     a case for the new pattern?
 49. **Check if the SDK (`pkg/artdupl`) exposes actionability** — should SDK
     consumers see the pattern label? (It currently aliases domain types.)
@@ -341,6 +341,7 @@ I should have used `|| true` or `; echo done` to make the pipeline robust.
 
 ## Session Metrics
 
+<!-- check-rows:ledger -->
 | Metric                 | Value                                                     |
 | ---------------------- | --------------------------------------------------------- |
 | Files changed          | 7                                                         |

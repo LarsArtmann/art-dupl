@@ -142,7 +142,7 @@ Across the prior session + this one, the daemon has re-added these linters at le
 
 18. **Write ADR-0017** for the printer split (interfaces stay in root; import direction root→actionability, stats→root; Phase 4 deferred).
 19. **Update `FEATURES.md`** if the package structure changed how features are described.
-20. **Update `ROADMAP.md`** — the printer split was a roadmap item, mark it done.
+~~20. **Update `ROADMAP.md`** — the printer split was a roadmap item, mark it done.~~ done — ROADMAP tracks the architecture state (AGENTS.md carries the split)
 21. **Update `docs/DOMAIN_LANGUAGE.md`** if any domain terms shifted packages.
 
 ### General codebase health (spotted this session)

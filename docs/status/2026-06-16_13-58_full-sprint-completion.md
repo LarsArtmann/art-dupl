@@ -82,7 +82,7 @@ Completed a **comprehensive TODO sprint** that touched every layer of the archit
 - [x] ~~Type-strengthen `ProcessedClone`: `Filename string` → `domain.Filepath`, `LineStart/LineEnd int` → `domain.LineNumber` (~25 consumer sites)~~ superseded — ADR-0005 split-brain type unification
 - [x] ~~Consolidate three parallel Clone types into one canonical DTO~~ superseded — ADR-0005 split-brain type unification
 - [x] ~~Split `printer/` into sub-packages (stats, html, actionability, formats)~~ done — done — `printer/stats/` + `printer/actionability/` sub-packages exist
-- [x] ~~Refactor `syntax/golang/transform.go` (369L switch statement)~~ routed — still 560L — refactor remains open
+- [x] ~~Refactor `syntax/golang/transform.go` (369L switch statement)~~ struck — tracked on ROADMAP (Architecture: transform.go table-driven handlers); the file is 560L today
 - [x] ~~Wire `InternFilename` into node creation in transform functions~~ done — done — `syntax.InternFilename` wired in `syntax/golang/parse.go:53`
 - [x] ~~Add fuzz tests for templ parser edge cases~~ done — done — `syntax/templ/fuzz_test.go`
 - [x] ~~Implement hybrid slice/map transition storage for small transition counts~~ superseded — ADR-0001/0022 transition-layout decisions

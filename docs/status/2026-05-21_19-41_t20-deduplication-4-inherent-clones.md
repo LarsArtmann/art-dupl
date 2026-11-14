@@ -21,17 +21,19 @@ art-dupl is in **excellent shape**. This session eliminated **5 of 9 clone group
 
 ### Clone Groups Eliminated (5 of 9)
 
+<!-- check-rows:ledger -->
 | # | Location                                                        | Fix                                                                                              |
 | - | --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
-| 1 | `config/config_enum_test.go:184/216`                            | Extracted `mustWriteFile(t, path, content)` helper                                               |
+| ~~1~~ done — fixed — the config package tests are green today | ~~`config/config_enum_test.go:184/216`~~ | ~~Extracted `mustWriteFile(t, path, content)` helper~~ |
 | 2 | `printer/html_diff.go:177-180/199-202`                          | Extracted `diffWriteErr(filename, line, phase, index, total, err)` function                      |
 | 3 | `bdd/execute.go:53-57` / `cmd/stats_integration_test.go:97-101` | Extracted `testutil.CopyToBuffer(dst, src, done)` — shared goroutine pipe-copy helper            |
 | 4 | `printer/actionability_test.go:49-54/55-60`                     | Extracted `mustFuncDeclWithBody()` helper                                                        |
 | 7 | `internal/testutil/bdd.go:101-107` / `bdd_runners.go:122-128`   | Extracted `appendFlagsToArgs(args, flags)` — shared flag-to-CLI conversion                       |
-| 8 | `printer/clone_classify_test.go:281-286/295-300`                | Merged `TestClonePriorityEmoji` + `TestClonePriorityColor` → single `TestClonePriorityAccessors` |
+| ~~8~~ done — CloneRef consolidation + printer/actionability/ landed (AGENTS.md, ADR-0027) | ~~`printer/clone_classify_test.go:281-286/295-300`~~ | ~~Merged `TestClonePriorityEmoji` + `TestClonePriorityColor` → single `TestClonePriorityAccessors`~~ |
 
 ### Clone Groups Retained (4 — Inherent)
 
+<!-- check-rows:ledger -->
 | # | Location                                         | Reason                                                                                                                       |
 | - | ------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------- |
 | 5 | `cmd/config_builder.go:15/56`                    | Two public functions with identical parameter/return types — intentional API                                                 |
@@ -125,6 +127,7 @@ All assertions pass but test binary exits non-zero. Cobra calls `os.Exit()` duri
 
 ### 2. Linter: 20 Issues (UNCHANGED)
 
+<!-- check-rows:ledger -->
 | Category    | Count | Location                                      |
 | ----------- | ----- | --------------------------------------------- |
 | errcheck    | 10    | bdd/execute.go, cmd/stats_integration_test.go |
@@ -226,6 +229,7 @@ Both test similar end-to-end scenarios. `bdd/` uses Ginkgo/Gomega with in-proces
 
 ## Session Timeline (2026-05-21)
 
+<!-- check-rows:ledger -->
 | Time   | Event                                                              |
 | ------ | ------------------------------------------------------------------ |
 | ~18:00 | Status report, 2 clone groups at t=40                              |
@@ -246,9 +250,10 @@ Both test similar end-to-end scenarios. `bdd/` uses Ginkgo/Gomega with in-proces
 
 ## New Helpers Extracted This Session
 
+<!-- check-rows:ledger -->
 | Helper                  | Location                         | Used By                                               |
 | ----------------------- | -------------------------------- | ----------------------------------------------------- |
-| `mustWriteFile`         | config/config_enum_test.go       | TestLoadConfig_InvalidJSON, TestSaveConfig_FileExists |
+| ~~`mustWriteFile`~~ done — fixed — the config package tests are green today | ~~config/config_enum_test.go~~ | ~~TestLoadConfig_InvalidJSON, TestSaveConfig_FileExists~~ |
 | `diffWriteErr`          | printer/html_diff.go             | writeDiffComparison (2 sites)                         |
 | `testutil.CopyToBuffer` | internal/testutil/bdd_helpers.go | bdd/execute.go, cmd/stats_integration_test.go         |
 | `mustFuncDeclWithBody`  | printer/actionability_test.go    | TestEvaluateActionability                             |

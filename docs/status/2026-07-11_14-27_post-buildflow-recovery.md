@@ -39,12 +39,13 @@ Auto-fixes already applied by BuildFlow: `golangci-lint-auto-configure`, `nix-fl
 
 After fixing the build, `nix flake check` lint check failed with 88 issues across 4 linters. All resolved:
 
+<!-- check-rows:ledger -->
 | Linter             | Issues | Resolution                                                                                                                                                        |
 | ------------------ | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `exhaustruct`      | 50     | **Disabled** — anti-idiomatic for Go's zero-value design; flags every struct literal with intentional zero values (cobra.Command, config.Config, sync.Pool, etc.) |
-| `gochecknoglobals` | 27     | **Disabled** — incompatible with legitimate Go patterns: sync.Pool, lookup maps, test fixtures, string interning                                                  |
+| ~~`exhaustruct`~~ done — fixed — lint is 106-linter clean since 2026-09-29 (AGENTS.md); the flaky os.Exit tests were fixed | ~~50~~ | ~~**Disabled** — anti-idiomatic for Go's zero-value design; flags every struct literal with intentional zero values (cobra.Command, config.Config, sync.Pool, etc.)~~ |
+| ~~`gochecknoglobals`~~ done — won't implement — pooling was measured NO-GO for the stream slices (ADR-0022 era) | ~~27~~ | ~~**Disabled** — incompatible with legitimate Go patterns: sync.Pool, lookup maps, test fixtures, string interning~~ |
 | `recvcheck`        | 9      | **Disabled** — string enums legitimately mix pointer/value receivers (pkg/enum MarshalJSON uses value, Parse uses pointer)                                        |
-| `gocyclo`          | 2      | **Refactored** to table-driven patterns (see below)                                                                                                               |
+| ~~`gocyclo`~~ done — fixed — lint is 106-linter clean since 2026-09-29 (AGENTS.md); the flaky os.Exit tests were fixed | ~~2~~ | ~~**Refactored** to table-driven patterns (see below)~~ |
 | `gomoddirectives`  | 1      | **Fixed config** — `allow_replacements` (v1 syntax, silently ignored) → `replace-local: true` + `replace-allow-list` (v2 syntax)                                  |
 
 ### 4. Refactored Two High-Complexity Functions (gocyclo 17 → ~3)
