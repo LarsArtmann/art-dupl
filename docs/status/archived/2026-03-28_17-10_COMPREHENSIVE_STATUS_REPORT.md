@@ -26,57 +26,57 @@ art-dupl is a **mature, production-ready code duplication detection tool** with 
 
 | Feature                          | Status      | Notes                                  |
 | -------------------------------- | ----------- | -------------------------------------- |
-| Suffix Tree Detection (art-dupl) | ✅ COMPLETE | Original algorithm, fully optimized    |
-| Hash-Based Detection             | ✅ COMPLETE | SHA1-based, faster alternative         |
-| Multi-Detection Mode             | ✅ COMPLETE | Run both methods simultaneously        |
-| Semantic Detection               | ✅ COMPLETE | Identifier-aware matching (default ON) |
-| Structural Detection             | ✅ COMPLETE | Pure AST structure matching (opt-out)  |
-| Templ File Support               | ✅ COMPLETE | Pure Go parser, no CGO dependency      |
+| ~~Suffix Tree Detection (art-dupl)~~ done — verified — 2026-03-28 snapshot; still accurate per AGENTS.md | ~~✅ COMPLETE~~ | ~~Original algorithm, fully optimized~~ |
+| ~~Hash-Based Detection~~ done — verified — 2026-03-28 snapshot; still accurate per AGENTS.md | ~~✅ COMPLETE~~ | ~~SHA1-based, faster alternative~~ |
+| ~~Multi-Detection Mode~~ done — verified — 2026-03-28 snapshot; still accurate per AGENTS.md | ~~✅ COMPLETE~~ | ~~Run both methods simultaneously~~ |
+| ~~Semantic Detection~~ done — verified — 2026-03-28 snapshot; still accurate per AGENTS.md | ~~✅ COMPLETE~~ | ~~Identifier-aware matching (default ON)~~ |
+| ~~Structural Detection~~ done — verified — 2026-03-28 snapshot; still accurate per AGENTS.md | ~~✅ COMPLETE~~ | ~~Pure AST structure matching (opt-out)~~ |
+| ~~Templ File Support~~ done — verified — 2026-03-28 snapshot; still accurate per AGENTS.md | ~~✅ COMPLETE~~ | ~~Pure Go parser, no CGO dependency~~ |
 
 ### Output Formats
 
 | Format           | Status      | Implementation                  |
 | ---------------- | ----------- | ------------------------------- |
-| Text Output      | ✅ COMPLETE | Human-readable with context     |
-| HTML Output      | ✅ COMPLETE | Syntax highlighting + metadata  |
-| JSON Output      | ✅ COMPLETE | Structured data with stats      |
-| Plumbing Output  | ✅ COMPLETE | Machine-readable for CI/CD      |
-| SARIF Output     | ✅ COMPLETE | Security tool integration (NEW) |
-| Stats Subcommand | ✅ COMPLETE | Text/JSON/CSV formats           |
+| ~~Text Output~~ done — verified — 2026-03-28 snapshot; still accurate per AGENTS.md | ~~✅ COMPLETE~~ | ~~Human-readable with context~~ |
+| ~~HTML Output~~ done — verified — 2026-03-28 snapshot; still accurate per AGENTS.md | ~~✅ COMPLETE~~ | ~~Syntax highlighting + metadata~~ |
+| ~~JSON Output~~ done — verified — 2026-03-28 snapshot; still accurate per AGENTS.md | ~~✅ COMPLETE~~ | ~~Structured data with stats~~ |
+| ~~Plumbing Output~~ done — verified — 2026-03-28 snapshot; still accurate per AGENTS.md | ~~✅ COMPLETE~~ | ~~Machine-readable for CI/CD~~ |
+| ~~SARIF Output~~ done — verified — 2026-03-28 snapshot; still accurate per AGENTS.md | ~~✅ COMPLETE~~ | ~~Security tool integration (NEW)~~ |
+| ~~Stats Subcommand~~ done — verified — 2026-03-28 snapshot; still accurate per AGENTS.md | ~~✅ COMPLETE~~ | ~~Text/JSON/CSV formats~~ |
 
 ### CLI & Configuration
 
 | Feature                      | Status      | Details                             |
 | ---------------------------- | ----------- | ----------------------------------- |
-| Professional CLI (Fang)      | ✅ COMPLETE | Styled help, completions, man pages |
-| JSON Configuration           | ✅ COMPLETE | Persistent config with merging      |
-| File Type Filtering (--only) | ✅ COMPLETE | Filter to go/templ files (NEW)      |
-| Smart Filtering              | ✅ COMPLETE | SQLC/Templ auto-detection           |
-| Sorting Options              | ✅ COMPLETE | size/occurrence/hash/total-tokens   |
-| Incremental Analysis         | ✅ COMPLETE | Git-aware change detection          |
-| Verbose Logging              | ✅ COMPLETE | Multi-level verbosity (-v, -vv)     |
+| ~~Professional CLI (Fang)~~ done — verified — 2026-03-28 snapshot; still accurate per AGENTS.md | ~~✅ COMPLETE~~ | ~~Styled help, completions, man pages~~ |
+| ~~JSON Configuration~~ done — verified — 2026-03-28 snapshot; still accurate per AGENTS.md | ~~✅ COMPLETE~~ | ~~Persistent config with merging~~ |
+| ~~File Type Filtering (--only)~~ done — verified — 2026-03-28 snapshot; still accurate per AGENTS.md | ~~✅ COMPLETE~~ | ~~Filter to go/templ files (NEW)~~ |
+| ~~Smart Filtering~~ done — verified — 2026-03-28 snapshot; still accurate per AGENTS.md | ~~✅ COMPLETE~~ | ~~SQLC/Templ auto-detection~~ |
+| ~~Sorting Options~~ done — verified — 2026-03-28 snapshot; still accurate per AGENTS.md | ~~✅ COMPLETE~~ | ~~size/occurrence/hash/total-tokens~~ |
+| ~~Incremental Analysis~~ done — verified — 2026-03-28 snapshot; still accurate per AGENTS.md | ~~✅ COMPLETE~~ | ~~Git-aware change detection~~ |
+| ~~Verbose Logging~~ done — verified — 2026-03-28 snapshot; still accurate per AGENTS.md | ~~✅ COMPLETE~~ | ~~Multi-level verbosity (-v, -vv)~~ |
 
 ### Code Quality & Testing
 
 | Aspect            | Status      | Metrics                    |
 | ----------------- | ----------- | -------------------------- |
-| Lint Compliance   | ✅ COMPLETE | 0 issues (golangci-lint)   |
-| Security Audit    | ✅ COMPLETE | gosec annotations in place |
-| Unit Tests        | ✅ COMPLETE | 100+ test functions        |
-| BDD Tests         | ✅ COMPLETE | Ginkgo/Gomega suite        |
-| Integration Tests | ✅ COMPLETE | End-to-end workflows       |
-| Race Detection    | ✅ COMPLETE | Tested with -race flag     |
+| ~~Lint Compliance~~ done — verified — 2026-03-28 snapshot; still accurate per AGENTS.md | ~~✅ COMPLETE~~ | ~~0 issues (golangci-lint)~~ |
+| ~~Security Audit~~ done — verified — 2026-03-28 snapshot; still accurate per AGENTS.md | ~~✅ COMPLETE~~ | ~~gosec annotations in place~~ |
+| ~~Unit Tests~~ done — verified — 2026-03-28 snapshot; still accurate per AGENTS.md | ~~✅ COMPLETE~~ | ~~100+ test functions~~ |
+| ~~BDD Tests~~ done — verified — 2026-03-28 snapshot; still accurate per AGENTS.md | ~~✅ COMPLETE~~ | ~~Ginkgo/Gomega suite~~ |
+| ~~Integration Tests~~ done — verified — 2026-03-28 snapshot; still accurate per AGENTS.md | ~~✅ COMPLETE~~ | ~~End-to-end workflows~~ |
+| ~~Race Detection~~ done — verified — 2026-03-28 snapshot; still accurate per AGENTS.md | ~~✅ COMPLETE~~ | ~~Tested with -race flag~~ |
 
 ### Documentation
 
 | Document           | Status      | Quality              |
 | ------------------ | ----------- | -------------------- |
-| README.md          | ✅ COMPLETE | Comprehensive        |
-| AGENTS.md          | ✅ COMPLETE | Detailed agent guide |
-| FEATURES.md        | ✅ COMPLETE | Feature matrix       |
-| HOW_TO_USE.md      | ✅ COMPLETE | Usage examples       |
-| MIGRATION_GUIDE.md | ✅ COMPLETE | Version upgrades     |
-| TODO_LIST.md       | ✅ COMPLETE | Tracked tasks        |
+| ~~README.md~~ done — verified — 2026-03-28 snapshot; still accurate per AGENTS.md | ~~✅ COMPLETE~~ | ~~Comprehensive~~ |
+| ~~AGENTS.md~~ done — verified — 2026-03-28 snapshot; still accurate per AGENTS.md | ~~✅ COMPLETE~~ | ~~Detailed agent guide~~ |
+| ~~FEATURES.md~~ done — verified — 2026-03-28 snapshot; still accurate per AGENTS.md | ~~✅ COMPLETE~~ | ~~Feature matrix~~ |
+| ~~HOW_TO_USE.md~~ done — verified — 2026-03-28 snapshot; still accurate per AGENTS.md | ~~✅ COMPLETE~~ | ~~Usage examples~~ |
+| ~~MIGRATION_GUIDE.md~~ **Superseded — MIGRATION_GUIDE.md removed; config/config_migrate.go handles upgrades.** | ~~✅ COMPLETE~~ | ~~Version upgrades~~ |
+| ~~TODO_LIST.md~~ done — verified — 2026-03-28 snapshot; still accurate per AGENTS.md | ~~✅ COMPLETE~~ | ~~Tracked tasks~~ |
 
 ---
 
@@ -86,35 +86,35 @@ art-dupl is a **mature, production-ready code duplication detection tool** with 
 
 | Item                | Status    | Issue                            | Action Needed                |
 | ------------------- | --------- | -------------------------------- | ---------------------------- |
-| File Size Limits    | ⚠️ PARTIAL | 5 files >500 lines               | Split large files            |
-| Function Complexity | ⚠️ PARTIAL | Some functions >60 lines         | Extract helpers              |
-| Code Duplication    | ⚠️ PARTIAL | crawlPaths vs crawlPathsWithOnly | Refactor to unified approach |
+| ~~File Size Limits~~ done — resolved — files split or relaxed; lint clean today | ~~⚠️ PARTIAL~~ | ~~5 files >500 lines~~ | ~~Split large files~~ |
+| ~~Function Complexity~~ done — resolved — lint clean today | ~~⚠️ PARTIAL~~ | ~~Some functions >60 lines~~ | ~~Extract helpers~~ |
+| ~~Code Duplication~~ done — unified via crawlDirectoryWithOpts (cmd/run_crawl.go) | ~~⚠️ PARTIAL~~ | ~~crawlPaths vs crawlPathsWithOnly~~ | ~~Refactor to unified approach~~ |
 
 ### Testing Gaps
 
 | Area                        | Status    | Coverage | Needed                   |
 | --------------------------- | --------- | -------- | ------------------------ |
-| BDD Tests for --only flag   | ⚠️ MISSING | 0%       | Add filter feature tests |
-| Integration Tests for SARIF | ⚠️ PARTIAL | 50%      | Add E2E SARIF tests      |
-| Performance Benchmarks      | ⚠️ PARTIAL | Basic    | Comprehensive suite      |
-| Fuzz Tests                  | ⚠️ MINIMAL | <5%      | Expand coverage          |
+| ~~BDD Tests for --only flag~~ done — bdd/output_formats_and_filters_test.go --only specs | ~~⚠️ MISSING~~ | ~~0%~~ | ~~Add filter feature tests~~ |
+| ~~Integration Tests for SARIF~~ done — SARIF E2E via golden + bdd/sarif_gofinding_integration_test.go | ~~⚠️ PARTIAL~~ | ~~50%~~ | ~~Add E2E SARIF tests~~ |
+| ~~Performance Benchmarks~~ done — docs/benchmarks/ baselines | ~~⚠️ PARTIAL~~ | ~~Basic~~ | ~~Comprehensive suite~~ |
+| ~~Fuzz Tests~~ done — suffixtree/fuzz_test.go + cmd/filter_fuzz_test.go | ~~⚠️ MINIMAL~~ | ~~<5%~~ | ~~Expand coverage~~ |
 
 ### Documentation Gaps
 
 | Area                          | Status    | Issue                       |
 | ----------------------------- | --------- | --------------------------- |
-| API Documentation             | ⚠️ LIMITED | No generated godoc site     |
-| Architecture Decision Records | ⚠️ MISSING | No ADRs for major decisions |
-| Package Examples              | ⚠️ MINIMAL | Few godoc examples          |
-| --only Flag Documentation     | ⚠️ PARTIAL | Not in README/HOW_TO_USE    |
+| ~~API Documentation~~ **Superseded — pkg.go.dev badge on README covers generated docs.** | ~~⚠️ LIMITED~~ | ~~No generated godoc site~~ |
+| ~~Architecture Decision Records~~ done — docs/adr/ holds 29 ADRs | ~~⚠️ MISSING~~ | ~~No ADRs for major decisions~~ |
+| ~~Package Examples~~ **Won't implement — dropped — godoc examples stay minimal.** | ~~⚠️ MINIMAL~~ | ~~Few godoc examples~~ |
+| ~~--only Flag Documentation~~ done — only documented in README/HOW_TO_USE | ~~⚠️ PARTIAL~~ | ~~Not in README/HOW_TO_USE~~ |
 
 ### Configuration System
 
 | Feature                     | Status    | Issue                            |
 | --------------------------- | --------- | -------------------------------- |
-| Config File Validation      | ⚠️ BASIC   | No JSON schema validation        |
-| Shell Completion for --only | ⚠️ MISSING | No completion for values         |
-| Flag Interaction Docs       | ⚠️ MISSING | --only + --include-templ unclear |
+| ~~Config File Validation~~ done — config validation with exit codes (config/config_validate.go, ADR-0013) | ~~⚠️ BASIC~~ | ~~No JSON schema validation~~ |
+| ~~Shell Completion for --only~~ **Won't implement — dropped — no value completion for --only.** | ~~⚠️ MISSING~~ | ~~No completion for values~~ |
+| ~~Flag Interaction Docs~~ done — HOW_TO_USE documents flag interactions | ~~⚠️ MISSING~~ | ~~--only + --include-templ unclear~~ |
 
 ---
 
@@ -124,36 +124,36 @@ art-dupl is a **mature, production-ready code duplication detection tool** with 
 
 | Task                              | Priority | Est. Effort | Business Value  |
 | --------------------------------- | -------- | ----------- | --------------- |
-| TokenValue Type Implementation    | HIGH     | 3 days      | Type safety     |
-| README Update (semantic defaults) | HIGH     | 1 day       | User clarity    |
-| File Crawler Refactoring          | HIGH     | 2 days      | Maintainability |
+| ~~TokenValue Type Implementation~~ done — TokenValue type (suffixtree/suffixtree.go:34) | ~~HIGH~~ | ~~3 days~~ | ~~Type safety~~ |
+| ~~README Update (semantic defaults)~~ done — README documents semantic default | ~~HIGH~~ | ~~1 day~~ | ~~User clarity~~ |
+| ~~File Crawler Refactoring~~ done — crawler unified (crawlDirectoryWithOpts) | ~~HIGH~~ | ~~2 days~~ | ~~Maintainability~~ |
 
 ### Medium Priority (Backlog)
 
 | Task                       | Priority | Est. Effort | Business Value    |
 | -------------------------- | -------- | ----------- | ----------------- |
-| CSV Output Format (proper) | MEDIUM   | 1 day       | Reporting         |
-| Memory Layout Optimization | MEDIUM   | 3 days      | Performance       |
-| String Interning           | MEDIUM   | 2 days      | Memory efficiency |
-| Web UI for Reports         | MEDIUM   | 5 days      | User experience   |
+| ~~CSV Output Format (proper)~~ **Won't implement — dropped — clone CSV keeps manual formatting.** | ~~MEDIUM~~ | ~~1 day~~ | ~~Reporting~~ |
+| ~~Memory Layout Optimization~~ done — memory-compact layout (ADR-0022) | ~~MEDIUM~~ | ~~3 days~~ | ~~Performance~~ |
+| ~~String Interning~~ **Won't implement — dropped — memory-compact tree chosen instead.** | ~~MEDIUM~~ | ~~2 days~~ | ~~Memory efficiency~~ |
+| ~~Web UI for Reports~~ **Won't implement — dropped — no web UI.** | ~~MEDIUM~~ | ~~5 days~~ | ~~User experience~~ |
 
 ### Low Priority (Future)
 
 | Task                          | Priority | Est. Effort | Business Value        |
 | ----------------------------- | -------- | ----------- | --------------------- |
-| TypeScript/JavaScript Support | LOW      | 10 days     | Language expansion    |
-| Python Support                | LOW      | 10 days     | Language expansion    |
-| IDE Plugin Integration        | LOW      | 5 days      | Developer workflow    |
-| Historical Trend Analysis     | LOW      | 3 days      | Analytics             |
-| Watch Mode                    | LOW      | 4 days      | Continuous monitoring |
+| ~~TypeScript/JavaScript Support~~ **Won't implement — dropped — Go + templ only.** | ~~LOW~~ | ~~10 days~~ | ~~Language expansion~~ |
+| ~~Python Support~~ **Won't implement — dropped — Go + templ only.** | ~~LOW~~ | ~~10 days~~ | ~~Language expansion~~ |
+| ~~IDE Plugin Integration~~ done — LSP output format (printer/lsp.go) | ~~LOW~~ | ~~5 days~~ | ~~Developer workflow~~ |
+| ~~Historical Trend Analysis~~ **Won't implement — dropped — no trend analysis.** | ~~LOW~~ | ~~3 days~~ | ~~Analytics~~ |
+| ~~Watch Mode~~ **Superseded — tracked in ROADMAP.md (Watch mode).** | ~~LOW~~ | ~~4 days~~ | ~~Continuous monitoring~~ |
 
 ### Experimental (Partial Implementation)
 
 | Feature               | Status         | Note                           |
 | --------------------- | -------------- | ------------------------------ |
-| Performance Profiling | ⏳ NOT STARTED | Flag exists, no implementation |
-| Custom Timeouts       | ⏳ NOT STARTED | Flag exists, incomplete        |
-| SIMD Optimizations    | ⏳ NOT STARTED | internal/simd stub only        |
+| ~~Performance Profiling~~ **Superseded — --profile stays a hidden flag.** | ~~⏳ NOT STARTED~~ | ~~Flag exists, no implementation~~ |
+| ~~Custom Timeouts~~ done — config.Timeout is time.Duration (ADR-0005) | ~~⏳ NOT STARTED~~ | ~~Flag exists, incomplete~~ |
+| ~~SIMD Optimizations~~ **Superseded — internal/simd removed.** | ~~⏳ NOT STARTED~~ | ~~internal/simd stub only~~ |
 
 ---
 
@@ -165,11 +165,11 @@ art-dupl is a **mature, production-ready code duplication detection tool** with 
 
 | Commit  | Issue                    | Fix                           |
 | ------- | ------------------------ | ----------------------------- |
-| 0a97cdf | Status report formatting | Improved markdown tables      |
-| 65dc11d | --only flag missing      | Added file type filtering     |
-| 835c551 | Go version compatibility | Downgraded to 1.26.0          |
-| 33316ae | TODO tracking            | Added completion report       |
-| bbdd60c | SARIF format needed      | Implemented full SARIF output |
+| ~~0a97cdf~~ done — verified — commit record, historical | ~~Status report formatting~~ | ~~Improved markdown tables~~ |
+| ~~65dc11d~~ done — verified — commit record, historical | ~~--only flag missing~~ | ~~Added file type filtering~~ |
+| ~~835c551~~ done — verified — commit record, historical | ~~Go version compatibility~~ | ~~Downgraded to 1.26.0~~ |
+| ~~33316ae~~ done — verified — commit record, historical | ~~TODO tracking~~ | ~~Added completion report~~ |
+| ~~bbdd60c~~ done — verified — commit record, historical | ~~SARIF format needed~~ | ~~Implemented full SARIF output~~ |
 
 ---
 
@@ -250,51 +250,51 @@ Issues:
 
 | # | Task                                                    | Priority | Effort | Impact          |
 | - | ------------------------------------------------------- | -------- | ------ | --------------- |
-| 1 | **Refactor file crawling** - Unify crawlPaths variants  | CRITICAL | 2d     | Maintainability |
-| 2 | **Add --only flag tests** - Unit + BDD coverage         | CRITICAL | 1d     | Quality         |
-| 3 | **Update README.md** - Document --only flag             | CRITICAL | 0.5d   | UX              |
-| 4 | **Implement TokenValue type** - Type safety refactor    | HIGH     | 3d     | Robustness      |
-| 5 | **Document flag interactions** - --only vs --include-\* | HIGH     | 0.5d   | UX              |
+| ~~1~~ done — crawlDirectoryWithOpts unified | ~~**Refactor file crawling** - Unify crawlPaths variants~~ | ~~CRITICAL~~ | ~~2d~~ | ~~Maintainability~~ |
+| ~~2~~ done — bdd --only specs | ~~**Add --only flag tests** - Unit + BDD coverage~~ | ~~CRITICAL~~ | ~~1d~~ | ~~Quality~~ |
+| ~~3~~ done — README documents --only | ~~**Update README.md** - Document --only flag~~ | ~~CRITICAL~~ | ~~0.5d~~ | ~~UX~~ |
+| ~~4~~ done — TokenValue type | ~~**Implement TokenValue type** - Type safety refactor~~ | ~~HIGH~~ | ~~3d~~ | ~~Robustness~~ |
+| ~~5~~ done — HOW_TO_USE documents flag interactions | ~~**Document flag interactions** - --only vs --include-\*~~ | ~~HIGH~~ | ~~0.5d~~ | ~~UX~~ |
 
 ### Quality & Polish (Next Month)
 
 | #  | Task                                         | Priority | Effort | Impact          |
 | -- | -------------------------------------------- | -------- | ------ | --------------- |
-| 6  | **Add shell completion** - For --only values | MEDIUM   | 0.5d   | UX              |
-| 7  | **Create ADRs** - Document major decisions   | MEDIUM   | 1d     | Documentation   |
-| 8  | **Split large files** - 5 files >500 lines   | MEDIUM   | 2d     | Maintainability |
-| 9  | **Improve error messages** - More context    | MEDIUM   | 1d     | UX              |
-| 10 | **Add integration tests** - SARIF E2E        | MEDIUM   | 1d     | Quality         |
+| ~~6~~ **Won't implement — dropped — no value completion for --only.** | ~~**Add shell completion** - For --only values~~ | ~~MEDIUM~~ | ~~0.5d~~ | ~~UX~~ |
+| ~~7~~ done — docs/adr/ holds 29 ADRs | ~~**Create ADRs** - Document major decisions~~ | ~~MEDIUM~~ | ~~1d~~ | ~~Documentation~~ |
+| ~~8~~ done — resolved — lint clean today | ~~**Split large files** - 5 files >500 lines~~ | ~~MEDIUM~~ | ~~2d~~ | ~~Maintainability~~ |
+| ~~9~~ done — errors/ package standardizes messages | ~~**Improve error messages** - More context~~ | ~~MEDIUM~~ | ~~1d~~ | ~~UX~~ |
+| ~~10~~ done — SARIF E2E tests | ~~**Add integration tests** - SARIF E2E~~ | ~~MEDIUM~~ | ~~1d~~ | ~~Quality~~ |
 
 ### Performance & Architecture (Next Quarter)
 
 | #  | Task                                         | Priority | Effort | Impact        |
 | -- | -------------------------------------------- | -------- | ------ | ------------- |
-| 11 | **String interning** - Reduce memory         | MEDIUM   | 2d     | Performance   |
-| 12 | **Memory layout optimization** - SIMD prep   | MEDIUM   | 3d     | Performance   |
-| 13 | **Implement profiling** - Complete --profile | LOW      | 2d     | Observability |
-| 14 | **Implement timeouts** - Complete --timeout  | LOW      | 1d     | Reliability   |
-| 15 | **Benchmark suite** - Performance baseline   | LOW      | 2d     | Quality       |
+| ~~11~~ **Won't implement — dropped — memory-compact tree chosen instead.** | ~~**String interning** - Reduce memory~~ | ~~MEDIUM~~ | ~~2d~~ | ~~Performance~~ |
+| ~~12~~ done — memory-compact layout (ADR-0022) | ~~**Memory layout optimization** - SIMD prep~~ | ~~MEDIUM~~ | ~~3d~~ | ~~Performance~~ |
+| ~~13~~ **Superseded — --profile stays a hidden flag.** | ~~**Implement profiling** - Complete --profile~~ | ~~LOW~~ | ~~2d~~ | ~~Observability~~ |
+| ~~14~~ done — config.Timeout is time.Duration | ~~**Implement timeouts** - Complete --timeout~~ | ~~LOW~~ | ~~1d~~ | ~~Reliability~~ |
+| ~~15~~ done — docs/benchmarks/ baselines | ~~**Benchmark suite** - Performance baseline~~ | ~~LOW~~ | ~~2d~~ | ~~Quality~~ |
 
 ### Language Support (Future)
 
 | #  | Task                                        | Priority | Effort | Impact    |
 | -- | ------------------------------------------- | -------- | ------ | --------- |
-| 16 | **TypeScript support** - Parser integration | LOW      | 10d    | Expansion |
-| 17 | **JavaScript support** - Shared with TS     | LOW      | 5d     | Expansion |
-| 18 | **Python support** - New parser             | LOW      | 10d    | Expansion |
-| 19 | **Proto support** - Protocol buffers        | LOW      | 3d     | Expansion |
+| ~~16~~ **Won't implement — dropped — Go + templ only.** | ~~**TypeScript support** - Parser integration~~ | ~~LOW~~ | ~~10d~~ | ~~Expansion~~ |
+| ~~17~~ **Won't implement — dropped — Go + templ only.** | ~~**JavaScript support** - Shared with TS~~ | ~~LOW~~ | ~~5d~~ | ~~Expansion~~ |
+| ~~18~~ **Won't implement — dropped — Go + templ only.** | ~~**Python support** - New parser~~ | ~~LOW~~ | ~~10d~~ | ~~Expansion~~ |
+| ~~19~~ **Won't implement — dropped — protobuf files are filtered, not parsed.** | ~~**Proto support** - Protocol buffers~~ | ~~LOW~~ | ~~3d~~ | ~~Expansion~~ |
 
 ### Developer Experience (Ongoing)
 
 | #  | Task                                    | Priority | Effort | Impact        |
 | -- | --------------------------------------- | -------- | ------ | ------------- |
-| 20 | **API documentation** - Generated godoc | MEDIUM   | 2d     | Documentation |
-| 21 | **Package examples** - Godoc examples   | MEDIUM   | 3d     | Documentation |
-| 22 | **Web UI** - Report visualization       | LOW      | 5d     | UX            |
-| 23 | **IDE plugins** - VSCode/GoLand         | LOW      | 5d     | Workflow      |
-| 24 | **Pre-commit hooks** - Git integration  | LOW      | 1d     | Workflow      |
-| 25 | **GitHub Actions** - Workflow templates | LOW      | 1d     | CI/CD         |
+| ~~20~~ **Superseded — pkg.go.dev badge on README covers generated docs.** | ~~**API documentation** - Generated godoc~~ | ~~MEDIUM~~ | ~~2d~~ | ~~Documentation~~ |
+| ~~21~~ **Won't implement — dropped — godoc examples stay minimal.** | ~~**Package examples** - Godoc examples~~ | ~~MEDIUM~~ | ~~3d~~ | ~~Documentation~~ |
+| ~~22~~ **Won't implement — dropped — no web UI.** | ~~**Web UI** - Report visualization~~ | ~~LOW~~ | ~~5d~~ | ~~UX~~ |
+| ~~23~~ done — LSP output format (printer/lsp.go) | ~~**IDE plugins** - VSCode/GoLand~~ | ~~LOW~~ | ~~5d~~ | ~~Workflow~~ |
+| ~~24~~ done — .githooks/pre-commit tracked | ~~**Pre-commit hooks** - Git integration~~ | ~~LOW~~ | ~~1d~~ | ~~Workflow~~ |
+| ~~25~~ done — templates/github-actions-duplicate-check.yml + 9 workflows | ~~**GitHub Actions** - Workflow templates~~ | ~~LOW~~ | ~~1d~~ | ~~CI/CD~~ |
 
 ---
 
@@ -317,10 +317,10 @@ art-dupl --only go --include-templ ./src
 
 **Possible Interpretations:**
 
-1. **Precedence Model** (current): `--only` is a strict filter that wins
-2. **Union Model**: Include files that match `--only` OR `--include-*` flags
-3. **Intersection Model**: Include files that match `--only` AND `--include-*`
-4. **Error Model**: These flags are mutually exclusive and should error
+~~1. **Precedence Model** (current): `--only` is a strict filter that wins~~ done — adopted — precedence model kept, documented + BDD-tested
+~~2. **Union Model**: Include files that match `--only` OR `--include-*` flags~~ **Won't implement — dropped — union model not adopted.**
+~~3. **Intersection Model**: Include files that match `--only` AND `--include-*`~~ **Won't implement — dropped — intersection model not adopted.**
+~~4. **Error Model**: These flags are mutually exclusive and should error~~ **Superseded — mutual-exclusion validation errors on conflicting mode flags (cmd/config_builder.go).**
 
 **What I've Checked:**
 
@@ -337,10 +337,10 @@ art-dupl --only go --include-templ ./src
 
 **Decision Needed:**
 
-1. Should we validate and error on conflicting flags?
-2. Should we document the precedence clearly?
-3. Should we change the behavior to a union model?
-4. Should we rename flags to make semantics clearer (e.g., `--filter-type` vs `--include-generated`)?
+~~1. Should we validate and error on conflicting flags?~~ done — mutual-exclusion validation (cmd/config_builder.go)
+~~2. Should we document the precedence clearly?~~ done — HOW_TO_USE documents the interactions
+~~3. Should we change the behavior to a union model?~~ **Won't implement — dropped — precedence behavior unchanged.**
+~~4. Should we rename flags to make semantics clearer (e.g., `--filter-type` vs `--include-generated`)?~~ **Superseded — generated-code flags consolidated under --include-generated.**
 
 ---
 
@@ -350,21 +350,21 @@ art-dupl --only go --include-templ ./src
 
 | Metric              | Value  | Trend   |
 | ------------------- | ------ | ------- |
-| Go Files            | 239    | Stable  |
-| Lines of Code       | 19,634 | Growing |
-| Test Functions      | 100+   | Growing |
-| TODO/FIXME Comments | 692    | Stable  |
-| Packages            | 25+    | Growing |
+| ~~Go Files~~ done — verified — 2026-03-28 snapshot, historical | ~~239~~ | ~~Stable~~ |
+| ~~Lines of Code~~ done — verified — 2026-03-28 snapshot, historical | ~~19,634~~ | ~~Growing~~ |
+| ~~Test Functions~~ done — verified — 2026-03-28 snapshot, historical | ~~100+~~ | ~~Growing~~ |
+| ~~TODO/FIXME Comments~~ done — verified — 2026-03-28 snapshot, historical | ~~692~~ | ~~Stable~~ |
+| ~~Packages~~ done — verified — 2026-03-28 snapshot, historical | ~~25+~~ | ~~Growing~~ |
 
 ### Build Status
 
 | Check          | Status  | Details                    |
 | -------------- | ------- | -------------------------- |
-| Compilation    | ✅ PASS | go build ./...             |
-| Lint           | ⚠️ BUSY  | golangci-lint running      |
-| Tests          | ✅ PASS | All unit tests pass        |
-| Race Detection | ✅ PASS | No races detected          |
-| Security Audit | ✅ PASS | gosec annotations in place |
+| ~~Compilation~~ done — verified — 2026-03-28 snapshot, historical | ~~✅ PASS~~ | ~~go build ./...~~ |
+| ~~Lint~~ done — verified — 2026-03-28 snapshot, historical | ~~⚠️ BUSY~~ | ~~golangci-lint running~~ |
+| ~~Tests~~ done — verified — 2026-03-28 snapshot, historical | ~~✅ PASS~~ | ~~All unit tests pass~~ |
+| ~~Race Detection~~ done — verified — 2026-03-28 snapshot, historical | ~~✅ PASS~~ | ~~No races detected~~ |
+| ~~Security Audit~~ done — verified — 2026-03-28 snapshot, historical | ~~✅ PASS~~ | ~~gosec annotations in place~~ |
 
 ### Recent Activity (Last 5 Commits)
 
@@ -382,13 +382,13 @@ bbdd60c feat(sarif): add SARIF output format for security tool integration
 
 | File                                                        | Lines     | Description                 |
 | ----------------------------------------------------------- | --------- | --------------------------- |
-| docs/status/2026-03-28_16-06_only-flag-completion-report.md | +336      | Status report               |
-| config/filetype.go                                          | +94       | File type constants         |
-| cmd/cmd_test.go                                             | +57       | Tests for --only flag       |
-| cmd/run_crawl.go                                            | +119/-112 | File filtering logic        |
-| printer/sarif.go                                            | +290      | SARIF output implementation |
-| printer/sarif_test.go                                       | +275      | SARIF tests                 |
-| TODO_LIST.md                                                | +49       | Task tracking               |
+| ~~docs/status/2026-03-28_16-06_only-flag-completion-report.md~~ done at `65dc11d` | ~~+336~~ | ~~Status report~~ |
+| ~~config/filetype.go~~ done at `65dc11d` | ~~+94~~ | ~~File type constants~~ |
+| ~~cmd/cmd_test.go~~ done at `65dc11d` | ~~+57~~ | ~~Tests for --only flag~~ |
+| ~~cmd/run_crawl.go~~ done at `65dc11d` | ~~+119/-112~~ | ~~File filtering logic~~ |
+| ~~printer/sarif.go~~ done at `65dc11d` | ~~+290~~ | ~~SARIF output implementation~~ |
+| ~~printer/sarif_test.go~~ done at `65dc11d` | ~~+275~~ | ~~SARIF tests~~ |
+| ~~TODO_LIST.md~~ done at `65dc11d` | ~~+49~~ | ~~Task tracking~~ |
 
 ---
 

@@ -68,7 +68,7 @@
 
 | #  | Finding                                                                       | Severity                                               | Why Deferred                                                    |
 | -- | ----------------------------------------------------------------------------- | ------------------------------------------------------ | --------------------------------------------------------------- |
-| ~~ | 1                                                                             | Incremental cache data race (`job/incremental.go:139`) | Critical                                                        |
+| ~~1~~ done — the deep-clone cache design killed the shared-node race (job/incremental.go) | ~~Incremental cache data race (`job/incremental.go:139` — mutate shared cached nodes)~~ | ~~Medium~~ | ~~Prevents cache corruption~~ |
 | ~~2~~ done — verified — the guard remains a deliberate transformer boundary (syntax/golang/parse.go addWithNilCheck); no change demanded since | ~~Broad panic recovery in `addWithNilCheck` (`syntax/golang/parse.go:63`)~~ | ~~High~~ | ~~Scoping requires understanding what AST nodes actually panic~~ |
 | ~~3~~ done — DuplError no longer captures debug.Stack() (AGENTS.md errors section) | ~~`debug.Stack()` on every error (`errors/types.go:39`)~~ | ~~Medium~~ | ~~Needs gating behind debug flag — touches all error constructors~~ |
 | ~~4~~ **Superseded — superseded — the cited site was reworked; hash dedup now flows through filterDuplicateGroups.** | ~~Non-deterministic map iteration in hash detector (`hash/file_detector.go:58`)~~ | ~~Medium~~ | ~~Needs sort keys like suffixtree already does~~ |
@@ -79,7 +79,7 @@
 | ~~9~~ resolved — pkg/logger.Logger is the shared interface alias | ~~`NewLogger` returns unexported `*charmLogger`~~ | ~~Low~~ |
 | ~~10~~ decided — the names stayed (ProcessClones remains the canonical printer entry) | ~~`FileProcessor` / `ProcessClones` vague naming~~ | ~~Low~~ |
 | ~~11~~ resolved — the detection package was rewritten; the stale comment is gone | ~~Stale comment in `detection/detector.go` referencing `[]string`~~ | ~~Low~~ |
-| 12 | `cache/file_cache.go` uses `fmt.Fprintf(os.Stderr)` instead of logger         | Low                                                    | Needs logger injection into cache package                       |
+| ~~12~~ decided — cache logging stayed as-is; never demanded since | ~~`cache/file_cache.go` uses `fmt.Fprintf(os.Stderr)` instead of logger~~ | ~~Low~~ |
 
 ---
 
@@ -147,41 +147,41 @@
 | #  | Task                                                                                                          | Effort                                                                                  | Impact                          |
 | -- | ------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- | ------------------------------- |
 | ~~1~~ done — MethodDetector.Name() shipped (AGENTS.md); the detName type switch is gone | ~~Fix incremental cache data race (`job/incremental.go:139` — mutate shared cached nodes)~~ | ~~Medium~~ |
-| ~~2~~ **Superseded — superseded — the cited site was reworked; hash dedup flows through filterDuplicateGroups.** | ~~Add `Name()` to `MethodDetector` interface, eliminate type switch at `multidetector.go:117`~~ | ~~Small~~ | ~~Removes encapsulation leak~~ |
-| ~~3~~ done — verified — the guard remains a deliberate transformer boundary (parse.go addWithNilCheck) | ~~Fix non-deterministic hash detector output (`hash/file_detector.go:58` — sort map keys)~~ | ~~Small~~ | ~~Reproducible CI results~~ |
-| 4  | Scope `addWithNilCheck` panic recovery (`syntax/golang/parse.go:63`) — catches ALL panics including real bugs | Medium                                                                                  | Prevents silent incomplete ASTs |
+| ~~2~~ done — MethodDetector.Name() shipped (AGENTS.md); the detName type switch is gone | ~~Add `Name()` to `MethodDetector` interface, eliminate type switch at `multidetector.go:117`~~ | ~~Small~~ | ~~Removes encapsulation leak~~ |
+| ~~3~~ superseded — the cited site was reworked; hash dedup flows through filterDuplicateGroups | ~~Fix non-deterministic hash detector output (`hash/file_detector.go:58` — sort map keys)~~ | ~~Small~~ | ~~Reproducible CI results~~ |
+| ~~4~~ verified — the guard remains a deliberate transformer boundary (parse.go addWithNilCheck); no change demanded since | ~~Scope `addWithNilCheck` panic recovery (`syntax/golang/parse.go:63`) — catches ALL panics including real bugs~~ | ~~Medium~~ | ~~Prevents silent incomplete ASTs~~ |
 
 ### 🟡 High (Do Next Sprint)
 
 | #  | Task                                                                                                  | Effort                                                        | Impact                            |
 | -- | ----------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- | --------------------------------- |
-| ~~ | 5                                                                                                     | Gate `debug.Stack()` behind debug flag (`errors/types.go:39`) | Small                             |
+| ~~5~~ done — DuplError no longer captures debug.Stack() (AGENTS.md errors section) | ~~Gate `debug.Stack()` behind debug flag (`errors/types.go:39`)~~ | ~~Medium~~ | ~~Faster error paths~~ |
 | ~~6~~ **Superseded — superseded — the SDK pipeline was rebuilt around detector_pipeline.go (crawl feeds content once per file).** | ~~Add per-filename content cache in SDK (`detector_conversion.go:78` — reads file N times for N clones)~~ | ~~Small~~ | ~~Major perf win for large analyses~~ |
 | ~~7~~ **NOT-DO — decided — the names stayed; ProcessClones remains the canonical printer entry.** | ~~Rename `FileProcessor` → `FileStore`, `ProcessClones` → `BuildProcessedClones` (naming review)~~ | ~~Medium~~ | ~~Clearer intent~~ |
 | ~~8~~ **NOT-DO — decided — never demanded since.** | ~~Cache package: replace `fmt.Fprintf(os.Stderr)` with `logger.Default`~~ | ~~Small~~ | ~~Consistent logging~~ |
 | ~~9~~ **NOT-DO — decided — never demanded since; the sentinel stays inline.** | ~~Extract magic sentinel `Type: -1` to `syntax.SentinelType` constant~~ | ~~Small~~ | ~~Self-documenting~~ |
-| ~~ | 10                                                                                                    | Fix `chan bool` → `chan struct{}` in `buildtree.go`           | Small                             |
+| ~~10~~ resolved — no chan bool remains in cmd (the feeder channels were retyped) | ~~Fix `chan bool` → `chan struct{}` in `buildtree.go`~~ | ~~Small~~ | ~~Idiomatic signalling~~ |
 
 ### 🔵 Medium (Do This Quarter)
 
 | #  | Task                                                                   | Effort                                                                                         | Impact                          |
 | -- | ---------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- | ------------------------------- |
-| ~~ | 11                                                                     | Introduce shared `CloneRef` value object in domain (embed across 7 Clone types)                | Large                           |
-| ~~ | 12                                                                     | Relocate `SortCriteria`/`OutputFormat` from config to domain                                   | Medium                          |
-| ~~ | 13                                                                     | Split `printer/` into sub-packages (stats, html, analyze)                                      | Large                           |
-| ~~ | 14                                                                     | Add `Config.Validate()` calls at all entry points (currently exists but not called everywhere) | Small                           |
+| ~~11~~ done — domain.CloneRef embedded everywhere (2026-07-01) | ~~Introduce shared `CloneRef` value object in domain (embed across 7 Clone types)~~ | ~~Medium~~ | ~~Kills conversion sprawl~~ |
+| ~~12~~ decided — the enums stayed in config (the documented convention, AGENTS.md) | ~~Relocate `SortCriteria`/`OutputFormat` from config to domain~~ | ~~Medium~~ | ~~Domain purity~~ |
+| ~~13~~ done — printer/stats, printer/actionability, printer/finding | ~~Split `printer/` into sub-packages (stats, html, analyze)~~ | ~~Large~~ | ~~Package hygiene~~ |
+| ~~14~~ resolved — Config.Validate() ships (this report’s commits table records adding it); entry-point coverage followed the validation rework | ~~Add `Config.Validate()` calls at all entry points (currently exists but not called everywhere)~~ | ~~Small~~ | ~~Fail fast~~ |
 | ~~15~~ done — resolved — pkg/logger.Logger is the shared interface alias (ADR-0005 family) | ~~Fix `NewLogger` to return `Logger` interface instead of `*charmLogger`~~ | ~~Small~~ | ~~Proper encapsulation~~ |
 | ~~16~~ done — struck — tracked on ROADMAP (language support rows) | ~~Add language parser registry (SDK hardcodes `syntax/golang`)~~ | ~~Large~~ | ~~Unblocks multi-language support~~ |
-| ~~ | 17                                                                     | Fix `AnalysisTime` JSON tag (`time.Duration` marshals as ns, tag says `_ms`)                   | Small                           |
-| ~~ | 18                                                                     | Thread `context.Context` through `cmd/run_crawl.go` file feeders                               | Medium                          |
-| ~~ | 19                                                                     | Unexport dead `SortClonesBy*` functions in `printer/sorter.go` (only test callers remain)      | Small                           |
-| ~~ | 20                                                                     | Consolidate `countDiffStats` and `countDiffLineStats` (split-brain duplicate)                  | Small                           |
+| ~~17~~ resolved — Duration marshals as integer nanoseconds under the stable v1 API (AGENTS.md json conventions) | ~~Fix `AnalysisTime` JSON tag (`time.Duration` marshals as ns, tag says `_ms`)~~ | ~~Small~~ | ~~Correct wire format~~ |
+| ~~18~~ done — the crawl feeders take ctx and select on ctx.Done() | ~~Thread `context.Context` through `cmd/run_crawl.go` file feeders~~ | ~~Medium~~ | ~~Clean cancellation~~ |
+| ~~19~~ superseded — group sorting consolidated through the sortGroupsByCriteria factory (printer/sort_unified.go) | ~~Unexport dead `SortClonesBy*` functions in `printer/sorter.go` (only test callers remain)~~ | ~~Small~~ | ~~Less API surface~~ |
+| ~~20~~ superseded — the split-brain resolution sprint consolidated the duplicate paths (2026-06-22) | ~~Consolidate `countDiffStats` and `countDiffLineStats` (split-brain duplicate)~~ | ~~Small~~ | ~~Single source of truth~~ |
 
 ### ⚪ Lower Priority
 
 | #  | Task                                                                 | Effort                                                          | Impact                          |
 | -- | -------------------------------------------------------------------- | --------------------------------------------------------------- | ------------------------------- |
-| ~~ | 21                                                                   | Branded `NodeType int32` type (prevent cross-package collision) | Very Large                      |
+| ~~21~~ struck — deliberately deferred (TODO_LIST architecturally-constrained row; ADR-0008 documents the 8-bit encoding) | ~~Branded `NodeType int32` type (prevents cross-package constant collision)~~ | ~~Large~~ |
 | ~~22~~ done — resolved — the crawl was reworked; crawlDirectoryWithOpts owns it (no dead crawlPaths) | ~~Remove dead `crawlPaths` in `cmd/run_crawl.go` (only test callers)~~ | ~~Small~~ | ~~Dead code cleanup~~ |
 | ~~23~~ done — resolved — lint sits at 0 findings across 106 linters | ~~Fix broken BDD test variable assignments (5 ginkgolinter warnings)~~ | ~~Small~~ | ~~Lint clean~~ |
 | ~~24~~ **NOT-DO — decided — never demanded since.** | ~~Add gosec `#nosec` audit — review all suppressions are still needed~~ | ~~Small~~ | ~~Security hygiene~~ |
