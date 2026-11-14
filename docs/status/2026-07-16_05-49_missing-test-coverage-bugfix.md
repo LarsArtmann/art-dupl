@@ -138,7 +138,7 @@ No regressions, no broken tests, no lint failures introduced. The `--min-lines` 
 
 ### Immediate (high impact, low effort)
 
-1. **Commit the current work** — 3 modified files + 4 new test files are uncommitted.
+~~1. **Commit the current work** — 3 modified files + 4 new test files are uncommitted.~~ done — the daemon commits continuously; the session files landed
 2. **Write integration test: 2-stmt error wrapping → `NonActionable`** — verify `EvaluateActionabilityWithLabel` returns the correct label.
 3. **Write integration test: cobra command with receiver → `NonActionable`** — verify the tightened `isCommandLiteral` check.
 4. **Write integration test: builder threshold=2 → `NonActionable`** — verify `isBuilderCallbackPattern` triggers with the lower threshold.
@@ -154,7 +154,7 @@ No regressions, no broken tests, no lint failures introduced. The `--min-lines` 
 11. **Add `--version` output format** — JSON-structured version info for CI tooling.
 12. **Stdin file list mode** — `--files-from-stdin` already exists but may lack docs.
 13. **`.artdupl.yml` config file support** — if not already present.
-14. **Progress output for long runs** — spinner or percentage to stderr.
+~~14. **Progress output for long runs** — spinner or percentage to stderr.~~ done — progress output ships (cmd/progress.go, periodic counts to stderr)
 15. **`--quiet` flag** — suppress all non-essential output.
 16. **`--no-color` flag** — explicit color disable (may rely on `NO_COLOR` env only).
 17. **Shell completion generation** — `art-dupl completion bash/zsh/fish`.
@@ -198,7 +198,7 @@ No regressions, no broken tests, no lint failures introduced. The `--min-lines` 
 43. **Performance benchmarking suite** — automated benchmarks on large repos (k8s, gorilla).
 44. **Fuzz testing** — `go test -fuzz` on parser, suffix tree, serialization.
 45. **SARIF output validation** — verify SARIF output passes GitHub Code Scanning validation.
-46. **GitHub Action** — pre-built action for CI clone detection.
+~~46. **GitHub Action** — pre-built action for CI clone detection.~~ done — struck — tracked on ROADMAP (Platform and Ecosystem: pre-built GitHub Action, landed 2026-11-14)
 47. **VS Code extension** — highlight clones in editor.
 48. **Clone history tracking** — `.artdupl-baseline.json` evolution across commits.
 49. **Machine-learning-assisted actionability** — train a model on actionable vs non-actionable clones.

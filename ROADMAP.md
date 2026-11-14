@@ -45,6 +45,7 @@ Shipped 2026-09-14: nested-block statements (loop/if/switch/select bodies, else-
 
 **Source:** `docs/status/2026-09-19_06-41_v0.7.0-release-go1.27-coherence-ci-recovery.md` (#N = that report's task number).
 
+- **Pre-built GitHub Action**: marketplace action wrapping the check gate for third-party repos.
 - **Real Windows stdin cancellation** (#5, gated on the platform-investment question): `feedFromStdin`'s close-on-cancel relies on `os.File.Close` unblocking a pending `Read`, which Windows `os.Pipe` does not guarantee - three stdin tests are Windows-skipped because of it. A real fix means a thread-based reader or `CancelIoEx`; a supported-Windows decision would also add a windows-required CI lane. Until the platform question is answered, skip-and-document is the correct resting state.
 - **Go 1.28 watch item: `GOEXPERIMENT=jsonv2` retirement** (#50): the flake sets the flag; a graduated/retired flag change would alter engine behavior under the v1 API. Output bytes are experiment-independent by construction (ADR-0024), so the risk is confined to build breakage - verify `nix build` on the first 1.28 beta.
 - **treefmt withGo127 wrappers → upstream env option** (#33): the symlinkJoin wrappers around goimports/templ exist because the treefmt sandbox has no network for toolchain download; replace with an upstream treefmt env option if one lands.
@@ -81,6 +82,8 @@ Shipped 2026-09-14: nested-block statements (loop/if/switch/select bodies, else-
 - **`scripts/ledger-diff.sh`**: auto-surface new `-t 1` groups vs `docs/SELF_CLEAN_LEDGER.md` after each self-scan.
 
 ## UX and Defaults
+
+- **`--since <ref>` git-aware scan scope**: analyze only files changed since a git ref.
 
 - **Threshold cliff mitigation**: Binary on/off between t=2 and t=3 causes abrupt jumps in clone count. Approaches: fractional thresholds (token-based), `--explain-threshold` mode showing what each value produces, or recommending a range. (art-dupl-threshold-cliff, licenseforge feedback)
 - **`.art-duplignore` config file support**: Project-level ignore patterns for clone detection, parallel to `.gitignore`. (false-positive-report feedback)

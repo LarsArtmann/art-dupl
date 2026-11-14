@@ -157,7 +157,7 @@ Honest self-critique on this session:
 22. Add a CI gate: `art-dupl --semantic -t 25 --plumbing | check_threshold` (or similar)
 23. Generate HTML report on each PR as an artifact
 24. Add `--diff` mode to art-dupl: show only clones introduced since main
-~~25. Add a `--since <ref>` flag that runs git-aware dedup~~ done — won't implement — git-aware incrementals were never built; tracked for the polish pass
+~~25. Add a `--since <ref>` flag that runs git-aware dedup~~ **struck — tracked on ROADMAP (UX and Defaults: `--since` scan scope, landed 2026-11-14).**
 
 ### Documentation / project hygiene
 

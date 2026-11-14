@@ -143,7 +143,7 @@ Over three work blocks this session, I built a complete Astro + Starlight docume
 28. **Verify Go Report Card** still works
 29. **Update CONTRIBUTING.md** — remove `just` references, match README's `go build`/`go test` commands
 30. **Consolidate stale docs**: HOW_TO_USE.md, USAGE.md, SDK_DESIGN.md → archive or delete (website is now source of truth)
-31. **Audit WHAT_THIS_PROJECT_IS_NOT.md, PARTS.md, PERFORMANCE_OPTIMIZATION.md** for relevance
+~~31. **Audit WHAT_THIS_PROJECT_IS_NOT.md, PARTS.md, PERFORMANCE_OPTIMIZATION.md** for relevance~~ done — PARTS.md and PERFORMANCE_OPTIMIZATION.md are gone; WHAT_THIS_PROJECT_IS_NOT.md remains and stays current
 32. **Archive `docs/status/archive/`** — hundreds of historical status files clutter the repo
 33. **Add Go module path consistency** — README uses `github.com/LarsArtmann/art-dupl` (capital L, A) but actual go.mod may differ
 
@@ -151,7 +151,7 @@ Over three work blocks this session, I built a complete Astro + Starlight docume
 
 34. **Verify `--test-threshold` default formula** (`max(30, threshold)`) against `cmd/flags.go`
 35. **Verify all flag defaults** in cli-flags.mdx against actual source code
-36. **Verify JSON output structure** described in output-formats.mdx — run `art-dupl --json` and compare
+~~36. **Verify JSON output structure** described in output-formats.mdx — run `art-dupl --json` and compare~~ done — golden tests pin the output structure (printer/testdata/; ADR-0024 canonical marshaler)
 37. **Verify SARIF output** meets GitHub's expected schema
 38. **Compile-test SDK code examples** in a temporary Go file
 39. **Add a Troubleshooting doc page** (there's a `docs/TROUBLESHOOTING.md` already to reference)

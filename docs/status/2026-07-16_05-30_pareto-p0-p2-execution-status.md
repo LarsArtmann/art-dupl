@@ -184,8 +184,8 @@ All P3 tasks from the roadmap were skipped. Key ones:
 19. ~~Add OG image meta tags to LandingLayout~~ done — LandingLayout.astro og:image
 20. ~~Run `pnpm dlx astro check` + fix TS errors~~ done — astro check in .github/workflows/deploy-site.yml
 21. ~~Run HTML validation on dist output~~ done — website/.htmlvalidate.json
-22. Remove `continue-on-error: true` from deploy-site.yml CI
-23. ~~Run Lighthouse audit + fix issues~~ **Superseded — Lighthouse CI still open in ROADMAP.md.**
+22. ~~Remove `continue-on-error: true` from deploy-site.yml CI~~ **done 2026-11-14 — the check blocks deploys now.**
+23. ~~Run Lighthouse audit + fix issues~~ **Superseded — tracked on ROADMAP (Website and Presence section).**
 24. ~~Test mobile responsive layout~~ **Won't implement — dropped — no recorded mobile QA.**
 25. ~~Add "Edit this page" links in Starlight config~~ **Won't implement — dropped — editUrl not configured.**
 26. ~~Verify sidebar links resolve~~ **Won't implement — dropped — no recorded link audit.**

@@ -206,7 +206,7 @@ The previous session (first session) had one issue that was fixed this session:
 45. **Add LSP integration** for real-time clone detection in editors
 46. **Improve suffix tree memory** usage for very large codebases
 47. **Add parallel suffix tree construction** (currently single-threaded)
-48. **Add `--since` flag** to only analyze files changed since a git ref
+~~48. **Add `--since` flag** to only analyze files changed since a git ref~~ done — struck — tracked on ROADMAP (UX and Defaults: --since scan scope, landed 2026-11-14)
 49. **Add diff mode** - compare two codebases and find clones that exist in one but not the other
 50. **Add machine-learning-based actionability** classification (long-term research)
 

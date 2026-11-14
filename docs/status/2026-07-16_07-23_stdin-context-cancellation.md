@@ -125,12 +125,12 @@ I initially recommended an `io.Pipe` intermediary as the "best" solution. On fur
 ### Direct follow-ups from this session
 
 1. Add test for `feedFromStdin` with active `gogenfilter.Filter` + `FileTypeGo` filtering
-2. Add test verifying stderr suppression (`ctx.Err() == nil` guard on line 83)
+~~2. Add test verifying stderr suppression (`ctx.Err() == nil` guard on line 83)~~ done — the stdin-cancellation tests shipped (cmd/run_crawl_stdin_test.go; AGENTS.md stdin bullet)
 3. Add test for `feedFromStdin` with `./` prefix stripping (line 64)
 4. Refactor `RunArtDuplWithStdin` to actually exercise the stdin pipe path
 5. Add `--stdin` cancellation behavior to HOW_TO_USE.md
-6. Run `go build ./...` to verify clean compilation (not just tests)
-7. Run `nix flake check` for full CI validation
+~~6. Run `go build ./...` to verify clean compilation (not just tests)~~ done — go build ./... is green (boundary gate runs it every task)
+~~7. Run `nix flake check` for full CI validation~~ done — nix flake check is the CI gate (lint + format + race + alloc-gate)
 8. Consider adding `defer close(done)` via restructuring to make cleanup symmetric
 9. Add an integration test: pipe real Go file paths via stdin to the CLI binary, verify clone detection works
 10. Verify `feedFromStdin` handles `\r\n` line endings (bufio.Scanner default split is `ScanLines` which handles this)
