@@ -12,6 +12,8 @@ Extended the AST-aware false-positive filter system and completed several TODO i
 
 ## a) FULLY DONE ✅
 
+<!-- ledger note: historical session record: rows cite landed commit hashes -->
+<!-- check-rows:ledger -->
 | Item                                              | Commit    | Impact                                                            |
 | ------------------------------------------------- | --------- | ----------------------------------------------------------------- |
 | FuncType-based interface impl detector            | `49ae11a` | Eliminates 6-way PrintClones clone group (non-actionable)         |
@@ -25,6 +27,8 @@ Extended the AST-aware false-positive filter system and completed several TODO i
 
 ## b) PARTIALLY DONE 🔶
 
+<!-- ledger note: analysis snapshot; 2-file interface limitation tracked as Top-25 item 6 (open) -->
+<!-- check-rows:ledger -->
 | Item                    | Status                                                                                                                                                                                                                                       | What Remains                                                                                                                |
 | ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
 | Interface impl detector | Works for 3+ files with FuncType root. **Does NOT catch 2-file interface implementations** (e.g., PrintHeader, PrintFooter which have only 2 implementations each). The threshold of 3 files is correct for precision but misses some cases. | Could lower to 2 files with an additional signal (e.g., both in same package, both implement same interface). Low priority. |
@@ -34,24 +38,28 @@ Extended the AST-aware false-positive filter system and completed several TODO i
 
 From TODO_LIST.md, these items remain untouched:
 
+<!-- ledger note: one open row: transform.go refactor still pending -->
+<!-- check-rows:ledger -->
 | Priority  | Item                                                                          |
 | --------- | ----------------------------------------------------------------------------- |
-| 🔴 HIGH   | ProcessedClone DTO to decouple Printer from syntax.Node (111 test call sites) |
-| ~~        | 🔴 HIGH                                                                       |
-| 🔴 HIGH   | TokenValue type with validation                                               |
-| 🟡 MEDIUM | CSV output format using encoding/csv                                          |
-| ~~        | 🟡 MEDIUM                                                                     |
-| 🟡 MEDIUM | SIMD memory layouts + string interning                                        |
-| 🟡 MEDIUM | --output-file flag for stats subcommand                                       |
+| ~~🔴 HIGH~~ done — `domain/processed_clone.go` | ~~ProcessedClone DTO to decouple Printer from syntax.Node (111 test call sites)~~ |
+| ~~🔴 HIGH~~ superseded — ADR-0005 split-brain type unification | ~~Consolidate three parallel Clone types~~ |
+| ~~🔴 HIGH~~ done — `suffixtree/suffixtree.go` `TokenValue` | ~~TokenValue type with validation~~ |
+| ~~🟡 MEDIUM~~ done — `printer/stats/stats_formatter.go` | ~~CSV output format using encoding/csv~~ |
+| ~~🟡 MEDIUM~~ done — `pkg/enum/enum.go`, `config/enum_helpers.go` | ~~Unify enum patterns with config's generic helpers~~ |
+| ~~🟡 MEDIUM~~ done — string interning in `syntax/intern.go` | ~~SIMD memory layouts + string interning~~ |
+| ~~🟡 MEDIUM~~ done — `cmd/stats.go` | ~~--output-file flag for stats subcommand~~ |
 | 🟢 LOW    | Refactor transform.go (369L, 300L switch)                                     |
-| 🟢 LOW    | Fix remaining LSP hints                                                       |
-| 🟢 LOW    | SDK documentation for pkg/artdupl/                                            |
-| 🟢 LOW    | BDD tests for --only templ/go, --include-generic                              |
-| 🟢 LOW    | Fuzz tests for templ parser                                                   |
-| 🟢 LOW    | Validate GoReleaser config                                                    |
+| ~~🟢 LOW~~ done at c0261563 | ~~Fix remaining LSP hints~~ |
+| ~~🟢 LOW~~ done — `SDK_DESIGN.md` | ~~SDK documentation for pkg/artdupl/~~ |
+| ~~🟢 LOW~~ done — `bdd/output_formats_and_filters_test.go` (`--include-generic` superseded by `--include-generated`) | ~~BDD tests for --only templ/go, --include-generic~~ |
+| ~~🟢 LOW~~ done — `syntax/templ/fuzz_test.go` | ~~Fuzz tests for templ parser~~ |
+| ~~🟢 LOW~~ done — `.github/workflows/release.yml` | ~~Validate GoReleaser config~~ |
 
 ## d) TOTALLY FUCKED UP 💥
 
+<!-- ledger note: split-brain analysis snapshot — superseded by docs/adr/0005 -->
+<!-- check-rows:ledger -->
 | Issue                                                             | Severity | Details                                                                                                                                                                                                                                            |
 | ----------------------------------------------------------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `printer/actionability.go` still imports `syntax/golang` directly | Medium   | `baseTypeOf()` calls `golang.DecodeBaseType()`. The actionability detectors (all 8 of them) use `golang.FuncType`, `golang.FuncDecl`, `golang.BlockStmt`, etc. This is a layer violation — printer should work through `syntax.Node` abstractions. |
@@ -86,34 +94,35 @@ From TODO_LIST.md, these items remain untouched:
 
 Sorted by **impact × effort⁻¹** (highest value first):
 
+<!-- ledger note: open rows 6/15/22 are the point (harvest candidates) -->
+<!-- check-rows:ledger -->
 | #  | Item                                                                              | Impact                                                          | Effort                       | Type                 |
 | -- | --------------------------------------------------------------------------------- | --------------------------------------------------------------- | ---------------------------- | -------------------- |
-| ~~ | 1                                                                                 | Move PatternLabel to domain package                             | Medium                       | Low (30 min)         |
-| ~~ | 2                                                                                 | Fix 3 godoclint warnings (remove duplicate doc.go files)        | Low                          | Low (15 min)         |
-| ~~ | 3                                                                                 | Type TodoIssue.Type and LegacyIssue.Type as domain enums        | Low                          | Low (30 min)         |
-| 4  | Add NodeType typed int32 to domain, unify ClassificationInput/CloneClassification | Medium                                                          | Medium (1 hr)                | Type safety          |
-| ~~ | 5                                                                                 | Extract actionability node-type checks into syntax/ abstraction | High                         | Medium (2 hr)        |
-| 6  | Lower interface impl detector threshold to 2 files + package signal               | Low                                                             | Low (30 min)                 | Feature              |
-| ~~ | 7                                                                                 | Validate GoReleaser release config                              | Low                          | Low (30 min)         |
-| ~~ | 8                                                                                 | Add BDD test for `--only templ` and `--only go`                 | Medium                       | Low (1 hr)           |
-| ~~ | 9                                                                                 | Add BDD test for `--include-generic` end-to-end                 | Medium                       | Low (1 hr)           |
-| ~~ | 10                                                                                | Write SDK documentation for `pkg/artdupl/`                      | Medium                       | Medium (2 hr)        |
-| ~~ | 11                                                                                | Add `--output-file` flag to stats subcommand                    | Medium                       | Low (1 hr)           |
-| ~~ | 12                                                                                | Implement CSV output format using encoding/csv                  | Medium                       | Medium (2 hr)        |
-| 13 | Unify enum patterns with config's generic helpers                                 | Low                                                             | Medium (2 hr)                | Architecture         |
-| ~~ | 14                                                                                | Add fuzz tests for templ parser edge cases                      | Medium                       | Medium (2 hr)        |
-| ~~ | 15                                                                                | Refactor `syntax/golang/transform.go` (table-driven)            | Medium                       | Medium (3 hr)        |
-| ~~ | 16                                                                                | Implement TokenValue type with validation                       | High                         | Medium (3 hr)        |
-| ~~ | 17                                                                                | ProcessedClone DTO — decouple Printer from syntax.Node          | Very High                    | Very High (1-2 days) |
-| 18 | Consolidate three parallel Clone types                                            | High                                                            | High (1 day, blocked on #17) | Architecture         |
-| ~~ | 19                                                                                | Optimize memory layouts for SIMD + string interning             | Medium                       | High (1-2 days)      |
-| ~~ | 20                                                                                | Investigate using `go/types` for precise interface satisfaction | Medium                       | Medium (2 hr)        |
-| ~~ | 21                                                                                | Dogfood on external projects (test real-world precision)        | High                         | Low (1 hr)           |
-| 22 | Add `--min-files` flag to filter by minimum file count                            | Low                                                             | Low (30 min)                 | Feature              |
-| ~~ | 23                                                                                | Fix `cmd/run_crawl.go` scanner.Err() unchecked                  | Low                          | Low (15 min)         |
-| ~~ | 24                                                                                | Add actionability metrics to stats output                       | Medium                       | Medium (2 hr)        |
-| ~~ | 25                                                                                | Benchmark actionability filters on large codebases              | Medium                       | Medium (2 hr)        |
-
+| ~~1~~ done — `printer/actionability/actionability.go` `PatternLabel` | ~~Move PatternLabel to domain package~~ | ~~Medium~~ | ~~Low (30 min)~~ | ~~Architecture~~ |
+| ~~2~~ done at 8889a7a3 | ~~Fix 3 godoclint warnings (remove duplicate doc.go files)~~ | ~~Low~~ | ~~Low (15 min)~~ | ~~Lint~~ |
+| ~~3~~ resolved — `TodoIssue`/`LegacyIssue` types removed in 64057ba7 | ~~Type TodoIssue.Type and LegacyIssue.Type as domain enums~~ | ~~Low~~ | ~~Low (30 min)~~ | ~~Type safety~~ |
+| ~~4~~ done — `domain/processed_clone.go` `NodeType int32` | ~~Add NodeType typed int32 to domain, unify ClassificationInput/CloneClassification~~ | ~~Medium~~ | ~~Medium (1 hr)~~ | ~~Type safety~~ |
+| ~~5~~ done — `printer/actionability/` package | ~~Extract actionability node-type checks into syntax/ abstraction~~ | ~~High~~ | ~~Medium (2 hr)~~ | ~~Architecture~~ |
+| 6 | Lower interface impl detector threshold to 2 files + package signal | Low | Low (30 min) | Feature |
+| ~~7~~ done — `.github/workflows/release.yml` | ~~Validate GoReleaser release config~~ | ~~Low~~ | ~~Low (30 min)~~ | ~~Ops~~ |
+| ~~8~~ done — `bdd/output_formats_and_filters_test.go` | ~~Add BDD test for `--only templ` and `--only go`~~ | ~~Medium~~ | ~~Low (1 hr)~~ | ~~Testing~~ |
+| ~~9~~ superseded — flag renamed `--include-generated` (`cmd/flags.go`) | ~~Add BDD test for `--include-generic` end-to-end~~ | ~~Medium~~ | ~~Low (1 hr)~~ | ~~Testing~~ |
+| ~~10~~ done — `SDK_DESIGN.md` | ~~Write SDK documentation for `pkg/artdupl/`~~ | ~~Medium~~ | ~~Medium (2 hr)~~ | ~~Docs~~ |
+| ~~11~~ done — `cmd/stats.go` | ~~Add `--output-file` flag to stats subcommand~~ | ~~Medium~~ | ~~Low (1 hr)~~ | ~~Feature~~ |
+| ~~12~~ done — `printer/stats/stats_formatter.go` | ~~Implement CSV output format using encoding/csv~~ | ~~Medium~~ | ~~Medium (2 hr)~~ | ~~Feature~~ |
+| ~~13~~ done — `pkg/enum/enum.go` + `config/enum_helpers.go` | ~~Unify enum patterns with config's generic helpers~~ | ~~Low~~ | ~~Medium (2 hr)~~ | ~~Architecture~~ |
+| ~~14~~ done — `syntax/templ/fuzz_test.go` | ~~Add fuzz tests for templ parser edge cases~~ | ~~Medium~~ | ~~Medium (2 hr)~~ | ~~Testing~~ |
+| 15 | Refactor `syntax/golang/transform.go` (table-driven) | Medium | Medium (3 hr) | Code quality |
+| ~~16~~ done — `suffixtree/suffixtree.go` `TokenValue` | ~~Implement TokenValue type with validation~~ | ~~High~~ | ~~Medium (3 hr)~~ | ~~Architecture~~ |
+| ~~17~~ done — `domain/processed_clone.go` | ~~ProcessedClone DTO — decouple Printer from syntax.Node~~ | ~~Very High~~ | ~~Very High (1-2 days)~~ | ~~Architecture~~ |
+| ~~18~~ superseded — ADR-0005 split-brain type unification | ~~Consolidate three parallel Clone types~~ | ~~High~~ | ~~High (1 day, blocked on #17)~~ | ~~Architecture~~ |
+| ~~19~~ done — string interning in `syntax/intern.go` | ~~Optimize memory layouts for SIMD + string interning~~ | ~~Medium~~ | ~~High (1-2 days)~~ | ~~Performance~~ |
+| ~~20~~ done — `syntax/golang/typeinfo.go` | ~~Investigate using `go/types` for precise interface satisfaction~~ | ~~Medium~~ | ~~Medium (2 hr)~~ | ~~Feature~~ |
+| ~~21~~ done — `scripts/dogfood-goroot.sh` | ~~Dogfood on external projects (test real-world precision)~~ | ~~High~~ | ~~Low (1 hr)~~ | ~~Validation~~ |
+| 22 | Add `--min-files` flag to filter by minimum file count | Low | Low (30 min) | Feature |
+| ~~23~~ done — `cmd/run_crawl.go:115` | ~~Fix `cmd/run_crawl.go` scanner.Err() unchecked~~ | ~~Low~~ | ~~Low (15 min)~~ | ~~Bug~~ |
+| ~~24~~ done — `printer/stats/stats_formatter.go` actionability block | ~~Add actionability metrics to stats output~~ | ~~Medium~~ | ~~Medium (2 hr)~~ | ~~Feature~~ |
+| ~~25~~ done — `printer/actionability/extractability_bench_test.go` | ~~Benchmark actionability filters on large codebases~~ | ~~Medium~~ | ~~Medium (2 hr)~~ | ~~Performance~~ |
 ## g) Top #1 Question I Cannot Figure Out Myself
 
 **How should the actionability system work for non-Go languages (templ)?**
@@ -130,6 +139,8 @@ This is an architectural decision that affects the ProcessedClone DTO design. If
 
 ## Metrics
 
+<!-- ledger note: session metrics snapshot, not action items -->
+<!-- check-rows:ledger -->
 | Metric                                 | Value                               |
 | -------------------------------------- | ----------------------------------- |
 | Clone groups (threshold 15, semantic)  | 68                                  |

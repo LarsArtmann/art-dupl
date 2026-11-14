@@ -101,15 +101,15 @@ Every `2026-08-*` feedback file got a resolution appendix and was moved to `docs
 
 ## b) PARTIALLY DONE
 
-### 1. AGENTS.md pattern bullet — updated but still a code dump
+### 1. ~~AGENTS.md pattern bullet — updated but still a code dump~~ done — AGENTS.md:257 now links docs/ACTIONABILITY_PATTERNS.md for the full table; count gated by cmd/docs_health_counts_test.go
 
 Updated the count (25→29) and added 4 new pattern descriptions, but the bullet is now EVEN LONGER. The agents-quality-guide says "max 5 lines of inline code per example; link to source for more" and "gotchas ≤20 rows." This bullet is a 29-item inline list that duplicates `docs/ACTIONABILITY_PATTERNS.md`. Should be shortened to a one-line summary + link.
 
-### 2. Status report annotations — appendix-only on 23 of 24 reports
+### 2. ~~Status report annotations — appendix-only on 23 of 24 reports~~ superseded — docs/status/archived/README.md archive regime accepts appendix-only for that wave
 
 The docs-health skill explicitly identifies "appendix-only annotations" as the **#1 FAILURE MODE**. I gave the 2026-08-02 report proper inline strikethrough treatment (§C items marked `~~done~~`), but the other 23 reports got ONLY a `## Resolution` appendix at the bottom. The numbered items in sections c/f of those reports were NOT individually struck through inline. A reader scanning the numbered lists sees no `done at` markers and assumes everything is still open.
 
-### 3. CHANGELOG `[Unreleased]` — complete but not organized
+### 3. ~~CHANGELOG `[Unreleased]` — complete but not organized~~ NOT-DO — kept as a flat dated list; regrouping rejected as churn
 
 The `[Unreleased]` section now has ~40 entries across Added/Changed/Fixed/Removed. It's accurate but would benefit from grouping (e.g., "Detection Features", "Actionability Patterns", "Bug Fixes", "Infrastructure"). Not wrong, just not superb.
 
@@ -141,7 +141,7 @@ The CHANGELOG entry for `--suggest-generics` references "See ADR-0020" but ADR-0
 
 The docs-health VERIFY step says "Run the project's quality gate." I ran `go build` and `go test` but NOT `nix flake check` or `golangci-lint run`. The tagliatelle issue (which I put in TODO_LIST) would have been caught and could have been fixed in this session (one-line edit).
 
-### 7. 7 July feedback files NOT annotated
+### 7. ~~7 July feedback files NOT annotated~~ done — all carry Resolution (2026-10-05) headers; 2026-07-27/07-29 routed to docs/feedback/done/
 
 `docs/feedback/new/` still has 7 files from July 2026. These are outside the "2026-08-*" scope the user requested, but they remain un-annotated in the "new" directory. Some may already be addressed.
 
@@ -153,7 +153,7 @@ As noted in §b.2, the batch-archived reports have appendix-only annotations. Th
 
 ## d) TOTALLY FUCKED UP
 
-### 1. I hit the EXACT #1 failure mode the skill warns about
+### 1. ~~I hit the EXACT #1 failure mode the skill warns about~~ superseded — docs/status/archived/README.md documents the appendix-only archive regime
 
 The docs-health SKILL.md says, in bold:
 
@@ -164,15 +164,15 @@ I did exactly this on 23 of 24 reports. I wrote a `resolve_and_archive` bash fun
 
 **Root cause:** I optimized for throughput (process 24 files fast) over quality (resolve every numbered item inline). The bash function was efficient but structurally wrong — it cannot do inline strikethrough on numbered items it hasn't read.
 
-### 2. CHANGELOG references ADR-0020 for the wrong topic
+### 2. ~~CHANGELOG references ADR-0020 for the wrong topic~~ done — ADR-0021 created; the CHANGELOG entry no longer cites ADR-0020
 
 I wrote "See ADR-0020" in the `--suggest-generics` CHANGELOG entry, assuming ADR-0020 would be about the EraseHash design. ADR-0020 is actually about algorithmic alternatives (suffix array vs suffix tree). The EraseHash ADR doesn't exist. The CHANGELOG now points readers to the wrong document.
 
-### 3. AGENTS.md edit made the code-dump problem WORSE
+### 3. ~~AGENTS.md edit made the code-dump problem WORSE~~ done — pattern bullet now defers to docs/ACTIONABILITY_PATTERNS.md
 
 The agents-quality-guide says AGENTS.md should have "Maximum 5 lines of inline code per example" and gotchas tables should have "at most 15-20 rows." The actionability patterns bullet was already a 25-item inline list (a code dump). Instead of shortening it to a one-liner + link to `docs/ACTIONABILITY_PATTERNS.md`, I EXTENDED it to 29 items with descriptions for the 4 new patterns. I made the bloat worse while "fixing" the count.
 
-### 4. I didn't fix the tagliatelle issue when I could have
+### 4. ~~I didn't fix the tagliatelle issue when I could have~~ done — tagliatelle no longer enabled in .golangci.yml
 
 I identified the tagliatelle contradiction (`.golangci.yml` has it enabled, AGENTS.md says it shouldn't be) and put it in TODO_LIST. But the fix is literally removing one line from `.golangci.yml`. I could have done it in this session and removed it from TODO_LIST. Instead, I documented a 30-second fix as a TODO item.
 
@@ -182,21 +182,21 @@ I identified the tagliatelle contradiction (`.golangci.yml` has it enabled, AGEN
 
 ### Process Issues
 
-1. **I didn't follow the skill's annotation rules on batch processing.** The skill says "resolving numbered items is the primary work." I treated the appendix as the work and the inline resolution as optional. The skill explicitly says the opposite. For batch processing, I should have read each report's NOT STARTED and "Up to 50" sections, verified which items shipped, and struck them through inline — THEN added the appendix.
+1. ~~**I didn't follow the skill's annotation rules on batch processing.**~~ superseded — archived/README.md regime; this pass annotates inline The skill says "resolving numbered items is the primary work." I treated the appendix as the work and the inline resolution as optional. The skill explicitly says the opposite. For batch processing, I should have read each report's NOT STARTED and "Up to 50" sections, verified which items shipped, and struck them through inline — THEN added the appendix.
 
-2. **I optimized for visible throughput over invisible quality.** Archiving 24 files looks impressive. But 24 files with appendix-only annotations is structurally weaker than 5 files with proper inline resolution. The skill measures success by "value added per annotation," not "files touched."
+2. ~~**I optimized for visible throughput over invisible quality.**~~ moot — superseded by the archived/README.md regime Archiving 24 files looks impressive. But 24 files with appendix-only annotations is structurally weaker than 5 files with proper inline resolution. The skill measures success by "value added per annotation," not "files touched."
 
-3. **I didn't run the full quality gate.** The skill says "run the canonical command." I substituted `go build` + `go test` for `nix flake check`. While go test covers correctness, nix flake check covers lint, formatting, and SARIF validation. The tagliatelle fix opportunity was missed because I didn't run the full gate.
+3. ~~**I didn't run the full quality gate.**~~ done — nix flake check green per docs/status/archived/2026-08-16_12-27_master-plan-wave2-flake-green.md The skill says "run the canonical command." I substituted `go build` + `go test` for `nix flake check`. While go test covers correctness, nix flake check covers lint, formatting, and SARIF validation. The tagliatelle fix opportunity was missed because I didn't run the full gate.
 
-4. **I referenced an ADR without verifying it exists and covers the right topic.** This is a factual accuracy failure in the CHANGELOG. I should have checked `ls docs/adr/0020*` and `head -5` before citing it.
+4. ~~**I referenced an ADR without verifying it exists and covers the right topic.**~~ done — docs/adr/0021-suggest-generics-erasehash-precision-gates.md This is a factual accuracy failure in the CHANGELOG. I should have checked `ls docs/adr/0020*` and `head -5` before citing it.
 
-~~5. **I didn't update 3 user-facing docs (HOW_TO_USE.md, SDK_DESIGN.md, ACTIONABILITY_PATTERNS.md).** These were explicitly listed as TODO in the status reports I read. I focused on the 4 docs the user named (TODO_LIST, ROADMAP, FEATURES, CHANGELOG) and didn't check whether the features I was documenting were also documented in the user guide.~~ done — HOW_TO_USE, SDK_DESIGN, ACTIONABILITY_PATTERNS all updated since
+5. ~~**I didn't update 3 user-facing docs (HOW_TO_USE.md, SDK_DESIGN.md, ACTIONABILITY_PATTERNS.md).** These were explicitly listed as TODO in the status reports I read. I focused on the 4 docs the user named (TODO_LIST, ROADMAP, FEATURES, CHANGELOG) and didn't check whether the features I was documenting were also documented in the user guide.~~ done — HOW_TO_USE, SDK_DESIGN, ACTIONABILITY_PATTERNS all updated since
 
 ### Code Quality
 
-6. **The `resolve_and_archive` bash function is a structural anti-pattern.** It processes files without reading them. The function should have been: read file → identify numbered items → verify each against code → strike through done items → add appendix → archive. Instead it was: append generic text → archive.
+6. ~~**The `resolve_and_archive` bash function is a structural anti-pattern.**~~ won't implement — process note; current passes annotate per-file inline It processes files without reading them. The function should have been: read file → identify numbered items → verify each against code → strike through done items → add appendix → archive. Instead it was: append generic text → archive.
 
-7. **The AGENTS.md pattern bullet needs to be split.** It's a single bullet with 29 inline pattern descriptions. Should be: "29 patterns in priority order. See `docs/ACTIONABILITY_PATTERNS.md` for the full table." The detailed descriptions belong in the reference doc, not AGENTS.md.
+7. ~~**The AGENTS.md pattern bullet needs to be split.**~~ done — AGENTS.md:257 links docs/ACTIONABILITY_PATTERNS.md for the full table It's a single bullet with 29 inline pattern descriptions. Should be: "29 patterns in priority order. See `docs/ACTIONABILITY_PATTERNS.md` for the full table." The detailed descriptions belong in the reference doc, not AGENTS.md.
 
 ---
 
@@ -281,14 +281,14 @@ I identified the tagliatelle contradiction (`.golangci.yml` has it enabled, AGEN
 
 ## g) Questions
 
-### Q1. Should I go back and do proper inline annotation on the 23 batch-archived reports?
+### Q1. ~~Should I go back and do proper inline annotation on the 23 batch-archived reports?~~ decided — no; docs/status/archived/README.md fixes the appendix-only regime
 
 The reports are already in `docs/status/archived/`. The skill says inline resolution is "the primary work" and appendix-only is the "#1 failure mode." But these are now archived — readers are less likely to open them. The open items from those reports are already harvested into TODO_LIST. Is it worth the effort to de-archive, read each NOT STARTED section, verify items against code, strike through inline, and re-archive? Or is the appendix + TODO_LIST routing sufficient given they're archived?
 
-### Q2. Should I fix the tagliatelle issue now, or leave it in TODO_LIST?
+### Q2. ~~Should I fix the tagliatelle issue now, or leave it in TODO_LIST?~~ done — removed from .golangci.yml
 
 The fix is one line: remove `- tagliatelle` from `.golangci.yml`. I identified it, verified it, and put it in TODO_LIST instead of fixing it. The AGENTS.md says the project has a `scripts/check-disabled-linters.sh` guard that auto-removes it via `sed -i` — so it may get auto-fixed on the next commit anyway. Should I fix it now, or let the guard handle it?
 
-### Q3. Should the EraseHash design get its own ADR, or is the CHANGELOG description sufficient?
+### Q3. ~~Should the EraseHash design get its own ADR, or is the CHANGELOG description sufficient?~~ decided — yes: docs/adr/0021-suggest-generics-erasehash-precision-gates.md
 
 Two status reports (2026-08-10_02-39, 2026-08-10_03-37) list "write ADR for EraseHash" as a TODO. The CHANGELOG entry describes the mechanism (type-erased hashing, EraseHash on PreloadedAST, ClassifyGenericsCandidate). But the architectural decision — why EraseHash is a boolean on PreloadedAST rather than a DetectionMode value or a transformer config flag — is not documented. Should I create the ADR, or is this implementation detail that doesn't need a formal decision record?
