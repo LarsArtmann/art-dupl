@@ -75,9 +75,7 @@ module github.com/LarsArtmann/art-dupl
 
 go 1.27.1
 
-ignore (
-	dist
-)
+ignore dist
 
 require (
 	charm.land/lipgloss/v2 v2.0.6

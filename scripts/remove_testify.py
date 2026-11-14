@@ -84,7 +84,7 @@ if __name__ == "__main__":
         print("Usage: python3 remove_testify.py <file>")
         sys.exit(1)
 
-    with open(sys.argv[1], "r") as f:
+    with open(sys.argv[1]) as f:
         content = f.read()
 
     content = add_helper_function(content)

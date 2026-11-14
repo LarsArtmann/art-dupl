@@ -146,7 +146,11 @@ def move(block):
         return True
     dst.parent.mkdir(parents=True, exist_ok=True)
     r = subprocess.run(
-        ["git", "mv", str(f), str(dst)], check=False, cwd=ROOT, capture_output=True, text=True
+        ["git", "mv", str(f), str(dst)],
+        check=False,
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
     )
     if r.returncode != 0:
         print(f"  MOVE-FAIL: {r.stderr.strip()}")
@@ -203,12 +207,7 @@ def main():
         elif b.get("banner"):
             do_banner(f, b["banner"])
         # 4. archive move only when fully resolved
-        if (
-            apply
-            and b["class"] == "ARCHIVE"
-            and b["move"] != "none"
-            and not move(b)
-        ):
+        if apply and b["class"] == "ARCHIVE" and b["move"] != "none" and not move(b):
             n_fail += 1
             continue
         n_ok += 1
