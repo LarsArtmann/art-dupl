@@ -55,15 +55,15 @@ Updated all BDD tests across 9 files:
 
 | File                                             | Changes                                                                                                                       |
 | ------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------- |
-| `bdd/default_filtering_test.go`                  | Removed `--exclude-templ` from 4 test invocations, renamed test names, added `--include-templ` for inclusion tests            |
-| `bdd/filter_features_test.go`                    | Removed `--filter-generated` from 3 invocations, removed `--exclude-templ` from 1, added `--include-templ` for inclusion test |
-| `bdd/stats_command_test.go`                      | Updated helper calls, renamed tests, added `--include-templ` for inclusion tests                                              |
-| `bdd/stats_subcommand_test.go`                   | Removed `filter-generated` DescribeTable entry                                                                                |
-| `bdd/plumbing_output_test.go`                    | Removed `--filter-generated` flag, renamed test                                                                               |
-| `bdd/templ_clone_detection_test.go`              | Removed `--exclude-templ`, renamed test, updated comments                                                                     |
-| `bdd/output_formats_and_filters_test.go`         | Removed `--filter-generated` from 2 invocations, renamed 2 tests                                                              |
-| `bdd/configuration_file_test.go`                 | Removed `filterGenerated` from JSON configs, changed `excludeTempl` to `includeTempl`                                         |
-| `internal/filtertest/integration_filter_test.go` | Renamed sub-test                                                                                                              |
+| ~~`bdd/default_filtering_test.go`~~ done at `d32b64e` | ~~Removed `--exclude-templ` from 4 test invocations, renamed test names, added `--include-templ` for inclusion tests~~ |
+| ~~`bdd/filter_features_test.go`~~ done at `d32b64e` | ~~Removed `--filter-generated` from 3 invocations, removed `--exclude-templ` from 1, added `--include-templ` for inclusion test~~ |
+| ~~`bdd/stats_command_test.go`~~ done at `d32b64e` | ~~Updated helper calls, renamed tests, added `--include-templ` for inclusion tests~~ |
+| ~~`bdd/stats_subcommand_test.go`~~ done at `d32b64e` | ~~Removed `filter-generated` DescribeTable entry~~ |
+| ~~`bdd/plumbing_output_test.go`~~ done at `d32b64e` | ~~Removed `--filter-generated` flag, renamed test~~ |
+| ~~`bdd/templ_clone_detection_test.go`~~ done at `d32b64e` | ~~Removed `--exclude-templ`, renamed test, updated comments~~ |
+| ~~`bdd/output_formats_and_filters_test.go`~~ done at `d32b64e` | ~~Removed `--filter-generated` from 2 invocations, renamed 2 tests~~ |
+| ~~`bdd/configuration_file_test.go`~~ done at `d32b64e` | ~~Removed `filterGenerated` from JSON configs, changed `excludeTempl` to `includeTempl`~~ |
+| ~~`internal/filtertest/integration_filter_test.go`~~ done at `d32b64e` | ~~Renamed sub-test~~ |
 
 ### 5. All tests pass — 22/22 suites
 
@@ -115,18 +115,18 @@ Nothing — all tasks started were completed.
 
 ### Architecture improvements identified but not implemented:
 
-1. **Printer ↔ syntax.Node coupling** — `Printer.PrintClones(dups [][]*syntax.Node)` forces all 6 implementations to depend on AST internals. Should introduce `ProcessedClone` DTO.
-2. **Three parallel Clone types** — `printer.clone`, `pkg/artdupl.Clone`, and different `CloneGroup` types should be consolidated.
-3. **gogenfilter v3 upgrade** — Current `v0.2.1` pseudo-version. v3 adds FilterGoEnum, FilterOapi, FilterDeepcopy, FilterWire, FilterMoq.
-4. **AGENTS.md update** — Should reflect all filtering pipeline changes from this session.
+1. ~~**Printer ↔ syntax.Node coupling** — `Printer.PrintClones(dups [][]*syntax.Node)` forces all 6 implementations to depend on AST internals. Should introduce `ProcessedClone` DTO.~~ done at `7e5a5cb`
+2. ~~**Three parallel Clone types** — `printer.clone`, `pkg/artdupl.Clone`, and different `CloneGroup` types should be consolidated.~~ done — CloneRef embed + format DTOs (ADR-0005)
+3. ~~**gogenfilter v3 upgrade** — Current `v0.2.1` pseudo-version. v3 adds FilterGoEnum, FilterOapi, FilterDeepcopy, FilterWire, FilterMoq.~~ done — gogenfilter v3.4+ integrated (AGENTS.md generated-code filtering)
+4. ~~**AGENTS.md update** — Should reflect all filtering pipeline changes from this session.~~ done — AGENTS.md documents the filtering pipeline
 
 ---
 
 ## d) TOTALLY FUCKED UP (honest self-review)
 
-1. **First attempt thrashed** — Made partial edits across many files without compiling between steps, chased stale LSP errors, mixed production and test changes in the same batch. Had to `git checkout -- .` and start over.
-2. **Didn't verify before editing** — On the first attempt, I renamed `IncludeTempl` to `IncludeTemplGenerated` which created cascading LSP errors across the entire codebase. The simpler approach (keep the field name, just change the default) was obviously better.
-3. **Should have planned before executing** — I jumped into editing before fully understanding the scope of changes needed across BDD tests. The agent-based analysis phase was good, but I should have completed the full plan before making the first edit.
+1. ~~**First attempt thrashed** — Made partial edits across many files without compiling between steps, chased stale LSP errors, mixed production and test changes in the same batch. Had to `git checkout -- .` and start over.~~ done — moot — process lesson
+2. ~~**Didn't verify before editing** — On the first attempt, I renamed `IncludeTempl` to `IncludeTemplGenerated` which created cascading LSP errors across the entire codebase. The simpler approach (keep the field name, just change the default) was obviously better.~~ done — moot — process lesson
+3. ~~**Should have planned before executing** — I jumped into editing before fully understanding the scope of changes needed across BDD tests. The agent-based analysis phase was good, but I should have completed the full plan before making the first edit.~~ done — moot — process lesson
 
 ---
 
@@ -134,16 +134,16 @@ Nothing — all tasks started were completed.
 
 ### Process improvements:
 
-1. **Always build after every edit batch** — Not just at the end. Each logical change should compile before moving to the next.
-2. **Plan ALL edits before making the first one** — Read all files, map all changes, then execute. Don't discover dependencies mid-edit.
-3. **Don't trust LSP diagnostics** — They can be stale. Use `go build ./...` as the source of truth.
-4. **Commit after each self-contained change** — Smaller commits are easier to review and revert.
+1. ~~**Always build after every edit batch** — Not just at the end. Each logical change should compile before moving to the next.~~ done — moot — process lesson
+2. ~~**Plan ALL edits before making the first one** — Read all files, map all changes, then execute. Don't discover dependencies mid-edit.~~ done — moot — process lesson
+3. ~~**Don't trust LSP diagnostics** — They can be stale. Use `go build ./...` as the source of truth.~~ done — moot — process lesson
+4. ~~**Commit after each self-contained change** — Smaller commits are easier to review and revert.~~ done — moot — process lesson
 
 ### Code improvements identified:
 
-1. **`setupFilter()` always creates a `gogenfilter.Filter`** — Even when no filter options are set (empty `filterOptions` + no patterns). The `NewFilter()` call at the bottom creates a no-op filter. Should return `nil` when no filtering is needed.
-2. **Bool flag merge pattern** — `applyBooleanFlags` only sets `true` values via the loop. The special-case handling for `IncludeTempl` (now removed) was a band-aid. Consider tracking which flags were explicitly set.
-3. **`cmd/config_builder.go` still has `cfg.IncludeTempl = flags.IncludeTempl`** — This unconditional assignment is no longer needed now that `IncludeTempl` defaults to `false` like all others. The standard loop handles it correctly.
+1. ~~**`setupFilter()` always creates a `gogenfilter.Filter`** — Even when no filter options are set (empty `filterOptions` + no patterns). The `NewFilter()` call at the bottom creates a no-op filter. Should return `nil` when no filtering is needed.~~ **Superseded — gogenfilter v3 handles empty filters; setupFilter retained (cmd/run_analysis.go).**
+2. ~~**Bool flag merge pattern** — `applyBooleanFlags` only sets `true` values via the loop. The special-case handling for `IncludeTempl` (now removed) was a band-aid. Consider tracking which flags were explicitly set.~~ done — reflection-based config merge (ADR-0003)
+3. ~~**`cmd/config_builder.go` still has `cfg.IncludeTempl = flags.IncludeTempl`** — This unconditional assignment is no longer needed now that `IncludeTempl` defaults to `false` like all others. The standard loop handles it correctly.~~ done — handled by the standard flag map (cmd/config_builder.go)
 
 ---
 
@@ -151,31 +151,31 @@ Nothing — all tasks started were completed.
 
 | #  | Priority | Task                                                                                                                                                                  | Impact                 | Effort |
 | -- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------- | ------ |
-| 1  | P0       | Update AGENTS.md with filtering pipeline changes                                                                                                                      | Docs accuracy          | LOW    |
-| 2  | P0       | Remove unnecessary `cfg.IncludeTempl = flags.IncludeTempl` workaround in config_builder.go                                                                            | Code cleanliness       | LOW    |
-| 3  | P1       | Update HOW_TO_USE.md to reflect `--include-templ` instead of `--exclude-templ`                                                                                        | User-facing docs       | LOW    |
-| 4  | P1       | Update README.md flag examples                                                                                                                                        | User-facing docs       | LOW    |
-| 5  | P1       | Upgrade gogenfilter to v3 — gain FilterGoEnum, FilterOapi, FilterDeepcopy, FilterWire, FilterMoq                                                                      | Better detection       | MED    |
-| 6  | P1       | Add `--include-go-enum`, `--include-oapi`, etc. flags for new gogenfilter detectors                                                                                   | Feature parity         | MED    |
-| 7  | P2       | Return `nil` from `setupFilter()` when no filter options are set                                                                                                      | Performance            | LOW    |
-| 8  | P2       | Printer DTO refactor — introduce `ProcessedClone` to decouple from AST                                                                                                | Architecture           | HIGH   |
-| 9  | P2       | Consolidate three Clone types (`printer.clone`, `pkg/artdupl.Clone`)                                                                                                  | Code health            | HIGH   |
-| 10 | P2       | Move `printer/clone_classify.go` language-specific constants out of printer                                                                                           | Language extensibility | MED    |
-| 11 | P2       | Add integration test for `art-dupl --semantic .` on real project                                                                                                      | Confidence             | MED    |
-| 12 | P3       | Fix `templ_clone_detection_test.go` "exclude .templ files" test — it tests `.templ` source exclusion but `--include-templ` only controls `*_templ.go` generated files | Test accuracy          | LOW    |
-| 13 | P3       | Consider `--only templ` flag for filtering to `.templ` source files only                                                                                              | UX completeness        | LOW    |
-| 14 | P3       | Add flag description consistency check to CI                                                                                                                          | Prevent future drift   | LOW    |
-| 15 | P3       | Track which flags were explicitly set in config_builder (replace bool loop pattern)                                                                                   | Correctness            | MED    |
-| 16 | P4       | Add `--filter-generic` flag for `gogenfilter.FilterGeneric` (catches any "Code generated by" comment)                                                                 | Feature                | LOW    |
-| 17 | P4       | Fix `sqlc.yaml` auto-detection — flag description mentions it but no runtime detection exists                                                                         | Honest UX              | MED    |
-| 18 | P4       | Add E2E test that runs `art-dupl` on its own source code and validates output                                                                                         | Meta-testing           | MED    |
-| 19 | P4       | Nix flake: update gogenfilter rev after v3 upgrade                                                                                                                    | Build system           | LOW    |
-| 20 | P4       | Consider renaming `IncludeTempl` to `IncludeTemplGenerated` for clarity                                                                                               | Naming                 | LOW    |
-| 21 | P5       | SARIF: add fingerprinting for GitHub CodeQL integration quality                                                                                                       | Security tooling       | MED    |
-| 22 | P5       | Stats subcommand: add filter reason breakdown (how many templ/sqlc/protobuf filtered)                                                                                 | Observability          | MED    |
-| 23 | P5       | Add `--filter-report` flag to output what was filtered and why                                                                                                        | Debug UX               | MED    |
-| 24 | P5       | Incremental analysis: wire filter through cache invalidation                                                                                                          | Performance            | HIGH   |
-| 25 | P5       | Add fuzz tests for gogenfilter integration edge cases                                                                                                                 | Robustness             | MED    |
+| ~~1~~ done — AGENTS.md documents the filtering pipeline | ~~P0~~ | ~~Update AGENTS.md with filtering pipeline changes~~ | ~~Docs accuracy~~ | ~~LOW~~ |
+| ~~2~~ done — handled by the standard flag map (cmd/config_builder.go) | ~~P0~~ | ~~Remove unnecessary `cfg.IncludeTempl = flags.IncludeTempl` workaround in config_builder.go~~ | ~~Code cleanliness~~ | ~~LOW~~ |
+| ~~3~~ **Superseded — --include-generated templ category replaces --include-templ (HOW_TO_USE.md).** | ~~P1~~ | ~~Update HOW_TO_USE.md to reflect `--include-templ` instead of `--exclude-templ`~~ | ~~User-facing docs~~ | ~~LOW~~ |
+| ~~4~~ done — README flag examples current | ~~P1~~ | ~~Update README.md flag examples~~ | ~~User-facing docs~~ | ~~LOW~~ |
+| ~~5~~ done — gogenfilter v3.4+ integrated | ~~P1~~ | ~~Upgrade gogenfilter to v3 — gain FilterGoEnum, FilterOapi, FilterDeepcopy, FilterWire, FilterMoq~~ | ~~Better detection~~ | ~~MED~~ |
+| ~~6~~ done — include-generated categories expose the detectors (AGENTS.md) | ~~P1~~ | ~~Add `--include-go-enum`, `--include-oapi`, etc. flags for new gogenfilter detectors~~ | ~~Feature parity~~ | ~~MED~~ |
+| ~~7~~ **Superseded — gogenfilter v3 handles empty filters; setupFilter retained.** | ~~P2~~ | ~~Return `nil` from `setupFilter()` when no filter options are set~~ | ~~Performance~~ | ~~LOW~~ |
+| ~~8~~ done at `7e5a5cb` | ~~P2~~ | ~~Printer DTO refactor — introduce `ProcessedClone` to decouple from AST~~ | ~~Architecture~~ | ~~HIGH~~ |
+| ~~9~~ done — CloneRef consolidation (ADR-0005) | ~~P2~~ | ~~Consolidate three Clone types (`printer.clone`, `pkg/artdupl.Clone`)~~ | ~~Code health~~ | ~~HIGH~~ |
+| ~~10~~ done — clone_classify lives in printer/actionability with file-kind-scoped tables | ~~P2~~ | ~~Move `printer/clone_classify.go` language-specific constants out of printer~~ | ~~Language extensibility~~ | ~~MED~~ |
+| ~~11~~ done — semantic validated on 15 projects (docs/status/2026-07-16_semantic-validation-15-projects.md) | ~~P2~~ | ~~Add integration test for `art-dupl --semantic .` on real project~~ | ~~Confidence~~ | ~~MED~~ |
+| ~~12~~ done — the test now targets *_templ.go generated exclusion (bdd/templ_clone_detection_test.go) | ~~P3~~ | ~~Fix `templ_clone_detection_test.go` "exclude .templ files" test — it tests `.templ` source exclusion but `--include-templ` only controls `*_templ.go` generated files~~ | ~~Test accuracy~~ | ~~LOW~~ |
+| ~~13~~ done — only templ flag (cmd/flags.go) | ~~P3~~ | ~~Consider `--only templ` flag for filtering to `.templ` source files only~~ | ~~UX completeness~~ | ~~LOW~~ |
+| ~~14~~ **Superseded — docs-health count gate pins flag counts (cmd/docs_health_counts_test.go).** | ~~P3~~ | ~~Add flag description consistency check to CI~~ | ~~Prevent future drift~~ | ~~LOW~~ |
+| ~~15~~ done — reflection-based merge (ADR-0003) | ~~P3~~ | ~~Track which flags were explicitly set in config_builder (replace bool loop pattern)~~ | ~~Correctness~~ | ~~MED~~ |
+| ~~16~~ **Superseded — generic category via --include-generated generic (AGENTS.md).** | ~~P4~~ | ~~Add `--filter-generic` flag for `gogenfilter.FilterGeneric` (catches any "Code generated by" comment)~~ | ~~Feature~~ | ~~LOW~~ |
+| ~~17~~ done — SQLC content-only detection via gogenfilter v3.4+ (AGENTS.md) | ~~P4~~ | ~~Fix `sqlc.yaml` auto-detection — flag description mentions it but no runtime detection exists~~ | ~~Honest UX~~ | ~~MED~~ |
+| ~~18~~ done — CI Self-Analysis job runs art-dupl on itself | ~~P4~~ | ~~Add E2E test that runs `art-dupl` on its own source code and validates output~~ | ~~Meta-testing~~ | ~~MED~~ |
+| ~~19~~ done — gogenfilter rev maintained via flake.lock | ~~P4~~ | ~~Nix flake: update gogenfilter rev after v3 upgrade~~ | ~~Build system~~ | ~~LOW~~ |
+| ~~20~~ **Won't implement — dropped — IncludeTempl name kept.** | ~~P4~~ | ~~Consider renaming `IncludeTempl` to `IncludeTemplGenerated` for clarity~~ | ~~Naming~~ | ~~LOW~~ |
+| ~~21~~ done — SARIFFingerprints in printer/sarif.go | ~~P5~~ | ~~SARIF: add fingerprinting for GitHub CodeQL integration quality~~ | ~~Security tooling~~ | ~~MED~~ |
+| ~~22~~ done — stats filter breakdown (printer/stats/stats_collector.go) | ~~P5~~ | ~~Stats subcommand: add filter reason breakdown (how many templ/sqlc/protobuf filtered)~~ | ~~Observability~~ | ~~MED~~ |
+| ~~23~~ **Superseded — stats filter breakdown covers it (printer/stats/stats_collector.go).** | ~~P5~~ | ~~Add `--filter-report` flag to output what was filtered and why~~ | ~~Debug UX~~ | ~~MED~~ |
+| ~~24~~ done — cache keys encode mode + params; CacheVersion ledger (AGENTS.md cache section) | ~~P5~~ | ~~Incremental analysis: wire filter through cache invalidation~~ | ~~Performance~~ | ~~HIGH~~ |
+| ~~25~~ done — cmd/filter_fuzz_test.go + cmd/fuzz_seed_gate_test.go | ~~P5~~ | ~~Add fuzz tests for gogenfilter integration edge cases~~ | ~~Robustness~~ | ~~MED~~ |
 
 ---
 

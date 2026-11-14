@@ -12,8 +12,8 @@
 
 Analysis of clone detection on branching-flow project revealed that **dupl correctly identified genuine code duplication** in enum implementations. Two clone groups were detected with threshold 100:
 
-1. **ErrorHandlingStatus** (110 lines) ↔ **RecoverabilityStatus** (111 lines)
-2. **FlowPointType** (55 lines) ↔ **ReportFormat** (55 lines)
+1. ~~**ErrorHandlingStatus** (110 lines) ↔ **RecoverabilityStatus** (111 lines)~~ done — verified — true positives, historical
+2. ~~**FlowPointType** (55 lines) ↔ **ReportFormat** (55 lines)~~ done — verified — true positives, historical
 
 Implemented refactoring strategy using `NewEnumValidator[T]` generic pattern, achieving **28% code reduction** (110→79 lines and 111→80 lines) while maintaining backward compatibility. Tests pass, compilation successful, and public API preserved.
 
@@ -298,43 +298,43 @@ Determine optimal threshold for this codebase.
 
 ### Tier 1: Critical (Must Do Immediately)
 
-1. **Run full test suite** - Execute `go test ./...` on branching-flow to verify no regressions
-2. **Verify JSON behavior** - Create explicit tests that JSON output is identical pre/post refactor
-3. **Determine if custom MarshalJSON is needed** - Test if generic TextMarshaler is sufficient
-4. **Update QualityLevelEnum** - Migrate to EnumValidator for consistency
-5. **Remove dead code** - Delete unused enum_helpers.go functions
+1. ~~**Run full test suite** - Execute `go test ./...` on branching-flow to verify no regressions~~ done — verified — session tests passed
+2. ~~**Verify JSON behavior** - Create explicit tests that JSON output is identical pre/post refactor~~ **Superseded — pkg/enum JSON behavior pinned by pkg/enum/enum_test.go.**
+3. ~~**Determine if custom MarshalJSON is needed** - Test if generic TextMarshaler is sufficient~~ done — generic marshal helpers in pkg/enum
+4. ~~**Update QualityLevelEnum** - Migrate to EnumValidator for consistency~~ done — NewEnumValidator evolved into pkg/enum helpers
+5. ~~**Remove dead code** - Delete unused enum_helpers.go functions~~ done — superseded by pkg/enum; config/enum_helpers.go remains for config-internal use
 
 ### Tier 2: High Priority (Do This Week)
 
-6. **Unify enum patterns** - Audit ALL enums and migrate to single pattern
-7. **Test clone thresholds** - Run `art-dupl -t 50` and `art-dupl -t 150` to optimize detection
-8. **FlowPointType/ReportFormat analysis** - Document why 55-line clones are acceptable
-9. **Add enum validation tests** - Ensure IsValid() works for all values and edge cases
-10. **Test error messages** - Verify validation errors are user-friendly and consistent
+6. ~~**Unify enum patterns** - Audit ALL enums and migrate to single pattern~~ done — unified under pkg/enum (domain enums use it)
+7. ~~**Test clone thresholds** - Run `art-dupl -t 50` and `art-dupl -t 150` to optimize detection~~ done — threshold guidance rewritten (ADR-0009)
+8. ~~**FlowPointType/ReportFormat analysis** - Document why 55-line clones are acceptable~~ **Won't implement — dropped — acceptability rationale never recorded.**
+9. ~~**Add enum validation tests** - Ensure IsValid() works for all values and edge cases~~ done — pkg/enum tests cover IsValid edge cases
+10. ~~**Test error messages** - Verify validation errors are user-friendly and consistent~~ done — validation errors standardized (domain sentinels)
 
 ### Tier 3: Medium Priority (Do This Sprint)
 
-11. **Document enum patterns** - Create docs/enums.md with patterns and migration guide
-12. **Create ADR** - Document enum architecture decision in Architecture Decision Record
-13. **Performance benchmarks** - Add benchmark tests for enum operations
-14. **Integration testing** - Run actual CLI commands using refactored enums
-15. **Check enum constants usage** - Find all references to ensure no silent failures
+11. ~~**Document enum patterns** - Create docs/enums.md with patterns and migration guide~~ **Superseded — ADR-0016 (json-tag convention) + AGENTS.md document the pattern.**
+12. ~~**Create ADR** - Document enum architecture decision in Architecture Decision Record~~ done — ADR-0016 + ADR-0005 cover enum architecture
+13. ~~**Performance benchmarks** - Add benchmark tests for enum operations~~ **Won't implement — dropped — no enum-specific benchmarks.**
+14. ~~**Integration testing** - Run actual CLI commands using refactored enums~~ done — CLI integration tested (cmd/ suite)
+15. ~~**Check enum constants usage** - Find all references to ensure no silent failures~~ done — references verified by compilation
 
 ### Tier 4: Lower Priority (Do When Time Permits)
 
-16. **Consider type aliases** - Evaluate if enum types should be type aliases vs distinct types
-17. **Review string enum constraint** - Check if `~string` is optimal or too restrictive
-18. **Error handling consistency** - Standardize between pkgerrors and standard errors
-19. **Consolidate enum files** - Consider merging to single core/enums.go
-20. **Add enum best practices** - Create team wiki entry on enum implementation
+16. ~~**Consider type aliases** - Evaluate if enum types should be type aliases vs distinct types~~ **Won't implement — dropped — distinct types kept by design (pkg/enum).**
+17. ~~**Review string enum constraint** - Check if `~string` is optimal or too restrictive~~ **Won't implement — dropped — constraint question never revisited.**
+18. ~~**Error handling consistency** - Standardize between pkgerrors and standard errors~~ done — errors/ package standardizes handling (AGENTS.md)
+19. ~~**Consolidate enum files** - Consider merging to single core/enums.go~~ **Won't implement — dropped — enums stay in per-domain files.**
+20. ~~**Add enum best practices** - Create team wiki entry on enum implementation~~ **Won't implement — dropped — no wiki entry.**
 
 ### Tier 5: Nice To Have (Future Improvements)
 
-21. **Code generation spike** - Research `go:generate` for 100% deduplication
-22. **Review vendor directory** - Check if -vendor flag affects enum detection
-23. **Test JSON tags** - Verify json:"" tags work correctly with all patterns
-24. **Consider enum encoding** - Evaluate if enums should implement full encoding interfaces
-25. **Extract enum library** - Consider extracting enum utilities to separate package
+21. ~~**Code generation spike** - Research `go:generate` for 100% deduplication~~ **Won't implement — dropped — no go:generate spike.**
+22. ~~**Review vendor directory** - Check if -vendor flag affects enum detection~~ done — verified — vendor exclusion handled by default filters
+23. ~~**Test JSON tags** - Verify json:"" tags work correctly with all patterns~~ done — json tags pinned (ADR-0016 + tests)
+24. ~~**Consider enum encoding** - Evaluate if enums should implement full encoding interfaces~~ **Won't implement — dropped — marshal/unmarshal only, no full encoding interfaces.**
+25. ~~**Extract enum library** - Consider extracting enum utilities to separate package~~ done — extracted to pkg/enum
 
 ---
 
@@ -346,8 +346,8 @@ Determine optimal threshold for this codebase.
 
 Both enums implement:
 
-1. `MarshalText/UnmarshalText` via `EnumValidator[T]` (handles validation in O(1) with map lookup)
-2. Custom `MarshalJSON/UnmarshalJSON` that **duplicate the exact same validation logic**
+1. ~~`MarshalText/UnmarshalText` via `EnumValidator[T]` (handles validation in O(1) with map lookup)~~ done — verified — design record, historical
+2. ~~Custom `MarshalJSON/UnmarshalJSON` that **duplicate the exact same validation logic**~~ done — resolved — duplication eliminated by pkg/enum shared helpers
 
 ### The Methods
 
@@ -379,17 +379,17 @@ func (e *ErrorHandlingStatus) UnmarshalJSON(data []byte) error {
 
 ### What I Need To Know
 
-1. **Are these enums ever JSON-serialized with different behavior than TextMarshaler?**
+1. ~~**Are these enums ever JSON-serialized with different behavior than TextMarshaler?**~~ done — resolved — JSON behavior pinned by pkg/enum tests + ADR-0016
    - Do they appear in API responses?
    - Are they stored in JSON config files?
    - Do external systems depend on specific JSON format?
 
-2. **Would removing custom JSON methods cause silent failures?**
+2. ~~**Would removing custom JSON methods cause silent failures?**~~ done — resolved — json round-trips tested
    - Are there integration tests that only test JSON path?
    - Would TextMarshaler path change error message formats?
    - Are there json:"" struct tags that expect specific behavior?
 
-3. **Is there a specific technical reason?**
+3. ~~**Is there a specific technical reason?**~~ done — resolved — no JSON-specific requirement; helpers shared
    - Does json.Marshal have different string escaping than []byte conversion?
    - Are there JSON-specific requirements not met by TextMarshaler?
    - Is this legacy code that's no longer needed?
@@ -418,9 +418,9 @@ This question is **blocking true 100% deduplication** and requires domain knowle
 
 Successfully identified and partially addressed genuine code duplication in enum implementations. Refactored two enums from manual pattern to EnumValidator[T] pattern, achieving 28% code reduction with zero test failures. However, structural similarity remains, indicating that either:
 
-1. **Code generation** is needed for 100% deduplication, OR
-2. **Clone acceptance** is appropriate for inherently similar structures, OR
-3. **Further extraction** can eliminate remaining duplication
+1. ~~**Code generation** is needed for 100% deduplication, OR~~ **Won't implement — dropped — no code generation.**
+2. ~~**Clone acceptance** is appropriate for inherently similar structures, OR~~ done — adopted — inherent similarity accepted via baseline + accept directives
+3. ~~**Further extraction** can eliminate remaining duplication~~ done — further extraction happened (pkg/enum)
 
 **Next steps focused on:** JSON behavior verification, pattern unification, dead code removal, and determination of whether custom MarshalJSON is required.
 
