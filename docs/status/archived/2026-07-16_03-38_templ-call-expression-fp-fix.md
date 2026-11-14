@@ -64,14 +64,14 @@ func (t *transformer) transformCallTemplateExpression(cte *templparser.CallTempl
 
 | #  | Task | Impact                                                                                | Effort                         | Priority |
 | -- | ---- | ------------------------------------------------------------------------------------- | ------------------------------ | -------- |
-| ~~ | 1    | Fix `transformCallTemplateExpression`: add callee name extraction + semantic encoding | Critical — eliminates both FPs | 10min    |
-| ~~ | 2    | Write unit test: verify `@demoSection(...)` ≠ `@display.DataTable(...)` tokens        | High — regression guard        | 10min    |
-| ~~ | 3    | Run `go test ./syntax/templ/... -count=1`                                             | High — verify templ tests pass | 5min     |
-| ~~ | 4    | Run full test suite `go test ./... -count=1`                                          | High — verify no regressions   | 10min    |
-| ~~ | 5    | Build binary and re-run 15-project validation                                         | High — confirm 0 FPs           | 15min    |
-| ~~ | 6    | Run lint on changed files                                                             | Medium — hygiene               | 5min     |
-| ~~ | 7    | Update validation doc with post-fix results                                           | Medium — documentation         | 5min     |
-| ~~ | 8    | Commit and push                                                                       | Required — persist work        | 5min     |
+| ~~1~~ done — the callee-name semantic encoding shipped; see AGENTS.md (Templ callee name encoding) and the archived validation report | ~~Fix `transformCallTemplateExpression`: add callee name extraction + semantic encoding~~ | ~~Critical — eliminates both FPs~~ | ~~10min~~ |
+| ~~2~~ done — the callee-name semantic encoding shipped; see AGENTS.md (Templ callee name encoding) and the archived validation report | ~~Write unit test: verify `@demoSection(...)` ≠ `@display.DataTable(...)` tokens~~ | ~~High — regression guard~~ | ~~10min~~ |
+| ~~3~~ done — the callee-name semantic encoding shipped; see AGENTS.md (Templ callee name encoding) and the archived validation report | ~~Run `go test ./syntax/templ/... -count=1`~~ | ~~High — verify templ tests pass~~ | ~~5min~~ |
+| ~~4~~ done — the callee-name semantic encoding shipped; see AGENTS.md (Templ callee name encoding) and the archived validation report | ~~Run full test suite `go test ./... -count=1`~~ | ~~High — verify no regressions~~ | ~~10min~~ |
+| ~~5~~ done — the callee-name semantic encoding shipped; see AGENTS.md (Templ callee name encoding) and the archived validation report | ~~Build binary and re-run 15-project validation~~ | ~~High — confirm 0 FPs~~ | ~~15min~~ |
+| ~~6~~ done — the callee-name semantic encoding shipped; see AGENTS.md (Templ callee name encoding) and the archived validation report | ~~Run lint on changed files~~ | ~~Medium — hygiene~~ | ~~5min~~ |
+| ~~7~~ done — the callee-name semantic encoding shipped; see AGENTS.md (Templ callee name encoding) and the archived validation report | ~~Update validation doc with post-fix results~~ | ~~Medium — documentation~~ | ~~5min~~ |
+| ~~8~~ done — the callee-name semantic encoding shipped; see AGENTS.md (Templ callee name encoding) and the archived validation report | ~~Commit and push~~ | ~~Required — persist work~~ | ~~5min~~ |
 
 ---
 
@@ -79,19 +79,19 @@ func (t *transformer) transformCallTemplateExpression(cte *templparser.CallTempl
 
 | #  | Task                                                           | File(s)                                                            | Est                                         |
 | -- | -------------------------------------------------------------- | ------------------------------------------------------------------ | ------------------------------------------- |
-| ~~ | 1a                                                             | Add `"strings"` import to `transform_components.go`                | `syntax/templ/transform_components.go`      |
-| ~~ | 1b                                                             | Add `extractCalleeName(expr string) string` helper                 | `syntax/templ/transform_components.go`      |
+| ~~1a~~ done — shipped in syntax/templ/transform_components.go | ~~Add `"strings"` import to `transform_components.go`~~ | ~~`syntax/templ/transform_components.go`~~ |
+| ~~1b~~ done — shipped in syntax/templ/transform_components.go | ~~Add `extractCalleeName(expr string) string` helper~~ | ~~`syntax/templ/transform_components.go`~~ |
 | 1c | Update `transformCallTemplateExpression` to encode callee name | `syntax/templ/transform_components.go`                             | 3min                                        |
-| ~~ | 2a                                                             | Write `TestExtractCalleeName` table-driven test                    | `syntax/templ/transform_components_test.go` |
-| ~~ | 2b                                                             | Write `TestCallTemplateSemanticEncoding` test                      | `syntax/templ/transform_components_test.go` |
-| ~~ | 3a                                                             | Run `go test ./syntax/templ/... -count=1 -v`                       | —                                           |
-| ~~ | 4a                                                             | Run `go test ./... -count=1 -timeout 180s`                         | —                                           |
-| ~~ | 5a                                                             | Build binary: `go build -o /tmp/art-dupl ./cmd/art-dupl/`          | —                                           |
-| ~~ | 5b                                                             | Run validation on templ-components (the FP source)                 | —                                           |
+| ~~2a~~ done — shipped in syntax/templ/transform_components.go | ~~Write `TestExtractCalleeName` table-driven test~~ | ~~`syntax/templ/transform_components_test.go`~~ |
+| ~~2b~~ done — shipped in syntax/templ/transform_components.go | ~~Write `TestCallTemplateSemanticEncoding` test~~ | ~~`syntax/templ/transform_components_test.go`~~ |
+| ~~3a~~ done — shipped in syntax/templ/transform_components.go | ~~Run `go test ./syntax/templ/... -count=1 -v`~~ | ~~—~~ |
+| ~~4a~~ done — shipped in syntax/templ/transform_components.go | ~~Run `go test ./... -count=1 -timeout 180s`~~ | ~~—~~ |
+| ~~5a~~ done — shipped in syntax/templ/transform_components.go | ~~Build binary: `go build -o /tmp/art-dupl ./cmd/art-dupl/`~~ | ~~—~~ |
+| ~~5b~~ done — shipped in syntax/templ/transform_components.go | ~~Run validation on templ-components (the FP source)~~ | ~~—~~ |
 | 5c | Run validation on all 15 projects                              | —                                                                  | 10min                                       |
-| ~~ | 6a                                                             | Run `golangci-lint run --timeout 5m ./syntax/templ/...`            | —                                           |
-| ~~ | 7a                                                             | Update `docs/status/archived/2026-07-16_semantic-validation-15-projects.md` | docs                                        |
-| ~~ | 8a                                                             | `git add` + `git commit` with detailed message                     | —                                           |
+| ~~6a~~ done — shipped in syntax/templ/transform_components.go | ~~Run `golangci-lint run --timeout 5m ./syntax/templ/...`~~ | ~~—~~ |
+| ~~7a~~ done — validation doc updated; now archived at docs/status/archived/2026-07-16_semantic-validation-15-projects.md | ~~Update `docs/status/archived/2026-07-16_semantic-validation-15-projects.md`~~ | ~~docs~~ |
+| ~~8a~~ done — shipped in syntax/templ/transform_components.go | ~~`git add` + `git commit` with detailed message~~ | ~~—~~ |
 | 8b | `git push`                                                     | —                                                                  | 2min                                        |
 
 ---

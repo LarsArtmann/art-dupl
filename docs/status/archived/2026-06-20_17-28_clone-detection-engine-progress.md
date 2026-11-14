@@ -123,7 +123,7 @@ Dogfooding art-dupl on itself at `-t 15`:
 | ---- | --------------------------------- |
 | ~~**T21** — GitHub Actions template~~ done — .github/workflows/art-dupl-check.yml + ci.yml |
 | ~~**T22** — Pre-commit hook~~ done — .githooks/pre-commit tracked (2026-10-24) |
-| ~~**T23** — json/v2 migration~~ **NOT-DO — NOT-DO — direct json/v2 imports rejected; ADR-0024 canonical marshaler + internal/jsonv2gate.** |
+| ~~**T23** — json/v2 migration~~ **NOT-DO — direct json/v2 imports rejected; ADR-0024 canonical marshaler + internal/jsonv2gate.** |
 | ~~**T24** — Rename Data→View~~ done — View types in printer (html_views.go, StatsView in stats_data.go) |
 
 ---
@@ -183,7 +183,7 @@ Nothing. No regressions, no broken builds, no reverted changes.
 | ~~21~~ done — printer/clone_type_test.go | ~~**Fix domain coverage**: Write CloneType tests specifically~~ | ~~High~~ | ~~20min~~ |
 | ~~22~~ done — reviewed during v0.7.0 calibration (duplicate of item 9) | ~~**Review false-positives.json**: Check which entries T9 patterns now catch~~ | ~~High~~ | ~~30min~~ |
 | ~~23~~ done — domain.CloneRef consolidation (ADR-0005) | ~~**T14**: Consolidate CloneLocation in ProcessedClone/CloneGroup/SDK Clone~~ | ~~Medium~~ | ~~90min~~ |
-| ~~24~~ **NOT-DO — NOT-DO — direct json/v2 migration rejected (ADR-0024 + internal/jsonv2gate).** | ~~**T23**: Audit and migrate to encoding/json/v2~~ | ~~Low~~ | ~~40min~~ |
+| ~~24~~ **NOT-DO — direct json/v2 migration rejected (ADR-0024 + internal/jsonv2gate).** | ~~**T23**: Audit and migrate to encoding/json/v2~~ | ~~Low~~ | ~~40min~~ |
 | ~~25~~ done — View types in printer (html_views.go) | ~~**T24**: Rename `*Data` → `*View` in printer~~ | ~~Low~~ | ~~35min~~ |
 
 ---

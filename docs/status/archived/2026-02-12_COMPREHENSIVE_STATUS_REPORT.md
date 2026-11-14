@@ -18,6 +18,7 @@ This report provides a comprehensive reflection on the art-dupl project status a
 
 ### Core Refactoring Completed
 
+<!-- check-rows:ledger -->
 | Item                            | Details                                                                                  | Commit    |
 | ------------------------------- | ---------------------------------------------------------------------------------------- | --------- |
 | `.templ` file support           | Full tree-sitter integration with CGO bindings                                           | `ec5c4e9` |
@@ -31,6 +32,7 @@ This report provides a comprehensive reflection on the art-dupl project status a
 
 ### Build & Test Infrastructure
 
+<!-- check-rows:ledger -->
 | Item                       | Status             |
 | -------------------------- | ------------------ |
 | CGO_ENABLED=1 build        | ✅ Works           |
@@ -41,6 +43,7 @@ This report provides a comprehensive reflection on the art-dupl project status a
 
 ### Feature Completeness
 
+<!-- check-rows:ledger -->
 | Feature                        | Status           |
 | ------------------------------ | ---------------- |
 | Go file analysis               | ✅ Full          |
@@ -66,12 +69,13 @@ This report provides a comprehensive reflection on the art-dupl project status a
 
 | Item         | Current State                  | Gap                                                         |
 | ------------ | ------------------------------ | ----------------------------------------------------------- |
-| README.md    | Mentions `-include-templ` flag | Doesn't explain .templ files are now SUPPORTED for analysis |
-| FEATURES.md  | Lists "Go Only" limitation     | Needs update to include .templ support                      |
-| No CHANGELOG | Missing                        | Major changes not tracked                                   |
+| ~~README.md~~ done — templ support documented in FEATURES.md/README | ~~Mentions `-include-templ` flag~~ | ~~Doesn't explain .templ files are now SUPPORTED for analysis~~ |
+| ~~FEATURES.md~~ done — FEATURES.md covers .templ analysis | ~~Lists "Go Only" limitation~~ | ~~Needs update to include .templ support~~ |
+| ~~No CHANGELOG~~ done — `CHANGELOG.md` exists | ~~Missing~~ | ~~Major changes not tracked~~ |
 
 ### Test Coverage Gaps
 
+<!-- check-rows:ledger -->
 | Package                     | Coverage | Issue                      |
 | --------------------------- | -------- | -------------------------- |
 | `cmd/art-dupl`              | 0%       | No tests                   |
@@ -86,6 +90,7 @@ This report provides a comprehensive reflection on the art-dupl project status a
 
 ### Files Still Over 300 Lines
 
+<!-- check-rows:ledger -->
 | File                             | Lines | Recommendation               |
 | -------------------------------- | ----- | ---------------------------- |
 | `domain/domain_types_test.go`    | 875   | Split by type being tested   |
@@ -114,11 +119,11 @@ This report provides a comprehensive reflection on the art-dupl project status a
 
 | Issue                                 | Severity | Status                |
 | ------------------------------------- | -------- | --------------------- |
-| Estimated Total Lines (`files * 100`) | CRITICAL | Documented, not fixed |
-| Double-counting duplicate lines       | CRITICAL | Documented, not fixed |
-| Duplication Ratio unreliable          | CRITICAL | Documented, not fixed |
-| Complexity Score misleading name      | MEDIUM   | Documented, not fixed |
-| Health Score arbitrary thresholds     | MEDIUM   | Documented, not fixed |
+| ~~Estimated Total Lines (`files * 100`)~~ done — line counts now actual (`printer/stats/`) | ~~CRITICAL~~ | ~~Documented, not fixed~~ |
+| ~~Double-counting duplicate lines~~ done — unique-pattern accounting in `printer/stats/` | ~~CRITICAL~~ | ~~Documented, not fixed~~ |
+| ~~Duplication Ratio unreliable~~ done — duplication ratio reworked (`printer/stats/`) | ~~CRITICAL~~ | ~~Documented, not fixed~~ |
+| ~~Complexity Score misleading name~~ **Won't implement — kept `ComplexityScore` naming (`printer/stats/stats_data.go`).** | ~~MEDIUM~~ | ~~Documented, not fixed~~ |
+| ~~Health Score arbitrary thresholds~~ **Won't implement — thresholds fixed and documented (`domain/types_health.go`).** | ~~MEDIUM~~ | ~~Documented, not fixed~~ |
 
 ---
 
@@ -128,26 +133,26 @@ This report provides a comprehensive reflection on the art-dupl project status a
 
 | Item                | Description                                   | Impact |
 | ------------------- | --------------------------------------------- | ------ |
-| Fix Estimated Lines | Actually count lines instead of `files * 100` | HIGH   |
-| Fix Double-Counting | Count unique patterns, not all instances      | HIGH   |
-| Add CHANGELOG       | Track version history and changes             | MEDIUM |
+| ~~Fix Estimated Lines~~ done — actual line counts (`printer/stats/`) | ~~Actually count lines instead of `files * 100`~~ | ~~HIGH~~ |
+| ~~Fix Double-Counting~~ done — unique-pattern accounting (`printer/stats/`) | ~~Count unique patterns, not all instances~~ | ~~HIGH~~ |
+| ~~Add CHANGELOG~~ done — `CHANGELOG.md` maintained | ~~Track version history and changes~~ | ~~MEDIUM~~ |
 
 ### Medium Priority
 
 | Item                              | Description                                 | Impact |
 | --------------------------------- | ------------------------------------------- | ------ |
-| Update README with .templ support | Document that .templ files are now analyzed | HIGH   |
-| Update FEATURES.md                | Remove "Go Only" limitation                 | MEDIUM |
-| Add tests to untested packages    | Improve coverage                            | MEDIUM |
-| Split remaining large test files  | Follow 300-line guideline                   | LOW    |
+| ~~Update README with .templ support~~ done — README/FEATURES document templ support | ~~Document that .templ files are now analyzed~~ | ~~HIGH~~ |
+| ~~Update FEATURES.md~~ done — FEATURES.md covers templ | ~~Remove "Go Only" limitation~~ | ~~MEDIUM~~ |
+| ~~Add tests to untested packages~~ done — former 0% packages removed or tested (`pkg/logger/logger_test.go`) | ~~Improve coverage~~ | ~~MEDIUM~~ |
+| Split remaining large test files **→ some large test files remain by design** | Follow 300-line guideline | LOW |
 
 ### Low Priority
 
 | Item                                  | Description                     | Impact |
 | ------------------------------------- | ------------------------------- | ------ |
-| Clear gopls cache                     | False compiler errors in editor | LOW    |
-| Rename ComplexityScore to SpreadScore | Clearer naming                  | LOW    |
-| Configurable Health Score thresholds  | Project-specific needs          | LOW    |
+| Clear gopls cache **→ gopls cache issues transient** | False compiler errors in editor | LOW |
+| ~~Rename ComplexityScore to SpreadScore~~ **Won't implement — rename never adopted; field remains `ComplexityScore`.** | ~~Clearer naming~~ | ~~LOW~~ |
+| ~~Configurable Health Score thresholds~~ **Won't implement — thresholds fixed and documented.** | ~~Project-specific needs~~ | ~~LOW~~ |
 
 ---
 
@@ -172,9 +177,9 @@ This report provides a comprehensive reflection on the art-dupl project status a
 
 | File                       | Issue                  | Technical Debt                         |
 | -------------------------- | ---------------------- | -------------------------------------- |
-| `domain/clone.go`          | gopls errors reported  | Validation helpers possibly incomplete |
-| `printer/stats.go`         | Complex health scoring | Arbitrary magic numbers                |
-| `internal/testutil/bdd.go` | 529 lines              | Monolithic test utility                |
+| ~~`domain/clone.go`~~ done — moot — `domain/clone.go` split; no gopls errors | ~~gopls errors reported~~ | ~~Validation helpers possibly incomplete~~ |
+| ~~`printer/stats.go`~~ done — health scoring documented in `domain/types_health.go` + `printer/stats/` | ~~Complex health scoring~~ | ~~Arbitrary magic numbers~~ |
+| ~~`internal/testutil/bdd.go`~~ done — now 102L | ~~529 lines~~ | ~~Monolithic test utility~~ |
 
 ---
 
@@ -184,14 +189,15 @@ This report provides a comprehensive reflection on the art-dupl project status a
 
 | Area                      | Current                     | Improvement                                                  |
 | ------------------------- | --------------------------- | ------------------------------------------------------------ |
-| **Result[T] / Option[T]** | Custom implementation       | Consider `samber/mo` for more features (flatMap, fold, etc.) |
-| **Error handling**        | Custom DuplError types      | More consistent use of Wrap\* functions                      |
-| **Concurrency**           | Manual goroutine management | Consider `golang.org/x/sync/errgroup`                        |
-| **Logging**               | Basic logger                | Consider structured logging (`zap`, `slog`)                  |
-| **Dependency Injection**  | Manual                      | Already using `samber/do/v2` in some places                  |
+| ~~**Result[T] / Option[T]**~~ **Won't implement — kept custom minimal types; stdlib-only policy.** | ~~Custom implementation~~ | ~~Consider `samber/mo` for more features (flatMap, fold, etc.)~~ |
+| ~~**Error handling**~~ done — typed errors in `errors/` package | ~~Custom DuplError types~~ | ~~More consistent use of Wrap\* functions~~ |
+| ~~**Concurrency**~~ **Won't implement — manual concurrency kept; no errgroup dependency.** | ~~Manual goroutine management~~ | ~~Consider `golang.org/x/sync/errgroup`~~ |
+| ~~**Logging**~~ **Won't implement — structured logging deps not adopted.** | ~~Basic logger~~ | ~~Consider structured logging (`zap`, `slog`)~~ |
+| ~~**Dependency Injection**~~ **Won't implement — DI frameworks not adopted.** | ~~Manual~~ | ~~Already using `samber/do/v2` in some places~~ |
 
 ### Code Quality Improvements
 
+<!-- check-rows:ledger -->
 | Area                        | Current    | Target     |
 | --------------------------- | ---------- | ---------- |
 | Test coverage (detection)   | 11.5%      | 60%+       |
@@ -203,9 +209,9 @@ This report provides a comprehensive reflection on the art-dupl project status a
 
 | Area                 | Issue                         | Fix                             |
 | -------------------- | ----------------------------- | ------------------------------- |
-| gopls errors         | Stale cache after refactoring | Document `gopls cache clean`    |
-| Build command        | Must use `CGO_ENABLED=1`      | Document in AGENTS.md           |
-| Justfile vs Makefile | Confusion                     | Justfile preferred (documented) |
+| gopls errors **→ transient editor issue** | Stale cache after refactoring | Document `gopls cache clean` |
+| Build command **→ build is pure Go; CGO not required anymore** | Must use `CGO_ENABLED=1` | Document in AGENTS.md |
+| ~~Justfile vs Makefile~~ **Won't implement — neither adopted — Nix flake + BuildFlow are the tooling.** | ~~Confusion~~ | ~~Justfile preferred (documented)~~ |
 
 ---
 
@@ -215,31 +221,31 @@ This report provides a comprehensive reflection on the art-dupl project status a
 
 | #  | Task                                            | Impact | Effort | Ratio | Priority |
 | -- | ----------------------------------------------- | ------ | ------ | ----- | -------- |
-| 1  | Update README with .templ analysis support      | HIGH   | LOW    | 🔥    | P1       |
-| 2  | Create CHANGELOG.md                             | MEDIUM | LOW    | 🔥    | P1       |
-| 3  | Fix Estimated Lines (actually count)            | HIGH   | MEDIUM | ⭐    | P1       |
-| 4  | Fix double-counting in stats                    | HIGH   | MEDIUM | ⭐    | P1       |
-| 5  | Update FEATURES.md                              | MEDIUM | LOW    | ⭐    | P2       |
-| 6  | Add disclaimer to stats output                  | MEDIUM | LOW    | ⭐    | P2       |
-| 7  | Add tests for `internal/enum`                   | LOW    | LOW    | ✅    | P2       |
-| 8  | Add tests for `pkg/logger`                      | LOW    | LOW    | ✅    | P2       |
-| 9  | Split `domain/domain_types_test.go`             | LOW    | MEDIUM | ✅    | P2       |
-| 10 | Split `printer/stats_test.go`                   | LOW    | MEDIUM | ✅    | P2       |
-| 11 | Split `pkg/filter/filter_test.go`               | LOW    | MEDIUM | ✅    | P3       |
-| 12 | Extract validation from `domain/clone.go`       | MEDIUM | MEDIUM | ✅    | P3       |
-| 13 | Split `pkg/filter/filter.go`                    | LOW    | MEDIUM | ✅    | P3       |
-| 14 | Extract helpers from `syntax/golang/golang.go`  | LOW    | MEDIUM | ✅    | P3       |
-| 15 | Extract validation from `config/config.go`      | LOW    | MEDIUM | ✅    | P3       |
-| 16 | Add tests for `internal/treesitter/templ`       | MEDIUM | HIGH   | ⚠️     | P3       |
-| 17 | Improve detection package coverage              | HIGH   | HIGH   | ⚠️     | P3       |
-| 18 | Improve pkg/artdupl coverage                    | HIGH   | HIGH   | ⚠️     | P3       |
-| 19 | Improve syntax/golang coverage                  | HIGH   | HIGH   | ⚠️     | P4       |
-| 20 | Add tests for `internal/simd`                   | LOW    | MEDIUM | ⚠️     | P4       |
-| 21 | Extract helpers from `internal/testutil/bdd.go` | LOW    | MEDIUM | ⚠️     | P4       |
-| 22 | Extract parsing from `detection/todos.go`       | LOW    | MEDIUM | ⚠️     | P4       |
-| 23 | Rename ComplexityScore to SpreadScore           | LOW    | LOW    | ✅    | P4       |
-| 24 | Make Health Score thresholds configurable       | MEDIUM | HIGH   | ⚠️     | P5       |
-| 25 | Add confidence intervals to stats               | MEDIUM | HIGH   | ⚠️     | P5       |
+| ~~1~~ done — templ support documented (FEATURES.md) | ~~Update README with .templ analysis support~~ | ~~HIGH~~ | ~~LOW~~ | ~~🔥~~ | ~~P1~~ |
+| ~~2~~ done — `CHANGELOG.md` | ~~Create CHANGELOG.md~~ | ~~MEDIUM~~ | ~~LOW~~ | ~~🔥~~ | ~~P1~~ |
+| ~~3~~ done — actual line counts (`printer/stats/`) | ~~Fix Estimated Lines (actually count)~~ | ~~HIGH~~ | ~~MEDIUM~~ | ~~⭐~~ | ~~P1~~ |
+| ~~4~~ done — unique-pattern accounting (`printer/stats/`) | ~~Fix double-counting in stats~~ | ~~HIGH~~ | ~~MEDIUM~~ | ~~⭐~~ | ~~P1~~ |
+| ~~5~~ done — FEATURES.md current | ~~Update FEATURES.md~~ | ~~MEDIUM~~ | ~~LOW~~ | ~~⭐~~ | ~~P2~~ |
+| 6 **→ stats output carries documented semantics** | Add disclaimer to stats output | MEDIUM | LOW | ⭐ | P2 |
+| ~~7~~ done — moot — `internal/enum` removed (helpers live in `pkg/enum` with tests) | ~~Add tests for `internal/enum`~~ | ~~LOW~~ | ~~LOW~~ | ~~✅~~ | ~~P2~~ |
+| ~~8~~ done — `pkg/logger/logger_test.go` | ~~Add tests for `pkg/logger`~~ | ~~LOW~~ | ~~LOW~~ | ~~✅~~ | ~~P2~~ |
+| ~~9~~ done — domain tests split (`domain/*_test.go`) | ~~Split `domain/domain_types_test.go`~~ | ~~LOW~~ | ~~MEDIUM~~ | ~~✅~~ | ~~P2~~ |
+| ~~10~~ done — `printer/stats/` split into focused modules | ~~Split `printer/stats_test.go`~~ | ~~LOW~~ | ~~MEDIUM~~ | ~~✅~~ | ~~P2~~ |
+| ~~11~~ done — moot — `pkg/filter` removed | ~~Split `pkg/filter/filter_test.go`~~ | ~~LOW~~ | ~~MEDIUM~~ | ~~✅~~ | ~~P3~~ |
+| ~~12~~ done — `domain/clone.go` split (clone_node/clone_ref) | ~~Extract validation from `domain/clone.go`~~ | ~~MEDIUM~~ | ~~MEDIUM~~ | ~~✅~~ | ~~P3~~ |
+| ~~13~~ done — moot — `pkg/filter` removed | ~~Split `pkg/filter/filter.go`~~ | ~~LOW~~ | ~~MEDIUM~~ | ~~✅~~ | ~~P3~~ |
+| ~~14~~ done — reorganized (`transform.go`, `parse.go`) | ~~Extract helpers from `syntax/golang/golang.go`~~ | ~~LOW~~ | ~~MEDIUM~~ | ~~✅~~ | ~~P3~~ |
+| ~~15~~ done — `config/config_validate.go` extracted | ~~Extract validation from `config/config.go`~~ | ~~LOW~~ | ~~MEDIUM~~ | ~~✅~~ | ~~P3~~ |
+| ~~16~~ done — moot — `internal/treesitter` removed; native templ parser (`syntax/templ/`) with tests | ~~Add tests for `internal/treesitter/templ`~~ | ~~MEDIUM~~ | ~~HIGH~~ | ~~⚠️~~ | ~~P3~~ |
+| ~~17~~ done — detection coverage grown (`detection/` tests) | ~~Improve detection package coverage~~ | ~~HIGH~~ | ~~HIGH~~ | ~~⚠️~~ | ~~P3~~ |
+| ~~18~~ done — SDK tests in `pkg/artdupl/` | ~~Improve pkg/artdupl coverage~~ | ~~HIGH~~ | ~~HIGH~~ | ~~⚠️~~ | ~~P3~~ |
+| ~~19~~ done — extensive `syntax/golang/` tests | ~~Improve syntax/golang coverage~~ | ~~HIGH~~ | ~~HIGH~~ | ~~⚠️~~ | ~~P4~~ |
+| ~~20~~ done — moot — `internal/simd` removed; SIMD notes in `hash/` | ~~Add tests for `internal/simd`~~ | ~~LOW~~ | ~~MEDIUM~~ | ~~⚠️~~ | ~~P4~~ |
+| ~~21~~ done — now 102L | ~~Extract helpers from `internal/testutil/bdd.go`~~ | ~~LOW~~ | ~~MEDIUM~~ | ~~⚠️~~ | ~~P4~~ |
+| ~~22~~ done — moot — `detection/todos.go` removed | ~~Extract parsing from `detection/todos.go`~~ | ~~LOW~~ | ~~MEDIUM~~ | ~~⚠️~~ | ~~P4~~ |
+| ~~23~~ **Won't implement — rename never adopted; remains `ComplexityScore`.** | ~~Rename ComplexityScore to SpreadScore~~ | ~~LOW~~ | ~~LOW~~ | ~~✅~~ | ~~P4~~ |
+| ~~24~~ **Won't implement — thresholds fixed and documented.** | ~~Make Health Score thresholds configurable~~ | ~~MEDIUM~~ | ~~HIGH~~ | ~~⚠️~~ | ~~P5~~ |
+| 25 **→ not adopted; stats semantics documented instead** | Add confidence intervals to stats | MEDIUM | HIGH | ⚠️ | P5 |
 
 ### Legend
 
@@ -267,6 +273,7 @@ This report provides a comprehensive reflection on the art-dupl project status a
 
 **Options:**
 
+<!-- check-rows:ledger -->
 | Option                             | Pros                         | Cons                      |
 | ---------------------------------- | ---------------------------- | ------------------------- |
 | **A) Fix before any release**      | Users get accurate metrics   | Delays release, more work |
@@ -280,6 +287,7 @@ This report provides a comprehensive reflection on the art-dupl project status a
 
 ## Session Statistics
 
+<!-- check-rows:ledger -->
 | Metric                     | Value                 |
 | -------------------------- | --------------------- |
 | Total commits this session | 8                     |
@@ -317,6 +325,7 @@ just check
 
 ### Key Files to Remember
 
+<!-- check-rows:ledger -->
 | File                        | Purpose                                |
 | --------------------------- | -------------------------------------- |
 | `AGENTS.md`                 | Project-specific agent instructions    |
