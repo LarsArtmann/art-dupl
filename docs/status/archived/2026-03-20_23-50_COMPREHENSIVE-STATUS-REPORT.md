@@ -209,8 +209,8 @@ go/types.(*Checker).builtin-range1
 
 ### P0: Blockers
 
-1. Fix BDD threshold in semantic_detection_test.go (15 → 10)
-2. Verify all 224 BDD tests pass
+~~1. Fix BDD threshold in semantic_detection_test.go (15 → 10)~~ done — the BDD suite is green today (bdd/)
+~~2. Verify all 224 BDD tests pass~~ done — the BDD suite is green today (bdd/)
 3. Confirm golangci-lint runs cleanly
 
 ### P1: Quick Wins
@@ -226,17 +226,17 @@ go/types.(*Checker).builtin-range1
 
 10. Fix gosec G115 integer overflow
 11. Reduce transformer.trans complexity
-12. Fix gochecknoglobals (SemanticHashEnabled)
+~~12. Fix gochecknoglobals (SemanticHashEnabled)~~ done — lint is 106-linter clean (AGENTS.md)
 13. Fix funlen (PrintFooter 87 lines)
-14. Add domain type validation tests
+~~14. Add domain type validation tests~~ done — the domain sentinels are cross-alias-tested (AGENTS.md sentinel convention)
 15. Fix varnamelen short variable names
 
 ### P3: Features
 
 16. Threshold type migration
 17. Complete --profile flag
-18. Implement CSV output
-19. Add SARIF format
+~~18. Implement CSV output~~ done — CSV is an OutputFormat value (AGENTS.md)
+~~19. Add SARIF format~~ done — SARIF ships with a byte-level golden (AGENTS.md)
 20. Resolve config/domain cycle
 
 ### P4: Architecture
@@ -245,7 +245,7 @@ go/types.(*Checker).builtin-range1
 22. File split: pkg/artdupl/detector.go (546 lines)
 23. File split: cmd/run.go (528 lines)
 24. File split: printer/stats.go (727 lines)
-25. File split: domain/clone.go (495 lines)
+~~25. File split: domain/clone.go (495 lines)~~ superseded — domain/clone.go no longer exists; focused type files landed
 
 ---
 

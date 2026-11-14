@@ -176,9 +176,9 @@ The art-dupl project is in excellent condition. Recent session focused on fixing
 ### Immediate (Next Session)
 
 1. **Run full lint fix pass** - Address remaining 387 issues systematically
-2. **Split cmd/cmd_test.go** - Reduce from 1158 lines to <350
-3. **Split domain/coverage_test.go** - Reduce from 1348 lines to <350
-4. **Split pkg/artdupl/detector_test.go** - Reduce from 1323 lines to <350
+~~2. **Split cmd/cmd_test.go** - Reduce from 1158 lines to <350~~ not-do — the test file stayed whole
+~~3. **Split domain/coverage_test.go** - Reduce from 1348 lines to <350~~ not-do — the test file stayed whole
+~~4. **Split pkg/artdupl/detector_test.go** - Reduce from 1323 lines to <350~~ not-do — the test file stayed whole
 5. **Add missing package comments** - Fix 50 revive warnings
 
 ### Short Term (This Week)
@@ -194,14 +194,14 @@ The art-dupl project is in excellent condition. Recent session focused on fixing
 11. **Create CI pipeline optimization** - Reduce CI time
 12. **Add performance benchmarks** - Establish baseline metrics
 13. **Improve BDD test organization** - Better test categorization
-14. **Add integration tests** - End-to-end workflow tests
+~~14. **Add integration tests** - End-to-end workflow tests~~ done — pipeline_integration_test.go exercises the full pipeline (AGENTS.md)
 15. **Create contribution guide** - CONTRIBUTING.md
 
 ### Long Term (This Quarter)
 
 16. **Design plugin architecture** - Extensibility framework
 17. **Create VS Code extension** - IDE integration
-18. **Build GitHub Action** - CI/CD integration
+~~18. **Build GitHub Action** - CI/CD integration~~ struck — tracked on ROADMAP (Platform and Ecosystem: pre-built GitHub Action)
 19. **Add SARIF output** - Security tool integration
 20. **Design LSP support** - Real-time feedback
 
@@ -209,7 +209,7 @@ The art-dupl project is in excellent condition. Recent session focused on fixing
 
 21. **Multi-language support** - Beyond Go
 22. **ML-based filtering** - Reduce false positives
-23. **Web report viewer** - Visual analysis
+~~23. **Web report viewer** - Visual analysis~~ not-do — no web viewer landed; the HTML report ships (printer/report.templ)
 24. **Git hooks package** - Pre-commit integration
 25. **Configuration wizard** - Interactive setup
 

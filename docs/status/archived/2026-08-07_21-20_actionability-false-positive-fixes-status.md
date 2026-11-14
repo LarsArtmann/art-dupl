@@ -190,8 +190,8 @@ The regression tests (`TestSerializePreservesIsAlias`, `TestCheckParameterizabil
 #### Immediate (lint + cleanup)
 
 1. Fix `gocyclo` on `getSuggestion` — refactor switch to map lookup
-2. Fix `gofumpt` formatting on `clone_classify_test.go`
-3. Fix `wsl_v5` whitespace in `recommend_threshold.go`
+~~2. Fix `gofumpt` formatting on `clone_classify_test.go`~~ done — formatting is treefmt/gofmt-enforced and clean
+~~3. Fix `wsl_v5` whitespace in `recommend_threshold.go`~~ done — lint is 106-linter clean (AGENTS.md)
 4. Apply `slices.ContainsFunc` modernization in `extractability_engine.go` (2 sites)
 5. Verify whether the `isAtomicDeclaration` GenDecl case (commit b6853f43) is dead code; remove if so
 6. Run `golangci-lint run --timeout 5m ./...` on the full project, not just changed packages
@@ -200,8 +200,8 @@ The regression tests (`TestSerializePreservesIsAlias`, `TestCheckParameterizabil
 #### Integration tests
 
 8. Write `TestTypeAliasReExportNotActionable` — full pipeline test: parse two .go files with `type X = pkg.Y`, verify 0 actionable clones
-9. Write `TestHelperCallDifferentArgsNotActionable` — full pipeline test: parse two .go files with `printHeading("A", "=", 50)` and `printHeading("B", "=", 50)`, verify 0 actionable clones
-10. Write `TestControlFlowCloneWithDifferentLiteralsActionable` — full pipeline test: parse `processUser`/`processProduct` pattern, verify clones ARE found (not over-suppressed)
+~~9. Write `TestHelperCallDifferentArgsNotActionable` — full pipeline test: parse two .go files with `printHeading("A", "=", 50)` and `printHeading("B", "=", 50)`, verify 0 actionable clones~~ not-do — the named test never landed
+~~10. Write `TestControlFlowCloneWithDifferentLiteralsActionable` — full pipeline test: parse `processUser`/`processProduct` pattern, verify clones ARE found (not over-suppressed)~~ not-do — the named test never landed
 11. Audit all other pattern matchers that use `n.IsAlias` — verify they now work correctly
 12. Audit all other consumers of `collectStringLiterals` — verify they now receive actual values
 13. Audit ALL `Node` struct fields against `serial()` copy — find any other missing fields
@@ -234,7 +234,7 @@ The regression tests (`TestSerializePreservesIsAlias`, `TestCheckParameterizabil
 
 #### Issue 6: `--explain-threshold` mode (Medium effort)
 
-31. Design the output format: "At t=5: N groups suppressed (M actionability-filtered, K threshold-filtered)"
+~~31. Design the output format: "At t=5: N groups suppressed (M actionability-filtered, K threshold-filtered)"~~ superseded — the check summary reports suppression splits (AGENTS.md issue #12)
 32. Implement threshold-level breakdown in the `--explain` output
 33. Add `--show-suppressed` enhancement to include threshold-suppressed clones (currently only shows actionability-suppressed)
 
@@ -250,7 +250,7 @@ The regression tests (`TestSerializePreservesIsAlias`, `TestCheckParameterizabil
 
 39. Add JSON output format for `--recommend-threshold` (currently text-only)
 40. Consider file-type-aware recommendations (Go vs templ vs mixed)
-41. Add `--threshold-sweep` as a subcommand or flag
+~~41. Add `--threshold-sweep` as a subcommand or flag~~ not-do — no threshold-sweep flag landed
 
 #### Code quality
 

@@ -104,7 +104,7 @@ Nothing. The fix is correct, minimal, well-tested, and verified end-to-end. No r
 ### High Priority — Close This Session's Gaps
 
 1. Update `AGENTS.md:103` to document that `single-call-expression` now covers `ExprStmt(CallExpr)` including `t.Parallel()`, `fmt.Println()`, `log.Fatal()`, etc.
-2. Update `docs/ACTIONABILITY_PATTERNS.md:16` table row for Single call pattern.
+~~2. Update `docs/ACTIONABILITY_PATTERNS.md:16` table row for Single call pattern.~~ done — the pattern doc carries the single-call row (docs/ACTIONABILITY_PATTERNS.md)
 3. Run `golangci-lint run --timeout 5m ./...` and fix any findings in changed files.
 4. Run `nix flake check` to verify reproducible CI passes.
 5. Audit ALL actionability patterns in `printer/actionability*.go` for the same ExprStmt-wrapping blind spot — check every `BaseType == golang.XXX` comparison.
@@ -136,7 +136,7 @@ Nothing. The fix is correct, minimal, well-tested, and verified end-to-end. No r
 
 ### Documentation & Maintenance
 
-18. Add `isLoneCallExpr` to the ACTIONABILITY_PATTERNS.md pattern reference.
+~~18. Add `isLoneCallExpr` to the ACTIONABILITY_PATTERNS.md pattern reference.~~ done — the pattern doc carries the single-call row (docs/ACTIONABILITY_PATTERNS.md)
 19. Document the ExprStmt-wrapping gotcha in AGENTS.md's actionability section as a general principle.
 20. Consider adding a "common false positive patterns" section to HOW_TO_USE.md.
 21. Update FEATURES.md if actionability filtering is listed there.
@@ -157,11 +157,11 @@ Nothing. The fix is correct, minimal, well-tested, and verified end-to-end. No r
 
 ### Future Actionability Patterns
 
-30. `single-return-statement` — lone `return nil`, `return err`, `return true`.
-31. `single-assign-statement` — lone `x := 0`, `var foo string`.
-32. `single-var-declaration` — lone `var x int`.
-33. `single-channel-send` — lone `ch <- value`.
-34. `single-type-assertion` — lone `x, ok := y.(Type)`.
+~~30. `single-return-statement` — lone `return nil`, `return err`, `return true`.~~ superseded — the single-simple-statement pattern covers lone statements (AGENTS.md)
+~~31. `single-assign-statement` — lone `x := 0`, `var foo string`.~~ superseded — the single-simple-statement pattern covers lone statements (AGENTS.md)
+~~32. `single-var-declaration` — lone `var x int`.~~ superseded — the single-declaration pattern covers it (AGENTS.md)
+~~33. `single-channel-send` — lone `ch <- value`.~~ not-do — no channel-send pattern landed
+~~34. `single-type-assertion` — lone `x, ok := y.(Type)`.~~ superseded — the interface-assertion and assertion-chain patterns cover it (AGENTS.md)
 35. `logging-call-sequence` — multiple `log.Println`/`log.Printf` in sequence (data-dominated variant).
 
 ### Broader System Improvements

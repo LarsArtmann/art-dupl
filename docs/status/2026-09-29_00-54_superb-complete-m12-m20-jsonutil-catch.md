@@ -82,28 +82,28 @@
 **Product tail (TODO_LIST residents, unchanged):**
 18. v0.8.0 cut (the B1–B6 hardening is still unreleased; CHANGELOG `[Unreleased]` curated and waiting).
 19. Provider threshold knob decision (TODO_LIST D1).
-20. D2 warnings_budget `art-dupl` key in BuildFlow's config.
+~~20. D2 warnings_budget `art-dupl` key in BuildFlow's config.~~ not-do — the BuildFlow warnings_budget key was never added
 21. D3 lane-overlap query (jscpd non-Go vs art-dupl Go findings, post-soak).
 22. Provider test-gap bundle (TODO_LIST: equivalence test, GroupID pin, GOOS=windows live crawl, ctx-cancellation…).
 23. HTML goldens: one real clone group (the lone M07 residue; TODO_LIST).
 24. `--explain` structured JSON explanation object.
 25. SARIF rule metadata for actionability patterns.
 26. YAML vs JSON config: YAML shipped — decide whether the Pareto Tier-1 item is closed or needs parity work.
-27. CopyToBuffer silent `io.Copy` error drop.
+~~27. CopyToBuffer silent `io.Copy` error drop.~~ fixed — the done channel carries the io.Copy error (internal/testutil/bdd_helpers.go:345)
 28. Rich-text preview E2E test.
-29. previewFromFile bufio.Scanner early-exit.
+~~29. previewFromFile bufio.Scanner early-exit.~~ not-do — previewFirstLine still prefers Fragment with ReadFile fallback (AGENTS.md)
 30. Windows exe-start `ProcessState nil` (TODO #4).
-31. go-paperless tag+release (TODO #20).
+~~31. go-paperless tag+release (TODO #20).~~ struck — external-repo release action
 32. Branch protection with required checks (TODO #18 — oldest process gap).
 33. gogenfilter fleet sweep (9 consumers ≤v3.6.0).
 34. Fleet `filepath.Separator` sweep (TODO #15).
 35. Watch mode / TS/Python (ROADMAP parked — pull-trigger only; listed to keep them visible).
-36. `art-dupl init` scaffolder (ROADMAP).
+~~36. `art-dupl init` scaffolder (ROADMAP).~~ struck — tracked on ROADMAP (IDE and Tooling: art-dupl init scaffold)
 37. `--diff-baseline` mode (ROADMAP).
 38. Normalizer nested-scope shadowing (ROADMAP; go/types precise scoping).
 39. Branded NodeType + syntax/golang facade (PARKED — major-version window only).
 40. i18n error messages (23-08 f24, low).
-41. `--format table` output (23-08 f23, low).
+~~41. `--format table` output (23-08 f23, low).~~ not-do — no table format landed
 42. SDK streaming findings surface (`iter.Seq`) — revisit only with consumer demand (ADR-0025).
 43. Coverage per-package floors decision (advisory today).
 44. SDK_DESIGN.md refresh (ADR-0025 + provider diagram) — struck-open twice; still open.

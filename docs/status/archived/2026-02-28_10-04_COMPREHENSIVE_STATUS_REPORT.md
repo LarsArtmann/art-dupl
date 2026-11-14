@@ -217,11 +217,11 @@ All critical systems are operational:
 
 | #  | Task                                         | Effort | Impact |
 | -- | -------------------------------------------- | ------ | ------ |
-| 11 | Optimize printer/stats_styles.go (28.6% cov) | 2h     | LOW    |
-| 12 | Add benchmarks for hot paths                 | 3h     | LOW    |
+| ~~11~~ **superseded — printer/stats_styles.go no longer exists (verified 2026-11-14)** |~~Optimize printer/stats_styles.go (28.6% cov)~~|~~2h~~|~~LOW~~|
+| ~~12~~ **done — the alloc-gate + docs/benchmarks/ guard the hot paths (AGENTS.md)** |~~Add benchmarks for hot paths~~|~~3h~~|~~LOW~~|
 | 13 | Improve error messages for users             | 2h     | LOW    |
 | 14 | Add color output to text format              | 2h     | LOW    |
-| 15 | Create video tutorial                        | 4h     | LOW    |
+| ~~15~~ **not-do — no video tutorial landed** |~~Create video tutorial~~|~~4h~~|~~LOW~~|
 
 ### Priority 4: Future Work
 
@@ -229,10 +229,10 @@ All critical systems are operational:
 | -- | ------------------------------------- | ------ | ------ |
 | 16 | Web dashboard for clone visualization | 16h    | LOW    |
 | 17 | IDE plugin (VSCode)                   | 20h    | LOW    |
-| 18 | SARIF output format                   | 4h     | LOW    |
+| ~~18~~ **done — SARIF ships with a byte-level golden (AGENTS.md)** |~~SARIF output format~~|~~4h~~|~~LOW~~|
 | 19 | Python language support               | 40h    | LOW    |
-| 20 | JavaScript/TypeScript support         | 40h    | LOW    |
-| 21 | Distributed analysis mode             | 80h    | LOW    |
+| ~~20~~ **struck — tracked on ROADMAP (Language Support section)** |~~JavaScript/TypeScript support~~|~~40h~~|~~LOW~~|
+| ~~21~~ **won't implement — distributed analysis is out of scope** |~~Distributed analysis mode~~|~~80h~~|~~LOW~~|
 | 22 | Machine learning for clone ranking    | 80h    | LOW    |
 | 23 | Real-time clone detection             | 40h    | LOW    |
 | 24 | Git hook integration                  | 4h     | LOW    |

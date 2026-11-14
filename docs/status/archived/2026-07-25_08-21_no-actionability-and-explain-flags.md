@@ -211,7 +211,7 @@ I fixed it for the 3rd time. The root cause is still unknown. The daemon reforma
 ### Tier 2 — From Pareto plan (HIGH impact)
 
 7. **`--diff-report <baseline>` mode** — show new/resolved/suppressed clones vs baseline
-8. **`baseline.Diff(old, new)` function** — returning `New/Resolved/Unchanged` sets
+~~8. **`baseline.Diff(old, new)` function** — returning `New/Resolved/Unchanged` sets~~ done — --diff-report compares baselines (cmd/baseline_cmd.go; AGENTS.md)
 9. **`--diff-report` JSON output** — for CI integration
 10. **Move `PatternLabel` to `domain/`** — make `NonActionablePattern` typed instead of string
 11. **HTML report: `--html-output <file>` flag** — write HTML to file instead of stdout
@@ -219,7 +219,7 @@ I fixed it for the 3rd time. The root cause is still unknown. The daemon reforma
 13. **HTML report: stable `id` attributes** — for deep-linking clone groups
 14. **YAML config support** (`.artdupl.yml`) via `go-faster/yaml`
 15. **Config file discovery** — `.artdupl.yml` / `.artdupl.json` in cwd or parent dirs
-16. **`--config <path>` flag** — for explicit config file
+~~16. **`--config <path>` flag** — for explicit config file~~ done — the --config/-c flag ships (cmd/flags.go:13)
 17. **`--include-generated` accepts comma-separated values** — `--include-generated sqlc,templ`
 
 ### Tier 3 — Detection improvements
@@ -237,10 +237,10 @@ I fixed it for the 3rd time. The root cause is still unknown. The daemon reforma
 
 26. **Split `printer/` into sub-packages** — blocked by circular dep on `StatsPrinter`
 27. **Move `Printer`/`ReadFile`/`StatsPrinter` to `printer/base/`**
-28. **Extract HTML printer to `printer/html/`**
-29. **Extract JSON printer to `printer/json/`**
-30. **Extract text printer to `printer/text/`**
-31. **Extract SARIF printer to `printer/sarif/`**
+~~28. **Extract HTML printer to `printer/html/`**~~ not-do — printer/html stayed at the root (AGENTS.md)
+~~29. **Extract JSON printer to `printer/json/`**~~ not-do — printer/json stayed at the root (AGENTS.md)
+~~30. **Extract text printer to `printer/text/`**~~ not-do — printer/text stayed at the root (AGENTS.md)
+~~31. **Extract SARIF printer to `printer/sarif/`**~~ not-do — printer/sarif stayed at the root (AGENTS.md)
 32. **Decouple `actionability.go` from `syntax.Node`** — via `domain.ProcessedClone`
 33. **Eliminate `printer.simpleJSONClone`** — fold into `JSONClone`
 34. **Add `context.Context` to `Printer` interface methods**

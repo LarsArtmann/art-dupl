@@ -632,8 +632,8 @@ $ go build ./bdd/...
 1. `docs(status): Add comprehensive codebase improvement plan`
 2. `Refactor(bdd_test): Remove disabled Configuration Management tests`
 3. `Feat(testutil): Add subdirectory and file creation helpers`
-4. `Refactor(bdd_test): Convert File Targeting Scenarios to use setup pattern`
-5. `Refactor(bdd_test): Convert Integration Scenarios to use setup pattern`
+~~4. `Refactor(bdd_test): Convert File Targeting Scenarios to use setup pattern`~~ done — the BDD suite is green today (bdd/)
+~~5. `Refactor(bdd_test): Convert Integration Scenarios to use setup pattern`~~ done — the BDD suite is green today (bdd/)
 
 ---
 
@@ -1279,12 +1279,12 @@ func processData(data string) error {
 ### IMMEDIATE (Today) - High Priority
 
 1. ✅ **DONE**: Fix original `:=` error at bdd_test.go:131
-2. ✅ **DONE**: Remove dead code from bdd_test.go (136 lines)
+~~2. ✅ **DONE**: Remove dead code from bdd_test.go (136 lines)~~ done — the BDD suite is green today (bdd/)
 3. ✅ **DONE**: Add 3 helper methods to testutil (CreateSubdirectories, CreateFileWithContent, RunArtDuplAndCapture)
-4. ✅ **DONE**: Refactor File Targeting Scenarios in bdd_test.go
-5. ✅ **DONE**: Refactor Integration Scenarios in bdd_test.go
+~~4. ✅ **DONE**: Refactor File Targeting Scenarios in bdd_test.go~~ done — the BDD suite is green today (bdd/)
+~~5. ✅ **DONE**: Refactor Integration Scenarios in bdd_test.go~~ done — the BDD suite is green today (bdd/)
 6. ⏳ **NEXT**: Analyze filter_features_test.go (investigation + status determination)
-7. ⏳ **NEXT**: Refactor detection_methods_test.go to use setup pattern (~25 min)
+~~7. ⏳ **NEXT**: Refactor detection_methods_test.go to use setup pattern (~25 min)~~ not-do — the setup refactor never happened
 8. ⏳ **NEXT**: Refactor filter_features_test.go (if needed, ~30 min)
 9. ⏳ **NEXT**: Complete error_handling_test.go refactoring (remaining ~10 patterns, ~20 min)
 10. ⏳ **NEXT**: Verify ALL BDD tests pass after all refactorings
@@ -1298,8 +1298,8 @@ func processData(data string) error {
 15. **Type-safe output** - Create `type CommandOutput struct` (15 min)
 16. **Add flag builder** - Create `func (f Flags) WithThreshold(value int) Flags` (20 min)
 17. **Review all BDD test files** - Ensure consistent patterns (30 min)
-18. **Test error_handling_test.go** - Run and verify all tests pass (10 min)
-19. **Test detection_methods_test.go** - Run and verify all tests pass (10 min)
+~~18. **Test error_handling_test.go** - Run and verify all tests pass (10 min)~~ done — the full suite is green (go test ./...)
+~~19. **Test detection_methods_test.go** - Run and verify all tests pass (10 min)~~ done — the full suite is green (go test ./...)
 20. **Test filter_features_test.go** - Run and verify all tests pass (10 min)
 
 ### MEDIUM TERM (Next Sprint) - Architecture
@@ -1567,8 +1567,8 @@ This refactoring session is **COMPLETE** when:
 1. ✅ Original `:=` error fixed
 2. ✅ All dead code removed
 3. ✅ testutil enhanced with necessary helpers
-4. ✅ File Targeting Scenarios refactored
-5. ✅ Integration Scenarios refactored
+~~4. ✅ File Targeting Scenarios refactored~~ done — the BDD suite is green today (bdd/)
+~~5. ✅ Integration Scenarios refactored~~ done — the BDD suite is green today (bdd/)
 6. ✅ All tests passing (100% success rate)
 7. ✅ No compilation errors
 8. ✅ Comprehensive documentation created

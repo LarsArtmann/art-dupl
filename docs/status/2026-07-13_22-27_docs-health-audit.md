@@ -13,7 +13,7 @@
 | #  | File                 | Finding                                                                                                               | Fix Applied                                                                         |
 | -- | -------------------- | --------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
 | 1  | `FEATURES.md`        | Threshold default said 15 → actual is 5 (`config.DefaultThreshold = 5`)                                               | Fixed to "default: 5"                                                               |
-| 2  | `FEATURES.md`        | Cache row said "SHA1 keys" → actual is SHA-256 (`crypto/sha256`)                                                      | Fixed to "SHA-256 content hashing"                                                  |
+| ~~2~~ **superseded — docs/MIGRATION_QUICK_START.md no longer exists (verified 2026-11-14)** |~~`FEATURES.md`~~|~~Cache row said "SHA1 keys" → actual is SHA-256 (`crypto/sha256`)~~|~~Fixed to "SHA-256 content hashing"~~|
 | 3  | `FEATURES.md`        | Said "10 non-actionable patterns" → actual is 15 pattern functions                                                    | Fixed to "15 non-actionable patterns" with full list                                |
 | 4  | `FEATURES.md`        | Fuzz tests claimed in `fuzz/` directory → no such dir exists                                                          | Fixed to "Fuzz tests for templ parser and suffix tree"                              |
 | 5  | `FEATURES.md`        | Quick Reference showed removed `--since HEAD~10`                                                                      | Removed `--since` line                                                              |
@@ -28,7 +28,7 @@
 | 14 | `HOW_TO_USE.md`      | Wrong template paths: `.github/workflows/art-dupl-check.yml` → actual: `templates/github-actions-duplicate-check.yml` | Fixed both paths                                                                    |
 | 15 | `TESTING.md`         | All commands used `just` (5 commands) → no justfile exists                                                            | Replaced all with `go test`, `go tool cover`, `nix flake check` equivalents         |
 | 16 | `README.md`          | Said "12+ boilerplate patterns" → actual is 15                                                                        | Fixed to "15 boilerplate patterns"                                                  |
-| 17 | `CHANGELOG.md`       | `[Unreleased]` missing entire July sprint (14+ changes)                                                               | Added Added/Changed/Removed sections covering all July work                         |
+| ~~17~~ **done — the three plan docs were deleted from docs/ (verified 2026-11-14)** |~~`CHANGELOG.md`~~|~~`[Unreleased]` missing entire July sprint (14+ changes)~~|~~Added Added/Changed/Removed sections covering all July work~~|
 | 18 | `CHANGELOG.md`       | Footer date said "2026-06-12"                                                                                         | Updated to 2026-07-13                                                               |
 | 19 | `AGENTS.md`          | Missing `GOEXPERIMENT=jsonv2` requirement (non-obvious build blocker for non-Nix users)                               | Added warning block with env var, `omitzero` convention, `format:nano` for Duration |
 | 20 | `TODO_LIST.md`       | "Last Updated: 2026-07-01"                                                                                            | Updated to 2026-07-13                                                               |
@@ -45,7 +45,7 @@ These issues were discovered during the self-review phase (after the initial fix
 | # | File                       | Issue                                                                                                                                                               | Why Not Fixed                       |
 | - | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------- |
 | 1 | `CONTRIBUTING.md`          | 5 `just` command references (`just ci`, `just build`, `just test`, `just check`) — no justfile exists                                                               | Discovered in post-audit sweep      |
-| 2 | `MIGRATION_QUICK_START.md` | `just build` reference — no justfile exists                                                                                                                         | Discovered in post-audit sweep      |
+| ~~2~~ **superseded — docs/MIGRATION_QUICK_START.md no longer exists (verified 2026-11-14)** |~~`MIGRATION_QUICK_START.md`~~|~~`just build` reference — no justfile exists~~|~~Discovered in post-audit sweep~~|
 | 3 | `HOW_TO_USE.md`            | GitHub Actions example uses `go-version: "1.21"` — project requires Go 1.26+ with `GOEXPERIMENT=jsonv2`                                                             | Discovered in post-audit sweep      |
 | 4 | `docs/feedback/`           | `2026-07-09-semantic-noise-declaration-files.md` not marked as "IMPLEMENTED" despite all recommendations being shipped                                              | Discovered, not fixed               |
 | 5 | Cross-file consistency     | Output format count discrepancy: README lists 7 (incl. Rich-text, excl. CSV); FEATURES lists 7 (excl. Rich-text as separate, incl. CSV). Actual count is ambiguous. | Discovered, needs design decision   |
@@ -58,7 +58,7 @@ These issues were discovered during the self-review phase (after the initial fix
 | # | Task                                                                                                                                                      | Why Not Started                                        |
 | - | --------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
 | 1 | Fix `CONTRIBUTING.md` `just` → `go`/`nix` commands                                                                                                        | Discovered after initial fixes                         |
-| 2 | Fix `MIGRATION_QUICK_START.md` `just build`                                                                                                               | Discovered after initial fixes                         |
+| ~~2~~ **superseded — docs/MIGRATION_QUICK_START.md no longer exists (verified 2026-11-14)** |~~Fix `MIGRATION_QUICK_START.md` `just build`~~|~~Discovered after initial fixes~~|
 | 3 | Fix `HOW_TO_USE.md` Go version in GitHub Actions example (1.21 → 1.26+)                                                                                   | Discovered after initial fixes                         |
 | 4 | Mark `docs/feedback/2026-07-09-semantic-noise-declaration-files.md` as "IMPLEMENTED"                                                                      | Need to update the feedback doc status                 |
 | 5 | Resolve output format count discrepancy (README vs FEATURES: 7 vs 8, different sets)                                                                      | Needs decision: is Rich-text a "format" or a modifier? |
@@ -146,7 +146,7 @@ The status reports explicitly flagged that `docs/feedback/2026-07-09-semantic-no
 | # | Task                                                                                 | Effort |
 | - | ------------------------------------------------------------------------------------ | ------ |
 | 1 | Fix `CONTRIBUTING.md` — replace 5 `just` commands with `go`/`nix` equivalents        | 5 min  |
-| 2 | Fix `MIGRATION_QUICK_START.md` — replace `just build`                                | 2 min  |
+| ~~2~~ **superseded — docs/MIGRATION_QUICK_START.md no longer exists (verified 2026-11-14)** |~~Fix `MIGRATION_QUICK_START.md` — replace `just build`~~|~~2 min~~|
 | 3 | Fix `HOW_TO_USE.md` GitHub Actions example — Go 1.21 → 1.26+ + `GOEXPERIMENT=jsonv2` | 5 min  |
 | 4 | Mark `docs/feedback/2026-07-09-semantic-noise-declaration-files.md` as "IMPLEMENTED" | 5 min  |
 | 5 | Run `go build ./...` to verify nothing broke from this session                       | 2 min  |
@@ -171,7 +171,7 @@ The status reports explicitly flagged that `docs/feedback/2026-07-09-semantic-no
 | #  | Task                                                                                               | Effort |
 | -- | -------------------------------------------------------------------------------------------------- | ------ |
 | 16 | Archive stale SIMD docs (5 files) to `docs/archive/` or `trash` them                               | 10 min |
-| 17 | Archive `docs/EXECUTION_PLAN.md`, `docs/IMPROVEMENT_PLAN.md`, `docs/MODERNIZATION_FINAL_REPORT.md` | 10 min |
+| ~~17~~ **done — the three plan docs were deleted from docs/ (verified 2026-11-14)** |~~Archive `docs/EXECUTION_PLAN.md`, `docs/IMPROVEMENT_PLAN.md`, `docs/MODERNIZATION_FINAL_REPORT.md`~~|~~10 min~~|
 | 18 | Audit `USAGE.md` for stale references (old flag names, removed features)                           | 15 min |
 | 19 | Audit `PARTS.md` for stale references                                                              | 10 min |
 | 20 | Audit `WHAT_THIS_PROJECT_IS_NOT.md` for accuracy                                                   | 10 min |
@@ -179,7 +179,7 @@ The status reports explicitly flagged that `docs/feedback/2026-07-09-semantic-no
 | 22 | Check `docs/enum-consolidation-plan.md` — was this completed?                                      | 10 min |
 | 23 | Check `docs/code-quality-improvements-2026-01-31.md` — historical, archive?                        | 5 min  |
 | 24 | Check `docs/phase0-validation-safety-report.md` — historical, archive?                             | 5 min  |
-| 25 | Check `docs/STATICPOOL_PERFORMANCE_ANALYSIS.md` — still relevant?                                  | 10 min |
+| ~~25~~ **superseded — docs/STATICPOOL_PERFORMANCE_ANALYSIS.md no longer exists (verified 2026-11-14)** |~~Check `docs/STATICPOOL_PERFORMANCE_ANALYSIS.md` — still relevant?~~|~~10 min~~|
 | 26 | Update `FEATURES.md` architecture row for `errors/` — says "6 error types" verify count            | 5 min  |
 | 27 | Verify "4 priority levels" claim in FEATURES                                                       | 2 min  |
 | 28 | Check `docs/ARCHITECTURE_REVIEW*.md` — 2 files, are these current?                                 | 10 min |
@@ -191,14 +191,14 @@ The status reports explicitly flagged that `docs/feedback/2026-07-09-semantic-no
 | 29 | Add `--include-generated` override semantics to DOMAIN_LANGUAGE.md (surprising behavior)                                             | 10 min |
 | 30 | Add `sendCtx` pattern and context propagation to DOMAIN_LANGUAGE.md                                                                  | 10 min |
 | 31 | Add `CloneNode` DTO concept to DOMAIN_LANGUAGE.md                                                                                    | 5 min  |
-| 32 | Update ROADMAP.md with feedback-derived ideas (baseline UX, linter-mandated boilerplate detection, token-tier classification)        | 15 min |
+| ~~32~~ **not-do — the feedback ideas never reached ROADMAP** |~~Update ROADMAP.md with feedback-derived ideas (baseline UX, linter-mandated boilerplate detection, token-tier classification)~~|~~15 min~~|
 | 33 | Add `--explain` flag idea to ROADMAP.md                                                                                              | 5 min  |
 | 34 | Add `--min-lines` flag idea to ROADMAP.md                                                                                            | 5 min  |
 | 35 | Add `--no-boilerplate-filter` flag idea to ROADMAP.md                                                                                | 5 min  |
 | 36 | Add `--aggressive`/`--sensitive` preset flags to ROADMAP.md                                                                          | 5 min  |
 | 37 | Add interface-method-aware suppression idea to ROADMAP.md                                                                            | 5 min  |
 | 38 | Add shared-type-reference suppression idea to ROADMAP.md                                                                             | 5 min  |
-| 39 | Add mutex-pattern recognition idea to ROADMAP.md                                                                                     | 5 min  |
+| ~~39~~ **not-do — the mutex-pattern idea never reached ROADMAP** |~~Add mutex-pattern recognition idea to ROADMAP.md~~|~~5 min~~|
 | 40 | Consider removing `branching-flow-*.md` and `BENCHMARK_COMPARISON.md` from root (clutter)                                            | 5 min  |
 | 41 | Consider removing `BDD_TESTS_REVIEW.md` from root (historical, clutter)                                                              | 5 min  |
 | 42 | `docs/DOMAIN_LANGUAGE.md` Severity entry says "collapsed into ClonePriority" but Events/Commands tables still reference old concepts | 10 min |
@@ -207,7 +207,7 @@ The status reports explicitly flagged that `docs/feedback/2026-07-09-semantic-no
 | 45 | Add threshold floor enforcement (`< 3` rejected) to TODO_LIST.md                                                                     | 5 min  |
 | 46 | Add `buildMatch` partial-match rendering fix to TODO_LIST.md                                                                         | 5 min  |
 | 47 | Add regression test for ValueSpec-as-Statement to TODO_LIST.md                                                                       | 5 min  |
-| 48 | Add ADR for threshold change (1→5)                                                                                                   | 20 min |
+| ~~48~~ **done — docs/adr/0009-default-threshold-change.md carries the threshold decision** |~~Add ADR for threshold change (1→5)~~|~~20 min~~|
 | 49 | Add ADR for json/v2 migration decision                                                                                               | 20 min |
 | 50 | Schedule periodic docs-health audit (monthly) to prevent drift accumulation                                                          | 5 min  |
 

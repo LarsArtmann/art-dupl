@@ -144,8 +144,8 @@ Grouped by theme, rough priority order within each group.
 3. HTML report: show `non_actionable_pattern` badge on suppressed clones
 4. YAML config file support (`--config config.yaml`) alongside JSON
 5. `--explain` for JSON: structured `explanation` object, not just the pattern string
-6. SARIF: emit actionability pattern as `rule.tags` + `rule.id`
-7. SARIF: emit clone type as a rule property
+~~6. SARIF: emit actionability pattern as `rule.tags` + `rule.id`~~ done — SARIF results carry the art-dupl metadata namespace (AGENTS.md go-finding adapter)
+~~7. SARIF: emit clone type as a rule property~~ done — SARIF results carry the art-dupl metadata namespace (AGENTS.md)
 
 ### F2. Testing & verification
 
@@ -176,10 +176,10 @@ Grouped by theme, rough priority order within each group.
 
 27. Split `printer/` into sub-packages (TODO #26-30) — blocked by circular dep on `StatsPrinter`
 28. Move `Printer`/`ReadFile`/`StatsPrinter` to `printer/base/`
-29. Extract HTML printer to `printer/html/`
-30. Extract JSON printer to `printer/json/`
-31. Extract text printer to `printer/text/`
-32. Extract SARIF printer to `printer/sarif/`
+~~29. Extract HTML printer to `printer/html/`~~ not-do — printer/html stayed at the root (AGENTS.md)
+~~30. Extract JSON printer to `printer/json/`~~ not-do — printer/json stayed at the root (AGENTS.md)
+~~31. Extract text printer to `printer/text/`~~ not-do — printer/text stayed at the root (AGENTS.md)
+~~32. Extract SARIF printer to `printer/sarif/`~~ not-do — printer/sarif stayed at the root (AGENTS.md)
 33. Decouple `actionability.go` from `syntax.Node` via `domain.ProcessedClone` (TODO #32)
 34. Eliminate `printer.simpleJSONClone` — fold into `JSONClone` (TODO #33)
 35. Add `context.Context` to `Printer` interface methods (TODO #34)
@@ -189,7 +189,7 @@ Grouped by theme, rough priority order within each group.
 
 37. Update AGENTS.md "Lint config" note to warn about the daemon reversion cycle + that `nix build .#disabled-linters` is authoritative
 38. HOW_TO_USE.md: add `--explain --json` example showing the `non_actionable_pattern` field
-39. `docs/ACTIONABILITY_PATTERNS.md`: cross-reference the JSON field name
+~~39. `docs/ACTIONABILITY_PATTERNS.md`: cross-reference the JSON field name~~ not-do — the doc does not name the JSON field yet (verified 2026-11-14)
 40. ADR-0017 (or next number): formalize `NonActionablePattern` as `string` in domain
 41. ROADMAP.md: reflect closed gaps + reprioritize
 
