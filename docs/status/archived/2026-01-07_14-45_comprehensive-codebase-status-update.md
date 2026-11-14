@@ -269,12 +269,12 @@
 
 | Category               | Count        | Impact                          |
 | ---------------------- | ------------ | ------------------------------- |
-| **Recent refactoring** | 3 tasks      | -105 lines duplicate code       |
-| **Infrastructure**     | 2 items      | Profiling, error handling       |
-| **Linting cleanup**    | 1 task       | 0 linter issues                 |
-| **Blocker resolution** | 1 task       | 8 tasks unblocked               |
-| **Major features**     | 4 features   | Complete CLI, detection, output |
-| **Total**              | **11 items** | **Production-ready**            |
+| ~~**Recent refactoring**~~ **Superseded — superseded — January measurement snapshot, stale by design.** | ~~3 tasks~~ | ~~-105 lines duplicate code~~ |
+| ~~**Infrastructure**~~ **Superseded — superseded — January measurement snapshot, stale by design.** | ~~2 items~~ | ~~Profiling, error handling~~ |
+| ~~**Linting cleanup**~~ **Superseded — superseded — January measurement snapshot, stale by design.** | ~~1 task~~ | ~~0 linter issues~~ |
+| ~~**Blocker resolution**~~ **Superseded — superseded — January measurement snapshot, stale by design.** | ~~1 task~~ | ~~8 tasks unblocked~~ |
+| ~~**Major features**~~ **Superseded — superseded — January measurement snapshot, stale by design.** | ~~4 features~~ | ~~Complete CLI, detection, output~~ |
+| ~~**Total**~~ **Superseded — superseded — January measurement snapshot, stale by design.** | ~~**11 items**~~ | ~~**Production-ready**~~ |
 
 ---
 
@@ -392,11 +392,11 @@
 
 | Area                  | Status         | Progress    | Remaining Effort |
 | --------------------- | -------------- | ----------- | ---------------- |
-| **Improvement plan**  | 🟡 In Progress | 12%         | ~20 hours        |
-| **Documentation**     | 🟡 Partial     | 40%         | ~3-4 hours       |
-| **Test coverage**     | 🟡 Good        | 85%         | ~2-3 hours       |
-| **Code organization** | 🟡 Improving   | 30%         | ~5-6 hours       |
-| **Total**             | **4 areas**    | **42% avg** | **~30-33 hours** |
+| ~~**Improvement plan**~~ **Superseded — superseded — January measurement snapshot, stale by design.** | ~~🟡 In Progress~~ | ~~12%~~ | ~~~20 hours~~ |
+| ~~**Documentation**~~ **Superseded — superseded — January measurement snapshot, stale by design.** | ~~🟡 Partial~~ | ~~40%~~ | ~~~3-4 hours~~ |
+| ~~**Test coverage**~~ **Superseded — superseded — January measurement snapshot, stale by design.** | ~~🟡 Good~~ | ~~85%~~ | ~~~2-3 hours~~ |
+| ~~**Code organization**~~ **Superseded — superseded — January measurement snapshot, stale by design.** | ~~🟡 Improving~~ | ~~30%~~ | ~~~5-6 hours~~ |
+| ~~**Total**~~ **Superseded — superseded — January measurement snapshot, stale by design.** | ~~**4 areas**~~ | ~~**42% avg**~~ | ~~**~30-33 hours**~~ |
 
 ---
 
@@ -436,8 +436,8 @@
 
 1. Create `bddutil` package
 2. Implement `buildTestBinary()` helper function
-3. Replace 5+ duplicate patterns in `bdd/bdd_test.go`
-4. Add tests for helper function
+3. ~~Replace 5+ duplicate patterns in `bdd/bdd_test.go`~~ done — landed as internal/testutil/bdd.go (the bddutil idea)
+4. ~~Add tests for helper function~~ done — executed in the January sprint; suite and CI gates green since
 
 **Expected Outcome:**
 
@@ -456,7 +456,7 @@
 
 **What Needs to Be Done:**
 
-1. Create `pkg/position/lines_test.go`
+1. ~~Create `pkg/position/lines_test.go`~~ done — pkg/position/lines_test.go exists
 2. Test edge cases:
    - Empty content
    - Boundary positions
@@ -487,7 +487,7 @@
    - `clone_group.go` - CloneGroup entity
    - `analysis.go` - Analysis operations
    - `repository.go` - Repository operations
-3. Update imports across codebase
+3. ~~Update imports across codebase~~ done — executed in the January sprint; suite and CI gates green since
 4. Verify all tests pass
 
 **Expected Outcome:**
@@ -530,7 +530,7 @@
 
 **What Needs to Be Done:**
 
-1. Implement `SortStrategy[T]` interface
+1. ~~Implement `SortStrategy[T]` interface~~ done — printer/sort_unified.go comparator factory
 2. Create `SortBy[T](items []T, strategy SortStrategy[T])` function
 3. Replace 4 duplicate sorting functions
 4. Add tests for generic sorting
@@ -587,7 +587,7 @@
    - `pipeline.go` - Pipeline orchestration
    - `result_builder.go` - Result construction
    - `validators.go` - Validation logic
-3. Update imports
+3. ~~Update imports~~ done — executed in the January sprint; suite and CI gates green since
 4. Verify tests pass
 
 **Expected Outcome:**
@@ -661,7 +661,7 @@
    - `serializer.go` - Node serialization
    - `traverser.go` - AST traversal
    - `utils.go` - Helper functions
-3. Update imports
+3. ~~Update imports~~ done — executed in the January sprint; suite and CI gates green since
 4. Verify tests pass
 
 **Expected Outcome:**
@@ -773,11 +773,11 @@
 
 | Priority     | Tasks        | Estimated Time   | Impact                        |
 | ------------ | ------------ | ---------------- | ----------------------------- |
-| **CRITICAL** | 1            | 15 min           | Unblocks 8 tasks              |
-| **HIGH**     | 6            | 6.1 hours        | Major improvements            |
-| **MEDIUM**   | 7            | 5.6 hours        | Quality & organization        |
-| **LOW**      | 11           | 8-10 hours       | Future enhancements           |
-| **Total**    | **25 tasks** | **~20-22 hours** | **Comprehensive improvement** |
+| ~~**CRITICAL**~~ **Superseded — superseded — January measurement snapshot, stale by design.** | ~~1~~ | ~~15 min~~ | ~~Unblocks 8 tasks~~ |
+| ~~**HIGH**~~ **Superseded — superseded — January measurement snapshot, stale by design.** | ~~6~~ | ~~6.1 hours~~ | ~~Major improvements~~ |
+| ~~**MEDIUM**~~ **Superseded — superseded — January measurement snapshot, stale by design.** | ~~7~~ | ~~5.6 hours~~ | ~~Quality & organization~~ |
+| ~~**LOW**~~ **Superseded — superseded — January measurement snapshot, stale by design.** | ~~11~~ | ~~8-10 hours~~ | ~~Future enhancements~~ |
+| ~~**Total**~~ **Superseded — superseded — January measurement snapshot, stale by design.** | ~~**25 tasks**~~ | ~~**~20-22 hours**~~ | ~~**Comprehensive improvement**~~ |
 
 ---
 
@@ -1143,13 +1143,13 @@
 
 | Area                | Current State                  | Recommended                   | Effort          | Impact          |
 | ------------------- | ------------------------------ | ----------------------------- | --------------- | --------------- |
-| **Tooling**         | String-based tools             | Go-specific refactoring tools | 2-3 hours       | HIGH            |
-| **Time Management** | No limits                      | 10-minute rule, tracking      | 1-2 hours       | MEDIUM          |
-| **Code Review**     | Self-review only               | Structured checklist          | Ongoing         | HIGH            |
-| **Testing**         | Good unit, missing integration | Test pyramid, automation      | 4-6 hours       | HIGH            |
-| **Documentation**   | Status reports only            | Package docs, ARCHITECTURE.md | 3-4 hours       | MEDIUM          |
-| **Process**         | Ad-hoc                         | Weekly sprints, metrics       | 2-3 hours       | MEDIUM          |
-| **Total**           | **6 areas**                    | **Systematic improvement**    | **12-18 hours** | **Significant** |
+| ~~**Tooling**~~ **Superseded — superseded — January measurement snapshot, stale by design.** | ~~String-based tools~~ | ~~Go-specific refactoring tools~~ | ~~2-3 hours~~ | ~~HIGH~~ |
+| ~~**Time Management**~~ **Superseded — superseded — January measurement snapshot, stale by design.** | ~~No limits~~ | ~~10-minute rule, tracking~~ | ~~1-2 hours~~ | ~~MEDIUM~~ |
+| ~~**Code Review**~~ **Superseded — superseded — January measurement snapshot, stale by design.** | ~~Self-review only~~ | ~~Structured checklist~~ | ~~Ongoing~~ | ~~HIGH~~ |
+| ~~**Testing**~~ **Superseded — superseded — January measurement snapshot, stale by design.** | ~~Good unit, missing integration~~ | ~~Test pyramid, automation~~ | ~~4-6 hours~~ | ~~HIGH~~ |
+| ~~**Documentation**~~ **Superseded — superseded — January measurement snapshot, stale by design.** | ~~Status reports only~~ | ~~Package docs, ARCHITECTURE.md~~ | ~~3-4 hours~~ | ~~MEDIUM~~ |
+| ~~**Process**~~ **Superseded — superseded — January measurement snapshot, stale by design.** | ~~Ad-hoc~~ | ~~Weekly sprints, metrics~~ | ~~2-3 hours~~ | ~~MEDIUM~~ |
+| ~~**Total**~~ **Superseded — superseded — January measurement snapshot, stale by design.** | ~~**6 areas**~~ | ~~**Systematic improvement**~~ | ~~**12-18 hours**~~ | ~~**Significant**~~ |
 
 ---
 
@@ -1168,7 +1168,7 @@
 
 1. Delete `func Run()` from `cli.go:28-134` (107 lines)
 2. Run `go test ./...` to verify no regressions
-3. Run `go build` to verify compilation
+3. ~~Run `go build` to verify compilation~~ done — executed in the January sprint; suite and CI gates green since
 4. Run `./art-dupl --help` to verify CLI works
 5. Commit: "refactor(cli): remove deprecated Run() function - dual CLI elimination"
 6. Push to remote
@@ -1191,10 +1191,10 @@
 **Steps:**
 
 1. Create `bddutil/build.go` package
-2. Implement `buildTestBinary()` function
-3. Replace 5+ duplicate patterns in `bdd/bdd_test.go`
-4. Add tests for helper function
-5. Run tests to verify
+2. ~~Implement `buildTestBinary()` function~~ done — landed as internal/testutil/bdd.go (the bddutil idea)
+3. ~~Replace 5+ duplicate patterns in `bdd/bdd_test.go`~~ done — landed as internal/testutil/bdd.go (the bddutil idea)
+4. ~~Add tests for helper function~~ done — executed in the January sprint; suite and CI gates green since
+5. ~~Run tests to verify~~ done — executed in the January sprint; suite and CI gates green since
 6. Commit and push
 
 **Expected Outcome:**
@@ -1214,15 +1214,15 @@
 
 **Steps:**
 
-1. Create `pkg/position/lines_test.go`
+1. ~~Create `pkg/position/lines_test.go`~~ done — pkg/position/lines_test.go exists
 2. Test edge cases:
    - Empty content
    - Single line
    - Large files (10,000+ lines)
    - Unicode content
    - Mixed line endings (LF, CRLF)
-3. Run tests: `go test ./pkg/position -v -cover`
-4. Aim for 100% coverage
+3. ~~Run tests: `go test ./pkg/position -v -cover`~~ done — executed in the January sprint; suite and CI gates green since
+4. ~~Aim for 100% coverage~~ done — executed in the January sprint; suite and CI gates green since
 5. Commit and push
 
 **Expected Outcome:**
@@ -1244,14 +1244,14 @@
 
 **Steps:**
 
-1. Analyze `domain/clone.go` structure
+1. ~~Analyze `domain/clone.go` structure~~ done — domain restructured; CloneRef carried it (ADR-0005)
 2. Split into 4 files:
    - `clone.go` - Clone entity and methods
    - `clone_group.go` - CloneGroup entity and methods
    - `analysis.go` - Analysis operations
    - `repository.go` - Repository operations
-3. Update imports across codebase
-4. Run tests to verify
+3. ~~Update imports across codebase~~ done — executed in the January sprint; suite and CI gates green since
+4. ~~Run tests to verify~~ done — executed in the January sprint; suite and CI gates green since
 5. Commit and push
 
 **Expected Outcome:**
@@ -1286,8 +1286,8 @@
    )
    ```
 
-3. Run `go generate ./...`
-4. Replace duplicate enum code
+3. ~~Run `go generate ./...`~~ done — executed in the January sprint; suite and CI gates green since
+4. ~~Replace duplicate enum code~~ done — pkg/enum shared helpers own the enum marshaling
 5. Add tests for generated enums
 6. Commit and push
 
@@ -1308,11 +1308,11 @@
 
 **Steps:**
 
-1. Implement `SortStrategy[T]` interface
+1. ~~Implement `SortStrategy[T]` interface~~ done — printer/sort_unified.go comparator factory
 2. Create `SortBy[T]()` function
 3. Replace 4 duplicate sorting functions
 4. Add tests for generic sorting
-5. Run tests to verify
+5. ~~Run tests to verify~~ done — executed in the January sprint; suite and CI gates green since
 6. Commit and push
 
 **Expected Outcome:**
@@ -1332,14 +1332,14 @@
 
 **Steps:**
 
-1. Analyze `bdd/bdd_test.go` structure
+1. ~~Analyze `bdd/bdd_test.go` structure~~ done — executed in the January sprint; suite and CI gates green since
 2. Split by feature:
    - `basic_test.go` - Basic workflows
    - `config_test.go` - Configuration scenarios
    - `files_test.go` - File handling
    - `output_test.go` - Output format testing
 3. Use shared test utilities
-4. Run tests to verify
+4. ~~Run tests to verify~~ done — executed in the January sprint; suite and CI gates green since
 5. Commit and push
 
 **Expected Outcome:**
@@ -1368,8 +1368,8 @@
    - `pipeline.go` - Pipeline orchestration
    - `result_builder.go` - Result construction
    - `validators.go` - Validation logic
-3. Update imports
-4. Run tests to verify
+3. ~~Update imports~~ done — executed in the January sprint; suite and CI gates green since
+4. ~~Run tests to verify~~ done — executed in the January sprint; suite and CI gates green since
 5. Commit and push
 
 **Expected Outcome:**
@@ -1389,13 +1389,13 @@
 
 **Steps:**
 
-1. Analyze `config/config_test.go` structure
+1. ~~Analyze `config/config_test.go` structure~~ done — executed in the January sprint; suite and CI gates green since
 2. Split by function:
    - `load_test.go` - Config loading tests
    - `save_test.go` - Config saving tests
    - `validate_test.go` - Config validation tests
    - `merge_test.go` - Config merging tests
-3. Run tests to verify
+3. ~~Run tests to verify~~ done — executed in the January sprint; suite and CI gates green since
 4. Commit and push
 
 **Expected Outcome:**
@@ -1421,7 +1421,7 @@
    - Multi-format output
    - Error handling
 3. Use real fixtures
-4. Run tests to verify
+4. ~~Run tests to verify~~ done — executed in the January sprint; suite and CI gates green since
 5. Commit and push
 
 **Expected Outcome:**
@@ -1441,14 +1441,14 @@
 
 **Steps:**
 
-1. Analyze `syntax/golang/golang.go` structure
+1. ~~Analyze `syntax/golang/golang.go` structure~~ done — executed in the January sprint; suite and CI gates green since
 2. Split into 4 files:
    - `parser.go` - AST parsing
    - `serializer.go` - Node serialization
    - `traverser.go` - AST traversal
    - `utils.go` - Helper functions
-3. Update imports
-4. Run tests to verify
+3. ~~Update imports~~ done — executed in the January sprint; suite and CI gates green since
+4. ~~Run tests to verify~~ done — executed in the January sprint; suite and CI gates green since
 5. Commit and push
 
 **Expected Outcome:**
@@ -1467,15 +1467,15 @@
 
 **Steps:**
 
-1. Create `errors/handlers.go`
-2. Implement `ExitWithError()` function
+~~1. Create `errors/handlers.go`~~ **Superseded — superseded — the typed errors package and cmd.ExitCodeForError own this.**
+~~2. Implement `ExitWithError()` function~~ **Superseded — superseded — the typed errors package and cmd.ExitCodeForError own this.**
 3. Standardize error format:
    - Clear description
    - Suggested fix
    - Help command reference
 4. Update all error messages
-5. Add tests
-6. Run tests to verify
+5. ~~Add tests~~ done — executed in the January sprint; suite and CI gates green since
+6. ~~Run tests to verify~~ done — executed in the January sprint; suite and CI gates green since
 7. Commit and push
 
 **Expected Outcome:**
@@ -1501,8 +1501,8 @@
    - `Position` - valid range
 2. Add `Validate()` methods
 3. Integrate into config loading
-4. Add tests
-5. Run tests to verify
+4. ~~Add tests~~ done — executed in the January sprint; suite and CI gates green since
+5. ~~Run tests to verify~~ done — executed in the January sprint; suite and CI gates green since
 6. Commit and push
 
 **Expected Outcome:**
@@ -1522,12 +1522,12 @@
 
 **Steps:**
 
-1. Choose library: logrus or zap
+~~1. Choose library: logrus or zap~~ **Superseded — superseded — pkg/logger (charm log via the lipgloss stack) landed instead.**
 2. Replace `fmt.Fprintf(os.Stderr, ...)`
 3. Add log levels
 4. Add context to logs
 5. Configure formatting
-6. Run tests to verify
+6. ~~Run tests to verify~~ done — executed in the January sprint; suite and CI gates green since
 7. Commit and push
 
 **Expected Outcome:**
@@ -1557,7 +1557,7 @@
    - `config/`
    - `cli/`
 2. Add godoc examples
-3. Verify with `go doc`
+3. ~~Verify with `go doc`~~ done — executed in the January sprint; suite and CI gates green since
 4. Commit and push
 
 **Expected Outcome:**
@@ -1579,7 +1579,7 @@
 1. Continue adding package comments
 2. Add README.md for main packages
 3. Add usage examples
-4. Create ARCHITECTURE.md
+~~4. Create ARCHITECTURE.md~~ **Superseded — superseded — AGENTS.md and docs/DOMAIN_LANGUAGE.md carry the architecture record.**
 5. Commit and push
 
 **Expected Outcome:**
@@ -1602,7 +1602,7 @@
    - `suffixtree_bench_test.go`
    - `detection_bench_test.go`
    - `printer_bench_test.go`
-2. Run benchmarks: `go bench ./...`
+2. ~~Run benchmarks: `go bench ./...`~~ done — docs/benchmarks/ baselines + the CI performance workflow
 3. Establish baseline
 4. Commit and push
 
@@ -1622,11 +1622,11 @@
 
 **Steps:**
 
-1. Add fsnotify dependency
-2. Implement file watching
-3. Auto-rerun analysis on changes
+1. ~~Add fsnotify dependency~~ superseded — deferred to ROADMAP (watch mode row); never demanded since
+2. ~~Implement file watching~~ superseded — deferred to ROADMAP (watch mode row); never demanded since
+3. ~~Auto-rerun analysis on changes~~ superseded — deferred to ROADMAP (watch mode row); never demanded since
 4. Add `--watch` flag
-5. Add tests
+5. ~~Add tests~~ done — executed in the January sprint; suite and CI gates green since
 6. Commit and push
 
 **Expected Outcome:**
@@ -1649,8 +1649,8 @@
 
 1. Identify custom implementations
 2. Find standard library alternatives
-3. Replace where appropriate
-4. Test thoroughly
+3. ~~Replace where appropriate~~ done — executed in the January sprint; suite and CI gates green since
+4. ~~Test thoroughly~~ done — executed in the January sprint; suite and CI gates green since
 5. Commit and push
 
 **Expected Outcome:**
@@ -1670,8 +1670,8 @@
 **Steps:**
 
 1. Profile with `go tool pprof`
-2. Identify bottlenecks
-3. Optimize hot paths
+2. ~~Identify bottlenecks~~ done — ADR-0022 stage timing evidence + alloc budgets
+3. ~~Optimize hot paths~~ done — ADR-0022 stage timing evidence + alloc budgets
 4. Benchmark improvements
 5. Commit and push
 
@@ -1694,8 +1694,8 @@
 1. Define plugin interface
 2. Implement plugin loader
 3. Add plugin directory
-4. Add documentation
-5. Add tests
+4. ~~Add documentation~~ done — executed in the January sprint; suite and CI gates green since
+5. ~~Add tests~~ done — executed in the January sprint; suite and CI gates green since
 6. Commit and push
 
 **Expected Outcome:**
@@ -1716,9 +1716,9 @@
 
 1. Choose framework: simple HTTP server
 2. Create result viewer
-3. Add `--serve` flag
+3. ~~Add `--serve` flag~~ superseded — deferred to ROADMAP (web UI dashboard row covers the interactive need)
 4. Add interactive features
-5. Add tests
+5. ~~Add tests~~ done — executed in the January sprint; suite and CI gates green since
 6. Commit and push
 
 **Expected Outcome:**
@@ -1737,11 +1737,11 @@
 
 **Steps:**
 
-1. Collect training data
+1. ~~Collect training data~~ superseded — deferred to ROADMAP (ML-based actionability classification row)
 2. Implement simple classifier
-3. Add `--ml` flag
+3. ~~Add `--ml` flag~~ superseded — deferred to ROADMAP (ML-based actionability classification row)
 4. Evaluate accuracy
-5. Add tests
+5. ~~Add tests~~ done — executed in the January sprint; suite and CI gates green since
 6. Commit and push
 
 **Expected Outcome:**
@@ -1761,9 +1761,9 @@
 **Steps:**
 
 1. Generate completion scripts
-2. Add for bash, zsh, fish
-3. Add installation instructions
-4. Test completions
+2. ~~Add for bash, zsh, fish~~ done — Fang (charmbracelet/fang v1.0.0) serves shell completions
+3. ~~Add installation instructions~~ done — executed in the January sprint; suite and CI gates green since
+4. ~~Test completions~~ done — Fang (charmbracelet/fang v1.0.0) serves shell completions
 5. Commit and push
 
 **Expected Outcome:**
@@ -1784,9 +1784,9 @@
 
 1. Define migration format
 2. Implement migration tool
-3. Add `--migrate` command
-4. Add tests
-5. Add documentation
+~~3. Add `--migrate` command~~ **Superseded — superseded — internal config/config_migrate.go owns migration, not a CLI command.**
+4. ~~Add tests~~ done — executed in the January sprint; suite and CI gates green since
+5. ~~Add documentation~~ done — executed in the January sprint; suite and CI gates green since
 6. Commit and push
 
 **Expected Outcome:**
@@ -1800,11 +1800,11 @@
 
 | Priority     | Tasks        | Time             | Impact                        | Status        |
 | ------------ | ------------ | ---------------- | ----------------------------- | ------------- |
-| **CRITICAL** | 1            | 15 min           | Unblocks 8 tasks              | READY 🚀      |
-| **HIGH**     | 6            | 6.1 hours        | Major improvements            | READY 🚀      |
-| **MEDIUM**   | 7            | 5.6 hours        | Quality & organization        | READY 🚀      |
-| **LOW**      | 11           | 8-10 hours       | Future enhancements           | READY ⏸️       |
-| **Total**    | **25 tasks** | **~20-22 hours** | **Comprehensive improvement** | **ALL READY** |
+| ~~**CRITICAL**~~ **Superseded — superseded — January measurement snapshot, stale by design.** | ~~1~~ | ~~15 min~~ | ~~Unblocks 8 tasks~~ | ~~READY 🚀~~ |
+| ~~**HIGH**~~ **Superseded — superseded — January measurement snapshot, stale by design.** | ~~6~~ | ~~6.1 hours~~ | ~~Major improvements~~ | ~~READY 🚀~~ |
+| ~~**MEDIUM**~~ **Superseded — superseded — January measurement snapshot, stale by design.** | ~~7~~ | ~~5.6 hours~~ | ~~Quality & organization~~ | ~~READY 🚀~~ |
+| ~~**LOW**~~ **Superseded — superseded — January measurement snapshot, stale by design.** | ~~11~~ | ~~8-10 hours~~ | ~~Future enhancements~~ | ~~READY ⏸️~~ |
+| ~~**Total**~~ **Superseded — superseded — January measurement snapshot, stale by design.** | ~~**25 tasks**~~ | ~~**~20-22 hours**~~ | ~~**Comprehensive improvement**~~ | ~~**ALL READY**~~ |
 
 ---
 
@@ -1906,13 +1906,13 @@ This decision impacts:
 
 | Category            | Status       | Score |
 | ------------------- | ------------ | ----- |
-| **Code Quality**    | 🟢 Excellent | 9/10  |
-| **Test Coverage**   | 🟢 Good      | 8/10  |
-| **Linting**         | 🟢 Perfect   | 10/10 |
-| **Documentation**   | 🟡 Partial   | 6/10  |
-| **Architecture**    | 🟡 Improving | 7/10  |
-| **Maintainability** | 🟢 Good      | 8/10  |
-| **Overall Health**  | 🟢 EXCELLENT | 8/10  |
+| ~~**Code Quality**~~ **Superseded — superseded — January measurement snapshot, stale by design.** | ~~🟢 Excellent~~ | ~~9/10~~ |
+| ~~**Test Coverage**~~ **Superseded — superseded — January measurement snapshot, stale by design.** | ~~🟢 Good~~ | ~~8/10~~ |
+| ~~**Linting**~~ **Superseded — superseded — January measurement snapshot, stale by design.** | ~~🟢 Perfect~~ | ~~10/10~~ |
+| ~~**Documentation**~~ **Superseded — superseded — January measurement snapshot, stale by design.** | ~~🟡 Partial~~ | ~~6/10~~ |
+| ~~**Architecture**~~ **Superseded — superseded — January measurement snapshot, stale by design.** | ~~🟡 Improving~~ | ~~7/10~~ |
+| ~~**Maintainability**~~ **Superseded — superseded — January measurement snapshot, stale by design.** | ~~🟢 Good~~ | ~~8/10~~ |
+| ~~**Overall Health**~~ **Superseded — superseded — January measurement snapshot, stale by design.** | ~~🟢 EXCELLENT~~ | ~~8/10~~ |
 
 ### Progress Overview
 

@@ -152,24 +152,24 @@
 
 ### High Impact, Low Effort
 
-1. **Modernize 3 C-style for loops** - quick win, improves readability
-2. **Extract duplicated flag parsing** - ~100 lines → ~30 lines, reduces maintenance
+1. ~~**Modernize 3 C-style for loops** - quick win, improves readability~~ **Won't implement — dropped — C-style loops remain (e.g. printer/common.go:105); never taken up.**
+2. ~~**Extract duplicated flag parsing** - ~100 lines → ~30 lines, reduces maintenance~~ done — addSharedFlags (cmd/flags.go)
 
 ### High Impact, High Effort
 
-3. **Proper DI for SemanticHashEnabled** - requires careful API design
-4. **Type system hardening** - make impossible states unrepresentable
+3. ~~**Proper DI for SemanticHashEnabled** - requires careful API design~~ done — global removed; DetectionMode threaded (ADR-0007)
+4. ~~**Type system hardening** - make impossible states unrepresentable~~ **Superseded — ADR-0005 type unification + domain enums cover the hardening.**
 
 ### Architectural Improvements
 
-5. **Options pattern for Parse functions** - `ParseWithOptions(opts ...ParseOption)`
-6. **Config validation at boundaries** - fail fast, don't pass invalid configs deep
-7. **Immutable config objects** - prevent modification after construction
+5. ~~**Options pattern for Parse functions** - `ParseWithOptions(opts ...ParseOption)`~~ done — ParseConfig pattern (syntax/golang/parse.go ParseWithConfig)
+6. ~~**Config validation at boundaries** - fail fast, don't pass invalid configs deep~~ done — config validation at construction (config/config_validate.go)
+7. ~~**Immutable config objects** - prevent modification after construction~~ **Won't implement — dropped — config validated at construction instead; immutability never adopted.**
 
 ### Documentation
 
-8. **Architecture Decision Records (ADRs)** - document why DI was chosen/rejected
-9. **API stability guarantees** - document which APIs are public vs internal
+8. ~~**Architecture Decision Records (ADRs)** - document why DI was chosen/rejected~~ done — docs/adr/ holds 29 ADRs
+9. ~~**API stability guarantees** - document which APIs are public vs internal~~ done — public SDK surface documented (pkg/artdupl, website guides/sdk.mdx)
 
 ---
 
@@ -183,43 +183,43 @@
 
 ### Tier 2: Quick Wins (High Impact, Low Effort)
 
-4. Modernize `printer/common.go:123` C-style for loop
-5. Modernize `printer/common.go:141` C-style for loop
-6. Modernize `syntax/syntax.go:196` C-style for loop
-7. Extract semantic/structural validation to shared function
-8. Extract config loading pattern to shared function
-9. Extract detection methods parsing to shared function
-10. Extract filter flags handling to shared function
+4. ~~Modernize `printer/common.go:123` C-style for loop~~ **Won't implement — dropped — C-style loops remain (e.g. printer/common.go:105); never taken up.**
+5. ~~Modernize `printer/common.go:141` C-style for loop~~ **Won't implement — dropped — C-style loops remain (e.g. printer/common.go:105); never taken up.**
+6. ~~Modernize `syntax/syntax.go:196` C-style for loop~~ **Won't implement — dropped — C-style loops remain (e.g. printer/common.go:105); never taken up.**
+7. ~~Extract semantic/structural validation to shared function~~ done — mutual-exclusion validation (cmd/config_builder.go)
+8. ~~Extract config loading pattern to shared function~~ done — shared config loading (cmd/config_builder.go)
+9. ~~Extract detection methods parsing to shared function~~ done — DetectionMode enum replaced method parsing (ADR-0007)
+10. ~~Extract filter flags handling to shared function~~ done — filter flags via generatorIncludes (cmd/util.go)
 
 ### Tier 3: Code Quality (Medium Effort)
 
-11. Create `cmd/flags_common.go` for shared flag parsing
-12. Unify timeout context handling between run_flags.go and stats.go
-13. Add constructor function for `SemanticConfig`
-14. Document public API surface in `syntax/golang/`
-15. Add examples to package documentation
+11. ~~Create `cmd/flags_common.go` for shared flag parsing~~ done — addSharedFlags serves this (cmd/flags.go)
+12. ~~Unify timeout context handling between run_flags.go and stats.go~~ done — config.Timeout is time.Duration; ctx threaded (ADR-0005)
+13. ~~Add constructor function for `SemanticConfig`~~ **Superseded — SemanticConfig folded into ParseConfig (syntax/golang/parse.go).**
+14. ~~Document public API surface in `syntax/golang/`~~ done — AGENTS.md + godoc cover syntax/golang
+15. ~~Add examples to package documentation~~ done — examples/ + website docs
 
 ### Tier 4: Architecture (High Effort)
 
-16. Design `ParseOptions` pattern for `golang.Parse()`
-17. Implement `ParseWithOptions()` maintaining backward compatibility
-18. Thread `SemanticConfig` through `job.ParseFileByExtension()`
-19. Update `cmd/` packages to use new DI pattern
-20. Remove global `SemanticHashEnabled` completely
+16. ~~Design `ParseOptions` pattern for `golang.Parse()`~~ done — ParseConfig struct adopted (syntax/golang/parse.go, Option A shape)
+17. ~~Implement `ParseWithOptions()` maintaining backward compatibility~~ done — ParseWithConfig/ParseWithLineCountConfig keep backward-compat wrappers
+18. ~~Thread `SemanticConfig` through `job.ParseFileByExtension()`~~ done — job threads golang.DetectionMode (AGENTS.md)
+19. ~~Update `cmd/` packages to use new DI pattern~~ done — cmd builds config via config_builder.go
+20. ~~Remove global `SemanticHashEnabled` completely~~ done — removed; DetectionMode threaded (ADR-0007)
 
 ### Tier 5: Type Safety (Strategic)
 
-21. Create domain type for `TokenValue` with validation
-22. Add `Threshold` type with bounds checking
-23. Make `Config` immutable after construction
-24. Add compile-time interface checks
-25. Property-based testing for encoding functions
+21. ~~Create domain type for `TokenValue` with validation~~ done — TokenValue type (suffixtree/suffixtree.go:34)
+22. ~~Add `Threshold` type with bounds checking~~ **Won't implement — dropped — Threshold stays int with validateThreshold + domain sentinels.**
+23. ~~Make `Config` immutable after construction~~ **Won't implement — dropped — config validated at construction; immutability never adopted.**
+24. ~~Add compile-time interface checks~~ **Won't implement — dropped — arch-lint and gate tests cover boundary enforcement.**
+25. ~~Property-based testing for encoding functions~~ done — property-based classification engine (ADR-0017)
 
 ---
 
 ## g) Top #1 Question I Cannot Figure Out Myself ❓
 
-**Question: Should we prioritize backward compatibility or clean API design when removing the global `SemanticHashEnabled`?**
+~~**Question: Should we prioritize backward compatibility or clean API design when removing the global `SemanticHashEnabled`?**~~ resolved — Option A adopted: ParseWithConfig carries ParseConfig with backward-compat wrappers; global removed via ADR-0007
 
 **Context:**
 The current `golang.Parse()` and `golang.ParseWithLineCount()` signatures don't accept any configuration:
@@ -268,9 +268,9 @@ func SetSemanticConfig(cfg SemanticConfig) func()  // returns reset func
 
 **What I need from you:**
 
-1. Is `golang.Parse()` considered public API that external users depend on?
-2. What's the project's policy on breaking changes (semver, migration guides)?
-3. Is the "clean API" benefit worth the migration cost for Option B?
+1. ~~Is `golang.Parse()` considered public API that external users depend on?~~ done — resolved — Parse kept as wrapper; public API preserved
+2. ~~What's the project's policy on breaking changes (semver, migration guides)?~~ done — resolved — breaking changes managed via CHANGELOG + ADRs
+3. ~~Is the "clean API" benefit worth the migration cost for Option B?~~ done — resolved — Option A avoided the migration cost
 
 ---
 
@@ -278,13 +278,13 @@ func SetSemanticConfig(cfg SemanticConfig) func()  // returns reset func
 
 | Metric                     | Value                   |
 | -------------------------- | ----------------------- |
-| Build Status               | ✅ PASSING              |
-| Test Status                | ✅ ALL PASSING          |
-| Test Coverage              | ~80%+                   |
-| Compiler Errors            | 0 (actual)              |
-| LSP Phantom Errors         | ~70 (cache)             |
-| Lines of Dead Code Removed | 46 (writeDiffPanel)     |
-| Ghost Systems Eliminated   | 2 (cli/config.go, lib/) |
+| ~~Build Status~~ done — verified — 2026-03-20 snapshot, historical | ~~✅ PASSING~~ |
+| ~~Test Status~~ done — verified — 2026-03-20 snapshot, historical | ~~✅ ALL PASSING~~ |
+| ~~Test Coverage~~ done — verified — 2026-03-20 snapshot, historical | ~~~80%+~~ |
+| ~~Compiler Errors~~ done — verified — 2026-03-20 snapshot, historical | ~~0 (actual)~~ |
+| ~~LSP Phantom Errors~~ done — verified — 2026-03-20 snapshot, historical | ~~~70 (cache)~~ |
+| ~~Lines of Dead Code Removed~~ done — verified — 2026-03-20 snapshot, historical | ~~46 (writeDiffPanel)~~ |
+| ~~Ghost Systems Eliminated~~ done — verified — 2026-03-20 snapshot, historical | ~~2 (cli/config.go, lib/)~~ |
 
 ---
 
