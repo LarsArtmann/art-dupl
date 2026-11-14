@@ -10,27 +10,27 @@
 
 **Verified this session (command → result):**
 
-| Claim | Evidence |
-| --- | --- |
-| Tree was red (recurrence #15) | `go test -count=1 ./internal/jsonv2gate/` → FAIL naming all three files, pre-restore |
-| Restore is verbatim | `git diff 91419533 HEAD -- internal/jsonutil/jsonutil.go config/config_migrate.go pkg/enum/enum.go` → 0 lines (after daemon commit `b480e26a`) |
-| Offending commit identified | per-commit content probe over `91419533..5412d55d` → `5412d55d` is the FIRST v2 carrier; its own message names the class and commits anyway |
-| Pre-commit hook actually works | live poison test in a scratch clone: `git commit` of v2-poisoned `pkg/enum/enum.go` → gate FAIL, **no commit created** |
-| Full suite green post-fix | `go build ./... && go test -count=1 ./...` → exit 0 |
-| Lint clean | `golangci-lint run ./pkg/artdupl/... ./cmd/` → 0 issues |
-| Boundary gate green | `bash scripts/check-boundary.sh` → OK (14s, fast profile) — run twice this session |
-| astro check green on TS 6 | `pnpm exec astro check` (website/) → 30 files, 0 errors 0 warnings |
-| astro build green on TS 6 | `pnpm run build` → 15 pages, complete |
-| G4 reconstruction pin | `go test -count=1 ./bdd/` → ok; `bdd/sarif_gofinding_integration_test.go` asserts exact partition from real CLI SARIF bytes |
-| G3 golden exists | `printer/sarif_golden_test.go::TestSARIFOutputGolden` + `printer/testdata/TestSARIFOutputGolden.golden` present (runs in suite) |
-| G6 pointer in place | `AGENTS.md:241` reads "§05–§06" with §06 summary |
+| Claim                          | Evidence                                                                                                                                       |
+| ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| Tree was red (recurrence #15)  | `go test -count=1 ./internal/jsonv2gate/` → FAIL naming all three files, pre-restore                                                           |
+| Restore is verbatim            | `git diff 91419533 HEAD -- internal/jsonutil/jsonutil.go config/config_migrate.go pkg/enum/enum.go` → 0 lines (after daemon commit `b480e26a`) |
+| Offending commit identified    | per-commit content probe over `91419533..5412d55d` → `5412d55d` is the FIRST v2 carrier; its own message names the class and commits anyway    |
+| Pre-commit hook actually works | live poison test in a scratch clone: `git commit` of v2-poisoned `pkg/enum/enum.go` → gate FAIL, **no commit created**                         |
+| Full suite green post-fix      | `go build ./... && go test -count=1 ./...` → exit 0                                                                                            |
+| Lint clean                     | `golangci-lint run ./pkg/artdupl/... ./cmd/` → 0 issues                                                                                        |
+| Boundary gate green            | `bash scripts/check-boundary.sh` → OK (14s, fast profile) — run twice this session                                                             |
+| astro check green on TS 6      | `pnpm exec astro check` (website/) → 30 files, 0 errors 0 warnings                                                                             |
+| astro build green on TS 6      | `pnpm run build` → 15 pages, complete                                                                                                          |
+| G4 reconstruction pin          | `go test -count=1 ./bdd/` → ok; `bdd/sarif_gofinding_integration_test.go` asserts exact partition from real CLI SARIF bytes                    |
+| G3 golden exists               | `printer/sarif_golden_test.go::TestSARIFOutputGolden` + `printer/testdata/TestSARIFOutputGolden.golden` present (runs in suite)                |
+| G6 pointer in place            | `AGENTS.md:241` reads "§05–§06" with §06 summary                                                                                               |
 
 **NOT verified this session (and why):**
 
 - **`nix build` / `nix flake check` — NOT RUN.** The `58a00075` daemon commit swept `flake.lock` (2026-11-14), and the BuildFlow run you pasted (08:43) reports `nix-build` red **13/13 times** plus a `nix-checker` warning that `go.sum` was modified after the hash was set. That is the documented stale-`vendorHash` FOD class (AGENTS.md 2026-11-06 note) — uninvestigated. The pasted nix failure cites `.#checks…lint` drv build errors consistent with the poisoned tree at 08:43, but a CURRENT flake state is unknown.
 - **CI state on origin/fork** after the daemon's push of today's commits — not observed.
 - **SARIF golden CONTENT** — I verified the test+file exist and pass, not that the golden bytes pin "NO sibling snippets" (trusted the AGENTS.md claim).
-- **The pasted 08:43 BuildFlow run** — I did not re-run it; I *infer* its config `TestSaveConfig … cannot marshal from Go time.Duration` failures, `printer/finding` map-order nondeterminism, and `SA9003 empty branch (jsonutil.go:41)` all came from the POISONED tree (all four symptoms are exactly the v2 state; all are gone post-restore). If any BuildFlow step is still red NOW, it is not the JSON class.
+- **The pasted 08:43 BuildFlow run** — I did not re-run it; I _infer_ its config `TestSaveConfig … cannot marshal from Go time.Duration` failures, `printer/finding` map-order nondeterminism, and `SA9003 empty branch (jsonutil.go:41)` all came from the POISONED tree (all four symptoms are exactly the v2 state; all are gone post-restore). If any BuildFlow step is still red NOW, it is not the JSON class.
 - **LSP diagnostics** — gopls still shows 2 stale `wsl_v5` warnings that the authoritative `golangci-lint run` does not (stale LSP cache, `direnv reload` + restart territory). CLI lint is the truth.
 - **`HOW_TO_USE.md`** — did not check whether it documents SDK inputs (only README + SDK_DESIGN were updated).
 
@@ -56,7 +56,7 @@
 ## b) PARTIALLY DONE
 
 1. **README stamp / docs-health pass** — I fixed the one drift I touched (SDK example) but did NOT run the overdue docs-health pass (due 2026-10-28, now 17 days late). The stamp stays old per the item's own rule ("do NOT bump the stamp alone").
-2. **Recurrence prevention** — the hook is verified, but the *bypass mechanism* of `5412d55d` is undetermined, and the structural hole remains: a red tree arriving from OUTSIDE the hook (older daemon commits, foreign sessions) sat for 8 days until a session-start gate happened to run. No periodic/proactive guard added this session.
+2. **Recurrence prevention** — the hook is verified, but the _bypass mechanism_ of `5412d55d` is undetermined, and the structural hole remains: a red tree arriving from OUTSIDE the hook (older daemon commits, foreign sessions) sat for 8 days until a session-start gate happened to run. No periodic/proactive guard added this session.
 3. **Error-message precision** — the sentinel is `input is not a regular file`, but the wrapped message says "X **is a directory**" unconditionally; a fifo/socket would get a lying message. Cosmetic but real.
 4. **Working tree at report time** — 2 whitespace-only files (`detector_validation.go` + test) still uncommitted; the daemon picks them up (all content is already committed via `41b111b1`).
 5. **BuildFlow red-state confirmation** — I inferred the pasted run's failures were the poisoned tree; I did not re-run `buildflow --fix` post-restore to confirm green. The binary also predates BuildFlow HEAD by ~5h per its own preflight.
@@ -92,7 +92,7 @@
 ## e) WHAT WE SHOULD IMPROVE
 
 1. **Gate order discipline**: the jsonv2gate should be command #1 of every session in this repo, before even `go build` (build passed while the tree was red this time — build green means nothing for this class).
-2. **Kill the "describe-and-commit" failure mode for good**: a commit message that *documents* a known-red state is itself a carrier commit. Consider a pre-push gate too, not just pre-commit (recurrence #10 already reached origin once).
+2. **Kill the "describe-and-commit" failure mode for good**: a commit message that _documents_ a known-red state is itself a carrier commit. Consider a pre-push gate too, not just pre-commit (recurrence #10 already reached origin once).
 3. **Close the outside-the-hook hole**: the hook only guards commits made through it. Options: (a) flip SystemNix hooksPath to the daemon-gate binary (G5, prototype ready, owner answer pending), (b) a periodic (cron/daemon-tick) jsonv2gate probe that opens a flag file when red, (c) both. Eight days of red is the cost of not doing this.
 4. **Error wording precision** (fifo/socket vs "is a directory").
 5. **The near-miss sibling of today's bug**: a list of ALL-nonexistent files still returns `ErrNoDuplicatesFound` (every input skipped → zero files → "clean"). Same false-clean family, shallower. A "files analyzed = 0 but inputs > 0" result deserves its own error/warning in the SDK.
@@ -103,9 +103,10 @@
 
 ## f) UP TO 50 THINGS TO GET DONE NEXT
 
-*(Brainstorm, not commitment — docs-health HARVEST should route; ★ = this session's direct follow-ups, all else from the observed backlog.)*
+_(Brainstorm, not commitment — docs-health HARVEST should route; ★ = this session's direct follow-ups, all else from the observed backlog.)_
 
 **From today's session (highest leverage):**
+
 1. ★ Investigate/refresh nix `vendorHash` (`lib.fakeHash` → `nix build .#art-dupl` → paste `got:`) — flake.lock swept 2026-11-14, BuildFlow reports nix-build 13/13 red.
 2. ★ Run `nix flake check` (or at least `nix build .#art-dupl`) BEFORE the next push — recurrence #10's rule.
 3. ★ Re-run `buildflow --fix` on the restored tree (and rebuild the 5h-stale binary: `nix build . && nix run .#reinstall`) to confirm the 08:43 red was entirely the poisoned tree.
