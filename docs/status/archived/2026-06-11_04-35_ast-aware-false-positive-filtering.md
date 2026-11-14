@@ -19,7 +19,8 @@ All tests green. All vet clean. Printer coverage: 76.7%.
 
 ### New AST Pattern Detectors (`printer/actionability.go`)
 
-<!-- check-rows:ledger — historical record of what this session shipped; no open rows by definition -->
+<!-- justification: historical record of what this session shipped; no open rows by definition -->
+<!-- check-rows:ledger -->
 | # | Pattern Detector        | AST Signals Used                                                                                                                  | Report Patterns Covered                                                 |
 | - | ----------------------- | --------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
 | 1 | `isTestDataFilePair`    | Node `Filename` field, path component analysis for `testdata/`                                                                    | Pattern 3 (golden/input file pairs)                                     |
@@ -54,7 +55,8 @@ All tests green. All vet clean. Printer coverage: 76.7%.
 
 ### Files Changed
 
-<!-- check-rows:ledger — historical change record; no open rows by definition -->
+<!-- justification: historical change record; no open rows by definition -->
+<!-- check-rows:ledger -->
 | File                                     | Delta            | Purpose                               |
 | ---------------------------------------- | ---------------- | ------------------------------------- |
 | `printer/actionability.go`               | +282 lines       | 4 new detectors + label system        |
@@ -79,19 +81,19 @@ All tests green. All vet clean. Printer coverage: 76.7%.
 
 ### From the False-Positive Report (Not Yet Implemented)
 
-~~1. **Config file support** (`.art-dupl.yaml`) — The report's suggestion #2: project-specific exclusions. Currently all filtering is CLI flags only.~~ done — YAML config support shipped (bdd/configuration_file_test.go)
-~~2. **Semantic threshold multiplier for test files** — Automatically raising effective threshold when both clones are in `_test.go` files. Would catch patterns that slip through at the detection level rather than post-hoc classification.~~ done — --test-threshold flag
-~~3. **CallExpr callee hashing in semantic mode** — `CallExpr` currently doesn't encode the function being called in semantic mode. Adding callee name hashing would make `rule.Check()` vs `os.WriteFile()` distinct even with identical AST structure.~~ done — SelectorExpr encodes Sel.Name (syntax/golang/transform.go)
-~~4. **Refactoring suggestion classification** — The report's suggestion #4: classify recommended fix type (extract helper, table-driven test, acceptable similarity, data duplication).~~ done — category-specific refactoring suggestions (CHANGELOG)
-5. **Cross-file test pattern down-ranking** — Pattern 6 specifically mentions cross-file test matches. Currently handled by `isTestScaffolding` but could benefit from a separate weight/ranking for cross-file vs within-file test matches.
+1. ~~**Config file support** (`.art-dupl.yaml`) — The report's suggestion #2: project-specific exclusions. Currently all filtering is CLI flags only.~~ done — YAML config support shipped (bdd/configuration_file_test.go)
+2. ~~**Semantic threshold multiplier for test files** — Automatically raising effective threshold when both clones are in `_test.go` files. Would catch patterns that slip through at the detection level rather than post-hoc classification.~~ done — --test-threshold flag
+3. ~~**CallExpr callee hashing in semantic mode** — `CallExpr` currently doesn't encode the function being called in semantic mode. Adding callee name hashing would make `rule.Check()` vs `os.WriteFile()` distinct even with identical AST structure.~~ done — SelectorExpr encodes Sel.Name (syntax/golang/transform.go)
+4. ~~**Refactoring suggestion classification** — The report's suggestion #4: classify recommended fix type (extract helper, table-driven test, acceptable similarity, data duplication).~~ done — category-specific refactoring suggestions (CHANGELOG)
+5. ~~**Cross-file test pattern down-ranking** — Pattern 6 specifically mentions cross-file test matches. Currently handled by `isTestScaffolding` but could benefit from a separate weight/ranking for cross-file vs within-file test matches.~~ won't implement — the pattern table has no ranking layer; suppression tuning happens via corpus re-measures (AGENTS.md actionability section)
 
 ### From Existing TODO_LIST.md (Not Started)
 
-~~6. **ProcessedClone DTO migration** — 111 test call sites still depend on `syntax.Node` internals through `[][]*syntax.Node` in printers. This is the #1 HIGH priority item.~~ done — printers take domain.ProcessedCloneGroup
-~~7. **Clone type consolidation** — Three parallel types: `printer.clone`, `pkg/artdupl.Clone`, `printer.CloneGroup`~~ done — ADR-0005 unification
-~~8. **CSV output using encoding/csv** — Currently manual formatting~~ done — encoding/csv in stats output (CHANGELOG)
-~~9. **TokenValue type with validation**~~ done — suffixtree.TokenValue
-~~10. **Enum unification** — domain enums should use config's generic helpers~~ done — shared pkg/enum helpers
+6. ~~**ProcessedClone DTO migration** — 111 test call sites still depend on `syntax.Node` internals through `[][]*syntax.Node` in printers. This is the #1 HIGH priority item.~~ done — printers take domain.ProcessedCloneGroup
+7. ~~**Clone type consolidation** — Three parallel types: `printer.clone`, `pkg/artdupl.Clone`, `printer.CloneGroup`~~ done — ADR-0005 unification
+8. ~~**CSV output using encoding/csv** — Currently manual formatting~~ done — encoding/csv in stats output (CHANGELOG)
+9. ~~**TokenValue type with validation**~~ done — suffixtree.TokenValue
+10. ~~**Enum unification** — domain enums should use config's generic helpers~~ done — shared pkg/enum helpers
 
 ---
 
@@ -103,9 +105,9 @@ All tests pass. All vet clean. Build green. No regressions.
 
 ### Potential Concerns
 
-1. **Pattern ordering matters** — `isSignatureOnlyMatch` runs before `isTestDataFilePair`. If a testdata file has a single-node FuncDecl clone, it gets labeled as `signature-only` instead of `testdata-pair`. This is technically correct (signature-only IS the reason it's non-actionable) but may not match user expectations who see testdata files and expect that label.
-2. **`isTestScaffolding` assertion list** — The `walkForTestScaffoldingSignals` switch statement has `Should` as a standalone case to avoid duplicate switch cases. This is fragile — if more Gomega/assertion methods are added, the list needs manual maintenance.
-3. **No end-to-end validation** — The new patterns have unit tests with manually constructed AST trees, but haven't been validated against the actual output of running `art-dupl --semantic` on a real Go project. The detectors may fire differently on real serialized ASTs where semantic encoding is active (node types have identifier hashes in upper bits).
+1. ~~**Pattern ordering matters** — `isSignatureOnlyMatch` runs before `isTestDataFilePair`. If a testdata file has a single-node FuncDecl clone, it gets labeled as `signature-only` instead of `testdata-pair`. This is technically correct (signature-only IS the reason it's non-actionable) but may not match user expectations who see testdata files and expect that label.~~ moot — first-match-wins ordering is documented behavior (AGENTS.md actionability pattern order note)
+2. ~~**`isTestScaffolding` assertion list** — The `walkForTestScaffoldingSignals` switch statement has `Should` as a standalone case to avoid duplicate switch cases. This is fragile — if more Gomega/assertion methods are added, the list needs manual maintenance.~~ done — assertion names now map-based (printer/actionability/actionability_test_patterns.go:150)
+3. ~~**No end-to-end validation** — The new patterns have unit tests with manually constructed AST trees, but haven't been validated against the actual output of running `art-dupl --semantic` on a real Go project. The detectors may fire differently on real serialized ASTs where semantic encoding is active (node types have identifier hashes in upper bits).~~ done — corpus-validated on real projects (AGENTS.md actionability section: go-sse, go-cqrs-lite, branching-flow)
 
 ---
 
@@ -113,15 +115,15 @@ All tests pass. All vet clean. Build green. No regressions.
 
 ### Architecture
 
-~~1. **Thread more data into `ClassifyClone`** — Currently `ClassificationInput` only has `Filename`, `NodeType`, `Tokens`, `Lines`. The per-clone classification is blind to AST structure. The group-level `EvaluateActionability` has full AST access, but the per-clone category/suggestion is set before that runs. Consider adding a `PatternLabel` field to `ClassificationInput` so classification can be pattern-aware from the start.~~ resolved by alternative — ApplyPatternLabel makes classification pattern-aware
-~~2. **Extract assertion name detection into a registry** — The hardcoded switch in `walkForTestScaffoldingSignals` should be a `map[string]bool` or similar, making it extensible without modifying the detector.~~ done — map-based assertion name sets (actionability_test_patterns.go)
-3. **Make data dominance threshold configurable** — The 60% constant is opinionated. Users with data-heavy codebases (e.g., configuration management tools) may want to tune this.
-~~4. **Add pattern-specific BDD tests** — Current tests use manually constructed AST trees. End-to-end BDD tests that parse real Go files and verify the full pipeline (parse → detect → classify → output) would catch semantic encoding interactions.~~ done — bdd/actionability_test.go + pipeline integration tests
+1. ~~**Thread more data into `ClassifyClone`** — Currently `ClassificationInput` only has `Filename`, `NodeType`, `Tokens`, `Lines`. The per-clone classification is blind to AST structure. The group-level `EvaluateActionability` has full AST access, but the per-clone category/suggestion is set before that runs. Consider adding a `PatternLabel` field to `ClassificationInput` so classification can be pattern-aware from the start.~~ resolved by alternative — ApplyPatternLabel makes classification pattern-aware
+2. ~~**Extract assertion name detection into a registry** — The hardcoded switch in `walkForTestScaffoldingSignals` should be a `map[string]bool` or similar, making it extensible without modifying the detector.~~ done — map-based assertion name sets (actionability_test_patterns.go)
+3. ~~**Make data dominance threshold configurable** — The 60% constant is opinionated. Users with data-heavy codebases (e.g., configuration management tools) may want to tune this.~~ NOT-DO — dataDominanceRatio stays a constant (printer/actionability/actionability_data.go:20); no knob requested since
+4. ~~**Add pattern-specific BDD tests** — Current tests use manually constructed AST trees. End-to-end BDD tests that parse real Go files and verify the full pipeline (parse → detect → classify → output) would catch semantic encoding interactions.~~ done — bdd/actionability_test.go + pipeline integration tests
 
 ### Semantic Mode Gaps
 
-~~5. **`CallExpr` callee hashing** — The single highest-ROI semantic improvement. Currently `CallExpr` is type-only. Hashing `CallExpr.Fun` (when it's a `SelectorExpr` or `Ident`) would separate `rule.Check()` from `os.WriteFile()` at the detection level, eliminating many false positives before classification even runs.~~ done — SelectorExpr callee name hashed in semantic mode
-~~6. **BasicLit sub-categorization** — `BasicLit` is currently opaque regardless of literal kind (string, int, char). Adding semantic sub-types for `STRING_LIT` vs `INT_LIT` vs `CHAR_LIT` would allow more precise data-dominance detection.~~ done — BasicLit Kind/value encoded (transform.go)
+5. ~~**`CallExpr` callee hashing** — The single highest-ROI semantic improvement. Currently `CallExpr` is type-only. Hashing `CallExpr.Fun` (when it's a `SelectorExpr` or `Ident`) would separate `rule.Check()` from `os.WriteFile()` at the detection level, eliminating many false positives before classification even runs.~~ done — SelectorExpr callee name hashed in semantic mode
+6. ~~**BasicLit sub-categorization** — `BasicLit` is currently opaque regardless of literal kind (string, int, char). Adding semantic sub-types for `STRING_LIT` vs `INT_LIT` vs `CHAR_LIT` would allow more precise data-dominance detection.~~ done — BasicLit Kind/value encoded (transform.go)
 
 ---
 
@@ -150,7 +152,8 @@ All tests pass. All vet clean. Build green. No regressions.
 
 ### Tier 3: Quality & Observability
 
-<!-- check-rows:ledger — row 13 (printer coverage >85%) intentionally left bare: still ~77% per docs/benchmarks/coverage-baseline.txt -->
+<!-- justification: row 13 (printer coverage >85%) intentionally left bare — still ~77% per docs/benchmarks/coverage-baseline.txt -->
+<!-- check-rows:ledger -->
 | #  | Task                                                                                                            | Impact                                                                                      | Effort |
 | -- | --------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- | ------ |
 | ~~12~~ done — SuppressionStats counters (printer/stats/stats.go NonActionableGroups) | ~~**Pattern detection metrics** — Add stats counters for how many clones each pattern catches~~ | ~~Medium~~ |

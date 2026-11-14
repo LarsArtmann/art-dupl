@@ -12,10 +12,10 @@ Completed a comprehensive test coverage improvement sprint focusing on four key 
 
 | Metric           | Before | After     | Change |
 | ---------------- | ------ | --------- | ------ |
-| **pkg/position** | 46.9%  | **100%**  | +53.1% |
-| **lib**          | 56.9%  | **96.1%** | +39.2% |
-| **pkg/filter**   | 55.0%  | **82.5%** | +27.5% |
-| **pkg/artdupl**  | 54.6%  | **86.3%** | +31.7% |
+| ~~**pkg/position**~~ done at `b00646c` | ~~46.9%~~ | ~~**100%**~~ | ~~+53.1%~~ |
+| ~~**lib**~~ done at `a488be2` | ~~56.9%~~ | ~~**96.1%**~~ | ~~+39.2%~~ |
+| ~~**pkg/filter**~~ done at `ba6a948` | ~~55.0%~~ | ~~**82.5%**~~ | ~~+27.5%~~ |
+| ~~**pkg/artdupl**~~ done — pkg/artdupl detector tests (pkg/artdupl/detector_test.go today) | ~~54.6%~~ | ~~**86.3%**~~ | ~~+31.7%~~ |
 
 ---
 
@@ -77,13 +77,13 @@ Packages below 70% coverage that need attention:
 
 | Package             | Coverage | Priority |
 | ------------------- | -------- | -------- |
-| syntax              | 66.2%    | Medium   |
-| printer             | 67.3%    | Medium   |
-| cli                 | 70.6%    | Low      |
-| cmd                 | 71.3%    | Low      |
-| internal/filtertest | 58.3%    | Low      |
-| hash                | 75.0%    | Low      |
-| job                 | 75.9%    | Low      |
+| ~~syntax~~ **Superseded — 2026-03-02 snapshot; packages restructured and coverage re-targeted since (see 2026-06-20 coverage tables).** | ~~66.2%~~ | ~~Medium~~ |
+| ~~printer~~ **Superseded — 2026-03-02 snapshot; packages restructured and coverage re-targeted since (see 2026-06-20 coverage tables).** | ~~67.3%~~ | ~~Medium~~ |
+| ~~cli~~ **Superseded — 2026-03-02 snapshot; packages restructured and coverage re-targeted since (see 2026-06-20 coverage tables).** | ~~70.6%~~ | ~~Low~~ |
+| ~~cmd~~ **Superseded — 2026-03-02 snapshot; packages restructured and coverage re-targeted since (see 2026-06-20 coverage tables).** | ~~71.3%~~ | ~~Low~~ |
+| ~~internal/filtertest~~ **Superseded — 2026-03-02 snapshot; packages restructured and coverage re-targeted since (see 2026-06-20 coverage tables).** | ~~58.3%~~ | ~~Low~~ |
+| ~~hash~~ **Superseded — 2026-03-02 snapshot; packages restructured and coverage re-targeted since (see 2026-06-20 coverage tables).** | ~~75.0%~~ | ~~Low~~ |
+| ~~job~~ **Superseded — 2026-03-02 snapshot; packages restructured and coverage re-targeted since (see 2026-06-20 coverage tables).** | ~~75.9%~~ | ~~Low~~ |
 
 ---
 
@@ -150,39 +150,39 @@ Packages below 70% coverage that need attention:
 
 ### Immediate Priority (Next Sprint)
 
-1. **syntax package** - Add tests for `syntax.go` uncovered functions
-2. **syntax package** - Test `golang` subpackage edge cases
-3. **printer package** - Add tests for output formatters
-4. **printer package** - Test HTML/JSON/CSV output paths
+1. ~~**syntax package** - Add tests for `syntax.go` uncovered functions~~ done — syntax test suite grew extensively (91.4% by 2026-06-20)
+2. ~~**syntax package** - Test `golang` subpackage edge cases~~ done — syntax/golang 95.9% by 2026-06-20
+3. ~~**printer package** - Add tests for output formatters~~ done — printer formatter tests (printer/json_test.go, html_test.go, SARIF golden)
+4. ~~**printer package** - Test HTML/JSON/CSV output paths~~ done — printer/html_test.go and printer/json_test.go cover those paths
 
 ### Short-term (This Month)
 
-5. **hash package** - Complete hash detection tests
-6. **job package** - Add pipeline orchestration tests
-7. **cache package** - Add cache eviction tests (currently 87%)
-8. **config package** - Add config validation tests (currently 77.3%)
-9. **detection package** - Add multi-detector tests (currently 86.3%)
-10. **domain package** - Add edge case tests (currently 97%)
-11. **errors package** - Add error wrapping tests (currently 89.3%)
-12. **git package** - Add git integration tests (currently 83%)
+5. ~~**hash package** - Complete hash detection tests~~ done — hash 93.4% by 2026-06-20
+6. ~~**job package** - Add pipeline orchestration tests~~ done — job pipeline tests (job/incremental_test.go)
+7. ~~**cache package** - Add cache eviction tests (currently 87%)~~ done at `5abffb1c`
+8. ~~**config package** - Add config validation tests (currently 77.3%)~~ done — cmd/config_validation_test.go + config tests
+9. ~~**detection package** - Add multi-detector tests (currently 86.3%)~~ done — detection coverage 91.1% today
+10. ~~**domain package** - Add edge case tests (currently 97%)~~ done — domain edge-case tests in domain/
+11. ~~**errors package** - Add error wrapping tests (currently 89.3%)~~ done — errors 89.6% by 2026-06-20
+12. ~~**git package** - Add git integration tests (currently 83%)~~ **Superseded — git package removed; gitignore/ handles ignore logic now.**
 
 ### Medium-term (Next 2 Months)
 
-13. **internal/filtertest** - Complete filter test utilities (currently 58.3%)
-14. **internal/enum** - Add enum helper tests (currently 77.9%)
-15. **pkg/logger** - Add logger interface tests (currently 87.5%)
-16. **bdd tests** - Expand BDD coverage (currently 70%)
-17. **integration tests** - Add end-to-end scenarios
-18. **performance tests** - Add benchmarks for hot paths
-19. **fuzzing** - Add fuzz tests for parsers
+13. ~~**internal/filtertest** - Complete filter test utilities (currently 58.3%)~~ done — internal/filtertest retained (assertions.go)
+14. ~~**internal/enum** - Add enum helper tests (currently 77.9%)~~ **Superseded — enum helpers moved to pkg/enum with tests (pkg/enum/enum_test.go).**
+15. ~~**pkg/logger** - Add logger interface tests (currently 87.5%)~~ done — pkg/logger/logger_test.go
+16. ~~**bdd tests** - Expand BDD coverage (currently 70%)~~ done — BDD suite expanded (263 specs by 2026-06-20, more since)
+17. ~~**integration tests** - Add end-to-end scenarios~~ done — bdd/ end-to-end specs + pipeline integration tests (AGENTS.md)
+18. ~~**performance tests** - Add benchmarks for hot paths~~ done — docs/benchmarks/ + alloc-budget gates
+19. ~~**fuzzing** - Add fuzz tests for parsers~~ done — suffixtree/fuzz_test.go + cmd/filter_fuzz_test.go
 20. **mutation testing** - Evaluate test quality
 
 ### Long-term (Next Quarter)
 
-21. **Architecture** - Extract shared test utilities
-22. **CI/CD** - Add coverage gates
-23. **Documentation** - Add test documentation
-24. **Refactoring** - Reduce test duplication
+21. ~~**Architecture** - Extract shared test utilities~~ done — internal/testutil exists (assert.go, bdd.go)
+22. ~~**CI/CD** - Add coverage gates~~ **Superseded — CI generates coverage artifacts (.github/workflows/ci.yml); no blocking threshold gate adopted.**
+23. ~~**Documentation** - Add test documentation~~ done — testing documented in website contributing guide
+24. ~~**Refactoring** - Reduce test duplication~~ done at `45916c2b`
 25. **Monitoring** - Add test flakiness detection
 
 ---
@@ -201,9 +201,9 @@ Packages below 70% coverage that need attention:
 
 **Investigation Needed:**
 
-1. Is this a version mismatch between CLI and LSP?
-2. Does the LSP use a different config parsing library?
-3. Is there a schema validation that the CLI bypasses?
+1. ~~Is this a version mismatch between CLI and LSP?~~ done — moot: config reworked since
+2. ~~Does the LSP use a different config parsing library?~~ done — moot: config reworked since
+3. ~~Is there a schema validation that the CLI bypasses?~~ done — moot: config reworked since
 
 **Impact:** Medium - Affects development experience but not builds/tests
 
@@ -215,16 +215,16 @@ Packages below 70% coverage that need attention:
 
 | Package       | Coverage | Status       |
 | ------------- | -------- | ------------ |
-| pkg/format    | 100.0%   | ✅ Excellent |
-| pkg/position  | 100.0%   | ✅ Excellent |
-| syntax/golang | 98.5%    | ✅ Excellent |
-| domain        | 97.0%    | ✅ Excellent |
-| lib           | 96.1%    | ✅ Excellent |
-| internal/simd | 95.8%    | ✅ Excellent |
-| adapter       | 97.6%    | ✅ Excellent |
-| syntax/templ  | 80.6%    | ✅ Good      |
-| pkg/filter    | 82.5%    | ✅ Good      |
-| pkg/artdupl   | 86.3%    | ✅ Good      |
+| ~~pkg/format~~ done — verified — 2026-03-02 snapshot, historical | ~~100.0%~~ | ~~✅ Excellent~~ |
+| ~~pkg/position~~ done — verified — 2026-03-02 snapshot, historical | ~~100.0%~~ | ~~✅ Excellent~~ |
+| ~~syntax/golang~~ done — verified — 2026-03-02 snapshot, historical | ~~98.5%~~ | ~~✅ Excellent~~ |
+| ~~domain~~ done — verified — 2026-03-02 snapshot, historical | ~~97.0%~~ | ~~✅ Excellent~~ |
+| ~~lib~~ done — verified — 2026-03-02 snapshot, historical | ~~96.1%~~ | ~~✅ Excellent~~ |
+| ~~internal/simd~~ done — verified — 2026-03-02 snapshot, historical | ~~95.8%~~ | ~~✅ Excellent~~ |
+| ~~adapter~~ done — verified — 2026-03-02 snapshot, historical | ~~97.6%~~ | ~~✅ Excellent~~ |
+| ~~syntax/templ~~ done — verified — 2026-03-02 snapshot, historical | ~~80.6%~~ | ~~✅ Good~~ |
+| ~~pkg/filter~~ done — verified — 2026-03-02 snapshot, historical | ~~82.5%~~ | ~~✅ Good~~ |
+| ~~pkg/artdupl~~ done — verified — 2026-03-02 snapshot, historical | ~~86.3%~~ | ~~✅ Good~~ |
 
 ### Test Execution Summary
 
@@ -249,20 +249,20 @@ Coverage < 70%: 6 packages
 
 ## Commits Made This Session
 
-1. `b00646c` - fix: correct test expectation in pkg/position (wantStart: 1 → 2)
-2. `a488be2` - test: add comprehensive tests for lib package functions
-3. `ba6a948` - test: add comprehensive tests for pkg/filter sqlc_yaml.go
-4. `_______` - test: add comprehensive tests for pkg/artdupl uncovered functions
+1. ~~`b00646c` - fix: correct test expectation in pkg/position (wantStart: 1 → 2)~~ done at `b00646c`
+2. ~~`a488be2` - test: add comprehensive tests for lib package functions~~ done at `a488be2`
+3. ~~`ba6a948` - test: add comprehensive tests for pkg/filter sqlc_yaml.go~~ done at `ba6a948`
+4. ~~`_______` - test: add comprehensive tests for pkg/artdupl uncovered functions~~ done — pkg/artdupl detector tests exist today
 
 ---
 
 ## Next Recommended Actions
 
-1. **Fix LSP config** - Investigate and fix `golangci-lint_ls` config parsing
-2. **syntax package** - Begin test coverage improvement (66.2% → 80%)
-3. **printer package** - Add output formatter tests (67.3% → 80%)
-4. **CI Enhancement** - Add coverage threshold gates
-5. **Architecture** - Extract common test utilities
+1. ~~**Fix LSP config** - Investigate and fix `golangci-lint_ls` config parsing~~ done — recvcheck config since reworked (.golangci.yml passes CLI and sandbox runs)
+2. ~~**syntax package** - Begin test coverage improvement (66.2% → 80%)~~ done — syntax 91.4% by 2026-06-20
+3. ~~**printer package** - Add output formatter tests (67.3% → 80%)~~ done — printer formatter tests landed
+4. ~~**CI Enhancement** - Add coverage threshold gates~~ **Superseded — CI coverage artifacts exist; threshold gate not adopted.**
+5. ~~**Architecture** - Extract common test utilities~~ done — internal/testutil extracted
 
 ---
 

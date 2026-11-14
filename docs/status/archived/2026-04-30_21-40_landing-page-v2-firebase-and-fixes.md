@@ -60,7 +60,7 @@ Rewrote the entire landing page (`site/index.html`) from 1,670 → 2,116 lines, 
 
 | # | Item                      | What's Missing                                              |
 | - | ------------------------- | ----------------------------------------------------------- |
-| ~~1~~ **Superseded — superseded — Astro site ships extracted styles (website/src/styles/global.css).** | ~~CSS extraction~~ | ~~Still 1,100+ lines inline — hurts browser caching~~ |
+| ~~1~~ **Superseded — Astro site ships extracted styles (website/src/styles/global.css).** | ~~CSS extraction~~ | ~~Still 1,100+ lines inline — hurts browser caching~~ |
 | ~~2~~ **Won't implement — dropped — particle canvas gone with the Astro rebuild.** | ~~Design originality~~ | ~~Particle canvas still common (suffix tree viz not done)~~ |
 | ~~3~~ **Won't implement — no live backend; dropped and not harvested into ROADMAP.** | ~~Interactive demo~~ | ~~No live art-dupl execution; terminal output is static~~ |
 | ~~4~~ **Won't implement — static page replaced; moot after the Astro rebuild.** | ~~SVG sprite optimization~~ | ~~Checkmark SVG still repeated in multiple buttons~~ |
@@ -73,8 +73,8 @@ Rewrote the entire landing page (`site/index.html`) from 1,670 → 2,116 lines, 
 
 | #  | Item                                          | Priority                            |
 | -- | --------------------------------------------- | ----------------------------------- |
-| ~~1~~ **Superseded — superseded — Astro site ships extracted styles (website/src/styles/global.css).** | ~~CSS extraction to external file~~ | ~~MEDIUM — caching benefit~~ |
-| ~~2~~ **Superseded — superseded — Astro components/scripts (website/src).** | ~~JS extraction to external file~~ | ~~MEDIUM — caching benefit~~ |
+| ~~1~~ **Superseded — Astro site ships extracted styles (website/src/styles/global.css).** | ~~CSS extraction to external file~~ | ~~MEDIUM — caching benefit~~ |
+| ~~2~~ **Superseded — Astro components/scripts (website/src).** | ~~JS extraction to external file~~ | ~~MEDIUM — caching benefit~~ |
 | ~~3~~ **Won't implement — dropped — not carried into the Astro site.** | ~~Suffix tree canvas visualization~~ | ~~HIGH — unique visual identity~~ |
 | ~~4~~ **Won't implement — dropped — not harvested into ROADMAP.** | ~~Typewriter terminal animation~~ | ~~LOW — polish~~ |
 | ~~5~~ **Won't implement — dropped — not harvested into ROADMAP.** | ~~Animated hero stat counters~~ | ~~LOW — polish~~ |
@@ -118,7 +118,7 @@ Nothing is totally fucked up. All previously identified bugs have been fixed:
 
 ### Architecture
 
-~~1. **Extract CSS/JS to external files** — 1,100+ lines inline CSS hurts caching. Firebase Hosting's cache headers are already configured for `.css` and `.js` files. Just need to extract them.~~ **Superseded — superseded — Astro site ships extracted styles (website/src/styles/global.css).**
+1. ~~**Extract CSS/JS to external files** — 1,100+ lines inline CSS hurts caching. Firebase Hosting's cache headers are already configured for `.css` and `.js` files. Just need to extract them.~~ **Superseded — Astro site ships extracted styles (website/src/styles/global.css).**
 
 2. ~~**Firebase deploy automation** — Add a GitHub Actions workflow that deploys `site/` to Firebase on push to main. Use `firebase-tools` pnpm package.~~ done — .github/workflows/deploy-site.yml
 
@@ -136,7 +136,7 @@ Nothing is totally fucked up. All previously identified bugs have been fixed:
 
 ### Design
 
-~~8. **The page is good but not exceptional** — It follows the standard dev-tool landing page template. The "Why art-dupl" comparison table and benchmark cards are the standout elements. The SARIF integration is a unique selling point that's now properly showcased.~~ **Superseded — superseded — the static page was replaced by the Astro site (commit 2d3bc351).**
+~~8. **The page is good but not exceptional** — It follows the standard dev-tool landing page template. The "Why art-dupl" comparison table and benchmark cards are the standout elements. The SARIF integration is a unique selling point that's now properly showcased.~~ **Superseded — the static page was replaced by the Astro site (commit 2d3bc351).**
 
 ~~9. **Mobile nav could be smoother** — Currently just a dropdown. A slide-in panel with backdrop blur would feel more polished.~~ **Won't implement — not carried into the Astro site.**
 
@@ -149,13 +149,13 @@ Nothing is totally fucked up. All previously identified bugs have been fixed:
 | #  | Task                                          | Impact | Effort | Type         |
 | -- | --------------------------------------------- | ------ | ------ | ------------ |
 | ~~1~~ done — .gitignore excludes .firebase/ | ~~Add `.firebase/` to `.gitignore`~~ | ~~HIGH~~ | ~~1min~~ | ~~Housekeeping~~ |
-| ~~2~~ **Superseded — superseded — Astro site ships extracted styles (website/src/styles/global.css).** | ~~Extract CSS to `site/style.css`~~ | ~~MED~~ | ~~10min~~ | ~~Performance~~ |
-| ~~3~~ **Superseded — superseded — Astro components/scripts (website/src).** | ~~Extract JS to `site/app.js`~~ | ~~MED~~ | ~~10min~~ | ~~Performance~~ |
+| ~~2~~ **Superseded — Astro site ships extracted styles (website/src/styles/global.css).** | ~~Extract CSS to `site/style.css`~~ | ~~MED~~ | ~~10min~~ | ~~Performance~~ |
+| ~~3~~ **Superseded — Astro components/scripts (website/src).** | ~~Extract JS to `site/app.js`~~ | ~~MED~~ | ~~10min~~ | ~~Performance~~ |
 | ~~4~~ done — deployed via .github/workflows/deploy-site.yml; live at art-dupl.lars.software | ~~Run `firebase deploy` for first deployment~~ | ~~HIGH~~ | ~~5min~~ | ~~Deployment~~ |
 | ~~5~~ done — .github/workflows/deploy-site.yml | ~~Add Firebase deploy GitHub Actions workflow~~ | ~~MED~~ | ~~20min~~ | ~~CI/CD~~ |
 | ~~6~~ done — website/.htmlvalidate.json wired | ~~Verify page with W3C HTML validator~~ | ~~MED~~ | ~~10min~~ | ~~Quality~~ |
-| ~~7~~ **Superseded — superseded — Lighthouse CI still open in ROADMAP.md (Website and Presence).** | ~~Run Lighthouse audit on deployed page~~ | ~~MED~~ | ~~10min~~ | ~~Quality~~ |
-| ~~8~~ **Superseded — superseded — Lighthouse CI still open in ROADMAP.md (Website and Presence).** | ~~Fix any Lighthouse issues~~ | ~~VARIES~~ | ~~VARIES~~ | ~~Quality~~ |
+| ~~7~~ **Superseded — Lighthouse CI still open in ROADMAP.md (Website and Presence).** | ~~Run Lighthouse audit on deployed page~~ | ~~MED~~ | ~~10min~~ | ~~Quality~~ |
+| ~~8~~ **Superseded — Lighthouse CI still open in ROADMAP.md (Website and Presence).** | ~~Fix any Lighthouse issues~~ | ~~VARIES~~ | ~~VARIES~~ | ~~Quality~~ |
 | ~~9~~ done — website/public/og/home.png + og:image meta | ~~Generate OG image for social sharing~~ | ~~MED~~ | ~~30min~~ | ~~SEO~~ |
 | ~~10~~ done — art-dupl.lars.software | ~~Setup custom domain DNS~~ | ~~MED~~ | ~~30min~~ | ~~Deployment~~ |
 | ~~11~~ **Won't implement — dropped — not carried into the Astro site.** | ~~Replace particle canvas with suffix tree viz~~ | ~~HIGH~~ | ~~90min~~ | ~~Design~~ |
@@ -176,7 +176,7 @@ Nothing is totally fucked up. All previously identified bugs have been fixed:
 
 ## G) TOP #1 QUESTION
 
-**Do you want me to run `firebase deploy` now, or do you need to run `firebase login` first?**
+~~**Do you want me to run `firebase deploy` now, or do you need to run `firebase login` first?**~~ done — deployed via .github/workflows/deploy-site.yml; live at art-dupl.lars.software
 
 Firebase CLI is not installed in this environment. To deploy:
 
