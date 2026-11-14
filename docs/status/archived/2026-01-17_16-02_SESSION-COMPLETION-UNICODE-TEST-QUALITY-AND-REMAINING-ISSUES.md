@@ -393,7 +393,7 @@ Path resolution issues between test execution context and manual terminal execut
     - Impact: Inconsistent documentation
     - Effort: 30 minutes
 
-14. **❌ Fix gosec G301**
+~~14. **❌ Fix gosec G301**~~ y
     - File: `cmd/run.go`
     - Issue: Directory permissions `0o755` should be `0o750`
     - Impact: Security vulnerability

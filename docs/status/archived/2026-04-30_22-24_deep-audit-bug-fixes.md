@@ -23,9 +23,9 @@ Conducted a deep audit of all 7 site files (2,588 lines). Found 11 real issues (
 | 5  | Missing ARIA accessible names on new sections                                                        | Added `id="refactoring"` and `id="sdk"` to new sections                                                          |
 | 6  | `<code>` elements unstyled in feature cards                                                          | Added `.feature-card code` rule with mono font, accent color, background                                         |
 | 7  | Inline padding conflicts with section rhythm                                                         | New sections now use CSS classes with consistent `padding: 80px 0`                                               |
-| 8  | Canvas rAF loop never cancelled, no visibilitychange                                                 | Added `visibilitychange` listener to pause/resume animation                                                      |
-| 9  | `Math.random()` causes suffix tree rebuild jitter                                                    | Replaced with deterministic offset: `(i * 7 + key.charCodeAt(0)) % 15`                                           |
-| 10 | 404.html missing Google Fonts                                                                        | Added full Google Fonts `<link>` tag                                                                             |
+| ~~8~~ fixed — the visibilitychange listener pauses/resumes the animation | ~~Canvas rAF loop never cancelled, no visibilitychange~~ | ~~Added `visibilitychange` listener to pause/resume animation~~|
+| ~~9~~ fixed — a deterministic offset replaced Math.random | ~~`Math.random()` causes suffix tree rebuild jitter~~ | ~~Replaced with deterministic offset: `(i * 7 + key.charCodeAt(0)) % 15`~~|
+| ~~10~~ fixed — the 404 page carries the Google Fonts link | ~~404.html missing Google Fonts~~ | ~~Added full Google Fonts `<link>` tag~~ |
 | 11 | 404.html relative `style.css` path fails on deep 404s                                                | Changed to absolute `/style.css`                                                                                 |
 
 ## B) PARTIALLY DONE
@@ -45,9 +45,9 @@ Remaining items from previous reports that are NOT bugs but enhancements:
 | 5  | Dark/light theme toggle                                              | LOW      | 20min  |
 | 6  | PNG version of OG image (SVG may not render on all social platforms) | MED      | 10min  |
 | 7  | W3C HTML validation pass                                             | MED      | 10min  |
-| 8  | Lighthouse audit on deployed site                                    | MED      | 10min  |
-| 9  | axe-core accessibility audit                                         | MED      | 15min  |
-| 10 | `manifest.json` for PWA                                              | LOW      | 10min  |
+| ~~8~~ not-do — no Lighthouse audit pass recorded | ~~Lighthouse audit on deployed site~~ | ~~MED~~ | ~~10min~~|
+| ~~9~~ not-do — no axe-core audit pass recorded | ~~axe-core accessibility audit~~ | ~~MED~~ | ~~15min~~|
+| ~~10~~ not-do — no manifest.json landed | ~~`manifest.json` for PWA~~ | ~~LOW~~ | ~~10min~~|
 
 ## D) TOTALLY FUCKED UP
 
@@ -79,18 +79,18 @@ Remaining items from previous reports that are NOT bugs but enhancements:
 | 5  | Run axe-core accessibility scan               | MED    | 15min  | A11y     |
 | 6  | W3C HTML validation                           | MED    | 10min  | Quality  |
 | 7  | Generate PNG OG image                         | MED    | 10min  | SEO      |
-| 8  | CSS minification                              | MED    | 10min  | Perf     |
-| 9  | JS minification                               | MED    | 10min  | Perf     |
-| 10 | Self-host Google Fonts                        | LOW    | 15min  | Privacy  |
+| ~~8~~ **not-do — no CSS minification pipeline landed** |~~CSS minification~~|~~MED~~|~~10min~~|~~Perf~~|
+| ~~9~~ **not-do — no JS minification pipeline landed** |~~JS minification~~|~~MED~~|~~10min~~|~~Perf~~|
+| ~~10~~ **not-do — fonts stayed on the CDN** |~~Self-host Google Fonts~~|~~LOW~~|~~15min~~|~~Privacy~~|
 | 11 | Custom domain DNS                             | MED    | 30min  | Deploy   |
-| 12 | Build suffix tree mouse interaction           | MED    | 30min  | Design   |
-| 13 | Add `manifest.json`                           | LOW    | 10min  | PWA      |
+| ~~12~~ **not-do — the suffix-tree interaction never landed** |~~Build suffix tree mouse interaction~~|~~MED~~|~~30min~~|~~Design~~|
+| ~~13~~ **not-do — no manifest.json landed** |~~Add `manifest.json`~~|~~LOW~~|~~10min~~|~~PWA~~|
 | 14 | Add Apple Touch Icon                          | LOW    | 5min   | iOS      |
 | 15 | Dark/light theme toggle                       | LOW    | 20min  | UX       |
-| 16 | Add Plausible/Fathom analytics                | LOW    | 10min  | Tracking |
-| 17 | Test on real mobile devices                   | MED    | 15min  | QA       |
-| 18 | Add animated edge drawing to suffix tree      | MED    | 20min  | Design   |
-| 19 | Add color-coded node depths                   | LOW    | 10min  | Design   |
+| ~~16~~ **not-do — no analytics landed** |~~Add Plausible/Fathom analytics~~|~~LOW~~|~~10min~~|~~Tracking~~|
+| ~~17~~ **not-do — no device QA pass recorded** |~~Test on real mobile devices~~|~~MED~~|~~15min~~|~~QA~~|
+| ~~18~~ **not-do — animated edges never landed** |~~Add animated edge drawing to suffix tree~~|~~MED~~|~~20min~~|~~Design~~|
+| ~~19~~ **not-do — color-coded depths never landed** |~~Add color-coded node depths~~|~~LOW~~|~~10min~~|~~Design~~|
 | 20 | Build interactive live demo                   | HIGH   | 4hr    | Feature  |
 | 21 | Add `sitemap.xml` to Google Search Console    | LOW    | 5min   | SEO      |
 | 22 | Add structured data testing                   | LOW    | 5min   | SEO      |
