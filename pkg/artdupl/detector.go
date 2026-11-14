@@ -196,7 +196,7 @@ func (d *detector) wrapValidationError(err error, operation string, fileCount in
 func (d *detector) validateInputsWithContext(ctx context.Context, files []string) error {
 	err := d.validateInputs(ctx, files)
 	if err != nil {
-		return d.wrapValidationError(err, "validation failed for ", len(files))
+		return d.wrapValidationError(err, "analyzing", len(files))
 	}
 
 	return nil

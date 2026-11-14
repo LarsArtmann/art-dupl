@@ -3,6 +3,9 @@ package artdupl
 import (
 	"context"
 	"errors"
+	"os"
+	"path/filepath"
+	"strings"
 	"testing"
 	"time"
 
@@ -262,6 +265,7 @@ func TestErrors_AllErrors(t *testing.T) {
 		ErrInvalidTimeout,
 		ErrUnsupportedMethod,
 		ErrNoFilesProvided,
+		ErrNotARegularFile,
 		ErrFileNotFound,
 		ErrFileTooLarge,
 		ErrFileIgnored,
@@ -453,6 +457,89 @@ func TestDetector_FindClonesStreamResult_NoFiles(t *testing.T) {
 	_, actualErr = detector.FindClonesStreamResult(t.Context(), []string{})
 	if !errors.Is(actualErr, ErrNoFilesProvided) {
 		t.Errorf("Expected ErrNoFilesProvided, got: %v", actualErr)
+	}
+}
+
+// TestDetector_FindClones_RejectsDirectory pins the false-clean bug: a
+// directory input used to pass validation, parse to zero nodes, and return
+// ErrNoDuplicatesFound — the consumer believes the repo is clean.
+func TestDetector_FindClones_RejectsDirectory(t *testing.T) {
+	detector := mustCreateDetector(t, DefaultOptions())
+
+	dir := t.TempDir()
+
+	_, err := detector.FindClones(t.Context(), []string{dir})
+	if err == nil {
+		t.Fatal("Expected error for directory input, got nil")
+	}
+
+	if errors.Is(err, ErrNoDuplicatesFound) {
+		t.Fatalf("Directory input must not masquerade as a clean repo, got: %v", err)
+	}
+
+	if !errors.Is(err, ErrNotARegularFile) {
+		t.Errorf("Expected ErrNotARegularFile, got: %v", err)
+	}
+
+	if !strings.Contains(err.Error(), dir) {
+		t.Errorf("Error should name the offending path %q, got: %v", dir, err)
+	}
+}
+
+// TestDetector_FindClones_RejectsDirectoryMixedWithValidFiles verifies the
+// rejection is fail-fast even when the list also contains valid files —
+// a directory among file paths is a caller bug worth surfacing, not a skip.
+func TestDetector_FindClones_RejectsDirectoryMixedWithValidFiles(t *testing.T) {
+	detector := mustCreateDetector(t, DefaultOptions())
+
+	dir := t.TempDir()
+	validFile := filepath.Join(t.TempDir(), "valid.go")
+	if writeErr := os.WriteFile(validFile, []byte("package main\n"), 0o600); writeErr != nil {
+		t.Fatalf("Failed to write fixture: %v", writeErr)
+	}
+
+	_, err := detector.FindClones(t.Context(), []string{validFile, dir})
+	if !errors.Is(err, ErrNotARegularFile) {
+		t.Errorf("Expected ErrNotARegularFile for mixed list, got: %v", err)
+	}
+}
+
+// TestDetector_FindClonesStreamResult_RejectsDirectory covers the streaming
+// entry point, which shares validateInputsWithContext with FindClones.
+func TestDetector_FindClonesStreamResult_RejectsDirectory(t *testing.T) {
+	opts := DefaultOptions()
+
+	detector, err := NewDetector(opts)
+	if err != nil {
+		t.Fatalf("Failed to create detector: %v", err)
+	}
+
+	t.Cleanup(func() {
+		cleanupDetector(t, detector)
+	})
+
+	_, err = detector.FindClonesStreamResult(t.Context(), []string{t.TempDir()})
+	if !errors.Is(err, ErrNotARegularFile) {
+		t.Errorf("Expected ErrNotARegularFile, got: %v", err)
+	}
+}
+
+// TestDetector_FindClones_NonexistentFileKeepsSkipSemantics pins the existing
+// behavior the directory rejection must not change: a nonexistent path is
+// skipped with a warning in validateFile and a all-skipped run still reports
+// ErrNoDuplicatesFound.
+func TestDetector_FindClones_NonexistentFileKeepsSkipSemantics(t *testing.T) {
+	detector := mustCreateDetector(t, DefaultOptions())
+
+	missing := filepath.Join(t.TempDir(), "does_not_exist.go")
+
+	_, err := detector.FindClones(t.Context(), []string{missing})
+	if !errors.Is(err, ErrNoDuplicatesFound) {
+		t.Errorf("Nonexistent input should keep skip semantics (ErrNoDuplicatesFound), got: %v", err)
+	}
+
+	if errors.Is(err, ErrNotARegularFile) {
+		t.Errorf("Nonexistent input must not be rejected as non-regular file, got: %v", err)
 	}
 }
 

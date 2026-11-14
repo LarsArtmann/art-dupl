@@ -37,13 +37,21 @@ detector, err := artdupl.New(artdupl.DefaultOptions())
 if err != nil { return err }
 defer detector.Close()
 
-result, err := detector.FindClones(ctx, []string{"./src"})
+result, err := detector.FindClones(ctx, []string{"./src/parser.go", "./src/util.go"})
 if err != nil { return err }
 
 for _, group := range result.CloneGroups {
     fmt.Printf("Clone group %s: %d occurrences\n", group.Hash, len(group.Clones))
 }
 ```
+
+`FindClones` takes an explicit FILE list and never crawls: an input path that
+exists but is not a regular file (a directory such as `./src`, a fifo, a
+socket) is rejected up front with `artdupl.ErrNotARegularFile` instead of
+silently parsing to zero files and reporting a false clean repo. Nonexistent
+paths keep skip-with-warning semantics. Crawl the directory yourself (the
+provider in `pkg/provider` shows the pattern: `.gitignore`-aware walk over
+`.go`/`.templ` files) and pass the resulting file list.
 
 ## Design Decisions
 
