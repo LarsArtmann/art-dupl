@@ -175,42 +175,42 @@
 
 ### Immediate (This Week)
 
-1. **Fix Generics Tests** - Two tests in `syntax/golang/generics_test.go` are failing
+1. ~~**Fix Generics Tests** - Two tests in `syntax/golang/generics_test.go` are failing~~ done — generics tests pass (`syntax/golang/generics_erase_test.go` suite)
    - Investigate parser handling of type parameters
    - Likely AST structure change needed
 
-2. **Improve Error Messages** - Continue Pareto-driven error context improvements
+2. ~~**Improve Error Messages** - Continue Pareto-driven error context improvements~~ done — typed errors with context (`errors/` package)
    - Tier 2: File processing errors with paths and line numbers
    - Tier 3: Syntax errors with code snippets
    - Tier 4: Cache/IO errors with operation context
 
-3. **Cache System Polish** - The incremental parsing cache is working but needs:
+3. ~~**Cache System Polish** - The incremental parsing cache is working but needs:~~ done — cache hardened (`cache/file_cache.go`, metrics + limits)
    - Better error messages when cache operations fail
    - Cache size limits and eviction policies
    - Cache validation/hashing improvements
 
 ### Short Term (This Month)
 
-4. **Performance Profiling** - Run benchmarks and identify bottlenecks
+4. ~~**Performance Profiling** - Run benchmarks and identify bottlenecks~~ done — benchmarks in `performance.yml`
    - Memory usage during large codebase analysis
    - Suffix tree construction performance
    - Parallel parsing efficiency
 
-5. **Test Coverage** - Increase coverage in:
+5. ~~**Test Coverage** - Increase coverage in:~~ done — coverage grown; Coverage job in CI
    - `cmd/` package (CLI command testing)
    - `detection/` (edge cases in multi-detector)
    - Error handling paths
 
-6. **Documentation** - Update README with:
+6. ~~**Documentation** - Update README with:~~ done — README/HOW_TO_USE current
    - More real-world examples
    - CI/CD integration guides
    - Performance tuning guide
 
 ### Medium Term (Next Quarter)
 
-7. **SIMD Optimization** - Enable ARM64 SIMD when Go supports it
-8. **Plugin System** - Design architecture for custom detection methods
-9. **IDE Integration** - VSCode extension for real-time duplicate detection
+7. ~~**SIMD Optimization** - Enable ARM64 SIMD when Go supports it~~ done — ARM64 NEON SIMD in `hash/file_detector.go`
+8. ~~**Plugin System** - Design architecture for custom detection methods~~ **Won't implement — plugin system not adopted — adapters cover method composition.**
+9. ~~**IDE Integration** - VSCode extension for real-time duplicate detection~~ **Won't implement — no VS Code extension.**
 
 ---
 
@@ -218,40 +218,40 @@
 
 ### Critical Priority (Do First)
 
-1. **Fix generics test failures** - `TestTypeParamsInTypeSpec` and `TestTypeParamsInFuncType`
-2. **Complete error context Tier 2** - File processing errors with rich context
-3. **Add cache size limits** - Prevent unbounded cache growth
-4. **Improve cache error messages** - Better logging for cache operations
-5. **Add cache metrics** - Expose hit/miss rates in stats output
+1. ~~**Fix generics test failures** - `TestTypeParamsInTypeSpec` and `TestTypeParamsInFuncType`~~ done — generics tests green
+2. ~~**Complete error context Tier 2** - File processing errors with rich context~~ done — file errors carry context (`errors/`)
+3. ~~**Add cache size limits** - Prevent unbounded cache growth~~ done — `max-cache-entries` limit (`config/config_validate.go`)
+4. ~~**Improve cache error messages** - Better logging for cache operations~~ done — cache errors typed (`cache/`)
+5. ~~**Add cache metrics** - Expose hit/miss rates in stats output~~ done — CacheMetrics in stats (`printer/stats/stats_formatter.go` Cache field)
 
 ### High Priority (This Week)
 
-6. **Benchmark suite** - Create comprehensive benchmarks for performance tracking
-7. **Memory profiling** - Analyze memory usage on large codebases
-8. **Parallel parsing optimization** - Tune worker pool based on benchmarks
-9. **Add more integration tests** - Test complex multi-method scenarios
-10. **Improve BDD test reliability** - Fix binary dependency issues
+6. ~~**Benchmark suite** - Create comprehensive benchmarks for performance tracking~~ done — benchmark suite + `performance.yml`
+7. ~~**Memory profiling** - Analyze memory usage on large codebases~~ done — gc profiling in `performance.yml`
+8. ~~**Parallel parsing optimization** - Tune worker pool based on benchmarks~~ done — `--workers`/`--search-workers` tunables
+9. ~~**Add more integration tests** - Test complex multi-method scenarios~~ done — multi-method BDD (`bdd/combined_mode_test.go`)
+10. ~~**Improve BDD test reliability** - Fix binary dependency issues~~ done — in-process BDD harness (`internal/testutil/`)
 
 ### Medium Priority (This Month)
 
-11. **Complete error context Tier 3** - Syntax error improvements
-12. **Complete error context Tier 4** - Cache/IO error improvements
-13. **Documentation: CI/CD guide** - GitHub Actions integration examples
-14. **Documentation: Performance tuning** - Guide for large codebases
-15. **Add SARIF output** - GitHub Advanced Security integration
+11. ~~**Complete error context Tier 3** - Syntax error improvements~~ done — syntax errors via typed errors
+12. ~~**Complete error context Tier 4** - Cache/IO error improvements~~ done — cache/IO errors typed
+13. **Documentation: CI/CD guide** - GitHub Actions integration examples **→ CI guide covered by HOW_TO_USE exit-codes/workflow sections**
+14. ~~**Documentation: Performance tuning** - Guide for large codebases~~ done — performance guidance in HOW_TO_USE/AGENTS
+15. ~~**Add SARIF output** - GitHub Advanced Security integration~~ done — SARIF output (`printer/sarif.go`)
 
 ### Lower Priority (Next Quarter)
 
-16. **SIMD for x86_64** - Vectorized rolling hash implementation
-17. **File watching mode** - Real-time detection during development
-18. **VSCode extension** - IDE integration
-19. **Plugin architecture** - Custom detection method support
-20. **Web dashboard** - Historical duplicate tracking
-21. **Additional output formats** - TeamCity, JUnit XML
-22. **Configuration validation** - Strict mode for CI/CD
-23. **Ignore comments** - Configure which comment types to ignore
-24. **Custom tokenizers** - Support for non-Go languages
-25. **Machine learning** - ML-based duplicate detection
+16. ~~**SIMD for x86_64** - Vectorized rolling hash implementation~~ **Won't implement — x86_64 SIMD not adopted; XXH3 + ARM64 NEON cover the paths.**
+17. ~~**File watching mode** - Real-time detection during development~~ **Won't implement — watch mode declined — unclear demand.**
+18. ~~**VSCode extension** - IDE integration~~ **Won't implement — no VS Code extension.**
+19. ~~**Plugin architecture** - Custom detection method support~~ **Won't implement — plugin architecture not adopted.**
+20. ~~**Web dashboard** - Historical duplicate tracking~~ **Won't implement — web dashboard not adopted; website is static docs.**
+21. ~~**Additional output formats** - TeamCity, JUnit XML~~ **Won't implement — TeamCity/JUnit formats not adopted — SARIF covers CI.**
+22. ~~**Configuration validation** - Strict mode for CI/CD~~ done — strict validation via `config/config_validate.go` + exit code 2 (ADR-0013)
+23. ~~**Ignore comments** - Configure which comment types to ignore~~ **Won't implement — comment-ignore config not adopted; `.artdupl.yml` suppression covers needs.**
+24. ~~**Custom tokenizers** - Support for non-Go languages~~ **Won't implement — non-Go tokenizers declined — Go + templ (see `WHAT_THIS_PROJECT_IS_NOT.md`).**
+25. ~~**Machine learning** - ML-based duplicate detection~~ **Won't implement — ML detection declined — stays in ROADMAP vision.**
 
 ---
 
@@ -292,6 +292,7 @@ TestTypeParamsInFuncType: generic_funcs.go:4:1: expected declaration, found Filt
 
 | Metric            | Value                                  |
 | ----------------- | -------------------------------------- |
+<!-- check-rows:ledger -->
 | **Go Files**      | 232                                    |
 | **Lines of Code** | 47,343                                 |
 | **Test Files**    | ~60+ `*_test.go`                       |
@@ -349,9 +350,9 @@ $ ./dist/art-dupl stats --semantic -t 50
 
 **Next immediate actions:**
 
-1. Investigate and fix the two generics test failures
-2. Continue with Pareto error context improvements (Tier 2)
-3. Add benchmarking to establish performance baselines
+1. ~~Investigate and fix the two generics test failures~~ done — generics tests green
+2. ~~Continue with Pareto error context improvements (Tier 2)~~ done — typed errors with context (`errors/`)
+3. ~~Add benchmarking to establish performance baselines~~ done — benchmark baselines in `performance.yml`
 
 **Overall assessment:** Production-ready with minor rough edges.
 

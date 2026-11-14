@@ -26,8 +26,7 @@ art-dupl is in **strong shape** for v0.1.0. Core detection engine works across 2
 - [x] Multi-detection mode (both methods in parallel via goroutines)
 - [x] Semantic-aware matching (FNV-1a, **default ON** since 2026-05-17)
 - [x] Structural-only mode (`--structural` flag)
-- ```SIMD-optimized hot paths in internal/simd/~~ internal/simd was deleted; xxh3 provides native SIMD.~~ internal/simd was deleted; xxh3 provides native SIMD.~~ internal/simd was deleted; xxh3 provides native SIMD.
-  ```
+- [x] ~~SIMD-optimized hot paths in `internal/simd/`~~ moot — `internal/simd` was deleted; xxh3 provides native SIMD.
 
 ### Languages
 
@@ -117,16 +116,16 @@ art-dupl is in **strong shape** for v0.1.0. Core detection engine works across 2
 
 ## c) NOT STARTED
 
-1. **TokenValue type with validation** — refactor suffixtree/syntax to use it (HIGH priority per TODO_LIST.md)
-2. **ProcessedClone DTO** — decouple Printer from syntax.Node (111 test call sites)
-3. **Clone type consolidation** — 3 parallel Clone types (printer.clone, pkg/artdupl.Clone, printer.CloneGroup)
-4. **Proper CSV output** — use encoding/csv instead of manual formatting
-5. **Enum unification** — domain enums should use config's generic helpers
-6. **Memory layout optimization** — SIMD-friendly data structures, string interning
-7. **SIMD TODOs** — 6 items in syntax/hash_simd.go and internal/simd/
-8. **transform.go refactor** — 369L, 300L switch statement
-9. **Old status docs archival** — 304 files in docs/status/, keep last 30 days
-10. **SDK design** — SDK_DESIGN.md exists but no implementation
+1. ~~**TokenValue type with validation** — refactor suffixtree/syntax to use it (HIGH priority per TODO_LIST.md)~~ done — `suffixtree/suffixtree.go` `TokenValue`
+2. ~~**ProcessedClone DTO** — decouple Printer from syntax.Node (111 test call sites)~~ done — `domain/processed_clone.go`
+3. ~~**Clone type consolidation** — 3 parallel Clone types (printer.clone, pkg/artdupl.Clone, printer.CloneGroup)~~ **Superseded — ADR-0005 split-brain type unification.**
+4. ~~**Proper CSV output** — use encoding/csv instead of manual formatting~~ done — `encoding/csv` in `printer/stats/stats_formatter.go`
+5. ~~**Enum unification** — domain enums should use config's generic helpers~~ done — `pkg/enum/enum.go` + `config/enum_helpers.go`
+6. ~~**Memory layout optimization** — SIMD-friendly data structures, string interning~~ done — string interning in `syntax/intern.go`
+7. ~~**SIMD TODOs** — 6 items in syntax/hash_simd.go and internal/simd/~~ done — SIMD notes documented in `hash/`; `internal/simd` removed
+8. **transform.go refactor** — 369L, 300L switch statement **→ still 560L — refactor remains open**
+9. ~~**Old status docs archival** — 304 files in docs/status/, keep last 30 days~~ **Superseded — docs-health archival pass 2026-11 (378 files archived).**
+10. ~~**SDK design** — SDK_DESIGN.md exists but no implementation~~ done — SDK implemented (`pkg/artdupl/`, ADR-0025)
 
 ---
 
@@ -148,6 +147,7 @@ b) Or use subprocess-based testing for commands that exit
 
 ### Linter: 20 Issues
 
+<!-- check-rows:ledger -->
 | Category    | Count | Severity |
 | ----------- | ----- | -------- |
 | errcheck    | 10    | MEDIUM   |
@@ -178,27 +178,27 @@ b) Or use subprocess-based testing for commands that exit
 
 ### Immediate (This Week)
 
-1. **Fix os.Exit test flakiness** — this is the #1 quality blocker. SetExitFunc or subprocess pattern.
-2. **Fix 10 errcheck issues** — unchecked syscall.Dup2/Close errors in test code.
-3. **Reduce buildJSONData complexity** — split the 16-complexity function into smaller helpers.
+1. ~~**Fix os.Exit test flakiness** — this is the #1 quality blocker. SetExitFunc or subprocess pattern.~~ done — in-process BDD harness + subprocess isolation resolved flakiness
+2. ~~**Fix 10 errcheck issues** — unchecked syscall.Dup2/Close errors in test code.~~ done — 0 lint findings (AGENTS.md Linter Pareto)
+3. **Reduce buildJSONData complexity** — split the 16-complexity function into smaller helpers. **→ buildJSONData returns concrete type; complexity accepted**
 
 ### Short-term (Next 2 Weeks)
 
-4. **Wire TODO/Legacy detectors to CLI** — they exist but users can't access them.
-5. **Introduce ProcessedClone DTO** — start decoupling printer from AST internals.
-6. **Proper CSV output** — use encoding/csv, not manual string formatting.
-7. **Consolidate Clone types** — 3 types is 2 too many.
+4. ~~**Wire TODO/Legacy detectors to CLI** — they exist but users can't access them.~~ **Superseded — ADR-0028 go-finding adapter (findings became the library-only path).**
+5. ~~**Introduce ProcessedClone DTO** — start decoupling printer from AST internals.~~ done — `domain/processed_clone.go`
+6. ~~**Proper CSV output** — use encoding/csv, not manual string formatting.~~ done — `encoding/csv` in `printer/stats/stats_formatter.go`
+7. ~~**Consolidate Clone types** — 3 types is 2 too many.~~ **Superseded — ADR-0005 split-brain type unification.**
 
 ### Medium-term (Next Month)
 
-8. **TokenValue type** — strong typing for token sequences in suffixtree/syntax.
-9. **Enum unification** — use config's generic helpers for domain enums.
-10. **Memory layout optimization** — SIMD-friendly, string interning for large codebases.
+8. ~~**TokenValue type** — strong typing for token sequences in suffixtree/syntax.~~ done — `suffixtree/suffixtree.go` `TokenValue`
+9. ~~**Enum unification** — use config's generic helpers for domain enums.~~ done — `pkg/enum/enum.go` + `config/enum_helpers.go`
+10. ~~**Memory layout optimization** — SIMD-friendly, string interning for large codebases.~~ done — string interning in `syntax/intern.go`
 
 ### Ongoing
 
-11. **Archive old docs/status/** — 304 files is excessive.
-12. **Refactor transform.go** — 369L, 300L switch needs table-driven or visitor pattern.
+11. ~~**Archive old docs/status/** — 304 files is excessive.~~ **Superseded — docs-health archival pass 2026-11.**
+12. **Refactor transform.go** — 369L, 300L switch needs table-driven or visitor pattern. **→ still 560L — refactor remains open**
 
 ---
 
@@ -206,31 +206,31 @@ b) Or use subprocess-based testing for commands that exit
 
 | #  | Task                                                                  | Priority | Effort | Impact           |
 | -- | --------------------------------------------------------------------- | -------- | ------ | ---------------- |
-| 1  | Fix os.Exit test flakiness (bdd + cmd packages)                       | CRITICAL | M      | CI trust         |
-| 2  | Fix 10 errcheck issues in test code                                   | HIGH     | S      | Linter clean     |
-| 3  | Extract buildJSONData into smaller functions (gocyclo 16→<10)         | HIGH     | S      | Maintainability  |
-| 4  | Extract `--threshold` and `art-dupl` string constants in tests        | LOW      | S      | Linter clean     |
-| 5  | Wire TodoDetector and LegacyDetector to CLI `-m` flag                 | HIGH     | M      | Feature complete |
-| 6  | Fix 2 exhaustruct issues in testutil                                  | LOW      | S      | Linter clean     |
-| 7  | Fix 2 err113 issues in testutil                                       | LOW      | S      | Linter clean     |
-| 8  | Introduce ProcessedClone DTO to decouple Printer from syntax.Node     | HIGH     | L      | Architecture     |
-| 9  | Consolidate 3 parallel Clone types                                    | MEDIUM   | L      | Simplicity       |
-| 10 | Implement proper CSV output using encoding/csv                        | MEDIUM   | S      | Correctness      |
-| 11 | Implement TokenValue type with validation                             | HIGH     | M      | Type safety      |
-| 12 | Unify enum patterns (domain → config generic helpers)                 | MEDIUM   | M      | Consistency      |
-| 13 | Refactor transform.go (369L, 300L switch)                             | MEDIUM   | M      | Maintainability  |
-| 14 | Optimize memory layouts for SIMD-friendly structures                  | MEDIUM   | L      | Performance      |
-| 15 | Implement string interning for large codebases                        | LOW      | M      | Memory           |
-| 16 | Wire remaining SIMD TODOs (6 items)                                   | LOW      | M      | Performance      |
-| 17 | Fix ConstantCSSProperty position (upstream PR or workaround)          | LOW      | S      | Correctness      |
-| 18 | Archive old docs/status/ files (keep last 30 days)                    | LOW      | S      | Cleanliness      |
-| 19 | Fix remaining LSP hints: unused params, unnecessary type args         | LOW      | S      | Cleanliness      |
-| 20 | Implement SDK from SDK_DESIGN.md                                      | LOW      | XL     | Extensibility    |
-| 21 | Add more fuzz tests for edge cases                                    | LOW      | M      | Robustness       |
-| 22 | Coverage improvement: domain (67%), job (77%), detection (78%)        | MEDIUM   | M      | Quality          |
-| 23 | Add benchmark regression CI (performance.yml exists but needs tuning) | MEDIUM   | S      | Performance      |
-| 24 | Consider modularization (go-modularize skill exists)                  | LOW      | XL     | Architecture     |
-| 25 | Migrate justfile → nix flake (per AGENTS.md preference)               | LOW      | M      | Tooling          |
+| ~~1~~ done — in-process harness resolved os.Exit flakiness | ~~Fix os.Exit test flakiness (bdd + cmd packages)~~ | ~~CRITICAL~~ | ~~M~~ | ~~CI trust~~ |
+| ~~2~~ done — 0 lint findings | ~~Fix 10 errcheck issues in test code~~ | ~~HIGH~~ | ~~S~~ | ~~Linter clean~~ |
+| 3 **→ buildJSONData accepted** | Extract buildJSONData into smaller functions (gocyclo 16→<10) | HIGH | S | Maintainability |
+| ~~4~~ done — test constants extracted | ~~Extract `--threshold` and `art-dupl` string constants in tests~~ | ~~LOW~~ | ~~S~~ | ~~Linter clean~~ |
+| ~~5~~ **Superseded — ADR-0028 go-finding adapter.** | ~~Wire TodoDetector and LegacyDetector to CLI `-m` flag~~ | ~~HIGH~~ | ~~M~~ | ~~Feature complete~~ |
+| ~~6~~ done — exhaustruct removed from enable list | ~~Fix 2 exhaustruct issues in testutil~~ | ~~LOW~~ | ~~S~~ | ~~Linter clean~~ |
+| ~~7~~ done — typed errors (`errors/`) | ~~Fix 2 err113 issues in testutil~~ | ~~LOW~~ | ~~S~~ | ~~Linter clean~~ |
+| ~~8~~ done — `domain/processed_clone.go` | ~~Introduce ProcessedClone DTO to decouple Printer from syntax.Node~~ | ~~HIGH~~ | ~~L~~ | ~~Architecture~~ |
+| ~~9~~ **Superseded — ADR-0005 split-brain type unification.** | ~~Consolidate 3 parallel Clone types~~ | ~~MEDIUM~~ | ~~L~~ | ~~Simplicity~~ |
+| ~~10~~ done — `encoding/csv` | ~~Implement proper CSV output using encoding/csv~~ | ~~MEDIUM~~ | ~~S~~ | ~~Correctness~~ |
+| ~~11~~ done — `suffixtree/suffixtree.go` `TokenValue` | ~~Implement TokenValue type with validation~~ | ~~HIGH~~ | ~~M~~ | ~~Type safety~~ |
+| ~~12~~ done — `pkg/enum/enum.go` | ~~Unify enum patterns (domain → config generic helpers)~~ | ~~MEDIUM~~ | ~~M~~ | ~~Consistency~~ |
+| 13 **→ still 560L — refactor remains open** | Refactor transform.go (369L, 300L switch) | MEDIUM | M | Maintainability |
+| ~~14~~ done — interning landed; SIMD layout notes in `hash/` | ~~Optimize memory layouts for SIMD-friendly structures~~ | ~~MEDIUM~~ | ~~L~~ | ~~Performance~~ |
+| ~~15~~ done — `syntax/intern.go` | ~~Implement string interning for large codebases~~ | ~~LOW~~ | ~~M~~ | ~~Memory~~ |
+| ~~16~~ done — SIMD notes documented; `internal/simd` removed | ~~Wire remaining SIMD TODOs (6 items)~~ | ~~LOW~~ | ~~M~~ | ~~Performance~~ |
+| 17 **→ upstream templ issue; tracked upstream** | Fix ConstantCSSProperty position (upstream PR or workaround) | LOW | S | Correctness |
+| ~~18~~ **Superseded — docs-health archival pass 2026-11.** | ~~Archive old docs/status/ files (keep last 30 days)~~ | ~~LOW~~ | ~~S~~ | ~~Cleanliness~~ |
+| ~~19~~ done at `c0261563` | ~~Fix remaining LSP hints: unused params, unnecessary type args~~ | ~~LOW~~ | ~~S~~ | ~~Cleanliness~~ |
+| ~~20~~ done — SDK implemented (`pkg/artdupl/`) | ~~Implement SDK from SDK_DESIGN.md~~ | ~~LOW~~ | ~~XL~~ | ~~Extensibility~~ |
+| ~~21~~ done — fuzz tests in `suffixtree/`, `syntax/templ/` | ~~Add more fuzz tests for edge cases~~ | ~~LOW~~ | ~~M~~ | ~~Robustness~~ |
+| ~~22~~ done — coverage grown; Coverage job in CI | ~~Coverage improvement: domain (67%), job (77%), detection (78%)~~ | ~~MEDIUM~~ | ~~M~~ | ~~Quality~~ |
+| ~~23~~ done — `performance.yml` regression CI tuned | ~~Add benchmark regression CI (performance.yml exists but needs tuning)~~ | ~~MEDIUM~~ | ~~S~~ | ~~Performance~~ |
+| ~~24~~ **Won't implement — modularization not adopted — single module.** | ~~Consider modularization (go-modularize skill exists)~~ | ~~LOW~~ | ~~XL~~ | ~~Architecture~~ |
+| ~~25~~ done — Nix flake is the tooling; no justfile | ~~Migrate justfile → nix flake (per AGENTS.md preference)~~ | ~~LOW~~ | ~~M~~ | ~~Tooling~~ |
 
 ---
 
@@ -252,6 +252,7 @@ This decision affects the os.Exit fix strategy and long-term test architecture.
 
 ## Metrics Summary
 
+<!-- check-rows:ledger -->
 | Metric                        | Value                           |
 | ----------------------------- | ------------------------------- |
 | Go files                      | 214                             |
@@ -276,6 +277,7 @@ This decision affects the os.Exit fix strategy and long-term test architecture.
 
 ### Passing Packages (21/23)
 
+<!-- check-rows:ledger -->
 | Package             | Coverage |
 | ------------------- | -------- |
 | pkg/format          | 100%     |
@@ -302,6 +304,7 @@ This decision affects the os.Exit fix strategy and long-term test architecture.
 
 ### Failing Packages (2/23)
 
+<!-- check-rows:ledger -->
 | Package | Status                                    | Root Cause       |
 | ------- | ----------------------------------------- | ---------------- |
 | bdd     | FAIL (all 255 specs pass, exit non-zero)  | os.Exit in Cobra |
