@@ -20,6 +20,27 @@ func (d *detector) validateInputs(ctx context.Context, files []string) error {
 	default:
 	}
 
+	// Reject non-regular files (directories, fifos, sockets) up front. A
+	// directory would otherwise pass validateFile (os.Stat succeeds), reach
+	// the parser, produce zero nodes, and turn an entirely-directory input
+	// list into a false ErrNoDuplicatesFound — the consumer believes the
+	// repo is clean. Nonexistent paths keep their skip-with-warning
+	// semantics in validateFile; only existing-but-unparseable inputs fail
+	// the run.
+	for _, path := range files {
+		info, err := os.Stat(path)
+		if err != nil {
+			continue
+		}
+		if !info.Mode().IsRegular() {
+			return fmt.Errorf(
+				"%w: %s is a directory; pass individual source files instead (the SDK analyzes explicit file lists, it does not crawl)",
+				ErrNotARegularFile,
+				path,
+			)
+		}
+	}
+
 	return nil
 }
 

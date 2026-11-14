@@ -42,6 +42,13 @@ var (
 	// ErrNoFilesProvided is returned when no files are provided for analysis.
 	ErrNoFilesProvided = errors.New("no files provided for analysis")
 
+	// ErrNotARegularFile is returned when an input path exists but is not a
+	// regular file (a directory, fifo, socket, ...). The SDK analyzes explicit
+	// file lists; it never crawls directories, so such an input is rejected
+	// up front instead of silently parsing to zero files and reporting a
+	// false clean repo (ErrNoDuplicatesFound).
+	ErrNotARegularFile = errors.New("input is not a regular file")
+
 	// ErrFileNotFound is returned when file does not exist.
 	ErrFileNotFound = errors.New("file not found")
 
