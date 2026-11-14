@@ -494,6 +494,7 @@ func TestDetector_FindClones_RejectsDirectoryMixedWithValidFiles(t *testing.T) {
 
 	dir := t.TempDir()
 	validFile := filepath.Join(t.TempDir(), "valid.go")
+
 	if writeErr := os.WriteFile(validFile, []byte("package main\n"), 0o600); writeErr != nil {
 		t.Fatalf("Failed to write fixture: %v", writeErr)
 	}

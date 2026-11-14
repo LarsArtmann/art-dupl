@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 )
+
 // validateInputs checks that inputs are valid for analysis.
 func (d *detector) validateInputs(ctx context.Context, files []string) error {
 	if len(files) == 0 {
