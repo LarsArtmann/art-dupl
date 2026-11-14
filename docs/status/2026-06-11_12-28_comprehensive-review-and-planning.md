@@ -76,7 +76,7 @@ From TODO_LIST.md, these items remain untouched:
 
 ~~2. **Three parallel Clone types** — `printer.clone` (internal), `pkg/artdupl.Clone` (public SDK), `domain.ProcessedClone` (DTO). Each has overlapping fields. The ProcessedClone DTO migration (111 test call sites) would unify them.~~ done — ADR-0005; canonical domain.ProcessedCloneGroup
 
-3. **NodeType representation** — int32 in some places, string in others. Should be a single typed representation throughout the pipeline.
+3. ~~**NodeType representation** — int32 in some places, string in others. Should be a single typed representation throughout the pipeline.~~ superseded — ADR-0005 split-brain type unification (`NodeType int32` in `domain/processed_clone.go`)
 
 ### Code Quality
 

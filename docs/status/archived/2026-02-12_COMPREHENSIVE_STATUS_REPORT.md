@@ -267,9 +267,9 @@ This report provides a comprehensive reflection on the art-dupl project status a
 - Stats command has CRITICAL issues with core metrics
 - Users relying on `DuplicationRatio` will get wrong results
 - Fixing requires:
-  1. Actually counting total lines (currently: `files * 100`)
-  2. Counting unique patterns vs all instances (currently double-counts)
-  3. Possibly redesigning the health score formula
+  1. ~~Actually counting total lines (currently: `files * 100`)~~ done — actual line counting (`printer/stats/stats.go` uniqueLineCount)
+  2. ~~Counting unique patterns vs all instances (currently double-counts)~~ done — unique-line accounting (`printer/stats/stats.go:62`)
+  3. ~~Possibly redesigning the health score formula~~ done — health scoring reworked (`domain/types_health.go`, `printer/stats/stats_health.go`)
 
 **Options:**
 
