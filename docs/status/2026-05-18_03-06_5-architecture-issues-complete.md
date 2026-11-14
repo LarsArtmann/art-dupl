@@ -131,34 +131,36 @@ Nothing.
 
 | # | Task                                                                     | Impact | Effort |
 | - | ------------------------------------------------------------------------ | ------ | ------ |
-| 1 | Pass DetectionConfig through job/ pipeline instead of bare bool          | High   | 2h     |
-| 2 | Property test: reflection merge automatically picks up new Config fields | Medium | 1h     |
-| 3 | Add string pool for syntax.Node.Name (reduce allocations)                | Medium | 1h     |
+| ~~1~~ done — DetectionConfig threads through the job pipeline (config split + job mode plumbing) | ~~Pass DetectionConfig through job/ pipeline instead of bare bool~~ | ~~High~~ | ~~2h~~ |
+| ~~2~~ done — reflection-merge coverage landed with the config merge suite | ~~Property test: reflection merge automatically picks up new Config fields~~ | ~~Medium~~ | ~~1h~~ |
+| ~~3~~ done — identifier/filename interning landed as syntax/intern.go | ~~Add string pool for syntax.Node.Name (reduce allocations)~~ | ~~Medium~~ | ~~1h~~ |
 
 ### P1 — Architecture
 
 | #  | Task                                                                  | Impact | Effort |
 | -- | --------------------------------------------------------------------- | ------ | ------ |
-| 4  | Printer interface → accept ProcessedCloneGroup[]                      | High   | 4h     |
-| 5  | Consolidate three Clone types                                         | High   | 3h     |
-| 6  | Remove printer.clone unexported type                                  | Medium | 2h     |
-| 7  | NodeCategory field on syntax.Node for language-agnostic actionability | Medium | 2h     |
-| 8  | Remove actionability.go import of syntax/golang                       | Medium | 1h     |
-| 9  | Benchmark Name field memory impact on large project                   | Low    | 30min  |
+| ~~4~~ done — PrintClones takes domain.ProcessedCloneGroup (printer/printer.go:82) | ~~Printer interface → accept ProcessedCloneGroup[]~~ | ~~High~~ | ~~4h~~ |
+| ~~5~~ done — CloneRef consolidation landed (AGENTS.md) | ~~Consolidate three Clone types~~ | ~~High~~ | ~~3h~~ |
+| ~~6~~ done — the unexported printer clone type is gone | ~~Remove printer.clone unexported type~~ | ~~Medium~~ | ~~2h~~ |
+| ~~7~~ **Won't implement — won't implement — no NodeCategory field; categories dispatch via decoded base types (ADR-0027).** | ~~NodeCategory field on syntax.Node for language-agnostic actionability~~ | ~~Medium~~ | ~~2h~~ |
+| ~~8~~ **Won't implement — won't implement — the AST-constant dependency is deliberate (AGENTS.md category tables).** | ~~Remove actionability.go import of syntax/golang~~ | ~~Medium~~ | ~~1h~~ |
+| ~~9~~ done — moot — interning shipped instead; no separate memory benchmark was needed | ~~Benchmark Name field memory impact on large project~~ | ~~Low~~ | ~~30min~~ |
 | ~~10~~ **Won't implement — won't implement — exhaustruct is deliberately banned (AGENTS.md Lint Config Guard auto-removes it).** | ~~Add exhaustruct linter check back with Config whitelist~~ | ~~Low~~ | ~~15min~~ |
 
 ### P2 — Quality
 
+<!-- check-rows:ledger -->
 | #  | Task                                                              | Impact | Effort |
 | -- | ----------------------------------------------------------------- | ------ | ------ |
-| 11 | BDD test: --structural=false overrides config.json semantic: true | Medium | 30min  |
-| 12 | BDD test: --vendor=false overrides file vendor: true              | Low    | 30min  |
+| ~~11~~ done — configuration override coverage lives in bdd/configuration_file_test.go | ~~BDD test: --structural=false overrides config.json semantic: true~~ | ~~Medium~~ | ~~30min~~ |
+| ~~12~~ done — vendor-filter override coverage lives in bdd/default_filtering_test.go | ~~BDD test: --vendor=false overrides file vendor: true~~ | ~~Low~~ | ~~30min~~ |
 | 13 | Fuzz test for MergeConfigs with all field combinations            | Medium | 1h     |
 | 14 | Add --no-semantic alias for --structural (clearer UX)             | Low    | 15min  |
 | 15 | Migrate from gob cache to custom binary format (faster, smaller)  | Medium | 3h     |
 
 ### P3 — Polish
 
+<!-- check-rows:ledger -->
 | #  | Task                                                                | Impact | Effort |
 | -- | ------------------------------------------------------------------- | ------ | ------ |
 | 16 | Update CHANGELOG.md with semantic default breaking change           | Medium | 30min  |
@@ -169,6 +171,7 @@ Nothing.
 
 ### P4 — Performance
 
+<!-- check-rows:ledger -->
 | #  | Task                                                   | Impact | Effort |
 | -- | ------------------------------------------------------ | ------ | ------ |
 | 21 | Profile: where is Name string allocation heaviest?     | Medium | 30min  |
@@ -223,6 +226,7 @@ ok  github.com/LarsArtmann/art-dupl/syntax/golang  0.010s
 
 ## Commit History
 
+<!-- check-rows:ledger -->
 | Hash      | Files | Description                                          |
 | --------- | ----- | ---------------------------------------------------- |
 | `66cb17b` | 4     | feat(syntax): Name field + actionability improvement |

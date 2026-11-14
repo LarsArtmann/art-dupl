@@ -87,16 +87,16 @@ The project is in **excellent health**. All 23 packages compile clean, 0 lint is
 
 | Priority | Item                                                      | Notes                                                         |
 | -------- | --------------------------------------------------------- | ------------------------------------------------------------- |
-| HIGH     | Implement TokenValue type with validation                 | Refactor suffixtree/syntax to use it                          |
-| MEDIUM   | Optimize memory layouts for SIMD-friendly data structures | + string interning                                            |
-| MEDIUM   | Implement CSV output using `encoding/csv`                 | General clone CSV, not stats                                  |
-| MEDIUM   | Unify enum patterns                                       | Domain enums → config's generic helpers                       |
-| MEDIUM   | Introduce ProcessedClone DTO                              | Decouple Printer from syntax.Node (111 test call sites!)      |
-| MEDIUM   | Consolidate three parallel Clone types                    | `printer.clone`, `pkg/artdupl.Clone`, `domain.ProcessedClone` |
-| LOW      | Refactor `syntax/golang/transform.go`                     | 355L, 300L switch statement                                   |
-| LOW      | Archive old docs/status/ files                            | 334 files                                                     |
-| LOW      | Fix remaining LSP hints                                   | Unused params, unnecessary type args                          |
-| LOW      | Implement SIMD TODOs                                      | 6 items — though xxh3 already has SIMD built-in               |
+| ~~HIGH~~ done — TokenValue is the suffix tree token type (ADR-0022) | ~~Implement TokenValue type with validation~~ | ~~Refactor suffixtree/syntax to use it~~ |
+| ~~MEDIUM~~ **Won't implement — won't implement — the SIMD code was deleted; alloc budgets own memory work.** | ~~Optimize memory layouts for SIMD-friendly data structures~~ | ~~+ string interning~~ |
+| ~~MEDIUM~~ done — CSV is an OutputFormat value (config enums; stats + run output paths) | ~~Implement CSV output using `encoding/csv`~~ | ~~General clone CSV, not stats~~ |
+| ~~MEDIUM~~ done — the pkg/enum shared helpers are adopted (AGENTS.md Enum pattern) | ~~Unify enum patterns~~ | ~~Domain enums → config's generic helpers~~ |
+| ~~MEDIUM~~ done — domain.ProcessedClone landed; PrintClones consumes it | ~~Introduce ProcessedClone DTO~~ | ~~Decouple Printer from syntax.Node (111 test call sites!)~~ |
+| ~~MEDIUM~~ done — CloneRef consolidation landed (AGENTS.md) | ~~Consolidate three parallel Clone types~~ | ~~`printer.clone`, `pkg/artdupl.Clone`, `domain.ProcessedClone`~~ |
+| ~~LOW~~ done — struck — tracked on ROADMAP (Architecture: transform.go table-driven handlers) | ~~Refactor `syntax/golang/transform.go`~~ | ~~355L, 300L switch statement~~ |
+| ~~LOW~~ done — fixed 2026-11-14 — the archive ritual is running (cadence gate) | ~~Archive old docs/status/ files~~ | ~~334 files~~ |
+| ~~LOW~~ done — fixed — the gopls findings were closed in the 2026-09-29 pass (AGENTS.md) | ~~Fix remaining LSP hints~~ | ~~Unused params, unnecessary type args~~ |
+| ~~LOW~~ **Won't implement — won't implement — the SIMD code was deleted; no TODOs remain.** | ~~Implement SIMD TODOs~~ | ~~6 items — though xxh3 already has SIMD built-in~~ |
 
 ### Not on TODO_LIST but Notable
 
@@ -161,6 +161,7 @@ All tests pass, lint is clean, build is clean. But here's what's fragile or regr
 
 ## f) Top #25 Things We Should Get Done Next
 
+<!-- check-rows:ledger -->
 | #  | Item                                                                                          | Impact | Effort            | Priority       |
 | -- | --------------------------------------------------------------------------------------------- | ------ | ----------------- | -------------- |
 | 1  | Delete `internal/simd/` package (dead code)                                                   | Low    | Tiny              | Quick win      |
@@ -201,6 +202,7 @@ The package has been a stub since creation. xxh3 already ships with runtime SIMD
 
 ## Scorecard
 
+<!-- check-rows:ledger -->
 | Metric              | Value                            | Trend                        |
 | ------------------- | -------------------------------- | ---------------------------- |
 | Build               | ✅ Clean                         | Stable                       |

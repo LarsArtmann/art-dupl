@@ -258,6 +258,7 @@ Alternatively: **Should we focus exclusively on AST structure changes** (replaci
 
 ## Current State Snapshot
 
+<!-- check-rows:ledger -->
 | Metric                 | Value               |
 | ---------------------- | ------------------- |
 | Clone groups (started) | 125                 |
@@ -270,6 +271,7 @@ Alternatively: **Should we focus exclusively on AST structure changes** (replaci
 
 ### Clone Group Distribution
 
+<!-- check-rows:ledger -->
 | Instance count | Groups  | Category                    |
 | -------------- | ------- | --------------------------- |
 | n=7            | 1       | syntax.Node literals        |

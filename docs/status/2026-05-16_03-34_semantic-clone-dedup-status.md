@@ -43,6 +43,7 @@ These replaced multi-line `if` blocks with single-line helper calls, fundamental
 
 All of these were done with proper function-scope analysis, ensuring no "declared and not used" or "undefined" errors:
 
+<!-- check-rows:ledger -->
 | File                                           | Old                         | New                                                                                      | Scope                      |
 | ---------------------------------------------- | --------------------------- | ---------------------------------------------------------------------------------------- | -------------------------- |
 | bdd/sorting_test.go                            | `sortOutput` (5 instances)  | `sizeSortedOutput`, `resultOutput`, `occurrenceOutput`, `hashSortedOutput`, `sortResult` | Per-It closure             |
@@ -101,6 +102,7 @@ All of these were done with proper function-scope analysis, ensuring no "declare
 
 ### Commits Made (This Session)
 
+<!-- check-rows:ledger -->
 | Commit    | Message                                                                        | Groups |
 | --------- | ------------------------------------------------------------------------------ | ------ |
 | `8384aa0` | refactor: reduce semantic clone groups from 107 to 88 across 33 files          | 107→88 |
@@ -224,6 +226,7 @@ Before any rename, automatically:
 
 ### 3. Categorize Variables Before Renaming
 
+<!-- check-rows:ledger -->
 | Safe to rename scoped        | Must rename globally         | Never rename       |
 | ---------------------------- | ---------------------------- | ------------------ |
 | Local loop vars              | Function names (def+callers) | Type names         |
@@ -257,6 +260,7 @@ For packages that can't import `testutil`:
 
 Sorted by impact × effort:
 
+<!-- check-rows:ledger -->
 | #  | Task                                                                                      | Groups         | Effort | Category          |
 | -- | ----------------------------------------------------------------------------------------- | -------------- | ------ | ----------------- |
 | 1  | Extract `testNode()` helper in printer/text_test.go — replace 7 `&syntax.Node{}` literals | G2 (n=7)       | 10min  | Helper extraction |
@@ -305,6 +309,7 @@ The problem: these are struct literals used as test fixtures. Renaming their fie
 
 ## Appendix: Remaining 78 Groups by Category
 
+<!-- check-rows:ledger -->
 | Category                       | Count  | Percentage |
 | ------------------------------ | ------ | ---------- |
 | **TD** — Test data literals    | 31     | 39.7%      |
