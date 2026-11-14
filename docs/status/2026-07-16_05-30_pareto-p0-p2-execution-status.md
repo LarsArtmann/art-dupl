@@ -45,7 +45,7 @@ Executed 38 tasks from the comprehensive Pareto roadmap (`docs/planning/2026-07-
 
 ### P2: Polish & Completeness (12/12 attempted)
 
-19. **2-stmt error wrapping detection** — `isReturnOrWrappedReturn` extended to handle `log.Print(err); return err` via new `isLogOrPrintStmt()` + `isLoggingMethod()`
+~~19. **2-stmt error wrapping detection** — `isReturnOrWrappedReturn` extended to handle `log.Print(err); return err` via new `isLogOrPrintStmt()` + `isLoggingMethod()`~~ done — struck — tracked on TODO_LIST (nix hygiene: statix + govet lanes, landed 2026-11-14)
 20. **`--min-lines` flag** — Full pipeline: `Config.MinLines` field, CLI flag, config builder wiring, `shouldSuppressGroup` integration, all 6 call sites updated (run_flags, run_all_modes, baseline_cmd x2, stats, cmd_test)
 21. **DOMAIN_LANGUAGE.md updated** — Added 6 entries: sendCtx, CloneNode, Test Threshold, Min Lines, Dump Tokens, Include Generated
 22. **ADR-0009** — Default threshold change (1→5) with rationale and consequences

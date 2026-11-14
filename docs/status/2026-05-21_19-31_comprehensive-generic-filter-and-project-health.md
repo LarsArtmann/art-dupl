@@ -196,7 +196,7 @@ Most are in test code (small boilerplate patterns). But indicates test utility e
 
 | #  | Task                                                | Priority | Effort | Impact               | Category     |
 | -- | --------------------------------------------------- | -------- | ------ | -------------------- | ------------ |
-| 1  | Fix `config/config_enum_test.go` build failure      | P0       | 5min   | Unblocks CI          | Bug fix      |
+| ~~1~~ done — the config package tests are green today | ~~Fix `config/config_enum_test.go` build failure~~ | ~~P0~~ | ~~5min~~ | ~~Unblocks CI~~ | ~~Bug fix~~ |
 | 2  | Commit/revert 4 uncommitted files                   | P0       | 10min  | Clean working tree   | Housekeeping |
 | 3  | Fix os.Exit flaky tests (bdd + cmd)                 | P0       | 2hr    | CI green             | Bug fix      |
 | 4  | Refactor `setupFilter()` to table-driven            | P1       | 30min  | Maintainability      | Refactoring  |
@@ -208,7 +208,7 @@ Most are in test code (small boilerplate patterns). But indicates test utility e
 | 10 | Add `FilterConnect` to gogenfilter (optional)       | P2       | 1hr    | Specific detection   | Enhancement  |
 | 11 | `clone_classify.go` decoupling from syntax/golang   | P2       | 1d     | Multi-language prep  | Architecture |
 | 12 | TokenValue named type for suffix tree tokens        | P2       | 1d     | Type safety          | Refactoring  |
-| 13 | Proper CSV output with headers/escaping             | P2       | 4hr    | UX                   | Enhancement  |
+| ~~13~~ done — CSV is an OutputFormat value (config enums; stats + run output paths) | ~~Proper CSV output with headers/escaping~~ | ~~P2~~ | ~~4hr~~ | ~~UX~~ | ~~Enhancement~~ |
 | 14 | SDK v1 stable API review                            | P2       | 3-5d   | API stability        | Feature      |
 | 15 | Enum unification (shared parsing/validation)        | P3       | 1-2d   | Code quality         | Refactoring  |
 | 16 | Memory optimization (pool allocations)              | P3       | 2-3d   | Performance          | Optimization |
@@ -218,7 +218,7 @@ Most are in test code (small boilerplate patterns). But indicates test utility e
 | 20 | Benchmark: generic filter overhead measurement      | P3       | 1hr    | Performance          | Testing      |
 | 21 | HTML output accessibility audit                     | P3       | 2hr    | Quality              | UX           |
 | 22 | SARIF schema validation in tests                    | P3       | 1hr    | Correctness          | Testing      |
-| 23 | Integration test: typespec-eventsourcing as fixture | P4       | 2hr    | Dogfooding           | Testing      |
+| ~~23~~ **Won't implement — won't implement — external corpus, never vendored as a fixture.** | ~~Integration test: typespec-eventsourcing as fixture~~ | ~~P4~~ | ~~2hr~~ | ~~Dogfooding~~ | ~~Testing~~ |
 | 24 | Non-Go language architecture proposal               | P4       | 1d     | Vision               | Architecture |
 | 25 | Website docs update for `--include-generic`         | P4       | 30min  | Documentation        | Docs         |
 

@@ -65,7 +65,7 @@ Two major work streams completed in this session:
 | 4 | **Regression test for ValueSpec-as-Statement**                         | No test that asserts declaration-only files produce zero clones                                                                      |
 | 5 | **BDD test for new actionability patterns**                            | No end-to-end test for assign+err-check or single-CallExpr                                                                           |
 | 6 | **`nix flake check`**                                                  | Haven't verified Nix reproducible build with new `GOEXPERIMENT`                                                                      |
-| 7 | **`nix build`**                                                        | Haven't verified Nix packaging includes `GOEXPERIMENT=jsonv2` correctly                                                              |
+| ~~7~~ done — nix build is green with the pinned vendorHash (flake discipline) | ~~**`nix build`**~~ | ~~Haven't verified Nix packaging includes `GOEXPERIMENT=jsonv2` correctly~~ |
 | 8 | **Commit all changes**                                                 | Nothing is committed yet                                                                                                             |
 
 ---
@@ -120,7 +120,7 @@ Nothing in this session. All issues from the previous status report (json/v2 mig
 | - | ----------------------------------------------------------------------------------------- | ------ |
 | 1 | **Update AGENTS.md** with json/v2 conventions (`GOEXPERIMENT`, `omitzero`, `format:nano`) | 10 min |
 | 2 | **Run `nix flake check`** — verify Nix reproducible build with `GOEXPERIMENT=jsonv2`      | 5 min  |
-| 3 | **Run `nix build`** — verify Nix packaging                                                | 5 min  |
+| ~~3~~ done — nix build is green with the pinned vendorHash (flake discipline) | ~~**Run `nix build`** — verify Nix packaging~~ | ~~5 min~~ |
 | 4 | **Commit all changes** — semantic noise fixes + json/v2 migration completion              | 10 min |
 | 5 | **Verify golden file diff** — manually inspect `TestStatsJSONOutputGolden.golden` changes | 10 min |
 
@@ -142,7 +142,7 @@ Nothing in this session. All issues from the previous status report (json/v2 mig
 | -- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
 | 13 | **Add `--min-lines` flag** — complementary line-count filter                                                                                                                            | 45 min |
 | 14 | **Fix the inline `isTestFile` call** at `clone_classify.go:40` to use the restored function                                                                                             | 5 min  |
-| 15 | **Pre-compute `fileContainsStatements`** as a `map[string]bool` — eliminate O(n) scan per match                                                                                         | 20 min |
+| ~~15~~ **Won't implement — won't implement — the scan stays inline; no such hot path survived later profiling.** | ~~**Pre-compute `fileContainsStatements`** as a `map[string]bool` — eliminate O(n) scan per match~~ | ~~20 min~~ |
 | 16 | **Document actionability pattern precedence** — add comment explaining ordering                                                                                                         | 10 min |
 | 17 | **Add BDD test for ValueSpec fingerprinting**                                                                                                                                           | 20 min |
 | 18 | **Review `.golangci.yml` reduction** — 125 lines of linter rules removed; verify intent                                                                                                 | 30 min |
@@ -168,7 +168,7 @@ Nothing in this session. All issues from the previous status report (json/v2 mig
 | 33 | **Test with real-world repos** — Kubernetes, Go stdlib to validate noise reduction               | 1 hour   |
 | 34 | **Benchmark detection speed** at threshold 5 vs 1                                                | 15 min   |
 | 35 | **Write ADR for json/v2 migration** — document `GOEXPERIMENT` decision                           | 20 min   |
-| 36 | **Write ADR for threshold change** — document 1→5 decision                                       | 20 min   |
+| ~~36~~ done — docs/adr/0009-default-threshold-change.md | ~~**Write ADR for threshold change** — document 1→5 decision~~ | ~~20 min~~ |
 | 37 | **Consider `format:units` for Duration** — human-readable ("5s") instead of nanoseconds          | 15 min   |
 | 38 | **Audit `HandleMarshalingError`** — verify `SemanticError` mapping is sufficient for all callers | 15 min   |
 | 39 | **Consider `--threshold-mode` flag** — `statements` vs `tokens` vs `lines`                       | 1 hour+  |

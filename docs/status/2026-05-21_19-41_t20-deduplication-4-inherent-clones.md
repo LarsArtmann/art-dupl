@@ -192,7 +192,7 @@ All assertions pass but test binary exits non-zero. Cobra calls `os.Exit()` duri
 | 21 | Add more fuzz tests                                            | LOW      | M      |
 | 22 | Coverage improvement: domain (67%), job (77%), detection (78%) | MEDIUM   | M      |
 | 23 | Add benchmark regression CI                                    | MEDIUM   | S      |
-| 24 | Consider modularization                                        | LOW      | XL     |
+| ~~24~~ done — won't implement — the single-module layout stands; module splits are major-version work (TODO_LIST PARKED) | ~~Consider modularization~~ | ~~LOW~~ | ~~XL~~ |
 | 25 | Migrate justfile → nix flake                                   | LOW      | M      |
 
 ---

@@ -153,9 +153,9 @@ Nothing destroyed or irreversibly broken. But two things I'm unhappy about:
 
 #### High Priority (blocking or correctness)
 
-1. Commit the 4 changed files
+~~1. Commit the 4 changed files~~ done — the daemon commits continuously; the files landed
 2. Update AGENTS.md with: disabled linters rationale, gomoddirectives v2 fix, GOEXPERIMENT=jsonv2 in build commands
-3. Add `meta.description` to nix apps to silence warnings
+~~3. Add `meta.description` to nix apps to silence warnings~~ done — flake.nix carries meta.description (apps + package)
 4. Re-run full BuildFlow to confirm all 45 steps pass
 5. Run `go-auto-upgrade:detect` to check for dependency upgrades
 
@@ -205,14 +205,14 @@ Nothing destroyed or irreversibly broken. But two things I'm unhappy about:
 
 #### Dependency Management
 
-35. Check `go-mod-update` output from BuildFlow for pending updates
+~~35. Check `go-mod-update` output from BuildFlow for pending updates~~ done — moot — BuildFlow dependency sweeps are routine (2026-11-04)
 36. Review `gogenfilter` version — is v3.3.0 latest?
 37. Check for Go toolchain updates (currently 1.26.4)
 38. Review nixpkgs lock — is it on the latest nixos-unstable?
 
 #### Architecture
 
-39. Review whether the 15 non-actionable patterns are the right set
+~~39. Review whether the 15 non-actionable patterns are the right set~~ done — the pattern set grew to 42 with corpus-validated reviews (AGENTS.md actionability bullet)
 40. Consider making pattern detection extensible (plugin/registry pattern)
 41. Review the Printer ↔ syntax.Node coupling mentioned in AGENTS.md
 42. Check if the CloneClassification system could use stronger types

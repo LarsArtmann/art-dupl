@@ -202,7 +202,7 @@ BuildFlow flags 4 untracked binaries: `art-dupl`, `dist/art-dupl`, `result`, `bd
 | 17 | **Custom TODO patterns** (`--todo-patterns "BUG,PERF"`)            | Medium   | Medium | P3       |
 | 18 | **Custom legacy patterns** (`--legacy-patterns "pkg.OldFunc"`)     | Medium   | Medium | P3       |
 | 19 | **Cache findings** in incremental mode                             | Low      | Medium | P3       |
-| 20 | **Findings in stats output** (count by type/priority)              | Low      | Low    | P3       |
+| ~~20~~ done — stats carries severity/priority distributions (AGENTS.md stats bullet) | ~~**Findings in stats output** (count by type/priority)~~ | ~~Low~~ | ~~Low~~ | ~~P3~~ |
 | 21 | **Hybrid slice/map transition storage**                            | Low      | Medium | P3       |
 | 22 | **Refactor actionability.go** into sub-files                       | Low      | Medium | P3       |
 | 23 | **Add ADR-0005** for Findings pipeline architecture                | Low      | Low    | P3       |

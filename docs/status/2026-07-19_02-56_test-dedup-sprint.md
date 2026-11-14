@@ -157,7 +157,7 @@ Honest self-critique on this session:
 22. Add a CI gate: `art-dupl --semantic -t 25 --plumbing | check_threshold` (or similar)
 23. Generate HTML report on each PR as an artifact
 24. Add `--diff` mode to art-dupl: show only clones introduced since main
-25. Add a `--since <ref>` flag that runs git-aware dedup
+~~25. Add a `--since <ref>` flag that runs git-aware dedup~~ done — won't implement — git-aware incrementals were never built; tracked for the polish pass
 
 ### Documentation / project hygiene
 
@@ -182,7 +182,7 @@ Honest self-critique on this session:
 38. When a skill instruction conflicts with a global rule, ASK THE USER instead of silently picking one
 39. Always run `-race` after non-trivial test refactors
 40. Always update `AGENTS.md` when introducing new patterns (per the global update protocol)
-41. View HTML output when I generate it — don't waste the tool call
+~~41. View HTML output when I generate it — don't waste the tool call~~ done — moot — process note, not a work item
 42. Check cross-package reuse potential before extracting helpers (avoid reinvention)
 43. Add a direct test for any production function whose body becomes a 1-line delegation
 

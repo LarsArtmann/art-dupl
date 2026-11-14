@@ -120,7 +120,7 @@ From TODO_LIST.md (priority order):
 | 7  | Change Printer interface → []ProcessedCloneGroup          | M      |
 | 8  | Update 111 test call sites                                | L      |
 | 9  | Implement TokenValue type with validation                 | M      |
-| 10 | Unify enum patterns                                       | S      |
+| ~~10~~ done — the pkg/enum shared helpers are adopted (AGENTS.md Enum pattern) | ~~Unify enum patterns~~ | ~~S~~ |
 | 11 | Refactor syntax/golang/transform.go — extract switch arms | M      |
 | 12 | Fix remaining LSP hints                                   | S      |
 
@@ -138,13 +138,13 @@ From TODO_LIST.md (priority order):
 
 | #  | Task                            | Effort |
 | -- | ------------------------------- | ------ |
-| 18 | Bump BDD test coverage to 80%+  | M      |
+| ~~18~~ done — superseded — coverage is tracked by the CI Coverage job; per-package floors moved on | ~~Bump BDD test coverage to 80%+~~ | ~~M~~ |
 | 19 | Add fuzz tests for templ parser | S      |
 | 20 | CI pipeline audit               | S      |
 | 21 | Update FEATURES.md              | S      |
-| 22 | SDK dogfooding                  | M      |
+| ~~22~~ done — the SDK is dogfooded by the BuildFlow provider (pkg/provider; live since 2026-09-25) | ~~SDK dogfooding~~ | ~~M~~ |
 | 23 | Performance benchmarking        | M      |
-| 24 | Nix flake check                 | S      |
+| ~~24~~ done — nix flake check is the CI gate (lint + format + race + alloc-gate) | ~~Nix flake check~~ | ~~S~~ |
 | 25 | Update HOW_TO_USE.md FAQ        | S      |
 
 ---

@@ -115,7 +115,7 @@ Built a complete Astro + Starlight documentation website, rewrote the README as 
 10. Generate OG image for social sharing
 11. Add OG image meta tags to LandingLayout
 12. Run HTML validation (`html-validate dist/**/*.html`)
-13. Fix any HTML validation errors
+~~13. Fix any HTML validation errors~~ done — struck — tracked on ROADMAP (Website and Presence section)
 14. Run Lighthouse audit on landing page
 15. Fix Lighthouse issues (performance, accessibility, SEO, best practices)
 16. Test mobile responsive layout (DevTools device emulation)
@@ -131,14 +131,14 @@ Built a complete Astro + Starlight documentation website, rewrote the README as 
 23. Verify pkg.go.dev badge URL works
 24. Verify Go Report Card still works for the repo
 25. Reconcile stale docs: decide which of HOW_TO_USE.md, USAGE.md, SDK_DESIGN.md, etc. to keep/link
-26. Add a "Contributing" call-to-action section
+~~26. Add a "Contributing" call-to-action section~~ done — struck — tracked on ROADMAP (Website and Presence section)
 27. Consider adding a project logo/banner image
 
 ### Docs Accuracy
 
 28. Verify `--test-threshold` default formula (`max(30, threshold)`) in CLI Flags doc
 29. Verify all flag defaults in cli-flags.mdx against `cmd/flags.go`
-30. Verify JSON output structure described in output-formats.mdx matches actual output
+~~30. Verify JSON output structure described in output-formats.mdx matches actual output~~ done — golden tests pin the output structure (printer/testdata/; ADR-0024 canonical marshaler)
 31. Verify SARIF output format matches GitHub's expected schema
 32. Add code examples that can actually be run (test them)
 33. Verify SDK code examples compile against actual `pkg/artdupl` API
@@ -157,7 +157,7 @@ Built a complete Astro + Starlight documentation website, rewrote the README as 
 
 41. Audit and consolidate USAGE.md, HOW_TO_USE.md — these now overlap with website docs
 42. Audit WHAT_THIS_PROJECT_IS_NOT.md — useful or stale?
-43. Audit PARTS.md — is this still relevant?
+~~43. Audit PARTS.md — is this still relevant?~~ done — moot — PARTS.md no longer exists in the tree
 44. Audit MIGRATION_QUICK_START.md, MIGRATION_TO_NIX_FLAKES_PROPOSAL.md — still needed?
 45. Audit PERFORMANCE_OPTIMIZATION.md — accurate or stale?
 46. Remove or archive `docs/status/archive/` (hundreds of historical status files)

@@ -171,7 +171,7 @@ AGENTS.md says `nix flake check` is the reproducible CI (includes `templ generat
 42. **Add `FilterSource` to JSON stats output**: If/when `SourceBreakdown` is wired, add `filter_source_breakdown` to `StatsData`
 43. **Consolidate test helpers**: `newTestFilter` in `cmd/filter_includes_test.go` duplicates setup logic — extract to testutil
 44. **Review BDD test for templ defense-in-depth**: The new test uses `parseHeader`-style code — ensure it actually exceeds threshold 5 (statement count)
-45. **Add contract test between gogenfilter and art-dupl**: Verify filter behavior matches when gogenfilter is updated
+~~45. **Add contract test between gogenfilter and art-dupl**: Verify filter behavior matches when gogenfilter is updated~~ done — TestMarkersMatchGogenfilter cross-validates the markers (AGENTS.md generated-code bullet)
 46. **Review `t.Context()` usage**: Go 1.24+ feature, verify all test files use it consistently
 47. **Audit `io.Discard` vs `io.MultiWriter`**: Progress tests discard output — consider capturing for debug when test fails
 48. **Add `--filter-source-breakdown` to stats subcommand**: Surface the new source distinction in CLI stats output

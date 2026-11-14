@@ -187,7 +187,7 @@ Categories of "clones" found at t=15 that are **not actionable**:
 | 21 | Add more fuzz tests                                            | LOW      |
 | 22 | Coverage improvement: domain (67%), job (77%), detection (78%) | MEDIUM   |
 | 23 | Add benchmark regression CI                                    | MEDIUM   |
-| 24 | Consider modularization                                        | LOW      |
+| ~~24~~ done — won't implement — the single-module layout stands; module splits are major-version work (TODO_LIST PARKED) | ~~Consider modularization~~ | ~~LOW~~ |
 | 25 | Migrate justfile → nix flake                                   | LOW      |
 
 ---

@@ -190,7 +190,7 @@ This is misleading for anyone reading project docs.
 | #  | Item                                                               | Impact   | Effort | Category     |
 | -- | ------------------------------------------------------------------ | -------- | ------ | ------------ |
 | 1  | Fix `os.Exit(1)` in `statError()` → return error                   | Critical | Small  | Bug fix      |
-| 2  | Move `--version` flag to `NewRootCommand()`                        | Critical | Small  | Bug fix      |
+| ~~2~~ done — version info ships via the version subcommand + buildinfo fallback (cmd/version.go, 2026-10-16) | ~~Move `--version` flag to `NewRootCommand()`~~ | ~~Critical~~ | ~~Small~~ | ~~Bug fix~~ |
 | 3  | Update `docs/status/README.md` with real metrics                   | High     | Small  | Docs         |
 | 4  | Implement `TokenValue` type with validation                        | High     | Medium | Architecture |
 | 5  | Create `ProcessedClone` DTO for printer decoupling                 | High     | High   | Architecture |
@@ -210,7 +210,7 @@ This is misleading for anyone reading project docs.
 | 19 | Add benchmark comparison: in-process vs subprocess BDD execution   | Medium   | Small  | Testing      |
 | 20 | Profile memory usage during large repo analysis                    | Medium   | Medium | Performance  |
 | 21 | Consider `go:embed` for HTML template instead of const             | Low      | Small  | Quality      |
-| 22 | Add SARIF output integration test                                  | Low      | Small  | Testing      |
+| ~~22~~ done — the SARIF round-trip is pinned (bdd/sarif_gofinding_integration_test.go) | ~~Add SARIF output integration test~~ | ~~Low~~ | ~~Small~~ | ~~Testing~~ |
 | 23 | Document `syscall.Dup2` pattern in `bdd/execute.go` with comments  | Low      | Small  | Docs         |
 | 24 | Evaluate `a-h/templ` v3 for `ConstantCSSProperty` Range field      | Low      | Small  | Upstream     |
 | 25 | Create GitHub release workflow (tag → binary → release)            | Medium   | Medium | CI/CD        |

@@ -135,8 +135,8 @@ tests pass. Zero lint issues.
 | 2  | T36 Perf regression CI (threshold assertions)       | HIGH   | 40m                    |
 | 3  | T23 CloneRef value object (unify 7 Clone types)     | MED    | 80m                    |
 | 4  | T28 Sort comparator factory                         | LOW    | 12m                    |
-| 5  | T18 Hash pipeline consolidation                     | LOW    | 12m                    |
-| 6  | T41 Context through file feeders                    | LOW    | 60m                    |
+| ~~5~~ **Won't implement — won't implement — the hash package stands as-is; the free-function/method split never consolidated.** | ~~T18 Hash pipeline consolidation~~ | ~~LOW~~ | ~~12m~~ |
+| ~~6~~ done — context cancellation threads through every feeder (AGENTS.md context propagation) | ~~T41 Context through file feeders~~ | ~~LOW~~ | ~~60m~~ |
 | 7  | T24 Branded NodeType (HIGH RISK: cache format)      | MED    | 180m                   |
 | 8  | Test GitHub Actions template in real CI             | MED    | 30m                    |
 | 9  | Test pre-commit hook template                       | MED    | 30m                    |
@@ -146,7 +146,7 @@ tests pass. Zero lint issues.
 | 13 | ADR for semantic encoding layout                    | LOW    | 30m                    |
 | 14 | "How art-dupl detects clones" deep-dive             | LOW    | 40m                    |
 | 15 | go.mod dependency audit in CI                       | LOW    | 20m                    |
-| 16 | HTML report: collapsible clone groups               | LOW    | 40m                    |
+| ~~16~~ **Won't implement — won't implement — the HTML report ships anchors + perm links instead (printer/html_views.go).** | ~~HTML report: collapsible clone groups~~ | ~~LOW~~ | ~~40m~~ |
 | 17 | T32 Watch mode (`--watch`)                          | MED    | 1d                     |
 | 18 | T38 TypeScript/JS support                           | HIGH   | 1w+                    |
 | 19 | T39 Python support                                  | HIGH   | 1w+                    |
