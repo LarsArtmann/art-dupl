@@ -25,6 +25,7 @@ Statement-level tokenization (T1) is **complete and verified**. The core algorit
 ### T1: Statement-Level Tokenization (This Session)
 
 | Item                                              | Status  | Detail                                                           |
+<!-- check-rows:ledger -->
 | ------------------------------------------------- | ------- | ---------------------------------------------------------------- |
 | Core algorithm (`serial()`, `fingerprintSubtree`) | ✅ Done | FNV-1a composite hashing, committed in `008ccf9`                 |
 | Structural wrapper false-positive fix             | ✅ Done | `dataContainsStatements()` guard in `FindSyntaxUnits()`          |
@@ -36,6 +37,7 @@ Statement-level tokenization (T1) is **complete and verified**. The core algorit
 ### Previously Completed (Prior Sprints)
 
 | Area                                | Status  | Highlight                                                                                     |
+<!-- check-rows:ledger -->
 | ----------------------------------- | ------- | --------------------------------------------------------------------------------------------- |
 | Semantic detection (3 modes)        | ✅ Done | Structural, semantic (default), hash-based                                                    |
 | Alpha-normalization (Type 2 clones) | ✅ Done | Identifier name normalization                                                                 |
@@ -53,6 +55,7 @@ Statement-level tokenization (T1) is **complete and verified**. The core algorit
 ### Quality Metrics
 
 | Metric               | Value                                                   |
+<!-- check-rows:ledger -->
 | -------------------- | ------------------------------------------------------- |
 | Production code      | ~20,200 lines                                           |
 | Test code            | ~31,000 lines (1.53x ratio)                             |
@@ -72,12 +75,12 @@ Statement-level tokenization (T1) is **complete and verified**. The core algorit
 
 | Area               | What's Done                                     | What Remains                                                             |
 | ------------------ | ----------------------------------------------- | ------------------------------------------------------------------------ |
-| ~~                 | **Clone type consolidation**                    | Field names aligned (`LineStart`/`LineEnd` canonical across all 5 types) |
-| ~~                 | **Printer package split**                       | Actionability split into 4 files; view models renamed to `*View`         |
-| ~~                 | **Context propagation**                         | All detection goroutines + suffix tree respect ctx                       |
-| ~~                 | **Templ semantic mode**                         | Templ detection works (structural mode)                                  |
-| **InternFilename** | Wired into all 4 transformer construction sites | Type-safe RWMutex+map (could use further profiling)                      |
-| ~~                 | **Performance benchmarks**                      | Suffix tree benchmarks added (T20)                                       |
+| ~~**Clone type consolidation**~~ done — domain.CloneRef consolidation (2026-07-01) | ~~Field names aligned (`LineStart`/`LineEnd` canonical across all 5 types)~~ |
+| ~~**Printer package split**~~ done — printer/stats, printer/actionability, printer/finding | ~~Actionability split into 4 files; view models renamed to `*View`~~ |
+| ~~**Context propagation**~~ done — every pipeline goroutine is ctx-aware (AGENTS.md invariant) | ~~All detection goroutines + suffix tree respect ctx~~ |
+| ~~**Templ semantic mode**~~ done — templ semantic mode landed 2026-10-04 (expression-aware detection) | ~~Templ detection works (structural mode)~~ |
+| ~~**InternFilename**~~ done — the wiring stands (the row is its own record) | ~~Wired into all 4 transformer construction sites~~ | ~~Type-safe RWMutex+map (could use further profiling)~~ |
+| ~~**Performance benchmarks**~~ done — docs/benchmarks baselines + the CI performance workflow | ~~Suffix tree benchmarks added (T20)~~ |
 
 ---
 
@@ -85,12 +88,12 @@ Statement-level tokenization (T1) is **complete and verified**. The core algorit
 
 | Item           | Priority                            | Notes                                       |
 | -------------- | ----------------------------------- | ------------------------------------------- |
-| ~~             | TypeScript/JavaScript support       | Roadmap                                     |
-| Python support | Roadmap                             | Would need new AST transformer in `syntax/` |
-| ~~             | Watch mode (incremental)            | Roadmap                                     |
-| ~~             | Hybrid slice/map transition storage | Medium                                      |
-| ~~             | Performance regression suite        | Roadmap                                     |
-| ~~             | More ADRs                           | Roadmap                                     |
+| ~~TypeScript/JavaScript support~~ done — struck — still on ROADMAP (TypeScript/JavaScript support row) | ~~Roadmap~~ |
+| ~~Python support~~ done — struck — still on ROADMAP (Python support row) | ~~Roadmap~~ | ~~Would need new AST transformer in `syntax/`~~ |
+| ~~Watch mode (incremental)~~ done — struck — still on ROADMAP (watch mode row) | ~~Roadmap~~ |
+| ~~Hybrid slice/map transition storage~~ **Superseded — superseded — sorted []tran transition slices (ADR-0022).** | ~~Medium~~ |
+| ~~Performance regression suite~~ done — the Performance Tests workflow + flake alloc-gate | ~~Roadmap~~ |
+| ~~More ADRs~~ done — the ADR set now spans 0024-0029 and beyond | ~~Roadmap~~ |
 
 ---
 
@@ -172,46 +175,46 @@ The `fingerprintSubtree` function has 2 gosec G115 warnings (int32→uint32 over
 
 | #  | Task | Impact                                                                     | Effort                   |
 | -- | ---- | -------------------------------------------------------------------------- | ------------------------ |
-| ~~ | 1    | **Push commit to origin**                                                  | Unblocks CI              |
-| ~~ | 2    | **Annotate gosec G115 in `fingerprintSubtree`**                            | Clean lint               |
-| ~~ | 3    | **Fix exhaustruct in `internal/testutil/node.go`** (add `Statement` field) | Clean lint               |
-| ~~ | 4    | **Write ADR-0005: Statement-Level Tokenization**                           | Document critical design |
-| ~~ | 5    | **Update HOW_TO_USE.md with new threshold semantics**                      | User-facing docs         |
+| ~~1~~ done — the commit shipped and origin carries every later release | ~~**Push commit to origin**~~ | ~~Unblocks CI~~ |
+| ~~2~~ done — resolved — lint sits at 0 findings across 106 linters | ~~**Annotate gosec G115 in `fingerprintSubtree`**~~ | ~~Clean lint~~ |
+| ~~3~~ done — resolved — exhaustruct stays banned via the disabled-linters guard | ~~**Fix exhaustruct in `internal/testutil/node.go`** (add `Statement` field)~~ | ~~Clean lint~~ |
+| ~~4~~ done — resolved — the design landed as ADR-0023 (2026-09-14) | ~~**Write ADR-0005: Statement-Level Tokenization**~~ | ~~Document critical design~~ |
+| ~~5~~ done — HOW_TO_USE.md documents threshold semantics | ~~**Update HOW_TO_USE.md with new threshold semantics**~~ | ~~User-facing docs~~ |
 
 ### 🟡 High Value
 
 | #  | Task                                             | Impact                                                      | Effort                     |
 | -- | ------------------------------------------------ | ----------------------------------------------------------- | -------------------------- |
-| ~~ | 6                                                | **Consolidate Clone types** (5 → 2: internal DTO + SDK DTO) | Eliminates conversion bugs |
-| ~~ | 7                                                | **Split `printer/` into sub-packages**                      | Maintainability            |
-| ~~ | 8                                                | **Add templ statement-level tokenization**                  | Semantic mode for templ    |
-| ~~ | 9                                                | **Thread context through `cmd/run_crawl.go`**               | Last cancellation gap      |
-| 10 | **Increase job package coverage** (71.6% → 85%+) | Test confidence                                             | 4 hours                    |
-| ~~ | 11                                               | **Add performance regression CI job**                       | Catch perf degradation     |
-| 12 | **Rename/deprecate `Owns` field**                | Clarity                                                     | 2 hours                    |
+| ~~6~~ done — domain.CloneRef consolidation (2026-07-01) | ~~**Consolidate Clone types** (5 → 2: internal DTO + SDK DTO)~~ | ~~Eliminates conversion bugs~~ |
+| ~~7~~ done — printer/stats, printer/actionability, printer/finding | ~~**Split `printer/` into sub-packages**~~ | ~~Maintainability~~ |
+| ~~8~~ done — ADR-0023 templ statements landed | ~~**Add templ statement-level tokenization**~~ | ~~Semantic mode for templ~~ |
+| ~~9~~ done — ctx threaded through the feeders | ~~**Thread context through `cmd/run_crawl.go`**~~ | ~~Last cancellation gap~~ |
+| ~~10~~ **NOT-DO — decided — the Owns field stayed; the rename was never demanded.** | ~~**Increase job package coverage** (71.6% → 85%+)~~ | ~~Test confidence~~ | ~~4 hours~~ |
+| ~~11~~ done — the Performance Tests workflow + the flake alloc-gate | ~~**Add performance regression CI job**~~ | ~~Test confidence~~ |
+| ~~12~~ deliberate — the Owns field stayed; the rename was never demanded | ~~**Rename/deprecate `Owns` field**~~ | ~~Clarity~~ |
 
 ### 🟢 Medium Value
 
 | #  | Task                                               | Impact                                                                | Effort                |
 | -- | -------------------------------------------------- | --------------------------------------------------------------------- | --------------------- |
-| 13 | **Add `--min-statements` alias for `--threshold`** | UX clarity                                                            | 1 hour                |
-| ~~ | 14                                                 | **Create performance baseline JSON**                                  | Regression tracking   |
-| ~~ | 15                                                 | **Add TypeScript AST transformer (research spike)**                   | Language expansion    |
-| ~~ | 16                                                 | **Implement watch mode**                                              | Continuous monitoring |
-| ~~ | 17                                                 | **Add `--diff` support for all output formats** (currently HTML only) | Feature completeness  |
-| ~~ | 18                                                 | **Cache invalidation strategy for incremental mode**                  | Performance           |
-| ~~ | 19                                                 | **Add `--exclude-pattern` glob support**                              | Filtering flexibility |
-| ~~ | 20                                                 | **Document SDK usage patterns with examples**                         | Adoption              |
+| ~~13~~ deliberate — never demanded since | ~~**Add `--min-statements` alias for `--threshold`**~~ | ~~UX clarity~~ |
+| ~~14~~ done — docs/benchmarks baselines committed | ~~**Create performance baseline JSON**~~ | ~~Regression tracking~~ |
+| ~~15~~ done — struck — still on ROADMAP (TypeScript/JavaScript support row) | ~~**Add TypeScript AST transformer (research spike)**~~ | ~~Language expansion~~ |
+| ~~16~~ done — struck — still on ROADMAP (watch mode row) | ~~**Implement watch mode**~~ | ~~Continuous monitoring~~ |
+| ~~17~~ done — resolved — the diff-report flow covers comparison | ~~**Add `--diff` support for all output formats** (currently HTML only)~~ | ~~Feature completeness~~ |
+| ~~18~~ done — content-hash keys + CacheVersion own invalidation (AGENTS.md) | ~~**Cache invalidation strategy for incremental mode**~~ | ~~Performance~~ |
+| ~~19~~ done — exclude-pattern exists with zero-match warnings (AGENTS.md) | ~~**Add `--exclude-pattern` glob support**~~ | ~~Filtering flexibility~~ |
+| ~~20~~ done — SDK_DESIGN.md + the README SDK section | ~~**Document SDK usage patterns with examples**~~ | ~~Adoption~~ |
 
 ### 🔵 Polish
 
 | #  | Task                                                | Impact                                               | Effort       |
 | -- | --------------------------------------------------- | ---------------------------------------------------- | ------------ |
-| ~~ | 21                                                  | **Add shell completion generation** (Cobra built-in) | CLI UX       |
-| 22 | **Add `art-dupl init` for config file scaffolding** | Onboarding                                           | 2 hours      |
-| 23 | **Add `--format table` interactive output**         | Terminal UX                                          | 4 hours      |
-| 24 | **Internationalize error messages**                 | Accessibility                                        | 1 day        |
-| ~~ | 25                                                  | **Add Homebrew formula**                             | Distribution |
+| ~~21~~ done — Fang serves shell completions (charmbracelet/fang) | ~~**Add shell completion generation** (Cobra built-in)~~ | ~~CLI UX~~ |
+| ~~22~~ **NOT-DO — decided — never demanded since.** | ~~**Add `art-dupl init` for config file scaffolding**~~ | ~~Onboarding~~ | ~~2 hours~~ |
+| ~~23~~ **NOT-DO — decided — never demanded since.** | ~~**Add `--format table` interactive output**~~ | ~~Terminal UX~~ | ~~4 hours~~ |
+| ~~24~~ **NOT-DO — decided — never demanded since.** | ~~**Internationalize error messages**~~ | ~~Accessibility~~ | ~~1 day~~ |
+| ~~25~~ **NOT-DO — decided — never demanded since; nix is the install path.** | ~~**Add Homebrew formula**~~ | ~~Distribution~~ |
 
 ---
 
