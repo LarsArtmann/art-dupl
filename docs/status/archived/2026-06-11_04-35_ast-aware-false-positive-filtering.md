@@ -19,6 +19,7 @@ All tests green. All vet clean. Printer coverage: 76.7%.
 
 ### New AST Pattern Detectors (`printer/actionability.go`)
 
+<!-- check-rows:ledger — historical record of what this session shipped; no open rows by definition -->
 | # | Pattern Detector        | AST Signals Used                                                                                                                  | Report Patterns Covered                                                 |
 | - | ----------------------- | --------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
 | 1 | `isTestDataFilePair`    | Node `Filename` field, path component analysis for `testdata/`                                                                    | Pattern 3 (golden/input file pairs)                                     |
@@ -53,6 +54,7 @@ All tests green. All vet clean. Printer coverage: 76.7%.
 
 ### Files Changed
 
+<!-- check-rows:ledger — historical change record; no open rows by definition -->
 | File                                     | Delta            | Purpose                               |
 | ---------------------------------------- | ---------------- | ------------------------------------- |
 | `printer/actionability.go`               | +282 lines       | 4 new detectors + label system        |
@@ -129,51 +131,52 @@ All tests pass. All vet clean. Build green. No regressions.
 
 | #  | Task | Impact                                                                                                                                                 | Effort   |
 | -- | ---- | ------------------------------------------------------------------------------------------------------------------------------------------------------ | -------- |
-| ~~ | 1    | **Validate new patterns against real projects** — Run `art-dupl -t 45 --semantic --rich-text` on 5+ projects, compare before/after false-positive rate | Critical |
-| ~~ | 2    | **Add BDD end-to-end tests** — Parse real Go files with table-driven tests, Ginkgo patterns, testdata fixtures. Verify full pipeline                   | High     |
-| ~~ | 3    | **CallExpr callee semantic hashing** — Hash `CallExpr.Fun` name in semantic mode. Eliminates cross-function test pattern matches                       | High     |
-| ~~ | 4    | **Extract assertion name registry** — Replace switch in `walkForTestScaffoldingSignals` with extensible map                                            | Medium   |
-| ~~ | 5    | **Add `--exclude-testdata` and `--exclude-tests` CLI flags** — Pre-detection filtering for users who want to skip test files entirely                  | Medium   |
-| ~~ | 6    | **Config file support** (`.art-dupl.yaml`) — Project-specific exclusions, thresholds, pattern overrides                                                | High     |
+| ~~1~~ done — corpus-validated on real projects (AGENTS.md actionability section: go-sse, go-cqrs-lite, branching-flow re-measures) | ~~**Validate new patterns against real projects** — Run `art-dupl -t 45 --semantic --rich-text` on 5+ projects, compare before/after false-positive rate~~ | ~~Critical~~ |
+| ~~2~~ done — bdd/ suite covers full-pipeline scenarios (e.g. bdd/suggest_generics_test.go, bdd/min_tokens_test.go) | ~~**Add BDD end-to-end tests** — Parse real Go files with table-driven tests, Ginkgo patterns, testdata fixtures. Verify full pipeline~~ | ~~High~~ |
+| ~~3~~ done — SelectorExpr callee hashed in semantic mode (report section e.5) | ~~**CallExpr callee semantic hashing** — Hash `CallExpr.Fun` name in semantic mode. Eliminates cross-function test pattern matches~~ | ~~High~~ |
+| ~~4~~ done — assertionNames map in printer/actionability/actionability_test_patterns.go:150 | ~~**Extract assertion name registry** — Replace switch in `walkForTestScaffoldingSignals` with extensible map~~ | ~~Medium~~ |
+| ~~5~~ done — covered by --ignore-tests (cmd/flags.go:144) + --exclude-pattern instead of dedicated flags | ~~**Add `--exclude-testdata` and `--exclude-tests` CLI flags** — Pre-detection filtering for users who want to skip test files entirely~~ | ~~Medium~~ |
+| ~~6~~ done — config file loading (config/config_io.go, --config flag) | ~~**Config file support** (`.art-dupl.yaml`) — Project-specific exclusions, thresholds, pattern overrides~~ | ~~High~~ |
 
 ### Tier 2: Architecture Improvements
 
 | #  | Task | Impact                                                                                                                        | Effort    |
 | -- | ---- | ----------------------------------------------------------------------------------------------------------------------------- | --------- |
-| ~~ | 7    | **ProcessedClone DTO migration** — Decouple printers from `syntax.Node`. 111 test call sites. #1 HIGH in TODO_LIST.md         | Very High |
-| ~~ | 8    | **Clone type consolidation** — Merge `printer.clone`, `pkg/artdupl.Clone`, `printer.CloneGroup` into unified type             | High      |
-| ~~ | 9    | **Thread PatternLabel into ClassifyClone** — Make per-clone classification pattern-aware, not just group-level                | Medium    |
-| ~~ | 10   | **Test threshold multiplier** — Auto-raise threshold for test-to-test clones at detection time                                | Medium    |
-| ~~ | 11   | **Refactoring suggestion classification** — Classify recommended fix type: extract helper, table-driven, acceptable, data-dup | Medium    |
+| ~~7~~ done — printers consume domain ProcessedCloneGroup DTOs (domain/domain.go) | ~~**ProcessedClone DTO migration** — Decouple printers from `syntax.Node`. 111 test call sites. #1 HIGH in TODO_LIST.md~~ | ~~Very High~~ |
+| ~~8~~ done — pkg/artdupl/types.go CloneGroup is the canonical SDK type | ~~**Clone type consolidation** — Merge `printer.clone`, `pkg/artdupl.Clone`, `printer.CloneGroup` into unified type~~ | ~~High~~ |
+| ~~9~~ done — NonActionablePattern field carries the label (AGENTS.md actionability section) | ~~**Thread PatternLabel into ClassifyClone** — Make per-clone classification pattern-aware, not just group-level~~ | ~~Medium~~ |
+| ~~10~~ done — TestThreshold config (config/config.go:165, --test-threshold) | ~~**Test threshold multiplier** — Auto-raise threshold for test-to-test clones at detection time~~ | ~~Medium~~ |
+| ~~11~~ done — category-specific refactoring suggestions (CHANGELOG [Unreleased]) | ~~**Refactoring suggestion classification** — Classify recommended fix type: extract helper, table-driven, acceptable, data-dup~~ | ~~Medium~~ |
 
 ### Tier 3: Quality & Observability
 
+<!-- check-rows:ledger — row 13 (printer coverage >85%) intentionally left bare: still ~77% per docs/benchmarks/coverage-baseline.txt -->
 | #  | Task                                                                                                            | Impact                                                                                      | Effort |
 | -- | --------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- | ------ |
-| ~~ | 12                                                                                                              | **Pattern detection metrics** — Add stats counters for how many clones each pattern catches | Medium |
+| ~~12~~ done — SuppressionStats counters (printer/stats/stats.go NonActionableGroups) | ~~**Pattern detection metrics** — Add stats counters for how many clones each pattern catches~~ | ~~Medium~~ |
 | 13 | **Printer coverage >85%** — Currently 76.7%. Add tests for new classification paths in HTML/JSON/SARIF printers | Medium                                                                                      | 2hr    |
-| 14 | **Fuzz tests for actionability detectors** — Random AST trees, ensure no panics on edge cases                   | Medium                                                                                      | 2hr    |
-| ~~ | 15                                                                                                              | **Update FEATURES.md** — Add actionability pattern detection as a feature                   | Low    |
-| ~~ | 16                                                                                                              | **Update TODO_LIST.md** — Reflect completed work and new items from this session            | Low    |
+| ~~14~~ NOT-DO — no dedicated actionability fuzz; parser-level fuzzing covers panics (syntax/templ/fuzz_test.go, syntax/syntax_test.go). | ~~**Fuzz tests for actionability detectors** — Random AST trees, ensure no panics on edge cases~~ | ~~Medium~~ | ~~2hr~~ |
+| ~~15~~ done — FEATURES.md documents the actionability pattern engine | ~~**Update FEATURES.md** — Add actionability pattern detection as a feature~~ | ~~Low~~ |
+| ~~16~~ done — TODO_LIST.md fully rebuilt 2026-08-10 (docs/status/2026-08-10_06-59 §a.4) | ~~**Update TODO_LIST.md** — Reflect completed work and new items from this session~~ | ~~Low~~ |
 
 ### Tier 4: Semantic Mode Improvements
 
 | #  | Task                                                                                                                                                     | Impact                                                                                                                                         | Effort |
 | -- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
-| ~~ | 17                                                                                                                                                       | **BasicLit sub-categorization** — Separate string/int/char literals for better data-dominance detection                                        | Medium |
-| 18 | **FuncLit semantic hashing** — Currently `FuncLit` is type-only. Hashing function literal signatures would reduce false positives in callback-heavy code | Medium                                                                                                                                         | 2hr    |
-| ~~ | 19                                                                                                                                                       | **Interface method semantic dedup** — Methods declared in interfaces are currently hashed with `~interface~`. Consider per-method-name hashing | Low    |
-| 20 | **CompositeLit type hashing** — Hash the type name in composite literals to separate `types.Module{}` from `types.Dep{}`                                 | Medium                                                                                                                                         | 1hr    |
+| ~~17~~ done — BasicLit Kind/value encoded (syntax/golang/transform.go:44-49) | ~~**BasicLit sub-categorization** — Separate string/int/char literals for better data-dominance detection~~ | ~~Medium~~ |
+| ~~18~~ NOT-DO — FuncLit stays type-only; callback-heavy noise handled by pattern suppression instead. | ~~**FuncLit semantic hashing** — Currently `FuncLit` is type-only. Hashing function literal signatures would reduce false positives in callback-heavy code~~ | ~~Medium~~ | ~~2hr~~ |
+| ~~19~~ NOT-DO — FuncType in interfaces still hashed `~interface~` (syntax/golang/transform.go:215); the interface-method class is suppressed via syntax/golang/interface_method.go detection. | ~~**Interface method semantic dedup** — Methods declared in interfaces are currently hashed with `~interface~`. Consider per-method-name hashing~~ | ~~Low~~ |
+| ~~20~~ done — CompositeLit type folded in as a child node (syntax/golang/transform.go:96-98) | ~~**CompositeLit type hashing** — Hash the type name in composite literals to separate `types.Module{}` from `types.Dep{}`~~ | ~~Medium~~ | ~~1hr~~ |
 
 ### Tier 5: Infrastructure
 
 | #  | Task | Impact                                                                  | Effort |
 | -- | ---- | ----------------------------------------------------------------------- | ------ |
-| ~~ | 21   | **CSV output using encoding/csv** — Replace manual formatting           | Low    |
-| ~~ | 22   | **Enum unification** — Domain enums use config's generic helpers        | Low    |
-| ~~ | 23   | **TokenValue type validation** — Stronger typing for suffix tree tokens | Low    |
-| ~~ | 24   | **Split printer/stats_test.go** — 975L → 3 files                        | Low    |
-| ~~ | 25   | **Write SDK documentation for pkg/artdupl/**                            | Low    |
+| ~~21~~ done — printer/stats/stats_formatter.go:92 uses encoding/csv | ~~**CSV output using encoding/csv** — Replace manual formatting~~ | ~~Low~~ |
+| ~~22~~ done — pkg/enum shared helpers (AGENTS.md enum section) | ~~**Enum unification** — Domain enums use config's generic helpers~~ | ~~Low~~ |
+| ~~23~~ done — suffixtree.TokenValue used throughout (syntax/syntax.go:186) | ~~**TokenValue type validation** — Stronger typing for suffix tree tokens~~ | ~~Low~~ |
+| ~~24~~ done — printer/stats/ split into ~10 focused files | ~~**Split printer/stats_test.go** — 975L → 3 files~~ | ~~Low~~ |
+| ~~25~~ done — SDK_DESIGN.md + docs/api/ | ~~**Write SDK documentation for pkg/artdupl/**~~ | ~~Low~~ |
 
 ---
 

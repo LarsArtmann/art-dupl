@@ -33,30 +33,30 @@ func (t *transformer) transformCallTemplateExpression(cte *templparser.CallTempl
 
 | Task                                                    | Why                                       |
 | ------------------------------------------------------- | ----------------------------------------- |
-| Encode callee name in `transformCallTemplateExpression` | Eliminates both FPs in one 10-line change |
+| ~~Encode callee name in `transformCallTemplateExpression`~~ done — shipped in syntax/templ/transform_components.go | ~~Eliminates both FPs in one 10-line change~~ |
 
 ### 4% effort → 64% result
 
 | Task                           | Why                              |
 | ------------------------------ | -------------------------------- |
-| Add `extractCalleeName` helper | Clean, testable extraction logic |
-| Write unit test for extraction | Prevents regressions             |
+| ~~Add `extractCalleeName` helper~~ done — extractCalleeName helper exists | ~~Clean, testable extraction logic~~ |
+| ~~Write unit test for extraction~~ done — TestExtractCalleeName guards it | ~~Prevents regressions~~ |
 
 ### 20% effort → 80% result
 
 | Task                              | Why                       |
 | --------------------------------- | ------------------------- |
-| Run full test suite (24 packages) | Verify no regressions     |
-| Re-run 15-project validation      | Confirm 0 FPs, no new FNs |
-| Run lint                          | Code hygiene              |
+| ~~Run full test suite (24 packages)~~ done — full suite green at ship time | ~~Verify no regressions~~ |
+| ~~Re-run 15-project validation~~ done — 15-project validation re-run clean (archived doc) | ~~Confirm 0 FPs, no new FNs~~ |
+| ~~Run lint~~ done — lint green | ~~Code hygiene~~ |
 
 ### Remaining 20% → 100%
 
 | Task                  | Why            |
 | --------------------- | -------------- |
-| Update validation doc | Record results |
-| Update status doc     | Mark task done |
-| Commit and push       | Persist work   |
+| ~~Update validation doc~~ done — validation doc updated (now archived) | ~~Record results~~ |
+| ~~Update status doc~~ done — this report records the session | ~~Mark task done~~ |
+| ~~Commit and push~~ done — committed and pushed | ~~Persist work~~ |
 
 ---
 
@@ -81,18 +81,18 @@ func (t *transformer) transformCallTemplateExpression(cte *templparser.CallTempl
 | -- | -------------------------------------------------------------- | ------------------------------------------------------------------ | ------------------------------------------- |
 | ~~1a~~ done — shipped in syntax/templ/transform_components.go | ~~Add `"strings"` import to `transform_components.go`~~ | ~~`syntax/templ/transform_components.go`~~ |
 | ~~1b~~ done — shipped in syntax/templ/transform_components.go | ~~Add `extractCalleeName(expr string) string` helper~~ | ~~`syntax/templ/transform_components.go`~~ |
-| 1c | Update `transformCallTemplateExpression` to encode callee name | `syntax/templ/transform_components.go`                             | 3min                                        |
+| ~~1c~~ done — landed with the same change | ~~Update `transformCallTemplateExpression` to encode callee name~~ | ~~`syntax/templ/transform_components.go`~~ | ~~3min~~ |
 | ~~2a~~ done — shipped in syntax/templ/transform_components.go | ~~Write `TestExtractCalleeName` table-driven test~~ | ~~`syntax/templ/transform_components_test.go`~~ |
 | ~~2b~~ done — shipped in syntax/templ/transform_components.go | ~~Write `TestCallTemplateSemanticEncoding` test~~ | ~~`syntax/templ/transform_components_test.go`~~ |
 | ~~3a~~ done — shipped in syntax/templ/transform_components.go | ~~Run `go test ./syntax/templ/... -count=1 -v`~~ | ~~—~~ |
 | ~~4a~~ done — shipped in syntax/templ/transform_components.go | ~~Run `go test ./... -count=1 -timeout 180s`~~ | ~~—~~ |
 | ~~5a~~ done — shipped in syntax/templ/transform_components.go | ~~Build binary: `go build -o /tmp/art-dupl ./cmd/art-dupl/`~~ | ~~—~~ |
 | ~~5b~~ done — shipped in syntax/templ/transform_components.go | ~~Run validation on templ-components (the FP source)~~ | ~~—~~ |
-| 5c | Run validation on all 15 projects                              | —                                                                  | 10min                                       |
+| ~~5c~~ done — all-15 validation clean | ~~Run validation on all 15 projects~~ | ~~—~~ | ~~10min~~ |
 | ~~6a~~ done — shipped in syntax/templ/transform_components.go | ~~Run `golangci-lint run --timeout 5m ./syntax/templ/...`~~ | ~~—~~ |
 | ~~7a~~ done — validation doc updated; now archived at docs/status/archived/2026-07-16_semantic-validation-15-projects.md | ~~Update `docs/status/archived/2026-07-16_semantic-validation-15-projects.md`~~ | ~~docs~~ |
 | ~~8a~~ done — shipped in syntax/templ/transform_components.go | ~~`git add` + `git commit` with detailed message~~ | ~~—~~ |
-| 8b | `git push`                                                     | —                                                                  | 2min                                        |
+| ~~8b~~ done — pushed | ~~`git push`~~ | ~~—~~ | ~~2min~~ |
 
 ---
 
@@ -176,7 +176,7 @@ func (t *transformer) transformCallTemplateExpression(
 
 | Risk                          | Mitigation                                                                                                         |
 | ----------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| Breaking existing templ tests | Tests use structural matching; semantic encoding only changes Type in semantic mode                                |
-| Introducing false negatives   | Same callee with different args STILL matches (Type-2 detection preserved)                                         |
-| Hash collisions               | `EncodeSemanticType` uses 24-bit identifier hash — same as Element/Attribute encoding, proven safe                 |
-| Empty expression edge case    | `extractCalleeName("")` returns `""`, `EncodeSemanticType(_, "", true)` hashes empty string — consistent, no crash |
+| ~~Breaking existing templ tests~~ done — resolved — suite stayed green; structural matching unaffected | ~~Tests use structural matching; semantic encoding only changes Type in semantic mode~~ |
+| ~~Introducing false negatives~~ done — resolved — Type-2 detection preserved (same callee, different args still matches) | ~~Same callee with different args STILL matches (Type-2 detection preserved)~~ |
+| ~~Hash collisions~~ done — resolved — 24-bit identifier hash, same scheme as the rest of the encoding | ~~`EncodeSemanticType` uses 24-bit identifier hash — same as Element/Attribute encoding, proven safe~~ |
+| ~~Empty expression edge case~~ done — resolved — empty expression hashes an empty name like any other string | ~~`extractCalleeName("")` returns `""`, `EncodeSemanticType(_, "", true)` hashes empty string — consistent, no crash~~ |

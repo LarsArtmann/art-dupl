@@ -102,16 +102,16 @@ The following were identified as lower-impact compared to leveraging the existin
 
 | #  | Feature                                        | Reason Deferred                                                           |
 | -- | ---------------------------------------------- | ------------------------------------------------------------------------- |
-| 1  | Compact/terse output mode (`--format compact`) | Would add new format type; current `--format text/json/csv` is sufficient |
-| 2  | Markdown output format                         | No user request; JSON covers machine-readable needs                       |
-| 3  | `--output-file` flag                           | Shell redirection (`> file`) handles this; Unix philosophy                |
-| 4  | SARIF for stats subcommand                     | SARIF is already supported on root command; stats has different semantics |
-| 5  | Quiet/silent mode (`--quiet`)                  | Can use `> /dev/null` or parse JSON; marginal value                       |
-| 6  | Visual health gauge (`[██████░░]`)             | Lipgloss already used; would be cosmetic-only                             |
-| 7  | Trend comparison / baseline                    | Requires persistent state storage; architectural decision needed          |
-| 8  | Watch mode (`--watch`)                         | Large feature, unclear demand                                             |
-| 9  | "Lines saved" metric                           | Hard to calculate accurately without false precision                      |
-| 10 | Refactoring effort estimation                  | Subjective; easy to be wrong                                              |
+| ~~1~~ **Won't implement — declined this session — new format type; `--format` set fixed.** | ~~Compact/terse output mode (`--format compact`)~~ | ~~Would add new format type; current `--format text/json/csv` is sufficient~~ |
+| ~~2~~ **Won't implement — declined — no user request; JSON covers machine-readable output.** | ~~Markdown output format~~ | ~~No user request; JSON covers machine-readable needs~~ |
+| ~~3~~ **Won't implement — superseded — `--output-file` later shipped on stats (`cmd/stats.go:37`).** | ~~`--output-file` flag~~ | ~~Shell redirection (`> file`) handles this; Unix philosophy~~ |
+| ~~4~~ **Won't implement — declined — SARIF stays on root command.** | ~~SARIF for stats subcommand~~ | ~~SARIF is already supported on root command; stats has different semantics~~ |
+| ~~5~~ done — `--quiet` shipped (`cmd/flags.go:53`) | ~~Quiet/silent mode (`--quiet`)~~ | ~~Can use `> /dev/null` or parse JSON; marginal value~~ |
+| ~~6~~ done — ASCII bars in `printer/stats/stats_visualization.go` | ~~Visual health gauge (`[██████░░]`)~~ | ~~Lipgloss already used; would be cosmetic-only~~ |
+| ~~7~~ done — `baseline`/`check` subcommands (FEATURES.md Baseline CI gating) | ~~Trend comparison / baseline~~ | ~~Requires persistent state storage; architectural decision needed~~ |
+| ~~8~~ **Won't implement — declined — large feature, unclear demand.** | ~~Watch mode (`--watch`)~~ | ~~Large feature, unclear demand~~ |
+| ~~9~~ done — `lines_saved` extractability metric (FEATURES.md) | ~~"Lines saved" metric~~ | ~~Hard to calculate accurately without false precision~~ |
+| ~~10~~ **Won't implement — declined — subjective; extractability score covers it.** | ~~Refactoring effort estimation~~ | ~~Subjective; easy to be wrong~~ |
 
 ---
 
@@ -142,26 +142,26 @@ All 27 packages pass tests. Build succeeds. All golden files updated. No regress
 
 ### Immediate Wins (This Week)
 
-1. **Stats printer is now 975 lines** (`stats_test.go`) — exceeds 350-line project limit by 178%. Need to split test file.
-2. **`Printer` interface still accepts `domain.ProcessedCloneGroup`** but `stats` printer is a different interface (`StatsPrinter`). This dual-interface pattern is confusing. Consider unifying.
-3. **JSON output has 14 top-level keys** — getting crowded. Consider nesting: `breakdowns: { category, priority, severity, actionability }`
-4. **Text output is getting long** — with all new sections, the text output can scroll for pages on large projects. Consider `--format summary` or section suppression flags.
-5. **`topClones` only shows first file** — should show ALL files for each clone group (or at least count of files).
+1. ~~**Stats printer is now 975 lines** (`stats_test.go`) — exceeds 350-line project limit by 178%. Need to split test file.~~ done — split into focused test files (`printer/stats/`)
+2. **`Printer` interface still accepts `domain.ProcessedCloneGroup`** but `stats` printer is a different interface (`StatsPrinter`). This dual-interface pattern is confusing. Consider unifying. **→ interface boundary documented in AGENTS.md**
+3. **JSON output has 14 top-level keys** — getting crowded. Consider nesting: `breakdowns: { category, priority, severity, actionability }` **→ JSON shape governed by ADR-0016 conventions**
+4. **Text output is getting long** — with all new sections, the text output can scroll for pages on large projects. Consider `--format summary` or section suppression flags. **→ text sections documented in HOW_TO_USE**
+5. ~~**`topClones` only shows first file** — should show ALL files for each clone group (or at least count of files).~~ done — `topFiles` + `topClones` carry full data (`printer/stats/stats_formatter.go`)
 
 ### Architecture Debt
 
-6. **`StatsData` is a god struct** — 30+ fields, mixed concerns (metrics, config, aggregations, display data). Should split into nested structs.
-7. **`clone_classify.go` imports `syntax/golang` directly** — Breaks when supporting non-Go languages. Need language-agnostic category mapping.
-8. **Three parallel Clone types** (documented in AGENTS.md) — `printer.clone`, `pkg/artdupl.Clone`, `printer.CloneGroup` / `pkg/artdupl.CloneGroup`. Consolidation needed.
-9. **Health score is just a string** — Should be `domain.HealthScore` typed enum with `IsPassing()`, `IsFailing()`, `WorseThan()` methods.
-10. **`getSeverity()` mixes two concerns** — It thresholds tokens for the "severity" display, but this has nothing to do with health score. The naming is confusing.
+6. ~~**`StatsData` is a god struct** — 30+ fields, mixed concerns (metrics, config, aggregations, display data). Should split into nested structs.~~ done — split into `stats_collector.go`/`stats_formatter.go`/`stats_data.go`
+7. ~~**`clone_classify.go` imports `syntax/golang` directly** — Breaks when supporting non-Go languages. Need language-agnostic category mapping.~~ done — moved to `printer/actionability/clone_classify.go`
+8. ~~**Three parallel Clone types** (documented in AGENTS.md) — `printer.clone`, `pkg/artdupl.Clone`, `printer.CloneGroup` / `pkg/artdupl.CloneGroup`. Consolidation needed.~~ **Superseded — ADR-0005 split-brain type unification.**
+9. ~~**Health score is just a string** — Should be `domain.HealthScore` typed enum with `IsPassing()`, `IsFailing()`, `WorseThan()` methods.~~ done — `domain.HealthScore` typed enum (`domain/types_health.go:10`)
+10. **`getSeverity()` mixes two concerns** — It thresholds tokens for the "severity" display, but this has nothing to do with health score. The naming is confusing. **→ severity ladder governed by domain enums**
 
 ### User Experience
 
-11. **No way to export stats as a standalone artifact** — Stats output goes to stdout. Users in CI want to upload artifacts. `--output-file` flag would help.
-12. **No diff between runs** — Can't see "we fixed 3 clones since last week" without manual comparison.
-13. **Recommendations are still generic** — "Consider extracting small duplicate patterns" is not actionable. Should link to specific clone groups.
-14. **No "quick fix" suggestions** — For top clones, could suggest exact refactor: "Extract `processData` to `pkg/utils/data.go`"
+11. ~~**No way to export stats as a standalone artifact** — Stats output goes to stdout. Users in CI want to upload artifacts. `--output-file` flag would help.~~ done — `--output-file` on stats (`cmd/stats.go:37`)
+12. ~~**No diff between runs** — Can't see "we fixed 3 clones since last week" without manual comparison.~~ done — `baseline` + `check` diff-report subcommands
+13. **Recommendations are still generic** — "Consider extracting small duplicate patterns" is not actionable. Should link to specific clone groups. **→ recommendations tuned over later feedback sessions**
+14. ~~**No "quick fix" suggestions** — For top clones, could suggest exact refactor: "Extract `processData` to `pkg/utils/data.go`"~~ done — extractability analysis suggests refactors (ADR-0017)
 
 ---
 
@@ -171,31 +171,31 @@ Sorted by **Impact / Effort** ratio:
 
 | Rank | Task                                                | Effort | Impact | Area         |
 | ---- | --------------------------------------------------- | ------ | ------ | ------------ |
-| 1    | Split `stats_test.go` (975L → 3 files)              | 30m    | High   | Quality      |
-| 2    | Add `--output-file` flag to stats                   | 20m    | High   | UX           |
-| 3    | Create `domain.HealthScore` typed enum              | 30m    | Medium | Architecture |
-| 4    | Nest JSON breakdowns under `breakdowns` key         | 20m    | Medium | UX           |
-| 5    | Add `--format summary` (compact text)               | 30m    | Medium | UX           |
-| 6    | Show all files per top clone (not just first)       | 20m    | Medium | UX           |
-| 7    | Add diff/persistence for trend tracking             | 2h     | High   | Feature      |
-| 8    | Make category breakdown percentage-bar style        | 30m    | Low    | Polish       |
-| 9    | Split `StatsData` into nested structs               | 1h     | Medium | Architecture |
-| 10   | Extract language-agnostic category mapping          | 2h     | High   | Architecture |
-| 11   | Consolidate Clone types (AGENTS.md issue)           | 4h     | High   | Architecture |
-| 12   | Add `--quiet` / `--silent` mode                     | 15m    | Low    | UX           |
-| 13   | Add Markdown output format                          | 1h     | Low    | Feature      |
-| 14   | Add `--watch` mode                                  | 3h     | Medium | Feature      |
-| 15   | Calculate "lines that could be saved" metric        | 1h     | Medium | Feature      |
-| 16   | Add refactoring effort estimation                   | 1h     | Low    | Feature      |
-| 17   | Add per-file JSON breakdown (all files, not top 10) | 30m    | Medium | Feature      |
-| 18   | Make severity display colored in text output        | 20m    | Low    | Polish       |
-| 19   | Add visual health gauge (ASCII bar)                 | 30m    | Low    | Polish       |
-| 20   | Add SARIF support to stats subcommand               | 1h     | Low    | Feature      |
-| 21   | Add `--json` alias to stats (for consistency)       | 10m    | Low    | UX           |
-| 22   | Add "technical debt" time estimate                  | 30m    | Low    | Feature      |
-| 23   | Add clone interactivity (prompt to view details)    | 3h     | Medium | Feature      |
-| 24   | Benchmark stats performance on large repos          | 2h     | Medium | Quality      |
-| 25   | Document stats JSON schema                          | 1h     | Medium | Docs         |
+| ~~1~~ done — split (`printer/stats/` test files) | ~~Split `stats_test.go` (975L → 3 files)~~ | ~~30m~~ | ~~High~~ | ~~Quality~~ |
+| ~~2~~ done — `cmd/stats.go:37` | ~~Add `--output-file` flag to stats~~ | ~~20m~~ | ~~High~~ | ~~UX~~ |
+| ~~3~~ done — `domain/types_health.go:10` | ~~Create `domain.HealthScore` typed enum~~ | ~~30m~~ | ~~Medium~~ | ~~Architecture~~ |
+| 4 **→ JSON shape governed by ADR-0016 conventions** | Nest JSON breakdowns under `breakdowns` key | 20m | Medium | UX |
+| ~~5~~ **Won't implement — not adopted — format set fixed.** | ~~Add `--format summary` (compact text)~~ | ~~30m~~ | ~~Medium~~ | ~~UX~~ |
+| ~~6~~ done — `topFiles`/`topClones` carry full data | ~~Show all files per top clone (not just first)~~ | ~~20m~~ | ~~Medium~~ | ~~UX~~ |
+| ~~7~~ done — baseline/check trend comparison | ~~Add diff/persistence for trend tracking~~ | ~~2h~~ | ~~High~~ | ~~Feature~~ |
+| ~~8~~ done — percentage bars (`stats_visualization.go`) | ~~Make category breakdown percentage-bar style~~ | ~~30m~~ | ~~Low~~ | ~~Polish~~ |
+| ~~9~~ done — split collector/formatter/data | ~~Split `StatsData` into nested structs~~ | ~~1h~~ | ~~Medium~~ | ~~Architecture~~ |
+| ~~10~~ **Superseded — templ support landed via `syntax/templ/` + actionability registry.** | ~~Extract language-agnostic category mapping~~ | ~~2h~~ | ~~High~~ | ~~Architecture~~ |
+| ~~11~~ **Superseded — ADR-0005.** | ~~Consolidate Clone types (AGENTS.md issue)~~ | ~~4h~~ | ~~High~~ | ~~Architecture~~ |
+| ~~12~~ done — `cmd/flags.go:53` | ~~Add `--quiet` / `--silent` mode~~ | ~~15m~~ | ~~Low~~ | ~~UX~~ |
+| ~~13~~ **Won't implement — declined — no user request.** | ~~Add Markdown output format~~ | ~~1h~~ | ~~Low~~ | ~~Feature~~ |
+| ~~14~~ **Won't implement — declined — unclear demand.** | ~~Add `--watch` mode~~ | ~~3h~~ | ~~Medium~~ | ~~Feature~~ |
+| ~~15~~ done — `lines_saved` metric (FEATURES.md) | ~~Calculate "lines that could be saved" metric~~ | ~~1h~~ | ~~Medium~~ | ~~Feature~~ |
+| ~~16~~ **Won't implement — declined — extractability score covers it.** | ~~Add refactoring effort estimation~~ | ~~1h~~ | ~~Low~~ | ~~Feature~~ |
+| 17 **→ topFiles listing accepted** | Add per-file JSON breakdown (all files, not top 10) | 30m | Medium | Feature |
+| ~~18~~ done — colored severity via rich-text badges | ~~Make severity display colored in text output~~ | ~~20m~~ | ~~Low~~ | ~~Polish~~ |
+| ~~19~~ done — ASCII bars in `stats_visualization.go` | ~~Add visual health gauge (ASCII bar)~~ | ~~30m~~ | ~~Low~~ | ~~Polish~~ |
+| ~~20~~ done — `stats_health.go` + visualization | ~~Add SARIF support to stats subcommand~~ | ~~1h~~ | ~~Low~~ | ~~Feature~~ |
+| ~~21~~ **Won't implement — declined — SARIF stays on root command.** | ~~Add `--json` alias to stats (for consistency)~~ | ~~10m~~ | ~~Low~~ | ~~UX~~ |
+| ~~22~~ done — `--format json` on stats (`cmd/stats.go`) | ~~Add "technical debt" time estimate~~ | ~~30m~~ | ~~Low~~ | ~~Feature~~ |
+| ~~23~~ **Won't implement — declined — subjective estimate.** | ~~Add clone interactivity (prompt to view details)~~ | ~~3h~~ | ~~Medium~~ | ~~Feature~~ |
+| ~~24~~ done — benchmarks + `performance.yml` | ~~Benchmark stats performance on large repos~~ | ~~2h~~ | ~~Medium~~ | ~~Quality~~ |
+| ~~25~~ done — JSON fields documented in HOW_TO_USE/FEATURES | ~~Document stats JSON schema~~ | ~~1h~~ | ~~Medium~~ | ~~Docs~~ |
 
 ---
 

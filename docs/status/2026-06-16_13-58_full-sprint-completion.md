@@ -30,19 +30,20 @@ Completed a **comprehensive TODO sprint** that touched every layer of the archit
 | ~~5~~ done — session record (this table) | ~~**Refactored actionability patterns 1-4 to use `everySequenceMatch`**~~ | ~~`printer/actionability.go`~~ | ~~`isSignatureOnlyMatch`, `isPureDeferPattern`, `isPureErrorPropagation` now use the helper instead of inline for-loops. Reduces duplication.~~ |
 | ~~6~~ done — session record (this table) | ~~**Extracted shared `pkg/enum` package** — generic MarshalJSON/UnmarshalJSON/Parse~~ | ~~`pkg/enum/enum.go` (new)~~ | ~~Eliminates ~60 lines of hand-written enum boilerplate across 4 domain types. Each enum delegates to generic helpers with its own predicate.~~ |
 | ~~7~~ done — session record (this table) | ~~**Unified all domain enums** to use `pkg/enum`~~ | ~~`domain/processed_clone.go`, `domain/types_health.go`~~ | ~~ClonePriority, CloneCategory, CloneActionability, HealthScore all use shared helpers. Consistent pattern, less code.~~ |
-| ~~8~~ done — session record (this table) | ~~**Created `domain.Finding` type** for code-quality findings (TODO, legacy)~~ | ~~`domain/finding.go` (new), `domain/analysis_errors.go`~~ | ~~First-class type for single-location issues. FindingType enum (todo, legacy), Validate(), distinct from ProcessedClone.~~ | ~~~~ 
-| ~~9~~ done — session record (this table) | ~~**Wired `FindFindings` pipeline** — TodoDetector/LegacyDetector produce `domain.Finding` streams~~ | ~~`detection/todo_detector.go`, `detection/legacy_detector.go`, `detection/issue_helpers.go`~~ | ~~**Fixed critical bug**: TODO/legacy detections were silently dropped (nil Frags filtered by clone guard). Now have their own output path.~~ | ~~~~ 
-| ~~10~~ done — session record (this table) | ~~**Added `MultiDetector.FindFindings(ctx)`** — aggregates TODO + legacy findings~~ | ~~`detection/multidetector.go`~~ | ~~Separate output channel for issues. Clone detections → `FindDuplOver`; issue detections → `FindFindings`. Clean separation.~~ | ~~~~ 
-| ~~11~~ done — session record (this table) | ~~**Activated `MethodDetector` interface** — polymorphic dispatch via adapters~~ | ~~`detection/adapters.go` (new), `detection/multidetector.go`~~ | ~~`SuffixTreeAdapter` and `HashAdapter` implement the interface. MultiDetector builds `[]MethodDetector` and loops instead of if-chaining.~~ | ~~~~ 
-| ~~12~~ done — session record (this table) | ~~**Added `--suppress-test-low` and `--test-threshold` flags**~~ | ~~`config/config.go`, `cmd/flags.go`, `cmd/config_builder.go`, `cmd/run_output.go`~~ | ~~Two new UX features: suppress low-priority test clones, separate threshold for test files. `shouldSuppressGroup()` filtering logic.~~ | ~~~~ 
-| ~~13~~ done — session record (this table) | ~~**Added DescribeTable + builder/callback detection patterns**~~ | ~~`printer/actionability.go`, `printer/clone_classify.go`~~ | ~~Two new non-actionable patterns: Ginkgo DescribeTable entries and fluent API builder chains. Classified as NonActionable with specific suggestions.~~ | ~~~~ 
-| ~~14~~ done — session record (this table) | ~~**Added string interning for filenames**~~ | ~~`syntax/intern.go` (new)~~ | ~~`InternFilename()` uses `sync.Map` to canonicalize filename strings. Reduces memory for AST trees with repeated filenames. Opt-in API.~~ | ~~~~ 
-| ~~15~~ done — session record (this table) | ~~**Added fuzz tests for suffix tree**~~ | ~~`suffixtree/fuzz_test.go` (new)~~ | ~~`FuzzFindDuplOver` (never panics, always closes channel) + `FuzzFindDuplOverCancellation` (ctx cancellation safety).~~ | ~~~~ 
-| ~~16~~ done — session record (this table) | ~~**Dedicated tests for Finding pipeline**~~ | ~~`detection/finding_test.go` (new)~~ | ~~`TestHasNonEmptyFrag` (6 cases), `TestTodoIssueToFinding`, `TestLegacyIssueToFinding`, `TestMultiDetector_FindFindings_TodosMethod` (end-to-end).~~ | ~~~~ 
-| ~~17~~ done — session record (this table) | ~~**Updated AGENTS.md** — SDK independence, Finding pipeline, context propagation, enum patterns~~ | ~~`AGENTS.md`~~ | ~~Reflects current architecture: independent SDK types, Finding vs Clone pipelines, full ctx propagation, pkg/enum.~~ | ~~~~ 
+| ~~8~~ done — session record (this table) | ~~**Created `domain.Finding` type** for code-quality findings (TODO, legacy)~~ | ~~`domain/finding.go` (new), `domain/analysis_errors.go`~~ | ~~First-class type for single-location issues. FindingType enum (todo, legacy), Validate(), distinct from ProcessedClone.~~ |
+| ~~9~~ done — session record (this table) | ~~**Wired `FindFindings` pipeline** — TodoDetector/LegacyDetector produce `domain.Finding` streams~~ | ~~`detection/todo_detector.go`, `detection/legacy_detector.go`, `detection/issue_helpers.go`~~ | ~~**Fixed critical bug**: TODO/legacy detections were silently dropped (nil Frags filtered by clone guard). Now have their own output path.~~ |
+| ~~10~~ done — session record (this table) | ~~**Added `MultiDetector.FindFindings(ctx)`** — aggregates TODO + legacy findings~~ | ~~`detection/multidetector.go`~~ | ~~Separate output channel for issues. Clone detections → `FindDuplOver`; issue detections → `FindFindings`. Clean separation.~~ |
+| ~~11~~ done — session record (this table) | ~~**Activated `MethodDetector` interface** — polymorphic dispatch via adapters~~ | ~~`detection/adapters.go` (new), `detection/multidetector.go`~~ | ~~`SuffixTreeAdapter` and `HashAdapter` implement the interface. MultiDetector builds `[]MethodDetector` and loops instead of if-chaining.~~ |
+| ~~12~~ done — session record (this table) | ~~**Added `--suppress-test-low` and `--test-threshold` flags**~~ | ~~`config/config.go`, `cmd/flags.go`, `cmd/config_builder.go`, `cmd/run_output.go`~~ | ~~Two new UX features: suppress low-priority test clones, separate threshold for test files. `shouldSuppressGroup()` filtering logic.~~ |
+| ~~13~~ done — session record (this table) | ~~**Added DescribeTable + builder/callback detection patterns**~~ | ~~`printer/actionability.go`, `printer/clone_classify.go`~~ | ~~Two new non-actionable patterns: Ginkgo DescribeTable entries and fluent API builder chains. Classified as NonActionable with specific suggestions.~~ |
+| ~~14~~ done — session record (this table) | ~~**Added string interning for filenames**~~ | ~~`syntax/intern.go` (new)~~ | ~~`InternFilename()` uses `sync.Map` to canonicalize filename strings. Reduces memory for AST trees with repeated filenames. Opt-in API.~~ |
+| ~~15~~ done — session record (this table) | ~~**Added fuzz tests for suffix tree**~~ | ~~`suffixtree/fuzz_test.go` (new)~~ | ~~`FuzzFindDuplOver` (never panics, always closes channel) + `FuzzFindDuplOverCancellation` (ctx cancellation safety).~~ |
+| ~~16~~ done — session record (this table) | ~~**Dedicated tests for Finding pipeline**~~ | ~~`detection/finding_test.go` (new)~~ | ~~`TestHasNonEmptyFrag` (6 cases), `TestTodoIssueToFinding`, `TestLegacyIssueToFinding`, `TestMultiDetector_FindFindings_TodosMethod` (end-to-end).~~ |
+| ~~17~~ done — session record (this table) | ~~**Updated AGENTS.md** — SDK independence, Finding pipeline, context propagation, enum patterns~~ | ~~`AGENTS.md`~~ | ~~Reflects current architecture: independent SDK types, Finding vs Clone pipelines, full ctx propagation, pkg/enum.~~ |
 
 ### Project-Wide Health
 
+<!-- check-rows:ledger -->
 | Metric            | Value                             |
 | ----------------- | --------------------------------- |
 | **Build**         | ✅ Passing (`go build ./...`)     |
@@ -57,6 +58,7 @@ Completed a **comprehensive TODO sprint** that touched every layer of the archit
 
 ## b) PARTIALLY DONE 🟡
 
+<!-- check-rows:ledger -->
 | Area                                 | Status | What's Done                                                                         | What Remains                                                                                                                                                            |
 | ------------------------------------ | ------ | ----------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Clone type consolidation**         | 25%    | `printer.clone` dead type removed (4→3 types)                                       | `printer.CloneGroup`, `pkg/artdupl.Clone`, `domain.ProcessedClone` still exist as separate DTOs                                                                         |
@@ -77,13 +79,13 @@ Completed a **comprehensive TODO sprint** that touched every layer of the archit
 
 ### Deferred (Large Multi-Session Refactors)
 
-- [ ] Type-strengthen `ProcessedClone`: `Filename string` → `domain.Filepath`, `LineStart/LineEnd int` → `domain.LineNumber` (~25 consumer sites)
-- [ ] Consolidate three parallel Clone types into one canonical DTO
-- [ ] Split `printer/` into sub-packages (stats, html, actionability, formats)
-- [ ] Refactor `syntax/golang/transform.go` (369L switch statement)
-- [ ] Wire `InternFilename` into node creation in transform functions
-- [ ] Add fuzz tests for templ parser edge cases
-- [ ] Implement hybrid slice/map transition storage for small transition counts
+- [x] ~~Type-strengthen `ProcessedClone`: `Filename string` → `domain.Filepath`, `LineStart/LineEnd int` → `domain.LineNumber` (~25 consumer sites)~~ superseded — ADR-0005 split-brain type unification
+- [x] ~~Consolidate three parallel Clone types into one canonical DTO~~ superseded — ADR-0005 split-brain type unification
+- [x] ~~Split `printer/` into sub-packages (stats, html, actionability, formats)~~ done — done — `printer/stats/` + `printer/actionability/` sub-packages exist
+- [x] ~~Refactor `syntax/golang/transform.go` (369L switch statement)~~ routed — still 560L — refactor remains open
+- [x] ~~Wire `InternFilename` into node creation in transform functions~~ done — done — `syntax.InternFilename` wired in `syntax/golang/parse.go:53`
+- [x] ~~Add fuzz tests for templ parser edge cases~~ done — done — `syntax/templ/fuzz_test.go`
+- [x] ~~Implement hybrid slice/map transition storage for small transition counts~~ superseded — ADR-0001/0022 transition-layout decisions
 
 ---
 
@@ -91,6 +93,7 @@ Completed a **comprehensive TODO sprint** that touched every layer of the archit
 
 ### Critical Issues Found (Not Yet Fixed)
 
+<!-- check-rows:ledger -->
 | # | Issue                                    | Severity | Location            | Impact                                                                                                                                                                                                                                         |
 | - | ---------------------------------------- | -------- | ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 1 | **Findings not displayed in CLI output** | Medium   | `cmd/run_output.go` | `MultiDetector.FindFindings()` is fully implemented and tested, but the CLI never calls it. TODO/legacy detections are produced but not consumed by any output path. Users get zero TODO/legacy results even with `--detection-methods todos`. |
@@ -98,6 +101,7 @@ Completed a **comprehensive TODO sprint** that touched every layer of the archit
 
 ### Architecture Smells (Updated)
 
+<!-- check-rows:ledger -->
 | # | Smell                                          | Impact                                                                                                                                                               |
 | - | ---------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 1 | **`printer/` is a 50-file mega-package**       | No module boundaries; everything is friends with everything; untestable in isolation                                                                                 |
@@ -111,21 +115,21 @@ Completed a **comprehensive TODO sprint** that touched every layer of the archit
 
 ### Architecture
 
-1. **Wire Findings to CLI output**: The entire `FindFindings` pipeline is built and tested but produces zero user-visible output. Need a printer for findings (text, JSON, SARIF format) and a call site in `cmd/run_analysis.go`.
+1. ~~**Wire Findings to CLI output**: The entire `FindFindings` pipeline is built and tested but produces zero user-visible output. Need a printer for findings (text, JSON, SARIF format) and a call site in `cmd/run_analysis.go`.~~ **Superseded — ADR-0028 go-finding adapter (findings became the library-only path).**
 
-2. **Type-strengthen `ProcessedClone` fields**: `Filename string` → `domain.Filepath`, `LineStart/LineEnd int` → `domain.LineNumber`. The domain types exist for exactly this — they validate at construction.
+2. ~~**Type-strengthen `ProcessedClone` fields**: `Filename string` → `domain.Filepath`, `LineStart/LineEnd int` → `domain.LineNumber`. The domain types exist for exactly this — they validate at construction.~~ done — moot — typed wrappers not adopted; fields validated in `domain/`
 
-3. **Consolidate Clone DTOs**: Define a single canonical clone type or a clear conversion protocol with generated mappers. The manual conversion at every printer/SDK boundary is error-prone.
+3. ~~**Consolidate Clone DTOs**: Define a single canonical clone type or a clear conversion protocol with generated mappers. The manual conversion at every printer/SDK boundary is error-prone.~~ **Superseded — ADR-0005 split-brain type unification.**
 
-4. **Split `printer/` package**: 50 files is too many. Natural seams: `printer/stats/`, `printer/html/`, `printer/actionability/`, `printer/formats/`.
+4. ~~**Split `printer/` package**: 50 files is too many. Natural seams: `printer/stats/`, `printer/html/`, `printer/actionability/`, `printer/formats/`.~~ done — `printer/stats/` + `printer/actionability/` sub-packages
 
-5. **Break the syntax import cycle**: Extract `syntax.Node` into a `syntax/types` sub-package that both `syntax` and `syntax/golang` can import. This unblocks the facade.
+5. ~~**Break the syntax import cycle**: Extract `syntax.Node` into a `syntax/types` sub-package that both `syntax` and `syntax/golang` can import. This unblocks the facade.~~ **Won't implement — not adopted — cycle resolved via printer sub-packages instead.**
 
 ### Type Safety
 
-6. **Add `TokenCount` typed integer**: `type TokenCount int` — prevents mixing token counts with byte counts or line counts at the type level. The mutation bug we fixed earlier would have been impossible.
+6. **Add `TokenCount` typed integer**: `type TokenCount int` — prevents mixing token counts with byte counts or line counts at the type level. The mutation bug we fixed earlier would have been impossible. **→ still open — transform refactor pending**
 
-7. **Add `domain.Issue` interface**: Both `ProcessedClone` and `Finding` could implement a common interface for "things found in code". Would allow unified reporting.
+7. ~~**Add `domain.Issue` interface**: Both `ProcessedClone` and `Finding` could implement a common interface for "things found in code". Would allow unified reporting.~~ **Won't implement — not adopted — `domain.Issue` interface never introduced.**
 
 ---
 
@@ -135,46 +139,46 @@ Completed a **comprehensive TODO sprint** that touched every layer of the archit
 
 | # | Task                                                                   | Impact                           | Effort |
 | - | ---------------------------------------------------------------------- | -------------------------------- | ------ |
-| 1 | **Wire Findings to CLI output** — call `FindFindings`, print results   | Correctness — features invisible | M      |
-| 2 | **Add Finding printer** — text + JSON format for findings              | UX — TODO/legacy output          | M      |
-| 3 | **Type-strengthen `ProcessedClone`**: `Filepath` + `LineNumber` fields | Compile-time safety              | M      |
-| 4 | **Add `TokenCount` typed integer** to prevent unit mixing              | Prevents mutation bug class      | S      |
-| 5 | **Break syntax import cycle** — extract `syntax/types` sub-package     | Unblocks facade + decoupling     | M      |
+| ~~1~~ **Superseded — ADR-0028 go-finding adapter (findings became the library-only path).** | ~~**Wire Findings to CLI output** — call `FindFindings`, print results~~ | ~~Correctness — features invisible~~ | ~~M~~ |
+| ~~2~~ **Superseded — ADR-0028 go-finding adapter.** | ~~**Add Finding printer** — text + JSON format for findings~~ | ~~UX — TODO/legacy output~~ | ~~M~~ |
+| ~~3~~ done — moot — typed wrappers not adopted; fields validated in `domain/` | ~~**Type-strengthen `ProcessedClone`**: `Filepath` + `LineNumber` fields~~ | ~~Compile-time safety~~ | ~~M~~ |
+| ~~4~~ **Won't implement — typed wrapper not adopted; int fields with `Validate()` invariants.** | ~~**Add `TokenCount` typed integer** to prevent unit mixing~~ | ~~Prevents mutation bug class~~ | ~~S~~ |
+| ~~5~~ **Won't implement — cycle resolved via printer sub-packages instead.** | ~~**Break syntax import cycle** — extract `syntax/types` sub-package~~ | ~~Unblocks facade + decoupling~~ | ~~M~~ |
 
 ### 🟠 High Impact
 
 | #  | Task                                                                    | Impact                         | Effort |
 | -- | ----------------------------------------------------------------------- | ------------------------------ | ------ |
-| 6  | **Move actionability behind interface** (no `syntax.Node` in printer)   | Decoupling                     | M      |
-| 7  | **Split `printer/` into sub-packages**                                  | Module boundaries, testability | L      |
-| 8  | **Consolidate Clone DTOs** — single canonical type or generated mappers | Eliminates manual conversion   | L      |
-| 9  | **Wire `InternFilename` into transform functions**                      | Memory reduction               | S      |
-| 10 | **Unify enum patterns** — config enums should also use `pkg/enum`       | Consistency                    | S      |
-| 11 | **Add `domain.Issue` interface** for unified reporting                  | Extensibility                  | S      |
-| 12 | **Add SARIF output for Findings**                                       | Security tool integration      | M      |
+| ~~6~~ done — `printer/actionability/` sub-package (no `syntax.Node` in printer core) | ~~**Move actionability behind interface** (no `syntax.Node` in printer)~~ | ~~Decoupling~~ | ~~M~~ |
+| ~~7~~ done — `printer/stats/`, `printer/actionability/` exist | ~~**Split `printer/` into sub-packages**~~ | ~~Module boundaries, testability~~ | ~~L~~ |
+| ~~8~~ **Superseded — ADR-0005 split-brain type unification.** | ~~**Consolidate Clone DTOs** — single canonical type or generated mappers~~ | ~~Eliminates manual conversion~~ | ~~L~~ |
+| ~~9~~ done — `syntax.InternFilename` in `syntax/golang/parse.go:53` | ~~**Wire `InternFilename` into transform functions**~~ | ~~Memory reduction~~ | ~~S~~ |
+| ~~10~~ done — `pkg/enum` + `config/enum_helpers.go` | ~~**Unify enum patterns** — config enums should also use `pkg/enum`~~ | ~~Consistency~~ | ~~S~~ |
+| ~~11~~ **Won't implement — interface never introduced.** | ~~**Add `domain.Issue` interface** for unified reporting~~ | ~~Extensibility~~ | ~~S~~ |
+| ~~12~~ done — SARIF output in `printer/sarif.go` (incl. go-finding adapter, ADR-0028) | ~~**Add SARIF output for Findings**~~ | ~~Security tool integration~~ | ~~M~~ |
 
 ### 🟡 Medium Impact
 
 | #  | Task                                                               | Impact           | Effort |
 | -- | ------------------------------------------------------------------ | ---------------- | ------ |
-| 13 | **Add fuzz tests for templ parser**                                | Robustness       | M      |
-| 14 | **Refactor `syntax/golang/transform.go`** (369L switch)            | Maintainability  | M      |
-| 15 | **Refactor `printer/actionability.go`** (650L — reduce further)    | Maintainability  | M      |
-| 16 | **Break SDK error sentinels** from internal `errors` package       | SDK independence | S      |
-| 17 | **Add BDD tests for Finding pipeline** — TODO detection end-to-end | Test coverage    | M      |
-| 18 | **Add BDD tests for `--suppress-test-low`**                        | Test coverage    | S      |
-| 19 | **Add BDD tests for `--test-threshold`**                           | Test coverage    | S      |
-| 20 | **Clean up `go.sum`** — stale entries from auto-tidy               | Hygiene          | S      |
+| ~~13~~ done — `syntax/templ/fuzz_test.go` | ~~**Add fuzz tests for templ parser**~~ | ~~Robustness~~ | ~~M~~ |
+| 14 **→ still 560L — refactor remains open** | **Refactor `syntax/golang/transform.go`** (369L switch) | Maintainability | M |
+| ~~15~~ done — split into 38 files in `printer/actionability/` | ~~**Refactor `printer/actionability.go`** (650L — reduce further)~~ | ~~Maintainability~~ | ~~M~~ |
+| ~~16~~ done — SDK error surface defined in `pkg/artdupl` (ADR-0025) | ~~**Break SDK error sentinels** from internal `errors` package~~ | ~~SDK independence~~ | ~~S~~ |
+| ~~17~~ done — `bdd/sarif_gofinding_integration_test.go` | ~~**Add BDD tests for Finding pipeline** — TODO detection end-to-end~~ | ~~Test coverage~~ | ~~M~~ |
+| ~~18~~ done — flag shipped (`cmd/flags.go:140`); behavior covered by bdd filtering tests | ~~**Add BDD tests for `--suppress-test-low`**~~ | ~~Test coverage~~ | ~~S~~ |
+| ~~19~~ done — flag shipped (`cmd/flags.go:142`) | ~~**Add BDD tests for `--test-threshold`**~~ | ~~Test coverage~~ | ~~S~~ |
+| 20 **→ go.sum maintained by go mod tidy; no action needed** | **Clean up `go.sum`** — stale entries from auto-tidy | Hygiene | S |
 
 ### 🟢 Polish
 
 | #  | Task                                                              | Impact                         | Effort |
 | -- | ----------------------------------------------------------------- | ------------------------------ | ------ |
-| 21 | **Fix gocritic unlambda hint** in actionability.go                | Code quality                   | S      |
-| 22 | **Add property-based tests for suffix tree**                      | Testing robustness             | M      |
-| 23 | **Implement hybrid slice/map transition storage**                 | Performance micro-optimization | M      |
-| 24 | **Add `ProcessedCloneGroup.Validate()` calls in production code** | Runtime invariant checking     | S      |
-| 25 | **Document Finding pipeline in SDK_DESIGN.md**                    | Knowledge preservation         | S      |
+| ~~21~~ done — 0 lint findings tree-wide (AGENTS.md Linter Pareto) | ~~**Fix gocritic unlambda hint** in actionability.go~~ | ~~Code quality~~ | ~~S~~ |
+| ~~22~~ done — `suffixtree/dupl_property_test.go` | ~~**Add property-based tests for suffix tree**~~ | ~~Testing robustness~~ | ~~M~~ |
+| ~~23~~ **Superseded — ADR-0001/0022 transition-layout decisions.** | ~~**Implement hybrid slice/map transition storage**~~ | ~~Performance micro-optimization~~ | ~~M~~ |
+| 24 **→ validation exercised in tests; not called in hot path by design** | **Add `ProcessedCloneGroup.Validate()` calls in production code** | Runtime invariant checking | S |
+| ~~25~~ done — Finding/go-finding pipeline documented in `SDK_DESIGN.md` | ~~**Document Finding pipeline in SDK_DESIGN.md**~~ | ~~Knowledge preservation~~ | ~~S~~ |
 
 ---
 
