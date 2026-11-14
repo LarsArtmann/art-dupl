@@ -1,0 +1,1 @@
+docs/status/2026-07-16_05-49_missing-test-coverage-bugfix.md	45	v	fixed — lint is 106-linter clean since 2026-09-29 (AGENTS.md); the flaky os.Exit tests were fixed

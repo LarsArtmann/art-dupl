@@ -55,6 +55,7 @@ The critical bug that started this session: `FindFindings` was implemented but *
 
 ### Commits This Session (28 total, 15 in this reporting window)
 
+<!-- check-rows:ledger -->
 | Commit    | Description                                                           |
 | --------- | --------------------------------------------------------------------- |
 | `17f799f` | test(domain): FindingType enum tests + Finding.Validate               |
@@ -232,6 +233,7 @@ The goroutine leak we fixed (undrained `findingChan`) was a contributing factor 
 
 ## Session Metrics
 
+<!-- check-rows:ledger -->
 | Metric               | Value                                                                       |
 | -------------------- | --------------------------------------------------------------------------- |
 | Commits this session | 28                                                                          |

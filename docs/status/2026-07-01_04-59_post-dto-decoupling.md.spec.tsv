@@ -1,0 +1,2 @@
+docs/status/2026-07-01_04-59_post-dto-decoupling.md	98	v	done — docs/benchmarks/ baselines + the Performance gate + alloc-gate
+docs/status/2026-07-01_04-59_post-dto-decoupling.md	142	v	done — .githooks/pre-commit runs the jsonv2gate (2026-10-24)

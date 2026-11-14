@@ -171,6 +171,7 @@ the printer is decoupled — the foundation for either path is solid.
 
 ## Verification Gate
 
+<!-- check-rows:ledger -->
 | Check                               | Result                 |
 | ----------------------------------- | ---------------------- |
 | `go build ./...`                    | ✅ clean               |

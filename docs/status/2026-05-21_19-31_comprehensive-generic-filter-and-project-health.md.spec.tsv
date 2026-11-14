@@ -1,0 +1,13 @@
+docs/status/2026-05-21_19-31_comprehensive-generic-filter-and-project-health.md	107	v	superseded — the TODO/Legacy detectors were deleted; only the art-dupl and hash methods remain
+docs/status/2026-05-21_19-31_comprehensive-generic-filter-and-project-health.md	108	v	superseded — the CI Coverage job tracks coverage
+docs/status/2026-05-21_19-31_comprehensive-generic-filter-and-project-health.md	111	v	superseded — the filter pipeline was rebuilt (cmd/filter_stats.go, generatorIncludes)
+docs/status/2026-05-21_19-31_comprehensive-generic-filter-and-project-health.md	119	v	done — domain.ProcessedClone landed; PrintClones consumes it (printer/printer.go:82)
+docs/status/2026-05-21_19-31_comprehensive-generic-filter-and-project-health.md	120	v	done — CloneRef consolidation + printer/actionability/ landed (AGENTS.md, ADR-0027)
+docs/status/2026-05-21_19-31_comprehensive-generic-filter-and-project-health.md	122	v	done — ADR-0022 []TokenValue layout
+docs/status/2026-05-21_19-31_comprehensive-generic-filter-and-project-health.md	123	v	done — CSV is an OutputFormat value (config enums; stats + run output paths)
+docs/status/2026-05-21_19-31_comprehensive-generic-filter-and-project-health.md	124	v	done — the pkg/enum shared helpers are adopted (AGENTS.md Enum pattern)
+docs/status/2026-05-21_19-31_comprehensive-generic-filter-and-project-health.md	125	v	won't implement — alloc budgets own memory work (ADR-0022)
+docs/status/2026-05-21_19-31_comprehensive-generic-filter-and-project-health.md	126	v	done — the provider crawl runs FilterAll with gitignore (AGENTS.md provider bullet)
+docs/status/2026-05-21_19-31_comprehensive-generic-filter-and-project-health.md	127	v	struck — tracked on ROADMAP (Language Support section)
+docs/status/2026-05-21_19-31_comprehensive-generic-filter-and-project-health.md	128	v	done — the SDK shipped (pkg/artdupl; ADR-0025/0026, SDK_DESIGN.md)
+docs/status/2026-05-21_19-31_comprehensive-generic-filter-and-project-health.md	149	v	fixed — the config package tests are green today

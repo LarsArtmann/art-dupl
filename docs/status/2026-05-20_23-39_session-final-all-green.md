@@ -35,6 +35,7 @@
 
 ### Other Completed Work
 
+<!-- check-rows:ledger -->
 | Task                                                                  | Commit    |
 | --------------------------------------------------------------------- | --------- |
 | Pre-existing lint fixes (gci, golines, modernize from gogenfilter v3) | `16a54af` |
@@ -136,6 +137,7 @@ From TODO_LIST.md (priority order):
 
 ### P2 — Infrastructure
 
+<!-- check-rows:ledger -->
 | #  | Task                            | Effort |
 | -- | ------------------------------- | ------ |
 | ~~18~~ done — superseded — coverage is tracked by the CI Coverage job; per-package floors moved on | ~~Bump BDD test coverage to 80%+~~ | ~~M~~ |
@@ -162,6 +164,7 @@ This touches 111 test call sites and 6 printer implementations. Options:
 
 ## Metrics
 
+<!-- check-rows:ledger -->
 | Metric               | Value          |
 | -------------------- | -------------- |
 | Position bugs fixed  | 6              |

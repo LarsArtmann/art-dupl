@@ -1,0 +1,7 @@
+docs/status/2026-05-21_19-58_deduplication-floor-reached.md	35	v	done — internal/testutil/assert.go helpers
+docs/status/2026-05-21_19-58_deduplication-floor-reached.md	125	v	fixed — lint is 106-linter clean since 2026-09-29 (AGENTS.md); the flaky os.Exit tests were fixed
+docs/status/2026-05-21_19-58_deduplication-floor-reached.md	126	v	fixed — lint is 106-linter clean since 2026-09-29 (AGENTS.md); the flaky os.Exit tests were fixed
+docs/status/2026-05-21_19-58_deduplication-floor-reached.md	127	v	fixed — lint is 106-linter clean since 2026-09-29 (AGENTS.md); the flaky os.Exit tests were fixed
+docs/status/2026-05-21_19-58_deduplication-floor-reached.md	128	v	fixed — lint is 106-linter clean since 2026-09-29 (AGENTS.md); the flaky os.Exit tests were fixed
+docs/status/2026-05-21_19-58_deduplication-floor-reached.md	129	v	fixed — lint is 106-linter clean since 2026-09-29 (AGENTS.md); the flaky os.Exit tests were fixed
+docs/status/2026-05-21_19-58_deduplication-floor-reached.md	223	v	fixed — the config package tests are green today

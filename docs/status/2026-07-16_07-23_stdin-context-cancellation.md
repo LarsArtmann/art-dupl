@@ -210,6 +210,7 @@ The BDD test helper `RunArtDuplWithStdin` claims to test stdin but actually conv
 
 ## Session Metrics
 
+<!-- check-rows:ledger -->
 | Metric                 | Value                                                                            |
 | ---------------------- | -------------------------------------------------------------------------------- |
 | Files changed          | 4 (`run_crawl.go`, `run_crawl_stdin_test.go` [new], `AGENTS.md`, `TODO_LIST.md`) |

@@ -1,0 +1,26 @@
+docs/status/2026-05-21_17-29_comprehensive-status-update.md	115	v	done — CloneRef consolidation + printer/actionability/ landed (AGENTS.md, ADR-0027)
+docs/status/2026-05-21_17-29_comprehensive-status-update.md	116	v	done — ADR-0022 []TokenValue layout
+docs/status/2026-05-21_17-29_comprehensive-status-update.md	117	v	done — the pkg/enum shared helpers are adopted (AGENTS.md Enum pattern)
+docs/status/2026-05-21_17-29_comprehensive-status-update.md	118	v	struck — tracked on ROADMAP (Architecture: transform.go table-driven handlers)
+docs/status/2026-05-21_17-29_comprehensive-status-update.md	119	v	fixed 2026-11-14 — the archive ritual is running (cadence gate)
+docs/status/2026-05-21_17-29_comprehensive-status-update.md	120	v	done — canonical filename interning lives in syntax/intern.go
+docs/status/2026-05-21_17-29_comprehensive-status-update.md	192	v	fixed — lint is 106-linter clean since 2026-09-29 (AGENTS.md); the flaky os.Exit tests were fixed
+docs/status/2026-05-21_17-29_comprehensive-status-update.md	194	v	done — the living docs are maintained continuously (docs-health cadence)
+docs/status/2026-05-21_17-29_comprehensive-status-update.md	195	v	done — ADR-0022 []TokenValue layout
+docs/status/2026-05-21_17-29_comprehensive-status-update.md	197	v	done — CloneRef consolidation + printer/actionability/ landed (AGENTS.md, ADR-0027)
+docs/status/2026-05-21_17-29_comprehensive-status-update.md	199	v	fixed 2026-11-14 — the archive ritual is running (cadence gate)
+docs/status/2026-05-21_17-29_comprehensive-status-update.md	200	v	verified 2026-11-14 — inherited parent range mitigates it; templ pinned (AGENTS.md)
+docs/status/2026-05-21_17-29_comprehensive-status-update.md	201	v	done — the pkg/enum shared helpers are adopted (AGENTS.md Enum pattern)
+docs/status/2026-05-21_17-29_comprehensive-status-update.md	202	v	struck — tracked on ROADMAP (Architecture: transform.go table-driven handlers)
+docs/status/2026-05-21_17-29_comprehensive-status-update.md	203	v	won't implement — the SIMD code was deleted; alloc budgets own memory work (ADR-0022)
+docs/status/2026-05-21_17-29_comprehensive-status-update.md	204	v	done — CSV is an OutputFormat value (config enums; stats + run output paths)
+docs/status/2026-05-21_17-29_comprehensive-status-update.md	205	v	done — canonical filename interning lives in syntax/intern.go
+docs/status/2026-05-21_17-29_comprehensive-status-update.md	207	v	done 2026-10 — native fuzz targets + the seed-corpus gate (cmd/fuzz_seed_gate_test.go)
+docs/status/2026-05-21_17-29_comprehensive-status-update.md	208	v	superseded — the TODO/Legacy detectors were deleted; only the art-dupl and hash methods remain
+docs/status/2026-05-21_17-29_comprehensive-status-update.md	209	v	fixed — the gopls findings were closed in the 2026-09-29 pass (AGENTS.md)
+docs/status/2026-05-21_17-29_comprehensive-status-update.md	210	v	done — docs/benchmarks/ baselines + the Performance gate + alloc-gate
+docs/status/2026-05-21_17-29_comprehensive-status-update.md	211	v	done — docs/benchmarks/ baselines + the Performance gate + alloc-gate
+docs/status/2026-05-21_17-29_comprehensive-status-update.md	212	v	done — report.templ generates the HTML (printer/report.templ)
+docs/status/2026-05-21_17-29_comprehensive-status-update.md	214	v	superseded — the BDD runner design settled (internal/testutil/bdd_runners.go)
+docs/status/2026-05-21_17-29_comprehensive-status-update.md	215	v	verified 2026-11-14 — inherited parent range mitigates it; templ pinned (AGENTS.md)
+docs/status/2026-05-21_17-29_comprehensive-status-update.md	216	v	done — release automation runs via CI (auto-tag, deploy-site, release lanes; .goreleaser.yaml)

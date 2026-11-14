@@ -167,6 +167,7 @@ All assertions pass but test binary exits non-zero. Cobra calls `os.Exit()` duri
 
 ## f) Top #25 Things We Should Get Done Next
 
+<!-- check-rows:ledger -->
 | #  | Task                                                           | Priority | Effort |
 | -- | -------------------------------------------------------------- | -------- | ------ |
 | 1  | Fix os.Exit test flakiness (bdd + cmd)                         | CRITICAL | M      |
@@ -207,6 +208,7 @@ Both test similar end-to-end scenarios. `bdd/` uses Ginkgo/Gomega with in-proces
 
 ## Metrics Summary
 
+<!-- check-rows:ledger -->
 | Metric                        | Value                                 |
 | ----------------------------- | ------------------------------------- |
 | Go files                      | 214                                   |

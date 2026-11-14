@@ -14,6 +14,7 @@
 
 The project is in **strong shape** with 23/25 packages fully passing, 72% total test coverage, and the in-process BDD test migration complete. ~~~~~~One pre-existing test failure remains in `cmd` (`os.Exit(1)` in `statError`).~~ statError's os.Exit is gone; cmd and bdd suites green today.~~ statError's os.Exit is gone; cmd and bdd suites green today.~~ statError's os.Exit is gone; cmd and bdd suites green today. Additionally, a critical **flaky test** issue was discovered: `os.Exit(1)` in `statError()` causes random BDD suite death depending on Ginkgo's random seed — sometimes killing the entire test process after just 20-30 specs.
 
+<!-- check-rows:ledger -->
 | Metric                        | Value          | Trend                               |
 | ----------------------------- | -------------- | ----------------------------------- |
 | Total Go files                | 214            | Stable                              |

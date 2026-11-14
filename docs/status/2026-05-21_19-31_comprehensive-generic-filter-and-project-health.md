@@ -194,6 +194,7 @@ Most are in test code (small boilerplate patterns). But indicates test utility e
 
 ## f) TOP 25 THINGS TO DO NEXT (Prioritized)
 
+<!-- check-rows:ledger -->
 | #  | Task                                                | Priority | Effort | Impact               | Category     |
 | -- | --------------------------------------------------- | -------- | ------ | -------------------- | ------------ |
 | ~~1~~ done — the config package tests are green today | ~~Fix `config/config_enum_test.go` build failure~~ | ~~P0~~ | ~~5min~~ | ~~Unblocks CI~~ | ~~Bug fix~~ |
@@ -241,6 +242,7 @@ Was it deprioritized deliberately (concern about false positives?), or did it ju
 
 ## Test Results Summary
 
+<!-- check-rows:ledger -->
 | Package                  | Status        | Notes                                                                                                                                                                                                                                                                    |
 | ------------------------ | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `bdd/`                   | ❌ FAIL       | os.Exit flaky — `stats_command_test.go:448`                                                                                                                                                                                                                              |

@@ -162,6 +162,7 @@ Categories of "clones" found at t=15 that are **not actionable**:
 
 ## f) Top #25 Things We Should Get Done Next
 
+<!-- check-rows:ledger -->
 | #  | Task                                                           | Priority |
 | -- | -------------------------------------------------------------- | -------- |
 | 1  | Fix os.Exit test flakiness (bdd + cmd)                         | CRITICAL |
@@ -228,6 +229,7 @@ This has been the #1 question across ALL status reports this session. The overla
 
 ### Metrics (Unchanged Since Last Report)
 
+<!-- check-rows:ledger -->
 | Metric                        | Value                        |
 | ----------------------------- | ---------------------------- |
 | Go files                      | 214                          |

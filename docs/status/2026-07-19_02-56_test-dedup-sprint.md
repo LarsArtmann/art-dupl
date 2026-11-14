@@ -9,6 +9,7 @@
 
 ## TL;DR
 
+<!-- check-rows:ledger -->
 | Metric                      | Before | After                   |
 | --------------------------- | ------ | ----------------------- |
 | Clone groups at `-t 50`     | 8      | **3**                   |
@@ -221,6 +222,7 @@ syntax/templ/transform_components_test.go |  57 ++++----
 
 ## Helpers introduced this session
 
+<!-- check-rows:ledger -->
 | Helper                         | Location                                    | Replaces                                                                       |
 | ------------------------------ | ------------------------------------------- | ------------------------------------------------------------------------------ |
 | `cloneGroupMetrics`            | `printer/sorter.go` (prod)                  | 10 inline `GroupMetrics[CloneGroup]{...}` literals                             |
