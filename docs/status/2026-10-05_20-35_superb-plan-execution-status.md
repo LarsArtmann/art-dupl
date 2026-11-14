@@ -162,9 +162,9 @@ fumbles in one micro-task.
 4. Adapter: add `Options.EmitSuppressedAccepted` + `Options.Accepted` predicate.
 5. Mark accepted groups via `WithSuppression{Kind: SuppressionInSource, Rule: RuleCloneDetected, Reason: "//art-dupl:accept directive"}`.
 6. M30: round-trip test `ToSARIFWithOpts(WithIncludeSuppressed())` → `FindingsFromSARIF` preserves suppression.
-7. M31: guardrail test — flag off ⇒ ToFindings bytes identical.
+~~7. M31: guardrail test — flag off ⇒ ToFindings bytes identical.~~ done — TestEmitSuppressedAcceptedOffIsByteIdentical pins the off path (AGENTS.md)
 8. Provider: `emit-suppressed-accepted` bool Spec option; build AcceptedSet only when on; thread predicate through findingsFromGroups.
-9. Provider test: fixture with `//art-dupl:accept` — findings suppressed only when opted in; count unchanged when off.
+~~9. Provider test: fixture with `//art-dupl:accept` — findings suppressed only when opted in; count unchanged when off.~~ done — the suppression round-trip is pinned (AGENTS.md T06)
 10. M32: docs (AGENTS provider bullet, TODO_LIST) + boundary gate + commit.
 
 **Gates & hygiene (immediate):**
@@ -180,7 +180,7 @@ fumbles in one micro-task.
 
 **T08/T09:**
 18. Add `type-1/2/3` + `duplicate` tags from Classification (M40) — validated convention confirmed.
-19. Tag-validation + golden updates (M41–M42).
+~~19. Tag-validation + golden updates (M41–M42).~~ done — the provider golden is pinned (TestProviderFindingsGolden; AGENTS.md)
 20. M43–M45: SARIF cross-check printer vs `Report.ToSARIF()` on groupId+severity; fix or document divergence.
 
 **T05 (LSP, blanket-ordered):**
@@ -190,10 +190,10 @@ fumbles in one micro-task.
 
 **Research/proof/inventory (T10–T15):**
 24. M46: `agentic_fetch` pkg.go.dev + proxy — published latest vs local tags.
-25. M47–M48: Context7 + community pass.
+~~25. M47–M48: Context7 + community pass.~~ not-do — the community pass never ran
 26. M49: update report §currency + appendix.
 27. M50–M53: read `analysis/`, `pipeline/`, `registry.go`, `interval_index.go`, `category_linter.go`; mechanical inventory; re-score.
-28. M54: baseline-vs-`Diff` prove-or-retract.
+~~28. M54: baseline-vs-`Diff` prove-or-retract.~~ done — the go-finding remediation ledger carries the verdict (docs/research/2026-10-05_go-finding-deep-dive.html §05-06)
 29. M55: SARIF divergence quantification table.
 30. M56–M57: Column spike (check domain/CloneNode for column data; implement or N/A-with-evidence).
 31. M58: `ToReport` disposition (grep consumers; document-vs-delete).

@@ -137,7 +137,7 @@ questions of the 20:35 report had arrived; un-gated work proceeded autonomously.
 
 ## f) NEXT UP TO 50 (Pareto order; ✅ = done this session)
 
-1. Commit T05 (M26) + fast gate.
+~~1. Commit T05 (M26) + fast gate.~~ done — the emit-suppressed-accepted option ships (AGENTS.md T06)
 2. M25: HOW_TO_USE `--lsp` section (+ mention in README output-format list if format is listed).
 3. Merge T05 to fork, push.
 4. Root-cause / re-verify the one-off BDD red (`go test ./bdd/ -run TestBDD -count=3`).
@@ -146,12 +146,12 @@ questions of the 20:35 report had arrived; un-gated work proceeded autonomously.
    consumer (`cmd/go-finding`), `Finding.Edits` (v1.14.0 new).
 7. T11 M50: read go-finding `analysis/` + `registry.go`; notes for T14 re-score.
 8. T11 M51: read `pipeline/` public surface (EditListProvider is new in v1.14.0).
-9. T11 M52: (per plan) remaining inventory item.
+~~9. T11 M52: (per plan) remaining inventory item.~~ superseded — the superb plan closed with the 2026-09-29 superb-complete session
 10. T10 M46: `agentic_fetch` pkg.go.dev + proxy.golang.org latest vs local tags (versions table).
 11. T10 M47: Context7 query go-finding API surface + practices.
-12. T10 M48: community/anti-pattern search.
+~~12. T10 M48: community/anti-pattern search.~~ not-do — the community/anti-pattern search never ran
 13. T10 M49: update deep-dive report §currency + appendix; correct any wrong claims.
-14. T12 M53–M54: baseline package vs go-finding `Diff` — verdict + doc.
+~~14. T12 M53–M54: baseline package vs go-finding `Diff` — verdict + doc.~~ done — the go-finding remediation ledger carries the Diff verdict (docs/research/2026-10-05_go-finding-deep-dive.html §05-06)
 15. T13 M55: SARIF divergence table (properties, rule ids, levels; CLI vs go-finding paths).
 16. T13 M56: Column spike — check domain for column data; implement or record N/A.
 17. T13 M57: `ToReport` disposition (keep/drop; document).

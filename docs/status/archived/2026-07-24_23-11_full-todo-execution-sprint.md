@@ -190,15 +190,15 @@ All 30 tasks from the plan have been at least started (flag + config field added
 
 ### Short-term (next 1-2 sessions)
 
-10. **Write SDK unit test for TypeAware=true path** (M24 incomplete)
+~~10. **Write SDK unit test for TypeAware=true path** (M24 incomplete)~~ done — 3 unit tests cover Options.TypeAware (AGENTS.md SDK TypeAware)
 11. **Implement `--explain` output format** (M28: show method, pattern, actionability per group)
 12. **Implement `--html-out` file writing** (M29: write to file instead of stdout)
 13. **Implement `--recommend-threshold` heuristic** (M30: codebase size + test ratio analysis)
 14. **Implement YAML config support** (M26: add `yaml.v3`, parse `.artdupl.yml`)
 15. **Implement `--diff-report`** (M27: baseline comparison logic)
 16. **Add `id` attributes to HTML clone group divs** for deep-linking (M29)
-17. **Add TTY auto-detection** for HTML output (M29)
-18. **Write integration test for `//art-dupl:accept` with real CI workflow** (accept + baseline)
+~~17. **Add TTY auto-detection** for HTML output (M29)~~ done — resolveHTMLOutput probes the TTY with an injected seam (AGENTS.md HTML output resolution)
+~~18. **Write integration test for `//art-dupl:accept` with real CI workflow** (accept + baseline)~~ not-do — no accept+baseline CI integration test landed
 19. **Write integration test for `.gitignore` with nested directories**
 20. **Test gitignore matcher with real-world `.gitignore` files** (complex patterns)
 
@@ -206,9 +206,9 @@ All 30 tasks from the plan have been at least started (flag + config field added
 
 21. **Extract type-aware data loading** to shared helper (deduplicate CLI + SDK)
 22. **Replace manual gitignore parser with library** (handle `**`, char classes, etc.)
-23. **Make accept directive AST-aware** (don't match inside strings/comments)
+~~23. **Make accept directive AST-aware** (don't match inside strings/comments)~~ won't implement — the scanner is line-based by design (AGENTS.md accept-directive bullet)
 24. **Add `//art-dupl:accept` to baseline format** (persist accepted groups)
-25. **Add `--accept-show` flag** to list all accepted directives and their groups
+~~25. **Add `--accept-show` flag** to list all accepted directives and their groups~~ not-do — no --accept-show flag landed
 26. **Profile type-aware mode performance** and document expected slowdown
 27. **Add progress bar** (not just file count) for large codebases
 28. **Add `--watch` mode** for continuous monitoring (ROADMAP item)

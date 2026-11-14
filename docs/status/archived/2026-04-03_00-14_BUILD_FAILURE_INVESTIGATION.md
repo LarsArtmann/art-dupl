@@ -132,8 +132,8 @@ The workspace file at `/Users/larsartmann/projects/go.work` forces all projects 
 
 ### Critical (Must Do)
 
-1. **Fix Go toolchain corruption** — Remove and re-download Go 1.26.1 toolchain
-2. **Verify build succeeds** — Run `just install-local` after toolchain fix
+~~1. **Fix Go toolchain corruption** — Remove and re-download Go 1.26.1 toolchain~~ fixed — environmental; the toolchain is pinned and builds green (AGENTS.md)
+~~2. **Verify build succeeds** — Run `just install-local` after toolchain fix~~ superseded — justfile is deprecated; nix build owns it (AGENTS.md)
 3. **Run full test suite** — `just test` to verify everything works
 4. **Run `just ci`** — Verify CI pipeline passes
 
@@ -143,7 +143,7 @@ The workspace file at `/Users/larsartmann/projects/go.work` forces all projects 
 6. **Test gogenfilter integration** — Verify wrapper package works
 7. **Run BDD tests** — `./...` includes bdd package
 8. **Verify clean-wizard compatibility** — It also requires Go 1.26.1
-9. **Document build requirements** — Add to README/AGENTS.md
+~~9. **Document build requirements** — Add to README/AGENTS.md~~ done — AGENTS.md Build & Test documents it
 
 ### Medium Priority
 
@@ -153,14 +153,14 @@ The workspace file at `/Users/larsartmann/projects/go.work` forces all projects 
 13. **Initialize gogenfilter git repo** — Still pending from previous session
 14. **Create GitHub repo for gogenfilter** — Publish the SDK
 15. **Tag gogenfilter v0.1.0** — First release
-16. **Remove replace directive from art-dupl** — Use versioned module
+~~16. **Remove replace directive from art-dupl** — Use versioned module~~ fixed — gogenfilter v3.4.0+ is a real tagged dep; the replace is gone (AGENTS.md)
 17. **Add gogenfilter CI/CD** — GitHub Actions for the SDK
 
 ### Lower Priority
 
 18. **Update SDK README with more examples** — Better documentation
 19. **Add SDK integration tests** — Test with real projects
-20. **Add SDK benchmarks** — Performance testing
+~~20. **Add SDK benchmarks** — Performance testing~~ not-do — no SDK benchmarks landed
 21. **Review wrapper API completeness** — Ensure all original functionality preserved
 22. **Add BDD tests for filter wrapper** — Ginkgo-based tests
 23. **Update art-dupl AGENTS.md** — Reflect new architecture

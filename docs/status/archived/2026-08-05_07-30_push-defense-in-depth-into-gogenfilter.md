@@ -129,9 +129,9 @@ Nothing. The core implementation is clean, correct, and well-tested. The auto-co
 1. **Update gogenfilter `CHANGELOG.md`** `[Unreleased]` with the content-only detection change
 2. **Bump gogenfilter version** to v3.4.0 in `flake.nix`
 3. **Tag gogenfilter v3.4.0** and push (`git tag v3.4.0 && git push --tags`)
-4. **Remove `replace` directive** from art-dupl `go.mod`
+~~4. **Remove `replace` directive** from art-dupl `go.mod`~~ fixed — gogenfilter v3.4.0+ is a real tagged dep (AGENTS.md)
 5. **Update art-dupl `go.mod`** to `gogenfilter/v3 v3.4.0`
-6. **Update art-dupl `flake.nix`** gogenfilter `rev=` to the new commit
+~~6. **Update art-dupl `flake.nix`** gogenfilter `rev=` to the new commit~~ superseded — gogenfilter bumped since via the flake input (AGENTS.md Nix section)
 7. **Set `vendorHash=""`** in `flake.nix` and run `nix build` to get the new hash
 8. **Update art-dupl `CHANGELOG.md`** `[Unreleased]` with the removal entry
 9. **Verify `nix flake check`** passes for art-dupl with the new gogenfilter
@@ -139,8 +139,8 @@ Nothing. The core implementation is clean, correct, and well-tested. The auto-co
 ### Code cleanup (non-blocking but should be done)
 
 10. **Clean up BDD test comments** — 4 references to "defense-in-depth" in `bdd/filter_features_test.go`
-11. **Fix `printer/stats_data.go:87`** stale comment
-12. **Fix `printer/stats/stats_collector.go:42`** stale comment
+~~11. **Fix `printer/stats_data.go:87`** stale comment~~ superseded — printer/stats_data.go evolved with the stats split
+~~12. **Fix `printer/stats/stats_collector.go:42`** stale comment~~ not-do — comment drift never fixed (printer/stats/stats_collector.go)
 13. **Add temporary-replace comment** to art-dupl `go.mod` (if keeping replace for now)
 14. **Add ADR to gogenfilter** for the content-only detection design decision
 
@@ -154,7 +154,7 @@ Nothing. The core implementation is clean, correct, and well-tested. The auto-co
 ### The second TODO item (lazy content reading)
 
 19. **Design API for gogenfilter `FilterDetailed` to return content** — so art-dupl can avoid the upfront `os.ReadFile` when includes are active
-20. **Implement `FilterDetailedResult` struct** with `FilterResult` + `[]byte` content field
+~~20. **Implement `FilterDetailedResult` struct** with `FilterResult` + `[]byte` content field~~ not-do — the struct never landed
 21. **Update art-dupl `shouldIncludeFile`** to use the new API and skip the upfront read
 
 ### Broader improvements noticed during this session

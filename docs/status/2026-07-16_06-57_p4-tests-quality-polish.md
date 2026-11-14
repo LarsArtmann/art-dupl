@@ -262,7 +262,7 @@
 2. **Add `NewProcessedCloneGroup` unit test** — Direct test for the new constructor.
 3. **Improve `validateNonNegative` error messages** — Include flag names (e.g., "--workers must be non-negative" not "workers must be non-negative").
 4. **Cross-link `docs/ACTIONABILITY_PATTERNS.md`** — Link from HOW_TO_USE.md and AGENTS.md.
-5. **Add progress output for long runs** — Simple file count or spinner to stderr when not `--quiet`.
+~~5. **Add progress output for long runs** — Simple file count or spinner to stderr when not `--quiet`.~~ done — progress output ships (cmd/progress.go; AGENTS.md)
 6. **True exit code integration test** — Run `exec.Command` and check actual process exit code, not just `ExitCodeForError` return value.
 7. **Audit all flag descriptions in `--help`** — Verify every flag's `Short` and usage string is accurate and helpful.
 8. **Test `--workers 0` auto-detection** — Verify 0 defaults to NumCPU.
@@ -275,10 +275,10 @@
 12. **Refactor `dispatchAnalysis` to accept parameters** — Instead of reading flags directly, for testability.
 13. **Test `--quiet` with `--json`** — Verify JSON output to stdout is unaffected by quiet mode.
 14. **Test `--no-color` with `--rich-text`** — Verify badges still show but without color codes.
-15. **Add `--verbose` to version subcommand** — Show GC stats, build flags.
+~~15. **Add `--verbose` to version subcommand** — Show GC stats, build flags.~~ not-do — version has --json/--short, no --verbose
 16. **YAML config file support** — `.artdupl.yml` parser alongside existing JSON support.
-17. **Config file structure validation** — Validate JSON/YAML config on load.
-18. **Progress bar for `--all` mode** — Show which format/method is being generated.
+~~17. **Config file structure validation** — Validate JSON/YAML config on load.~~ done — ValidateConfig validates on load (config/config_validate.go)
+~~18. **Progress bar for `--all` mode** — Show which format/method is being generated.~~ not-do — no --all progress bar landed
 19. **Deprecation warning for `--semantic`** — It's the default now; flag is redundant.
 20. **Shell completion end-to-end test** — Verify `art-dupl completion bash` produces valid bash.
 21. **Profile-guided optimization** — Run with `--profile` and check for hot spots.
@@ -302,7 +302,7 @@
 36. **SDK: expose `VersionInfo`** — For library consumers who want version metadata.
 37. **Add `--dry-run` flag** — Show what would be analyzed without running detection.
 38. **Add `--progress` flag** — Explicit progress control (always/never/auto).
-39. **HTML report: add exit code info** — Show exit code in HTML summary.
+~~39. **HTML report: add exit code info** — Show exit code in HTML summary.~~ not-do — the HTML summary carries no exit code
 40. **SARIF: add exit code to rule metadata** — For CI tooling integration.
 41. **Config: add `Config.NoColor` field** — Complement `os.Setenv` approach.
 42. **Config: validate `DetectionMode` mutually exclusive flags** — `--semantic`/`--exact`/`--structural`.

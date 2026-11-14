@@ -858,7 +858,7 @@ file, err := os.Create(filename)
 
 - **Files:** internal/enum/marshal.go, suffixtree/suffixtree.go
 - **Action:**
-  1. Review ParseEnum design decision
+~~  1. Review ParseEnum design decision~~ not-do — the design review never happened
   2. Review At method design decision
   3. Decide if concrete types should be used
   4. Add nolint:ireturn comments if design is intentional
@@ -891,8 +891,8 @@ file, err := os.Create(filename)
 - **Files:** Multiple files with error returns
 - **Action:**
   1. Review all error messages
-  2. Add context where missing
-  3. Make errors actionable
+~~  2. Add context where missing~~ done — errors carry actionable hints (config_validate.go messages; AGENTS.md)
+~~  3. Make errors actionable~~ done — typed errors carry fix hints (AGENTS.md error handling)
   4. Document error codes
 - **Time:** 45 minutes
 - **Acceptance:** Errors are clear, provide context, are actionable

@@ -170,7 +170,7 @@ The closest thing to a problem: the first test iteration checked `result` (type 
 
 #### P0 — Critical (blocks production use)
 
-1. Add validation: `--type-aware` + `--structural` should error or warn
+~~1. Add validation: `--type-aware` + `--structural` should error or warn~~ not-do — no mode-combination validation landed
 2. Add validation: `--type-aware` + `--incremental` should warn "falling back to syntax-only"
 3. Wire type-aware into `buildSuffixTreeIncremental` or document the limitation clearly
 4. Run performance benchmark on art-dupl's own codebase to quantify overhead
@@ -180,13 +180,13 @@ The closest thing to a problem: the first test iteration checked `result` (type 
 
 6. Write ADR-0015 for type-aware detection design
 7. Update `HOW_TO_USE.md` with `--type-aware` section
-8. Add `TypeAware bool` to `pkg/artdupl.Options` and wire through SDK pipeline
-9. Add BDD test in `bdd/` for type-aware mode end-to-end
+~~8. Add `TypeAware bool` to `pkg/artdupl.Options` and wire through SDK pipeline~~ done — Options.TypeAware ships in the SDK (AGENTS.md SDK TypeAware)
+~~9. Add BDD test in `bdd/` for type-aware mode end-to-end~~ not-do — no dedicated type-aware BDD scenario (unit tests cover the SDK path)
 10. Test with vendored projects (set `packages.Config` vendor mode)
-11. Test with CGO-disabled environments
+~~11. Test with CGO-disabled environments~~ not-do — no CGO-disabled test matrix
 12. Test with modules that have compile errors (graceful degradation)
 13. Add type-aware to `--help` output verification test
-14. Add integration test: run `art-dupl --type-aware` on art-dupl's own source
+~~14. Add integration test: run `art-dupl --type-aware` on art-dupl's own source~~ done — the monthly self-scan runs --type-aware on art-dupl itself (AGENTS.md)
 15. Consider encoding receiver type into `SelectorExpr` for extra robustness
 
 #### P2 — Quality improvements

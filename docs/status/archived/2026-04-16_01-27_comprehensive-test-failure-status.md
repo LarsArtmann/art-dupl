@@ -75,7 +75,7 @@ The project is in **good shape overall** with 6 BDD test failures and 1 flaky un
 | 4 | Fix `should_exclude_files_matching_exclude_patterns`      | `bdd/filter_features_test.go:471` | `pkg2` found in output              |
 | 5 | Fix `should_give_include_patterns_precedence`             | `bdd/filter_features_test.go:523` | `specific` not in output            |
 | 6 | Fix `should_provide_examples_in_help`                     | `bdd/cli_commands_test.go:434`    | "Example" not in help output        |
-| 7 | Fix flaky `TestContextTimeoutExpired`                     | `job/profiler_test.go:87`         | Timing-sensitive; increase margins  |
+| ~~7~~ **not-do — the flaky profiler test still exists (job/profiler_test.go)** |~~Fix flaky `TestContextTimeoutExpired`~~|~~`job/profiler_test.go:87`~~|~~Timing-sensitive; increase margins~~|
 
 ### Priority 2: Code Quality
 
@@ -100,15 +100,15 @@ The project is in **good shape overall** with 6 BDD test failures and 1 flaky un
 
 | #  | Task                               | Details                            |
 | -- | ---------------------------------- | ---------------------------------- |
-| 17 | SARIF output integration testing   | Verify with actual SARIF consumers |
+| ~~17~~ **done — the SARIF round-trip is pinned by tests (AGENTS.md issue #2)** |~~SARIF output integration testing~~|~~Verify with actual SARIF consumers~~|
 | 18 | Streaming hash detection hardening | Edge cases with large files        |
-| 19 | Incremental analysis robustness    | Cache invalidation scenarios       |
+| ~~19~~ **done — the incremental cache has 9 -race tests (AGENTS.md)** |~~Incremental analysis robustness~~|~~Cache invalidation scenarios~~|
 | 20 | Git integration edge cases         | Shallow clones, submodules         |
 | 21 | Error message quality              | User-facing error clarity          |
-| 22 | Documentation updates              | Sync docs with current behavior    |
+| ~~22~~ **done — the docs-health passes keep docs synced** |~~Documentation updates~~|~~Sync docs with current behavior~~|
 | 23 | Performance benchmarking           | Baseline for regression detection  |
 | 24 | Dependency audit                   | Check for outdated/vulnerable deps |
-| 25 | Clean up `docs/status/`            | 200+ status files, most outdated   |
+| ~~25~~ **struck — the cadence gate owns the docs/status archive wave (in flight)** |~~Clean up `docs/status/`~~|~~200+ status files, most outdated~~|
 
 ---
 

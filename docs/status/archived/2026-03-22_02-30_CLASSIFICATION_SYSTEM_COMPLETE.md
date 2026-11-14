@@ -134,7 +134,7 @@ The implementation is solid. No major issues found.
 
 ### High Priority Improvements:
 
-1. **Remove duplicate CSS definitions** in `html.go`
+~~1. **Remove duplicate CSS definitions** in `html.go`~~ not-do — the CSS cleanup never landed
 2. **Add BDD tests** for HTML report classification display
 3. **Document the classification system** in user-facing docs
 4. **Add `--priority-filter` CLI flag** to filter by priority level
@@ -162,16 +162,16 @@ The implementation is solid. No major issues found.
 
 ### Immediate (Next Session):
 
-1. **Remove duplicate CSS in `printer/html.go`** - Quick cleanup
+~~1. **Remove duplicate CSS in `printer/html.go`** - Quick cleanup~~ not-do — the CSS cleanup never landed
 2. **Add BDD test for HTML classification display** - Ensure feature works E2E
 3. **Update HOW_TO_USE.md** with classification feature docs
 4. **Add `--priority` filter flag** to CLI
-5. **Add category/priority to JSON output** - For CI/CD integration
+~~5. **Add category/priority to JSON output** - For CI/CD integration~~ done — JSON carries the classification fields (AGENTS.md --explain)
 
 ### Short-term (This Week):
 
 6. **Add category breakdown to `stats` subcommand**
-7. **Write benchmark for classification** - Performance baseline
+~~7. **Write benchmark for classification** - Performance baseline~~ not-do — no classification benchmark landed
 8. **Add priority distribution chart** to HTML summary
 9. **Create example gallery** of HTML reports
 10. **Add keyboard shortcuts** for filtering in HTML
@@ -186,7 +186,7 @@ The implementation is solid. No major issues found.
 
 ### Long-term (Future):
 
-16. **Machine learning for category prediction**
+~~16. **Machine learning for category prediction**~~ won't implement — deterministic pattern engine (AGENTS.md)
 17. **Custom category definitions** via YAML/JSON
 18. **IDE plugin integration** (VSCode, GoLand)
 19. **Historical comparison** of classification data

@@ -12,7 +12,7 @@ Fix false-positive clone detection noise in semantic mode, as reported in `/home
 
 | # | Task                                                                                                                                                                                                                                                                                                                 | Files                                                                                                     | Verified                                                                              |
 | - | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
-| 1 | **Root cause analysis** — Identified 3 root causes: (a) default threshold=1, (b) ValueSpec not marked as Statement → partial prefix matching, (c) no boilerplate filters for assign+err-check or single-CallExpr                                                                                                     | `docs/feedback/2026-07-09-semantic-noise-declaration-files.md`                                            | ✅                                                                                    |
+| ~~1~~ **done — the json/v2 rule holds; internal/jsonutil is v1-only (AGENTS.md jsonv2gate)** |~~**Root cause analysis** — Identified 3 root causes: (a) default threshold=1, (b) ValueSpec not marked as Statement → partial prefix matching, (c) no boilerplate filters for assign+err-check or single-CallExpr~~|~~`docs/feedback/2026-07-09-semantic-noise-declaration-files.md`~~|~~✅~~|
 | 2 | **Default threshold 1→5** — `config.DefaultThreshold` raised from 1 to 5. Updated help text, CLI flag description                                                                                                                                                                                                    | `config/config.go:170`, `cmd/flags.go:16`                                                                 | ✅ Tests passed (before cache invalidation)                                           |
 | 3 | **ValueSpec as Statement** — GenDecl spec children now marked `Statement=true`, causing each `var`/`const`/`type` declaration to be fingerprinted as a single composite token. Different string literal values produce different fingerprints → no more partial expression prefix matching in declaration-only files | `syntax/golang/transform.go:187-189`                                                                      | ✅ Verified against `/home/lars/forks/upd/` — Group #1 eliminated even at threshold 1 |
 | 4 | **Assign+error-check pattern** — New actionability pattern detecting 2-stmt `err := f(); if err != nil { return ... }` boilerplate. Classified as NonActionable                                                                                                                                                      | `printer/actionability.go:88-90`, `printer/actionability_boilerplate.go` (new)                            | ✅ Unit tests pass                                                                    |
@@ -20,7 +20,7 @@ Fix false-positive clone detection noise in semantic mode, as reported in `/home
 | 6 | **Tests updated** — Fixed 4 test files that asserted threshold=1 defaults. Added explicit `-t 1` to stats integration tests that need clones                                                                                                                                                                         | `config/config_test.go`, `config/config_enum_test.go`, `cmd/cmd_test.go`, `cmd/stats_integration_test.go` | ✅                                                                                    |
 | 7 | **New unit tests** — 11 test cases for the two new actionability patterns                                                                                                                                                                                                                                            | `printer/actionability_boilerplate_test.go` (new)                                                         | ✅                                                                                    |
 | 8 | **AGENTS.md updated** — Added statement-level tokenization convention, default threshold note, actionability patterns list                                                                                                                                                                                           | `AGENTS.md`                                                                                               | ✅                                                                                    |
-| 9 | **End-to-end verification** — Ran art-dupl against `/home/lars/forks/upd/`: 0 clone groups at threshold 2 AND default threshold 5. Real duplicates still detected at threshold 3 in our own `printer/` package                                                                                                       | —                                                                                                         | ✅ (before cache invalidation)                                                        |
+| ~~9~~ **done — feedback docs carry resolved verdicts (docs/feedback/)** |~~**End-to-end verification** — Ran art-dupl against `/home/lars/forks/upd/`: 0 clone groups at threshold 2 AND default threshold 5. Real duplicates still detected at threshold 3 in our own `printer/` package~~|~~—~~|~~✅ (before cache invalidation)~~|
 
 ---
 
@@ -28,7 +28,7 @@ Fix false-positive clone detection noise in semantic mode, as reported in `/home
 
 | # | Task                                                                                                                                                                                               | Status                                                         | What's Missing                     |
 | - | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- | ---------------------------------- |
-| 1 | **Feedback document** — Written but contains recommendations that are now implemented. Should be updated to reflect "FIXED" status                                                                 | `docs/feedback/2026-07-09-semantic-noise-declaration-files.md` | Update status to "resolved"        |
+| ~~1~~ **done — the json/v2 rule holds; internal/jsonutil is v1-only (AGENTS.md jsonv2gate)** |~~**Feedback document** — Written but contains recommendations that are now implemented. Should be updated to reflect "FIXED" status~~|~~`docs/feedback/2026-07-09-semantic-noise-declaration-files.md`~~|~~Update status to "resolved"~~|
 | 2 | **Full test suite verification** — All 24 packages passed earlier in session, but build cache has since been invalidated. Cannot re-verify due to pre-existing json/v2 build break (see section D) | —                                                              | Need json/v2 migration fixed first |
 
 ---
@@ -116,7 +116,7 @@ These were identified in the feedback doc as future improvements but not impleme
 
 | # | Task                                                                                                                                             | Effort |
 | - | ------------------------------------------------------------------------------------------------------------------------------------------------ | ------ |
-| 1 | **Fix `errors/marshal.go` json/v2 types** — Replace `json.UnsupportedValueError`/`json.UnsupportedTypeError` with v2 equivalents or revert to v1 | 15 min |
+| ~~1~~ **done — the json/v2 rule holds; internal/jsonutil is v1-only (AGENTS.md jsonv2gate)** |~~**Fix `errors/marshal.go` json/v2 types** — Replace `json.UnsupportedValueError`/`json.UnsupportedTypeError` with v2 equivalents or revert to v1~~|~~15 min~~|
 | 2 | **Add `GOEXPERIMENT=jsonv2` to `flake.nix` devShell** — Or decide to abandon json/v2 migration                                                   | 5 min  |
 | 3 | **Verify full test suite passes after json/v2 fix**                                                                                              | 5 min  |
 
@@ -129,7 +129,7 @@ These were identified in the feedback doc as future improvements but not impleme
 | 6  | **Add regression test** — Declaration-only file (`var ErrFoo = errors.New(...)`) produces zero clones | 10 min |
 | 7  | **Add regression test** — `err := f(); if err != nil { return }` classified as NonActionable          | 10 min |
 | 8  | **Update HOW_TO_USE.md** — Default threshold examples                                                 | 10 min |
-| 9  | **Update feedback doc** — Mark as resolved with implementation details                                | 5 min  |
+| ~~9~~ **done — feedback docs carry resolved verdicts (docs/feedback/)** |~~**Update feedback doc** — Mark as resolved with implementation details~~|~~5 min~~|
 | 10 | **Run `golangci-lint`** — The `.golangci.yml` was changed (pre-existing); verify linting passes       | 10 min |
 
 ### Medium Impact
@@ -137,7 +137,7 @@ These were identified in the feedback doc as future improvements but not impleme
 | #  | Task                                                                                                                                                         | Effort |
 | -- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------ |
 | 11 | **Add `--min-lines` flag** — Complementary line-count threshold filter                                                                                       | 45 min |
-| 12 | **Pre-compute `fileContainsStatements` as a map** — Eliminate O(n) scan per match                                                                            | 20 min |
+| ~~12~~ **superseded — the lazy statement-file set replaced the precomputed map (AGENTS.md mixed-parser guard)** |~~**Pre-compute `fileContainsStatements` as a map** — Eliminate O(n) scan per match~~|~~20 min~~|
 | 13 | **Document actionability pattern precedence** — Add comment explaining why order matters                                                                     | 10 min |
 | 14 | **Add BDD test for ValueSpec fingerprinting** — Verify `var` blocks with different values don't match                                                        | 20 min |
 | 15 | **Review `.golangci.yml` reduction** — 125 lines of linter rules removed; verify nothing important was lost                                                  | 30 min |
@@ -157,8 +157,8 @@ These were identified in the feedback doc as future improvements but not impleme
 | 24 | **Consider `--threshold` minimum in CLI** — Currently accepts 1; could warn below 3                                          | 15 min   |
 | 25 | **Add `--aggressive` / `--sensitive` preset flags** — Convenience presets for threshold + mode                               | 30 min   |
 | 26 | **Audit all actionability patterns for ordering** — Some patterns may shadow others                                          | 20 min   |
-| 27 | **Add `PatternAssignErrorCheck` to suggestion text** — New patterns should have user-facing explanations                     | 10 min   |
-| 28 | **Add `PatternSingleCallExpr` to suggestion text** — Same                                                                    | 10 min   |
+| ~~27~~ **done — the patterns carry user-facing labels via --explain (AGENTS.md)** |~~**Add `PatternAssignErrorCheck` to suggestion text** — New patterns should have user-facing explanations~~|~~10 min~~|
+| ~~28~~ **done — the patterns carry user-facing labels via --explain (AGENTS.md)** |~~**Add `PatternSingleCallExpr` to suggestion text** — Same~~|~~10 min~~|
 | 29 | **Consider normalizing import paths** — Multiple import styles might cause false negatives                                   | 30 min   |
 | 30 | **Test templ files with ValueSpec equivalent** — Verify templ files aren't affected by GenDecl change                        | 15 min   |
 | 31 | **Profile performance impact** of ValueSpec fingerprinting — More fingerprinting = more CPU per node                         | 15 min   |

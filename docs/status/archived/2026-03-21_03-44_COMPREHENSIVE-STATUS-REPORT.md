@@ -212,7 +212,7 @@ Actual: "Found total 0 clone groups"
 
 ### Priority 1: Blockers (P0)
 
-1. Fix BDD test expectations for semantic detection
+~~1. Fix BDD test expectations for semantic detection~~ done — the BDD suite is green today (bdd/)
 2. Complete threshold type migration (int → domain.Threshold)
 3. Investigate and fix linter panic on cmd_utils_test.go
 
@@ -231,8 +231,8 @@ Actual: "Found total 0 clone groups"
 11. Fix gosec G115 (integer overflow) issues
 12. Fix gosec G301/G304/G306 (file permissions)
 13. Reduce cyclomatic complexity (cyclop/gocognit)
-14. Fix nestif (nested if statements)
-15. Fix gochecknoinits
+~~14. Fix nestif (nested if statements)~~ done — lint is 106-linter clean (AGENTS.md)
+~~15. Fix gochecknoinits~~ done — lint is 106-linter clean (AGENTS.md)
 16. Fix dupword (duplicate words in comments)
 17. Fix containedctx (context in structs)
 18. Fix fatcontext (context usage)
@@ -242,8 +242,8 @@ Actual: "Found total 0 clone groups"
 ### Priority 4: Features (P3)
 
 21. Complete --profile flag implementation
-22. Implement proper CSV output
-23. Add SARIF output format
+~~22. Implement proper CSV output~~ done — CSV is an OutputFormat value (AGENTS.md)
+~~23. Add SARIF output format~~ done — SARIF ships with a byte-level golden (AGENTS.md)
 24. Resolve config/domain import cycle
 25. Add integration tests for hash-based detection
 

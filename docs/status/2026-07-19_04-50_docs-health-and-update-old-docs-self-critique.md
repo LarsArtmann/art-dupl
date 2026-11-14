@@ -251,7 +251,7 @@ A proper audit would either parse the markdown, extract every `art-dupl ...` inv
 ### Completing the docs-health work properly
 
 8. Verify `USAGE.md` against current CLI surface (may overlap or conflict with `HOW_TO_USE.md`)
-9. Verify `CONTRIBUTING.md` against current build/test workflow (`flake.nix`, not Makefile)
+~~9. Verify `CONTRIBUTING.md` against current build/test workflow (`flake.nix`, not Makefile)~~ done — CONTRIBUTING.md exists and references the flake workflow (verified 2026-11-14)
 10. Verify `WHAT_THIS_PROJECT_IS_NOT.md` (scope guard doc — may be stale)
 11. Verify `PARTS.md` (module overview — likely affected by `domain/` centralization)
 12. Verify `BENCHMARK_COMPARISON.md` (historical? current?)
@@ -260,8 +260,8 @@ A proper audit would either parse the markdown, extract every `art-dupl ...` inv
 15. Verify `branching-flow-analysis.md`, `branching-flow-findings-table.md` (historical?)
 16. Verify `BDD_TESTS_REVIEW.md` (historical review)
 17. Verify `docs/ACTIONABILITY_PATTERNS.md` (referenced from AGENTS.md — must be current)
-18. Verify `docs/SMART_FILTERING.md` (likely current)
-19. Verify `docs/TROUBLESHOOTING.md` (likely current)
+~~18. Verify `docs/SMART_FILTERING.md` (likely current)~~ done — docs/SMART_FILTERING.md exists (verified 2026-11-14)
+~~19. Verify `docs/TROUBLESHOOTING.md` (likely current)~~ done — docs/TROUBLESHOOTING.md exists (verified 2026-11-14)
 20. Audit `docs/api/` contents (auto-generated? hand-written? current?)
 21. Audit `docs/architecture-understanding/` (may contain stale architecture)
 22. Audit `docs/modularization/` (modularization proposals — historical?)
@@ -273,14 +273,14 @@ A proper audit would either parse the markdown, extract every `art-dupl ...` inv
 
 ### Structural / automated drift prevention
 
-28. Build a CI test that runs every fenced `art-dupl` command in `.md` files through `--help` validation
+~~28. Build a CI test that runs every fenced `art-dupl` command in `.md` files through `--help` validation~~ not-do — no fenced-command CI validator landed
 29. Add a `make verify-docs` / `nix run .#verify-docs` target that flags single-dash long flags
 30. Cross-check every flag mentioned in docs against `cmd/root.go` flag definitions
 31. Cross-check `CHANGELOG.md` ADR mentions against `docs/adr/` directory contents
 32. Cross-check `FEATURES.md` "actionability patterns: 15+" claim against actual pattern count in `printer/`
 33. Cross-check `FEATURES.md` "45 node types" (Go) and "28 node types" (templ) against source
 34. Consider structured `features.yaml` as single source of truth for `FEATURES.md` rows
-35. Consider a `docs/_index.md` categorizing every doc as Living/Historical/Proposal
+~~35. Consider a `docs/_index.md` categorizing every doc as Living/Historical/Proposal~~ not-do — no doc index landed
 36. Add file-level frontmatter to historical docs (`status: historical`, `superseded-by: <commit>`)
 37. Add a CI check that historical docs have `status: historical` frontmatter
 
