@@ -748,21 +748,21 @@ func crawlPaths(args []domain.Filepath, filter *filter.Filter, verbosity Verbosi
 11. **Fix gosec G304** (30 minutes)
 12. **Fix gosec G301** (5 minutes)
 13. **Reduce TestThreshold Complexity** (2-3 hours)
-14. **Add t.Parallel()** (4-6 hours)
+~~14. **Add t.Parallel()** (4-6 hours)~~ done — the suite uses t.Parallel() in 800+ places (verified 2026-11-14)
 15. **Fix Ginkgo Linter** (1 hour)
-16. **Generate Coverage Report** (5 minutes)
-17. **Verify JSON Output** (15 minutes)
-18. **Verify HTML Output** (15 minutes)
+~~16. **Generate Coverage Report** (5 minutes)~~ done — the CI Coverage job produces the report (AGENTS.md CI table)
+~~17. **Verify JSON Output** (15 minutes)~~ done — the JSON wire is pinned by goldens (printer testdata; AGENTS.md)
+~~18. **Verify HTML Output** (15 minutes)~~ done — the HTML report ships (printer/report.templ)
 
 ### **🟢 MEDIUM PRIORITY**:
 
-19. **Replace Primitives with Domain Types** (6-8 hours)
-20. **Reduce cyclop in main.go** (1-2 hours)
-21. **Fix ireturn Issues** (2 hours)
-22. **Reduce Test Function Lengths** (3-4 hours)
+~~19. **Replace Primitives with Domain Types** (6-8 hours)~~ won't implement — idiomatic Go policy bans Result/Option-style wrappers (AGENTS.md)
+~~20. **Reduce cyclop in main.go** (1-2 hours)~~ done — runCmd was split under the gocyclo threshold (AGENTS.md)
+~~21. **Fix ireturn Issues** (2 hours)~~ done — lint is 106-linter clean (AGENTS.md Linter Pareto)
+~~22. **Reduce Test Function Lengths** (3-4 hours)~~ not-do — test lengths were never restructured wholesale
 23. **Remove Unused ctx Comment** (5 minutes)
-24. **Add Missing Periods** (30 minutes)
-25. **Run golangci-lint** (10 minutes)
+~~24. **Add Missing Periods** (30 minutes)~~ done — the living docs were normalized across the docs-health passes
+~~25. **Run golangci-lint** (10 minutes)~~ done — lint is 106-linter clean (AGENTS.md)
 
 ---
 

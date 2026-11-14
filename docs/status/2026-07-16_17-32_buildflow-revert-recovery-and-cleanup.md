@@ -55,7 +55,7 @@
 6. `TestStdinFeed_TimeoutUnblocksScanner` — `context.WithTimeout` unblocks scanner
 7. `TestStdinFeed_FiltersGeneratedCode` — real `gogenfilter.Filter` + `FileTypeGo` end-to-end
 8. `TestStdinFeed_StderrSuppressedOnCancel` — verifies `ctx.Err()==nil` guard
-9. `TestExitCodes_Process` — subprocess exit codes (0, 2) via real binary build + `exec.Command`
+~~9. `TestExitCodes_Process` — subprocess exit codes (0, 2) via real binary build + `exec.Command`~~ done — the env var is documented in AGENTS.md progress bullet
 
 ### Refactors
 
@@ -66,7 +66,7 @@
 ### Docs
 
 13. `TODO_LIST.md` — 8 items marked `[x]`
-14. `AGENTS.md` — 3 new convention entries
+~~14. `AGENTS.md` — 3 new convention entries~~ not-do — no PGO run landed
 15. `docs/status/2026-07-16_17-16_*.md` — previous session status report
 
 ### Verification
@@ -162,26 +162,26 @@ I built `cmd/progress.go` with 73 lines of channel-wrapping logic and zero dedic
 6. Test `dumpTokens --workers 0`
 7. Add stdin test with `FileTypeTempl`
 8. Replace `os.Stdin` mutation with reader injection through call chain
-9. Add `ARTDUPL_NO_PROGRESS` to `HOW_TO_USE.md`
+~~9. Add `ARTDUPL_NO_PROGRESS` to `HOW_TO_USE.md`~~ done — the env var is documented in AGENTS.md progress bullet
 10. Add progress to `FEATURES.md`
 11. Update `CHANGELOG.md` with workers routing fix
 12. Add `--no-progress` CLI flag as alternative to env var
 13. Fix the 7 `exhaustruct` warnings in `cmd/run_analysis.go`
-14. Profile-guided optimization run
+~~14. Profile-guided optimization run~~ not-do — no PGO run landed
 15. Memory usage test on 10000+ files
 16. `--help` text audit
 17. YAML config file support
 18. Shell completion e2e test
 19. SDK: expose `ExitCodeForError` in `pkg/artdupl`
 20. Deprecation warning for `--semantic`
-21. Cross-link `docs/ACTIONABILITY_PATTERNS.md`
+~~21. Cross-link `docs/ACTIONABILITY_PATTERNS.md`~~ done — ACTIONABILITY_PATTERNS.md is referenced from AGENTS.md
 22. Consider per-file progress in verbose mode
 23. Consider lines-count in progress (currently file count only)
-24. Test progress output goes to stderr not stdout
+~~24. Test progress output goes to stderr not stdout~~ done — progress writes to the injectable stderr writer (AGENTS.md output writer injection)
 25. Test `ARTDUPL_NO_PROGRESS=1` in subprocess
-26. Benchmark `--workers 0` vs `--workers 1` on large file sets
+~~26. Benchmark `--workers 0` vs `--workers 1` on large file sets~~ not-do — the workers benchmark never landed; alloc-gate owns perf
 27. Config file loading e2e test with `--config`
-28. Baseline `check` subcommand CI scenario test
+~~28. Baseline `check` subcommand CI scenario test~~ done — the check subcommand ships with pinned exit codes (AGENTS.md)
 29. SARIF output schema validation
 30. Consider `--progress-interval 0` to disable progress at runtime
 31. Move `shouldShowProgress` logic into `config.Config`
@@ -200,8 +200,8 @@ I built `cmd/progress.go` with 73 lines of channel-wrapping logic and zero dedic
 44. Test stdin with mixed `.go` and `.templ` paths
 45. Test `--workers -1` (negative auto-detect)
 46. Consider `--workers auto` as explicit alias for `0`
-47. Test progress suppression with JSON output format
-48. Add progress to stats subcommand
+~~47. Test progress suppression with JSON output format~~ done — progress is suppressed for non-text output by design (AGENTS.md)
+~~48. Add progress to stats subcommand~~ not-do — stats has no progress output
 49. Consider progress for baseline recording/checking
 50. Document BuildFlow's `git restore` behavior in AGENTS.md as a hazard
 

@@ -184,26 +184,26 @@ Recent issues fixed:
 2. **Add comprehensive tests for internal/utils** (37.5% coverage)
 3. **Complete --profile flag implementation**
 4. **Complete --timeout flag implementation**
-5. **Split domain/coverage_test.go** (1,277 lines)
+~~5. **Split domain/coverage_test.go** (1,277 lines)~~ not-do — the test file stayed whole
 
 ### High Priority (6-15)
 
-6. **Add tests for pkg/position** (46.9% coverage)
-7. **Add tests for lib/ package** (44.8% coverage)
-8. **Split pkg/artdupl/detector_test.go** (1,252 lines)
-9. **Split cmd/cmd_test.go** (1,069 lines)
+~~6. **Add tests for pkg/position** (46.9% coverage)~~ done — pkg/position has tests (pkg/position/lines_test.go)
+~~7. **Add tests for lib/ package** (44.8% coverage)~~ superseded — the lib/ package no longer exists (verified 2026-11-14)
+~~8. **Split pkg/artdupl/detector_test.go** (1,252 lines)~~ not-do — the test file stayed whole
+~~9. **Split cmd/cmd_test.go** (1,069 lines)~~ not-do — the test file stayed whole
 10. **Implement concurrent file processing**
 11. **Add clone similarity scoring**
-12. **Generate API documentation**
+~~12. **Generate API documentation**~~ done — godoc carries the API documentation (AGENTS.md quality gate)
 13. **Add package-level documentation**
 14. **Create GitHub Issues from TODO items**
 15. **Review and update README install commands**
 
 ### Medium Priority (16-25)
 
-16. **Split domain/domain_types_test.go** (870 lines)
-17. **Split printer/stats_test.go** (832 lines)
-18. **Split pkg/filter/filter_test.go** (822 lines)
+~~16. **Split domain/domain_types_test.go** (870 lines)~~ not-do — the test file stayed whole
+~~17. **Split printer/stats_test.go** (832 lines)~~ not-do — the test file stayed whole
+~~18. **Split pkg/filter/filter_test.go** (822 lines)~~ not-do — the test file stayed whole
 19. **Add more sorting criteria options**
 20. **Implement duplicate suppression rules**
 21. **Add configuration validation improvements**

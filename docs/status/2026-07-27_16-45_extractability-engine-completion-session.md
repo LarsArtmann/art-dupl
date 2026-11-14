@@ -235,9 +235,9 @@ I broadened `isReturnOrWrappedReturn` to accept `ExprStmt(CallExpr)` as a single
 9. Verify `isReturnOrWrappedReturn` broadening doesn't cause false negatives
 10. Add property engine labels to `AllActionabilityPatterns()` / `--list-patterns`
 11. Add `--debug-extractability` flag to show property analysis breakdown
-12. Wire `Classification.Analysis` through `clone_processor.go` pipeline
+~~12. Wire `Classification.Analysis` through `clone_processor.go` pipeline~~ done — classification threads through clone_processor (AGENTS.md --explain)
 13. Write integration test: `--type-aware --explain` shows confidence on real parsed code
-14. Add `-race` test for incremental + type-aware + actionability
+~~14. Add `-race` test for incremental + type-aware + actionability~~ done — the race suite runs on every nix flake check (AGENTS.md -race cadence)
 15. Calibrate confidence thresholds against 3-5 OSS Go projects
 
 ### Medium Priority
@@ -252,7 +252,7 @@ I broadened `isReturnOrWrappedReturn` to accept `ExprStmt(CallExpr)` as a single
 23. Mark deprecated patterns with code comments
 24. Write migration guide for `--disable-pattern` users
 25. Run on 2-3 real OSS Go projects, document FP/FN findings
-26. Add cache-hit-with-type-data integration test
+~~26. Add cache-hit-with-type-data integration test~~ not-do — no cache-hit-with-type-data integration test landed
 27. Consider whether property engine should eventually replace the denylist
 28. Add `--explain` output quality test (snapshot/golden test)
 29. Benchmark type-aware vs syntax-only actionability overhead
@@ -266,13 +266,13 @@ I broadened `isReturnOrWrappedReturn` to accept `ExprStmt(CallExpr)` as a single
 34. Consider cross-package type matching for property 2
 35. Document confidence tier thresholds as configurable
 36. Consider ML-based confidence calibration (ROADMAP)
-37. Write property engine design blog post
-38. Add property engine to SDK `Detect()` results
-39. Add property engine performance regression test
+~~37. Write property engine design blog post~~ not-do — no blog post landed
+~~38. Add property engine to SDK `Detect()` results~~ not-do — SDK findings are classification-free by contract (ADR-0025)
+~~39. Add property engine performance regression test~~ not-do — no property-engine perf test; the alloc-gate guards hot paths
 40. Tag ROADMAP vision items as graduated
 41. Consider whether `testdata-pair` should be disabled for fixture dirs
-42. Add fixture for `if err := f(); err != nil` InitStmt form
-43. Add fixture for multi-return-arity error wrapping (`return 0, nil, err`)
+~~42. Add fixture for `if err := f(); err != nil` InitStmt form~~ superseded — the error-guard-fallthrough pattern covers the shape (AGENTS.md)
+~~43. Add fixture for multi-return-arity error wrapping (`return 0, nil, err`)~~ superseded — the error-wrapping pattern covers multi-return forms (AGENTS.md)
 44. Add fixture for `errkit.Transient` and other non-standard wrappers
 45. Verify `checkParameterizability` works with real parsed BasicLit.Name values
 46. Add `containsLenCall` builtin verification (not user-defined `len`)

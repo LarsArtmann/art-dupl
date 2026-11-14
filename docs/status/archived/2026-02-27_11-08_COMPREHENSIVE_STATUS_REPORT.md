@@ -183,8 +183,8 @@
 
 ### P0 - Critical (Do First)
 
-1. ✅ **FIXED** - Fix generic type inference errors in domain tests
-2. 🔄 **IN PROGRESS** - Fix Go module cache corruption
+~~1. ✅ **FIXED** - Fix generic type inference errors in domain tests~~ done — the domain tests are green today
+~~2. 🔄 **IN PROGRESS** - Fix Go module cache corruption~~ fixed — environmental module-cache corruption; builds are green
 3. 📝 Clean up and archive old status reports (75+ files)
 4. 📝 Consolidate TODO_LIST.md with actual remaining work
 5. 🔧 Fix BuildFlow pre-commit hook
@@ -194,7 +194,7 @@
 6. 📝 Fix top 10 lint issues (err113, revive, exhaustruct)
 7. 📝 Add tests for cmd/art-dupl package
 8. 📝 Document semantic detection feature properly
-9. 📝 Add performance benchmarks for hash detection
+~~9. 📝 Add performance benchmarks for hash detection~~ done — hash detection is benchmarked (docs/benchmarks/; alloc-gate)
 10. 📝 Improve error messages with actionable suggestions
 
 ### P2 - Medium Priority
@@ -202,16 +202,16 @@
 11. 📝 Add IDE integration prototype (LSP)
 12. 📝 Implement watch mode for continuous monitoring
 13. 📝 Add diff output between versions
-14. 📝 Implement baseline file support
-15. 📝 Add more output formats (SARIF, Checkstyle)
+~~14. 📝 Implement baseline file support~~ done — baseline support shipped (baseline/; AGENTS.md check gate)
+~~15. 📝 Add more output formats (SARIF, Checkstyle)~~ done — SARIF shipped; Checkstyle was never added
 
 ### P3 - Nice to Have
 
-16. 📝 Add progress bars for long-running analysis
+~~16. 📝 Add progress bars for long-running analysis~~ done — progress output shipped (cmd/progress.go; AGENTS.md)
 17. 📝 Implement parallel processing for large codebases
 18. 📝 Add memory profiling options
 19. 📝 Create VS Code extension
-20. 📝 Add Vim/Neovim plugin
+~~20. 📝 Add Vim/Neovim plugin~~ not-do — no Vim/Neovim plugin landed
 
 ### P4 - Future Ideas
 
@@ -219,7 +219,7 @@
 22. 📝 Semantic similarity analysis
 23. 📝 Cross-language clone detection
 24. 📝 Machine learning for false positive reduction
-25. 📝 Cloud-based analysis for large monorepos
+~~25. 📝 Cloud-based analysis for large monorepos~~ won't implement — cloud analysis is out of scope
 
 ---
 

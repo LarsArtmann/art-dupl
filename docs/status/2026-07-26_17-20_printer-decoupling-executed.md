@@ -150,7 +150,7 @@ My edit to `TODO_LIST.md` (replacing the old "blocked by circular dep" item with
 
 ### Deduplication cleanup (introduced this session)
 
-6. **Extract `mockReadFile` to a shared test helper** — duplicated in `printer/json_test.go` and `printer/stats/helpers_test.go`
+~~6. **Extract `mockReadFile` to a shared test helper** — duplicated in `printer/json_test.go` and `printer/stats/helpers_test.go`~~ done — the shared helpers live in internal/testutil/assert.go (AGENTS.md)
 7. **Extract `testFileContent` constant** — duplicated in `printer/html_golden_test.go` and `printer/stats/helpers_test.go`
 8. **Consolidate `healthSmall`/`healthMedium`/`healthLarge`/`healthHuge`** — duplicated in `printer/groups_test.go` and `printer/stats/stats_health.go`. Export from stats or move to domain.
 9. **Consider a `printer/internal/testutil/` package** for shared test helpers across printer sub-packages
@@ -173,27 +173,27 @@ My edit to `TODO_LIST.md` (replacing the old "blocked by circular dep" item with
 17. **Run go-arch-lint standalone** to verify the new component rules work (not just via nix flake check)
 18. **Add the daemon linter regression as a pre-commit hook** (`.git/hooks/pre-commit`) — the Nix check only catches it in CI, not locally when the daemon commits
 19. **Consider a `.pre-commit-config.yaml`** for the linter guard
-20. **Add an arch-lint test that asserts component count** (fails if someone adds/removes a component without updating the test)
+~~20. **Add an arch-lint test that asserts component count** (fails if someone adds/removes a component without updating the test)~~ not-do — no component-count arch test landed; the count gate covers AST dispatch
 
 ### Format printer extraction (Phase 4 — evaluate later)
 
-21. **Assess root printer LOC after settling** — is ~3,830 LOC still too large?
+~~21. **Assess root printer LOC after settling** — is ~3,830 LOC still too large?~~ not-do — the root printer LOC was never re-assessed
 22. **If yes, extract `printer/text/`** — text.go + text_utils + text_golden_test
-23. **Extract `printer/json/`** — json.go + json_test.go
+~~23. **Extract `printer/json/`** — json.go + json_test.go~~ not-do — printer/json stayed at the root; only actionability/stats/finding extracted (AGENTS.md)
 24. **Extract `printer/html/`** — html*.go + report.templ + report_templ.go
-25. **Extract `printer/sarif/`** — sarif.go + sarif_test.go
-26. **Extract `printer/plumbing/`** — plumbing.go + plumbing_test.go
-27. **Each extraction needs to import root for `Printer` interface** — same pattern as stats
+~~25. **Extract `printer/sarif/`** — sarif.go + sarif_test.go~~ not-do — printer/sarif stayed at the root (AGENTS.md architecture)
+~~26. **Extract `printer/plumbing/`** — plumbing.go + plumbing_test.go~~ not-do — printer/plumbing stayed at the root (AGENTS.md architecture)
+~~27. **Each extraction needs to import root for `Printer` interface** — same pattern as stats~~ not-do — no further extraction happened
 
 ### General codebase health
 
 28. **Replace em-dashes with commas** in any new code (AGENTS.md convention)
 29. **Audit the 13 daemon commits** from this session — squash if appropriate, or at least verify no unintended changes
 30. **Update `FEATURES.md`** if the package structure changed how features are described
-31. **Update `ROADMAP.md`** — the printer split was a roadmap item, mark it done
+~~31. **Update `ROADMAP.md`** — the printer split was a roadmap item, mark it done~~ superseded — the split shipped and AGENTS.md records the architecture; ROADMAP carries current ideas
 32. **Consider adding `printer/actionability/` to the SDK** — `pkg/artdupl` could expose actionability evaluation directly
 33. **Review if `clone_classify.go` belongs in actionability** — it's classification logic, but maybe it should be in `domain/` or its own package
-34. **Add integration test** that runs art-dupl on its own source with the new package structure
+~~34. **Add integration test** that runs art-dupl on its own source with the new package structure~~ done — the CI Self-Analysis gate runs art-dupl on itself (AGENTS.md CI table)
 35. **Verify the self-test (`art-dupl` on its own source) still detects real duplication** and doesn't flag the new package boundaries as clones
 
 ### Documentation
@@ -201,7 +201,7 @@ My edit to `TODO_LIST.md` (replacing the old "blocked by circular dep" item with
 36. **Write an ADR for the printer split** (ADR-0017 or similar) — document the decision to keep interfaces in root, the import direction (root→actionability, stats→root), and the deferral of Phase 4
 37. **Update `docs/DOMAIN_LANGUAGE.md`** if any domain terms shifted packages
 38. **Update `SDK_DESIGN.md`** if the SDK's relationship to printer changed (it didn't, but worth verifying)
-39. **Add the new packages to the README module tree** if there is one
+~~39. **Add the new packages to the README module tree** if there is one~~ not-do — the README carries no module tree
 40. **Document the `healthSmall` constant duplication** as known debt or fix it
 
 ### Testing improvements

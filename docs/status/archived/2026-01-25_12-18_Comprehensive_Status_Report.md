@@ -295,7 +295,7 @@
 - Use domain.AnalysisStats directly
 - Better type safety and validation
 
-12. **Refactor to Use domain.ProcessingTime**
+~~12. **Refactor to Use domain.ProcessingTime**~~ not-do — the ProcessingTime refactor never landed; stats data is typed differently today
 
 - Replace time.Duration field
 - Use domain.ProcessingTime with .String() method
@@ -310,7 +310,7 @@
 - Calculate during file scanning
 - Include in stats output
 
-15. **Add File-Level Statistics**
+~~15. **Add File-Level Statistics**~~ not-do — no file-level statistics landed
 
 - Duplicates per file
 - Complexity per file
@@ -321,12 +321,12 @@
 - Visual representation of data
 - Historical comparisons
 
-17. **Add Sparkline Graphs**
+~~17. **Add Sparkline Graphs**~~ not-do — no sparkline graphs landed
 
 - Show trends over time
 - Compare multiple runs
 
-18. **Add Hot/Cold Clone Identification**
+~~18. **Add Hot/Cold Clone Identification**~~ not-do — no hot/cold clone identification landed
 
 - Highlight frequently duplicated code
 - Mark as "hot" for high impact
@@ -341,12 +341,12 @@
 - Rich interactive reports
 - Clickable drill-downs
 
-21. **Add Export to Markdown**
+~~21. **Add Export to Markdown**~~ not-do — no markdown export landed
 
 - Readable documentation format
 - Include charts as ASCII or images
 
-22. **Add CI/CD Integration**
+~~22. **Add CI/CD Integration**~~ done — CI/CD integration ships via SARIF + the check gate (AGENTS.md)
 
 - GitHub Actions workflow
 - GitLab CI configuration
@@ -387,7 +387,7 @@
 
 **What I've Tried (ALL FAILED):**
 
-1. **Sed with Newlines**
+~~1. **Sed with Newlines**~~ not-do — technique note, no action owed
 
    ```bash
    sed -i '' '/pattern/,/pattern/c\
@@ -398,7 +398,7 @@
    - Result: Malformed code, syntax errors
    - Issue: Newlines unpredictable, breaks function structure
 
-2. **Sed with Append**
+~~2. **Sed with Append**~~ not-do — technique note, no action owed
 
    ```bash
    sed -i '' '$ a\
@@ -418,7 +418,7 @@
    - Result: Inconsistent replacements, mixed results
    - Issue: Hard to chain complex changes
 
-4. **Python Read/Write**
+~~4. **Python Read/Write**~~ not-do — technique note, no action owed
 
    ```python
    with open('file.go', 'r') as f:
@@ -430,7 +430,7 @@
    - Result: "file has been modified since last read" error
    - Issue: Go tools lock file during editing
 
-5. **Here-Documents**
+~~5. **Here-Documents**~~ not-do — technique note, no action owed
 
    ```bash
    sed -i '' '470a\
