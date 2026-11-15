@@ -1312,7 +1312,7 @@ func processData(data string) error {
 
 ### LONG TERM (Next Quarter) - Quality & Performance
 
-26. **Add performance benchmarks** - Critical paths (clone detection, parsing) (60 min)
+~~26. **Add performance benchmarks** - Critical paths (clone detection, parsing) (60 min)~~ done 2026-11-15 — benchmarks exist across the pipeline (`suffixtree/suffixtree_bench_test.go`, `syntax/*_bench_test.go`, `cache/file_cache_test.go::BenchmarkFileCacheGet`, `bdd/semantic_performance_bench_test.go`), the CI alloc-gate replays `scripts/alloc-budgets.txt`, and baselines are committed in `docs/benchmarks/`.
 27. **Establish baseline metrics** - Current performance characteristics (30 min)
 28. **Create performance regression tests** - Detect performance degradation (45 min)
 29. **Enable parallel test execution** - Where safe (30 min)

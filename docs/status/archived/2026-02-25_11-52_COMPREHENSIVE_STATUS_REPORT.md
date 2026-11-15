@@ -210,7 +210,7 @@ Recent issues fixed:
 22. **Create formal performance benchmark suite**
 23. **Add integration tests for edge cases**
 24. **Review and optimize memory usage**
-25. **Add support for JavaScript/TypeScript parsing**
+~~25. **Add support for JavaScript/TypeScript parsing**~~ won't implement — parked by decision: ROADMAP "Language Support" carries TS/Python behind an explicit user-pull trigger (the detection pipeline is language-agnostic; only the AST transformer is per-language).
 
 ---
 

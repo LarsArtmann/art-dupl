@@ -114,8 +114,8 @@ Everything in the triage table marked "Real": dprint 211-file drift, cue-vet fle
 10. cue-vet: align `ci.yml` `runs-on` with the cue-policy schema (matrix expression conflict), add `concurrency:` to `release.yml`.
 11. Drop the patch component from `go-version` in `.github/workflows/arch-lint.yml` (gvac finding; keep the `go 1.27.1` go.mod pin per respect_patch_floor policy).
 12. shellcheck SC2034: remove or export `CGONOTE` in `scripts/check-boundary.sh`.
-~~13. mypy: fix `NoReturn` import + missing return in `scripts/corpus-diff.py`.~~ 2026-11-15 — imported `NoReturn` from typing; the missing-return finding was mypy treating `fail()` as None-returning; py_compile + argparse smoke green.
-~~14. vulture: fix unsatisfiable ternary at `scripts/docs-health-driver.py:126`.~~ 2026-11-15 — dropped the dead `if False` branch (kept the live banner string); py_compile green.
+~~13. mypy: fix `NoReturn` import + missing return in `scripts/corpus-diff.py`.~~ done 2026-11-15 — imported `NoReturn` from typing; the missing-return finding was mypy treating `fail()` as None-returning; py_compile + argparse smoke green.
+~~14. vulture: fix unsatisfiable ternary at `scripts/docs-health-driver.py:126`.~~ done 2026-11-15 — dropped the dead `if False` branch (kept the live banner string); py_compile green.
 15. bandit lane: exclude INFO chatter (72 warnings are mostly profile banners).
 16. pytest lane: point at `scripts/` tests or skip the lane (collects 0 items today).
 17. Decide sqlite resume-DB policy: single-instance discipline doc or busy_timeout upstream (BuildFlow issue for SQLITE_BUSY under concurrent runs).

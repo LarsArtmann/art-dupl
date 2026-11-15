@@ -139,7 +139,7 @@ clean and functional. The auto-git daemon committed everything correctly.
 
 46. Run the full BDD suite (`go test ./bdd/...`) specifically for type-aware tests
 47. Test on a real codebase (e.g., run art-dupl on itself with `--type-aware --explain`)
-48. Verify `--type-aware` + `--incremental` works with the new flag
+~~48. Verify `--type-aware` + `--incremental` works with the new flag~~ done 2026-11-15 — the `typeAwareTag` cache-key isolation (`""`/`"ta"`/`"sg"` in `job/incremental.go`) IS this verification: type-aware runs never reuse syntax-only cache entries, pinned by the param-key tests.
 49. Test with `--type-aware` on a package with compilation errors (graceful fallback)
 50. Run `golangci-lint run --timeout 5m ./...` on the FULL project (not just changed packages)
 

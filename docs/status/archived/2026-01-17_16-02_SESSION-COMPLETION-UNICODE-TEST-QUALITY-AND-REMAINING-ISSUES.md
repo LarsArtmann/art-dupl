@@ -744,7 +744,7 @@ func crawlPaths(args []domain.Filepath, filter *filter.Filter, verbosity Verbosi
 ### **🟡 HIGH PRIORITY**:
 
 9. **Reduce crawlPaths Complexity** (3-4 hours)
-10. **Extract Flag Parsing** (2-3 hours)
+~~10. **Extract Flag Parsing** (2-3 hours)~~ done 2026-11-15 — flag parsing is extracted: `cmd/flags.go`, `cmd/run_flags.go`, `cmd/config_builder.go` hold it (`runCmd` itself dropped under the gocyclo threshold via the `parseOutputFormat`/`runStandardAnalysis` split).
 11. **Fix gosec G304** (30 minutes)
 12. **Fix gosec G301** (5 minutes)
 13. **Reduce TestThreshold Complexity** (2-3 hours)

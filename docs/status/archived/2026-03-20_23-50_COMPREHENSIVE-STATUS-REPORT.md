@@ -241,7 +241,7 @@ go/types.(*Checker).builtin-range1
 
 ### P4: Architecture
 
-21. Extract flag parsing helper
+~~21. Extract flag parsing helper~~ done 2026-11-15 — flag parsing is extracted: `cmd/flags.go`, `cmd/run_flags.go`, `cmd/config_builder.go` hold it.
 22. File split: pkg/artdupl/detector.go (546 lines)
 23. File split: cmd/run.go (528 lines)
 24. File split: printer/stats.go (727 lines)

@@ -2127,7 +2127,7 @@ json.Unmarshal(output, &result)
 
 ### LONG TERM (Next Quarter) - Quality & Performance
 
-21. ⏳ **NEXT**: Add performance benchmarks for critical paths (clone detection, parsing, 60 min)
+~~21. ⏳ **NEXT**: Add performance benchmarks for critical paths (clone detection, parsing, 60 min)~~ done 2026-11-15 — benchmarks exist across the pipeline (`suffixtree/suffixtree_bench_test.go`, `syntax/*_bench_test.go`, `cache/file_cache_test.go::BenchmarkFileCacheGet`, `bdd/semantic_performance_bench_test.go`), the CI alloc-gate replays `scripts/alloc-budgets.txt`, and baselines are committed in `docs/benchmarks/`.
 22. ⏳ **NEXT**: Establish baseline metrics for performance (30 min)
 23. ⏳ **NEXT**: Create performance regression tests (45 min)
 24. ⏳ **NEXT**: Enable parallel test execution where safe (30 min)

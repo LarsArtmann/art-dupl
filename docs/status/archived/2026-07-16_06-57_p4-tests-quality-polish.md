@@ -285,7 +285,7 @@
 20. **Shell completion end-to-end test** — Verify `art-dupl completion bash` produces valid bash.
 21. **Profile-guided optimization** — Run with `--profile` and check for hot spots.
 22. **Memory usage for large repos** — Test on 10000+ files.
-23. **Cache invalidation on version change** — Verify `CacheVersion` bump works.
+~~23. **Cache invalidation on version change** — Verify `CacheVersion` bump works.~~ done 2026-11-15 — `cache/file_cache_test.go` pins the version gate (`metadata.Version == CacheVersion`; stale-version paths) and `CacheVersion` has since bumped 5→9 through five sanctioned invalidations with the gate green.
 24. **Templ actionability patterns** — No actionability checks for templ files currently.
 25. **Benchmark `NewProcessedCloneGroup` vs inline** — Verify no perf regression.
 26. **Add `cmd.OutOrStderr()` to `printBuildingStatus`/`printSearchStatus`** — Currently uses raw `os.Stderr`. Should use cobra's writer for testability.

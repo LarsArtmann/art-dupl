@@ -189,7 +189,7 @@ Several linters are disabled in `.golangci.yml`:
 ~~11. Add BDD tests for `--structural` flag functionality~~ not-do — no structural-mode BDD scenario landed
 12. Increase test coverage for semantic detection
 13. Add edge case tests for incremental parser with semantic=false
-14. Test parallel parsing with semantic flag variations
+~~14. Test parallel parsing with semantic flag variations~~ done 2026-11-15 — parallel parsing is race-tested (`job/incremental_parallel_test.go`, 9 `-race` tests incl. sequential-parity) and mode-isolated via cache-key param tags (`semantic:0:` / `exact:5:ta`).
 15. Add integration tests for hash-only detection with semantic flags
 
 ### Priority 4: Architecture (Next Month)

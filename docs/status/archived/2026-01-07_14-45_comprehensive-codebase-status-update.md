@@ -1169,7 +1169,7 @@
 1. Delete `func Run()` from `cli.go:28-134` (107 lines)
 2. Run `go test ./...` to verify no regressions
 3. ~~Run `go build` to verify compilation~~ done — executed in the January sprint; suite and CI gates green since
-4. Run `./art-dupl --help` to verify CLI works
+~~4. Run `./art-dupl --help` to verify CLI works~~ done 2026-11-15 — CLI operational at HEAD (Fang/Cobra root help renders; the docs-health count gate re-derives all registered flags every CI run).
 5. Commit: "refactor(cli): remove deprecated Run() function - dual CLI elimination"
 6. Push to remote
 

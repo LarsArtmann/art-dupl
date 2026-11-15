@@ -119,7 +119,7 @@ Nothing. The change was clean with no regressions. The two bugs found were in ex
 8. **Refactor `applyBooleanFlags`** — Track "was explicitly set" per flag, always apply explicit values regardless of true/false.
 9. **Refactor `mergeCLIConfig`** — Replace `skipZeroValues` with explicit "set" tracking.
 10. **Fix `internal/utils.TestFindProjectRoot`** — Pre-existing failure, should be fixed.
-11. **Add test for `--exclude-templ` + config file interaction** — Verify JSON config `excludeTempl` field works.
+~~11. **Add test for `--exclude-templ` + config file interaction** — Verify JSON config `excludeTempl` field works.~~ superseded — the `excludeTempl` config field was removed by this very flip: templ files are unconditionally included today (no exclusion flag survives in `config/` or `cmd/`), so there is no field left to test.
 12. **Add regression test for bool=false propagation** — Ensure no future bool flag with true-default gets silently dropped.
 
 ### Priority 3 — Architecture (From Outstanding Issues)

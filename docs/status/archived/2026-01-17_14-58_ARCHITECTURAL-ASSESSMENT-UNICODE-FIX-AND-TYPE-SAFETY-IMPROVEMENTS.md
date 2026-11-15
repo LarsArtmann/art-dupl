@@ -1180,7 +1180,7 @@ func main() {
 ### **🟡 HIGH PRIORITY**:
 
 11. **Reduce crawlPaths Complexity** (3-4 hours)
-12. **Extract Flag Parsing** (2-3 hours)
+~~12. **Extract Flag Parsing** (2-3 hours)~~ done 2026-11-15 — flag parsing is extracted: `cmd/flags.go`, `cmd/run_flags.go`, `cmd/config_builder.go` hold it (`runCmd` itself dropped under the gocyclo threshold via the `parseOutputFormat`/`runStandardAnalysis` split).
 13. **Fix gosec G304** (30 minutes)
 14. **Fix gosec G301** (5 minutes)
 15. **Reduce TestThreshold Complexity** (2-3 hours)
