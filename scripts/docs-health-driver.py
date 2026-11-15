@@ -121,12 +121,7 @@ def do_banner(path, note):
     # insert after first heading line (or at top if none)
     for i, ln in enumerate(lines):
         if ln.startswith("#"):
-            lines.insert(
-                i + 1,
-                f"\n> **Resolution (2026-10-05):** ~~{note}~~"
-                if False
-                else f"\n> **Resolution (2026-10-05):** {note}",
-            )
+            lines.insert(i + 1, f"\n> **Resolution (2026-10-05):** {note}")
             path.write_text("\n".join(lines) + "\n")
             return True
     lines.insert(0, f"> **Resolution (2026-10-05):** {note}")

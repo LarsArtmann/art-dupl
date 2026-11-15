@@ -29,10 +29,10 @@ import os
 import shlex
 import subprocess
 import sys
-from typing import Any
+from typing import Any, NoReturn
 
 
-def fail(message: str) -> NoReturn:  # noqa: F821 - string annotation, py3.8 safe
+def fail(message: str) -> NoReturn:
     print(f"corpus-diff: {message}", file=sys.stderr)
     raise SystemExit(2)
 
