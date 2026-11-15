@@ -32,6 +32,13 @@ Variants: `done at <hash/date — evidence>`, `Won't implement — <reason>`,
 "open" signal. Files qualify for archiving only when EVERY item is resolved
 or routed; the annotation happens BEFORE the `git mv`.
 
+**Citation sweep before every move (2026-11-15):** bulk `git mv`s broke two
+path citations in the 2026-11-15 wave (a report referenced a moved planning
+doc by its old path). Before moving any file, `grep -rn "<old-rel-path>"`
+over the repo (excluding `docs/status/archived/` itself and `.git/`) and fix
+each hit to the new path IN THE SAME commit as the move; stale citations
+inside archived files are exempt (historical record, not a live pointer).
+
 ### Regime A-lite — dated banner, grouped verdict (2026-10-05 pass)
 
 Files archived by the 2026-10-05 pass whose per-item strike specs failed the
