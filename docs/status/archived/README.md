@@ -32,7 +32,7 @@ Variants: `done at <hash/date — evidence>`, `Won't implement — <reason>`,
 "open" signal. Files qualify for archiving only when EVERY item is resolved
 or routed; the annotation happens BEFORE the `git mv`.
 
-**Citation sweep before every move (2026-11-15):** bulk `git mv`s broke two
+**Citation sweep before every move (2026-11-15):** bulk `git mv` batches broke two
 path citations in the 2026-11-15 wave (a report referenced a moved planning
 doc by its old path). Before moving any file, `grep -rn "<old-rel-path>"`
 over the repo (excluding `docs/status/archived/` itself and `.git/`) and fix
