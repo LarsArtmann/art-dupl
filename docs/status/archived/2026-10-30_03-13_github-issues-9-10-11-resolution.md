@@ -1,5 +1,7 @@
 # Status: GitHub Issues #9/#10/#11 Resolution Session (2026-10-30 02:00–03:13)
 
+> **Live remainder:** archived 2026-11-15 (cadence wave); every item in this report is struck or routed, and open work is owned by TODO_LIST.md and ROADMAP.md.
+
 **Scope:** Review and fix all open GitHub issues on LarsArtmann/art-dupl (3 found: #9, #10, #11).
 **Baseline:** tree at `1b165cdb`; verification binaries built from `1b165cdb` (before) and the fixed tree (after).
 **Corpus:** nsfw-classifier pinned at `~/projects/.corpus-pins/nsfw-classifier@a7cec08a` (new pin, kept).

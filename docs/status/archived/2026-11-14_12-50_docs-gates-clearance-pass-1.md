@@ -1,5 +1,7 @@
 # Status Report: docs-gates Clearance Pass 1 (freshness + routing GREEN, annotate 689→289, fleet orchestration lessons)
 
+> **Live remainder:** archived 2026-11-15 (cadence wave); every item in this report is struck or routed, and open work is owned by TODO_LIST.md and ROADMAP.md.
+
 > **Generated:** 2026-11-14 12:50 CET
 > **Branch:** `fork`
 > **Session:** one docs-health AUDIT/ANNOTATE/ARCHIVE pass over the whole status corpus, triggered by `docs-gates run` showing all five gates red (freshness/audit-all/annotate/routing/cadence — the overdue pass the 2026-11-14 10:13 report flagged as §f item 21/22).

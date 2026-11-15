@@ -1,7 +1,7 @@
 # art-dupl Feature Documentation
 
-> **Last Updated:** 2026-11-06
-> **Version:** v0.9.1 (current release)
+> **Last Updated:** 2026-11-15
+> **Version:** v0.9.0 (latest release; the 2026-11-06 markup-identity + check-json work sits in CHANGELOG Unreleased)
 
 ## Overview
 
@@ -164,7 +164,7 @@
 | **Parallel Parsing**      | FULLY_FUNCTIONAL | Worker pool via `--workers` flag (0=auto, NumCPU)                                                                                                                                                                                                                                            |
 | **Parallel Search**       | FULLY_FUNCTIONAL | `--search-workers` flag parallelizes suffix tree DFS across root subtrees (0/1=sequential, >1=N workers). 1.5-3.4x speedup.                                                                                                                                                                  |
 | **Memory-Compact Tree**   | FULLY_FUNCTIONAL | Suffix tree data stored as `[]TokenValue` (int32, 4 bytes) instead of `[]Token` (interface, 16 bytes). 75% pointer-array memory reduction.                                                                                                                                                   |
-| **Incremental Analysis**  | FULLY_FUNCTIONAL | SHA-256 content-hash AST caching, `--incremental` flag, CacheVersion 5 (mode-aware keys prevent cross-mode contamination; bumped 2026-10-04 for expression-aware templ streams)                                                                                                              |
+| **Incremental Analysis**  | FULLY_FUNCTIONAL | SHA-256 content-hash AST caching, `--incremental` flag, CacheVersion 9 (mode-aware keys prevent cross-mode contamination; 9 = constant CSS property values join the templ hash, 2026-11-06 — full history in `cache/file_cache.go`)                                                                                                                        |
 | **Git-Aware Incremental** | REMOVED          | `--since` flag removed (was a dead stub, never read). Only content-hash caching via `--incremental` works. Git-diff file selection not implemented.                                                                                                                                          |
 | **Cache Management**      | FULLY_FUNCTIONAL | `--cache-dir`, `--clear-cache`, `--max-cache-entries`, `--memory-cache-entries`, file-based gob serialization, hysteresis pruning (110%/90%)                                                                                                                                                 |
 | **In-Memory LRU Cache**   | FULLY_FUNCTIONAL | Configurable-entry (`--memory-cache-entries`, default 512) `container/list`-based LRU on top of `FileCache`. O(1) hit, no gob deserialization (~5x faster than disk, benchmark-proven in `BenchmarkFileCacheGet`). Deep-clone on read; `MemHits` surfaced in verbose stats. (`cache/lru.go`) |
@@ -204,7 +204,7 @@
 | **Color Control**            | FULLY_FUNCTIONAL | `--no-color` disables colored output                                                                                                                                   |
 | **Type-Aware Mode**          | FULLY_FUNCTIONAL | `--type-aware` encodes variable types into hashes via `go/types` (see Semantic)                                                                                        |
 | **Parallel Search**          | FULLY_FUNCTIONAL | `--search-workers N` parallelizes suffix tree search (0/1=sequential, >1=N workers)                                                                                    |
-| **Version Subcommand**       | FULLY_FUNCTIONAL | `art-dupl version [--json                                                                                                                                              |
+| **Version Subcommand**       | FULLY_FUNCTIONAL | `art-dupl version [--json|--short]` prints resolved version/build info (buildinfo fallback)                                                                                     |                                                                                                                                              |
 
 ---
 

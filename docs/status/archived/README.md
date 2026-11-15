@@ -4,8 +4,8 @@ Point-in-time snapshots (status reports, plans) whose items are fully resolved
 or explicitly routed. Archived ≠ deleted: every file here is a historical
 record; nothing in it is re-litigated.
 
-**Last counted: 2026-11-14 (docs-gates pass 3 wave) — 536 snapshots: 273 regime A,
-23 regime A-lite, 240 regime B.** Counts are computed, never asserted:
+**Last counted: 2026-11-15 (cadence wave) — 548 snapshots: 281 regime A,
+23 regime A-lite, 244 regime B.** Counts are computed, never asserted:
 
 ```bash
 cd docs/status/archived

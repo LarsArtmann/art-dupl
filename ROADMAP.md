@@ -1,6 +1,6 @@
 # Roadmap
 
-**Last Updated:** 2026-11-14 (docs-gates pass 3 sweep; the pass-2 rows below cover all surfaced candidates)
+**Last Updated:** 2026-11-15 (docs-health cadence pass: pattern counts corrected to the 42 canon)
 
 **No timeline.** Aspirational items for future consideration. Items graduate to `TODO_LIST.md` when they become actionable.
 
@@ -59,8 +59,8 @@ Shipped 2026-09-14: nested-block statements (loop/if/switch/select bodies, else-
 - **Mutation testing (gremlins/go-mutesting) behind a flake check**: mutation-test `suffixtree/` first.
 
 - **Interface-aware suppression (cross-package)**: Same-package interface detection via `go/types` is implemented (the `interface-method` pattern). Cross-package and stdlib interfaces still rely on the static name list (`commonInterfaceMethodNames`). Full call-graph analysis remains future work.
-- **Configurable actionability patterns**: `--disable-pattern <label>` and `--list-patterns` implemented. 30 denylist patterns + 4 property-engine labels currently active.
-- **ML-based actionability classification**: Train a model on labeled clone data to predict whether a clone is actionable, replacing the rule-based actionability patterns. Would handle edge cases the 30 current patterns miss.
+- **Configurable actionability patterns**: `--disable-pattern <label>` and `--list-patterns` implemented. 42 labels active (37 denylist + 1 shape + 4 property-engine, count-gated in FEATURES).
+- **ML-based actionability classification**: Train a model on labeled clone data to predict whether a clone is actionable, replacing the rule-based actionability patterns. Would handle edge cases the 42 current pattern labels miss.
 - **Fixability score**: Property-based extractability engine implemented (ADR-0017) with 4 properties + confidence scoring. Three-tier output (actionable / low-confidence / non-actionable). Confidence values need calibration against real-world data. Could evolve into a continuous fixability score instead of binary Actionable/NonActionable.
 - **Nested-scope shadowing in alpha-normalization**: Current symbol table is flat (no nested-scope shadowing). Proper lexical scoping would improve Type-2 clone accuracy in deeply nested code.
 - **Type narrowing for interface-typed variables**: If a local has an interface type, two variables with the same interface type match even if their concrete types differ. Could add concrete-type awareness via flow analysis.

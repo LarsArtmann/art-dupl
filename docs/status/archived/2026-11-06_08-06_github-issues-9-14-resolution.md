@@ -1,5 +1,7 @@
 # Status: GitHub Issues #9–#14 Resolution Session (2026-11-06)
 
+> **Live remainder:** archived 2026-11-15 (cadence wave); every item in this report is struck or routed, and open work is owned by TODO_LIST.md and ROADMAP.md.
+
 **Scope:** Review and fix all open GitHub issues on LarsArtmann/art-dupl — six found
 (#9 templ suppression, #10 duplicate groups, #11 mixed-parser mega-groups, #12 check
 counts, #13 baseline identity, #14 templ markup flood) — plus repairing the tree,

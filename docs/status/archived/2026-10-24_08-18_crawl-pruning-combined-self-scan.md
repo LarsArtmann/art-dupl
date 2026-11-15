@@ -1,5 +1,7 @@
 # Status Report — Crawl Pruning + Combined-Mode Self-Scan Session
 
+> **Live remainder:** archived 2026-11-15 (cadence wave); every item in this report is struck or routed, and open work is owned by TODO_LIST.md and ROADMAP.md.
+
 **Date:** 2026-10-24 08:18 CEST
 **Session input:** user ran `art-dupl --sort total-tokens -t 1 --suggest-generics --type-aware --timing --rich-text --html` on art-dupl itself and pasted the full output (2 shown groups, 1283 detected, crawl 31.8s, type-load 36.5s, total 69s, HTML inline).
 **Session mandate:** READ → UNDERSTAND → RESEARCH → REFLECT → break into steps → execute → verify until done.

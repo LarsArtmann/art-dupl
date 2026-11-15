@@ -1,5 +1,7 @@
 # Status Report — Ctrl+C Shutdown Fix + jsonv2 Recurrence #11
 
+> **Live remainder:** archived 2026-11-15 (cadence wave); every item in this report is struck or routed, and open work is owned by TODO_LIST.md and ROADMAP.md.
+
 **Date:** 2026-10-24 08:16 CEST
 **Session scope:** Single bug-fix session on branch `fork`: "Why can't I shutdown during type-load?" → diagnosis → fix → live verification. Plus one boundary-gate catch (jsonv2 recurrence #11).
 **Report scope constraint:** Only this session's run and what it surfaced. No repo-wide research.
@@ -91,7 +93,7 @@ _Ranked by impact. First ~15 are concrete; beyond that is brainstorm/ROADMAP fue
 | ~~12~~ done 2026-10-24 — exit-130 abort shipped and documented (AGENTS.md type-load-cancellation entry). | ~~Decide ^C UX detail: exit 130 silently (current) vs stderr notice "interrupted during type load; rerun without --type-aware for faster partial"~~ | ~~Low~~ | ~~S~~ | ~~Feature~~ |
 | ~~13~~ done 2026-10-07 — fixed upstream: gvac v0.2.5 honors `respect_patch_floor`; the skip was removed (AGENTS.md toolchain entry). | ~~File upstream BuildFlow issue: go-version-auto-configure should respect existing patch-level pins (documented flip war, second rewriter)~~ | ~~Medium~~ | ~~S~~ | ~~Bug~~ |
 | ~~14~~ parked — no corpus doc claimed type-load duration behavior; nothing to update. | ~~Update corpus docs if any pin claims type-load duration behavior (determinism unaffected — verify one sorted-group byte-identity run after this change)~~ | ~~Medium~~ | ~~S~~ | ~~Quality~~ |
-| ~~15~~ parked — lesson not verified in crush-config `references/lessons.md`. | ~~Record "verify the stimulus before the measurement" as a cross-project lesson in crush-config references/lessons.md (by commit, not in-session write)~~ | ~~Medium~~ | ~~S~~ | ~~Documentation~~ |
+| ~~15~~ parked — lesson not verified in the crush-config fleet lessons file (a different repo; not citable as a local path). | ~~Record "verify the stimulus before the measurement" as a cross-project lesson in crush-config references/lessons.md (by commit, not in-session write)~~ | ~~Medium~~ | ~~S~~ | ~~Documentation~~ |
 | ~~16~~ parked — flag never built. | ~~Consider `--type-aware-load-timeout` flag (context.WithTimeout) so pathological loads self-abort~~ | ~~Low~~ | ~~S~~ | ~~Feature~~ |
 | ~~17~~ parked — the env split remains (AGENTS.md); the crash class has not been re-probed since 2026-09-29. | ~~windows Test lane: re-check whether the GOEXPERIMENT crash class persists on current toolchain; update AGENTS.md scoping note~~ | ~~Low~~ | ~~M~~ | ~~Bug~~ |
 | ~~18~~ parked — ROADMAP "Detection Granularity" carries FuncLit/closure-body emission as a deferred scope cut. | ~~ADR-0023 scope cut: nested emission for FuncLit bodies (closures under t.Run/defer/go)~~ | ~~Medium~~ | ~~L~~ | ~~Feature~~ |

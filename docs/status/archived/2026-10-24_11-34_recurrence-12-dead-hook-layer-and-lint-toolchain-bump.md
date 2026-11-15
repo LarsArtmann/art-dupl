@@ -1,5 +1,7 @@
 # Status Report — Recurrence #12, the Dead Hook Layer, and the Lint-Toolchain Bump
 
+> **Live remainder:** archived 2026-11-15 (cadence wave); every item in this report is struck or routed, and open work is owned by TODO_LIST.md and ROADMAP.md.
+
 **Date:** 2026-10-24 11:34 CEST
 **Session input:** your "READ, UNDERSTAND, RESEARCH, REFLECT … Execute and Verify them one step at the time. Repeat until done." directive on the parked close-out state, then this report demand.
 **Session window:** ~09:20–09:40 execution + this report at 11:34.

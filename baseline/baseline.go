@@ -30,7 +30,7 @@
 package baseline
 
 import (
-	"encoding/json/v2"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"os"

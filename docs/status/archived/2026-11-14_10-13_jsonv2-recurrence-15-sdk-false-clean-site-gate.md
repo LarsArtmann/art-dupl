@@ -1,5 +1,7 @@
 # Status Report: jsonv2 Recurrence #15 Recovery + SDK False-Clean Fix + Site-Gate Repair
 
+> **Live remainder:** archived 2026-11-15 (cadence wave); every item in this report is struck or routed, and open work is owned by TODO_LIST.md and ROADMAP.md.
+
 **When:** 2026-11-14 10:13 CET
 **Session scope:** single working session on `fork` branch, art-dupl
 **Author:** Crush session (glm-5.3-flash)

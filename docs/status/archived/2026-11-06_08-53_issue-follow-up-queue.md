@@ -1,5 +1,7 @@
 # Continuation: Issue-Resolution Follow-Up Queue
 
+> **Live remainder:** archived 2026-11-15 (cadence wave); every item in this report is struck or routed, and open work is owned by TODO_LIST.md and ROADMAP.md.
+
 **Date:** 2026-11-06 08:53
 **Branch:** `fork`
 **Predecessor:** [`2026-11-06_08-06_github-issues-9-14-resolution.md`](./2026-11-06_08-06_github-issues-9-14-resolution.md)

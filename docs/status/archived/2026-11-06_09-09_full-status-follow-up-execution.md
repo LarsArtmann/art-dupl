@@ -1,5 +1,7 @@
 # Full Status Update — Follow-Up Queue Execution & Verification
 
+> **Live remainder:** archived 2026-11-15 (cadence wave); every item in this report is struck or routed, and open work is owned by TODO_LIST.md and ROADMAP.md.
+
 **Date:** 2026-11-06 09:09
 **Branch:** `fork` · HEAD `aea30779` · working tree **clean**
 **Session span:** `5ad3bd7a..aea30779` — 13 commits, 38 files, **+1522 / −50**
