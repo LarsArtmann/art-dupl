@@ -30,8 +30,8 @@ Found and fixed 10 categories of issues across the codebase: ghost systems, dead
 
 ~~- Fragment type unification ([]byte vs string split brain)~~ done — Fragment is string everywhere (AGENTS shared-types bullet, ADR-0005)
 
-- Clone type consolidation (5-7 parallel types)
-- Data→View rename in printer
+~~- Clone type consolidation (5-7 parallel types)~~ parked — tracked in ROADMAP (clone-type consolidation 7→2-3, "Recurring design debts"); deliberate ADR-worthy deferral.
+~~- Data→View rename in printer~~ NOT-DO — the "remaining parallel types" are legitimately different format DTOs by design (AGENTS.md clone-type-consolidation entry; docs/research/SPLIT-BRAIN.html); a rename would blur real boundaries.
   ~~- Test coverage for detection (61.8%) and domain (63.5%)~~ done at coverage baseline + trend script (docs-health 2026-10-05 re-verified; §11 row also resolved)
 
 ### 5. Did you lie?
