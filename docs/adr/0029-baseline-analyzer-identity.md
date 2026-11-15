@@ -90,3 +90,11 @@ Record an `AnalyzerIdentity` on every baseline:
 - Follow-ups tracked in `TODO_LIST.md`: surface the mismatch as a default-on
   stderr notice (no exit-code change), emit the split in `check --json`, and
   apply the same guard to `--diff-report`.
+- `--diff-report` contract (settled 2026-11-15): text runs WARN on an
+  incomparable baseline via `warnIncomparableBaseline` (same notice as
+  `check`); `--json` runs stay SILENT by design so machine output keeps its
+  stream clean. There is deliberately NO strict mode for the diff-report path
+  (no `--baseline-version-must-match` equivalent): machine consumers that need
+  a hard identity gate must use `check --baseline-version-must-match` instead.
+  Adding a strict flag to diff-report would be new CLI surface for a consumer
+  that can already express the requirement with `check`.

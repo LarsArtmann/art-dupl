@@ -92,6 +92,10 @@ var Provider = toolsdk.Register(toolsdk.Spec{
 		"option (default 5 statements). " +
 		"Crawl includes *_test.go files (the CLI default-ignores them), so group counts " +
 		"are intentionally higher than a default CLI run on the same tree",
+	// Trigger.Requires is deliberately empty: the SDK Detect path is pure
+	// syntax parsing (the go/types load is CLI-only) and works on any
+	// directory tree, including non-module layouts, so requiring a go.mod or
+	// go.work would needlessly exclude valid workspaces (M59 §f#24).
 	Trigger: toolsdk.OnFiles("go", "**/*.go", "**/*.templ"),
 	Inputs:  []string{"**/*.go", "**/*.templ"},
 	Options: []toolsdk.Option{
