@@ -43,7 +43,7 @@
 
 ## c) NOT STARTED
 
-<!-- check-rows:ledger -->
+
 | Item                                                                                                                                           | Why not started                                                                  | Still wanted?                               |
 | ---------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | ------------------------------------------- |
 | **Structural jsonv2 fix** (daemon exclusion list vs pre-commit jsonv2gate hook) — reported "since session 2", now 11 recurrences               | Owner question never answered; touches BuildFlow upstream vs local hook decision | Yes — this is the #1 item in (f)            |
@@ -74,7 +74,7 @@
 
 _Ranked by impact. First ~15 are concrete; beyond that is brainstorm/ROADMAP fuel per the skill's routing note — HARVEST should apply extra rigor before promoting items 16+ into TODO_LIST._
 
-<!-- check-rows:ledger -->
+
 | #  | Task                                                                                                                                                                  | Impact   | Effort | Category      |
 | -- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ------ | ------------- |
 | 1  | Decide + implement structural jsonv2 fix: pre-commit jsonv2gate hook on staged files (local) OR BuildFlow daemon exclusion list (upstream BuildFlow task)             | Critical | M      | Quality       |
