@@ -1,6 +1,6 @@
 # AGENTS.md - art-dupl
 
-**Last Updated:** 2026-11-15 (jsonv2 recurrence #16 restored: six files, per-file restore sources)
+**Last Updated:** 2026-11-15 (recurrence #17: root cause CONFIRMED = BuildFlow `go-auto-upgrade`; #16 mechanism note corrected; tree RED pending Q1 skip decision)
 
 Go tool for finding code clones via suffix tree + hash-based detection on ASTs. Multi-method, multi-format output.
 
@@ -353,10 +353,26 @@ only a `nix build`/`nix flake check` surfaces it.
   blanket restore-from-`91419533` would have silently deleted the feature (diff EVERY file against the restore source
   first; if a file carries feature work, restore from its last feature-carrying v1 commit — here `3cf34a23`, 2026-11-06).
   Plain files restored from `91419533` as before. Landed as daemon commit `7f7a58da`; verified green: full suite,
-  boundary fast gate, arch-lint, self-scan `-t 5` (0 shown). Operational note: the first `git checkout <sha> -- <files>`
-  restore did NOT stick (worktree re-read as v2 minutes later, mechanism undetermined — possibly a race with the
-  auto-commit daemon's working-tree handling); the `git restore --source=... --worktree --staged` retry stuck. Verify a
-  restore by grepping the content in the SAME command chain, not by trusting status output.
+  boundary fast gate, arch-lint, self-scan `-t 5` (0 shown). Operational note (**mechanism CORRECTED 2026-11-15,
+  see #17**): the first `git checkout <sha> -- <files>` restore "did NOT stick" was NOT a daemon race — BuildFlow's
+  `go-auto-upgrade` repair tool rewrote the files mid-session; the `git restore --source=... --worktree --staged`
+  retry stuck only because no pipeline was live at that moment. Verify a restore by grepping the content in the
+  SAME command chain, not by trusting status output — and run `pgrep -af buildflow` BEFORE any forensic or restore
+  work (a live pipeline rewrites Go files under you).
+- **Recurrence #17 (2026-11-15 07:37, ROOT CAUSE CONFIRMED)**: daemon commit `2a9291ba` re-committed the poisoned
+  v2 state ~11 minutes after the #16 restore landed — while a user-launched `buildflow --fix --build-mode=full`
+  pipeline ran concurrently. **The engine is BuildFlow's `go-auto-upgrade` repair step** (fleet v1→v2 JSON
+  migration policy) executing against this repo's ADR-0024 v1-API invariant: its own output names the rewrites
+  (`rewrote: config/config_migrate.go, internal/jsonutil/jsonutil.go, pkg/artdupl/types.go + 1 more`), and its 79
+  residual findings are the invariant HOLDING (Duration-wire and go-finding-boundary files correctly refuse
+  migration). Every future `buildflow --fix` run re-poisons the tree; restore-only remediation is infinite churn.
+  Structural fix PENDING owner Q1 (report §g): add `go-auto-upgrade` to `.buildflow.yml` `skip_steps` (exact
+  precedent: the `golangci-lint-auto-configure` skip) and/or negotiate an upstream exclusion mechanism, plus
+  root-cause the pre-commit hook bypass (`2a9291ba` is the SECOND commit to pass through the tracked hook).
+  Session report: `docs/status/2026-11-15_07-39_jsonv2-recurrence-16-root-caused-buildflow-go-auto-upgrade.md`.
+  Lessons: (1) check `pgrep -af buildflow` before forensics — "file changed underneath me" means "another writer
+  exists" first, mystery second; (2) ledger hypotheses stay marked as hypotheses until evidence lands (the #16
+  note above carried a wrong mechanism for hours); (3) never pipe first-read gate output through `tail -N`.
 - **Docs-health count gate** (`cmd/docs_health_counts_test.go`, 2026-09-28): the hand-written counts in the living docs are re-derived in the default suite — actionability pattern totals from `AllActionabilityPatterns()` (42 = 37 denylist + 1 shape + 4 property, since 2026-10-30 issue #11), user-visible CLI flags from `AddFlags(root)` + `LocalFlags()` excluding `Hidden` (57 of 65 registered; the 8 hidden are 6 deprecated `--include-*` aliases + `profile`/`timeout`), and AST node-type dispatch counts by scanning the transformer switch cases (`transform.go` 53 `*ast.`, templ 29 `*templparser.`). When a count changes, the test FAILS with the derived number — update the doc claim to the real value, never the test to the doc. Canary rule honored: the gate was observed failing against intentionally corrupted FEATURES numbers (37→38, 49→50, 45→46) before being trusted.
 - **Docs-health cadence (2026-09-28)**: the full docs-health pass (HARVEST recent reports → annotate resolved items inline → archive fully-done files → run the grep-gate + check-rows) runs monthly, next due **2026-12-14** (the overdue 2026-10-28 pass was executed 2026-11-14: passes 1-3 cleared all five docs-gates). Entry points: `scripts/annotate-status-items.py` (batch annotator, spec grammar in its header; refuses `open`-family verdicts by design), `scripts/check-docs-freshness.sh` (stamp-drift gate; warn-only until proven, `--strict` for CI), and the archive gates documented in `docs/status/archived/README.md`. The count gate (`cmd/docs_health_counts_test.go`) runs in the default suite — doc numbers are CI-enforced, do not hand-edit them.
 - **docs-gates grinding lessons (2026-11-14 pass 3, both matrix gates driven 290→0 / 383→0)**: the gate contracts, decoded from `~/projects/docs-gates/internal/`: (1) a verdict's marker word (`done|resolved|superseded|fixed|adopted|decided|verified|won't implement|not-do|duplicate|struck|moot|no longer`) must sit OUTSIDE the strike spans — `VerdictText` strips `~~...~~` before matching, so "routed", "parked", "REJECTED", "OBSOLETE", "Executed" are NOT markers; (2) freshness resolves an item only when its text contains `~~` — a routed verdict WITHOUT a strike leaves the item open; (3) the annotate item scanner starts a new block only on `N.`-prose or numbered/struck-ID table rows — the fleet's `| ~~ | N |` broken rows DON'T start blocks, so they glue onto the previous item and poison its verdict (the A/evidence continuation class); (4) check-rows counts a row struck only when the FIRST cell carries the strike (`~~ID~~ **verdict.**` in cell 1); (5) `<!-- check-rows:ledger -->` on the line ABOVE the header exempts a record/measurement table; (6) cadence counts only DATED unarchived reports (undated legacy files are gate-neutral) and the `> **Live remainder:**` banner is ritual, not gate-enforced. Process rules: batch repair scripts MUST anchor on content substrings, never bare line/row numbers (number-only keying over-struck six unrelated rows in one wave; `[num, anchor]` pairs caught it); session work state lives in-repo (`.crush/docs-health-work/`) because /tmp is wiped mid-session; probe provider capacity with ONE cheap dispatch before any fan-out; `git mv` for archive moves (never plain `mv`); house style is `| ~~N~~ **verdict — evidence.** | ~~cell~~ | ...` per cell.

@@ -114,8 +114,8 @@ Everything in the triage table marked "Real": dprint 211-file drift, cue-vet fle
 10. cue-vet: align `ci.yml` `runs-on` with the cue-policy schema (matrix expression conflict), add `concurrency:` to `release.yml`.
 11. Drop the patch component from `go-version` in `.github/workflows/arch-lint.yml` (gvac finding; keep the `go 1.27.1` go.mod pin per respect_patch_floor policy).
 12. shellcheck SC2034: remove or export `CGONOTE` in `scripts/check-boundary.sh`.
-13. mypy: fix `NoReturn` import + missing return in `scripts/corpus-diff.py`.
-14. vulture: fix unsatisfiable ternary at `scripts/docs-health-driver.py:126`.
+~~13. mypy: fix `NoReturn` import + missing return in `scripts/corpus-diff.py`.~~ 2026-11-15 — imported `NoReturn` from typing; the missing-return finding was mypy treating `fail()` as None-returning; py_compile + argparse smoke green.
+~~14. vulture: fix unsatisfiable ternary at `scripts/docs-health-driver.py:126`.~~ 2026-11-15 — dropped the dead `if False` branch (kept the live banner string); py_compile green.
 15. bandit lane: exclude INFO chatter (72 warnings are mostly profile banners).
 16. pytest lane: point at `scripts/` tests or skip the lane (collects 0 items today).
 17. Decide sqlite resume-DB policy: single-instance discipline doc or busy_timeout upstream (BuildFlow issue for SQLITE_BUSY under concurrent runs).
@@ -126,10 +126,10 @@ Everything in the triage table marked "Real": dprint 211-file drift, cue-vet fle
 
 **P2 — pre-existing findings triage**
 22. file-size-check policy: 82 findings, worst `config/config_enum_test.go` at 1,269 lines (max 350) — decide split vs threshold-for-tests (owner call).
-23. assets/ structure: 50 SVGs in `docs/architecture-understanding/` — accept or move.
+~~23. assets/ structure: 50 SVGs in `docs/architecture-understanding/` — accept or move.~~ Won't implement — the directory is the architecture-visualization skill's shared output directory by design (skill contract); renders are regenerable artifacts, not stray assets.
 24. `Dockerfile`: adopt multi-stage or delete if unused.
 25. `.github/workflows/arch-lint.yml` "builds but does not run tests" — align or accept.
-26. `bdd/semantic_testdata.go` → `testdata/` (info-level).
+~~26. `bdd/semantic_testdata.go` → `testdata/` (info-level).~~ NOT-DO — the file is compiled `package bdd` fixture code consumed by `semantic_detection_test.go:27`; Go tooling ignores `testdata/`, so the move would break the build; the finding's premise (raw data) is false.
 27. io-surface 13 N+1 infos: triage; walk-shaped loops likely accept-with-verdict.
 28. branching-flow analyzer 192 findings: cross-repo triage or record acceptance (living-corpus rule).
 29. art-dupl lane 184 findings: within the 1460 budget ceiling — no-op, but re-check after next release.
