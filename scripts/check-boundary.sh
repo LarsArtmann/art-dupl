@@ -38,7 +38,6 @@ if [ "$mode" = "full" ]; then
 	echo "== boundary gate (full): build + vet + lint + race ./... =="
 	go build ./...
 	go vet ./...
-	CGONOTE=""
 	if ! CGO_ENABLED=1 go test -count=1 -race ./...; then
 		echo "BOUNDARY GATE FAILED (full race suite)" >&2
 		exit 1

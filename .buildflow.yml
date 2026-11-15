@@ -28,3 +28,14 @@ skip_steps:
   # loop since 2026-09-19. The linter set here is hand-curated; config sync
   # for it is unwanted.
   - golangci-lint-auto-configure
+  # go-auto-upgrade SKIPPED 2026-11-15 (jsonv2 recurrences #17/#18, root cause
+  # CONFIRMED live: the step rewrote SIX v1-API files to encoding/json/v2 twice
+  # in one day, ~63s into each pipeline). This repo's ADR-0024 invariant is
+  # v1-only JSON on all output-wire paths: the pure v2 API refuses time.Duration
+  # (broke config.SaveConfig) and v1 defaults ARE the wire contract (no HTML
+  # escaping, no trailing newline, nanosecond durations). The step is pure
+  # downside here; its 79 residual findings were the invariant holding, not
+  # debt. Exact precedent: the golangci-lint-auto-configure skip above.
+  # Reversible one-liner pending owner Q1 (upstream exclusion mechanism or
+  # policy migration). Ledger: AGENTS.md recurrence #17/#18.
+  - go-auto-upgrade

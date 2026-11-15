@@ -16,6 +16,12 @@ permissions:
   packages: write
   id-token: write
 
+# Queue duplicate triggers (re-pushed tag, double dispatch) instead of running
+# two releases concurrently; never cancel an in-flight release.
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   release:
     runs-on: ubuntu-latest
