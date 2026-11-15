@@ -13,6 +13,7 @@ noticed. This session drained that queue.
 
 ## 1. Tree state at session start
 
+<!-- check-rows:ledger -->
 | Check                    | Result               |
 | ------------------------ | -------------------- |
 | `git status`             | clean at `5ad3bd7a`  |
@@ -45,6 +46,7 @@ The first successful `nix flake check` failed the `lint` check with 5 findings
 invisible to the devshell's `golangci-lint` (the sandbox runs 2.15.0, the
 devshell lagged):
 
+<!-- check-rows:ledger -->
 | File                                 | Finding                                                  |
 | ------------------------------------ | -------------------------------------------------------- |
 | `internal/accept/accept.go:263`      | `nonamedreturns` — named return `loc []int`              |
@@ -167,6 +169,7 @@ This closes the class that hid the `IsAlias` and `BasicLit.Name` bugs.
 
 ### Docs
 
+<!-- check-rows:ledger -->
 | File                        | Change                                                                                                                                                                                                       |
 | --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `AGENTS.md`                 | CacheVersion 9 + CSS-value policy; check-split/`--json` upgrade + decorator-forwarding gotcha; identity warning + ADR-0029; gob-boundary test; stale-FOD gotcha; corpus-diff process rule; exit-code verdict |
@@ -182,6 +185,7 @@ This closes the class that hid the `IsAlias` and `BasicLit.Name` bugs.
 
 ## 4. Verification evidence
 
+<!-- check-rows:ledger -->
 | Gate                                                | Result                                                                  |
 | --------------------------------------------------- | ----------------------------------------------------------------------- |
 | `go build ./...`                                    | PASS                                                                    |

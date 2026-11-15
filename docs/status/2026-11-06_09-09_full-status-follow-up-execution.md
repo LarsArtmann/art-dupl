@@ -54,6 +54,7 @@ backlog that falls out of it. No new research beyond the session's own work.
 
 ### What could I have done better?
 
+<!-- check-rows:ledger -->
 | # | Better version                                                                                              | Why it matters                                                                                                                                                                                        |
 | - | ----------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 1 | Grep for **dead exported functions** at session start (`OutputSimpleJSON` had zero callers since inception) | The `--simple-json` defect sat in plain sight; a `grep -rn "func (p \*JSONPrinter) Output" --include=*.go \| xargs` call-site check finds it in seconds                                               |
@@ -88,6 +89,7 @@ Everything below is verified on this tree; `go test ./... -count=1`,
 `scripts/check-boundary.sh --full`, `nix develop -c golangci-lint run` (0
 issues), and `nix flake check` (12/12) all pass at `aea30779`.
 
+<!-- check-rows:ledger -->
 | #  | Item                                                                                                                                                                                                                         | Evidence                                                                                                                                                                            |
 | -- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 1  | **nix build repaired** — stale `vendorHash` FOD whose cached content predated the dep sweeps; refreshed to `sha256-AFkwR+czRL1litT7pMz0L1ZeUYfq/H23tACxWzgFn8I=`                                                             | `nix build .#art-dupl` builds; `./result/bin/art-dupl version` → `0.9.0`; root cause recorded in `AGENTS.md`                                                                        |
@@ -118,6 +120,7 @@ issues), and `nix flake check` (12/12) all pass at `aea30779`.
 
 ## b) PARTIALLY DONE
 
+<!-- check-rows:ledger -->
 | # | Item                                             | What is there                                                                       | What is missing                                                                                                                                                                        |
 | - | ------------------------------------------------ | ----------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 1 | **`--diff-report` identity guard**               | Text mode warns; JSON stays silent by design                                        | No strict mode. The requested `--baseline-version-must-match`-equivalent for diff-report does not exist (needs a root-level flag + website doc row)                                    |
@@ -154,6 +157,7 @@ issues), and `nix flake check` (12/12) all pass at `aea30779`.
 
 ### Fixed (was badly broken before this session)
 
+<!-- check-rows:ledger -->
 | Defect                                                           | Blast radius                                                                                                            |
 | ---------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
 | **`nix build` broken repo-wide** since 2026-11-04                | Every nix consumer, CI's nix lane, the release path — invisible to `go build`/`go test`                                 |
@@ -346,6 +350,7 @@ issues), and `nix flake check` (12/12) all pass at `aea30779`.
 
 ## Verification log (this tree, `aea30779`)
 
+<!-- check-rows:ledger -->
 | Gate             | Command                                                                                      | Result                              |
 | ---------------- | -------------------------------------------------------------------------------------------- | ----------------------------------- |
 | Build            | `go build ./...`                                                                             | PASS                                |

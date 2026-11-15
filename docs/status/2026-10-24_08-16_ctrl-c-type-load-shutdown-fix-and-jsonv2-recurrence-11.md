@@ -19,6 +19,7 @@
 
 ## a) FULLY DONE
 
+<!-- check-rows:ledger -->
 | # | Item                                                                                                                                                                                                                                                                                                                                                                                                                                                      | Evidence                                                                                                 |
 | - | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
 | 1 | **Root cause: Ctrl+C dead during "loading type information"** — `golang.LoadTypeAwareData` took no context; `packages.Config.Context` unset → full go/packages type check ran under `context.Background()` (10–100x parse cost × N files). fang's `WithNotifySignal(os.Interrupt)` canceled ctx (main.go:94) but nothing observed it until the parse stage.                                                                                               | Diagnosis in session; code read of cmd/type_aware.go, syntax/golang/typeinfo.go:190, main.go:94          |
@@ -32,6 +33,7 @@
 
 ## b) PARTIALLY DONE
 
+<!-- check-rows:ledger -->
 | Item                     | Works                                                                                                      | Open                                                                                                                                                                                                                | Effort  |
 | ------------------------ | ---------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
 | CLI-level interrupt test | Unit-level ctx test exists (a.4)                                                                           | No automated SIGINT→exit-130 test of the actual binary; likely needs a non-Windows-gated subprocess test (windows lane has no easy SIGINT delivery — same lane that already carries the GOEXPERIMENT crash scoping) | M       |
@@ -41,6 +43,7 @@
 
 ## c) NOT STARTED
 
+<!-- check-rows:ledger -->
 | Item                                                                                                                                           | Why not started                                                                  | Still wanted?                               |
 | ---------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | ------------------------------------------- |
 | **Structural jsonv2 fix** (daemon exclusion list vs pre-commit jsonv2gate hook) — reported "since session 2", now 11 recurrences               | Owner question never answered; touches BuildFlow upstream vs local hook decision | Yes — this is the #1 item in (f)            |
@@ -71,6 +74,7 @@
 
 _Ranked by impact. First ~15 are concrete; beyond that is brainstorm/ROADMAP fuel per the skill's routing note — HARVEST should apply extra rigor before promoting items 16+ into TODO_LIST._
 
+<!-- check-rows:ledger -->
 | #  | Task                                                                                                                                                                  | Impact   | Effort | Category      |
 | -- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ------ | ------------- |
 | 1  | Decide + implement structural jsonv2 fix: pre-commit jsonv2gate hook on staged files (local) OR BuildFlow daemon exclusion list (upstream BuildFlow task)             | Critical | M      | Quality       |
