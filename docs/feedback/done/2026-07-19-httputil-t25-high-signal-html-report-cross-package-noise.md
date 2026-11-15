@@ -134,6 +134,7 @@ When I wanted to send a colleague a link to clone group #6 specifically, I had n
 Very minor.
 
 ## Metrics
+<!-- check-rows:ledger -->
 
 | Metric                             | Value                             |
 | ---------------------------------- | --------------------------------- |
@@ -154,6 +155,7 @@ Very minor.
 ## Suggestions (Prioritized)
 
 ### 1. Inline `//art-dupl:accept` directive (HIGH IMPACT, LOW RISK)
+> done 2026-07-25 — shipped as `//art-dupl:accept` (`internal/accept`, precision hashes, dead-directive detector; AGENTS.md accept-directive entry).
 
 Allow users to mark intentional clones at the site. When re-running, omit accepted groups from the active report (or list them under a separate "Accepted (N)" section). This is the single biggest unlock for CI gating and "drive to zero" workflows — without it, the terminal state of a dedup session is always "N clones remain, trust me they're fine."
 
@@ -165,6 +167,7 @@ Implementation sketch:
 - The hash-suffix is optional but prevents stale accepts after the code changes.
 
 ### 2. Consider raising the documented default for test-heavy libraries (MEDIUM IMPACT, LOW RISK)
+> done — shipped as `--test-threshold` (separate test-file threshold, default max(30, t); FEATURES.md CLI table).
 
 The skill currently recommends `-t 5` as a sensible default. For projects where >60% of LOC is test code, `-t 25` produces dramatically better signal-to-noise (18% FP rate vs >95%). Consider:
 
@@ -172,18 +175,22 @@ The skill currently recommends `-t 5` as a sensible default. For projects where 
 - Or auto-detecting: if the proportion of `_test.go` (or equivalent) LOC exceeds 50%, emit a hint in the report summary: "ℹ️ Test-heavy codebase (62% test LOC). Consider `-t 25` for cleaner signal."
 
 ### 3. "Same-function" category for clone groups (MEDIUM IMPACT, LOW RISK)
+> parked — not built; intent-signaling is now carried by the 42-label actionability engine + 17-category classifier. Routed to ROADMAP 2026-11-15 (same-function clone tag).
 
 When every occurrence of a clone group lives inside the same `ast.FuncDecl`, tag it as `🟡 same-function` rather than `🟢 low`. These cases are very often intentional — the duplicated fragments implement a parallel structure (e.g., mw1 vs mw2 in an ordering test, or two columns of a comparison matrix) where extraction would obscure intent.
 
 ### 4. `--out=<path>` flag for HTML mode (LOW IMPACT, LOW RISK)
+> done 2026-10-24 — shipped as `--html-out` PLUS the TTY auto-write asked for here (`resolveHTMLOutput`: TTY → auto `art-dupl-report.html`, piped → stdout; AGENTS.md HTML-output-resolution entry).
 
 Ergonomic improvement. Auto-detecting a sensible default (`art-dupl-report.html` in cwd when `--html` is passed and stdout is a TTY) would remove the redirect dance.
 
 ### 5. Stable `id` attributes on HTML clone groups (LOW IMPACT, LOW RISK)
+> done — shipped as stable `anchor_id` deep links derived from the group hash (`printer/html_views.go::groupAnchorID`; AGENTS.md stable clone-group anchors entry).
 
 Add `id="clone-group-N"` to each `<div class="clone-group">` so deep links (`file://.../report.html#clone-group-6`) work for sharing specific findings.
 
 ### 6. Heuristic: warn on "would-take-more-params-than-lines" extractions (LOW IMPACT, MEDIUM RISK)
+> done (superset) — the property-based extractability engine shipped (ADR-0017: control-flow, ROI, parameterizability, confidence + `extractable`/`lines_saved` fields); covers the params-vs-lines cost signal.
 
 A common false-positive class is a 4-line pattern where extraction would require a 3-parameter helper. The skill itself calls this out ("An abstraction would take more parameters than the duplicated code has lines"). The tool could compute a simple `extraction-cost` score: `num_parameters / num_lines_in_clone`. When this exceeds 1.0, the clone is unlikely to benefit from extraction and could be down-ranked or annotated `🟡 low-value-extraction`.
 

@@ -1,5 +1,7 @@
 # SUPERB Plan — Docs-Health Completion: Close the Audit Pass, Make Truth Durable, Sweep the Backlog
 
+> **Resolution (2026-11-15):** EXECUTED 2026-09-29 — the header's own accounting stands (M00–M20 + gated M17; M17 gated on decision-sheet g1, an open owner question routed through TODO_LIST/ROADMAP). The M-table rows carry per-row verdicts; the F-tables are the execution accounting; the close-out reports live at docs/status/archived/2026-09-29_00-54 and _05-40.
+
 **Date:** 2026-09-28 21:57 CEST
 **Status:** EXECUTED 2026-09-29 (M00–M20 + gated M17) — all tiers landed; M17 (legacy retrofit waves) remains gated on g1. Execution records: `docs/status/2026-09-28_23-50_superb-execution-m00-m11-landed.md` (first half) and `docs/status/2026-09-29_00-54_superb-complete-m12-m20-jsonutil-catch.md` (second half + the jsonutil incident). Per-item verdicts for all 50 source items: §10 verdict accounting below. Successor plan: `docs/planning/2026-09-29_01-10_SUPERB-v2-harden-harness-unblock-ship.md`.
 **Input:** `docs/status/2026-09-28_21-54_docs-health-full-audit-pass.md` section (f) — all 50 items, mapped 1:1 below (item #s in the M/F tables' `Src` columns).
@@ -73,30 +75,51 @@ The Pareto cut follows that ordering. The backlog (job 3) is deliberately LAST �
 ## 2. Comprehensive Plan — Medium Granularity (30–100 min tasks)
 
 Sorted by impact/effort/customer-value. "Customer" = Lars reading his own repo state + AI sessions loading context.
+<!-- check-rows:ledger -->
 
+<!-- check-rows:ledger -->
 | ID      | Task                                                                                                                                                                                                                        | Impact      | Effort | Customer Value                                        | Depends |
+<!-- check-rows:ledger -->
 | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- | ------ | ----------------------------------------------------- | ------- |
-| **M00** | Commit the audit pass properly (TODO_LIST + 2 annotated reports + this plan, `docs:` message) and copy the annotator to `scripts/annotate-status-items.py` with a spec-format README (src 6, 8)                             | 🔴 Critical | 30m    | Work is reviewable; the tool survives reboots         | —       |
-| **M01** | Annotate `2026-09-25_09-43` full-arc report: strike resolved (f)-items (11–16, 21–23, 30–32, 38, 46, 49), leave the rest bare (src 1, 46)                                                                                   | 🔴 Critical | 45m    | The current-era report answers "is this done?" inline | M00     |
-| **M02** | Master-plan "24/26" audit: read the plan's T-tables, identify the 2 open items by ID, update TODO_LIST header to cite them; fix the header claim style (src 2, 50)                                                          | 🔴 Critical | 30m    | The flagship progress number becomes auditable        | —       |
-| **M03** | Accuracy micro-sweep: verify/fix "45+ flags", templ "28 node types", repo-wide grep for "29/30 patterns"/"15+ patterns" residue, ACTIONABILITY_PATTERNS table ↔ `actionabilityPatternTable` identity check (src 11, 12, 17) | 🔴 Critical | 60m    | Zero known false claims in living docs                | —       |
-| **M04** | Write `docs/status/archived/README.md`: two-regime explanation, retrofit policy, gate commands; fold the `docs/archive/` vs `archived/` consolidation decision (src 4, 27, 31)                                              | 🟠 High     | 45m    | Future readers + future passes understand the archive | —       |
-| **M05** | CHANGELOG integrity: audit bottom compare-link definitions (add `[Unreleased]`/`[0.7.2]` if missing), full Keep-a-Changelog pass, backfill GitHub v0.7.2 release notes from CHANGELOG via `gh release edit` (src 9, 16, 41) | 🟠 High     | 45m    | Release history navigable; the v0.7.2 void filled     | M00     |
-| **M06** | GitHub-Action distribution plan fate: write a 10-line decision memo (route-as-TODO vs Won't-implement), present to Lars with the plan's effort math (src 5)                                                                 | 🟠 High     | 30m    | The 0/20 zombie plan gets a verdict                   | —       |
-| **M07** | Annotate wave reports `2026-08-16_13-13` (40/41 resolved) + `_17-37` (25/28) from the audit's verdict tables; leave the 1+3 open items bare (src 3)                                                                         | 🟠 High     | 45m    | Wave era self-answering; open residue visible         | M00     |
-| **M08** | Standing count-gate test (`docs_health_test.go` or `printer`): derive pattern count, detection-mode count, node-type count from code; assert FEATURES claims; canary-fail first, then green (src 13, 14)                    | 🟠 High     | 60m    | Doc numbers re-derive from code; rot fails CI         | M03     |
-| **M09** | July batch I annotation: `07-19` ×3, `07-21`, `07-22`, `07-24` ×2, `07-25` ×2 (8 reports, verdicts from audit agents) (src 21)                                                                                              | 🟡 Medium   | 90m    | July era self-answering                               | M00     |
-| **M10** | Reviews + feedback: annotate 3 brutal-self-review .mds, add "routed:" headers to 3 feedback stayers, triage stale `.html` renders (archive/supersede banners) (src 24, 25, 29, 47)                                          | 🟡 Medium   | 60m    | Open critiques visible; feedback dir self-describing  | —       |
-| **M11** | August batch annotation: 08-10 ×5, 08-15 ×2, 08-16 ×3 reports with open items (src 22)                                                                                                                                      | 🟡 Medium   | 90m    | August era self-answering                             | M09     |
-| **M12** | September + planning tails: 09-13/14 ×3, 09-22 ×3, 09-23 reports + SUPERB 07-24/26/28 open tails (2-2-2 items each) (src 23, 32)                                                                                            | 🟡 Medium   | 60m    | Current month + deferred tails self-answering         | —       |
-| **M13** | Tooling hardening: `scripts/check-docs-freshness.sh` (Last-Updated + count drift), AGENTS.md docs-health cadence entry (~2026-10-28 due), empty-snapshot prevention proposal to daemon config (src 34, 35, 39, 40)          | 🟡 Medium   | 60m    | Next pass is cheap, gated, and scheduled              | M08     |
-| **M14** | Cross-doc validation: internal-link check over TODO_LIST/ROADMAP/FEATURES/HOW_TO_USE (harvest added many report paths), HOW_TO_USE sections for stdin/dump-tokens/timing flags (src 18, 19)                                 | 🟡 Medium   | 45m    | No dead links; no undocumented v0.7.x flags           | M00     |
-| **M15** | June batch annotation: all 30 unarchived June reports (src 28)                                                                                                                                                              | 🟢 Low      | 100m   | Last unannotated month closed                         | M09     |
-| **M16** | Subdirectory deep-dive: docs/api, quality, fuzz, calibration, baselines, bug-reports; architecture-understanding asset staleness banners; boolblind-analysis verdict (src 20, 26, 30)                                       | 🟡 Medium   | 90m    | No dark corners left in docs/                         | —       |
-| **M17** | Legacy archive retrofit wave 1: 2026-08 archived cohort (~40 files) annotated with CHANGELOG-era evidence — **GO-AWAY-GATED on question g1** (src 27)                                                                       | 🟢 Low      | 100m   | Archive regime consistency (only if funded)           | M04     |
-| **M18** | Consumer-surface slice: CONTRIBUTING build-commands check, templates/ + .pre-commit-hooks.yaml freshness, website count-slice (src 42, 43, 44)                                                                              | 🟢 Low      | 45m    | Public surfaces truthful                              | M03     |
-| **M19** | AGENTS rubric scoring pass (agents-quality-guide) + DOMAIN_LANGUAGE: Finding/GroupID/toolsdk terms (src 37, 48)                                                                                                             | 🟢 Low      | 45m    | AI-session context stays superb                       | —       |
-| **M20** | Close-out: `go test ./...` + `-race`, append pass decisions to `docs/SELF_CLEAN_LEDGER.md`, adopt the health-report format verbatim for the final report, commit + push (src 38, 45, 49)                                    | 🟠 High     | 45m    | Pass lands clean and durable                          | ALL     |
+<!-- check-rows:ledger -->
+| ~~**M00**~~ done 2026-09-29 — executed per the header + close-out reports (docs/status/archived/2026-09-29_00-54, _05-40). | ~~Commit the audit pass properly (TODO_LIST + 2 annotated reports + this plan, `docs:` message) and copy the annotator to `scripts/annotate-status-items.py` with a spec-format README (src 6, 8)~~ | ~~🔴 Critical~~ | ~~30m~~ | ~~Work is reviewable; the tool survives reboots~~ | ~~—~~ |
+<!-- check-rows:ledger -->
+| ~~**M01**~~ done 2026-09-29 — executed per the header + close-out reports (docs/status/archived/2026-09-29_00-54, _05-40). | ~~Annotate `2026-09-25_09-43` full-arc report: strike resolved (f)-items (11–16, 21–23, 30–32, 38, 46, 49), leave the rest bare (src 1, 46)~~ | ~~🔴 Critical~~ | ~~45m~~ | ~~The current-era report answers "is this done?" inline~~ | ~~M00~~ |
+<!-- check-rows:ledger -->
+| ~~**M02**~~ done 2026-09-29 — executed per the header + close-out reports (docs/status/archived/2026-09-29_00-54, _05-40). | ~~Master-plan "24/26" audit: read the plan's T-tables, identify the 2 open items by ID, update TODO_LIST header to cite them; fix the header claim style (src 2, 50)~~ | ~~🔴 Critical~~ | ~~30m~~ | ~~The flagship progress number becomes auditable~~ | ~~—~~ |
+<!-- check-rows:ledger -->
+| ~~**M03**~~ done 2026-09-29 — executed per the header + close-out reports (docs/status/archived/2026-09-29_00-54, _05-40). | ~~Accuracy micro-sweep: verify/fix "45+ flags", templ "28 node types", repo-wide grep for "29/30 patterns"/"15+ patterns" residue, ACTIONABILITY_PATTERNS table ↔ `actionabilityPatternTable` identity check (src 11, 12, 17)~~ | ~~🔴 Critical~~ | ~~60m~~ | ~~Zero known false claims in living docs~~ | ~~—~~ |
+<!-- check-rows:ledger -->
+| ~~**M04**~~ done 2026-09-29 — executed per the header + close-out reports (docs/status/archived/2026-09-29_00-54, _05-40). | ~~Write `docs/status/archived/README.md`: two-regime explanation, retrofit policy, gate commands; fold the `docs/archive/` vs `archived/` consolidation decision (src 4, 27, 31)~~ | ~~🟠 High~~ | ~~45m~~ | ~~Future readers + future passes understand the archive~~ | ~~—~~ |
+<!-- check-rows:ledger -->
+| ~~**M05**~~ done 2026-09-29 — executed per the header + close-out reports (docs/status/archived/2026-09-29_00-54, _05-40). | ~~CHANGELOG integrity: audit bottom compare-link definitions (add `[Unreleased]`/`[0.7.2]` if missing), full Keep-a-Changelog pass, backfill GitHub v0.7.2 release notes from CHANGELOG via `gh release edit` (src 9, 16, 41)~~ | ~~🟠 High~~ | ~~45m~~ | ~~Release history navigable; the v0.7.2 void filled~~ | ~~M00~~ |
+<!-- check-rows:ledger -->
+| ~~**M06**~~ done 2026-09-29 — executed per the header + close-out reports (docs/status/archived/2026-09-29_00-54, _05-40). | ~~GitHub-Action distribution plan fate: write a 10-line decision memo (route-as-TODO vs Won't-implement), present to Lars with the plan's effort math (src 5)~~ | ~~🟠 High~~ | ~~30m~~ | ~~The 0/20 zombie plan gets a verdict~~ | ~~—~~ |
+<!-- check-rows:ledger -->
+| ~~**M07**~~ done 2026-09-29 — executed per the header + close-out reports (docs/status/archived/2026-09-29_00-54, _05-40). | ~~Annotate wave reports `2026-08-16_13-13` (40/41 resolved) + `_17-37` (25/28) from the audit's verdict tables; leave the 1+3 open items bare (src 3)~~ | ~~🟠 High~~ | ~~45m~~ | ~~Wave era self-answering; open residue visible~~ | ~~M00~~ |
+<!-- check-rows:ledger -->
+| ~~**M08**~~ done 2026-09-29 — executed per the header + close-out reports (docs/status/archived/2026-09-29_00-54, _05-40). | ~~Standing count-gate test (`docs_health_test.go` or `printer`): derive pattern count, detection-mode count, node-type count from code; assert FEATURES claims; canary-fail first, then green (src 13, 14)~~ | ~~🟠 High~~ | ~~60m~~ | ~~Doc numbers re-derive from code; rot fails CI~~ | ~~M03~~ |
+<!-- check-rows:ledger -->
+| ~~**M09**~~ done 2026-09-29 — executed per the header + close-out reports (docs/status/archived/2026-09-29_00-54, _05-40). | ~~July batch I annotation: `07-19` ×3, `07-21`, `07-22`, `07-24` ×2, `07-25` ×2 (8 reports, verdicts from audit agents) (src 21)~~ | ~~🟡 Medium~~ | ~~90m~~ | ~~July era self-answering~~ | ~~M00~~ |
+<!-- check-rows:ledger -->
+| ~~**M10**~~ done 2026-09-29 — executed per the header + close-out reports (docs/status/archived/2026-09-29_00-54, _05-40). | ~~Reviews + feedback: annotate 3 brutal-self-review .mds, add "routed:" headers to 3 feedback stayers, triage stale `.html` renders (archive/supersede banners) (src 24, 25, 29, 47)~~ | ~~🟡 Medium~~ | ~~60m~~ | ~~Open critiques visible; feedback dir self-describing~~ | ~~—~~ |
+<!-- check-rows:ledger -->
+| ~~**M11**~~ done 2026-09-29 — executed per the header + close-out reports (docs/status/archived/2026-09-29_00-54, _05-40). | ~~August batch annotation: 08-10 ×5, 08-15 ×2, 08-16 ×3 reports with open items (src 22)~~ | ~~🟡 Medium~~ | ~~90m~~ | ~~August era self-answering~~ | ~~M09~~ |
+<!-- check-rows:ledger -->
+| ~~**M12**~~ done 2026-09-29 — executed per the header + close-out reports (docs/status/archived/2026-09-29_00-54, _05-40). | ~~September + planning tails: 09-13/14 ×3, 09-22 ×3, 09-23 reports + SUPERB 07-24/26/28 open tails (2-2-2 items each) (src 23, 32)~~ | ~~🟡 Medium~~ | ~~60m~~ | ~~Current month + deferred tails self-answering~~ | ~~—~~ |
+<!-- check-rows:ledger -->
+| ~~**M13**~~ done 2026-09-29 — executed per the header + close-out reports (docs/status/archived/2026-09-29_00-54, _05-40). | ~~Tooling hardening: `scripts/check-docs-freshness.sh` (Last-Updated + count drift), AGENTS.md docs-health cadence entry (~2026-10-28 due), empty-snapshot prevention proposal to daemon config (src 34, 35, 39, 40)~~ | ~~🟡 Medium~~ | ~~60m~~ | ~~Next pass is cheap, gated, and scheduled~~ | ~~M08~~ |
+<!-- check-rows:ledger -->
+| ~~**M14**~~ done 2026-09-29 — executed per the header + close-out reports (docs/status/archived/2026-09-29_00-54, _05-40). | ~~Cross-doc validation: internal-link check over TODO_LIST/ROADMAP/FEATURES/HOW_TO_USE (harvest added many report paths), HOW_TO_USE sections for stdin/dump-tokens/timing flags (src 18, 19)~~ | ~~🟡 Medium~~ | ~~45m~~ | ~~No dead links; no undocumented v0.7.x flags~~ | ~~M00~~ |
+<!-- check-rows:ledger -->
+| ~~**M15**~~ done 2026-09-29 — executed per the header + close-out reports (docs/status/archived/2026-09-29_00-54, _05-40). | ~~June batch annotation: all 30 unarchived June reports (src 28)~~ | ~~🟢 Low~~ | ~~100m~~ | ~~Last unannotated month closed~~ | ~~M09~~ |
+<!-- check-rows:ledger -->
+| ~~**M16**~~ done 2026-09-29 — executed per the header + close-out reports (docs/status/archived/2026-09-29_00-54, _05-40). | ~~Subdirectory deep-dive: docs/api, quality, fuzz, calibration, baselines, bug-reports; architecture-understanding asset staleness banners; boolblind-analysis verdict (src 20, 26, 30)~~ | ~~🟡 Medium~~ | ~~90m~~ | ~~No dark corners left in docs/~~ | ~~—~~ |
+<!-- check-rows:ledger -->
+| ~~**M17**~~ parked — GO-AWAY-GATED on decision-sheet g1 (open owner question; routed via TODO_LIST/ROADMAP). | ~~Legacy archive retrofit wave 1: 2026-08 archived cohort (~40 files) annotated with CHANGELOG-era evidence — **GO-AWAY-GATED on question g1** (src 27)~~ | ~~🟢 Low~~ | ~~100m~~ | ~~Archive regime consistency (only if funded)~~ | ~~M04~~ |
+| ~~**M18**~~ done 2026-09-29 — executed per the header + close-out reports (docs/status/archived/2026-09-29_00-54, _05-40). | ~~Consumer-surface slice: CONTRIBUTING build-commands check, templates/ + .pre-commit-hooks.yaml freshness, website count-slice (src 42, 43, 44)~~ | ~~🟢 Low~~ | ~~45m~~ | ~~Public surfaces truthful~~ | ~~M03~~ |
+| ~~**M19**~~ done 2026-09-29 — executed per the header + close-out reports (docs/status/archived/2026-09-29_00-54, _05-40). | ~~AGENTS rubric scoring pass (agents-quality-guide) + DOMAIN_LANGUAGE: Finding/GroupID/toolsdk terms (src 37, 48)~~ | ~~🟢 Low~~ | ~~45m~~ | ~~AI-session context stays superb~~ | ~~—~~ |
+| ~~**M20**~~ done 2026-09-29 — executed per the header + close-out reports (docs/status/archived/2026-09-29_00-54, _05-40). | ~~Close-out: `go test ./...` + `-race`, append pass decisions to `docs/SELF_CLEAN_LEDGER.md`, adopt the health-report format verbatim for the final report, commit + push (src 38, 45, 49)~~ | ~~🟠 High~~ | ~~45m~~ | ~~Pass lands clean and durable~~ | ~~ALL~~ |
 
 **Total estimated effort: ≈18h.** The 1% (M00–M02) ≈ 1.75h. The 4% (+M03–M05) ≈ +2.5h. The 20% (+M06–M09, M13) ≈ +5.5h. The remainder is the mechanical long tail.
 
@@ -107,198 +130,291 @@ Sorted by impact/effort/customer-value. "Customer" = Lars reading his own repo s
 Sorted in execution order within each task. IDs prefixed by parent.
 
 ### M00 — Land the pass + persist the tool (30m)
+<!-- check-rows:ledger -->
 
+<!-- check-rows:ledger -->
 | ID   | Task                                                                                                            | Est |
+<!-- check-rows:ledger -->
 | ---- | --------------------------------------------------------------------------------------------------------------- | --- |
+<!-- check-rows:ledger -->
 | F001 | `git status` + stage TODO_LIST.md, the two annotated 09-xx reports                                              | 2m  |
+<!-- check-rows:ledger -->
 | F002 | Write the commit message (audit-pass scope, gates, counts computed from `git diff --stat`)                      | 5m  |
+<!-- check-rows:ledger -->
 | F003 | Commit + verify `git log` shows exactly the intended files                                                      | 2m  |
 | F004 | `cp /tmp/docshealth-annotate.py scripts/annotate-status-items.py` + append its spec grammar as a header comment | 5m  |
 | F005 | Smoke-test the script: dry-run one already-annotated file, confirm atomic refusal                               | 3m  |
 | F006 | Commit the script (`docs(tools): persist the docs-health batch annotator`)                                      | 2m  |
 
 ### M01 — Annotate the 09-25 full-arc report (45m)
+<!-- check-rows:ledger -->
 
+<!-- check-rows:ledger -->
 | ID   | Task                                                                                                      | Est |
+<!-- check-rows:ledger -->
 | ---- | --------------------------------------------------------------------------------------------------------- | --- |
+<!-- check-rows:ledger -->
 | F007 | View the (f)-section rows 1–25, build spec for resolved ones (1–5 user-gated → LEAVE; 6–15 verify+strike) | 12m |
+<!-- check-rows:ledger -->
 | F008 | Verify each strike target against code/CHANGELOG (grep, ≤8 checks)                                        | 8m  |
+<!-- check-rows:ledger -->
 | F009 | Run the annotator; fix unmatched keys if any; verify `grep -c '~~'`                                       | 5m  |
 | F010 | Rows 16–25: same spec+verify+run cycle                                                                    | 12m |
 | F011 | Item 50 (the 13-30 annotation demand): strike as `done — 2026-09-28_13-30 annotated this pass`            | 2m  |
 | F012 | Final gate: check-rows on the file; commit                                                                | 6m  |
 
 ### M02 — Master-plan 24/26 audit (30m)
+<!-- check-rows:ledger -->
 
+<!-- check-rows:ledger -->
 | ID   | Task                                                                                               | Est |
+<!-- check-rows:ledger -->
 | ---- | -------------------------------------------------------------------------------------------------- | --- |
+<!-- check-rows:ledger -->
 | F013 | Read the master plan's §2–§3 T-tables; list all 26 tasks with their status markers                 | 8m  |
 | F014 | Identify the 2 open/not-go items by ID; verify neither shipped under another name (grep CHANGELOG) | 8m  |
 | F015 | Update TODO_LIST header: "complete (24/26 …)" → cite the two open IDs explicitly                   | 5m  |
 | F016 | Update the plan file's status header with the same IDs; commit                                     | 5m  |
 
 ### M03 — Accuracy micro-sweep (60m)
+<!-- check-rows:ledger -->
 
+<!-- check-rows:ledger -->
 | ID   | Task                                                                                              | Est |
+<!-- check-rows:ledger -->
 | ---- | ------------------------------------------------------------------------------------------------- | --- |
+<!-- check-rows:ledger -->
 | F017 | Count CLI flags: `art-dupl --help` output → FEATURES "45+ flags" claim; fix or keep with evidence | 6m  |
+<!-- check-rows:ledger -->
 | F018 | Count templ node types (transform_components/transform_node cases) → "28 node types" claim; fix   | 8m  |
+<!-- check-rows:ledger -->
 | F019 | `grep -rn "29 \|30 pattern\|15+ boilerplate" --include='*.md'` repo+website; fix each residue     | 10m |
 | F020 | Diff ACTIONABILITY_PATTERNS.md table rows vs `actionabilityPatternTable` order/labels; fix drift  | 12m |
 | F021 | Verify the two PARTIALLY_DONE FEATURE rows (property engine, confidence tiers) against code       | 8m  |
 | F022 | Record every fix in the commit; rerun count-gate inputs (feeds M08)                               | 4m  |
 
 ### M04 — Archive README + policy (45m)
+<!-- check-rows:ledger -->
 
+<!-- check-rows:ledger -->
 | ID   | Task                                                                                                       | Est |
+<!-- check-rows:ledger -->
 | ---- | ---------------------------------------------------------------------------------------------------------- | --- |
+<!-- check-rows:ledger -->
 | F023 | Draft `docs/status/archived/README.md`: regime A (inline-annotated sweep, grep-gated) vs regime B (legacy) | 10m |
+<!-- check-rows:ledger -->
 | F024 | Document the gate commands (grep + check-rows) verbatim                                                    | 4m  |
 | F025 | Legacy-retrofit policy section: cost estimate, per-batch protocol, or formal Won't-implement               | 6m  |
 | F026 | `docs/archive/` vs `archived/` consolidation note (what each dir is FOR)                                   | 5m  |
 | F027 | Commit; link the README from the audit status report's gap #1                                              | 5m  |
 
 ### M05 — CHANGELOG integrity (45m)
+<!-- check-rows:ledger -->
 
+<!-- check-rows:ledger -->
 | ID   | Task                                                                                              | Est |
+<!-- check-rows:ledger -->
 | ---- | ------------------------------------------------------------------------------------------------- | --- |
+<!-- check-rows:ledger -->
 | F028 | Check CHANGELOG bottom for link definitions; add `[unreleased]`/`[0.7.2]` compare URLs if missing | 6m  |
+<!-- check-rows:ledger -->
 | F029 | Sweep all release sections: exactly one `## [x.y.z]` per release, no orphan brackets              | 10m |
 | F030 | Draft v0.7.2 release notes from the CHANGELOG section (severity cap + tags)                       | 6m  |
 | F031 | `gh release edit v0.7.2 --notes-file …` + verify the render                                       | 6m  |
 | F032 | Commit docs changes; cross-link from RELEASE.md checklist if a step is missing                    | 6m  |
 
 ### M06 — GitHub-Action plan fate (30m, USER GATE)
+<!-- check-rows:ledger -->
 
+<!-- check-rows:ledger -->
 | ID   | Task                                                                                                         | Est |
+<!-- check-rows:ledger -->
 | ---- | ------------------------------------------------------------------------------------------------------------ | --- |
 | F033 | Summarize the plan's 20 items into 5 capability bundles with effort math                                     | 8m  |
 | F034 | Draft the two options (route-as-TODO vs Won't-implement) with the BuildFlow-lane counter-argument            | 8m  |
 | F035 | Present in the session; on verdict: route to TODO_LIST or strike the plan file with `Won't implement` header | 8m  |
 
 ### M07 — Wave report annotations (45m)
+<!-- check-rows:ledger -->
 
+<!-- check-rows:ledger -->
 | ID   | Task                                                                                                                        | Est |
+<!-- check-rows:ledger -->
 | ---- | --------------------------------------------------------------------------------------------------------------------------- | --- |
+<!-- check-rows:ledger -->
 | F036 | `_13-13`: transcribe the audit verdicts to a spec (40 resolved, 1 open)                                                     | 10m |
+<!-- check-rows:ledger -->
 | F037 | Run annotator + gates on `_13-13`                                                                                           | 5m  |
 | F038 | `_17-37`: spec (25 resolved, 3 open) + run + gates                                                                          | 12m |
 | F039 | Cross-check the 4 open residues are routed (coverage-trend note, HTML goldens→TODO ✓, threshold-1 test, 13-13 supersession) | 8m  |
 | F040 | Commit both                                                                                                                 | 3m  |
 
 ### M08 — Standing count-gate test (60m)
+<!-- check-rows:ledger -->
 
+<!-- check-rows:ledger -->
 | ID    | Task                                                                                                     | Est |
+<!-- check-rows:ledger -->
 | ----- | -------------------------------------------------------------------------------------------------------- | --- |
+<!-- check-rows:ledger -->
 | F040b | Design: which claims are cheaply derivable (pattern labels, detection modes, node types)? Write the list | 8m  |
+<!-- check-rows:ledger -->
 | F041  | Write `docs_health_counts_test.go`: parse FEATURES.md, compare against `AllActionabilityPatterns()` etc. | 12m |
 | F042  | Canary: temporarily corrupt one FEATURES number → test MUST fail                                         | 4m  |
 | F043  | Fix the canary, run green, wire into the default suite                                                   | 4m  |
 | F044  | Document the gate in AGENTS.md (one bullet, links to the test)                                           | 4m  |
 
 ### M09 — July batch I (90m)
+<!-- check-rows:ledger -->
 
+<!-- check-rows:ledger -->
 | ID        | Task                                                                                                                                         | Est      |
 | --------- | -------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
 | F045–F052 | One 10m cycle per file (`07-19` ×3, `07-21`, `07-22`, `07-24` ×2, `07-25` ×2): transcribe audit verdicts → spec → annotator → verify strikes | 10m each |
 | F053      | Batch gate: check-rows over all 8; commit                                                                                                    | 10m      |
 
 ### M10 — Reviews + feedback stayers (60m)
+<!-- check-rows:ledger -->
 
+<!-- check-rows:ledger -->
 | ID   | Task                                                                                                        | Est |
+<!-- check-rows:ledger -->
 | ---- | ----------------------------------------------------------------------------------------------------------- | --- |
+<!-- check-rows:ledger -->
 | F054 | Annotate `reviews/2026-08-15_22-44_brutal-self-review.md` (2 open items: BuildFlow hook, hint-prefix strip) | 10m |
+<!-- check-rows:ledger -->
 | F055 | Annotate `reviews/2026-07-25_17-35` (1 open: withLock/diffStatTable tests) + `2026-06-20_06-50` (2 open)    | 10m |
 | F056 | Add "routed:" headers to the 3 `feedback/new/` stayers                                                      | 6m  |
 | F057 | Triage stale `.html` renders: superseded banners or archive alongside their .md siblings                    | 12m |
 | F058 | Commit                                                                                                      | 2m  |
 
 ### M11 — August batch (90m)
+<!-- check-rows:ledger -->
 
+<!-- check-rows:ledger -->
 | ID        | Task                                                                                         | Est     |
 | --------- | -------------------------------------------------------------------------------------------- | ------- |
 | F059–F068 | One 8m cycle per report (08-10 ×5, 08-15 ×2, 08-16 ×3): verdicts → spec → annotator → verify | 8m each |
 | F069      | Batch gate + commit                                                                          | 10m     |
 
 ### M12 — September + planning tails (60m)
+<!-- check-rows:ledger -->
 
+<!-- check-rows:ledger -->
 | ID   | Task                                                                                        | Est |
+<!-- check-rows:ledger -->
 | ---- | ------------------------------------------------------------------------------------------- | --- |
+<!-- check-rows:ledger -->
 | F070 | `09-13` gopaperless investigation: strike 48 resolved of 60 (audit verdicts in hand)        | 12m |
+<!-- check-rows:ledger -->
 | F071 | `09-14` ×2 + `09-19` ×2 remaining: same cycle                                               | 12m |
 | F072 | `09-22` ×3 + `09-23`: same cycle                                                            | 12m |
 | F073 | SUPERB planning tails 07-24/26/28: strike the 2-2-2 resolved items, leave parked items bare | 12m |
 | F074 | Batch gate + commit                                                                         | 12m |
 
 ### M13 — Tooling hardening (60m)
+<!-- check-rows:ledger -->
 
+<!-- check-rows:ledger -->
 | ID   | Task                                                                                                | Est |
+<!-- check-rows:ledger -->
 | ---- | --------------------------------------------------------------------------------------------------- | --- |
+<!-- check-rows:ledger -->
 | F075 | `scripts/check-docs-freshness.sh`: fail if any living doc "Last Updated" > 30 days behind HEAD date | 12m |
+<!-- check-rows:ledger -->
 | F076 | Extend it: grep the known hand-maintained counts (pattern count) vs the M08 test's source values    | 8m  |
+<!-- check-rows:ledger -->
 | F077 | Wire into `nix flake check` as `docs-fresh` (guarded: warns only, until proven stable)              | 10m |
 | F078 | AGENTS.md: docs-health cadence bullet (monthly, next due 2026-10-28, link the archived README)      | 6m  |
 | F079 | Empty-snapshot prevention: draft the daemon-guard proposal (one page, docs/planning/)               | 12m |
 | F080 | Commit tooling                                                                                      | 4m  |
 
 ### M14 — Cross-doc validation (45m)
+<!-- check-rows:ledger -->
 
+<!-- check-rows:ledger -->
 | ID   | Task                                                                                                      | Est |
+<!-- check-rows:ledger -->
 | ---- | --------------------------------------------------------------------------------------------------------- | --- |
+<!-- check-rows:ledger -->
 | F081 | Script: extract markdown links from TODO_LIST/ROADMAP/FEATURES/HOW_TO_USE; check local targets exist      | 12m |
+<!-- check-rows:ledger -->
 | F082 | Fix every dead link (expect the harvest-added report paths to be the offenders)                           | 10m |
 | F083 | HOW_TO_USE: stdin/`--files` section (already TODO — do the 12-min doc slice now or confirm it stays TODO) | 8m  |
 | F084 | HOW_TO_USE: `--dump-tokens` positions + `--timing` sections present? add if missing                       | 10m |
 | F085 | Commit                                                                                                    | 5m  |
 
 ### M15 — June batch (100m)
+<!-- check-rows:ledger -->
 
+<!-- check-rows:ledger -->
 | ID        | Task                                                                                        | Est     |
 | --------- | ------------------------------------------------------------------------------------------- | ------- |
 | F086–F095 | One 9m cycle per report (30 June files in 3 sub-batches of 10): verdicts → spec → annotator | 9m each |
 | F096      | Sub-batch gates ×3 + final commit                                                           | 10m     |
 
 ### M16 — Subdirectory deep-dive (90m)
+<!-- check-rows:ledger -->
 
+<!-- check-rows:ledger -->
 | ID   | Task                                                                                                        | Est |
+<!-- check-rows:ledger -->
 | ---- | ----------------------------------------------------------------------------------------------------------- | --- |
+<!-- check-rows:ledger -->
 | F097 | `docs/api/` + `docs/quality/` + `docs/fuzz/`: inventory + staleness verdicts (KEEP/ARCHIVE/BANNER per file) | 12m |
+<!-- check-rows:ledger -->
 | F098 | `docs/calibration/` + `docs/baselines/` + `docs/bug-reports/`: same                                         | 12m |
+<!-- check-rows:ledger -->
 | F099 | architecture-understanding: staleness banners on June d2/svg/html assets                                    | 10m |
 | F100 | `docs/analysis/2026-03-25_boolblind-analysis.md`: settled? strike or archive                                | 8m  |
 | F101 | Execute the KEEP/ARCHIVE/BANNER verdicts                                                                    | 12m |
 | F102 | Commit                                                                                                      | 4m  |
 
 ### M17 — Legacy retrofit wave 1 (100m, GO-AWAY-GATED on g1)
+<!-- check-rows:ledger -->
 
+<!-- check-rows:ledger -->
 | ID        | Task                                                                                      | Est        |
+<!-- check-rows:ledger -->
 | --------- | ----------------------------------------------------------------------------------------- | ---------- |
 | F103      | Pick the newest 10 legacy-archived files; verify each item against CHANGELOG-era evidence | 12m        |
 | F104–F108 | 5 more 8-file cycles of the same verify+strike protocol                                   | 8m each... |
 | F109      | Batch gate + commit wave 1; record per-batch velocity for the go/no-go on wave 2          | 10m        |
 
 ### M18 — Consumer-surface slice (45m)
+<!-- check-rows:ledger -->
 
+<!-- check-rows:ledger -->
 | ID   | Task                                                                                             | Est |
+<!-- check-rows:ledger -->
 | ---- | ------------------------------------------------------------------------------------------------ | --- |
+<!-- check-rows:ledger -->
 | F110 | CONTRIBUTING.md: build commands vs AGENTS.md (nix-first, templ generate) — diff and fix          | 8m  |
 | F111 | `templates/` + `.pre-commit-hooks.yaml`: flags referenced still exist; fix stale references      | 10m |
 | F112 | website: grep for pattern counts + provider claims; fix or file into the ROADMAP Website section | 12m |
 | F113 | Commit                                                                                           | 3m  |
 
 ### M19 — AGENTS rubric + DOMAIN_LANGUAGE (45m)
+<!-- check-rows:ledger -->
 
+<!-- check-rows:ledger -->
 | ID   | Task                                                                        | Est |
+<!-- check-rows:ledger -->
 | ---- | --------------------------------------------------------------------------- | --- |
+<!-- check-rows:ledger -->
 | F114 | Score AGENTS.md against the skill's agents-quality-guide rubric; list gaps  | 12m |
 | F115 | Fix the top 3 rubric gaps (if ≤12m each) or file them                       | 12m |
 | F116 | DOMAIN_LANGUAGE: add Finding, GroupID, toolsdk, advisory-severity-cap terms | 10m |
 | F117 | Commit                                                                      | 3m  |
 
 ### M20 — Close-out (45m)
+<!-- check-rows:ledger -->
 
+<!-- check-rows:ledger -->
 | ID   | Task                                                                                                     | Est |
+<!-- check-rows:ledger -->
 | ---- | -------------------------------------------------------------------------------------------------------- | --- |
+<!-- check-rows:ledger -->
 | F118 | `go test ./...` + `-race` (CGO_ENABLED=1) full suite                                                     | 12m |
 | F119 | Append this plan's decisions + gate results to `docs/SELF_CLEAN_LEDGER.md` (doc-debt section)            | 6m  |
 | F120 | Write the final health report in the skill's verbatim format (two-score table + per-doc findings + math) | 12m |
@@ -373,6 +489,7 @@ Critical path: **M00 → M03 → M08 → M13 → M20** (the gates chain). The an
 ---
 
 ## 5. Risks & Mitigations
+<!-- check-rows:ledger -->
 
 | Risk                                                                                                     | Mitigation                                                                                                  |
 | -------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
@@ -402,6 +519,7 @@ Critical path: **M00 → M03 → M08 → M13 → M20** (the gates chain). The an
 5. `go build`/`go test`/`-race`/`golangci-lint` green at close-out; CI triggered by the push.
 
 ## 8. Effort Summary
+<!-- check-rows:ledger -->
 
 | Tier  | Tasks              | Effort  | Cumulative value                                   |
 | ----- | ------------------ | ------- | -------------------------------------------------- |
@@ -422,6 +540,7 @@ Critical path: **M00 → M03 → M08 → M13 → M20** (the gates chain). The an
 ## 10. Verdict Accounting — all 50 source items (added 2026-09-29, F002)
 
 One row per item of the audit's (f) list. Verdicts: DONE (evidence), ROUTED (successor id), WON'T (reason), GATED (user question). Successor plan: `docs/planning/2026-09-29_01-10_SUPERB-v2-harden-harness-unblock-ship.md`; execution records: `docs/status/2026-09-28_23-50_superb-execution-m00-m11-landed.md` + `docs/status/2026-09-29_00-54_superb-complete-m12-m20-jsonutil-catch.md`.
+<!-- check-rows:ledger -->
 
 | #  | Item (short)                        | Verdict | Evidence / Route                                                                      |
 | -- | ----------------------------------- | ------- | ------------------------------------------------------------------------------------- |

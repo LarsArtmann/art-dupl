@@ -182,7 +182,7 @@ questions of the 20:35 report had arrived; un-gated work proceeded autonomously.
 39. Consider promoting the LSP BDD spec assertion set into a docs example snippet.
 40. Re-check jsonv2gate + goldens after ANY daemon auto-commit touching provider/finding (standing).
 41. Monthly self-scan due 2026-10-22 (`scripts/self-scan.sh`, ledger append) — calendar.
-42. Docs-health full pass due 2026-10-28 — calendar.
+~~42. Docs-health full pass due 2026-10-28 — calendar.~~ done 2026-11-14 — the pass executed: passes 1-3 cleared all five docs-gates; re-run 2026-11-15 cadence wave (battery green).
 43. v0.8.0 release still parked (owner-gated) — CHANGELOG ready; branch protection #18 still owner.
 44. Fleet gogenfilter v3.6.1 sweep (9 repos) — unchanged, cross-repo.
 45. Fleet json v2/format-tag audit (#14) + filepath.Separator audit (#15) — unchanged.

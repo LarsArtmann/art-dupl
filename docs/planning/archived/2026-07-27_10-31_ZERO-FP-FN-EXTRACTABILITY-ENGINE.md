@@ -1,5 +1,7 @@
 # ZERO False-Positive / False-Negative Clone Detection — Pareto Execution Plan
 
+> **Resolution (2026-11-15):** EXECUTED — audited 2026-10-05 (24 items verified resolved per the header). M24 (v1.0 readiness audit) parks behind the v1.0 cut; M22's recommendation was superseded by the shipped toolsdk threshold knob (D1). The engine shipped: ADR-0017 property engine + extractability fields. M-rows carry per-row verdicts; F-tables are the execution accounting.
+
 > **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 24 items verified resolved, 2 open (extractability engine shipped (ADR-0017); M24 v1.0-readiness audit pending (no v1.0 released)).
 
 > **Resolution (2026-10-05):** ~~Open items unresolved at write time.~~ Audited 2026-10-05 docs-health pass: 24 items verified resolved, 2 open (extractability engine shipped (ADR-0017); M24 v1.0-readiness audit pending (no v1.0 released)).
@@ -34,6 +36,7 @@ The actionability layer operates on `[][]*domain.CloneNode` — pure AST shape. 
 ### The Pivot: Property-Based Classification
 
 Replace the denylist-of-20-patterns with **four computable properties** that define "harmful duplication":
+<!-- check-rows:ledger -->
 
 | # | Property                        | Computable how?                                                                                                                                                                                                  | Kills which FPs                                                           |
 | - | ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
@@ -55,61 +58,65 @@ Properties 2 and 3 are the unlock. Both require type info to reach the actionabi
 ### The 1% that delivers 51%
 
 **The Extractability Analysis foundation.** Three tasks that wire type info through to the actionability layer and define the property model. Without these, the entire vision is blocked.
+<!-- check-rows:ledger -->
 
 | #   | Task                                                                                                           | Effort | Why 51%                                                                                                                                         |
 | --- | -------------------------------------------------------------------------------------------------------------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| M01 | Build regression test corpus from DiscordSync feedback (82 groups → fixtures, baseline FP rate)                | 90min  | Without measurement, every change is blind. This is the ruler.                                                                                  |
-| M06 | Add type + enclosing-signature fields to `domain.CloneNode`; update `syntaxToCloneNode` bridge to carry them   | 90min  | **The keystone.** Every property checker depends on type info surviving the bridge. Without this, the actionability layer is permanently blind. |
-| M09 | Define `ExtractabilityAnalysis` domain model — the 4-property struct, evaluation interface, confidence scoring | 60min  | The contract that all property checkers implement. Defines the shape of the new engine.                                                         |
+| ~~M01~~ done 2026-10-05 — executed per the audited header (24 items verified resolved). | ~~Build regression test corpus from DiscordSync feedback (82 groups → fixtures, baseline FP rate)~~ | ~~90min~~ | ~~Without measurement, every change is blind. This is the ruler.~~ |
+| ~~M06~~ done 2026-10-05 — executed per the audited header (24 items verified resolved). | ~~Add type + enclosing-signature fields to `domain.CloneNode`; update `syntaxToCloneNode` bridge to carry them~~ | ~~90min~~ | ~~**The keystone.** Every property checker depends on type info surviving the bridge. Without this, the actionability layer is permanently blind.~~ |
+| ~~M09~~ done 2026-10-05 — executed per the audited header (24 items verified resolved). | ~~Define `ExtractabilityAnalysis` domain model — the 4-property struct, evaluation interface, confidence scoring~~ | ~~60min~~ | ~~The contract that all property checkers implement. Defines the shape of the new engine.~~ |
 
 **Subtotal: 240min.** This is the critical path. Everything else is built on top.
 
 ### The 4% that delivers 64%
 
 **The two highest-volume property implementations** that kill the most false positives:
+<!-- check-rows:ledger -->
 
 | #   | Task                                                                                                   | Effort | Why 64%                                                                                                                 |
 | --- | ------------------------------------------------------------------------------------------------------ | ------ | ----------------------------------------------------------------------------------------------------------------------- |
-| M10 | Property 2: control-flow extractability checker (uses enclosing signature to detect void-return-traps) | 75min  | Kills 12 HTTP-handler groups + all future "forced by signature" FPs                                                     |
-| M11 | Property 3: ROI + helper-dominance checker (token economics + call-dominance ratio)                    | 75min  | Kills 27 `queryError` + 12 `defer cancel` + 5 helper-invocation = **44 groups eliminated**. Highest single-task impact. |
+| ~~M10~~ done 2026-10-05 — executed per the audited header (24 items verified resolved). | ~~Property 2: control-flow extractability checker (uses enclosing signature to detect void-return-traps)~~ | ~~75min~~ | ~~Kills 12 HTTP-handler groups + all future "forced by signature" FPs~~ |
+| ~~M11~~ done 2026-10-05 — executed per the audited header (24 items verified resolved). | ~~Property 3: ROI + helper-dominance checker (token economics + call-dominance ratio)~~ | ~~75min~~ | ~~Kills 27 `queryError` + 12 `defer cancel` + 5 helper-invocation = **44 groups eliminated**. Highest single-task impact.~~ |
 
 **Subtotal: 150min.** These two checkers eliminate 56 of 80 false positives via general principles, not pattern matching.
 
 ### The 20% that delivers 80%
 
 **Stop-the-bleeding bridge patterns + remaining properties + wiring:**
+<!-- check-rows:ledger -->
 
 | #   | Task                                                                                                                              | Effort |
 | --- | --------------------------------------------------------------------------------------------------------------------------------- | ------ |
-| M02 | Harden `raii-defer`: accept bare `cancel()` (Ident callee), unwrap `defer func(){ _ = x.Close() }()` (FuncLit)                    | 45min  |
-| M03 | Broaden `error-propagation` 2-stmt branch: accept any `ExprStmt(CallExpr) + ReturnStmt` (not just log/print)                      | 45min  |
-| M04 | Make `error-wrapping` structural: drop `{Errorf,Wrap,...}` name allowlist, match any `CallExpr` referencing `err`                 | 60min  |
-| M05 | Add bool-ok assign+guard pattern (`X, ok := helper(); if !ok { return }`)                                                         | 45min  |
-| M07 | Fix `IncrementalParser` to thread `typeInfos` (mirror `job.Parse`'s `LookupPreloaded`)                                            | 90min  |
-| M08 | Property 4: parameterizability checker (differing-critical-literal detection)                                                     | 60min  |
-| M12 | Wire property engine into `evaluateActionabilityWithDisabled` as a pre-filter layer                                               | 60min  |
-| M13 | Confidence scoring: replace binary `Actionable`/`NonActionable` with tiered output (actionable / low-confidence / non-actionable) | 90min  |
+| ~~M02~~ done 2026-10-05 — executed per the audited header (24 items verified resolved). | ~~Harden `raii-defer`: accept bare `cancel()` (Ident callee), unwrap `defer func(){ _ = x.Close() }()` (FuncLit)~~ | ~~45min~~ |
+| ~~M03~~ done 2026-10-05 — executed per the audited header (24 items verified resolved). | ~~Broaden `error-propagation` 2-stmt branch: accept any `ExprStmt(CallExpr) + ReturnStmt` (not just log/print)~~ | ~~45min~~ |
+| ~~M04~~ done 2026-10-05 — executed per the audited header (24 items verified resolved). | ~~Make `error-wrapping` structural: drop `{Errorf,Wrap,...}` name allowlist, match any `CallExpr` referencing `err`~~ | ~~60min~~ |
+| ~~M05~~ done 2026-10-05 — executed per the audited header (24 items verified resolved). | ~~Add bool-ok assign+guard pattern (`X, ok := helper(); if !ok { return }`)~~ | ~~45min~~ |
+| ~~M07~~ done 2026-10-05 — executed per the audited header (24 items verified resolved). | ~~Fix `IncrementalParser` to thread `typeInfos` (mirror `job.Parse`'s `LookupPreloaded`)~~ | ~~90min~~ |
+| ~~M08~~ done 2026-10-05 — executed per the audited header (24 items verified resolved). | ~~Property 4: parameterizability checker (differing-critical-literal detection)~~ | ~~60min~~ |
+| ~~M12~~ done 2026-10-05 — executed per the audited header (24 items verified resolved). | ~~Wire property engine into `evaluateActionabilityWithDisabled` as a pre-filter layer~~ | ~~60min~~ |
+| ~~M13~~ done 2026-10-05 — executed per the audited header (24 items verified resolved). | ~~Confidence scoring: replace binary `Actionable`/`NonActionable` with tiered output (actionable / low-confidence / non-actionable)~~ | ~~90min~~ |
 
 **Subtotal: 495min.**
 
 ### The other 20% (to reach 100%)
 
 **Validation, documentation, deprecation, and vision completion:**
+<!-- check-rows:ledger -->
 
 | #   | Task                                                                             | Effort |
 | --- | -------------------------------------------------------------------------------- | ------ |
-| M14 | Run regression corpus against new engine, measure FP/FN delta                    | 45min  |
-| M15 | Real-world validation: art-dupl self-host + 1-2 OSS Go projects                  | 90min  |
-| M16 | ADR-0009: property-based classification model                                    | 45min  |
-| M17 | Performance benchmark: type-aware actionability overhead vs syntax-only          | 60min  |
-| M18 | Update `ACTIONABILITY_PATTERNS.md` + `AGENTS.md` with new architecture           | 45min  |
-| M19 | Accept-directive workflow documentation (the "operational zero FP" promise)      | 45min  |
-| M20 | Deprecation plan for denylist patterns (migration guide + timeline)              | 60min  |
-| M21 | Type-aware + incremental integration test suite                                  | 90min  |
-| M22 | Threshold recommendation engine (`--recommend-threshold` from property analysis) | 60min  |
-| M23 | SDK parity: expose extractability analysis via `pkg/artdupl`                     | 60min  |
-| M24 | v1.0 readiness review: the ZERO FP/FN promise audit                              | 90min  |
-| M25 | Templ-specific actionability heuristics (empty-state-vs-loop rendering idiom)    | 60min  |
+| ~~M14~~ done 2026-10-05 — executed per the audited header (24 items verified resolved). | ~~Run regression corpus against new engine, measure FP/FN delta~~ | ~~45min~~ |
+| ~~M15~~ done 2026-10-05 — executed per the audited header (24 items verified resolved). | ~~Real-world validation: art-dupl self-host + 1-2 OSS Go projects~~ | ~~90min~~ |
+| ~~M16~~ done 2026-10-05 — executed per the audited header (24 items verified resolved). | ~~ADR-0009: property-based classification model~~ | ~~45min~~ |
+| ~~M17~~ done 2026-10-05 — executed per the audited header (24 items verified resolved). | ~~Performance benchmark: type-aware actionability overhead vs syntax-only~~ | ~~60min~~ |
+| ~~M18~~ done 2026-10-05 — executed per the audited header (24 items verified resolved). | ~~Update `ACTIONABILITY_PATTERNS.md` + `AGENTS.md` with new architecture~~ | ~~45min~~ |
+| ~~M19~~ done 2026-10-05 — executed per the audited header (24 items verified resolved). | ~~Accept-directive workflow documentation (the "operational zero FP" promise)~~ | ~~45min~~ |
+| ~~M20~~ done 2026-10-05 — executed per the audited header (24 items verified resolved). | ~~Deprecation plan for denylist patterns (migration guide + timeline)~~ | ~~60min~~ |
+| ~~M21~~ done 2026-10-05 — executed per the audited header (24 items verified resolved). | ~~Type-aware + incremental integration test suite~~ | ~~90min~~ |
+| ~~M22~~ done 2026-10-05 — superseded by the shipped toolsdk threshold knob (D1, 2026-10-05). | ~~Threshold recommendation engine (`--recommend-threshold` from property analysis)~~ | ~~60min~~ |
+| ~~M23~~ done 2026-10-05 — executed per the audited header (24 items verified resolved). | ~~SDK parity: expose extractability analysis via `pkg/artdupl`~~ | ~~60min~~ |
+| ~~M24~~ parked — gated on the v1.0 release (no v1.0 exists; the readiness audit belongs to that cut). | ~~v1.0 readiness review: the ZERO FP/FN promise audit~~ | ~~90min~~ |
+| ~~M25~~ done 2026-10-05 — executed per the audited header (24 items verified resolved). | ~~Templ-specific actionability heuristics (empty-state-vs-loop rendering idiom)~~ | ~~60min~~ |
 
 **Subtotal: 795min.**
 
@@ -213,6 +220,7 @@ M01 → M06 → M09 → {M10, M11} → M12 → M13 → M14 → M24
 **Total critical-path effort:** ~645min (~11 hours). Everything off the critical path can be parallelized.
 
 ### Parallelization Opportunities
+<!-- check-rows:ledger -->
 
 | Track            | Tasks     | Can run in parallel with                        |
 | ---------------- | --------- | ----------------------------------------------- |
@@ -226,34 +234,35 @@ M01 → M06 → M09 → {M10, M11} → M12 → M13 → M14 → M24
 ## Step 2 — Medium-Granularity Task Table (30–100min each)
 
 Sorted by **impact → customer-value → effort (ascending)**. Phases show execution order; within phase, by dependency.
+<!-- check-rows:ledger -->
 
 | ID  | Phase | Task                                                           | Impact    | Effort | Deps          | Risk                          |
 | --- | ----- | -------------------------------------------------------------- | --------- | ------ | ------------- | ----------------------------- |
-| M01 | 0     | Build regression test corpus from DiscordSync feedback         | Critical  | 90min  | —             | Low                           |
-| M06 | 2     | Add type + enclosing-sig fields to CloneNode; update bridge    | Critical  | 90min  | M01           | Medium (touches core types)   |
-| M09 | 2     | Define ExtractabilityAnalysis domain model (4 properties)      | Critical  | 60min  | M01           | Low (additive)                |
-| M11 | 3     | Property 3: ROI + helper-dominance checker                     | Very High | 75min  | M06, M09      | Medium                        |
-| M10 | 3     | Property 2: control-flow extractability checker                | Very High | 75min  | M06, M09      | Medium                        |
-| M04 | 1     | Make error-wrapping structural (drop name allowlist)           | High      | 60min  | M01           | Low                           |
-| M02 | 1     | Harden raii-defer (bare cancel, FuncLit unwrap)                | High      | 45min  | M01           | Low                           |
-| M03 | 1     | Broaden error-propagation 2-stmt branch                        | High      | 45min  | M01           | Low                           |
-| M12 | 3     | Wire property engine into evaluator as pre-filter              | High      | 60min  | M10, M11, M08 | Medium                        |
-| M13 | 3     | Confidence scoring (tiered actionable/low-conf/non-actionable) | High      | 90min  | M12           | Medium (output format change) |
-| M05 | 1     | Bool-ok assign+guard pattern                                   | Medium    | 45min  | M01           | Low                           |
-| M07 | 2     | Fix IncrementalParser to thread typeInfos                      | Medium    | 90min  | M06           | Medium                        |
-| M08 | 3     | Property 4: parameterizability checker                         | Medium    | 60min  | M09           | Low                           |
-| M14 | 4     | Run regression corpus, measure FP/FN delta                     | High      | 45min  | M02–M05, M12  | Low                           |
-| M15 | 4     | Real-world validation (self-host + OSS projects)               | High      | 90min  | M14           | Low                           |
-| M16 | 4     | ADR-0009: property-based classification model                  | Medium    | 45min  | M14           | Low                           |
-| M17 | 4     | Performance benchmark: type-aware actionability overhead       | Medium    | 60min  | M14           | Low                           |
-| M18 | 4     | Update ACTIONABILITY_PATTERNS.md + AGENTS.md                   | Medium    | 45min  | M14           | Low                           |
-| M19 | 5     | Accept-directive workflow documentation                        | Medium    | 45min  | M18           | Low                           |
-| M20 | 5     | Deprecation plan for denylist patterns                         | Medium    | 60min  | M18           | Low                           |
-| M21 | 5     | Type-aware + incremental integration test suite                | Medium    | 90min  | M07           | Low                           |
-| M22 | 5     | Threshold recommendation engine                                | Low       | 60min  | M13           | Low                           |
-| M23 | 5     | SDK parity: expose extractability via pkg/artdupl              | Medium    | 60min  | M12           | Low                           |
-| M25 | 5     | Templ-specific actionability heuristics                        | Low       | 60min  | M01           | Low                           |
-| M24 | 5     | v1.0 readiness review: ZERO FP/FN promise audit                | Critical  | 90min  | M19–M23, M25  | Low                           |
+| ~~M01~~ done 2026-10-05 — executed per the audited header (24 items verified resolved). | ~~0~~ | ~~Build regression test corpus from DiscordSync feedback~~ | ~~Critical~~ | ~~90min~~ | ~~—~~ | ~~Low~~ |
+| ~~M06~~ done 2026-10-05 — executed per the audited header (24 items verified resolved). | ~~2~~ | ~~Add type + enclosing-sig fields to CloneNode; update bridge~~ | ~~Critical~~ | ~~90min~~ | ~~M01~~ | ~~Medium (touches core types)~~ |
+| ~~M09~~ done 2026-10-05 — executed per the audited header (24 items verified resolved). | ~~2~~ | ~~Define ExtractabilityAnalysis domain model (4 properties)~~ | ~~Critical~~ | ~~60min~~ | ~~M01~~ | ~~Low (additive)~~ |
+| ~~M11~~ done 2026-10-05 — executed per the audited header (24 items verified resolved). | ~~3~~ | ~~Property 3: ROI + helper-dominance checker~~ | ~~Very High~~ | ~~75min~~ | ~~M06, M09~~ | ~~Medium~~ |
+| ~~M10~~ done 2026-10-05 — executed per the audited header (24 items verified resolved). | ~~3~~ | ~~Property 2: control-flow extractability checker~~ | ~~Very High~~ | ~~75min~~ | ~~M06, M09~~ | ~~Medium~~ |
+| ~~M04~~ done 2026-10-05 — executed per the audited header (24 items verified resolved). | ~~1~~ | ~~Make error-wrapping structural (drop name allowlist)~~ | ~~High~~ | ~~60min~~ | ~~M01~~ | ~~Low~~ |
+| ~~M02~~ done 2026-10-05 — executed per the audited header (24 items verified resolved). | ~~1~~ | ~~Harden raii-defer (bare cancel, FuncLit unwrap)~~ | ~~High~~ | ~~45min~~ | ~~M01~~ | ~~Low~~ |
+| ~~M03~~ done 2026-10-05 — executed per the audited header (24 items verified resolved). | ~~1~~ | ~~Broaden error-propagation 2-stmt branch~~ | ~~High~~ | ~~45min~~ | ~~M01~~ | ~~Low~~ |
+| ~~M12~~ done 2026-10-05 — executed per the audited header (24 items verified resolved). | ~~3~~ | ~~Wire property engine into evaluator as pre-filter~~ | ~~High~~ | ~~60min~~ | ~~M10, M11, M08~~ | ~~Medium~~ |
+| ~~M13~~ done 2026-10-05 — executed per the audited header (24 items verified resolved). | ~~3~~ | ~~Confidence scoring (tiered actionable/low-conf/non-actionable)~~ | ~~High~~ | ~~90min~~ | ~~M12~~ | ~~Medium (output format change)~~ |
+| ~~M05~~ done 2026-10-05 — executed per the audited header (24 items verified resolved). | ~~1~~ | ~~Bool-ok assign+guard pattern~~ | ~~Medium~~ | ~~45min~~ | ~~M01~~ | ~~Low~~ |
+| ~~M07~~ done 2026-10-05 — executed per the audited header (24 items verified resolved). | ~~2~~ | ~~Fix IncrementalParser to thread typeInfos~~ | ~~Medium~~ | ~~90min~~ | ~~M06~~ | ~~Medium~~ |
+| ~~M08~~ done 2026-10-05 — executed per the audited header (24 items verified resolved). | ~~3~~ | ~~Property 4: parameterizability checker~~ | ~~Medium~~ | ~~60min~~ | ~~M09~~ | ~~Low~~ |
+| ~~M14~~ done 2026-10-05 — executed per the audited header (24 items verified resolved). | ~~4~~ | ~~Run regression corpus, measure FP/FN delta~~ | ~~High~~ | ~~45min~~ | ~~M02–M05, M12~~ | ~~Low~~ |
+| ~~M15~~ done 2026-10-05 — executed per the audited header (24 items verified resolved). | ~~4~~ | ~~Real-world validation (self-host + OSS projects)~~ | ~~High~~ | ~~90min~~ | ~~M14~~ | ~~Low~~ |
+| ~~M16~~ done 2026-10-05 — executed per the audited header (24 items verified resolved). | ~~4~~ | ~~ADR-0009: property-based classification model~~ | ~~Medium~~ | ~~45min~~ | ~~M14~~ | ~~Low~~ |
+| ~~M17~~ done 2026-10-05 — executed per the audited header (24 items verified resolved). | ~~4~~ | ~~Performance benchmark: type-aware actionability overhead~~ | ~~Medium~~ | ~~60min~~ | ~~M14~~ | ~~Low~~ |
+| ~~M18~~ done 2026-10-05 — executed per the audited header (24 items verified resolved). | ~~4~~ | ~~Update ACTIONABILITY_PATTERNS.md + AGENTS.md~~ | ~~Medium~~ | ~~45min~~ | ~~M14~~ | ~~Low~~ |
+| ~~M19~~ done 2026-10-05 — executed per the audited header (24 items verified resolved). | ~~5~~ | ~~Accept-directive workflow documentation~~ | ~~Medium~~ | ~~45min~~ | ~~M18~~ | ~~Low~~ |
+| ~~M20~~ done 2026-10-05 — executed per the audited header (24 items verified resolved). | ~~5~~ | ~~Deprecation plan for denylist patterns~~ | ~~Medium~~ | ~~60min~~ | ~~M18~~ | ~~Low~~ |
+| ~~M21~~ done 2026-10-05 — executed per the audited header (24 items verified resolved). | ~~5~~ | ~~Type-aware + incremental integration test suite~~ | ~~Medium~~ | ~~90min~~ | ~~M07~~ | ~~Low~~ |
+| ~~M22~~ done 2026-10-05 — superseded by the shipped toolsdk threshold knob (D1, 2026-10-05). | ~~5~~ | ~~Threshold recommendation engine~~ | ~~Low~~ | ~~60min~~ | ~~M13~~ | ~~Low~~ |
+| ~~M23~~ done 2026-10-05 — executed per the audited header (24 items verified resolved). | ~~5~~ | ~~SDK parity: expose extractability via pkg/artdupl~~ | ~~Medium~~ | ~~60min~~ | ~~M12~~ | ~~Low~~ |
+| ~~M25~~ done 2026-10-05 — executed per the audited header (24 items verified resolved). | ~~5~~ | ~~Templ-specific actionability heuristics~~ | ~~Low~~ | ~~60min~~ | ~~M01~~ | ~~Low~~ |
+| ~~M24~~ parked — gated on the v1.0 release (no v1.0 exists; the readiness audit belongs to that cut). | ~~5~~ | ~~v1.0 readiness review: ZERO FP/FN promise audit~~ | ~~Critical~~ | ~~90min~~ | ~~M19–M23, M25~~ | ~~Low~~ |
 
 **25 tasks. Total: ~1,680min (~28 hours).**
 
@@ -264,6 +273,7 @@ Sorted by **impact → customer-value → effort (ascending)**. Phases show exec
 Each medium task broken into atomic, independently-verifiable steps. Sorted by dependency order within phase.
 
 ### Phase 0: Baseline
+<!-- check-rows:ledger -->
 
 | ID   | Task                                                                                                | Est   | Verifies                                             |
 | ---- | --------------------------------------------------------------------------------------------------- | ----- | ---------------------------------------------------- |
@@ -279,6 +289,7 @@ Each medium task broken into atomic, independently-verifiable steps. Sorted by d
 ### Phase 1: Bridge Patterns (Stop Bleeding)
 
 #### M02: Harden raii-defer
+<!-- check-rows:ledger -->
 
 | ID   | Task                                                                                                      | Est   | Verifies                 |
 | ---- | --------------------------------------------------------------------------------------------------------- | ----- | ------------------------ |
@@ -290,6 +301,7 @@ Each medium task broken into atomic, independently-verifiable steps. Sorted by d
 | F014 | Run full actionability test suite                                                                         | 5min  | no regressions           |
 
 #### M03: Broaden error-propagation
+<!-- check-rows:ledger -->
 
 | ID   | Task                                                                                                  | Est   | Verifies                           |
 | ---- | ----------------------------------------------------------------------------------------------------- | ----- | ---------------------------------- |
@@ -300,6 +312,7 @@ Each medium task broken into atomic, independently-verifiable steps. Sorted by d
 | F019 | Run regression corpus test — confirm 12 HTTP groups now suppressed                                    | 5min  | FP count drops by 12               |
 
 #### M04: Structural error-wrapping
+<!-- check-rows:ledger -->
 
 | ID   | Task                                                                                                    | Est   | Verifies                  |
 | ---- | ------------------------------------------------------------------------------------------------------- | ----- | ------------------------- |
@@ -311,6 +324,7 @@ Each medium task broken into atomic, independently-verifiable steps. Sorted by d
 | F025 | Run regression corpus — confirm 27 queryError groups now suppressed                                     | 5min  | FP count drops by 27      |
 
 #### M05: Bool-ok guard pattern
+<!-- check-rows:ledger -->
 
 | ID   | Task                                                                                                                 | Est   | Verifies                 |
 | ---- | -------------------------------------------------------------------------------------------------------------------- | ----- | ------------------------ |
@@ -323,6 +337,7 @@ Each medium task broken into atomic, independently-verifiable steps. Sorted by d
 ### Phase 2: Foundation (Type Info Plumbing)
 
 #### M06: CloneNode type + enclosing-sig fields
+<!-- check-rows:ledger -->
 
 | ID   | Task                                                                                                                                        | Est   | Verifies                                                                            |
 | ---- | ------------------------------------------------------------------------------------------------------------------------------------------- | ----- | ----------------------------------------------------------------------------------- |
@@ -340,6 +355,7 @@ Each medium task broken into atomic, independently-verifiable steps. Sorted by d
 | F042 | Run full test suite — confirm no regressions from new fields                                                                                | 5min  | all pass                                                                            |
 
 #### M07: IncrementalParser typeInfos
+<!-- check-rows:ledger -->
 
 | ID   | Task                                                                                                   | Est   | Verifies                           |
 | ---- | ------------------------------------------------------------------------------------------------------ | ----- | ---------------------------------- |
@@ -353,6 +369,7 @@ Each medium task broken into atomic, independently-verifiable steps. Sorted by d
 | F050 | Run `-race` incremental parallel tests                                                                 | 5min  | no races                           |
 
 #### M09: ExtractabilityAnalysis domain model
+<!-- check-rows:ledger -->
 
 | ID   | Task                                                                                                                                                                                     | Est   | Verifies                  |
 | ---- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----- | ------------------------- |
@@ -366,6 +383,7 @@ Each medium task broken into atomic, independently-verifiable steps. Sorted by d
 ### Phase 3: Property Engine
 
 #### M10: Property 2 — Control-flow extractability
+<!-- check-rows:ledger -->
 
 | ID   | Task                                                                                                                                  | Est   | Verifies                          |
 | ---- | ------------------------------------------------------------------------------------------------------------------------------------- | ----- | --------------------------------- |
@@ -378,6 +396,7 @@ Each medium task broken into atomic, independently-verifiable steps. Sorted by d
 | F063 | Run regression corpus — confirm 12 HTTP groups now classified `ControlFlowExtractable=false`                                          | 5min  | 12 groups killed                  |
 
 #### M11: Property 3 — ROI + helper-dominance
+<!-- check-rows:ledger -->
 
 | ID   | Task                                                                                                                                           | Est   | Verifies                       |
 | ---- | ---------------------------------------------------------------------------------------------------------------------------------------------- | ----- | ------------------------------ |
@@ -391,6 +410,7 @@ Each medium task broken into atomic, independently-verifiable steps. Sorted by d
 | F071 | Run regression corpus — confirm 27 queryError + 12 defer + 5 helper groups killed                                                              | 5min  | 44 groups killed               |
 
 #### M08: Property 4 — Parameterizability
+<!-- check-rows:ledger -->
 
 | ID   | Task                                                                                                                                                                                                                                       | Est   | Verifies                               |
 | ---- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----- | -------------------------------------- |
@@ -402,6 +422,7 @@ Each medium task broken into atomic, independently-verifiable steps. Sorted by d
 | F077 | Run regression corpus — confirm 3 bool-to-string + 1 fmt group handled correctly                                                                                                                                                           | 5min  | 4 groups handled                       |
 
 #### M12: Wire engine into evaluator
+<!-- check-rows:ledger -->
 
 | ID   | Task                                                                                                                                                         | Est   | Verifies                              |
 | ---- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----- | ------------------------------------- |
@@ -413,6 +434,7 @@ Each medium task broken into atomic, independently-verifiable steps. Sorted by d
 | F083 | Write `TestExtractabilityIntegration` — full pipeline test with type-aware on DiscordSync fixtures                                                           | 12min | FP rate < 10%                         |
 
 #### M13: Confidence scoring
+<!-- check-rows:ledger -->
 
 | ID   | Task                                                                                       | Est   | Verifies                            |
 | ---- | ------------------------------------------------------------------------------------------ | ----- | ----------------------------------- |
@@ -429,6 +451,7 @@ Each medium task broken into atomic, independently-verifiable steps. Sorted by d
 ### Phase 4: Quality & Validation
 
 #### M14: Regression delta
+<!-- check-rows:ledger -->
 
 | ID   | Task                                                                             | Est   | Verifies                     |
 | ---- | -------------------------------------------------------------------------------- | ----- | ---------------------------- |
@@ -437,6 +460,7 @@ Each medium task broken into atomic, independently-verifiable steps. Sorted by d
 | F095 | If any true-positive is now suppressed (FN regression): investigate, fix, re-run | 12min | 0 FN                         |
 
 #### M15: Real-world validation
+<!-- check-rows:ledger -->
 
 | ID   | Task                                                                        | Est   | Verifies                  |
 | ---- | --------------------------------------------------------------------------- | ----- | ------------------------- |
@@ -447,6 +471,7 @@ Each medium task broken into atomic, independently-verifiable steps. Sorted by d
 | F100 | If new FP categories found: add regression fixtures + property improvements | 12min | fixtures added            |
 
 #### M16: ADR-0009
+<!-- check-rows:ledger -->
 
 | ID   | Task                                                                                         | Est   | Verifies                  |
 | ---- | -------------------------------------------------------------------------------------------- | ----- | ------------------------- |
@@ -456,6 +481,7 @@ Each medium task broken into atomic, independently-verifiable steps. Sorted by d
 | F104 | Document consequences: denylist deprecation path, type-aware requirement, performance impact | 10min | consequences complete     |
 
 #### M17: Performance benchmark
+<!-- check-rows:ledger -->
 
 | ID   | Task                                                                                            | Est   | Verifies           |
 | ---- | ----------------------------------------------------------------------------------------------- | ----- | ------------------ |
@@ -465,6 +491,7 @@ Each medium task broken into atomic, independently-verifiable steps. Sorted by d
 | F108 | If overhead > 20%: optimize hot paths (cache type lookups, early-exit in property checks)       | 12min | overhead < 20%     |
 
 #### M18: Docs update
+<!-- check-rows:ledger -->
 
 | ID   | Task                                                                                                       | Est   | Verifies         |
 | ---- | ---------------------------------------------------------------------------------------------------------- | ----- | ---------------- |
@@ -477,6 +504,7 @@ Each medium task broken into atomic, independently-verifiable steps. Sorted by d
 ### Phase 5: Vision Completion
 
 #### M19: Accept-directive workflow documentation
+<!-- check-rows:ledger -->
 
 | ID   | Task                                                                                          | Est   | Verifies            |
 | ---- | --------------------------------------------------------------------------------------------- | ----- | ------------------- |
@@ -486,6 +514,7 @@ Each medium task broken into atomic, independently-verifiable steps. Sorted by d
 | F117 | Update `HOW_TO_USE.md` with link to workflow guide                                            | 5min  | linked              |
 
 #### M20: Deprecation plan
+<!-- check-rows:ledger -->
 
 | ID   | Task                                                                       | Est   | Verifies       |
 | ---- | -------------------------------------------------------------------------- | ----- | -------------- |
@@ -495,6 +524,7 @@ Each medium task broken into atomic, independently-verifiable steps. Sorted by d
 | F121 | Plan removal timeline (e.g., v1.1 removes deprecated patterns)             | 5min  | timeline set   |
 
 #### M21: Type-aware + incremental integration tests
+<!-- check-rows:ledger -->
 
 | ID   | Task                                                                                                           | Est   | Verifies    |
 | ---- | -------------------------------------------------------------------------------------------------------------- | ----- | ----------- |
@@ -504,6 +534,7 @@ Each medium task broken into atomic, independently-verifiable steps. Sorted by d
 | F125 | Write `TestIncrementalTypeAware_Invalidation` — file changes, cache invalidates, type re-checked               | 10min | test passes |
 
 #### M22: Threshold recommendation engine
+<!-- check-rows:ledger -->
 
 | ID   | Task                                                                                                     | Est   | Verifies               |
 | ---- | -------------------------------------------------------------------------------------------------------- | ----- | ---------------------- |
@@ -513,6 +544,7 @@ Each medium task broken into atomic, independently-verifiable steps. Sorted by d
 | F129 | Write `TestRecommendThreshold` — table-driven by codebase size                                           | 10min | test passes            |
 
 #### M23: SDK parity
+<!-- check-rows:ledger -->
 
 | ID   | Task                                                                                | Est   | Verifies      |
 | ---- | ----------------------------------------------------------------------------------- | ----- | ------------- |
@@ -522,6 +554,7 @@ Each medium task broken into atomic, independently-verifiable steps. Sorted by d
 | F133 | Write SDK integration test: detect with TypeAware, assert extractability on results | 12min | test passes   |
 
 #### M25: Templ-specific heuristics
+<!-- check-rows:ledger -->
 
 | ID   | Task                                                                            | Est   | Verifies           |
 | ---- | ------------------------------------------------------------------------------- | ----- | ------------------ |
@@ -531,6 +564,7 @@ Each medium task broken into atomic, independently-verifiable steps. Sorted by d
 | F137 | Run on `.templ` fixtures — confirm 4 templ groups suppressed                    | 5min  | 4 groups killed    |
 
 #### M24: v1.0 readiness audit
+<!-- check-rows:ledger -->
 
 | ID   | Task                                                                   | Est   | Verifies              |
 | ---- | ---------------------------------------------------------------------- | ----- | --------------------- |
@@ -546,6 +580,7 @@ Each medium task broken into atomic, independently-verifiable steps. Sorted by d
 ## Risk Analysis
 
 ### Verschlimmbesserung Risks (What Could Make Things Worse)
+<!-- check-rows:ledger -->
 
 | Risk                                                                | Mitigation                                                                                                                                                                                             |
 | ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -566,6 +601,7 @@ Each medium task broken into atomic, independently-verifiable steps. Sorted by d
 ---
 
 ## Success Criteria
+<!-- check-rows:ledger -->
 
 | Criterion                             | Measurement                       | Target                                       |
 | ------------------------------------- | --------------------------------- | -------------------------------------------- |

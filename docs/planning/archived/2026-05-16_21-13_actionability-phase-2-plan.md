@@ -13,9 +13,9 @@
 
 | Tier    | % Work  | % Result | What                                                               |
 | ------- | ------- | -------- | ------------------------------------------------------------------ |
-| **1%**  | 3 fixes | **51%**  | Populate Actionability field + fix text notation + fix gci         |
-| **4%**  | 3 fixes | **64%**  | Real error propagation + real defer detection + JSON serialization |
-| **20%** | 8 tasks | **80%**  | HTML badges + BDD tests + priority adjustment + docs               |
+| ~~**1%**~~ done 2026-10-05 — the audited resolution above: JSON field shipped (printer/json.go:53), text notation + gci fixed; phases 1-2 shipped. | ~~3 fixes~~ | ~~**51%**~~ | ~~Populate Actionability field + fix text notation + fix gci~~ |
+| ~~**4%**~~ done 2026-10-05 — shipped: isPureErrorPropagation/isPureDeferPattern denylist patterns (docs/ACTIONABILITY_PATTERNS.md table). | ~~3 fixes~~ | ~~**64%**~~ | ~~Real error propagation + real defer detection + JSON serialization~~ |
+| ~~**20%**~~ done 2026-10-05 / 2 residuals won't: BDD tests + priority adjustment shipped; HTML badges (3.2) + plumbing annotation (3.3) never implemented — superseded by the 42-pattern classification surface (--explain, --show-suppressed, non_actionable_pattern field); plumbing stays deliberately machine-minimal. | ~~8 tasks~~ | ~~**80%**~~ | ~~HTML badges + BDD tests + priority adjustment + docs~~ |
 
 ---
 

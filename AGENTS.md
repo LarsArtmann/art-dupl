@@ -1,6 +1,6 @@
 # AGENTS.md - art-dupl
 
-**Last Updated:** 2026-11-15 (recurrence #17: root cause CONFIRMED = BuildFlow `go-auto-upgrade`; #16 mechanism note corrected; tree RED pending Q1 skip decision)
+**Last Updated:** 2026-11-15 (recurrence #17 root cause CONFIRMED = BuildFlow `go-auto-upgrade`; #16 mechanism note corrected; #17's 6 files RESTORED 2026-11-15 ~08:45 post-pipeline — jsonv2gate + full suite green; the Q1 skip decision is still OPEN and every future `buildflow --fix` re-poisons)
 
 Go tool for finding code clones via suffix tree + hash-based detection on ASTs. Multi-method, multi-format output.
 
@@ -366,7 +366,9 @@ only a `nix build`/`nix flake check` surfaces it.
   (`rewrote: config/config_migrate.go, internal/jsonutil/jsonutil.go, pkg/artdupl/types.go + 1 more`), and its 79
   residual findings are the invariant HOLDING (Duration-wire and go-finding-boundary files correctly refuse
   migration). Every future `buildflow --fix` run re-poisons the tree; restore-only remediation is infinite churn.
-  Structural fix PENDING owner Q1 (report §g): add `go-auto-upgrade` to `.buildflow.yml` `skip_steps` (exact
+  The #17 state itself was restored 2026-11-15 ~08:45 (per-file sources `91419533`/`3cf34a23`, diff-verified pure
+  v2-import swaps, jsonv2gate + 34-pkg suite green) once the live pipeline exited — restore-only remains churn until
+  Q1 lands. Structural fix PENDING owner Q1 (report §g): add `go-auto-upgrade` to `.buildflow.yml` `skip_steps` (exact
   precedent: the `golangci-lint-auto-configure` skip) and/or negotiate an upstream exclusion mechanism, plus
   root-cause the pre-commit hook bypass (`2a9291ba` is the SECOND commit to pass through the tracked hook).
   Session report: `docs/status/2026-11-15_07-39_jsonv2-recurrence-16-root-caused-buildflow-go-auto-upgrade.md`.

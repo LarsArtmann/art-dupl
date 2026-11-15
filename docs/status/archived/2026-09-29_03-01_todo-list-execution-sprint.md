@@ -303,7 +303,7 @@ theirs; their §4 sequence is the path when you give the go.
 1. Give or withhold the `v0.8.0 = (a)` decision-sheet go.
 2. On go: flake.nix `version = "0.8.0"` bump → release commit → `git tag -s v0.8.0` → `git push --follow-tags origin fork`.
 3. `gh release create v0.8.0 --notes-file <[0.8.0] section verbatim>` (never `--notes-from-tag`).
-4. Verify `./result/bin/art-dupl version` prints 0.8.0 post-build.
+~~4. Verify `./result/bin/art-dupl version` prints 0.8.0 post-build.~~ superseded — v0.8.0 was never built or tagged; v0.9.0 shipped 2026-10-06 and the version command reports via buildinfo fallback (AGENTS.md version-embedding entry).
 5. Verify proxy/pkg.go.dev propagation (`go get github.com/LarsArtmann/art-dupl@v0.8.0` in a scratch module).
 6. Bump BuildFlow's provider pin to v0.8.0 + flake comment version note.
 7. Re-run BuildFlow's E2E against the v0.8.0 provider (gitignore-honoring crawl now visible in pipeline findings).

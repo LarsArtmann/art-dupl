@@ -14,6 +14,7 @@
 > Verdict: The report found **3 groups / 6 occurrences / 18 tokens**, but none represented harmful duplication. All three were minimum Go idioms or intentionally module-local API structure. The codebase has zero findings at `-t 4`; at `-t 3`, literal zero would require hiding lock scope, wrapping `strings.Builder`, coupling independent modules, or gaming source shape. The report should classify and suppress or down-rank these patterns instead of recommending “Review and extract common logic.”
 
 ## Results
+<!-- check-rows:ledger -->
 
 | Group                          | Locations                                                  | Report category   | Actual category                  | Decision |
 | ------------------------------ | ---------------------------------------------------------- | ----------------- | -------------------------------- | -------- |
@@ -242,6 +243,7 @@ The tool and companion workflow should explicitly distinguish:
 - **Zero actionable duplication**, where every remaining group is classified and defensibly accepted.
 
 For this session:
+<!-- check-rows:ledger -->
 
 | Threshold | Groups | Assessment                               |
 | --------- | -----: | ---------------------------------------- |

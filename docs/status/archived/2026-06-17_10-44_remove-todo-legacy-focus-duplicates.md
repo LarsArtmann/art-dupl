@@ -128,7 +128,7 @@ None. All modified packages compile. Unit tests pass. The removed code was clean
 ### High Impact / Low Effort (Quick Wins)
 
 1. Fix `text.go` — remove dead `findingCount` field and footer logic
-2. Verify `go.mod` / `go.sum` bump is intentional; revert if not
+~~2. Verify `go.mod` / `go.sum` bump is intentional; revert if not~~ done — superseded by the settled toolchain policy: the go 1.27.1 patch pin is deliberate (AGENTS.md toolchain entry, respect_patch_floor) and gogenfilter v3.6.1 is a tagged dep; no unintended bump ever landed.
 3. Remove `domain/finding.go` references from any remaining docs/status files
 4. Update `FEATURES.md` — remove TODO/FIXME detection and Legacy pattern detection rows
 5. Update `AGENTS.md` — remove Finding pipeline references

@@ -61,6 +61,8 @@
 
 ## v0.8.0 — go / no-go for the release
 
+**OUTCOME (2026-11-15):** (b)-Hold happened de facto — v0.8.0 was never tagged; **v0.9.0 shipped 2026-10-06** subsuming the `[0.8.0]` section (CHANGELOG `[0.9.0] - 2026-10-06`). This question is CLOSED; the M05 park document is archived (planning/archived/) as the standing release recipe. g1/g2/g3/binfmt remain OPEN owner questions (see TODO_LIST).
+
 **The facts:** the B1–B6 hardening + this week's additions are finished, curated under `## [0.8.0] - 2026-09-29` in CHANGELOG.md (link defs already updated), with ~15 user-facing entries incl. two real bug fixes (jsonv2 Duration crash class, Go 1.27 selector-key false positives). RELEASE.md exists; the remaining prep (rehearsal, tag draft) is this pass's M05 and stops one command short of execution.
 
 **Options**
@@ -76,6 +78,7 @@
 
 ## Gated-item map — what unlocks per answer
 
+<!-- check-rows:ledger -->
 | Your answer       | Items unlocked                                                             |
 | ----------------- | -------------------------------------------------------------------------- |
 | g1 = (a) fund     | M17 legacy retrofit waves (~3 sessions; scheduled after v2 pass)           |

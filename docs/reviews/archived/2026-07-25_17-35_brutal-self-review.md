@@ -65,6 +65,7 @@ One **small** one, now closed: AGENTS.md described the accept-directive semantic
 
 ## What I executed this session (verified)
 
+<!-- check-rows:ledger -->
 | Step | Change                                                         | Test after?           | Result   |
 | ---- | -------------------------------------------------------------- | --------------------- | -------- |
 | 1    | Scanner: `HasPrefix` → `Index` (recognize inline directives)   | ✅ `TestAcceptedSet*` | PASS     |

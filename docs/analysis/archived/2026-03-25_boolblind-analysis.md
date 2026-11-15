@@ -9,6 +9,7 @@
 ---
 
 ## Findings Summary
+<!-- check-rows:ledger -->
 
 | Severity    | Count | Struct        | Location            | Bool Fields |
 | ----------- | ----- | ------------- | ------------------- | ----------- |
@@ -72,6 +73,7 @@
 ## Recommendation: **DO NOT IMPLEMENT**
 
 Converting these bool fields to bitflags would:
+<!-- check-rows:ledger -->
 
 | Aspect               | Impact                   | Assessment   |
 | -------------------- | ------------------------ | ------------ |

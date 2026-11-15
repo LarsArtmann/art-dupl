@@ -2,11 +2,11 @@
 
 > **Live remainder:** archived 2026-11-14 (cadence wave); every item in this report is struck or routed, and open work is owned by TODO_LIST.md and ROADMAP.md.
 
-**Cross-links (added 2026-09-29):** plan status flipped to EXECUTED with the 50-item verdict accounting in `docs/planning/2026-09-28_21-57_SUPERB-docs-health-completion-plan.md` §10; second leg: `docs/status/2026-09-29_00-54_superb-complete-m12-m20-jsonutil-catch.md`; successor: `docs/planning/2026-09-29_01-10_SUPERB-v2-harden-harness-unblock-ship.md`.
+**Cross-links (added 2026-09-29):** plan status flipped to EXECUTED with the 50-item verdict accounting in `docs/planning/archived/2026-09-28_21-57_SUPERB-docs-health-completion-plan.md` (moved 2026-11-15) §10; second leg: `docs/status/2026-09-29_00-54_superb-complete-m12-m20-jsonutil-catch.md`; successor: `docs/planning/2026-09-29_01-10_SUPERB-v2-harden-harness-unblock-ship.md`.
 
 **Date:** 2026-09-28 23:50 CEST
 **Branch:** `fork` @ `03d5370f` (21 commits since the SUPERB plan `6e573c67`, 12 with real messages; the daemon buried 9 scopes in heuristic commits)
-**Executing:** `docs/planning/2026-09-28_21-57_SUPERB-docs-health-completion-plan.md` — ~~12 of 21 M-tasks complete, 1 in flight, 8 remaining (1 user-gated)~~ all 21 M-tasks complete; M12-M20 closed 2026-09-29 (docs/status/2026-09-29_00-54)..
+**Executing:** `docs/planning/archived/2026-09-28_21-57_SUPERB-docs-health-completion-plan.md` (moved 2026-11-15) — ~~12 of 21 M-tasks complete, 1 in flight, 8 remaining (1 user-gated)~~ all 21 M-tasks complete; M12-M20 closed 2026-09-29 (docs/status/2026-09-29_00-54)..
 **Session verdict:** 515 inline item-strikes landed across 25 historical reports with per-item evidence; three standing gates now exist (docs count gate, SDK threshold drift guard, archive regime docs); one standing guard caught ME once — and that is the best thing that happened all session.
 
 ---
@@ -85,7 +85,7 @@
 13. ~~June batch annotation (~30 files) with the fixed spot-check protocol (e4).~~ done — annotated in the 2026-11 docs-health pass (this batch)
 14. ~~docs/api, docs/quality, docs/fuzz, docs/calibration, docs/baselines, docs/bug-reports: KEEP/ARCHIVE/BANNER verdicts + execute.~~ done — KEEP verdicts recorded in subdir READMEs; boolblind settled
 15. ~~Architecture-understanding d2/svg/html assets: staleness banners.~~ done — staleness notice in `docs/architecture-understanding/README.md`
-16. ~~`docs/analysis/2026-03-25_boolblind-analysis.md`: settled or archive.~~ done — settled — header verdict in `docs/analysis/2026-03-25_boolblind-analysis.md`
+16. ~~`docs/analysis/2026-03-25_boolblind-analysis.md`: settled or archive.~~ done — settled — header verdict in `docs/analysis/archived/2026-03-25_boolblind-analysis.md` (moved 2026-11-15)
 17. M17 legacy-archive retrofit wave 1 — **GATED on your g1 answer** (the archived README documents the policy; waves of ~40 files each if funded). **→ policy recorded in `docs/status/archived/README.md`; retrofit remains parked**
 
 **Consumer surfaces (M18):**
