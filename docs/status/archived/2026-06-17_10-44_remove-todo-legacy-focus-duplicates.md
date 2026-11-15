@@ -128,10 +128,10 @@ None. All modified packages compile. Unit tests pass. The removed code was clean
 ### High Impact / Low Effort (Quick Wins)
 
 1. Fix `text.go` — remove dead `findingCount` field and footer logic
-~~2. Verify `go.mod` / `go.sum` bump is intentional; revert if not~~ done — superseded by the settled toolchain policy: the go 1.27.1 patch pin is deliberate (AGENTS.md toolchain entry, respect_patch_floor) and gogenfilter v3.6.1 is a tagged dep; no unintended bump ever landed.
-3. Remove `domain/finding.go` references from any remaining docs/status files
-4. Update `FEATURES.md` — remove TODO/FIXME detection and Legacy pattern detection rows
-5. Update `AGENTS.md` — remove Finding pipeline references
+   ~~2. Verify `go.mod` / `go.sum` bump is intentional; revert if not~~ done — superseded by the settled toolchain policy: the go 1.27.1 patch pin is deliberate (AGENTS.md toolchain entry, respect_patch_floor) and gogenfilter v3.6.1 is a tagged dep; no unintended bump ever landed.
+2. Remove `domain/finding.go` references from any remaining docs/status files
+3. Update `FEATURES.md` — remove TODO/FIXME detection and Legacy pattern detection rows
+4. Update `AGENTS.md` — remove Finding pipeline references
 
 ### High Impact / Medium Effort
 
@@ -154,8 +154,8 @@ None. All modified packages compile. Unit tests pass. The removed code was clean
 16. Audit `printer/html.go` for remaining `Finding` references (1484 lines, noted in AGENTS.md as overweight)
 17. Remove `TestDetectionMethods` hardcoded count assertion (currently asserts `len(methods) == 2`) — fragile
 18. Add `//go:build` integration test tags for slower BDD tests
-~~19. Standardize test helper naming (`createTestNode` vs `setupXxx` vs `mustXxx`)~~ not-do — helper naming stays heterogeneous by design
-20. Run `go vet ./...` and fix any shadow or unreachable warnings
+    ~~19. Standardize test helper naming (`createTestNode` vs `setupXxx` vs `mustXxx`)~~ not-do — helper naming stays heterogeneous by design
+19. Run `go vet ./...` and fix any shadow or unreachable warnings
 
 ### Medium Impact / Medium Effort
 

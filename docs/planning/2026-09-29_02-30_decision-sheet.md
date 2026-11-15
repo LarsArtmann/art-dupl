@@ -79,6 +79,7 @@
 ## Gated-item map — what unlocks per answer
 
 <!-- check-rows:ledger -->
+
 | Your answer       | Items unlocked                                                             |
 | ----------------- | -------------------------------------------------------------------------- |
 | g1 = (a) fund     | M17 legacy retrofit waves (~3 sessions; scheduled after v2 pass)           |

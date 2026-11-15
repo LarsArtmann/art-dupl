@@ -145,7 +145,7 @@ questions of the 20:35 report had arrived; un-gated work proceeded autonomously.
 4. Root-cause / re-verify the one-off BDD red (`go test ./bdd/ -run TestBDD -count=3`).
 5. Run golangci-lint on new/changed files; fix findings.
 6. T17 M67: integration spikes — Template, GroupFindings/Filter, ModuleFanOut/NotRequires, CLI
-   consumer (`cmd/go-finding`), `Finding.Edits` (v1.14.0 new).
+consumer (`cmd/go-finding`), `Finding.Edits` (v1.14.0 new).
 7. T11 M50: read go-finding `analysis/` + `registry.go`; notes for T14 re-score.
 8. T11 M51: read `pipeline/` public surface (EditListProvider is new in v1.14.0).
 ~~9. T11 M52: (per plan) remaining inventory item.~~ superseded — the superb plan closed with the 2026-09-29 superb-complete session
@@ -175,7 +175,7 @@ questions of the 20:35 report had arrived; un-gated work proceeded autonomously.
 33. T18 M70: BuildFlow registration test update if options surface there.
 34. T18 M70 (optional): BuildFlow `emit-suppressed-accepted` consumer decision wired.
 35. T07b M38: upstream prototype — `DetectResult{Findings, FilesScanned, SkippedModules}` behind
-    `DetectorV2` (or ctx collector) in `~/projects/go-finding` + tests.
+`DetectorV2` (or ctx collector) in `~/projects/go-finding` + tests.
 36. T07b M38: upstream PR (jj-fork-pr-workflow + verify-before-filing + github-voice skills).
 37. T07b M39: after tag — art-dupl consumes: provider populates counts + tests.
 38. Answer §g Q2 with BuildFlow telemetry once live (emit-suppressed-accepted default).

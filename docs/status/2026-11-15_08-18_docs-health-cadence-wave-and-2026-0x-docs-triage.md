@@ -53,6 +53,7 @@ Everything in the 07:39 report's §f P0–P2 that this docs pass didn't own: the
 ## f) Up to 50 Things To Get Done Next (prioritized)
 
 **P0 — this session's direct residues**
+
 1. Answer Q1 (go-auto-upgrade disposition: skip / upstream exclusion / migrate) — blocks #2 and the whole restore-churn end.
 2. When no pipeline is live: restore the 6 poisoned files (per-file sources `91419533` / `3cf34a23`), fresh `-count=1` jsonv2gate + suite, land the restore.
 3. Execute the 11 ANNOTATE verdicts from the planning-docs triage (per-item strikes with the subagent's file:line evidence), then archive them (`docs/planning/archived/`, `docs/reviews/archived/` — the reviews dir already has one).
@@ -122,4 +123,4 @@ Everything in the 07:39 report's §f P0–P2 that this docs pass didn't own: the
 
 ---
 
-*Session artifacts: 2 script fixes, 123 item verdicts across 13 files (4 newest + 15 ancient + 104 task/record-table rows), 16 ledger markers, 12 archived reports + 1 manifest + 1 README recount, 4 living docs edited + 1 verified, AGENTS.md #16/#17 ledger work. Gates at close: docs-gates 5/5 PASS, count gates 5/5 PASS, jsonv2gate RED (poisoned tree, restore deferred by design). Authoritative evidence for the restore procedure: `docs/status/2026-11-15_07-39_jsonv2-recurrence-16-root-caused-buildflow-go-auto-upgrade.md` §a1 + AGENTS.md #16/#17.*
+_Session artifacts: 2 script fixes, 123 item verdicts across 13 files (4 newest + 15 ancient + 104 task/record-table rows), 16 ledger markers, 12 archived reports + 1 manifest + 1 README recount, 4 living docs edited + 1 verified, AGENTS.md #16/#17 ledger work. Gates at close: docs-gates 5/5 PASS, count gates 5/5 PASS, jsonv2gate RED (poisoned tree, restore deferred by design). Authoritative evidence for the restore procedure: `docs/status/2026-11-15_07-39_jsonv2-recurrence-16-root-caused-buildflow-go-auto-upgrade.md` §a1 + AGENTS.md #16/#17._

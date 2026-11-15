@@ -111,6 +111,7 @@ Each clone group carries a stable `hash` field. Across runs, I could track which
 ### 5. Threshold sweep confirmed excellent signal-to-noise at the default
 
 After reaching zero at `-t 50`, I swept down to verify the fix was robust:
+
 <!-- check-rows:ledger -->
 
 | Threshold | Clone groups | Notes                                                  |
@@ -294,6 +295,7 @@ Reiterating the prior-feedback request, but with a scope observation: **at `-t 1
 If the implementer is choosing where to invest, the directive matters more for `-t 5` CI gating than for interactive `-t 15+` sessions. The interactive path already converges without it.
 
 ## Metrics
+
 <!-- check-rows:ledger -->
 
 | Metric                                   | Value                              |
@@ -320,19 +322,22 @@ If the implementer is choosing where to invest, the directive matters more for `
 | Time to triage 15 initial groups         | ~2 minutes (with `--json + jq`)    |
 
 ## Comparison to Prior Feedback
+
 <!-- check-rows:ledger -->
 
-| Issue raised here                      | Previously raised?                 | Status                                    |
-| -------------------------------------- | ---------------------------------- | ----------------------------------------- |
-| Zero-clone convergence achievable      | No                                 | **New — first observed zero result**      |
-| JSON output mode exists and works well | Yes (2026-07-19, "no JSON output") | **Resolved — `--json` is now available**  |
-| `unknown` category uninformative       | Yes (2026-07-19)                   | Open — routed to ROADMAP 2026-11-15 (AST-type fallback category, not built)                                      |
-| `--html` TTY auto-detection missing    | Yes (2026-07-19)                   | Shipped 2026-10-24 — `resolveHTMLOutput` (TTY auto-writes `art-dupl-report.html`; piped emits stdout; AGENTS.md HTML-output-resolution entry)                                      |
-| Accept/suppress directive needed       | Yes (2× 2026-07-19)                | Open — but only blocks `-t 5` workflows   |
-| Ginkgo `DescribeTable` variadic gotcha | No                                 | **Open — owner (P2 #25), routed to TODO_LIST 2026-11-15 — skill-doc fix, not tool fix**     |
+| Issue raised here                      | Previously raised?                 | Status                                                                                                                                        |
+| -------------------------------------- | ---------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| Zero-clone convergence achievable      | No                                 | **New — first observed zero result**                                                                                                          |
+| JSON output mode exists and works well | Yes (2026-07-19, "no JSON output") | **Resolved — `--json` is now available**                                                                                                      |
+| `unknown` category uninformative       | Yes (2026-07-19)                   | Open — routed to ROADMAP 2026-11-15 (AST-type fallback category, not built)                                                                   |
+| `--html` TTY auto-detection missing    | Yes (2026-07-19)                   | Shipped 2026-10-24 — `resolveHTMLOutput` (TTY auto-writes `art-dupl-report.html`; piped emits stdout; AGENTS.md HTML-output-resolution entry) |
+| Accept/suppress directive needed       | Yes (2× 2026-07-19)                | Open — but only blocks `-t 5` workflows                                                                                                       |
+| Ginkgo `DescribeTable` variadic gotcha | No                                 | **Open — owner (P2 #25), routed to TODO_LIST 2026-11-15 — skill-doc fix, not tool fix**                                                       |
+
 <!-- check-rows:ledger -->
-| Production semantic clones real        | No                                 | **New — validates Type-2/3 detection**    |
-| Threshold sweep holding zero           | No                                 | **New — confirms default is well-chosen** |
+
+| Production semantic clones real | No | **New — validates Type-2/3 detection** |
+| Threshold sweep holding zero | No | **New — confirms default is well-chosen** |
 
 ## Conclusion
 

@@ -182,12 +182,12 @@ theirs; their §4 sequence is the path when you give the go.
    settings; red CI sat unnoticed for 4 days earlier in September.
 7. **Windows `TestExitCodes_Process` root-cause (#4)** — needs a windows runner
    experiment; logic covered by `TestExitCodeForError` meanwhile.
-~~8. **go-paperless tag + release (#20)** — other repo, go-release flow.~~ done — moot — go-paperless is an external repo; the decision stays with its owner
-9. **BuildFlow upstream disposition fixes** (go-version-auto-configure ↔
+   ~~8. **go-paperless tag + release (#20)** — other repo, go-release flow.~~ done — moot — go-paperless is an external repo; the decision stays with its owner
+8. **BuildFlow upstream disposition fixes** (go-version-auto-configure ↔
    go-mod-normalize alignment; lint-auto-configure "respect ban lists") — both
    worked around locally via `skip_steps`; upstream changes are BuildFlow-repo
    development tasks.
-10. **pma daemon debounce/post-format hook** — BuildFlow-side improvement.
+9. **pma daemon debounce/post-format hook** — BuildFlow-side improvement.
 
 ---
 
@@ -303,11 +303,11 @@ theirs; their §4 sequence is the path when you give the go.
 1. Give or withhold the `v0.8.0 = (a)` decision-sheet go.
 2. On go: flake.nix `version = "0.8.0"` bump → release commit → `git tag -s v0.8.0` → `git push --follow-tags origin fork`.
 3. `gh release create v0.8.0 --notes-file <[0.8.0] section verbatim>` (never `--notes-from-tag`).
-~~4. Verify `./result/bin/art-dupl version` prints 0.8.0 post-build.~~ superseded — v0.8.0 was never built or tagged; v0.9.0 shipped 2026-10-06 and the version command reports via buildinfo fallback (AGENTS.md version-embedding entry).
-5. Verify proxy/pkg.go.dev propagation (`go get github.com/LarsArtmann/art-dupl@v0.8.0` in a scratch module).
-6. Bump BuildFlow's provider pin to v0.8.0 + flake comment version note.
-7. Re-run BuildFlow's E2E against the v0.8.0 provider (gitignore-honoring crawl now visible in pipeline findings).
-8. Re-baseline the art-dupl warnings budget on 14-day telemetry once soaked.
+   ~~4. Verify `./result/bin/art-dupl version` prints 0.8.0 post-build.~~ superseded — v0.8.0 was never built or tagged; v0.9.0 shipped 2026-10-06 and the version command reports via buildinfo fallback (AGENTS.md version-embedding entry).
+4. Verify proxy/pkg.go.dev propagation (`go get github.com/LarsArtmann/art-dupl@v0.8.0` in a scratch module).
+5. Bump BuildFlow's provider pin to v0.8.0 + flake comment version note.
+6. Re-run BuildFlow's E2E against the v0.8.0 provider (gitignore-honoring crawl now visible in pipeline findings).
+7. Re-baseline the art-dupl warnings budget on 14-day telemetry once soaked.
 
 **My session's loose ends:**
 9. Fix the concurrent session's `printer/sarif.go` prealloc + `actionability.go` slicescontains findings (or confirm their session owns them).

@@ -63,6 +63,7 @@ Two atomic acts, ~45+60 min combined, make art-dupl REAL in BuildFlow:
 27 tasks. Sorted by importance/impact/customer-value (primary), effort (secondary). Total ≈ 1,530 min ≈ 25.5 h.
 Impact: 5 = unblocks/delivers core value, 4 = protects/delivers major, 3 = meaningful, 2 = polish/fleet hygiene.
 `⚠ AUTH` = requires user go-ahead to touch BuildFlow.
+
 <!-- check-rows:ledger -->
 
 | #  | ID | Task                                                                                                                                                                                                                                                               | Track           | Impact | Effort | Depends on     |
@@ -102,6 +103,7 @@ Impact: 5 = unblocks/delivers core value, 4 = protects/delivers major, 3 = meani
 All fine tasks, sorted by parent priority then execution order. Each is independently verifiable.
 
 ### A2 — Release tag v0.7.1 (art-dupl, P0)
+
 <!-- check-rows:ledger -->
 
 | ID   | Task                                                                                                   | Est |
@@ -113,6 +115,7 @@ All fine tasks, sorted by parent priority then execution order. Each is independ
 | A2.5 | Consumer-style build test: `providerVersion()` resolves the real version via build info                | 9m  |
 
 ### A1 — BuildFlow preflight (⚠AUTH, P0)
+
 <!-- check-rows:ledger -->
 
 | ID   | Task                                                                               | Est |
@@ -124,6 +127,7 @@ All fine tasks, sorted by parent priority then execution order. Each is independ
 | A1.5 | Dry MVS check: with a hypothetical require, `go mod graph` shows `toolsdk v1.13.1` | 7m  |
 
 ### A3 — Wire the blank import (⚠AUTH, P0)
+
 <!-- check-rows:ledger -->
 
 | ID   | Task                                                                                           | Est |
@@ -136,6 +140,7 @@ All fine tasks, sorted by parent priority then execution order. Each is independ
 | A3.6 | Smoke: `buildflow -s art-dupl` on a tiny fixture; findings appear                              | 10m |
 
 ### A4 — Compliance rail (⚠AUTH)
+
 <!-- check-rows:ledger -->
 
 | ID   | Task                                                                                            | Est |
@@ -147,6 +152,7 @@ All fine tasks, sorted by parent priority then execution order. Each is independ
 | A4.5 | `go vet ./tools/...` + tools module test slice                                                  | 5m  |
 
 ### A5 — jscpd Go-lane demotion (⚠AUTH)
+
 <!-- check-rows:ledger -->
 
 | ID   | Task                                                                         | Est |
@@ -158,6 +164,7 @@ All fine tasks, sorted by parent priority then execution order. Each is independ
 | A5.5 | Check `.jscpd.json` repo-config branch unaffected for non-Go repos           | 8m  |
 
 ### A6 — Ghost purge (⚠AUTH)
+
 <!-- check-rows:ledger -->
 
 | ID    | Task                                                                                         | Est |
@@ -171,9 +178,10 @@ All fine tasks, sorted by parent priority then execution order. Each is independ
 | A6.7  | Remove `config_cmd*` references (init template, validate, display)                           | 10m |
 | A6.8  | Fix install hints: `doctor_cmd.go:226` + `flake.nix:543` → `github.com/LarsArtmann/art-dupl` | 8m  |
 | A6.9  | Delete `language.ToolDupl` + `tool_paths` doc example referencing `"dupl"`                   | 8m  |
-| A6.10 | Fleet grep for `dupl-check` in the `.buildflow.yml` files → deprecatedToolAliases decision            | 12m |
+| A6.10 | Fleet grep for `dupl-check` in the `.buildflow.yml` files → deprecatedToolAliases decision   | 12m |
 
 ### A7 — E2E verification (⚠AUTH)
+
 <!-- check-rows:ledger -->
 
 | ID   | Task                                                                                   | Est |
@@ -186,6 +194,7 @@ All fine tasks, sorted by parent priority then execution order. Each is independ
 | A7.6 | Budget smoke: set a `warnings_budget` for art-dupl, verify render collapse             | 8m  |
 
 ### A8 — BuildFlow stabilization (⚠AUTH)
+
 <!-- check-rows:ledger -->
 
 | ID   | Task                                                                            | Est |
@@ -196,6 +205,7 @@ All fine tasks, sorted by parent priority then execution order. Each is independ
 | A8.4 | Detailed commit(s) of all BuildFlow changes                                     | 11m |
 
 ### B1 — Provider .gitignore support (art-dupl)
+
 <!-- check-rows:ledger -->
 
 | ID   | Task                                                                          | Est |
@@ -208,6 +218,7 @@ All fine tasks, sorted by parent priority then execution order. Each is independ
 | B1.6 | Provider suite + lint green                                                   | 9m  |
 
 ### B2 — Concurrency + determinism suite (art-dupl)
+
 <!-- check-rows:ledger -->
 
 | ID   | Task                                                                   | Est |
@@ -220,6 +231,7 @@ All fine tasks, sorted by parent priority then execution order. Each is independ
 | B2.6 | `go test -race -count=1 ./pkg/provider/` green                         | 8m  |
 
 ### B3 — Workspace-scale perf/timeout (art-dupl)
+
 <!-- check-rows:ledger -->
 
 | ID   | Task                                                                                 | Est |
@@ -231,6 +243,7 @@ All fine tasks, sorted by parent priority then execution order. Each is independ
 | B3.5 | Record numbers in `docs/benchmarks/` note                                            | 10m |
 
 ### B4 — Provider polish (art-dupl)
+
 <!-- check-rows:ledger -->
 
 | ID   | Task                                                                       | Est |
@@ -243,6 +256,7 @@ All fine tasks, sorted by parent priority then execution order. Each is independ
 | B4.6 | Suite + lint green                                                         | 8m  |
 
 ### B5 — Classification metadata decision (art-dupl)
+
 <!-- check-rows:ledger -->
 
 | ID    | Task                                                                                    | Est |
@@ -255,6 +269,7 @@ All fine tasks, sorted by parent priority then execution order. Each is independ
 | B5.4  | Path DOCUMENT: provider doc + BuildFlow display note; printer/finding expectations test | 12m |
 
 ### B6 — Multi-module integration fixture (art-dupl)
+
 <!-- check-rows:ledger -->
 
 | ID   | Task                                                                           | Est |
@@ -266,6 +281,7 @@ All fine tasks, sorted by parent priority then execution order. Each is independ
 | B6.5 | Suite run + lint                                                               | 8m  |
 
 ### B7 — SDK-path self-scan (art-dupl)
+
 <!-- check-rows:ledger -->
 
 | ID   | Task                                          | Est |
@@ -276,6 +292,7 @@ All fine tasks, sorted by parent priority then execution order. Each is independ
 | B7.4 | Ledger note in SELF_CLEAN_LEDGER.md           | 8m  |
 
 ### C1 — f#4 AST quality gate (art-dupl)
+
 <!-- check-rows:ledger -->
 
 | ID   | Task                                                                                      | Est |
@@ -288,6 +305,7 @@ All fine tasks, sorted by parent priority then execution order. Each is independ
 | C1.6 | AGENTS.md note: gate exists, how to extend                                                | 8m  |
 
 ### C2 — "ln" evidence re-verification (art-dupl)
+
 <!-- check-rows:ledger -->
 
 | ID   | Task                                                           | Est |
@@ -297,6 +315,7 @@ All fine tasks, sorted by parent priority then execution order. Each is independ
 | C2.3 | Ledger note listing corrected artifacts                        | 6m  |
 
 ### C3 — Monthly self-scan cadence (art-dupl)
+
 <!-- check-rows:ledger -->
 
 | ID   | Task                                             | Est |
@@ -307,6 +326,7 @@ All fine tasks, sorted by parent priority then execution order. Each is independ
 | C3.4 | Append decisions to `docs/SELF_CLEAN_LEDGER.md`  | 9m  |
 
 ### C4 — Flipflop skip verification (cross)
+
 <!-- check-rows:ledger -->
 
 | ID   | Task                                                                                       | Est |
@@ -316,6 +336,7 @@ All fine tasks, sorted by parent priority then execution order. Each is independ
 | C4.3 | Record outcome (TODO_LIST update if resolved)                                              | 8m  |
 
 ### C5 — HARVEST + docs verify (art-dupl)
+
 <!-- check-rows:ledger -->
 
 | ID   | Task                                                          | Est |
@@ -327,6 +348,7 @@ All fine tasks, sorted by parent priority then execution order. Each is independ
 | C5.5 | Commit doc updates                                            | 5m  |
 
 ### C6 — lessons.md commit (process)
+
 <!-- check-rows:ledger -->
 
 | ID   | Task                                                          | Est |
@@ -336,6 +358,7 @@ All fine tasks, sorted by parent priority then execution order. Each is independ
 | C6.3 | Note home-manager activation path for deployment              | 10m |
 
 ### D1 — toolsdk upstream (go-finding)
+
 <!-- check-rows:ledger -->
 
 | ID   | Task                                                                        | Est |
@@ -348,6 +371,7 @@ All fine tasks, sorted by parent priority then execution order. Each is independ
 | D1.6 | Tests + PR with migration notes                                             | 12m |
 
 ### D2 — warnings_budget rollout (⚠AUTH)
+
 <!-- check-rows:ledger -->
 
 | ID   | Task                                                          | Est |
@@ -358,6 +382,7 @@ All fine tasks, sorted by parent priority then execution order. Each is independ
 | D2.4 | Fleet template note (per-repo budgets)                        | 10m |
 
 ### D3 — Lane-overlap measurement (fleet)
+
 <!-- check-rows:ledger -->
 
 | ID   | Task                                                                        | Est |
@@ -368,6 +393,7 @@ All fine tasks, sorted by parent priority then execution order. Each is independ
 | D3.4 | Analyze: does the backup lane pull weight? Scope verdict                    | 12m |
 
 ### D4 — SDK docs (art-dupl)
+
 <!-- check-rows:ledger -->
 
 | ID   | Task                                                                | Est |
@@ -378,6 +404,7 @@ All fine tasks, sorted by parent priority then execution order. Each is independ
 | D4.4 | Usage example snippet verified against real API                     | 10m |
 
 ### D5 — json/v2 migration slice (art-dupl, TODO_LIST #14)
+
 <!-- check-rows:ledger -->
 
 | ID   | Task                                                           | Est |
@@ -390,6 +417,7 @@ All fine tasks, sorted by parent priority then execution order. Each is independ
 | D5.6 | Update TODO_LIST progress + AGENTS.md count                    | 8m  |
 
 ### D6 — Fleet oddments triage (fleet)
+
 <!-- check-rows:ledger -->
 
 | ID   | Task                                                               | Est |

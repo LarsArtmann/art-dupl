@@ -58,7 +58,7 @@ One **small** one, now closed: AGENTS.md described the accept-directive semantic
 ### 11. How are we doing on tests? What can we do better?
 
 - **Added this session:** 3 new tests (2 for scanner inline support, 1 for error-sentinel aliasing).
-~~- **Still missing:** targeted tests for `withLock[T]` (nil-receiver safety) and `diffStatTable` (all accessors). Both are covered transitively by existing tests, but a focused unit test would lock the contract. Deferred — not blocking, and the transitive coverage is real.~~ parked — deliberate low-ROI deferral recorded in the row itself; transitive coverage is real; revisit only if a withLock/diffStatTable regression appears.
+  ~~- **Still missing:** targeted tests for `withLock[T]` (nil-receiver safety) and `diffStatTable` (all accessors). Both are covered transitively by existing tests, but a focused unit test would lock the contract. Deferred — not blocking, and the transitive coverage is real.~~ parked — deliberate low-ROI deferral recorded in the row itself; transitive coverage is real; revisit only if a withLock/diffStatTable regression appears.
 - **Process improvement applied:** tested after EVERY change this session, not at the end.
 
 ---
@@ -66,6 +66,7 @@ One **small** one, now closed: AGENTS.md described the accept-directive semantic
 ## What I executed this session (verified)
 
 <!-- check-rows:ledger -->
+
 | Step | Change                                                         | Test after?           | Result   |
 | ---- | -------------------------------------------------------------- | --------------------- | -------- |
 | 1    | Scanner: `HasPrefix` → `Index` (recognize inline directives)   | ✅ `TestAcceptedSet*` | PASS     |

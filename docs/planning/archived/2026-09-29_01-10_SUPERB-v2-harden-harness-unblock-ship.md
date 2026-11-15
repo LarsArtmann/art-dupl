@@ -79,33 +79,34 @@ The docs pass made the repo truthful: ~2,000 evidence-backed strikes, CI-enforce
 ## 2. Comprehensive Plan — Medium Granularity (30–100 min tasks)
 
 Sorted by importance → impact → customer value. "Customer" = Lars + every BuildFlow fleet repo + future AI sessions.
+
 <!-- check-rows:ledger -->
 
-| ID      | Task                                                                                                         | Impact      | Effort | Customer value                                                 | Depends |
-| ------- | ------------------------------------------------------------------------------------------------------------ | ----------- | ------ | -------------------------------------------------------------- | ------- |
-| ~~**M00**~~ done 2026-09-29 — executed per the header + close-out (docs/status/archived/2026-09-29_05-40). | ~~Pass-debris durability: SUPERB plan status flip + 50-item verdict accounting + cross-links~~ | ~~🔴 Critical~~ | ~~30m~~ | ~~The pass's own record becomes self-auditing~~ | ~~—~~ |
-| ~~**M01**~~ done 2026-09-29 — executed per the header + close-out (docs/status/archived/2026-09-29_05-40). | ~~Decision sheet: g1/g2/g3 + binfmt + v0.8.0 in one answerable block with recommendations~~ | ~~🔴 Critical~~ | ~~30m~~ | ~~Unblocks ~15 gated items in one reply~~ | ~~M00~~ |
-| ~~**M02**~~ done 2026-09-29 — executed per the header + close-out (docs/status/archived/2026-09-29_05-40). | ~~`scripts/check-boundary.sh`: full-suite/fast-profile boundary gate + AGENTS bullet~~ | ~~🔴 Critical~~ | ~~45m~~ | ~~The jsonutil class cannot survive a boundary again~~ | ~~—~~ |
-| ~~**M03**~~ done 2026-09-29 — executed per the header + close-out (docs/status/archived/2026-09-29_05-40). | ~~Annotator hardening: dup-key refusal + `--verify` + `--emit-keys` spec-builder + fixtures~~ | ~~🔴 Critical~~ | ~~60m~~ | ~~2,000-strike tool stops mis-striking; next pass is cheaper~~ | ~~—~~ |
-| ~~**M04**~~ done 2026-09-29 — executed per the header + close-out (docs/status/archived/2026-09-29_05-40). | ~~Concurrent-session tripwire: `scripts/check-intent.sh` + proposal update + Lars decision point~~ | ~~🟠 High~~ | ~~60m~~ | ~~Foreign edits get named before they enter history~~ | ~~M02~~ |
-| ~~**M05**~~ superseded — v0.8.0 was never tagged; v0.9.0 shipped 2026-10-06 (CHANGELOG `[0.9.0]`); the prepared release sequence is archived as the standing recipe (planning/archived/2026-09-29_02-45). | ~~v0.8.0 release preparation (finalize `[Unreleased]`, rehearse bump on worktree, draft tag) — execution GATED~~ | ~~🟠 High~~ | ~~60m~~ | ~~The finished hardening reaches every consumer~~ | ~~M01~~ |
-| ~~**M06**~~ done 2026-09-29 — executed per the header + close-out (docs/status/archived/2026-09-29_05-40). | ~~Provider tests I: ToFindings equivalence + gogenfilter parity pin~~ | ~~🟠 High~~ | ~~75m~~ | ~~The BuildFlow core lane's correctness is pinned, not assumed~~ | ~~—~~ |
-| ~~**M07**~~ done 2026-09-29 — executed per the header + close-out (docs/status/archived/2026-09-29_05-40). | ~~Provider tests II: cancellation, vanishing-file, walk-error policy~~ | ~~🟠 High~~ | ~~60m~~ | ~~Error paths of the live lane get real coverage~~ | ~~M06~~ |
-| ~~**M08**~~ done 2026-09-29 — executed per the header + close-out (docs/status/archived/2026-09-29_05-40). | ~~HTML goldens with a real clone group~~ | ~~🟠 High~~ | ~~45m~~ | ~~Clone-group HTML changes break goldens like everything else~~ | ~~—~~ |
-| ~~**M09**~~ done 2026-09-29 — executed per the header + close-out (docs/status/archived/2026-09-29_05-40). | ~~`--explain` structured JSON explanation object~~ | ~~🟠 High~~ | ~~60m~~ | ~~JSON consumers finally get the "why", not just a label~~ | ~~—~~ |
-| ~~**M10**~~ done 2026-09-29 — executed per the header + close-out (docs/status/archived/2026-09-29_05-40). | ~~SARIF rule metadata for actionability patterns~~ | ~~🟡 Medium~~ | ~~45m~~ | ~~SARIF dashboards can show WHY a result fired~~ | ~~—~~ |
-| ~~**M11**~~ done 2026-09-29 — executed per the header + close-out (docs/status/archived/2026-09-29_05-40). | ~~CopyToBuffer error propagation + test~~ | ~~🟡 Medium~~ | ~~30m~~ | ~~Test helper stops silently eating read errors~~ | ~~—~~ |
-| ~~**M12**~~ done 2026-09-29 — executed per the header + close-out (docs/status/archived/2026-09-29_05-40). | ~~Rich-text preview E2E test~~ | ~~🟡 Medium~~ | ~~45m~~ | ~~The rich-text branch loses its "manually verified" caveat~~ | ~~—~~ |
-| ~~**M13**~~ done 2026-09-29 — executed per the header + close-out (docs/status/archived/2026-09-29_05-40). | ~~Count-gate extensions: website flags, modes, formats~~ | ~~🟡 Medium~~ | ~~45m~~ | ~~The website doc cannot silently fall behind again~~ | ~~—~~ |
-| ~~**M14**~~ done 2026-09-29 — executed per the header + close-out (docs/status/archived/2026-09-29_05-40). | ~~Skill upstreaming PR prep (annotator extensions → docs-health repo)~~ | ~~🟡 Medium~~ | ~~45m~~ | ~~Every LarsArtmann repo's next docs pass gets the hardened tool~~ | ~~M03~~ |
-| ~~**M15**~~ done 2026-09-29 — executed per the header + close-out (docs/status/archived/2026-09-29_05-40). | ~~SDK_DESIGN refresh + CHANGELOG↔ADR cross-ref~~ | ~~🟡 Medium~~ | ~~45m~~ | ~~SDK onboarding docs match the shipped architecture~~ | ~~—~~ |
-| ~~**M16**~~ done 2026-09-29 — executed per the header + close-out (docs/status/archived/2026-09-29_05-40). | ~~Fuzz seed-corpus presence gate~~ | ~~🟡 Medium~~ | ~~40m~~ | ~~Fuzz targets without seeds fail loudly~~ | ~~—~~ |
-| ~~**M17**~~ done 2026-09-29 — executed per the header + close-out (docs/status/archived/2026-09-29_05-40). | ~~gogenfilter fleet sweep: art-dupl slice + external checklist~~ | ~~🟢 Low~~ | ~~60m~~ | ~~The 9-consumer debt gets a concrete, executable checklist~~ | ~~—~~ |
-| ~~**M18**~~ done 2026-09-29 — executed per the header + close-out (docs/status/archived/2026-09-29_05-40). | ~~Windows exe-start: one timeboxed round, park-with-evidence if it bites~~ | ~~🟢 Low~~ | ~~60m~~ | ~~Either the TODO dies or it dies with evidence~~ | ~~—~~ |
-| ~~**M19**~~ done 2026-09-29 — executed per the header + close-out (docs/status/archived/2026-09-29_05-40). | ~~go-paperless release memo (external)~~ | ~~🟢 Low~~ | ~~30m~~ | ~~TODO #20 becomes a 10-minute mechanical follow~~ | ~~—~~ |
-| ~~**M20**~~ done 2026-09-29 — executed per the header + close-out (docs/status/archived/2026-09-29_05-40). | ~~Branch-protection checklist doc~~ | ~~🟢 Low~~ | ~~30m~~ | ~~TODO #18 becomes owner-actionable in 15 minutes~~ | ~~—~~ |
-| ~~**M21**~~ done 2026-09-29 — executed per the header + close-out (docs/status/archived/2026-09-29_05-40). | ~~Docs tail: linter-count review + CI architecture in AGENTS + LSP note~~ | ~~🟢 Low~~ | ~~60m~~ | ~~The last doc debt is either fixed or bounded~~ | ~~—~~ |
-| ~~**M22**~~ done 2026-09-29 — executed per the header + close-out (docs/status/archived/2026-09-29_05-40). | ~~Close-out: `-race`, ledger, inline health report, push~~ | ~~🟠 High~~ | ~~45m~~ | ~~The pass lands clean, durable, and on the remote~~ | ~~ALL~~ |
+| ID                                                                                                                                                                                                        | Task                                                                                                             | Impact          | Effort  | Customer value                                                     | Depends |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- | --------------- | ------- | ------------------------------------------------------------------ | ------- |
+| ~~**M00**~~ done 2026-09-29 — executed per the header + close-out (docs/status/archived/2026-09-29_05-40).                                                                                                | ~~Pass-debris durability: SUPERB plan status flip + 50-item verdict accounting + cross-links~~                   | ~~🔴 Critical~~ | ~~30m~~ | ~~The pass's own record becomes self-auditing~~                    | ~~—~~   |
+| ~~**M01**~~ done 2026-09-29 — executed per the header + close-out (docs/status/archived/2026-09-29_05-40).                                                                                                | ~~Decision sheet: g1/g2/g3 + binfmt + v0.8.0 in one answerable block with recommendations~~                      | ~~🔴 Critical~~ | ~~30m~~ | ~~Unblocks ~15 gated items in one reply~~                          | ~~M00~~ |
+| ~~**M02**~~ done 2026-09-29 — executed per the header + close-out (docs/status/archived/2026-09-29_05-40).                                                                                                | ~~`scripts/check-boundary.sh`: full-suite/fast-profile boundary gate + AGENTS bullet~~                           | ~~🔴 Critical~~ | ~~45m~~ | ~~The jsonutil class cannot survive a boundary again~~             | ~~—~~   |
+| ~~**M03**~~ done 2026-09-29 — executed per the header + close-out (docs/status/archived/2026-09-29_05-40).                                                                                                | ~~Annotator hardening: dup-key refusal + `--verify` + `--emit-keys` spec-builder + fixtures~~                    | ~~🔴 Critical~~ | ~~60m~~ | ~~2,000-strike tool stops mis-striking; next pass is cheaper~~     | ~~—~~   |
+| ~~**M04**~~ done 2026-09-29 — executed per the header + close-out (docs/status/archived/2026-09-29_05-40).                                                                                                | ~~Concurrent-session tripwire: `scripts/check-intent.sh` + proposal update + Lars decision point~~               | ~~🟠 High~~     | ~~60m~~ | ~~Foreign edits get named before they enter history~~              | ~~M02~~ |
+| ~~**M05**~~ superseded — v0.8.0 was never tagged; v0.9.0 shipped 2026-10-06 (CHANGELOG `[0.9.0]`); the prepared release sequence is archived as the standing recipe (planning/archived/2026-09-29_02-45). | ~~v0.8.0 release preparation (finalize `[Unreleased]`, rehearse bump on worktree, draft tag) — execution GATED~~ | ~~🟠 High~~     | ~~60m~~ | ~~The finished hardening reaches every consumer~~                  | ~~M01~~ |
+| ~~**M06**~~ done 2026-09-29 — executed per the header + close-out (docs/status/archived/2026-09-29_05-40).                                                                                                | ~~Provider tests I: ToFindings equivalence + gogenfilter parity pin~~                                            | ~~🟠 High~~     | ~~75m~~ | ~~The BuildFlow core lane's correctness is pinned, not assumed~~   | ~~—~~   |
+| ~~**M07**~~ done 2026-09-29 — executed per the header + close-out (docs/status/archived/2026-09-29_05-40).                                                                                                | ~~Provider tests II: cancellation, vanishing-file, walk-error policy~~                                           | ~~🟠 High~~     | ~~60m~~ | ~~Error paths of the live lane get real coverage~~                 | ~~M06~~ |
+| ~~**M08**~~ done 2026-09-29 — executed per the header + close-out (docs/status/archived/2026-09-29_05-40).                                                                                                | ~~HTML goldens with a real clone group~~                                                                         | ~~🟠 High~~     | ~~45m~~ | ~~Clone-group HTML changes break goldens like everything else~~    | ~~—~~   |
+| ~~**M09**~~ done 2026-09-29 — executed per the header + close-out (docs/status/archived/2026-09-29_05-40).                                                                                                | ~~`--explain` structured JSON explanation object~~                                                               | ~~🟠 High~~     | ~~60m~~ | ~~JSON consumers finally get the "why", not just a label~~         | ~~—~~   |
+| ~~**M10**~~ done 2026-09-29 — executed per the header + close-out (docs/status/archived/2026-09-29_05-40).                                                                                                | ~~SARIF rule metadata for actionability patterns~~                                                               | ~~🟡 Medium~~   | ~~45m~~ | ~~SARIF dashboards can show WHY a result fired~~                   | ~~—~~   |
+| ~~**M11**~~ done 2026-09-29 — executed per the header + close-out (docs/status/archived/2026-09-29_05-40).                                                                                                | ~~CopyToBuffer error propagation + test~~                                                                        | ~~🟡 Medium~~   | ~~30m~~ | ~~Test helper stops silently eating read errors~~                  | ~~—~~   |
+| ~~**M12**~~ done 2026-09-29 — executed per the header + close-out (docs/status/archived/2026-09-29_05-40).                                                                                                | ~~Rich-text preview E2E test~~                                                                                   | ~~🟡 Medium~~   | ~~45m~~ | ~~The rich-text branch loses its "manually verified" caveat~~      | ~~—~~   |
+| ~~**M13**~~ done 2026-09-29 — executed per the header + close-out (docs/status/archived/2026-09-29_05-40).                                                                                                | ~~Count-gate extensions: website flags, modes, formats~~                                                         | ~~🟡 Medium~~   | ~~45m~~ | ~~The website doc cannot silently fall behind again~~              | ~~—~~   |
+| ~~**M14**~~ done 2026-09-29 — executed per the header + close-out (docs/status/archived/2026-09-29_05-40).                                                                                                | ~~Skill upstreaming PR prep (annotator extensions → docs-health repo)~~                                          | ~~🟡 Medium~~   | ~~45m~~ | ~~Every LarsArtmann repo's next docs pass gets the hardened tool~~ | ~~M03~~ |
+| ~~**M15**~~ done 2026-09-29 — executed per the header + close-out (docs/status/archived/2026-09-29_05-40).                                                                                                | ~~SDK_DESIGN refresh + CHANGELOG↔ADR cross-ref~~                                                                 | ~~🟡 Medium~~   | ~~45m~~ | ~~SDK onboarding docs match the shipped architecture~~             | ~~—~~   |
+| ~~**M16**~~ done 2026-09-29 — executed per the header + close-out (docs/status/archived/2026-09-29_05-40).                                                                                                | ~~Fuzz seed-corpus presence gate~~                                                                               | ~~🟡 Medium~~   | ~~40m~~ | ~~Fuzz targets without seeds fail loudly~~                         | ~~—~~   |
+| ~~**M17**~~ done 2026-09-29 — executed per the header + close-out (docs/status/archived/2026-09-29_05-40).                                                                                                | ~~gogenfilter fleet sweep: art-dupl slice + external checklist~~                                                 | ~~🟢 Low~~      | ~~60m~~ | ~~The 9-consumer debt gets a concrete, executable checklist~~      | ~~—~~   |
+| ~~**M18**~~ done 2026-09-29 — executed per the header + close-out (docs/status/archived/2026-09-29_05-40).                                                                                                | ~~Windows exe-start: one timeboxed round, park-with-evidence if it bites~~                                       | ~~🟢 Low~~      | ~~60m~~ | ~~Either the TODO dies or it dies with evidence~~                  | ~~—~~   |
+| ~~**M19**~~ done 2026-09-29 — executed per the header + close-out (docs/status/archived/2026-09-29_05-40).                                                                                                | ~~go-paperless release memo (external)~~                                                                         | ~~🟢 Low~~      | ~~30m~~ | ~~TODO #20 becomes a 10-minute mechanical follow~~                 | ~~—~~   |
+| ~~**M20**~~ done 2026-09-29 — executed per the header + close-out (docs/status/archived/2026-09-29_05-40).                                                                                                | ~~Branch-protection checklist doc~~                                                                              | ~~🟢 Low~~      | ~~30m~~ | ~~TODO #18 becomes owner-actionable in 15 minutes~~                | ~~—~~   |
+| ~~**M21**~~ done 2026-09-29 — executed per the header + close-out (docs/status/archived/2026-09-29_05-40).                                                                                                | ~~Docs tail: linter-count review + CI architecture in AGENTS + LSP note~~                                        | ~~🟢 Low~~      | ~~60m~~ | ~~The last doc debt is either fixed or bounded~~                   | ~~—~~   |
+| ~~**M22**~~ done 2026-09-29 — executed per the header + close-out (docs/status/archived/2026-09-29_05-40).                                                                                                | ~~Close-out: `-race`, ledger, inline health report, push~~                                                       | ~~🟠 High~~     | ~~45m~~ | ~~The pass lands clean, durable, and on the remote~~               | ~~ALL~~ |
 
 **Total estimated effort: ≈18h.** The 1% (M00–M03) ≈ 2.75h. The 4% (+M04–M07, M13) ≈ +5h. The 20% (+M08–M12, M14–M16) ≈ +5.5h. The remainder ≈ 4.75h, of which ~2h is external-repo memos and ~1h is timeboxed investigations with park-outcomes.
 
@@ -114,6 +115,7 @@ Sorted by importance → impact → customer value. "Customer" = Lars + every Bu
 ## 3. Detailed Breakdown — Fine Granularity (≤12 min tasks)
 
 ### M00 — Pass-debris durability (30m)
+
 <!-- check-rows:ledger -->
 
 | ID   | Task                                                                                                                             | Est |
@@ -124,6 +126,7 @@ Sorted by importance → impact → customer value. "Customer" = Lars + every Bu
 | F004 | Commit + verify the three files landed with real messages (not daemon heuristic)                                                 | 8m  |
 
 ### M01 — Decision sheet (30m)
+
 <!-- check-rows:ledger -->
 
 | ID   | Task                                                                                                  | Est |
@@ -133,6 +136,7 @@ Sorted by importance → impact → customer value. "Customer" = Lars + every Bu
 | F007 | Present inline in the session + file as `docs/planning/2026-09-29_*_decision-sheet.md`                | 10m |
 
 ### M02 — Boundary gate (45m)
+
 <!-- check-rows:ledger -->
 
 | ID   | Task                                                                                                                                           | Est |
@@ -145,6 +149,7 @@ Sorted by importance → impact → customer value. "Customer" = Lars + every Bu
 | F013 | Canary-clean: remove scratch, gate green again                                                                                                 | 4m  |
 
 ### M03 — Annotator hardening (60m)
+
 <!-- check-rows:ledger -->
 
 | ID   | Task                                                                                                 | Est |
@@ -157,6 +162,7 @@ Sorted by importance → impact → customer value. "Customer" = Lars + every Bu
 | F019 | Commit; smoke on one real already-annotated file via /tmp copy                                       | 6m  |
 
 ### M04 — Concurrent-session tripwire (60m)
+
 <!-- check-rows:ledger -->
 
 | ID   | Task                                                                                                                      | Est |
@@ -169,6 +175,7 @@ Sorted by importance → impact → customer value. "Customer" = Lars + every Bu
 | F025 | Commit script + proposal                                                                                                  | 6m  |
 
 ### M05 — v0.8.0 release preparation (60m; EXECUTION GATED on M01)
+
 <!-- check-rows:ledger -->
 
 | ID   | Task                                                                                                               | Est |
@@ -181,6 +188,7 @@ Sorted by importance → impact → customer value. "Customer" = Lars + every Bu
 | F031 | Park the prepared worktree/patch with a "run `git push --follow-tags` on go" note; STOP — execution waits for Lars | 6m  |
 
 ### M06 — Provider tests I (75m)
+
 <!-- check-rows:ledger -->
 
 | ID   | Task                                                                                                                                             | Est |
@@ -194,6 +202,7 @@ Sorted by importance → impact → customer value. "Customer" = Lars + every Bu
 | F038 | Commit (test-only change)                                                                                                                        | 5m  |
 
 ### M07 — Provider tests II (60m)
+
 <!-- check-rows:ledger -->
 
 | ID   | Task                                                                                                     | Est |
@@ -206,6 +215,7 @@ Sorted by importance → impact → customer value. "Customer" = Lars + every Bu
 | F044 | Commit (test-only)                                                                                       | 4m  |
 
 ### M08 — HTML goldens with a real clone group (45m)
+
 <!-- check-rows:ledger -->
 
 | ID   | Task                                                                                               | Est |
@@ -217,6 +227,7 @@ Sorted by importance → impact → customer value. "Customer" = Lars + every Bu
 | F049 | TODO_LIST strike + commit                                                                          | 6m  |
 
 ### M09 — --explain structured JSON (60m)
+
 <!-- check-rows:ledger -->
 
 | ID   | Task                                                                                                                                                  | Est |
@@ -229,6 +240,7 @@ Sorted by importance → impact → customer value. "Customer" = Lars + every Bu
 | F055 | Commit; TODO_LIST strike (the triple-open item dies)                                                                                                  | 4m  |
 
 ### M10 — SARIF rule metadata (45m)
+
 <!-- check-rows:ledger -->
 
 | ID   | Task                                                                                                                                                | Est |
@@ -240,6 +252,7 @@ Sorted by importance → impact → customer value. "Customer" = Lars + every Bu
 | F060 | Commit                                                                                                                                              | 3m  |
 
 ### M11 — CopyToBuffer error propagation (30m)
+
 <!-- check-rows:ledger -->
 
 | ID   | Task                                                                                                               | Est |
@@ -250,6 +263,7 @@ Sorted by importance → impact → customer value. "Customer" = Lars + every Bu
 | F064 | Commit (test-helper only)                                                                                          | 4m  |
 
 ### M12 — Rich-text preview E2E (45m)
+
 <!-- check-rows:ledger -->
 
 | ID   | Task                                                                                                                     | Est |
@@ -260,6 +274,7 @@ Sorted by importance → impact → customer value. "Customer" = Lars + every Bu
 | F068 | TODO_LIST strike (the twice-struck-open item dies) + commit                                                              | 6m  |
 
 ### M13 — Count-gate extensions (45m)
+
 <!-- check-rows:ledger -->
 
 | ID   | Task                                                                                         | Est |
@@ -271,10 +286,12 @@ Sorted by importance → impact → customer value. "Customer" = Lars + every Bu
 | F073 | Commit (test-only)                                                                           | 4m  |
 
 ### M14 — Skill upstreaming prep (45m)
+
 <!-- check-rows:ledger -->
 
 | Token: the docs-health skill lives in `github.com/LarsArtmann/crush-config` (per the global AGENTS memory-install note); changes there are commits to THAT repo, delivered by home-manager activation. |
 | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+
 <!-- check-rows:ledger -->
 
 | ID   | Task                                                                                                                      | Est |
@@ -286,6 +303,7 @@ Sorted by importance → impact → customer value. "Customer" = Lars + every Bu
 | F078 | Report the prepared PR/commit to Lars (external repo — push only on go)                                                   | 5m  |
 
 ### M15 — SDK_DESIGN refresh + ADR cross-ref (45m)
+
 <!-- check-rows:ledger -->
 
 | ID   | Task                                                                                                                              | Est |
@@ -296,6 +314,7 @@ Sorted by importance → impact → customer value. "Customer" = Lars + every Bu
 | F082 | Fix drift found; commit both files                                                                                                | 8m  |
 
 ### M16 — Fuzz seed-corpus presence gate (40m)
+
 <!-- check-rows:ledger -->
 
 | ID   | Task                                                                                                           | Est |
@@ -307,6 +326,7 @@ Sorted by importance → impact → customer value. "Customer" = Lars + every Bu
 | F087 | Commit (test + maybe seeds)                                                                                    | 4m  |
 
 ### M17 — gogenfilter fleet sweep slice (60m)
+
 <!-- check-rows:ledger -->
 
 | ID   | Task                                                                                     | Est |
@@ -319,6 +339,7 @@ Sorted by importance → impact → customer value. "Customer" = Lars + every Bu
 | F093 | Commit                                                                                   | 4m  |
 
 ### M18 — Windows exe-start round (60m, timeboxed)
+
 <!-- check-rows:ledger -->
 
 | ID   | Task                                                                                                                         | Est |
@@ -330,6 +351,7 @@ Sorted by importance → impact → customer value. "Customer" = Lars + every Bu
 | F098 | Commit (either way, evidence recorded)                                                                                       | 6m  |
 
 ### M19 — go-paperless release memo (30m, external)
+
 <!-- check-rows:ledger -->
 
 | ID   | Task                                                                                                                | Est |
@@ -339,6 +361,7 @@ Sorted by importance → impact → customer value. "Customer" = Lars + every Bu
 | F101 | Deliver as TODO #20 update (memo link); execution is Lars's call in that repo                                       | 8m  |
 
 ### M20 — Branch-protection checklist (30m)
+
 <!-- check-rows:ledger -->
 
 | ID   | Task                                                                                                       | Est |
@@ -348,6 +371,7 @@ Sorted by importance → impact → customer value. "Customer" = Lars + every Bu
 | F104 | Commit                                                                                                     | 8m  |
 
 ### M21 — Docs tail (60m)
+
 <!-- check-rows:ledger -->
 
 | ID   | Task                                                                                                                                 | Est |
@@ -359,6 +383,7 @@ Sorted by importance → impact → customer value. "Customer" = Lars + every Bu
 | F109 | Commit                                                                                                                               | 6m  |
 
 ### M22 — Close-out (45m)
+
 <!-- check-rows:ledger -->
 
 | ID   | Task                                                                           | Est |
@@ -435,6 +460,7 @@ flowchart LR
 ---
 
 ## 5. Risks & Mitigations
+
 <!-- check-rows:ledger -->
 
 | Risk                                                                         | Mitigation                                                                                                                    |
@@ -467,6 +493,7 @@ flowchart LR
 7. `-race` full suite green at close-out; CI green on the pushed HEAD.
 
 ## 8. Coverage Matrix — all ~100 source items dispositioned
+
 <!-- check-rows:ledger -->
 
 | Source (report §f items)                                                                                                  | Disposition                                                                                                                                                                                                                                                                              |
