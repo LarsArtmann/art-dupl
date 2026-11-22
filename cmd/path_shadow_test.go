@@ -75,10 +75,10 @@ func TestWarnIfMultipleArtDuplInPath(t *testing.T) {
 	}
 	t.Cleanup(func() { probeArtDuplVersion = original })
 
-	t.Setenv("PATH", strings.Join([]string{dirA, dirB}, string(os.PathListSeparator)))
+	pathEnv := strings.Join([]string{dirA, dirB}, string(os.PathListSeparator))
 
 	var stderr strings.Builder
-	warnIfMultipleArtDuplInPath(&stderr)
+	warnIfMultipleArtDuplInPath(&stderr, pathEnv)
 
 	out := stderr.String()
 	for _, want := range []string{"2 times in PATH", binA, binB, "v9.9.9-test", "first in PATH, wins"} {
@@ -96,10 +96,8 @@ func TestWarnIfMultipleArtDuplInPathSilentForSingleCopy(t *testing.T) {
 	dir := t.TempDir()
 	writeExecutable(t, dir, "art-dupl")
 
-	t.Setenv("PATH", dir)
-
 	var stderr strings.Builder
-	warnIfMultipleArtDuplInPath(&stderr)
+	warnIfMultipleArtDuplInPath(&stderr, dir)
 
 	if stderr.Len() != 0 {
 		t.Errorf("warning printed for a single copy:\n%s", stderr.String())

@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 	"runtime"
 
 	"github.com/LarsArtmann/art-dupl/internal/jsonutil"
@@ -57,7 +58,7 @@ func NewVersionCommand() *cobra.Command {
 			}
 
 			PrintVersion(cmd.OutOrStdout())
-			warnIfMultipleArtDuplInPath(cmd.ErrOrStderr())
+			warnIfMultipleArtDuplInPath(cmd.ErrOrStderr(), os.Getenv("PATH"))
 
 			return nil
 		},

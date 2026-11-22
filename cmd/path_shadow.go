@@ -103,11 +103,11 @@ func runningRealpath() string {
 }
 
 // warnIfMultipleArtDuplInPath prints a stderr warning naming every distinct
-// art-dupl copy reachable through PATH when there is more than one, marking
+// art-dupl copy reachable through pathEnv when there is more than one, marking
 // the copy that is running and the copy shell resolution would pick. Single
 // copy (or undeterminable): silent.
-func warnIfMultipleArtDuplInPath(stderr io.Writer) {
-	candidates := artDuplPathCandidates(os.Getenv("PATH"))
+func warnIfMultipleArtDuplInPath(stderr io.Writer, pathEnv string) {
+	candidates := artDuplPathCandidates(pathEnv)
 	if len(candidates) < 2 {
 		return
 	}
