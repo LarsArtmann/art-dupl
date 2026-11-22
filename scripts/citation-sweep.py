@@ -40,23 +40,45 @@ def file_line_count(path: Path) -> int:
         return -1
 
 
-def resolve(raw: str) -> Path | None:
+SKIP_DIRS = {"node_modules", ".git", "vendor", "dist", ".nix", "result"}
+
+
+def rglob_basenames(root: Path, name: str) -> list[Path]:
+    hits: list[Path] = []
+    for candidate in root.rglob(name):
+        if any(part in SKIP_DIRS for part in candidate.parts):
+            continue
+        hits.append(candidate)
+    return hits
+
+
+def resolve(raw: str) -> tuple[Path | None, str):
+    """Resolve a citation path. Returns (resolved, note)."""
     p = Path(raw).expanduser()
     if p.is_absolute():
-        return p if p.exists() else None
+        return (p if p.exists() else None), ""
     for prefix, root in sorted(LIB_ROOTS.items(), key=lambda kv: -len(kv[0])):
         if raw == prefix or raw.startswith(prefix + "/"):
             candidate = root / raw[len(prefix):].lstrip("/")
-            if candidate.exists():
-                return candidate
+            return (candidate if candidate.exists() else None), ""
     candidate = ART_DUPL / raw
     if candidate.exists():
-        return candidate
+        return candidate, ""
     for root in LIB_ROOTS.values():
         candidate = root / raw
         if candidate.exists():
-            return candidate
-    return None
+            return candidate, ""
+    if "/" not in raw:
+        hits = rglob_basenames(ART_DUPL, raw)
+        seen = {str(h) for h in hits}
+        for lib_root in LIB_ROOTS.values():
+            for h in rglob_basenames(lib_root, raw):
+                seen.add(str(h))
+        if len(seen) == 1:
+            return Path(next(iter(seen))), "bare-basename"
+        if len(seen) > 1:
+            return None, "AMBIGUOUS basename: " + ", ".join(sorted(seen))
+    return None, ""
 
 
 def sweep(report: Path) -> list[str]:
@@ -67,11 +89,11 @@ def sweep(report: Path) -> list[str]:
             start = int(m.group(2) or m.group(5))
             end_raw = m.group(3)
             end = int(end_raw) if end_raw else start
-            resolved = resolve(path_raw)
+            resolved, note = resolve(path_raw)
             if resolved is None:
                 failures.append(
                     f"{report.name}:{lineno}  {path_raw}:{start}"
-                    f"{('-' + str(end)) if end_raw else ''}  -> FILE NOT FOUND"
+                    f"{('-' + str(end)) if end_raw else ''}  -> FILE NOT FOUND {note}"
                 )
                 continue
             count = file_line_count(resolved)
