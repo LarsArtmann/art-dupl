@@ -57,6 +57,7 @@ func NewVersionCommand() *cobra.Command {
 			}
 
 			PrintVersion(cmd.OutOrStdout())
+			warnIfMultipleArtDuplInPath(cmd.ErrOrStderr())
 
 			return nil
 		},
