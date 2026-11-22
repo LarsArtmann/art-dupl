@@ -5,7 +5,7 @@
 
 ## Overview
 
-**art-dupl** is a Go tool for finding code clones using suffix tree algorithms and hash-based detection. It analyzes abstract syntax trees (ASTs) to find structural code clones while ignoring literal values. Supports multi-method detection, professional CLI (Fang/Cobra), 8 output formats, and 39 actionability patterns (plus 4 property-engine labels). Tuned on real-world Go projects (the documented dedup corpus: go-sse, go-cqrs-lite, go-paperless, DiscordSync, branching-flow, webphone — 6,000+ Go files and 85+ templ files as of 2026-11-22) to minimize false positives at the default threshold.
+**art-dupl** is a Go tool for finding code clones using suffix tree algorithms and hash-based detection. It analyzes abstract syntax trees (ASTs) to find structural code clones while ignoring literal values. Supports multi-method detection, professional CLI (Fang/Cobra), 8 output formats, and 39 actionability patterns (plus 4 property-engine labels). Tuned on real-world Go projects (the documented dedup corpus: go-sse, go-cqrs-lite, go-paperless, DiscordSync, branching-flow, webphone — 5,600+ Go files and 65+ templ files as of 2026-11-22) to minimize false positives at the default threshold.
 
 ---
 
