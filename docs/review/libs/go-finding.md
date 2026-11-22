@@ -48,9 +48,9 @@ checkout at HEAD = v1.16.0).
 | Consumer site | What it uses | Library symbols |
 | --- | --- | --- |
 | `printer/finding/finding.go` (adapter, LIBRARY-ONLY per ADR-0028) | Full finding construction | `NewTemplate`, `Builder`, `MustBuild`, `WithGroupID/Tags/Confidence/Range/Snippet/Metadata/Related/Suppression/FixStrategy/Suggestion`, `GenerateID`, `GroupID`, `Tag`, `Severity`, `CategoryDuplication`, `Confidence().Clamp()`, `Suppression{SuppressionInSource}`, `FixStrategySuggest`, `RelationCloneOf`, `RelatedRef`, `Position`, `Range`, `FilePath`, `ToolName`, `RuleName`, `NewReportFromFindings`, `ToolInfo` (finding.go:92, 100, 125, 131, 139, 152–199, 204–257, 259–312) |
-| `printer/sarif.go` (CLI product wire, hand-rolled) | Severity/level ladder source, group-id property key, relation name | `gofinding.RelationCloneOf` (sarif.go:231), `finding.SARIFPropGroupID` (sarif.go:241) |
+| `printer/sarif.go` (CLI product wire, hand-rolled) | Severity/level ladder source, group-id property key, relation name | `gofinding.RelationCloneOf` (printer/sarif.go:231), `finding.SARIFPropGroupID` (printer/sarif.go:241) |
 | `printer/lsp.go` (CLI `--lsp` format) | Per-finding LSP conversion | `gofinding.LSPDiagnostic`, `Finding.ToLSP()` (lsp.go:22, 66–69); envelope struct `LSPDocument` is local (lsp.go:20–23) |
-| `pkg/provider/provider.go` (BuildFlow toolsdk provider) | Detector contract, context, severity cap, tags | `Detector`, `WorkingDirFromContext`, `SeverityWarning/SeverityError/SeverityCritical`, `Tag` (provider.go:59, 131–181, 274–289) |
+| `pkg/provider/provider.go` (BuildFlow toolsdk provider) | Detector contract, context, severity cap, tags | `Detector`, `WorkingDirFromContext`, `SeverityWarning/SeverityError/SeverityCritical`, `Tag` (pkg/provider/provider.go:59, 131–181, 274–289) |
 | `bdd/sarif_gofinding_integration_test.go` | SARIF import round-trip of real CLI bytes | `FindingsFromSARIF`, `NewReportFromFindings`, `ToolInfo` (lines 95, 99, 129, 133, 184, 188) |
 | `bdd/lsp_output_test.go` | LSP import round-trip | `FromLSP`, `FilePath` (lines 51–54) |
 | Contract tests | Interchange guarantees | `printer/finding/finding_test.go` (GroupID determinism, SARIF/LSP/JSON round-trips, `Report.GroupFindings()` reconstruction), `printer/sarif_finding_crosscheck_test.go:22` `TestSARIFCrossCheckCLIvsGoFinding` (CLI printer vs `Report.ToSARIF()` parity, plan T09) |
@@ -70,15 +70,15 @@ Status rubric: **Fully Leveraged / Partially Used / Missed Opportunity / Misused
 | 2 | Builder + Template validated construction | Fully Leveraged | printer/finding/finding.go:101–102, 168–199 (`MustBuild`); pinned by `TestBuilderConversionIsByteIdenticalToLegacyConstruction`, `TestBuilderRejectsMalformedConstruction` | Malformed findings cannot enter the wire (plan T04, 2026-10-06) |
 | 3 | GroupID grouping key (JSON/SARIF/LSP round-trip) | Fully Leveraged | printer/finding/finding.go:92–94; printer/sarif.go:241 (`go-finding/groupId` property); `TestSARIFRoundTripPreservesGroupID`, bdd:95–100 | Consumers diff reports without re-deriving grouping |
 | 4 | Related links (`RelationCloneOf`) | Fully Leveraged | printer/finding/finding.go:288–312 (precomputed IDs, no quadratic regen); printer/sarif.go:229–232, 260–267 | Sibling topology on every wire |
-| 5 | Suppression model (`Suppression{InSource}`) | Fully Leveraged | printer/finding/finding.go:187–193; provider option `emit-suppressed-accepted` (provider.go:108–116, 158–160); SARIF round-trip via `WithIncludeSuppressed` pinned | `//art-dupl:accept` is visible on the wire, not an absence (plan T06) |
+| 5 | Suppression model (`Suppression{InSource}`) | Fully Leveraged | printer/finding/finding.go:187–193; provider option `emit-suppressed-accepted` (pkg/provider/provider.go:108–116, 158–160); SARIF round-trip via `WithIncludeSuppressed` pinned | `//art-dupl:accept` is visible on the wire, not an absence (plan T06) |
 | 6 | Severity ladder + SARIF level agreement | Fully Leveraged | `severityFor` printer/finding/finding.go:204–213 vs `determineLevel` printer/sarif.go:413–422; `TestToFindingsSeverityMirrorsSARIFLadder`; `TestSARIFCrossCheckCLIvsGoFinding` (cross-check contract, plan T09) | Both lanes agree per group; desync fails CI |
 | 7 | Tags + category-in-tags consistency | Fully Leveraged | `cloneTags` printer/finding/finding.go:221–228; `TestToFindingsTagsCarryCategoryAndCloneType` (plan T08) | Satisfies `Finding.Validate`'s tag rule trivially |
 | 8 | Confidence + `Clamp()` | Fully Leveraged | printer/finding/finding.go:230–236 | Analysis confidence normalized into the model |
 | 9 | Position/Range (lines, columns, offsets) | Fully Leveraged | `positionOf`/`rangeOf` printer/finding/finding.go:238–257 (columns since 2026-10-06, §05.1 T13) | Full fidelity regions in SARIF/LSP |
 | 10 | FixStrategy (suggest) | Fully Leveraged | printer/finding/finding.go:182–185 (`Suggestion` → `FixStrategySuggest`); `TestToFindingsSuggestionSetsFixStrategy` | Classification suggestions survive interchange |
 | 11 | `Finding.Metadata` interchange | Fully Leveraged | `metadataFor` printer/finding/finding.go:259–286; `art-dupl/*` namespace, reserved `go-finding/` respected | Clone-specific data travels without model surgery |
-| 12 | Detector contract (v1) + WorkingDir context | Fully Leveraged | provider.go:135–141 (`Detect`, `WorkingDirFromContext`) | Provider integrates with BuildFlow lanes |
-| 13 | **Coverage-evidence channel** (`DetectResult`, `DetectorV2`, `RunDetect`, `Report.AddDetectResult` → `Summary.FilesScanned`/`SkippedModules`) | **Missed Opportunity** | provider.go:135 implements v1 `Detect` only; zero production references to `DetectV2`/`RunDetect`/`FilesScanned`/`SkippedModules` in art-dupl (rg-verified). API **shipped at the current pin**: core v1.15.0 carries `detect_result.go` (go-finding/detect_result.go:15, 39, 53, 72) and `Summary.FilesScanned`/`SkippedModules` (go-finding/report.go:71, 78) | "0 findings" vs "not analyzed" unanswerable from the provider lane; TODO T07b consumption step is unblocked TODAY |
+| 12 | Detector contract (v1) + WorkingDir context | Fully Leveraged | pkg/provider/provider.go:135–141 (`Detect`, `WorkingDirFromContext`) | Provider integrates with BuildFlow lanes |
+| 13 | **Coverage-evidence channel** (`DetectResult`, `DetectorV2`, `RunDetect`, `Report.AddDetectResult` → `Summary.FilesScanned`/`SkippedModules`) | **Missed Opportunity** | pkg/provider/provider.go:135 implements v1 `Detect` only; zero production references to `DetectV2`/`RunDetect`/`FilesScanned`/`SkippedModules` in art-dupl (rg-verified). API **shipped at the current pin**: core v1.15.0 carries `detect_result.go` (go-finding/detect_result.go:15, 39, 53, 72) and `Summary.FilesScanned`/`SkippedModules` (go-finding/report.go:71, 78) | "0 findings" vs "not analyzed" unanswerable from the provider lane; TODO T07b consumption step is unblocked TODAY |
 | 14 | SARIF export (`ToSARIF`, `ToSARIFWithOpts`, `WithIncludeSuppressed`) | Fully Leveraged | Hand-rolled printer (printer/sarif.go:27–161, 269–286) is a deliberate superset (fingerprints, invocations, rule descriptors — §05.3); agreement with `ToSARIF()` is a pinned contract (`TestSARIFCrossCheckCLIvsGoFinding`, `TestSARIFCrossCheckRelatedLocations`) | Best of both: product wire + library parity guarantee |
 | 15 | SARIF import (`FindingsFromSARIF`, `FindingsFromReader`) | Fully Leveraged | bdd/sarif_gofinding_integration_test.go:95, 129, 184 (real CLI `--sarif` bytes reconstruct the exact group partition) | The consumer path is proven, not assumed |
 | 16 | **Run-level SARIF propertyBag** (`SetRunProperty`, `RunProperties`, `RunPropertiesFromSARIF`) — v1.16.0 | **Missed Opportunity** | Not at pin (core v1.15.0). Exists at v1.16.0: go-finding/report.go:140, :155; go-finding/sarif_import.go:29; fetchability proven below in Version currency | Per-run facts (threshold posture, semantic mode, tool version) still copied per-result or absent; `runs[].properties` is the shipped home for them |
@@ -128,7 +128,7 @@ concrete fix.
   `git show v1.15.0:detect_result.go` exists). Runnable examples exist at HEAD
   (`go-finding/examples/detectorv2/main.go`, `go-finding/pipeline/examples/detectorv2/`).
 - **art-dupl does instead**: `cloneDetector` implements only v1 `Detect` returning
-  `[]gofinding.Finding` (provider.go:135–181). Its crawl already knows the file count
+  `[]gofinding.Finding` (pkg/provider/provider.go:135–181). Its crawl already knows the file count
   (`collectSourceFiles`, pkg/provider/crawl.go:32) and discards it.
 - **Impact**: BuildFlow reports built from this provider render `filesScanned: 0` —
   indistinguishable from a real zero. The TODO T07b row's premise ("upstream-gated … next
@@ -183,7 +183,7 @@ report.SetRunProperty("art-dupl/mode", "semantic")
   same source fact" (go-finding/relativize.go:10–28, released v1.15.1, upstream issue #47).
 - **art-dupl does instead**: nothing; `findingIDs` hashes positions as handed in
   (printer/finding/finding.go:139–150), and the provider's `dir` comes from
-  `WorkingDirFromContext` (provider.go:138–141), which BuildFlow supplies as absolute paths.
+  `WorkingDirFromContext` (pkg/provider/provider.go:138–141), which BuildFlow supplies as absolute paths.
 - **Impact**: provider-lane finding IDs embed host paths (`/home/...`) and differ from CLI-lane
   IDs for the identical source fact — breaks cross-lane diffing/baselining and leaks host paths.
 - **Fix**: after the bump, at the end of `Detect`: `return gofinding.Relativize(findings, dir), nil`.

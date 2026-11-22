@@ -54,7 +54,7 @@ The provider is the sole toolsdk consumer in art-dupl (tests aside):
 | --- | --- | --- |
 | `pkg/provider/provider.go:87–124` | Self-registration spec | `toolsdk.Register`, `toolsdk.Spec` (Name:88, Description:89–94, Trigger:99 `OnFiles("go", "**/*.go", "**/*.templ")`, Inputs:100, Options:101–117, Detect:118, HealthCheck:123) |
 | `pkg/provider/provider.go:135–136` | Detect entry + context hygiene | `cloneDetector` implements `gofinding.Detector`; `toolsdk.EnsureContext(ctx)` |
-| `pkg/provider/provider.go:152–160` | Per-run option reads | `thresholdFromContext` (local), `boolOptionFromContext` (local) — built ON `toolsdk.OptionsFromContext` (provider.go:203, 223) |
+| `pkg/provider/provider.go:152–160` | Per-run option reads | `thresholdFromContext` (local), `boolOptionFromContext` (local) — built ON `toolsdk.OptionsFromContext` (pkg/provider/provider.go:203, 223) |
 | `pkg/provider/provider_test.go` | Contract pins | `TestProviderRegistersValidSpec` (:82), `TestDetectThresholdOption` (range-reject 0/1001 per D1), `TestDetectEmitSuppressedAcceptedOption`, `TestEmitSuppressedAcceptedOffIsByteIdentical`, `TestProviderDetect_ConcurrentSameWorkingDir` (:409), `TestDetect_MultiModuleWorkspaceShape` (:609) |
 | BuildFlow side (out of repo) | Host integration | blank import of `pkg/provider`; `toolsdk.All()` discovery; `toolsdk.WithOptions` per-run values (AGENTS.md:324) |
 
@@ -68,14 +68,14 @@ Applicable** (every N/A carries a one-line reason). 15 rows.
 
 | # | Capability | Status | Evidence | Impact |
 | --- | --- | --- | --- | --- |
-| 1 | Spec + process-global registry (`Register`, `All`) | Fully Leveraged | provider.go:87 (`var Provider = toolsdk.Register(...)` — package-level var = the entire BuildFlow wiring step via blank import) | Zero host-side glue; live in BuildFlow since 2026-09-25 |
-| 2 | Trigger declaration (`OnFiles` language + patterns; vs `OnGoFiles`/`OnGoModule`) | Fully Leveraged | provider.go:99 — `OnFiles("go", "**/*.go", "**/*.templ")` is the correct form: `OnGoFiles`/`OnGoModule` would drop `.templ` coverage (§06.2 verdict); empty `Requires` deliberate (works on non-module trees, M59 §f#24, provider.go:95–98) | Fires on exactly the files it can parse |
+| 1 | Spec + process-global registry (`Register`, `All`) | Fully Leveraged | pkg/provider/provider.go:87 (`var Provider = toolsdk.Register(...)` — package-level var = the entire BuildFlow wiring step via blank import) | Zero host-side glue; live in BuildFlow since 2026-09-25 |
+| 2 | Trigger declaration (`OnFiles` language + patterns; vs `OnGoFiles`/`OnGoModule`) | Fully Leveraged | pkg/provider/provider.go:99 — `OnFiles("go", "**/*.go", "**/*.templ")` is the correct form: `OnGoFiles`/`OnGoModule` would drop `.templ` coverage (§06.2 verdict); empty `Requires` deliberate (works on non-module trees, M59 §f#24, pkg/provider/provider.go:95–98) | Fires on exactly the files it can parse |
 | 3 | Trigger validation at `Register` (v1.16.0, issue #44; `ErrInvalidTrigger`) | Fully Leveraged (passive) | art-dupl's Trigger is validation-eligible and valid: language `"go"` ∈ `ValidLanguages()`, patterns non-empty (go-finding/toolsdk/spec.go:97–178); `TestProviderRegistersValidSpec` pins the registration | Malformed-trigger startup failures now impossible by construction; nothing for art-dupl to do |
-| 4 | Options channel — declaration + kind contract (`Spec.Options`, `Option`, `OptionKind*`, consumer-side `ValidateOptions`) | Fully Leveraged | provider.go:101–117: `threshold` (int, default `artdupl.DefaultThreshold`, 1–1000 range enforced at Detect per the D1 contract — §06.2 dissolved verdict) and `emit-suppressed-accepted` (bool, default false load-bearing); `TestDetectThresholdOption` | Consumers tune per run without rebuilds |
-| 5 | **Typed option accessors `StringFromContext`/`IntFromContext`/`BoolFromContext` (v1.16.0, issue #43)** | **Missed Opportunity** | provider.go:201–219 (`thresholdFromContext`) and provider.go:221–241 (`boolOptionFromContext`) hand-roll the lookup/assert/fallback plumbing the accessors ship — go-finding/toolsdk/options.go:142, 149, 156, **present in the pinned tag** (`git show toolsdk/v1.16.0:toolsdk/options.go`). Upstream shipped them explicitly "so tools stop hand-rolling the lookup/assert/fallback plumbing" | ~40 lines of duplicated option plumbing diverge from the fleet-standard read path; wrong-kind handling differs (local: silent unset; library: `ErrOptionKindMismatch`) |
-| 6 | `EnsureContext` | Fully Leveraged | provider.go:136 (nil-context hardening before any read) | Correct contract at the Detect boundary |
-| 7 | `HealthCheck` | Fully Leveraged | provider.go:123 — self-documenting no-op (pure-Go detector, nothing to probe; declared so absence isn't mistaken for unverified) | Honest spec surface |
-| 8 | `Inputs` declaration (read contract) | Fully Leveraged | provider.go:100 (`**/*.go`, `**/*.templ`) — gates the tool on file presence and feeds host data-flow edges | Host ordering correctness |
+| 4 | Options channel — declaration + kind contract (`Spec.Options`, `Option`, `OptionKind*`, consumer-side `ValidateOptions`) | Fully Leveraged | pkg/provider/provider.go:101–117: `threshold` (int, default `artdupl.DefaultThreshold`, 1–1000 range enforced at Detect per the D1 contract — §06.2 dissolved verdict) and `emit-suppressed-accepted` (bool, default false load-bearing); `TestDetectThresholdOption` | Consumers tune per run without rebuilds |
+| 5 | **Typed option accessors `StringFromContext`/`IntFromContext`/`BoolFromContext` (v1.16.0, issue #43)** | **Missed Opportunity** | pkg/provider/provider.go:201–219 (`thresholdFromContext`) and pkg/provider/provider.go:221–241 (`boolOptionFromContext`) hand-roll the lookup/assert/fallback plumbing the accessors ship — go-finding/toolsdk/options.go:142, 149, 156, **present in the pinned tag** (`git show toolsdk/v1.16.0:toolsdk/options.go`). Upstream shipped them explicitly "so tools stop hand-rolling the lookup/assert/fallback plumbing" | ~40 lines of duplicated option plumbing diverge from the fleet-standard read path; wrong-kind handling differs (local: silent unset; library: `ErrOptionKindMismatch`) |
+| 6 | `EnsureContext` | Fully Leveraged | pkg/provider/provider.go:136 (nil-context hardening before any read) | Correct contract at the Detect boundary |
+| 7 | `HealthCheck` | Fully Leveraged | pkg/provider/provider.go:123 — self-documenting no-op (pure-Go detector, nothing to probe; declared so absence isn't mistaken for unverified) | Honest spec surface |
+| 8 | `Inputs` declaration (read contract) | Fully Leveraged | pkg/provider/provider.go:100 (`**/*.go`, `**/*.templ`) — gates the tool on file presence and feeds host data-flow edges | Host ordering correctness |
 | 9 | `Spec.Outputs` write contract (v1.16.0) | Not Applicable | Read-only detector; empty `Outputs` IS the documented correct declaration for detect-only tools ("empty = the tool writes nothing hosts must order around", go-finding/toolsdk/spec.go:71–77) |
 | 10 | `DependsOn` | Not Applicable | Single self-contained detector; no intra-run tool ordering to declare beyond what Inputs-derived edges already give the host |
 | 11 | `ModuleFanOut` | Not Applicable | Cross-module clone detection is art-dupl's value — a clone duplicated between workspace modules is exactly the finding BuildFlow wants; per-module fan-out would blind it (§05.2 verdict, re-confirmed §06.2) |
@@ -95,8 +95,8 @@ Applicable** (every N/A carries a one-line reason). 15 rows.
   `ErrOptionKindMismatch`. Shipped per upstream changelog issue #43 precisely so "tools stop
   hand-rolling the lookup/assert/fallback plumbing."
 - **art-dupl does instead**: two local helpers, `thresholdFromContext`
-  (provider.go:201–219: `OptionsFromContext` → map lookup → `.(int)` assert → `(int, bool)`)
-  and `boolOptionFromContext` (provider.go:221–241: same shape for bool).
+  (pkg/provider/provider.go:201–219: `OptionsFromContext` → map lookup → `.(int)` assert → `(int, bool)`)
+  and `boolOptionFromContext` (pkg/provider/provider.go:221–241: same shape for bool).
 - **Impact**: functional duplication with a semantic divergence: the local helpers silently
   treat a wrong-kind value as unset (documented as "only reachable by callers that bypassed
   ValidateOptions"), while the library accessors surface `ErrOptionKindMismatch`. Maintenance
