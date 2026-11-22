@@ -73,7 +73,7 @@
 // LICENSE: MIT
 module github.com/LarsArtmann/art-dupl
 
-go 1.27
+go 1.27.1
 
 ignore dist
 
