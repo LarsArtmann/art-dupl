@@ -52,7 +52,7 @@ def rglob_basenames(root: Path, name: str) -> list[Path]:
     return hits
 
 
-def resolve(raw: str) -> tuple[Path | None, str):
+def resolve(raw: str) -> tuple[Path | None, str]:
     """Resolve a citation path. Returns (resolved, note)."""
     p = Path(raw).expanduser()
     if p.is_absolute():
