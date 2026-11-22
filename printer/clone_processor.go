@@ -56,6 +56,7 @@ func syntaxToCloneNode(n *syntax.Node) *domain.CloneNode {
 		EnclosingReturnArity: n.EnclosingReturnArity,
 		InterfaceMethod:      n.InterfaceMethod,
 		IsAlias:              n.IsAlias,
+		GoSnippet:            n.GoSnippet,
 	}
 	if len(n.Children) > 0 {
 		cn.Children = make([]*domain.CloneNode, len(n.Children))

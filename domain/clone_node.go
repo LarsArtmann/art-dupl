@@ -48,6 +48,12 @@ type CloneNode struct {
 	// actionability layer uses this to distinguish re-export shims (aliases,
 	// non-actionable) from named type definitions (potentially actionable).
 	IsAlias bool
+
+	// GoSnippet mirrors syntax.Node.GoSnippet: the node was parsed from Go
+	// source embedded in a .templ file. The golang and templ node-type enums
+	// overlap numerically (parallel iota), so consumers must consult this flag
+	// before interpreting BaseType through either enum (ADR-0027).
+	GoSnippet bool
 }
 
 // HasChildren returns true if the node has at least one child.

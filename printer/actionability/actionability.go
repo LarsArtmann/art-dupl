@@ -45,6 +45,7 @@ var actionabilityPatternTable = []patternEntry{ //nolint:gochecknoglobals // sta
 	{isBuilderCallbackPattern, PatternBuilderCallback},
 	{isTemplRenderingIdiom, PatternTemplRenderingIdiom},
 	{isTemplChildrenIdiom, PatternTemplChildrenIdiom},
+	{isSignatureFragmentMatch, PatternSignatureFragment},
 	{isDeferCallPattern, PatternDeferCall},
 	{isTestFrameworkCallPattern, PatternTestFrameworkCall},
 	{isTestPreamblePattern, PatternTestPreamble},
@@ -206,6 +207,7 @@ const (
 	PatternPropertyParameterizable    PatternLabel = "property-parameterizable"
 	PatternTemplRenderingIdiom        PatternLabel = "templ-rendering-idiom"
 	PatternTemplChildrenIdiom         PatternLabel = "templ-children-idiom"
+	PatternSignatureFragment          PatternLabel = "signature-fragment"
 	PatternDeferCall                  PatternLabel = "defer-call"
 	PatternTestFrameworkCall          PatternLabel = "test-framework-call"
 	PatternTestPreamble               PatternLabel = "test-preamble"
