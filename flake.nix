@@ -271,6 +271,7 @@
                   cd ${pkgs.lib.cleanSource ./.}
                   python3 scripts/citation-sweep.py --self-test
                   python3 scripts/citation-sweep.py --skip-missing-roots
+                  python3 scripts/sync-review-index.py --check
                   touch $out
                 '';
 
