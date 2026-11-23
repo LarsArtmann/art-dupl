@@ -27,7 +27,13 @@ STAMP=docs/review/libs/index-screenshot.sha256
 
 die() { echo "SCREENSHOT STALE: $*" >&2; exit 1; }
 
-[ -f "$HTML" ] || die "$HTML missing"
+# The dashboard is gitignored (`*.html`, .gitignore:22) — flakes and CI
+# checkouts (git-tracked files only) don't carry it. Skip there; enforce
+# wherever the working tree has the file (local dev).
+if [ ! -f "$HTML" ]; then
+  echo "screenshot stamp SKIP: $HTML not in this checkout (gitignored *.html; sandbox/CI)"
+  exit 0
+fi
 [ -f "$SHOT" ] || die "$SHOT missing"
 [ -f "$STAMP" ] || die "$STAMP missing"
 
