@@ -200,7 +200,7 @@ Across two sessions, I have now removed `exhaustruct`/`tagliatelle` from `.golan
 26. **The `errors/marshal.go` sentinels** (`ErrUnsupportedValueType`, `ErrUnsupportedType`, `ErrInvalidUTF8`) — are these duplicated anywhere? Not checked this session.
 27. **`config.ErrInvalidType`** (`"invalid type"`) — very generic name. Is it duplicated? Is the name too vague?
 28. **`config.ErrInvalidFileType`** (`"invalid file type"`) — should this be in domain? It's a domain concept.
-29. **`baseline.ErrUnsupportedBaselineVersion`** — any alias needed? Not checked.
+29. ~~**`baseline.ErrUnsupportedBaselineVersion`** — any alias needed? Not checked.~~ done — checked 2026-11-23 — baseline-internal only (baseline/baseline.go:54, used at :183); pkg/artdupl never consumes baseline, no cross-package alias needed
 30. **The `job/incremental.go::errUnexpectedSingleflightType`** — unexported sentinel in a production file. Is it compared via `errors.Is` across files? If so, it should be exported or the comparison should be local.
 
 ---

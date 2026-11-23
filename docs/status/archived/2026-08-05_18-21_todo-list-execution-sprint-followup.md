@@ -166,7 +166,7 @@ The old calibration report (`confidence-thresholds-2026-08-05.md`) claimed "0% f
 
 ### Code quality
 
-27. **Move the scripts test to `internal/scripts/`** or add a build tag to exclude from production builds.
+27. ~~**Move the scripts test to `internal/scripts/`** or add a build tag to exclude from production builds.~~ **NOT-DO — _test.go files never ship in production builds; scripts/check_disabled_linters_test.go runs in the default suite by design and its path is documented in CHANGELOG.**
 28. **Add integration test for the full calibration pipeline** (build → run → parse → report).
 29. **Refactor `calibrate-confidence.sh` to use `--json` output** instead of grep-parsing explain text.
 30. **Add type safety to the guard script** — validate YAML structure, not just regex patterns.

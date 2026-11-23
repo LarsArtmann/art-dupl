@@ -1146,6 +1146,29 @@ func TestDetectThresholdOption(t *testing.T) {
 	}
 }
 
+// A wrong-kind option value that bypassed Spec.ValidateOptions (the only way
+// to get one into the context) fails Detect loudly with the fleet's
+// ErrOptionKindMismatch via the typed accessors — the old hand-rolled reads
+// silently treated it as unset.
+func TestDetectWrongKindOptionBypassFailsLoudly(t *testing.T) {
+	t.Parallel()
+
+	dir := t.TempDir()
+	writeFile(t, dir, "a.go", "package fixtures\n\nfunc f() {}\n")
+
+	detector := cloneDetector{}
+
+	badThreshold := toolsdk.WithOptions(dirContext(t, dir), toolsdk.OptionValues{providerOptionThreshold: "5"})
+	if _, err := detector.Detect(badThreshold); !errors.Is(err, toolsdk.ErrOptionKindMismatch) {
+		t.Fatalf("threshold wrong-kind error = %v, want ErrOptionKindMismatch", err)
+	}
+
+	badEmit := toolsdk.WithOptions(dirContext(t, dir), toolsdk.OptionValues{providerOptionEmitSuppressedAccepted: 1})
+	if _, err := detector.Detect(badEmit); !errors.Is(err, toolsdk.ErrOptionKindMismatch) {
+		t.Fatalf("emit-suppressed-accepted wrong-kind error = %v, want ErrOptionKindMismatch", err)
+	}
+}
+
 // TestDetectEmitSuppressedAcceptedOption exercises the declared
 // "emit-suppressed-accepted" knob end to end: a clone group covered by an
 // in-source //art-dupl:accept directive is emitted with in-source

@@ -177,12 +177,26 @@ func (cloneDetector) detectWithCoverage(ctx context.Context) ([]gofinding.Findin
 	}
 
 	opts := providerOptions()
-	if threshold, ok := thresholdFromContext(ctx); ok {
-		opts.Threshold = threshold
+
+	// Fleet-semantics option reads (toolsdk v1.16.0 typed accessors): unset
+	// yields the declared default, a present value of the wrong Go kind is a
+	// loud ErrOptionKindMismatch error — only reachable by callers that
+	// bypassed Spec.ValidateOptions (the D1 declaration-only contract is
+	// unchanged: validation never inspects consumer values).
+	threshold, err := toolsdk.IntFromContext(ctx, providerOptionThreshold, artdupl.DefaultThreshold)
+	if err != nil {
+		return nil, 0, fmt.Errorf("read %q option: %w", providerOptionThreshold, err)
+	}
+
+	opts.Threshold = threshold
+
+	emitSuppressed, err := toolsdk.BoolFromContext(ctx, providerOptionEmitSuppressedAccepted, false)
+	if err != nil {
+		return nil, 0, fmt.Errorf("read %q option: %w", providerOptionEmitSuppressedAccepted, err)
 	}
 
 	var acceptedSet *accept.AcceptedSet
-	if boolOptionFromContext(ctx, providerOptionEmitSuppressedAccepted) {
+	if emitSuppressed {
 		acceptedSet = accept.NewAcceptedSet(os.ReadFile)
 	}
 
@@ -218,47 +232,6 @@ func providerOptions() *artdupl.Options {
 	opts.MaxClonesPerGroup = 0
 
 	return opts
-}
-
-// thresholdFromContext reads the declared "threshold" option from the
-// per-run option values. The toolsdk kind-checks values against the Spec
-// declaration and the SDK validates the range (1-1000) with the domain
-// sentinels, so a non-int here only occurs for direct callers that bypassed
-// ValidateOptions; it is treated as unset rather than panicking.
-func thresholdFromContext(ctx context.Context) (int, bool) {
-	values, ok := toolsdk.OptionsFromContext(ctx)
-	if !ok {
-		return 0, false
-	}
-
-	v, ok := values[providerOptionThreshold]
-	if !ok {
-		return 0, false
-	}
-
-	n, ok := v.(int)
-
-	return n, ok
-}
-
-// boolOptionFromContext reads a declared bool option from the per-run
-// option values, mirroring thresholdFromContext. Values of the wrong Go
-// kind only occur for direct callers that bypassed ValidateOptions and are
-// treated as unset.
-func boolOptionFromContext(ctx context.Context, name string) bool {
-	values, ok := toolsdk.OptionsFromContext(ctx)
-	if !ok {
-		return false
-	}
-
-	v, ok := values[name]
-	if !ok {
-		return false
-	}
-
-	b, ok := v.(bool)
-
-	return ok && b
 }
 
 // findingsFromGroups converts SDK clone groups into go-finding findings via
