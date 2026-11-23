@@ -57,7 +57,11 @@ banner naming its replacement.
 Index drift is mechanically gated: `scripts/sync-review-index.py --check`
 derives every version cell and Date cell from the report header tables and
 fails on mismatch (wired into the flake `citation-sweep` check; `--fix`
-rewrites the drifted cells after any report-header edit).
+rewrites the drifted cells after any report-header edit). The dashboard
+screenshot is freshness-gated the same way:
+`scripts/check-review-screenshot.sh` compares the dashboard's SHA-256 against
+`libs/index-screenshot.sha256` and fails after any dashboard edit without a
+regen (same flake check; `--regen` recaptures via headless chromium).
 
 Reopen rule (verified 2026-11-23 against `go-compliance.md` and
 `go-dag-app.md`): a NOT-ADOPTED verdict reopens ONLY when that report's
