@@ -2,6 +2,7 @@ package pipelineconfig
 
 import (
 	"os"
+	"slices"
 	"strings"
 	"testing"
 )
@@ -65,13 +66,7 @@ func TestBuildflowConfigKeepsGoAutoUpgradeSkipped(t *testing.T) {
 	items := skipStepsBlock(t, readBuildflowConfig(t))
 
 	for _, required := range []string{"go-auto-upgrade", "golangci-lint-auto-configure"} {
-		found := false
-		for _, item := range items {
-			if item == required {
-				found = true
-				break
-			}
-		}
+		found := slices.Contains(items, required)
 		if !found {
 			t.Fatalf("skip_steps lost %q (items: %v). Without the skip, buildflow --fix re-poisons the v1-API JSON files (recurrences #17-#21). Restore: %s. If the skip removal is intentional (owner Q1 resolved), update this gate.", required, items, restoreRitual)
 		}
