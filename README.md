@@ -1,6 +1,6 @@
 # art-dupl
 
-**Last Updated:** 2026-11-06 (claims re-verified against the binary: actionability pattern totals, node-type counts, output formats, transition layout)
+**Last Updated:** 2026-11-23 (claims re-verified against the binary: actionability pattern totals now 43 incl. signature-fragment, node-type counts, output formats, transition layout; count gate green)
 
 [![CI](https://github.com/LarsArtmann/art-dupl/actions/workflows/ci.yml/badge.svg)](https://github.com/LarsArtmann/art-dupl/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-e8a020.svg)](LICENSE)
@@ -47,7 +47,7 @@ Full documentation: **[art-dupl.lars.software](https://art-dupl.lars.software)**
 | CI baseline gating       | No                    | `baseline` + `check` subcommands                                                                                                                                               |
 | Diff visualization       | No                    | Side-by-side and inline diffs in HTML                                                                                                                                          |
 | Clone classification     | No                    | Type 1 / 2 / 3 labels + extractability scores                                                                                                                                  |
-| Actionability filtering  | No                    | Suppresses 42 pattern labels (37 boilerplate rules + 1 shape label + 4 property-engine labels: test scaffolding, error wrapping, Lock+Defer, etc.) - only in `--semantic` mode |
+| Actionability filtering  | No                    | Suppresses 43 pattern labels (38 boilerplate rules + 1 shape label + 4 property-engine labels: test scaffolding, error wrapping, Lock+Defer, etc.) - only in `--semantic` mode |
 | Parallel parsing         | No                    | Worker pool with auto-detect                                                                                                                                                   |
 | Programmatic SDK         | No                    | `pkg/artdupl` - Detector interface with streaming                                                                                                                              |
 

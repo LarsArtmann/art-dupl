@@ -3,7 +3,7 @@
 # Execution Plan — art-dupl Modularization
 
 **Date:** 2026-05-14
-**Status:** Draft
+~~**Status:** Draft~~ **Status:** DECIDED against — will not execute (banner above).
 **Prerequisite:** PROPOSAL.md and DEPENDENCY_GRAPH.md reviewed and approved
 
 ---
@@ -574,6 +574,8 @@ Phase 3 (CI + docs):             │
 
 ## Estimated Total Effort
 
+<!-- check-rows:ledger -->
+
 | Phase     | Tasks        | Effort         |
 | --------- | ------------ | -------------- |
 | Phase 0   | 4 tasks      | ~47 min        |
@@ -585,6 +587,8 @@ Phase 3 (CI + docs):             │
 ---
 
 ## Risk Mitigation Per Task
+
+<!-- check-rows:ledger -->
 
 | Task    | Risk                             | Mitigation                                                             |
 | ------- | -------------------------------- | ---------------------------------------------------------------------- |
@@ -598,6 +602,8 @@ Phase 3 (CI + docs):             │
 ---
 
 ## Commit Messages
+
+<!-- check-rows:ledger -->
 
 | Task | Commit Message                                                                 |
 | ---- | ------------------------------------------------------------------------------ |

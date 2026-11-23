@@ -6,7 +6,7 @@
     "message": "Duplicate code: 16 tokens in 2 instances",
     "severity": "warning",
     "position": {
-      "file": "<fixture>/one.go",
+      "file": "one.go",
       "line": 4,
       "column": 2,
       "offset": 77
@@ -73,7 +73,7 @@
     "message": "Duplicate code: 16 tokens in 2 instances",
     "severity": "warning",
     "position": {
-      "file": "<fixture>/two.go",
+      "file": "two.go",
       "line": 4,
       "column": 2,
       "offset": 80

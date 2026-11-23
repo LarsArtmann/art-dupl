@@ -1,6 +1,6 @@
 # Roadmap
 
-**Last Updated:** 2026-11-15 (docs-health cadence pass: pattern counts corrected to the 42 canon)
+**Last Updated:** 2026-11-23 (docs-health pass: pattern counts corrected to the 43 canon — signature-fragment shipped 2026-11-22)
 
 **No timeline.** Aspirational items for future consideration. Items graduate to `TODO_LIST.md` when they become actionable.
 
@@ -59,14 +59,14 @@ Shipped 2026-09-14: nested-block statements (loop/if/switch/select bodies, else-
 - **Mutation testing (gremlins/go-mutesting) behind a flake check**: mutation-test `suffixtree/` first.
 
 - **Interface-aware suppression (cross-package)**: Same-package interface detection via `go/types` is implemented (the `interface-method` pattern). Cross-package and stdlib interfaces still rely on the static name list (`commonInterfaceMethodNames`). Full call-graph analysis remains future work.
-- **Configurable actionability patterns**: `--disable-pattern <label>` and `--list-patterns` implemented. 42 labels active (37 denylist + 1 shape + 4 property-engine, count-gated in FEATURES).
-- **ML-based actionability classification**: Train a model on labeled clone data to predict whether a clone is actionable, replacing the rule-based actionability patterns. Would handle edge cases the 42 current pattern labels miss.
+- **Configurable actionability patterns**: `--disable-pattern <label>` and `--list-patterns` implemented. 43 labels active (38 denylist + 1 shape + 4 property-engine, count-gated in FEATURES).
+- **ML-based actionability classification**: Train a model on labeled clone data to predict whether a clone is actionable, replacing the rule-based actionability patterns. Would handle edge cases the 43 current pattern labels miss.
 - **Fixability score**: Property-based extractability engine implemented (ADR-0017) with 4 properties + confidence scoring. Three-tier output (actionable / low-confidence / non-actionable). Confidence values need calibration against real-world data. Could evolve into a continuous fixability score instead of binary Actionable/NonActionable.
 - **Nested-scope shadowing in alpha-normalization**: Current symbol table is flat (no nested-scope shadowing). Proper lexical scoping would improve Type-2 clone accuracy in deeply nested code.
 - **Type narrowing for interface-typed variables**: If a local has an interface type, two variables with the same interface type match even if their concrete types differ. Could add concrete-type awareness via flow analysis.
 - **Irreducibility class per group**: Classify each group by WHY it can't be reduced: semantic (real duplication), idiomatic (language convention), structurally-bound (framework constraint), or threshold-noise. Would give users actionable context instead of a binary verdict. (samber-do-auditlog feedback) branching-flow's dupe `CategorizeGroup` (verdict + named-pattern reason strings, 2026-10-11 lessons) is a working model for the reason taxonomy.
 - **Helper-call-site detection via call-graph**: Detect when duplication is already an invocation of a shared helper (the extraction IS the helper call, not more duplication). Requires call-graph resolution. (upd, discordsync feedback)
-- **Same-function clone tag**: groups whose occurrences all live inside one `ast.FuncDecl` could be tagged `same-function` ("probably intentional — review before extracting") instead of the generic low label. (httputil feedback §3, routed 2026-11-15; intent-signaling is currently carried by the 42-label actionability engine + category table.)
+- **Same-function clone tag**: groups whose occurrences all live inside one `ast.FuncDecl` could be tagged `same-function` ("probably intentional — review before extracting") instead of the generic low label. (httputil feedback §3, routed 2026-11-15; intent-signaling is currently carried by the 43-label actionability engine + category table.)
 - **`unknown` category → AST-type fallback**: when the classifier lands in `unknown`, derive a provisional category from the AST shape (call/assign/decl) instead of leaving it uninformative. (go-auto-upgrade feedback, routed 2026-11-15.)
 - **Golden-corpus recall harness**: run detection over a curated set of known clones (including loop-skeleton shapes) and report recall %. Turns "did the granularity change help?" into a number. (report #42) branching-flow joins the corpus set when the harness exists (plan task T14, 2026-10-11) - it is a live consumer with a `-t 1`-triaged baseline (`docs/dedup-acceptance.md` on their side).
 - **Type-aware value heuristic**: report how many type-aware-killed groups were actionable, so the 24x runtime cost becomes a data-driven decision per repo. (report #41/e6)

@@ -18,6 +18,7 @@ after = `v0.9.1-0.20261106063509-1ce6a7b3f64e`.
 ## a) FULLY DONE
 
 <!-- check-rows:ledger -->
+
 | #  | Item                                                                                                                                                                                                                                                                                                                                                                                                                                                               | Evidence                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | -- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 1  | **Tree repair — dependency break**: `go get -u` sweeps bumped indirect `github.com/a-h/parse` while downgrading `templ` to v0.3.1070; templ's parsers no longer satisfied `parse.Parser` (11 compile errors inside the dep)                                                                                                                                                                                                                                        | pinned parse back to templ's declared requirement (`v0.0.0-20250122154542-74294addb73e`); `templ` v0.3.1100 checked and requires the SAME pin, so the downgrade was the right fix rather than a templ bump; `go build ./...` green                                                                                                                                                                                                                                                                                                                                                     |
@@ -113,54 +114,54 @@ after = `v0.9.1-0.20261106063509-1ce6a7b3f64e`.
 
 1. Run `nix flake check` on `ab043dbf` and fix anything it surfaces.
 2. Cut a release (minor) with the CacheVersion bump; note the mandatory consumer baseline re-record.
-~~3. Add `baseline`/`new`/`suppressed` to `check --json` output.~~ done — the baseline split ships on the check --json document (AGENTS.md issue #12)
-4. Default-on stderr notice when the baseline identity differs (no exit-code change).
-5. Wire the identity guard into `--diff-report`.
-6. Write the ADR for baseline identity (policy scope, legacy handling, version-string decision).
-7. Include (or explicitly exclude with rationale) `threshold` and test-inclusion in the policy.
-8. Verify `GoSnippet` survives gob cache round-trip; add the test.
-9. Fix CSS constant-value hashing (`ConstantCSSProperty.Value`) — new issue + CacheVersion 9.
-10. Audit HTML printer for the group-level classification heuristic and the baseline split.
-11. Update `SDK_DESIGN.md` for templ text hashing; add an SDK templ text test.
-12. Provider test: templ fixture whose members differ only in text → zero findings.
-13. Measure parse/alloc cost of `TextContent` nodes; record in `docs/benchmarks/`.
-14. Add `TextContent` + `GoSnippet` to `docs/DOMAIN_LANGUAGE.md`.
-15. Update `baseline.go` package-doc format example with the `analyzer` block.
-16. Decide baseline file `version` bump (1.0 → 1.1) and whether `Load` should accept both.
-17. Write `scripts/corpus-diff.py` and document its use for precision claims.
-18. Re-run the consumer gates (templ-components once its merge completes, webphone) with the new binary and record the delta.
-19. Add a BDD spec for `check --baseline-version-must-match` (cmd-level tests exist; BDD would pin user-facing text).
-20. Add a BDD spec for the `check` split footer (currently cmd-level only).
-21. Add a `printer` unit test for `writeBaselineSummary` variants (0 vs >0 suppressed).
-22. Verify footer precedence when both `baselineSplit` and suppression stats are set; document it.
-23. Add an explicit test for `split.Total()` = in-baseline + new + suppressed invariance.
-24. Revisit the docs count gate for templ node types if the CSS-value fix changes dispatch.
-25. Investigate the `excerptRunes`/`maxRunes` const-declaration group (pattern gap, not detection).
-26. Consider a `signature` category for `FieldList`/`FuncType`/`Field` units (Go table currently `unknown`).
-27. Decide whether `TextContent` should be statement-marked for component-top-level text; add a test either way.
-28. Add fuzz seeds for text coalescing (mixed whitespace, multi-line, entities).
-29. Update the website templ section to describe markup identity hashing.
-30. Fix the remaining `docs/benchmarks/README.md` missing rows (sarif-snippet-share, crawl-overhead, sarif-alloc).
-31. Run the overdue docs-health pass (due 2026-10-28) and harvest this session's TODO entries.
-32. Refresh README.md content and stamp (or record why it is not refreshed).
-33. Add the analysis to `docs/SELF_CLEAN_LEDGER.md` after the next `scripts/self-scan.sh` run.
-34. Check `--quiet`/`--json` interactions with the new split line (text-only by construction, but pin it).
-35. Add a small unit test for `analyzerPolicyParts` output shape (golden string) so future fields are intentional.
-36. Verify `analyzerIdentity` does not call into config lazily (no behavior) and costs nothing measurable.
-37. Decide whether `baseline` should warn when overwriting a baseline recorded under a different policy.
-38. Add the identity guard to any future baseline consumer (LSP/diff-report) via a shared helper — currently one call site.
-39. Re-run the monthly self-scan cadence and record decisions.
-40. Consider exporting the algorithm revision in `version --json` (useful for CI pin debugging).
-41. Review whether `check` should print the analyzer identity on the _green_ path for auditability.
-42. Add a TODO entry for `<pre>`/whitespace-sensitive text tolerance and measure real cases.
-43. Check `bdd/discordsync_regression_test.go` expectations against the new DiscordSync counts (suite green, but the fixture corpus may be synthetic).
-44. Re-verify `--show-suppressed` surfaces text-divergent groups correctly (they no longer exist as groups, so nothing to show — confirm no regression in the suppression accounting).
-45. Confirm the `trivial-fragment` label still fires for identical single-element runs after text hashing.
-46. Document the "0 groups" fixture (issue #14 repro) somewhere durable — currently only in the BDD spec.
-47. Clean up `docs/drafts/2026-11-06_issue-closures.md` (archive under docs/drafts/README or delete).
-48. Add a CHANGELOG bullet for the split-arithmetic fix (currently only the feature bullet).
-49. Re-check `.buildflow.yml` skip list — `golangci-lint-auto-configure` is still skipped; decide if it can be restored now that lint is green.
-50. Re-read `HOW_TO_USE.md` check section against the actual `--help` output for drift.
+   ~~3. Add `baseline`/`new`/`suppressed` to `check --json` output.~~ done — the baseline split ships on the check --json document (AGENTS.md issue #12)
+3. Default-on stderr notice when the baseline identity differs (no exit-code change).
+4. Wire the identity guard into `--diff-report`.
+5. Write the ADR for baseline identity (policy scope, legacy handling, version-string decision).
+6. Include (or explicitly exclude with rationale) `threshold` and test-inclusion in the policy.
+7. Verify `GoSnippet` survives gob cache round-trip; add the test.
+8. Fix CSS constant-value hashing (`ConstantCSSProperty.Value`) — new issue + CacheVersion 9.
+9. Audit HTML printer for the group-level classification heuristic and the baseline split.
+10. Update `SDK_DESIGN.md` for templ text hashing; add an SDK templ text test.
+11. Provider test: templ fixture whose members differ only in text → zero findings.
+12. Measure parse/alloc cost of `TextContent` nodes; record in `docs/benchmarks/`.
+13. Add `TextContent` + `GoSnippet` to `docs/DOMAIN_LANGUAGE.md`.
+14. Update `baseline.go` package-doc format example with the `analyzer` block.
+15. ~~Decide baseline file `version` bump (1.0 → 1.1) and whether `Load` should accept both.~~ done — decided at code level — file version deliberately stays 1.0 (baseline/baseline.go:49,128) and Load keeps strict single-version rejection (:183); ADR-0029 (2026-11-06) added the analyzer identity block for compatibility gating instead of a version bump
+16. Write `scripts/corpus-diff.py` and document its use for precision claims.
+17. Re-run the consumer gates (templ-components once its merge completes, webphone) with the new binary and record the delta.
+18. Add a BDD spec for `check --baseline-version-must-match` (cmd-level tests exist; BDD would pin user-facing text).
+19. Add a BDD spec for the `check` split footer (currently cmd-level only).
+20. Add a `printer` unit test for `writeBaselineSummary` variants (0 vs >0 suppressed).
+21. Verify footer precedence when both `baselineSplit` and suppression stats are set; document it.
+22. Add an explicit test for `split.Total()` = in-baseline + new + suppressed invariance.
+23. Revisit the docs count gate for templ node types if the CSS-value fix changes dispatch.
+24. Investigate the `excerptRunes`/`maxRunes` const-declaration group (pattern gap, not detection).
+25. Consider a `signature` category for `FieldList`/`FuncType`/`Field` units (Go table currently `unknown`).
+26. Decide whether `TextContent` should be statement-marked for component-top-level text; add a test either way.
+27. Add fuzz seeds for text coalescing (mixed whitespace, multi-line, entities).
+28. Update the website templ section to describe markup identity hashing.
+29. Fix the remaining `docs/benchmarks/README.md` missing rows (sarif-snippet-share, crawl-overhead, sarif-alloc).
+30. Run the overdue docs-health pass (due 2026-10-28) and harvest this session's TODO entries.
+31. Refresh README.md content and stamp (or record why it is not refreshed).
+32. Add the analysis to `docs/SELF_CLEAN_LEDGER.md` after the next `scripts/self-scan.sh` run.
+33. Check `--quiet`/`--json` interactions with the new split line (text-only by construction, but pin it).
+34. Add a small unit test for `analyzerPolicyParts` output shape (golden string) so future fields are intentional.
+35. Verify `analyzerIdentity` does not call into config lazily (no behavior) and costs nothing measurable.
+36. Decide whether `baseline` should warn when overwriting a baseline recorded under a different policy.
+37. Add the identity guard to any future baseline consumer (LSP/diff-report) via a shared helper — currently one call site.
+38. Re-run the monthly self-scan cadence and record decisions.
+39. Consider exporting the algorithm revision in `version --json` (useful for CI pin debugging).
+40. Review whether `check` should print the analyzer identity on the _green_ path for auditability.
+41. Add a TODO entry for `<pre>`/whitespace-sensitive text tolerance and measure real cases.
+42. Check `bdd/discordsync_regression_test.go` expectations against the new DiscordSync counts (suite green, but the fixture corpus may be synthetic).
+43. Re-verify `--show-suppressed` surfaces text-divergent groups correctly (they no longer exist as groups, so nothing to show — confirm no regression in the suppression accounting).
+44. Confirm the `trivial-fragment` label still fires for identical single-element runs after text hashing.
+45. Document the "0 groups" fixture (issue #14 repro) somewhere durable — currently only in the BDD spec.
+46. Clean up `docs/drafts/2026-11-06_issue-closures.md` (archive under docs/drafts/README or delete).
+47. Add a CHANGELOG bullet for the split-arithmetic fix (currently only the feature bullet).
+48. Re-check `.buildflow.yml` skip list — `golangci-lint-auto-configure` is still skipped; decide if it can be restored now that lint is green.
+49. Re-read `HOW_TO_USE.md` check section against the actual `--help` output for drift.
 
 ---
 

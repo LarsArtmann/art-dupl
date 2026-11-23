@@ -148,7 +148,7 @@ claim** (cache-misses −59.2%, references −67.8%, <3% round variance).
 
 1. Re-run the parNumCPU A/B in a genuine idle window (overnight watcher or
    manual when load<4) to confirm the reversal magnitude without the asterisk.
-2. Same for threshold_10 ±CI comparison (pinned-tighter-CIs claim, n=30).
+2. ~~Same for threshold_10 ±CI comparison (pinned-tighter-CIs claim, n=30).~~ done — comparison exists — docs/benchmarks/baseline-2026-08-16-v3_notes.md:83 pins threshold_10 pinned ±4% vs unpinned ±19% (p=0.146), confirming the pinned-tighter-CIs claim
 3. Commit A/B runner scripts (`/tmp/artdupl-timing/*.sh`) into `scripts/bench/`.
    ~~4. Run full `nix flake check` on the current tree (race + alloc-gate + arch-lint).~~ done — full check passed 2026-09-23
 4. Verify/soften the AMD event 0x64 umask semantics wording in the notes/ADR.

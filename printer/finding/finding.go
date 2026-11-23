@@ -52,6 +52,19 @@ const (
 	MetadataKeyLines                = "art-dupl/lines"
 )
 
+// Run-property keys recorded once per ToReport call on the go-finding run
+// propertyBag (go-finding v1.16.0, upstream go-finding#53): per-run facts
+// belong at run level, not copied onto every result.
+const (
+	// RunPropertyKeyThreshold is the EFFECTIVE severity-ladder threshold
+	// (the declared value, or config.DefaultThreshold when unset).
+	RunPropertyKeyThreshold = "art-dupl/threshold"
+
+	// RunPropertyKeyDetectionMethod is the detection mode label, recorded
+	// only when the caller declared one.
+	RunPropertyKeyDetectionMethod = MetadataKeyDetectionMethod
+)
+
 // Options tunes the conversion. The zero value is usable: the threshold
 // falls back to config.DefaultThreshold and unknown optional values are
 // simply omitted from the output.
@@ -128,10 +141,29 @@ func ToReport(groups []domain.ProcessedCloneGroup, opts Options) *gofinding.Repo
 		findings = append(findings, ToFindings(group, opts)...)
 	}
 
-	return gofinding.NewReportFromFindings(
+	report := gofinding.NewReportFromFindings(
 		gofinding.ToolInfo{Name: ToolName, Version: opts.Version},
 		findings,
 	)
+
+	report.SetRunProperty(RunPropertyKeyThreshold, resolveThreshold(opts.Threshold))
+
+	if opts.DetectionMethod != "" {
+		report.SetRunProperty(RunPropertyKeyDetectionMethod, opts.DetectionMethod)
+	}
+
+	return report
+}
+
+// resolveThreshold normalizes the declared threshold to the effective
+// severity-ladder value (<= 0 means config.DefaultThreshold) — the same rule
+// toFinding applies per group, now in one place.
+func resolveThreshold(threshold int) int {
+	if threshold <= 0 {
+		return config.DefaultThreshold
+	}
+
+	return threshold
 }
 
 // findingIDs precomputes the stable ID of every clone occurrence so Related
@@ -159,11 +191,7 @@ func toFinding(
 	opts Options,
 ) gofinding.Finding {
 	size := group.TotalTokenCount()
-
-	threshold := opts.Threshold
-	if threshold <= 0 {
-		threshold = config.DefaultThreshold
-	}
+	threshold := resolveThreshold(opts.Threshold)
 
 	b := tmpl.Builder(
 		gofinding.RuleName(RuleCloneDetected),

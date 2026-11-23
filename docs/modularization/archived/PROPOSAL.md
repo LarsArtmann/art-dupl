@@ -3,7 +3,7 @@
 # Modularization Proposal — art-dupl
 
 **Date:** 2026-05-14 (updated 2026-06-15)
-**Status:** Proposal — Reviewed and Updated
+~~**Status:** Proposal — Reviewed and Updated~~ **Status:** DECIDED against — single module kept (banner above); superseded by `2026-06-20_PROPOSAL.html`.
 **Module:** `github.com/LarsArtmann/art-dupl`
 
 ---
@@ -33,6 +33,8 @@ art-dupl is a Go code duplication detection tool currently structured as a singl
 ## 2. Current State Analysis
 
 ### 2.1 Module Landscape
+
+<!-- check-rows:ledger -->
 
 | Property                 | Value           |
 | ------------------------ | --------------- |
@@ -86,6 +88,8 @@ Layer 7 (entry points):
 
 ### 2.3 Coupling Hotspots
 
+<!-- check-rows:ledger -->
+
 | Hotspot                                 | Severity   | Description                                                                                      |
 | --------------------------------------- | ---------- | ------------------------------------------------------------------------------------------------ |
 | `syntax.Node` as universal data carrier | **TIGHT**  | Flows through every pipeline stage: suffixtree, detection, job, printer, hash, cache, artdupl    |
@@ -96,6 +100,8 @@ Layer 7 (entry points):
 | `pkg/artdupl` SDK internal coupling     | **MEDIUM** | Exposes clean external API but directly constructs `detection.MultiDetector` and `job.BuildTree` |
 
 ### 2.4 God-Package Analysis
+
+<!-- check-rows:ledger -->
 
 | Package           | Files  | Concerns                                                                                            | Verdict                                         |
 | ----------------- | ------ | --------------------------------------------------------------------------------------------------- | ----------------------------------------------- |
@@ -116,6 +122,8 @@ Layer 7 (entry points):
 
 This is the root module, keeping the existing module path for backward compatibility.
 
+<!-- check-rows:ledger -->
+
 | Field                          | Content                                                                                                                                                                                                                                                    |
 | ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Module path**                | `github.com/LarsArtmann/art-dupl`                                                                                                                                                                                                                          |
@@ -131,6 +139,8 @@ This is the root module, keeping the existing module path for backward compatibi
 
 **Purpose:** Multi-method detection coordination — orchestrates art-dupl, hash, TODO, and legacy detectors.
 
+<!-- check-rows:ledger -->
+
 | Field                          | Content                                                                                                   |
 | ------------------------------ | --------------------------------------------------------------------------------------------------------- |
 | **Module path**                | `github.com/LarsArtmann/art-dupl/detection`                                                               |
@@ -145,6 +155,8 @@ This is the root module, keeping the existing module path for backward compatibi
 
 **Purpose:** All output formatting — text, HTML, JSON, SARIF, plumbing, statistics, sorting, and diff visualization.
 
+<!-- check-rows:ledger -->
+
 | Field                          | Content                                                                                                                                       |
 | ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Module path**                | `github.com/LarsArtmann/art-dupl/printer`                                                                                                     |
@@ -158,6 +170,8 @@ This is the root module, keeping the existing module path for backward compatibi
 #### Module 4: `art-dupl-sdk` (path: `./pkg/artdupl/`)
 
 **Purpose:** Public SDK for programmatic use — clean API surface wrapping internal pipeline.
+
+<!-- check-rows:ledger -->
 
 | Field                          | Content                                                                                                              |
 | ------------------------------ | -------------------------------------------------------------------------------------------------------------------- |
@@ -174,6 +188,8 @@ This is the root module, keeping the existing module path for backward compatibi
 
 **Purpose:** CLI application — Cobra commands, flag parsing, and analysis orchestration.
 
+<!-- check-rows:ledger -->
+
 | Field                          | Content                                                                                                                   |
 | ------------------------------ | ------------------------------------------------------------------------------------------------------------------------- |
 | **Module path**                | `github.com/LarsArtmann/art-dupl/cmd`                                                                                     |
@@ -186,6 +202,8 @@ This is the root module, keeping the existing module path for backward compatibi
 **Rationale:** The CLI is the top-level orchestrator. It's the only module that depends on everything else. Isolating it means CLI deps (cobra, fang, lipgloss) don't leak into the SDK or core.
 
 ### 3.2 Additional Directories (not modules)
+
+<!-- check-rows:ledger -->
 
 | Directory              | Treatment                                                                 |
 | ---------------------- | ------------------------------------------------------------------------- |
@@ -230,6 +248,8 @@ art-dupl-detection  art-dupl-printer  art-dupl-sdk
 4. **`internal/utils` is imported by `cmd/run_flags.go` and `cmd/stats.go` in production code.** Since cmd becomes a separate module, `internal/utils` MUST be promoted before cmd can be a module.
 
 ### 4.2 Corrected pre-work requirements
+
+<!-- check-rows:ledger -->
 
 | Package                | Current                | Target                | Affected Files                  | Why                                                                   |
 | ---------------------- | ---------------------- | --------------------- | ------------------------------- | --------------------------------------------------------------------- |
@@ -284,6 +304,8 @@ Since every edge points from a higher layer to a strictly lower layer, the graph
 
 **Chosen: `go.work` at repo root**
 
+<!-- check-rows:ledger -->
+
 | Factor                   | Decision                                                                   |
 | ------------------------ | -------------------------------------------------------------------------- |
 | All modules in same repo | Yes — `go.work` is ideal                                                   |
@@ -312,6 +334,8 @@ use (
 
 ### Per-module go.mod external dependencies
 
+<!-- check-rows:ledger -->
+
 | Module        | External deps                                                                                                                      |
 | ------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
 | `core` (root) | `zeebo/xxh3`, `a-h/templ`, `charm.land/log/v2`, `charmbracelet/x/exp/golden` (test), `onsi/ginkgo/v2` (test), `onsi/gomega` (test) |
@@ -323,6 +347,8 @@ use (
 ---
 
 ## 7. Test Dependency Isolation
+
+<!-- check-rows:ledger -->
 
 | Module      | Production Deps                | Test-Only Deps                                             |
 | ----------- | ------------------------------ | ---------------------------------------------------------- |
@@ -347,6 +373,8 @@ Cross-module test dependencies are acceptable in `_test.go` files (imported via 
 ## 8. Interface Extraction Plan
 
 ### 7.1 Current state
+
+<!-- check-rows:ledger -->
 
 | Module boundary            | Current interface                            | Needed                                         |
 | -------------------------- | -------------------------------------------- | ---------------------------------------------- |
@@ -376,6 +404,8 @@ The existing public API surfaces are sufficient. Each module's `go.mod` enforces
 ## 9. Versioning Strategy
 
 **Chosen: Root-only versioning**
+
+<!-- check-rows:ledger -->
 
 | Factor        | Decision                                     |
 | ------------- | -------------------------------------------- |
@@ -433,6 +463,8 @@ Each step leaves the project in a buildable, testable state. Each step is a sing
 ---
 
 ## 11. Risk Assessment
+
+<!-- check-rows:ledger -->
 
 | Risk                                          | Likelihood | Impact   | Mitigation                                                                                            |
 | --------------------------------------------- | ---------- | -------- | ----------------------------------------------------------------------------------------------------- |
@@ -495,6 +527,8 @@ The current `flake.nix` uses `buildGoModule` for the root module. With multi-mod
 
 ## Appendix A: Package-to-Module Mapping
 
+<!-- check-rows:ledger -->
+
 | Package                 | Module                        | Rationale                                           |
 | ----------------------- | ----------------------------- | --------------------------------------------------- |
 | `domain/`               | core                          | Domain types, zero deps beyond errors               |
@@ -525,6 +559,8 @@ The current `flake.nix` uses `buildGoModule` for the root module. With multi-mod
 | `examples/`             | core                          | Demo code                                           |
 
 ## Appendix B: External Dependency Mapping
+
+<!-- check-rows:ledger -->
 
 | External Dep                 | Used By                | Module  |
 | ---------------------------- | ---------------------- | ------- |

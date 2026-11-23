@@ -925,6 +925,7 @@ func TestDetectEquivalenceWithSharedAdapter(t *testing.T) {
 
 	capAdvisorySeverities(expected)
 	stripEmptyMetadata(expected)
+	expected = gofinding.Relativize(expected, dir)
 
 	sortFindingsForTest(providerFindings)
 	sortFindingsForTest(expected)

@@ -218,7 +218,14 @@ func (cloneDetector) detectWithCoverage(ctx context.Context) ([]gofinding.Findin
 		return nil, 0, fmt.Errorf("detect clones in %s: %w", dir, err)
 	}
 
-	return findingsFromGroups(result.CloneGroups, acceptedSet), len(files), nil
+	findings := findingsFromGroups(result.CloneGroups, acceptedSet)
+
+	// Checkout-independent output (go-finding v1.16.0 Relativize): rewrite
+	// absolute crawl paths to dir-relative slash paths and regenerate IDs
+	// from the new positions. Kills host-path leakage in IDs (upstream
+	// go-finding#47): the same clone fact yields the same finding on any
+	// machine, so orchestrator baselines gate identically across lanes.
+	return gofinding.Relativize(findings, dir), len(files), nil
 }
 
 // providerOptions configures the SDK for finding interchange: snippets are

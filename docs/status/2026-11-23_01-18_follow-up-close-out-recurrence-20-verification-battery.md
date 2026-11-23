@@ -58,7 +58,7 @@ Binary reinstall (user action; PATH copy still resolves to the poisoned-commit b
 4. Hunt the `.buildflow.yml` deleter: buildflow run history around 2026-11-15 12:37 (`buildflow history`), check whether any step deletes unknown-keyed config files.
 5. Upstream (BuildFlow repo): exclusion mechanism so go-auto-upgrade respects per-repo v1-API invariants without skip_steps (owner Q1); investigate the config-deletion behavior there too.
 6. Refresh the stale fleet buildflow binary (769b3a4 → HEAD 40fec90) so preflight warnings reflect current code.
-7. VACUUM the 1.07 GB buildflow state DB (`sqlite3 ~/.local/state/buildflow/buildflow.db VACUUM`). **→ routed to TODO_LIST MEDIUM Priority VACUUM the buildflow state DB when no pipeline is live row**
+7. VACUUM the 1.07 GB buildflow state DB (`sqlite3 ~/.local/state/buildflow/buildflow.db VACUUM`). **→ routed to TODO_LIST MEDIUM Priority Decide buildflow state-DB retention (VACUUM reclaims nothing) row** — VACUUM executed 2026-11-23 with the daemon idle: still 1.1 GB, `PRAGMA integrity_check` ok — the space is live data, not bloat.
 8. Extract shared nested-module-aware walker into `internal/testutil`; refactor fuzz gate, jsonv2gate, domain scanner onto it.
 9. Canary the nested-module skip in the failing direction (temporarily revert the skip in a scratch run, observe red).
 10. TODO_LIST.md HARVEST from this report + the 00-15 report (top ~10 rows).
@@ -97,4 +97,4 @@ Binary reinstall (user action; PATH copy still resolves to the poisoned-commit b
 
 **Verification state at close:** jsonv2gate fresh green · pin tests green · domain/actionability/bdd suites green · boundary `--full` + fast green · `nix flake check` all checks passed · daemon-committed through `44e5bf39` · nothing pushed anywhere.
 
-*Written, waiting for instructions.*
+_Written, waiting for instructions._

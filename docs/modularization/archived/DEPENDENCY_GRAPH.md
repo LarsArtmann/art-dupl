@@ -1,8 +1,10 @@
 > **Reference.** The layering documented here is enforced mechanically by `.go-arch-lint.yml`.
+> **DECIDED (won't implement).** Analysis record for the single-module proposal decided against — see `PROPOSAL.md`'s decision banner; kept verbatim as provenance for the `.go-arch-lint.yml` boundaries.
 
 # Dependency Graph — art-dupl
 
 **Date:** 2026-05-14
+~~**Status:** current dependency map~~ **Status:** historical record — module split decided against (banner above).
 **Source:** `go mod graph` + import analysis of all .go files
 
 ---
@@ -100,6 +102,8 @@ Layer 7 — Entry points:
 
 ### Coupling Severity Matrix
 
+<!-- check-rows:ledger -->
+
 | Coupling Point                         | Severity  | Packages Coupled                                               | Key Type                                        |
 | -------------------------------------- | --------- | -------------------------------------------------------------- | ----------------------------------------------- |
 | `syntax.Node` as pipeline data carrier | 🔴 TIGHT  | suffixtree, detection, job, printer, hash, cache, artdupl, cmd | `*syntax.Node`                                  |
@@ -162,6 +166,8 @@ Layer 7 — Entry points:
 
 ### Module Detail Table
 
+<!-- check-rows:ledger -->
+
 | Module        | Path             | Internal Deps            | External Deps                                                    | Packages                                 |
 | ------------- | ---------------- | ------------------------ | ---------------------------------------------------------------- | ---------------------------------------- |
 | **core**      | `./`             | None (root)              | `xxh3`, `a-h/templ`, `charm.land/log/v2`, `ginkgo/gomega` (test) | 17 production + 4 test + 2 entry         |
@@ -191,11 +197,15 @@ These must happen BEFORE module creation due to Go's `internal/` visibility rule
 
 ### 3.1 Production code promotions
 
+<!-- check-rows:ledger -->
+
 | Package          | Current          | Target      | Files Affected                                  |
 | ---------------- | ---------------- | ----------- | ----------------------------------------------- |
 | `internal/utils` | `internal/utils` | `pkg/utils` | `cmd/run_flags.go`, `cmd/stats.go` (production) |
 
 ### 3.2 Test code promotions
+
+<!-- check-rows:ledger -->
 
 | Package                | Current                | Target        | Files Affected                                                                     |
 | ---------------------- | ---------------------- | ------------- | ---------------------------------------------------------------------------------- |
@@ -203,6 +213,8 @@ These must happen BEFORE module creation due to Go's `internal/` visibility rule
 | `internal/testhelpers` | `internal/testhelpers` | `testhelpers` | 1 test file: `suffixtree/suffixtree_test.go`                                       |
 
 ### 3.3 Packages staying internal
+
+<!-- check-rows:ledger -->
 
 | Package               | Reason                                                        |
 | --------------------- | ------------------------------------------------------------- |
@@ -213,6 +225,8 @@ These must happen BEFORE module creation due to Go's `internal/` visibility rule
 ---
 
 ## 4. External Dependency Distribution
+
+<!-- check-rows:ledger -->
 
 | External Dep                 | Version   | Used By       | Module  | Production/Test |
 | ---------------------------- | --------- | ------------- | ------- | --------------- |
