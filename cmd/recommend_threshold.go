@@ -42,6 +42,7 @@ func runRecommendThreshold(ctx context.Context, cfg *config.Config) error {
 	fileCount := 0
 
 	for _, path := range cfg.Paths {
+		//art-dupl:accept per-path stat guard: skip unreadable paths, keep recommending
 		info, err := os.Stat(path)
 		if err != nil {
 			continue

@@ -231,6 +231,7 @@ func dedupLineAt(content []byte, offset int) int {
 
 	line := 1
 
+	//art-dupl:accept deliberate twin of pkg/position offsetToLine (arch-lint: syntax cannot import pkg/position)
 	for i := 0; i <= offset; i++ {
 		if content[i] == '\n' {
 			line++

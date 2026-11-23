@@ -28,6 +28,7 @@ func (d *detector) validateInputs(ctx context.Context, files []string) error {
 	// semantics in validateFile; only existing-but-unparseable inputs fail
 	// the run.
 	for _, path := range files {
+		//art-dupl:accept SDK file validation: skip stat-failing paths, regular-file check follows
 		info, err := os.Stat(path)
 		if err != nil {
 			continue

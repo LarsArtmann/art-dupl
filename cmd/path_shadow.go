@@ -58,6 +58,7 @@ func artDuplPathCandidates(pathEnv string) []string {
 	var candidates []string
 
 	for _, dir := range filepath.SplitList(pathEnv) {
+		//art-dupl:accept empty PATH element guard (filepath.SplitList may yield blanks)
 		if dir == "" {
 			continue
 		}

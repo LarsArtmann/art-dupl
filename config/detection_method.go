@@ -32,6 +32,7 @@ func ParseDetectionMethods(methodsStr string) ([]DetectionMethod, error) {
 
 	for _, method := range methods {
 		method = strings.TrimSpace(method)
+		//art-dupl:accept empty-element guard after TrimSpace (idiomatic skip)
 		if method == "" {
 			continue
 		}
