@@ -34,7 +34,10 @@ import sys
 import tempfile
 from pathlib import Path
 
-ART_DUPL = Path("/home/lars/projects/art-dupl")
+# Repo root derived from THIS script's location (scripts/ parent), not a
+# hardcoded host path: the nix citation-sweep check cds into the cleaned
+# store source, where the host checkout does not exist.
+ART_DUPL = Path(__file__).resolve().parent.parent
 PROJECTS = Path.home() / "projects"
 LIB_ROOTS = {
     "go-finding": PROJECTS / "go-finding",
