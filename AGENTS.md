@@ -147,6 +147,7 @@ only lane):
 | Gate (workflow → job)                           | Enforces                                              | Flake-check mirror |
 | ----------------------------------------------- | ----------------------------------------------------- | ------------------ |
 | CI → Lint                                       | golangci-lint (106 enabled, 0 findings at 2026-09-29) | `lint`             |
+| CI → Fetchability                               | pinned go-finding versions downloadable from the module proxy (2026-11-23, the 410-Gone class) | —                  |
 | CI → Test                                       | full suite, 3-OS matrix (windows w/o GOEXPERIMENT)    | `test`, `race`     |
 | CI → Coverage                                   | coverage report artifact                              | —                  |
 | CI → Nix Flake Check                            | the entire `checks` attrset                           | (is the runner)    |

@@ -38,6 +38,24 @@ jobs:
         with:
           version: v2.13.2
 
+  fetchability:
+    name: Fetchability
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: actions/setup-go@d8cbb8045d7f43706b9177cceb36c1f91a6644d5 # v7.1.0
+        with:
+          go-version: stable
+
+      # Proves the PINNED go-finding versions exist on the module proxy,
+      # not just as local git objects (the 410-Gone / poisoned-tag class).
+      - name: Download pinned go-finding versions from the module proxy
+        run: |
+          go list -m github.com/larsartmann/go-finding github.com/larsartmann/go-finding/toolsdk
+          go mod download github.com/larsartmann/go-finding
+          go mod download github.com/larsartmann/go-finding/toolsdk
+
   test:
     name: Test
     runs-on: ${{ matrix.os }}
