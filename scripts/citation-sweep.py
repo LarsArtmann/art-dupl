@@ -127,18 +127,25 @@ def resolve(raw: str) -> tuple[Path | None, str]:
 
 
 def _only_missing_roots(path_raw: str, missing_roots: set[str]) -> bool:
-    """True when every candidate root for this citation is an absent lib root."""
-    if path_raw.startswith("~") or Path(path_raw).expanduser().is_absolute():
-        return False
+    """True when this citation cannot resolve in the current environment for
+    root-absence reasons (sandbox mode). Absolute/tilde citations are
+    environment-dependent: skip them when the target is absent here — the
+    local run (no missing roots) still verifies them against the host tree."""
+    p = Path(path_raw).expanduser()
+    if p.is_absolute():
+        return not p.exists()
     for prefix in sorted(LIB_ROOTS, key=len, reverse=True):
         if path_raw == prefix or path_raw.startswith(prefix + "/"):
             return prefix in missing_roots
     parent = SUBMODULE_PARENTS.get(path_raw.split("/")[0])
     if parent is not None:
         return parent in missing_roots
-    if "/" not in path_raw and (ART_DUPL / path_raw).exists():
+    if (ART_DUPL / path_raw).exists():
         return False
-    return bool(missing_roots) and "/" not in path_raw
+    # Bare relative paths (with or without /) may live under any lib root;
+    # in sandbox mode a miss with absent roots is presumed root-missing.
+    # The local run (no missing roots) never skips and catches real staleness.
+    return bool(missing_roots)
 
 
 def sweep(report: Path, skip_missing_roots: bool = False) -> tuple[list[str], list[str]]:
@@ -270,8 +277,12 @@ def self_test() -> int:
 
             check("skip-missing-roots: all roots present -> no skip", not _only_missing_roots("go-finding/report.go", set()))
             check("skip-missing-roots: absent root targeted -> skip", _only_missing_roots("go-finding/report.go", {"go-finding"}))
-            check("skip-missing-roots: absolute never skipped", not _only_missing_roots("/etc/hosts", {"go-finding"}))
-            check("skip-missing-roots: art-dupl bare still verified", not _only_missing_roots("pkg/x.go", {"go-finding"}))
+            check("skip-missing-roots: present absolute never skipped", not _only_missing_roots(str((repo / "pkg" / "x.go").absolute()), {"go-finding"}))
+            check("skip-missing-roots: absent absolute skips", _only_missing_roots("/etc/hosts-definitely-absent", {"go-finding"}))
+            check("predicate flags absent absolute; only sandbox mode consults it", _only_missing_roots("/etc/hosts-definitely-absent", set()))
+            check("skip-missing-roots: art-dupl slashed still verified", not _only_missing_roots("pkg/x.go", {"go-finding"}))
+            check("skip-missing-roots: bare slashed lib path skips", _only_missing_roots("audit/settings.go", {"go-finding"}))
+            check("no missing roots: bare slashed never skips", not _only_missing_roots("audit/settings.go", set()))
         finally:
             ART_DUPL, LIB_ROOTS = old_art, old_libs
 
