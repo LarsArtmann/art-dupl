@@ -1,11 +1,14 @@
 # Library Review Index
 
-Point-in-time utilization/adoption reviews of first-party (LarsArtmann)
+ Point-in-time utilization/adoption reviews of first-party (LarsArtmann)
 libraries against art-dupl. One row per report: library, version reviewed,
 date, verdict. Re-reviews UPDATE the row and bump the version-reviewed column
 (each report carries its own header table with the exact checkout SHAs it
-audited). The dashboard (`libs/index.html`) is the run's landing page — stat
-cards, verdict table, top opportunities, fleet argument, verify appendix.
+audited). **The dashboard (`libs/index.html`) is the CANONICAL verdict home**
+for the run — stat cards, verdict table (score bands, per-row group
+provenance), top opportunities, fleet argument, verify appendix. The index
+table below is a derived convenience view; on any disagreement the dashboard
+and the per-report headers win.
 
 Citation gate: every report's `file:line` citations are machine-verified by
 `scripts/citation-sweep.py` (art-dupl-relative, `<lib>/`-qualified cross-repo,
