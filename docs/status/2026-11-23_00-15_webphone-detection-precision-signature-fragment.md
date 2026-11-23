@@ -97,3 +97,46 @@
 
 - Full suite `-count=1`: **green** · BDD 373 specs: **green** · boundary fast gate: **green** · jsonv2gate: **green** · pin tests: **green** · docs gates: **green** · self-scan `-t 5`: 0 shown · corpora: 5/5 identical before/after · webphone `-t 3` combined: 12 shown, all genuine.
 - Working tree: uncommitted (daemon will auto-commit); nothing pushed anywhere.
+
+---
+
+## Close-out verification addendum (2026-11-23, follow-up session)
+
+Executed this report's next-step list (items 4–8) plus a live recurrence:
+
+- **Determinism (item 6): VERIFIED** — webphone pin `-t 3 --suggest-generics --type-aware`, parallel
+  vs `--search-workers 1`: 12 shown groups each, canonical (hash, member-set) collections identical.
+- **Self-scan 61→62 (item 5): PROVEN BENIGN** — pre-feature (`2db9fc78`) and post-feature (`e16e45f+`)
+  binaries both report `Detected 62` on the same pinned tree; no group touches the session's new files.
+  The delta vs October's 61 is three weeks of ordinary tree drift; CI self-analysis lanes are advisory.
+- **Identical-Go-snippet 0-detected anomaly (item 4): NOT A BUG** — the statement-threshold gate
+  (`FindSyntaxUnits`, syntax/syntax.go) requires `threshold` EFFECTIVE statements after subsumption
+  trimming (an `if` swallows its nested `return`): if + trailing return = 2 statements, invisible at
+  `-t 3`, detected at `-t 2`, identical behavior for `.go` and `.templ` Go snippets. The identical body
+  additionally MASKS the shared signature tail (statement windows discard non-statement tokens), which
+  is why divergent bodies look MORE detected than identical ones. Pinned by
+  `bdd/short_body_threshold_test.go`; documented in AGENTS.md Known Limitations.
+- **Recurrence #20 (live at session start) + Q1 ROOT CAUSE**: a ~00:21 pipeline re-poisoned the six
+  v2 files + go-line pin (mtimes 00:22:41, commit `cee67b4a`); the 00:32 pipeline was innocent (mtimes
+  prove it rewrote nothing). **`8ce90a47` (#19) had deleted `.buildflow.yml` in its entirety** — the
+  `go-auto-upgrade` skip has been absent since 2026-11-15 12:37; #19's "skip held" note was a wrong
+  hypothesis, now corrected in the ledger. Restored: six files from `e16e45f2`, go pin +
+  `.golangci.yml` from `0c486ae9` (pin tests green), `.buildflow.yml` from `c00f3222` — skip verified
+  LIVE via `buildflow --dry-run` ("go-auto-upgrade: skipped via skip_steps config"). The DELETER of
+  `.buildflow.yml` remains unidentified; if the file vanishes again, that is the recurring destroyer.
+- **corpus-diff.py (item 8)**: added a suppression-summary dimension — a text-mode footer parse per
+  binary (detected/shown/non-actionable/filtered) reported as a fourth diff dimension; self-run
+  verified empty on branching-flow (`164 detected, 1 shown`, unchanged), head-vs-fix control also
+  unchanged (zero collateral).
+- **webphone pin registered (item 8)** in docs/benchmarks/README.md with the registered-pins list and
+  the `-t 5` + `-t 3` dual-threshold validation cadence (keep/remove still pending owner answer).
+- **nix flake check (item 2): initially RED, fixed, now GREEN** — `internal/jsonv2gate` failed ONLY in
+  the sandbox on `gogenfilter-real/cmd/gendocs/main.go` (upstream v2 import in the flake-materialized
+  dependency source; invisible locally). Applied the documented 2026-10-04 rule (tree-walking gates
+  must skip nested `go.mod` dirs) to jsonv2gate and, preventively, to `domain`'s
+  duplicate-errors.New scanner; verified with a local nested-module fixture. `nix flake check`:
+  **all checks passed** (test, race, arch-lint, alloc-gate, fmt, lint, sarif, disabled-linters).
+- **boundary gate `--full`: GREEN** (34 packages, incl. lint — also proves the gopls "unused" warnings
+  on the new pattern file are stale).
+- Still open for the owner: binary install (Q1), webphone pin keep/remove (Q2), `-t 3` as working
+  threshold (Q3); `/tmp/art-dupl-{head,fix,warn}` cleanup after install (item 29).
