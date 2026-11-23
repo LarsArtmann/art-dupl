@@ -265,12 +265,14 @@
             # checkouts, so cross-repo citations SKIP while every
             # art-dupl-internal citation still verifies; local runs (sibling
             # roots present) verify the cross-repo half.
-            citation-sweep = pkgs.runCommand "art-dupl-citation-sweep" { nativeBuildInputs = [ pkgs.python3 ]; } ''
-              cd ${pkgs.lib.cleanSource ./.}
-              python3 scripts/citation-sweep.py --self-test
-              python3 scripts/citation-sweep.py --skip-missing-roots
-              touch $out
-            '';
+            citation-sweep =
+              pkgs.runCommand "art-dupl-citation-sweep" { nativeBuildInputs = [ pkgs.python3 ]; }
+                ''
+                  cd ${pkgs.lib.cleanSource ./.}
+                  python3 scripts/citation-sweep.py --self-test
+                  python3 scripts/citation-sweep.py --skip-missing-roots
+                  touch $out
+                '';
 
             # arch-lint (TODO #40, 2026-09-23): the 2026-09-18 arch-lint break
             # only surfaced in CI. go/packages needs a Go toolchain + writable

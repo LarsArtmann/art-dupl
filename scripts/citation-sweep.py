@@ -148,7 +148,9 @@ def _only_missing_roots(path_raw: str, missing_roots: set[str]) -> bool:
     return bool(missing_roots)
 
 
-def sweep(report: Path, skip_missing_roots: bool = False) -> tuple[list[str], list[str]]:
+def sweep(
+    report: Path, skip_missing_roots: bool = False
+) -> tuple[list[str], list[str]]:
     """Returns (failures, skipped). Only failures drive the exit code."""
     failures: list[str] = []
     skipped: list[str] = []
@@ -163,16 +165,24 @@ def sweep(report: Path, skip_missing_roots: bool = False) -> tuple[list[str], li
             cite = f"{path_raw}:{start}{('-' + str(end)) if end_raw else ''}"
 
             if skip_missing_roots and _only_missing_roots(path_raw, missing_roots):
-                skipped.append(f"{report.name}:{lineno}  {cite}  -> SKIPPED (root missing)")
+                skipped.append(
+                    f"{report.name}:{lineno}  {cite}  -> SKIPPED (root missing)"
+                )
                 continue
 
             resolved, note = resolve(path_raw)
             if resolved is None:
-                failures.append(f"{report.name}:{lineno}  {cite}  -> FILE NOT FOUND {note}")
+                failures.append(
+                    f"{report.name}:{lineno}  {cite}  -> FILE NOT FOUND {note}"
+                )
                 continue
             count = file_line_count(resolved)
-            if count >= 0 and (start < 1 or end < start or start > count or end > count):
-                failures.append(f"{report.name}:{lineno}  {cite}  -> {resolved} has {count} lines")
+            if count >= 0 and (
+                start < 1 or end < start or start > count or end > count
+            ):
+                failures.append(
+                    f"{report.name}:{lineno}  {cite}  -> {resolved} has {count} lines"
+                )
                 continue
             if anchor:
                 lines = read_lines(resolved)
@@ -204,12 +214,20 @@ def self_test() -> int:
 
         x_go = repo / "pkg" / "x.go"
         x_go.write_text(
-            "\n".join(f"line {i}" for i in range(1, 31)).replace("line 12", "line 12 ANCHOR_TOKEN") + "\n"
+            "\n".join(f"line {i}" for i in range(1, 31)).replace(
+                "line 12", "line 12 ANCHOR_TOKEN"
+            )
+            + "\n"
         )
         (libs_go / "report.go").write_text(
-            "\n".join(f"l{i}" for i in range(1, 201)).replace("l140", "l140 SetRunProperty") + "\n"
+            "\n".join(f"l{i}" for i in range(1, 201)).replace(
+                "l140", "l140 SetRunProperty"
+            )
+            + "\n"
         )
-        (libs_go / "toolsdk" / "options.go").write_text("\n".join(f"o{i}" for i in range(1, 181)) + "\n")
+        (libs_go / "toolsdk" / "options.go").write_text(
+            "\n".join(f"o{i}" for i in range(1, 181)) + "\n"
+        )
         (libs_go / "nested").mkdir()
         (libs_other / "nested").mkdir()
         (libs_go / "nested" / "dup.go").write_text("dup\n")
@@ -227,7 +245,10 @@ def self_test() -> int:
             check("anchor hit passes", sweep(report) == ([], []))
 
             report.write_text("see pkg/x.go:12 ~NOT_THERE\n")
-            check("anchor miss detected", any("CONTENT ANCHOR MISS" in f for f in sweep(report)[0]))
+            check(
+                "anchor miss detected",
+                any("CONTENT ANCHOR MISS" in f for f in sweep(report)[0]),
+            )
 
             report.write_text("see pkg/x.go:5-9\n")
             check("range in bounds passes", sweep(report) == ([], []))
@@ -239,28 +260,47 @@ def self_test() -> int:
             check("lib-root prefix resolves with anchor", sweep(report) == ([], []))
 
             report.write_text("see toolsdk/options.go:180\n")
-            check("submodule prefix resolves", sweep(report) == ([], []) and "submodule-resolved" in resolve("toolsdk/options.go")[1])
+            check(
+                "submodule prefix resolves",
+                sweep(report) == ([], [])
+                and "submodule-resolved" in resolve("toolsdk/options.go")[1],
+            )
 
             report.write_text("see go-finding/report.go:140 ~SetRunProperty\n")
             failures, skipped = sweep(report, skip_missing_roots=True)
-            check("skip-missing-roots: present root still verifies", failures == [] and skipped == [])
+            check(
+                "skip-missing-roots: present root still verifies",
+                failures == [] and skipped == [],
+            )
 
             LIB_ROOTS = {"go-finding": root / "no-such-root"}
             failures, skipped = sweep(report, skip_missing_roots=True)
-            check("skip-missing-roots: absent root -> skipped, not failed", failures == [] and len(skipped) == 1)
+            check(
+                "skip-missing-roots: absent root -> skipped, not failed",
+                failures == [] and len(skipped) == 1,
+            )
             failures, _ = sweep(report, skip_missing_roots=False)
             check("without flag, absent root still fails", len(failures) == 1)
             LIB_ROOTS = {"go-finding": libs_go, "other-lib": libs_other}
 
             report.write_text("see cmd/x.go:1\n")
-            check("cmd falls through to art-dupl", resolve("cmd/x.go")[0] == repo / "cmd" / "x.go")
+            check(
+                "cmd falls through to art-dupl",
+                resolve("cmd/x.go")[0] == repo / "cmd" / "x.go",
+            )
 
             report.write_text("see dup.go:1\n")
             res, note = resolve("dup.go")
-            check("ambiguous basename rejected", res is None and note.startswith("AMBIGUOUS"))
+            check(
+                "ambiguous basename rejected",
+                res is None and note.startswith("AMBIGUOUS"),
+            )
 
             report.write_text("see unique.go:1\n")
-            check("bare unique basename resolves", resolve("unique.go")[1] == "bare-basename")
+            check(
+                "bare unique basename resolves",
+                resolve("unique.go")[1] == "bare-basename",
+            )
 
             report.write_text("en–dash range see pkg/x.go:3–6\n")
             check("en-dash range parses", sweep(report) == ([], []))
@@ -272,17 +312,46 @@ def self_test() -> int:
             m2 = CITE_RE.search("a.go:7-9 ~tok")
             check(
                 "CITE_RE groups intact",
-                m1.group(2) == "7" and m1.group(4) is None and m2.group(3) == "9" and m2.group(4) == "tok",
+                m1.group(2) == "7"
+                and m1.group(4) is None
+                and m2.group(3) == "9"
+                and m2.group(4) == "tok",
             )
 
-            check("skip-missing-roots: all roots present -> no skip", not _only_missing_roots("go-finding/report.go", set()))
-            check("skip-missing-roots: absent root targeted -> skip", _only_missing_roots("go-finding/report.go", {"go-finding"}))
-            check("skip-missing-roots: present absolute never skipped", not _only_missing_roots(str((repo / "pkg" / "x.go").absolute()), {"go-finding"}))
-            check("skip-missing-roots: absent absolute skips", _only_missing_roots("/etc/hosts-definitely-absent", {"go-finding"}))
-            check("predicate flags absent absolute; only sandbox mode consults it", _only_missing_roots("/etc/hosts-definitely-absent", set()))
-            check("skip-missing-roots: art-dupl slashed still verified", not _only_missing_roots("pkg/x.go", {"go-finding"}))
-            check("skip-missing-roots: bare slashed lib path skips", _only_missing_roots("audit/settings.go", {"go-finding"}))
-            check("no missing roots: bare slashed never skips", not _only_missing_roots("audit/settings.go", set()))
+            check(
+                "skip-missing-roots: all roots present -> no skip",
+                not _only_missing_roots("go-finding/report.go", set()),
+            )
+            check(
+                "skip-missing-roots: absent root targeted -> skip",
+                _only_missing_roots("go-finding/report.go", {"go-finding"}),
+            )
+            check(
+                "skip-missing-roots: present absolute never skipped",
+                not _only_missing_roots(
+                    str((repo / "pkg" / "x.go").absolute()), {"go-finding"}
+                ),
+            )
+            check(
+                "skip-missing-roots: absent absolute skips",
+                _only_missing_roots("/etc/hosts-definitely-absent", {"go-finding"}),
+            )
+            check(
+                "predicate flags absent absolute; only sandbox mode consults it",
+                _only_missing_roots("/etc/hosts-definitely-absent", set()),
+            )
+            check(
+                "skip-missing-roots: art-dupl slashed still verified",
+                not _only_missing_roots("pkg/x.go", {"go-finding"}),
+            )
+            check(
+                "skip-missing-roots: bare slashed lib path skips",
+                _only_missing_roots("audit/settings.go", {"go-finding"}),
+            )
+            check(
+                "no missing roots: bare slashed never skips",
+                not _only_missing_roots("audit/settings.go", set()),
+            )
         finally:
             ART_DUPL, LIB_ROOTS = old_art, old_libs
 
@@ -312,7 +381,10 @@ def main() -> int:
             targets.append(p)
     if not targets:
         targets = sorted((ART_DUPL / "docs/review/libs").glob("*.md"))
-        targets += [ART_DUPL / "docs/review/README.md", ART_DUPL / "docs/research/README.md"]
+        targets += [
+            ART_DUPL / "docs/review/README.md",
+            ART_DUPL / "docs/research/README.md",
+        ]
 
     total_failures = 0
     for report in targets:
