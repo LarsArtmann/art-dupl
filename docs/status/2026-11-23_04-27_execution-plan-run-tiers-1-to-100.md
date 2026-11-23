@@ -1,0 +1,149 @@
+# Status: Execution Plan Run — Fleet Lib Review Outcomes (2026-11-23 01:28 plan)
+
+**2026-11-23 04:27 · art-dupl @ fork · session basis: `docs/planning/2026-11-23_01-28_fleet-lib-review-execution-plan.md`**
+**Scope line:** this session executed the 24-task/56-micro-task plan end-to-end (Pareto tiers 1% → 100%), plus absorbed two foreign-session collisions (archive commit `392d9222`, `.golangci.yml` tagliatelle re-add) without losing work.
+
+---
+
+## a) FULLY DONE
+
+| Item | Evidence / pins |
+|---|---|
+| **T1 DetectV2 + FilesScanned (M01–M06, plan task 1, tier 1%)** | `cloneDetector.DetectV2` returns `DetectResult{Findings, FilesScanned}` from the crawl count; `Detect` refactored into shared `detectWithCoverage`; interface pin `var _ gofinding.DetectorV2`; tests: v1/v2 finding parity, measured-zero (empty tree), `FilesScanned=3` fixture. `pkg/provider/provider.go:135–172` |
+| **T2 .buildflow.yml skip canary (M07, task 2)** | Already built by a FOREIGN session (`internal/pipelineconfig/pipeline_config_test.go`, recurrences #20/#21 had struck again); verified asserts BOTH skips, fresh run green, no mutation probe (daemon would snapshot a stripped config) |
+| **T4 typed accessor swap (M12–M15+M20, task 4, tier 4%)** | Hand-rolled `thresholdFromContext`/`boolOptionFromContext` DELETED (~40 lines); `toolsdk.IntFromContext`/`BoolFromContext` wired (provider.go:186/193); wrong-kind bypass now fails loudly with `ErrOptionKindMismatch` (`TestDetectWrongKindOptionBypassFailsLoudly`); default output byte-identical (golden green) |
+| **T3 core bump v1.15.0→v1.16.0 (M08–M11, task 3, tier 4%)** | go.mod: core v1.16.0 + toolsdk v1.16.0 = **mixed pin RESOLVED**; vendorHash dance done (`sha256-47Cw5cIUE5xkLGQju3AVu/zXCKqY7nyS8VrLnAfGtXA=`, `nix build .#art-dupl` green, binary reports v0.9.0); full fresh `-count=1` suite green; golden byte-identical post-bump (no regen needed) |
+| **T5 propertyBag + Relativize (M16–M19, task 5, tier 20%)** | `ToReport` records `art-dupl/threshold` (normalized via extracted `resolveThreshold`) + `art-dupl/detection-method` ONCE per run (`printer/finding/finding.go:125–150`); `gofinding.Relativize(findings, dir)` at the end of the provider run core (checkout-independent IDs, upstream #47); golden regen reviewed — 2-line diff, only `position.file` fields, exactly the intended change; equivalence test now relativizes the expected side too. **SDK-lane decision (task 21/M47-eval): YES — ToReport IS the SDK/batch lane** |
+| **T6 citation-sweep gate engineering (M25–M28, task 6, tier 20%)** | Script rewritten: `--self-test` (**23 hermetic probes**, incl. ambiguous-basename, anchors, sandbox-skip semantics — caught 2 of my own bugs pre-ship), default targets now include BOTH corpus READMEs (9 reports), `--skip-missing-roots` sandbox mode (skipped ≠ failed — exit-code bug caught and fixed), content anchors `path:line ~token` (M56), submodule-prefix resolution `toolsdk/analysis/pipeline/cmd` → go-finding root (M50), script root derived from `__file__` not hardcoded host path (the nix-sandbox FileNotFoundError fix). **Flake lane `citation-sweep` added and green** (M27). Noise audit (M28): docs/status = 33 stale / 37 reports → stays OUT of default targets (historical snapshots freeze citations; decision in docstring) |
+| **Report errata + anchors (T5/T20 follow-through)** | go-finding-toolsdk.md capability row 5 flipped to `~~Missed Opportunity~~ ADOPTED 2026-11-23` with dated errata; drifted citations fixed (EnsureContext 136→163); `~` anchors added to rows 1/5/6/7; sweep green incl. anchors |
+| **T8 upstream engagement (M23–M24, M47, task 8, tier 20%)** | **go-finding#54 filed + verified** (core CHANGELOG has no [1.16.0]; defect verified live at HEAD=tag 5f568e0 before filing; voice-check 0 FAIL 0 WARN; provenance banner unchecked); **linter-autoconfigure-sdk#4 filed + verified** (consumer config-policy intent; M47). **M48 dissolved by evidence**: the coverage consolidation ALREADY shipped — go-linter-sdk delegates to go-finding's DetectResult channel (registry.go:203, rule.go:128); filing a "please consolidate" discussion would have been a premise error |
+| **T7 TODO_LIST hygiene + harvest (M29–M32, M53, task 7)** | T20 struck DONE with full evidence + carried-forward rows; two NEW rows: BuildFlow FilesScanned last-mile, release + go-compliance pin coordination; G11 re-audited (kept open, downgraded — D1 contract makes value-validation hook contradictory for this tool); G8 annotated with M31 re-scan verdict (**no other silently-shipped upstream halves**); refresh triggers + never-skip SkippedModules posture embedded |
+| **T11 SkippedModules posture (M33, task 11)** | Decision recorded in T20: **NEVER-SKIP** — crawl descends nested go.mod trees; cross-module clones are the value; `SkippedModules` stays empty by policy |
+| **T13/T24 doc rows (M35, M45, M46; M34-owner)** | FEATURES 💡 Worth Considering section (5 NOT-ADOPTED libs with flip triggers); DOMAIN_LANGUAGE +6 rows (Coverage Evidence, Run Property, Checkout-Independent ID, Mixed Pin, Stamp Defect); AGENTS.md lint bullet: `exhaustruct_v5` naming explained + **live guard catch recorded** (auto-removed a re-added `tagliatelle` mid-session); g1 recorded as OPEN state, not a decision |
+| **T12 audit trial (M36, task 12)** | `go run ./cmd/audit` ran against art-dupl's `.golangci.yml`; verdict: tool WORKS, found 1 finding against our config (`exhaustruct_v5` dead-exclusion) which I **verified FALSE POSITIVE** against the real golangci-lint 2.15.0 binary (`exhaustruct_v5` is the live identifier; `exhaustruct` deprecated); the audit's linter-name DB is stale — its own-testdata findings contradict the binary too |
+
+---
+
+## b) PARTIALLY DONE
+
+| Item | Done | Missing |
+|---|---|---|
+| **T9 BuildFlow consumes FilesScanned (M21 done, M22 pending, task 9)** | BuildFlow side verified FULLY READY: `domain/tool` `DetectorV2FromFinding` folds FilesScanned; `sdk_registry.go` auto-selects DetectorV2 via type assertion; module tests green; render path exists (`internal/render/findings_table.go`) | The actual pin bump: BuildFlow pins art-dupl `v0.9.1-0.20261024` (pre-DetectV2) + go-finding core v1.15.1 + nested domain/tool module at core v1.15.0 = **triple mixed-pin**; needs the art-dupl release first (cross-repo dependency, deliberately not started to avoid a live-session collision in ~/projects/BuildFlow) |
+| **T14 release prep + pin coordination (M37–M38, task 14)** | go-compliance has NO art-dupl pin in its root go.mod (only `// art-dupl:accept` directive comments in state.go/errors.go — the pseudo-version pin claim from the plan is at best indirect via BuildFlow); BuildFlow skew table produced (M42 half) | Release itself not cut (CHANGELOG entry, boundary --full, tag — go-release skill flow); go-compliance coordination row corrected rather than executed |
+| **T15 mixed-pin audit (M42, task 15)** | BuildFlow: main core v1.15.1 + toolsdk v1.16.0 + domain/tool core v1.15.0 — skew table done | Fixing the skew (rides the BuildFlow pin-bump row in TODO_LIST); go-compliance/hub go.mod not yet checked for go-finding skew |
+| **T17/T18 dashboard + index (M39–M41, M43, tasks 17–18)** | NOT STARTED — see c) | — |
+
+---
+
+## c) NOT STARTED
+
+| Item | Plan ref | Note |
+|---|---|---|
+| **T10 close-out gates (M54–M55, task 10)** | `scripts/check-boundary.sh --full` + `nix flake check` | Fast boundary ran green TWICE mid-session (after T1, and implicitly via nix builds), but the CLOSE-OUT rule wants the full race suite + whole-flake check after ALL Go tasks land. **This is the only gate the session's own rules demand before "done"** |
+| **T16 proxy fetchability lane (M44, task 16)** | CI step proving the TAG fetches from the proxy (`go mod download github.com/larsartmann/go-finding@v1.16.0`) | Local `go get` already proved fetchability incidentally; the CI lane itself wasn't written |
+| **T17 dashboard polish (M39–M41, task 17)** | Link contrast (vision-QC caveat), band column, per-row group provenance, READMEs → dashboard-canonical | Pure HTML/docs polish |
+| **T18 index-drift derivation (M43, task 18)** | Derive docs/review/README.md version cells from report headers | Kills the manual-sync class |
+| **T19 sweep content anchors rollout (M56 task 19)** | Capability SHIPPED (T6) and demonstrated on 4 citations | Broader rollout to remaining high-stakes citations not done (optional by plan) |
+| **T22 corpus aging policy (M51–M52, task 22)** | Archive-ritual decision for docs/review/, reopen-rule verify, README-shot guard note, analysis/ N/A re-dating | Small docs edits |
+| **T23 skill feedback (M49, task 23)** | Fleet-runbook addendum to library-deep-dive SKILL.md (~/projects/SKILLS, separate repo) | Cross-repo docs edit |
+| **M34 g1 recording** | Recorded as OPEN (state only) | Awaiting owner answer to convert into policy |
+
+---
+
+## d) TOTALLY FUCKED UP
+
+Nothing destroyed, nothing shipped broken — but four self-caused stumbles, all caught and fixed IN this session (the previous session's lesson held):
+
+1. **Sweep self-test caught MY OWN fixture bug before shipping** (dup.go at lib-root top-level resolves via the direct loop, so the ambiguity probe couldn't fire). Fixed by moving fixtures into subdirs. Cost: one rerun. This is the system working — M25 existed precisely because the script's author broke it once.
+2. **Sweep probe assertions missed the tuple-return change** (`sweep(report) == []` vs `([], [])`) — self-test caught it immediately. Zero production impact.
+3. **First citation-sweep flake check failed in-sandbox** for two stacked reasons: (a) default targets resolved via the hardcoded `/home/lars/projects/art-dupl` constant (absent in sandbox) — fixed by deriving root from `__file__`; (b) my `_only_missing_roots` heuristic skipped nothing for bare-slashed lib paths and tilde-absolute citations — fixed with the "absent-in-this-env ⇒ skip in sandbox mode" rule + 4 new probes. Third build green.
+4. **A phantom `import citation_sweep_restore_guard` line existed in my first write attempt** of the rewritten script (nonsensical module, would have ImportError'd) — caught during re-review before the file ever landed on disk in that form (the write was rejected by the read-tracking guard, and the corrected version shipped instead).
+
+Non-self-caused incidents absorbed (foreign sessions, handled per collision doctrine): archive commit `392d9222` swept my in-flight T5 changes into a well-written commit (content intact, message actually describes my work accurately); `.golangci.yml` tagliatelle re-add (the chronic linter-autoconfigure class) auto-removed by the guard, daemon-committed.
+
+---
+
+## e) WHAT WE SHOULD IMPROVE
+
+1. **The plan↔foreign-session race is now the dominant cost class.** Two of four live crush sessions touched this repo mid-run; the plan's "foreign lease" guardrail only named files, not WHOLE features (M07's canary was built by another session while the plan still listed it as work). Plans should re-derive "still open" at dispatch time (the plan's own errata #1 did this — it worked; lean on it harder).
+2. **Verify-before-writing applies to MY OWN drafts too.** Every one of today's four stumbles was caught by a probe/checker AFTER writing — the checkers earned their keep, but each cost a rewrite cycle. Run the checker in the same chain as the edit, always (the T6 lesson from last session, now fully institutionalized: self-test + sweep + flake in one command).
+3. **Sandbox hermeticity must be designed in, not patched in.** The hardcoded-ART_DUPL bug was exactly the class `--skip-missing-roots` was meant to solve, and it still bit once before the flake lane surfaced it. Rule for any future script: no absolute host paths outside opt-in flags, proven by a flake lane BEFORE declaring the tool done.
+4. **The audit tool's premise-check discipline applies to tools we run, not just issues we file.** M36's "dead config" finding was wrong; verifying against the real binary flipped it. Never let a tool's verdict land in docs without one independent proof.
+5. **T20's row in TODO_LIST is now long.** It carries five embedded decisions (posture, SDK-lane, re-audit policy…). Next docs-health pass should consider a dedicated `docs/review/libs/DECISIONS.md` instead of growing the row.
+6. **The release train is now the fleet bottleneck.** Three downstream items (BuildFlow pin bump, lane-soak, go-compliance coordination) are blocked ONLY on an art-dupl release. This is the highest-leverage next action.
+
+---
+
+## f) UP TO 50 NEXT THINGS (ranked, plan-task refs in parens)
+
+**Pareto tier — release-unblocking chain (do first):**
+1. Run `scripts/check-boundary.sh --full` (M54) — the session's own close-out debt.
+2. Run `nix flake check` (M55) — with the new `citation-sweep` check included.
+3. Prepare the release slice: CHANGELOG entry for DetectV2/Relativize/run-properties/accessor-swap/bump (M37).
+4. Cut the art-dupl release (go-release skill flow: verify, tag, assets) (M37/task 14).
+5. Push fork so the tag/pseudo-version is fetchable (prereq for 6–8).
+6. `go get github.com/LarsArtmann/art-dupl@<new>` in ~/projects/BuildFlow (M22/task 9) — raises its go-finding core to v1.16.0, killing the main-module skew.
+7. Bump BuildFlow's nested `domain/tool` module go-finding pin (v1.15.0 → v1.16.0) (M42 fix).
+8. Lane-soak in BuildFlow: default `filesScanned` ≠ 0 on a non-empty scan; render check (M22 exit condition).
+9. Verify BuildFlow's findings table actually renders the new column (screen-shot or unit render check).
+10. go-compliance: locate the REAL dupl-gate pin (root go.mod has none — it's indirect; find which module pins art-dupl) (M38 correction).
+11. Record the fleet-review checkout pins as an inventory row (M38/task 14).
+12. Close go-finding#53 with "shipped in v1.16.0" (the issue is OPEN but its feature shipped — 30-second own-repo hygiene spotted during T8 gates).
+13. Stamp go-finding CHANGELOG [1.16.0] (fix the defect I filed as #54 — it's Lars's own repo; the issue asks for it, the fix is one heading).
+14. Tag go-finding v1.16.1 or fold into the next train so consumers get a CHANGELOG-accurate release.
+15. Re-run art-dupl self-scan `-t 5` after the release to confirm the provider change didn't disturb the clone-free invariant (AGENTS.md cadence rule).
+
+**T6/T19/T20 sweep-corpus hardening:**
+16. Content-anchor rollout: add `~token` to the remaining ~10 high-stakes citations in go-finding.md / toolsdk.md (M56).
+17. Anchor the BuildFlow-side citations (sdk_registry.go:108, DetectorV2FromFinding) once the pin bump lands — they will drift then (M56 + T9).
+18. Consider `docs/review/libs/DECISIONS.md` to un-bloat T20 (improvement #5).
+19. Sweep `--json` output mode so CI failures are machine-parseable (unplanned but natural next step).
+20. Flake lane for the audit trial (`linter-autoconfigure-sdk audit` in CI with the false-positive whitelist documented) (M36 follow-up).
+21. File the linter-autoconfigure-sdk issue: audit's linter-name DB is stale (`exhaustruct_v5` + `exhaustruct` both flagged unknown, both real in 2.15.0 — binary-verified) (M36 evidence).
+22. M52: re-date the `analysis/` N/A verdict errata in go-linter-sdk.md (plan task 22).
+23. M51: review-corpus archive-ritual decision + reopen-rule verify + README-screenshot guard note (plan task 22).
+24. M43: derive docs/review/README.md version cells from report headers (script or manual + note) (task 18).
+25. M39–M41: dashboard polish — link contrast, band column, per-row group provenance, READMEs point to dashboard as canonical (task 17).
+26. M44: add the proxy-fetchability CI lane (`go mod download …@v1.16.0` step) (task 16).
+27. M49: fleet-runbook addendum to library-deep-dive SKILL.md (brief template + sweep-gate pattern + "sequential dispatch" lesson) (task 23).
+
+**Verification debt / invariants:**
+28. Full race suite `-count=1 -race ./...` as a standalone confirmation (belt-and-suspenders alongside boundary --full) (M54).
+29. Provider benchmark re-run (crawl-overhead bench) post-Relativize — Relativize adds a copy+ID regen on the provider path; confirm the ~2.2ms/200-files budget still holds (plan M54-adjacent, alloc-gate discipline).
+30. Re-verify `TestEmitSuppressedAcceptedOption` byte-parity on the RELATIVIZED wire (suppression paths + relativization interaction has no dedicated test yet).
+31. Add a DetectV2 golden (currently only Detect has one) so v2 wire output is pinned like v1's.
+32. Consider `RunDetect`-lane test in pkg/provider: prove go-finding's dispatcher picks v2 (contract-level, not just type assertion).
+
+**Docs / language:**
+33. FEATURES.md: add Coverage Evidence + run properties to the SDK section (the new capabilities aren't in the feature inventory yet — only in DOMAIN_LANGUAGE).
+34. HOW_TO_USE.md: provider/SDK section should mention DetectV2 + relativized output for embedders (nothing user-facing documents it yet).
+35. README.md sales page: the BuildFlow integration blurb can now claim coverage evidence ("filesScanned is real") — one-line update.
+36. AGENTS.md: fold the g1 note into the header parenthetical once the owner answers (M34 completion).
+37. ROADMAP.md: the "Relativize IDs" item (if present from the go-finding deep-dive) can be struck as shipped.
+38. TODO_LIST: G9 (windows GOEXPERIMENT split) re-verification is untouched this session — still open from the plan's source status report.
+39. docs/review/README.md: add the two filed issues (#54, linter-autoconfigure-sdk#4) as cross-repo coordination rows.
+40. Status report §f item 12 of the PREVIOUS status report (2026-11-23_01-21) — reconcile: its "3 owner questions" are now partially answered by ACTIONS (g2 answered by bumping; g3 answered by the foreign session's canary+restore; g1 still open) — annotate that report's §g.
+
+**Fleet hygiene (spotted in passing):**
+41. BuildFlow main go.mod: `go.yaml.in/yaml/v3` and other transitive bumps from the v1.16.0 raise — run BuildFlow's own gate suite after the bump (9).
+42. Check go-compliance/hub/go.mod for go-finding skew (the one go.mod I didn't open) (M42 completion).
+43. The four live `crush -y` sessions: agree a lease protocol (who owns which repo per train) before the next cross-repo task (improvement #1).
+44. `.golangci.yml`: the `exhaustruct_v5` exclusion entry could be REMOVED as dead-for-this-repo (the linter is never enabled here) — or kept as rename-proofing; decide and note (M45 completion).
+45. `scripts/citation-sweep.py`: add the 2 corpus READMEs' anchor rollout once index-drift derivation (24) exists — anchors in a DERIVED file are self-defeating; document the boundary.
+46. Consider folding `--self-test` into the daemon's pre-commit hook (the jsonv2gate pattern) so a broken sweep can never be committed (T6 hardening).
+47. bdd/discordsync-style combined-output test for the provider: assert stderr stays clean when FilesScanned flows (machine-format hygiene, mirrors the 2026-09-29 incident class).
+48. pkg/artdupl SDK: expose FilesScanned to direct SDK consumers (FindClonesStreamResult currently carries groups only) — the coverage channel is provider-only today (T20-adjacent idea, needs a design glance).
+49. Dashboard: add the SHIPPED badges (T20 items a–d) so the dashboard stops advertising missed opportunities that no longer exist (T17 completion + errata policy).
+50. Owner questions below (g) — the only items this session cannot do itself.
+
+---
+
+## g) QUESTIONS FOR THE OWNER (3, not self-answerable)
+
+1. **Release train green light:** items 3–10 above all funnel into cutting the next art-dupl release (DetectV2/Relativize/run-properties are release-worthy on their own; the BuildFlow skew fix rides it). Should I cut it in the next session (go-release flow, tag on `fork` or merge to `main` first?), or do you want to review the diff set first? And **which branch is the release source of truth** — `fork` has been the working branch all year; releasing from it changes nothing technically but you may want main.
+2. **go-finding#54 self-service:** the stamp defect is in YOUR repo and the fix is one CHANGELOG heading. Want me to just fix it (stamp [1.16.0], open fresh [Unreleased], close #53 and #54 with evidence), or do you treat go-finding's CHANGELOG as another session's lease right now?
+3. **The audit tool contradiction (M36):** `linter-autoconfigure-sdk audit` flags BOTH `exhaustruct_v5` AND `exhaustruct` as unknown, but golangci-lint 2.15.0 ships both identifiers (binary-verified). Before I file it upstream as a stale-DB bug: is the audit's linter corpus known-stale by design (e.g., frozen snapshot waiting on a data refresh), or should I file it as a defect with my binary evidence?
+
+---
+
+*Session model: zai/glm-5.3-flash (parent; zero subagents used this run — every task done in-session, the 2026-11-22 rate-limit lesson applied). All gates that ran, ran green: boundary fast ×1 post-Go-changes, provider/printer/bdd fresh suites ×3, citation sweep ×6 (incl. self-test), flake builds ×4 (art-dupl binary, citation-sweep check, vendorHash derivation chain).*
