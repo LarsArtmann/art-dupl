@@ -76,7 +76,7 @@
 18. go-cqrs-lite corpus pin is stale vs its documented baseline (repo drifted under its own daemon) — re-pin and re-baseline counts.
 19. CHANGELOG: check whether the repo keeps one and whether the pattern + warning warrant entries.
 20. Consider `art-dupl doctor` subcommand aggregating: PATH-shadow check, go/toolchain pin check, cache-version vs binary, stale-baseline detection.
-21. Sweep other LarsArtmann machines/repos for multi-copy art-dupl installs (the warning only helps when `version` is run).
+21. Sweep other LarsArtmann machines/repos for multi-copy art-dupl installs (the warning only helps when `version` is run). **→ routed to TODO_LIST MEDIUM Priority Sweep machines/repos for multi-copy art-dupl installs row**
 22. Add the PATH-shadow warning output to a bdd spec (currently unit-level only).
 23. Document the defense-in-depth relationship (signature-fragment ∪ trivial-fragment) in ACTIONABILITY_PATTERNS.md priority notes.
 24. Investigate why `--include-pattern` scoping run showed different totals (23 groups vs 261 — expected, but worth a sanity pin).
@@ -84,7 +84,7 @@
 26. Re-run the 2026-10-30 precision-pass corpus matrix with the new binary to refresh all documented numbers in one wave.
 27. Check whether `printer/finding` provider output should expose the new pattern label (currently CLI-only classification — deliberate, but re-confirm after provider version bump).
 28. The user's `-t 3` habit: if intentional, consider a documented "low-threshold profile" (paired flags) instead of raw `-t 3`.
-29. Remove/keep `/tmp/art-dupl-fix`, `/tmp/art-dupl-head`, `/tmp/art-dupl-warn` scratch binaries after user installs.
+29. Remove/keep `/tmp/art-dupl-fix`, `/tmp/art-dupl-head`, `/tmp/art-dupl-warn` scratch binaries after user installs. **→ routed to TODO_LIST MEDIUM Priority Install-or-trash the /tmp scratch binaries row**
 30. Consider nix flake `apps` output for a canonical `nix run` path so the system copy stops drifting.
 
 ## g) QUESTIONS FOR THE OWNER (cannot be answered from the repo)

@@ -167,7 +167,7 @@ Nothing in this session was destructive or incorrect. However, here are honest s
 35. Consider git attributes or hooks that reject `.golangci.yml` changes from non-human committers
 36. Add `docs/CONTRIBUTING.md` section on linter configuration policy
 37. Review whether `exhaustruct` exclusion is still needed or if the codebase has evolved
-38. Add property engine ADR cross-reference to CHANGELOG
+38. ~~Add property engine ADR cross-reference to CHANGELOG~~ **Won't implement — CHANGELOG is append-only (docs-health canon forbids editing shipped entries); ADR-0017 already cross-referenced from FEATURES.md + docs/ACTIONABILITY_PATTERNS.md.**
 39. Consider splitting `.golangci.yml` into base + override files for easier review
 40. Add test that verifies `AllActionabilityPatterns()` count matches `actionabilityPatternTable` length
 41. Document the daemon's commit message patterns for easier identification

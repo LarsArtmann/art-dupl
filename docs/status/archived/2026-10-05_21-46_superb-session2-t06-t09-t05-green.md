@@ -169,7 +169,7 @@ consumer (`cmd/go-finding`), `Finding.Edits` (v1.14.0 new).
 27. M68: `scripts/check-boundary.sh --full` on fork HEAD.
 28. M68: `nix flake check` (full CI mirror incl. race + alloc-gate).
 29. M68: both-GOEXPERIMENT full suite once more on final HEAD.
-30. M69: CHANGELOG entries for T01/T04/T05/T06/T07a/T08/T09.
+30. ~~M69: CHANGELOG entries for T01/T04/T05/T06/T07a/T08/T09.~~ done — all seven CHANGELOG entries verified by title (jsonv2gate AST gate, --lsp format, emit-suppressed-accepted, semantic tags, SARIF cross-check, Builder+Template, go-finding core bump)
 31. M69: final push, verify origin green.
 32. T18 M70: BuildFlow repo — map `art-dupl.threshold` consumer config → `toolsdk.WithOptions`.
 33. T18 M70: BuildFlow registration test update if options surface there.

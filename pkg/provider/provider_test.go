@@ -194,6 +194,86 @@ func TestDetectOnEmptyWorkingDir(t *testing.T) {
 	}
 }
 
+// cloneDetector must satisfy the richer v2 contract so gofinding.RunDetect
+// picks up coverage evidence through its DetectorV2 type assertion (the
+// compile-time smoke for the upstream examples/detectorv2 consumption shape).
+var _ gofinding.DetectorV2 = cloneDetector{}
+
+func TestDetectV2ReportsFilesScanned(t *testing.T) {
+	dir := t.TempDir()
+	header := "package fixtures\n\nimport \"errors\"\n\n"
+
+	writeFile(t, dir, "a.go", header+duplicatedFunction)
+	writeFile(t, dir, "b.go", header+duplicatedFunction)
+	writeFile(t, dir, "clean.go", "package fixtures\n\nfunc unique() int { return 42 }\n")
+
+	res, err := cloneDetector{}.DetectV2(dirContext(t, dir))
+	if err != nil {
+		t.Fatalf("DetectV2: %v", err)
+	}
+
+	if res.FilesScanned != 3 {
+		t.Errorf("FilesScanned = %d, want 3 (crawl count incl. clean files)", res.FilesScanned)
+	}
+
+	if len(res.Findings) < 2 {
+		t.Errorf("DetectV2 returned %d findings, want >= 2 (a.go/b.go occurrences)", len(res.Findings))
+	}
+}
+
+// Detect and DetectV2 must agree on the findings for the same run (the
+// DetectorV2 contract requires it: hosts may call either).
+func TestDetectV2MatchesDetectFindings(t *testing.T) {
+	dir := t.TempDir()
+	header := "package fixtures\n\nimport \"errors\"\n\n"
+
+	writeFile(t, dir, "a.go", header+duplicatedFunction)
+	writeFile(t, dir, "b.go", header+renamedFunction)
+
+	ctx := dirContext(t, dir)
+
+	v1, err := cloneDetector{}.Detect(ctx)
+	if err != nil {
+		t.Fatalf("Detect: %v", err)
+	}
+
+	res, err := cloneDetector{}.DetectV2(ctx)
+	if err != nil {
+		t.Fatalf("DetectV2: %v", err)
+	}
+
+	if len(res.Findings) != len(v1) {
+		t.Fatalf("DetectV2 returned %d findings, Detect returned %d; contracts disagree",
+			len(res.Findings), len(v1))
+	}
+
+	for i := range v1 {
+		if res.Findings[i].ID != v1[i].ID || res.Findings[i].GroupID != v1[i].GroupID {
+			t.Errorf("finding %d diverges: v2 ID=%s/GroupID=%s, v1 ID=%s/GroupID=%s",
+				i, res.Findings[i].ID, res.Findings[i].GroupID, v1[i].ID, v1[i].GroupID)
+		}
+	}
+}
+
+// A measured zero: an empty tree scans zero files and finds zero clones —
+// distinct from the un-measured zero a v1 detector reports (FilesScanned
+// unset because the crawl never ran).
+func TestDetectV2EmptyTreeIsMeasuredZero(t *testing.T) {
+	res, err := cloneDetector{}.DetectV2(dirContext(t, t.TempDir()))
+	if err != nil {
+		t.Fatalf("DetectV2 on empty tree: %v", err)
+	}
+
+	if res.FilesScanned != 0 || len(res.Findings) != 0 {
+		t.Errorf("empty tree: FilesScanned=%d findings=%d, want 0/0", res.FilesScanned, len(res.Findings))
+	}
+
+	if len(res.SkippedModules) != 0 {
+		t.Errorf("SkippedModules = %v, want empty (crawl descends nested modules by policy)",
+			res.SkippedModules)
+	}
+}
+
 func TestCollectSourceFilesExcludesDefaults(t *testing.T) {
 	dir := t.TempDir()
 

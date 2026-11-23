@@ -197,7 +197,7 @@ I built `cmd/progress.go` with 73 lines of channel-wrapping logic and zero dedic
 39. Add context cancellation to hash-only file collection
 40. Audit all `fmt.Fprintf(os.Stderr, ...)` calls
 41. Document workers routing convention in an ADR
-42. Add workers bug to CHANGELOG as behavioral fix
+42. ~~Add workers bug to CHANGELOG as behavioral fix~~ done — CHANGELOG --workers 0 routing bug entry verified by title (2026-11-23 docs-health pass)
 43. Create testing conventions doc
 44. Test stdin with mixed `.go` and `.templ` paths
 45. Test `--workers -1` (negative auto-detect)

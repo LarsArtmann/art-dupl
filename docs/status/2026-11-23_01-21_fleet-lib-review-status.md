@@ -80,7 +80,7 @@
 8. Smoke-test `examples/detectorv2` against art-dupl's pin before writing T20a.
 9. Provider golden regen + diff review after T20b/T20c.
 10. Surface FilesScanned in BuildFlow's tool report (cross-repo; closes the T07b loop end-to-end).
-11. Make the citation sweep a flake check (`scripts/citation-sweep.py` gate lane) so stale report citations fail CI.
+11. Make the citation sweep a flake check (`scripts/citation-sweep.py` gate lane) so stale report citations fail CI. **→ routed to TODO_LIST MEDIUM Priority Make the citation sweep a flake check lane row**
 12. Extend the sweep default glob to include `docs/review/README.md` + `docs/research/README.md`.
 13. Add `--self-test` mode to the sweep (embedded probe citations incl. an ambiguous-basename case).
 14. Mechanical canary test asserting `.buildflow.yml` still contains the `go-auto-upgrade` skip (jsonv2gate-style; `8ce90a47` proved the file can silently lose it).

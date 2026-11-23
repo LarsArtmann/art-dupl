@@ -133,6 +133,33 @@ func (cloneDetector) Name() string { return finding.ToolName }
 // Detect implements gofinding.Detector: analyze the working directory from
 // the context (default ".") and return one finding per clone occurrence.
 func (cloneDetector) Detect(ctx context.Context) ([]gofinding.Finding, error) {
+	findings, _, err := cloneDetector{}.detectWithCoverage(ctx)
+
+	return findings, err
+}
+
+// DetectV2 implements gofinding.DetectorV2 (go-finding core v1.15.0+): the
+// identical run to Detect plus coverage evidence. FilesScanned is the crawl's
+// file count, so a host can distinguish "clean repo, every file seen" from
+// "coverage not measured" — both look like zero findings, but only the first
+// is a measured zero. SkippedModules stays empty by policy: the crawl
+// deliberately descends into nested go.mod trees (cross-module clones are
+// real findings; see the provider posture note in TODO_LIST T20).
+// gofinding.RunDetect picks this up via its DetectorV2 type assertion, so
+// hosts upgrade to coverage evidence without any wire change.
+func (cloneDetector) DetectV2(ctx context.Context) (gofinding.DetectResult, error) {
+	findings, scanned, err := cloneDetector{}.detectWithCoverage(ctx)
+	if err != nil {
+		return gofinding.DetectResult{}, err
+	}
+
+	return gofinding.DetectResult{Findings: findings, FilesScanned: scanned}, nil
+}
+
+// detectWithCoverage is the shared run behind Detect and DetectV2: crawl the
+// working directory, run the SDK, and return the findings plus the number of
+// files the crawl actually selected.
+func (cloneDetector) detectWithCoverage(ctx context.Context) ([]gofinding.Finding, int, error) {
 	ctx = toolsdk.EnsureContext(ctx)
 
 	dir := gofinding.WorkingDirFromContext(ctx)
@@ -142,11 +169,11 @@ func (cloneDetector) Detect(ctx context.Context) ([]gofinding.Finding, error) {
 
 	files, err := collectSourceFiles(dir, gitignore.LoadTree(dir, io.Discard))
 	if err != nil {
-		return nil, fmt.Errorf("collect source files under %s: %w", dir, err)
+		return nil, 0, fmt.Errorf("collect source files under %s: %w", dir, err)
 	}
 
 	if len(files) == 0 {
-		return []gofinding.Finding{}, nil
+		return []gofinding.Finding{}, 0, nil
 	}
 
 	opts := providerOptions()
@@ -161,7 +188,7 @@ func (cloneDetector) Detect(ctx context.Context) ([]gofinding.Finding, error) {
 
 	detector, err := artdupl.NewDetector(opts)
 	if err != nil {
-		return nil, fmt.Errorf("create art-dupl detector: %w", err)
+		return nil, 0, fmt.Errorf("create art-dupl detector: %w", err)
 	}
 
 	defer func() { _ = detector.Close() }()
@@ -171,13 +198,13 @@ func (cloneDetector) Detect(ctx context.Context) ([]gofinding.Finding, error) {
 		// A clone-free repo is a successful Detect run, not an error: the
 		// SDK surfaces zero groups as a sentinel.
 		if errors.Is(err, artdupl.ErrNoDuplicatesFound) {
-			return []gofinding.Finding{}, nil
+			return []gofinding.Finding{}, len(files), nil
 		}
 
-		return nil, fmt.Errorf("detect clones in %s: %w", dir, err)
+		return nil, 0, fmt.Errorf("detect clones in %s: %w", dir, err)
 	}
 
-	return findingsFromGroups(result.CloneGroups, acceptedSet), nil
+	return findingsFromGroups(result.CloneGroups, acceptedSet), len(files), nil
 }
 
 // providerOptions configures the SDK for finding interchange: snippets are

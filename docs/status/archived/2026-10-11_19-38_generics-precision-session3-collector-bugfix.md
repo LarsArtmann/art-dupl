@@ -78,7 +78,7 @@
 2. Specifically check whether art-dupl `17b5f676` (`snippet.go` asNodes pair, session-1 TRUE label) is suppressed or gone — decides g/Q1 with evidence.
 3. Resolve B2 (branching-flow 1→0 mechanism: jq family diff + source read at `dbdeb0f1`).
 4. T13: `nil-guard-after-helper` pattern + FP guard + ParseSnippet real-source tests + BDD e2e + docs row + count gate 39→40 + corpus re-validation (3-binary method, current HEADs) + baseline regen check.
-5. CHANGELOG entries (T12 now; T4/T5/T7/T8/T9/loader per T20.2).
+5. ~~CHANGELOG entries (T12 now; T4/T5/T7/T8/T9/loader per T20.2).~~ done — CHANGELOG entries verified by title (append-collector-tail + option-apply-loop T12; instantiation-aware hints + per-module type loader T7/T8/T9)
 6. T10: no-double-suggest test (reuse-suggested groups carry no extraction suggestion/veto).
 7. T6: already-generic annotation ("would be over-engineering").
 8. T14: branching-flow corpus row in AGENTS.md (pin HEAD at scan time).

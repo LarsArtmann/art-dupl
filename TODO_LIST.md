@@ -1,6 +1,6 @@
 # TODO List
 
-**Last Updated:** 2026-11-15
+**Last Updated:** 2026-11-23
 
 Actionable items for the next 2-4 weeks. Completed work lives in `CHANGELOG.md`.
 This file is OPEN work only - no completed, rejected, or resolved items.
@@ -24,6 +24,10 @@ or external by nature.
 
 ## MEDIUM Priority
 
+- [ ] **Sweep machines/repos for multi-copy art-dupl installs** (2026-11-23 webphone §f#21 + close-out §f#22): the PATH-shadow warning only fires when `version` is run, so stale copies elsewhere stay silent — sweep other machines' PATHs (`~/go/bin`, `~/.local/bin` both carried stale builds on THIS machine until the user removed them 2026-11-22).
+- [ ] **Install-or-trash the /tmp scratch binaries** (2026-11-23 webphone §f#29 + close-out §f#29): `/tmp/art-dupl-{fix,head,warn}` (17 MB each — the fixed + warn builds from the webphone session) still existed 2026-11-23; user installs them or runs `trash`; the empty `/tmp/sigfrag/` dir goes with them.
+- [ ] **VACUUM the buildflow state DB when no pipeline is live** (2026-11-23 close-out §f#7): `sqlite3 ~/.local/state/buildflow/buildflow.db VACUUM` — still 1.1 GB on 2026-11-23; VACUUM needs the daemon idle (two `--fix` pipelines were running when checked).
+- [ ] **Make the citation sweep a flake check lane** (2026-11-23 fleet-lib §f#11): `scripts/citation-sweep.py` (exit 0 = ship gate) currently only runs when invoked manually; wire it into `flake.nix` checks so stale report citations fail CI.
 - [ ] **statix + govet lanes for `flake.nix`**: statix sweep plus a govet static-check lane.
 - [ ] **`cmd/run_suppression.go` carve-out**: suppression/output assembly leaves the analysis command file.
 - [x] ~~**FEATURES.md "6,000+ files" claim re-count**~~ DONE 2026-11-15: the claim described the TUNING CORPUS, not `git ls-files` (art-dupl itself is 1,456 files) — re-derived the documented dedup corpus (go-sse 67, go-cqrs-lite 3,746, go-paperless 47, DiscordSync 1,185, branching-flow 524 = 5,569 Go files; 50 templ) and rewrote FEATURES.md:8 to name the five repos with re-derivable numbers ("5,500+ Go files and 50 templ files as of 2026-11-15"); the old "6,000+/320+" was not re-derivable from any documented corpus. The `38 actionability patterns` phrase on the same line is count-gated and untouched.

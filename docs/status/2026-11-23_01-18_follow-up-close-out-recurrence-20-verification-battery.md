@@ -58,7 +58,7 @@ Binary reinstall (user action; PATH copy still resolves to the poisoned-commit b
 4. Hunt the `.buildflow.yml` deleter: buildflow run history around 2026-11-15 12:37 (`buildflow history`), check whether any step deletes unknown-keyed config files.
 5. Upstream (BuildFlow repo): exclusion mechanism so go-auto-upgrade respects per-repo v1-API invariants without skip_steps (owner Q1); investigate the config-deletion behavior there too.
 6. Refresh the stale fleet buildflow binary (769b3a4 → HEAD 40fec90) so preflight warnings reflect current code.
-7. VACUUM the 1.07 GB buildflow state DB (`sqlite3 ~/.local/state/buildflow/buildflow.db VACUUM`).
+7. VACUUM the 1.07 GB buildflow state DB (`sqlite3 ~/.local/state/buildflow/buildflow.db VACUUM`). **→ routed to TODO_LIST MEDIUM Priority VACUUM the buildflow state DB when no pipeline is live row**
 8. Extract shared nested-module-aware walker into `internal/testutil`; refactor fuzz gate, jsonv2gate, domain scanner onto it.
 9. Canary the nested-module skip in the failing direction (temporarily revert the skip in a scratch run, observe red).
 10. TODO_LIST.md HARVEST from this report + the 00-15 report (top ~10 rows).
@@ -72,15 +72,15 @@ Binary reinstall (user action; PATH copy still resolves to the poisoned-commit b
 18. Decision + doc: should `signature-fragment` cover statement-free `.go` files (currently GoSnippet-gated)?
 19. Reconcile resurfaced bloop warnings with AGENTS "CLOSED" claim (prior item 17).
 20. Re-pin go-cqrs-lite corpus (drifted vs documented baseline) and re-baseline counts.
-21. CHANGELOG check for pattern + warning entries.
-22. Sweep other machines/repos for multi-copy art-dupl installs.
+21. ~~CHANGELOG check for pattern + warning entries.~~ done — CHANGELOG Unreleased section now carries the signature-fragment pattern + PATH-shadow warning entries (added 2026-11-23 docs-health pass)
+22. Sweep other machines/repos for multi-copy art-dupl installs. **→ routed to TODO_LIST MEDIUM Priority Sweep machines/repos for multi-copy art-dupl installs row**
 23. ACTIONABILITY_PATTERNS.md: document the signature-fragment ∪ trivial-fragment defense-in-depth in priority notes.
 24. `--include-pattern` totals sanity pin (23 vs 261 observation).
 25. Assert exact GoSnippet Field counts for templ component params in the pattern test.
 26. Re-run the 2026-10-30 corpus matrix with the new binary; refresh all documented numbers in one wave.
 27. Re-confirm provider output label exposure after the next provider version bump.
 28. Decide the "low-threshold profile" (paired flags) if `-t 3` is confirmed standing.
-29. Trash `/tmp/art-dupl-{head,fix,warn}` + `/tmp/sigfrag*` after the user installs.
+29. Trash `/tmp/art-dupl-{head,fix,warn}` + `/tmp/sigfrag*` after the user installs. **→ routed to TODO_LIST MEDIUM Priority Install-or-trash the /tmp scratch binaries row**
 30. One-line ledger note: `config/config_test.go` v2 import tolerance (test file, gate-exempt — confirm deliberate).
 31. Consider asserting `.golangci.yml`/go.mod pin equality from ONE source (the pin test reads both; a third writer could re-split them).
 32. Self-scan +1 group identification next time drift matters (snapshot today's JSON as the new baseline for that comparison).

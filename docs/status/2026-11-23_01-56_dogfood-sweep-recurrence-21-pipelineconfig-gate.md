@@ -83,7 +83,7 @@
 4. **Resolve owner Q1**: upstream BuildFlow exclusion mechanism for `go-auto-upgrade`, or declare the skip permanent fleet-wide (see questions below).
 5. **Investigate the residual go-line rewriter**: `respect_patch_floor` was supposed to end flips; `fb34125f`+`a9d1a0f8` say otherwise. Find which step rewrites `go.mod` despite the option (BuildFlow `go-mod-normalize`? gvac? something else?).
 6. **Run one REAL `buildflow --fix` pipeline under observation** and verify end-to-end that the skip holds and the six files survive (dry-run proof is necessary, not sufficient).
-7. **Add `.buildflow-fod-journal.json` (and any `.*-journal.json` buildflow scratch) to `.gitignore`** — prevent the daemon committing mid-repair scratch.
+7. ~~**Add `.buildflow-fod-journal.json` (and any `.*-journal.json` buildflow scratch) to `.gitignore`** — prevent the daemon committing mid-repair scratch.~~ done — .gitignore now carries .buildflow-fod-journal.json + *-journal.json (added 2026-11-23 docs-health pass)
 8. **Post-pipeline re-verification ritual**: after any live `buildflow --fix` exits, re-run jsonv2gate + pin tests + `ls .buildflow.yml` before trusting the tree (one command chain; document it next to the pgrep lesson in AGENTS.md).
 9. **Fleet rollout**: port `internal/pipelineconfig` to other repos with non-default `.buildflow.yml` overrides (the deletion class is almost certainly not art-dupl-specific).
 10. **Cross-repo destroyer audit NOW**: check every fleet repo's `.buildflow.yml` presence + skip content and the daemon logs for deletion commits in the same window — determine blast radius before assuming art-dupl is unique.
