@@ -373,3 +373,38 @@ at 1283 detected). Both judged; zero harmful duplication found.
   printer/finding TestBuilderConversionIsByteIdenticalToLegacyConstruction
   fail at pre-fix HEAD 889421f5 too (concurrent session's in-flight state;
   left untouched).
+
+## 2026-11-23 — monthly `-t 1 --suggest-generics --type-aware` sweep (6 shown → 0)
+
+**Detected: 1362 / shown: 0** (`art-dupl --sort total-tokens -t 1 --suggest-generics --type-aware --timing` on art-dupl itself; first run: 1360 detected / 6 shown, total 22.3s, type-load 19.9s). The 2026-10-24 sweep's two accepted groups (`setAttributeKey`/`setConstantAttribute`, `shortRevision`/`truncHash`) stayed suppressed — those directives hold. All six shown groups judged:
+
+### Extracted
+
+| Clone                                                                                                                                              | Action                                                                                                                                                                                                             | Outcome                                     |
+| -------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------- |
+| 11× identical 5-line check-test setup (`dir := t.TempDir()`, writeCheckFixture a/b, `recordCheckBaseline`) in `cmd/check_cmd_test.go`               | New `recordTwoFamilyBaseline(t)` helper returning (dir, baselinePath); 11 identical sites collapsed to one line; the 4-fixture variant (double-count test) stays inline                                              | Family gone; no residue group at -t 1       |
+| `detectionMethodsPolicyKey` vs `detectionMethodsToStringSlice` (duplicate method-set→`[]string` conversion; `cmd/baseline_identity.go` / `cmd/util.go`) | Delegated the policy key to the existing helper — NO generic needed: `[]config.DetectionMethod` is assignable to named `config.DetectionMethods`, so the `suggest-generics` flag was a false alarm for extraction (assignability already unifies) | Family gone                                 |
+| `VersionFooterSetter` assertion ×3 (`cmd/run_flags.go`, `cmd/run_all_modes.go`, `cmd/baseline_cmd.go`)                                              | New `setVersionFooter(p printer.Printer)` helper next to the existing `setJSONPrinterFilesCount` optional-setter helper; all three sites call it (the scan grouped only 2 of 3 — the third found by grep)            | Family gone; `run_all_modes.go` dropped its `printer` import |
+
+### Accepted (intentional)
+
+| Clone                                                                                                                                    | Rationale                                                                                                                                                  | Suppression                                                                                  |
+| ---------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| `os.Stat` + skip guard (`cmd/recommend_threshold.go` / `pkg/artdupl/detector_validation.go`)                                             | Cross-package stat-guard idiom; the SDK boundary (`pkg/artdupl` must not import `cmd`) forbids a shared home; a helper would out-param its 3-line body      | Bare `//art-dupl:accept` above each guard (two directives, edit-robustness)                   |
+| Newline-counting loop (`pkg/position/lines.go` `offsetToLine` / `syntax/dedup_member_sets.go` `dedupLinesForRange`)                       | The documented deliberate twin: arch-lint forbids `syntax` → `pkg/position` (import cycle via position's testutil); already rationaled in the AGENTS.md dedup-member-sets entry | One directive above the syntax-side loop (one covered occurrence accepts the group)          |
+| Empty-element guard (`cmd/path_shadow.go` / `config/detection_method.go`)                                                                | Guard + continue over different domains (PATH splitting vs TrimSpace'd method names); the single-simple-statement pattern covers 1-statement guards, this is 2 | Bare accept above each guard                                                                 |
+
+### Notes
+
+- Detected rose 1360 → 1362 after extraction (the new helper's fragments re-match the 4-fixture variant and the fixture helpers at sub-threshold windows); everything new lands suppressed — shown is the judged metric.
+- Timing stable: 23.7s total, type-load 21.1s (the documented ADR-0026 shared go/packages cost), ~11.4M allocs / 1.7 GiB.
+- Process gotcha worth remembering: a `replace_all` on a duplicated block silently rewrites the NEW helper's own body when the helper is inserted BEFORE the replacement runs — the helper recursed into itself and the suite caught it as a stack overflow. Count occurrences AFTER inserting new code, or insert the helper after replacing.
+
+## 2026-11-23 ~01:45 — recurrence #21: the destroyer struck again mid-session (config-gate now enforces the skips)
+
+- **Timeline**: sweep session started ~01:20 with jsonv2gate green. A `buildflow --fix --build-mode=full` pipeline (pid 1165938, started 01:38:58) ran with ZERO project overrides because daemon commit `57782482` had DELETED `.buildflow.yml` again — the second destroyer strike, same signature as `8ce90a47` (#20). The pipeline's `go-auto-upgrade` re-poisoned the same six files AND flipped the go-line pin (`go 1.27`, quoted `.golangci.yml` `run.go`); the sweep's config test failed with the Duration refusal, which is what caught it mid-session.
+- **Forensics**: `git log --diff-filter=D -- .buildflow.yml` names BOTH destroyer commits (`8ce90a47`, `57782482`) — the deletion rides daemon auto-commits, not buildflow itself.
+- **Remediation (all diff-verified pure)**: six files restored from `fb34125f` (the #20 remediation commit; pure v2 import swaps, no feature work in between), go.mod + `.golangci.yml` restored from `0c486ae9` (only the pin lines differ), `.buildflow.yml` recreated from `c00f3222`. jsonv2gate + touched-package suite green in the same chain.
+- **NEW DISCOVERY**: `fb34125f` itself shipped the FLIPPED go-line pin (`go 1.27` in go.mod AND the quoted `.golangci.yml` line) — the #20 AGENTS.md claim "pin tests green" did not hold for the remediation commit's landed content (a later daemon commit `a9d1a0f8` also touched go.mod). Never trust a remediation commit's landed content; diff-verify in the restore chain.
+- **Structural fix landed**: `internal/pipelineconfig` gate (canary-verified green→red→green) fails the suite when `.buildflow.yml` is missing or loses either skip step (`go-auto-upgrade`, `golangci-lint-auto-configure`), naming the restore ritual in the failure. The destroyer can no longer strike silently; WHO it is remains owner Q1's second question.
+- **Lesson**: "skip verified live" is a point-in-time claim — the config must be verified to EXIST at every session start, which is now the gate's job.
