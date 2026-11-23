@@ -29,12 +29,15 @@ benchstat baseline-2026-08-10.txt /tmp/bench_current.txt
 
 `scripts/corpus-diff.py` replaces the hand-written analyzer every
 detection-change session used to rewrite. It runs a reference and a new binary
-over the same corpus with `--json` and reports the three things that matter:
+over the same corpus with `--json` and reports what matters:
 
 - **groups** added / removed,
 - **member sets** whose displayed spans (`file:start-end`) are identical but
   whose group hash changed (a granularity/identity change, not a fixed clone),
-- **clone counts by category**, i.e. where the change landed.
+- **clone counts by category**, i.e. where the change landed,
+- **suppression summary** (detected/shown/non-actionable/filtered) from the
+  text footer — catches pattern or threshold behavior changes the group-set
+  diff cannot see.
 
 ```bash
 go build -o /tmp/art-dupl-new ./cmd/art-dupl
@@ -47,6 +50,14 @@ with `git worktree add --detach`): live consumer repos drift under their own
 daemons, and drift invalidates before/after comparisons. Run the same script
 with `--before X --after X` first — the output must be empty, otherwise the
 corpus is moving, not the detector.
+
+Registered pins: `branching-flow@dbdeb0f1`, `DiscordSync@4c0502c3`,
+`go-cqrs-lite@10c9f987`, `go-paperless@1909797`, `go-sse@67a16fa`,
+`nsfw-classifier@a7cec08a`, `webphone@10327ed8` (added 2026-11-22 — the
+templ-heavy project behind the signature-fragment pattern; keep/remove
+pending owner decision). Validate detection changes at the default `-t 5`
+AND at a low threshold (`-t 3`, webphone's working threshold): the
+2026-11-22 session showed junk classes that are invisible at `-t 5`.
 
 ## Before/After Corpus Reports
 

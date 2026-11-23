@@ -13,6 +13,9 @@ Reported dimensions:
                 group hash — a granularity or identity change, not a fixed or
                 introduced clone
   categories    per-category group-count delta (where the change lands)
+  suppression   text-footer summary delta (detected/shown/non-actionable/
+                filtered) — catches pattern or threshold behavior changes the
+                group-set diff cannot see
 
 Usage:
   scripts/corpus-diff.py --before ./old --after ./new [--args "-t 2"] CORPUS
@@ -26,6 +29,7 @@ import argparse
 import collections
 import json
 import os
+import re
 import shlex
 import subprocess
 import sys
@@ -61,6 +65,56 @@ def run_binary(binary: str, corpus: str, extra_args: list[str]) -> dict[str, Any
     except json.JSONDecodeError as exc:
         print(completed.stdout[:2000], file=sys.stderr)
         fail(f"{binary} did not emit JSON: {exc}")
+
+
+FOOTER_RE = re.compile(r"Detected (\d+) clone groups, (\d+) shown \(([^)]*)\)")
+FOUND_RE = re.compile(r"Found total (\d+) clone groups")
+
+
+def run_summary(binary: str, corpus: str, extra_args: list[str]) -> dict[str, Any] | None:
+    """Run one binary in text mode and parse its summary footer.
+
+    The JSON document carries the shown groups but not the detected /
+    suppressed accounting, so a suppression-behavior change (patterns,
+    thresholds) is invisible to the group-set diff. The text footer has it.
+    """
+    cmd = [binary, *extra_args, corpus]
+    env = dict(os.environ)
+    env["ARTDUPL_NO_PROGRESS"] = "1"
+
+    try:
+        completed = subprocess.run(
+            cmd, capture_output=True, text=True, env=env, check=False
+        )
+    except OSError as exc:
+        fail(f"cannot execute {binary}: {exc}")
+
+    text = completed.stdout + "\n" + completed.stderr
+    match = FOOTER_RE.search(text)
+    if match:
+        detail = match.group(3)
+        non_actionable = re.search(r"(\d+) non-actionable", detail)
+        filtered = re.search(r"(\d+) filtered suppressed", detail)
+        return {
+            "detected": int(match.group(1)),
+            "shown": int(match.group(2)),
+            "non_actionable": (
+                int(non_actionable.group(1)) if non_actionable else None
+            ),
+            "filtered_suppressed": int(filtered.group(1)) if filtered else None,
+        }
+
+    found = FOUND_RE.findall(text)
+    if found:
+        total = int(found[-1])
+        return {
+            "detected": total,
+            "shown": total,
+            "non_actionable": None,
+            "filtered_suppressed": None,
+        }
+
+    return None
 
 
 def member_set(group: dict[str, Any]) -> tuple[str, ...]:
@@ -138,6 +192,8 @@ def main(argv: list[str]) -> int:
     extra_args = shlex.split(args.args)
     before = summarize(run_binary(args.before, args.corpus, extra_args))
     after = summarize(run_binary(args.after, args.corpus, extra_args))
+    before_summary = run_summary(args.before, args.corpus, extra_args)
+    after_summary = run_summary(args.after, args.corpus, extra_args)
 
     removed_hashes = [h for h in before["groups"] if h not in after["groups"]]
     added_hashes = [h for h in after["groups"] if h not in before["groups"]]
@@ -163,6 +219,18 @@ def main(argv: list[str]) -> int:
         f"before: {before['total']} groups / {before['clones']} clones\n"
         f"after : {after['total']} groups / {after['clones']} clones"
     )
+
+    if before_summary is None or after_summary is None:
+        print("suppression summary: unavailable (no footer parsed)")
+    elif before_summary != after_summary:
+        print(
+            f"suppression summary CHANGED: {before_summary} -> {after_summary}"
+        )
+    else:
+        print(
+            f"suppression summary: unchanged "
+            f"({before_summary['detected']} detected, {before_summary['shown']} shown)"
+        )
 
     print_samples("removed groups", sorted(removed, key=describe), args.samples)
     print_samples("added groups", sorted(added, key=describe), args.samples)
@@ -191,6 +259,7 @@ def main(argv: list[str]) -> int:
         payload = {
             "corpus": args.corpus,
             "args": extra_args,
+            "summary": {"before": before_summary, "after": after_summary},
             "before": {"groups": before["total"], "clones": before["clones"]},
             "after": {"groups": after["total"], "clones": after["clones"]},
             "removed": removed_hashes,
