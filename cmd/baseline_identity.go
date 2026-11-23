@@ -38,10 +38,7 @@ func analyzerPolicyParts(cfg *config.Config) string {
 // detectors, but a different detector SET produces different group hashes
 // (hash-detected groups would read as new against an art-dupl-only baseline).
 func detectionMethodsPolicyKey(methods []config.DetectionMethod) string {
-	names := make([]string, 0, len(methods))
-	for _, method := range methods {
-		names = append(names, method.String())
-	}
+	names := detectionMethodsToStringSlice(methods)
 
 	sort.Strings(names)
 

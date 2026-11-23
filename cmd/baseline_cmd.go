@@ -192,9 +192,7 @@ func runCheck(c *cobra.Command, arguments []string) error {
 		inner = printer.NewJSON(os.Stdout, os.ReadFile)
 	}
 
-	if vfs, ok := inner.(printer.VersionFooterSetter); ok {
-		vfs.SetVersionFooter(GetVersion())
-	}
+	setVersionFooter(inner)
 
 	filter := newBaselineFilterPrinter(inner, bf)
 

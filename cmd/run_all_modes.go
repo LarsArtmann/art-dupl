@@ -9,7 +9,6 @@ import (
 
 	"github.com/LarsArtmann/art-dupl/config"
 	"github.com/LarsArtmann/art-dupl/job"
-	"github.com/LarsArtmann/art-dupl/printer"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
@@ -158,9 +157,7 @@ func writeFormatFile(
 
 	setJSONPrinterFilesCount(p, parseStats.FilesCount)
 
-	if vfs, ok := p.(printer.VersionFooterSetter); ok {
-		vfs.SetVersionFooter(GetVersion())
-	}
+	setVersionFooter(p)
 
 	// Create channel from matches for this printer
 	matchChan := make(chan syntax.Match)

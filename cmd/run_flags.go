@@ -210,9 +210,7 @@ func runStandardAnalysis(
 		}
 	}
 
-	if vfs, ok := p.(printer.VersionFooterSetter); ok {
-		vfs.SetVersionFooter(GetVersion())
-	}
+	setVersionFooter(p)
 
 	suppression := buildSuppressionConfig(mergedConfig)
 	suppression.GenericDecls = genericDecls
@@ -347,5 +345,13 @@ func resolveHTMLOutput(
 func setJSONPrinterFilesCount(p printer.Printer, filesCount int) {
 	if jsonPrinter, ok := p.(*printer.JSONPrinter); ok {
 		jsonPrinter.SetFilesCount(filesCount)
+	}
+}
+
+// setVersionFooter stamps the effective build version onto printers that
+// implement the optional VersionFooterSetter interface.
+func setVersionFooter(p printer.Printer) {
+	if vfs, ok := p.(printer.VersionFooterSetter); ok {
+		vfs.SetVersionFooter(GetVersion())
 	}
 }
