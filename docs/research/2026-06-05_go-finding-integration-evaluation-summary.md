@@ -51,7 +51,9 @@ into findings, and go-finding's dedup passes consume art-dupl reports directly.
 
 ## Follow-ups
 
-- Issue #2 (committed SARIF integration test feeding real CLI bytes through
-  `FindingsFromSARIF`) — tracked in `TODO_LIST.md`.
-- GAP-2 GroupID consumer-intent issue in go-finding — was unfiled at the
-  2026-09-23 docs-health pass; check upstream before filing a duplicate.
+- ~~Issue #2 (committed SARIF integration test feeding real CLI bytes through
+  `FindingsFromSARIF`) — tracked in `TODO_LIST.md`.~~ closed 2026-10-16 — shipped as
+  `bdd/sarif_gofinding_integration_test.go` (see the feedback pointer doc).
+- ~~GAP-2 GroupID consumer-intent issue in go-finding — was unfiled at the
+  2026-09-23 docs-health pass; check upstream before filing a duplicate.~~ resolved —
+  GroupID shipped upstream (gap table above); nothing left to file.
