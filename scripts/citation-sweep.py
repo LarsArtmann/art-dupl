@@ -138,8 +138,10 @@ def _only_missing_roots(path_raw: str, missing_roots: set[str]) -> bool:
     return bool(missing_roots) and "/" not in path_raw
 
 
-def sweep(report: Path, skip_missing_roots: bool = False) -> list[str]:
+def sweep(report: Path, skip_missing_roots: bool = False) -> tuple[list[str], list[str]]:
+    """Returns (failures, skipped). Only failures drive the exit code."""
     failures: list[str] = []
+    skipped: list[str] = []
     missing_roots = {name for name, root in LIB_ROOTS.items() if not root.is_dir()}
     for lineno, line in enumerate(report.read_text(encoding="utf-8").splitlines(), 1):
         for m in CITE_RE.finditer(line):
@@ -151,7 +153,7 @@ def sweep(report: Path, skip_missing_roots: bool = False) -> list[str]:
             cite = f"{path_raw}:{start}{('-' + str(end)) if end_raw else ''}"
 
             if skip_missing_roots and _only_missing_roots(path_raw, missing_roots):
-                failures.append(f"{report.name}:{lineno}  {cite}  -> SKIPPED (root missing)")
+                skipped.append(f"{report.name}:{lineno}  {cite}  -> SKIPPED (root missing)")
                 continue
 
             resolved, note = resolve(path_raw)
@@ -169,7 +171,7 @@ def sweep(report: Path, skip_missing_roots: bool = False) -> list[str]:
                     failures.append(
                         f"{report.name}:{lineno}  {cite}  -> CONTENT ANCHOR MISS (~{anchor} not in cited range of {resolved})"
                     )
-    return failures
+    return failures, skipped
 
 
 def self_test() -> int:
@@ -212,22 +214,33 @@ def self_test() -> int:
         LIB_ROOTS = {"go-finding": libs_go, "other-lib": libs_other}
         try:
             report.write_text("see pkg/x.go:12 ~ANCHOR_TOKEN\n")
-            check("anchor hit passes", sweep(report) == [])
+            check("anchor hit passes", sweep(report) == ([], []))
 
             report.write_text("see pkg/x.go:12 ~NOT_THERE\n")
-            check("anchor miss detected", any("CONTENT ANCHOR MISS" in f for f in sweep(report)))
+            check("anchor miss detected", any("CONTENT ANCHOR MISS" in f for f in sweep(report)[0]))
 
             report.write_text("see pkg/x.go:5-9\n")
-            check("range in bounds passes", sweep(report) == [])
+            check("range in bounds passes", sweep(report) == ([], []))
 
             report.write_text("see pkg/x.go:25-40\n")
-            check("range out of bounds detected", len(sweep(report)) == 1)
+            check("range out of bounds detected", len(sweep(report)[0]) == 1)
 
             report.write_text("see go-finding/report.go:140 ~SetRunProperty\n")
-            check("lib-root prefix resolves with anchor", sweep(report) == [])
+            check("lib-root prefix resolves with anchor", sweep(report) == ([], []))
 
             report.write_text("see toolsdk/options.go:180\n")
-            check("submodule prefix resolves", sweep(report) == [] and "submodule-resolved" in resolve("toolsdk/options.go")[1])
+            check("submodule prefix resolves", sweep(report) == ([], []) and "submodule-resolved" in resolve("toolsdk/options.go")[1])
+
+            report.write_text("see go-finding/report.go:140 ~SetRunProperty\n")
+            failures, skipped = sweep(report, skip_missing_roots=True)
+            check("skip-missing-roots: present root still verifies", failures == [] and skipped == [])
+
+            LIB_ROOTS = {"go-finding": root / "no-such-root"}
+            failures, skipped = sweep(report, skip_missing_roots=True)
+            check("skip-missing-roots: absent root -> skipped, not failed", failures == [] and len(skipped) == 1)
+            failures, _ = sweep(report, skip_missing_roots=False)
+            check("without flag, absent root still fails", len(failures) == 1)
+            LIB_ROOTS = {"go-finding": libs_go, "other-lib": libs_other}
 
             report.write_text("see cmd/x.go:1\n")
             check("cmd falls through to art-dupl", resolve("cmd/x.go")[0] == repo / "cmd" / "x.go")
@@ -240,10 +253,10 @@ def self_test() -> int:
             check("bare unique basename resolves", resolve("unique.go")[1] == "bare-basename")
 
             report.write_text("en–dash range see pkg/x.go:3–6\n")
-            check("en-dash range parses", sweep(report) == [])
+            check("en-dash range parses", sweep(report) == ([], []))
 
             report.write_text("| `pkg/x.go:12 ~ANCHOR_TOKEN` | table cell |\n")
-            check("backticked table citation parses", sweep(report) == [])
+            check("backticked table citation parses", sweep(report) == ([], []))
 
             m1 = CITE_RE.search("a.go:7")
             m2 = CITE_RE.search("a.go:7-9 ~tok")
@@ -289,11 +302,15 @@ def main() -> int:
 
     total_failures = 0
     for report in targets:
-        failures = sweep(report, skip_missing_roots)
+        failures, skipped = sweep(report, skip_missing_roots)
         status = "OK" if not failures else f"{len(failures)} STALE"
+        if skipped:
+            status += f" ({len(skipped)} skipped)"
         print(f"{report}: {status}")
         for failure in failures:
             print(f"  {failure}")
+        for skip in skipped:
+            print(f"  {skip}")
         total_failures += len(failures)
     print(
         f"\ncitation sweep: {len(targets)} report(s), {total_failures} stale citation(s)"

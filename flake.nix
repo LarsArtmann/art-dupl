@@ -257,6 +257,21 @@
               touch $out
             '';
 
+            # citation-sweep gate (2026-11-23, plan T6): keeps the fleet-review
+            # corpus honest. The --self-test probes are hermetic (fixture tree,
+            # no sibling repos) and would have caught the 2026-11-23 syntax
+            # break shipped by the sweep's own author. The corpus sweep runs
+            # with --skip-missing-roots: the nix sandbox has no sibling lib
+            # checkouts, so cross-repo citations SKIP while every
+            # art-dupl-internal citation still verifies; local runs (sibling
+            # roots present) verify the cross-repo half.
+            citation-sweep = pkgs.runCommand "art-dupl-citation-sweep" { nativeBuildInputs = [ pkgs.python3 ]; } ''
+              cd ${pkgs.lib.cleanSource ./.}
+              python3 scripts/citation-sweep.py --self-test
+              python3 scripts/citation-sweep.py --skip-missing-roots
+              touch $out
+            '';
+
             # arch-lint (TODO #40, 2026-09-23): the 2026-09-18 arch-lint break
             # only surfaced in CI. go/packages needs a Go toolchain + writable
             # module/build cache at runtime, which the sandbox DOES provide via
