@@ -1,0 +1,106 @@
+# Library adoption audit — go-linter-sdk
+
+| Field | Value |
+| --- | --- |
+| Library | `github.com/larsartmann/go-linter-sdk` |
+| Version reviewed | checkout HEAD `1694dcb2ae13548bf5b6fc9440e0d40e8475bb8e` = `git describe --tags` `v0.6.1-8-g1694dcb` (v0.6.1 tagged 2026-11-19; HEAD is 8 commits past it, latest non-daemon commit `1694dcb` docs fix, 2026-11-22) |
+| Consumer | `/home/lars/projects/art-dupl` @ HEAD `02b42ff3c6768d23d9d9d257885d13e2fc666a77`, single Go module `github.com/LarsArtmann/art-dupl` |
+| Date | 2026-11-23 |
+| Auditor | group C fleet run (read-only on code; this file is the only write) |
+| Verdict | **NOT-ADOPTED** — score 50/100 (moderate), inputs Σ = 0.5 of A = 1 |
+
+## Module map
+
+| Repo | Modules | Tags |
+| --- | --- | --- |
+| go-linter-sdk | single module `github.com/larsartmann/go-linter-sdk` (go.mod:1, `go 1.27`, dep `go-finding v1.15.1`, indirect `go-error-family v0.12.0`) | v0.6.1 (2026-11-19); HEAD = v0.6.1-8 |
+| art-dupl | single module; pins `go-finding v1.15.0` (core) + `toolsdk v1.16.0` (see art-dupl docs/review/libs/go-finding.md, go-finding-toolsdk.md) | — |
+
+## What the library is, in one paragraph
+
+A scaffolding SDK for fleet linters: a `Rule`/`RuleFunc` interface (go-linter-sdk/rule.go:115, 158), a registry that runs rules and builds a go-finding `Report` (go-linter-sdk/registry.go:218 `Registry.Run`), enable/disable selection (go-linter-sdk/registry.go:479 `SelectRules`), exit-code policy (go-linter-sdk/registry.go:415 `ExitCodeFromReport`, :512 `ExitCodeByConfidence`), a coverage-evidence channel (`CoverageReporter`, go-linter-sdk/rule.go:148), and bridges from a registry to go-finding `Detector`/`DetectV2` contracts (go-linter-sdk/registry.go:294 `DetectorFromRegistry`, :319 `DetectV2`). Six LarsArtmann repos already import it; the no-converter-layer claim is source-verified in go-linter-sdk/docs/ADOPTION.md.
+
+## art-dupl's existing lane (read FIRST, per the brief)
+
+art-dupl already implements the **go-finding/toolsdk provider contract**, not a linter contract:
+
+- Self-registration: `var Provider = toolsdk.Register(toolsdk.Spec{…})` at pkg/provider/provider.go:87 — package-level var, wired by BuildFlow's blank import; `Trigger: toolsdk.OnFiles("go", "**/*.go", "**/*.templ")` at pkg/provider/provider.go:99, declared Options (`threshold`, `emit-suppressed-accepted`) at pkg/provider/provider.go:101–117, `Detect` at pkg/provider/provider.go:118/135.
+- Native finding emission with **no converter**: the CLI's `printer/finding` adapter builds `finding.Finding` directly from clone groups (art-dupl docs/review/libs/go-finding.md usage map: printer/finding/finding.go is the full go-finding construction surface; ~72 identifier references). art-dupl is exactly the "born native" pattern go-linter-sdk's ADOPTION doc celebrates — achieved without the SDK, because art-dupl is a **single-rule detector**, not a multi-rule linter.
+- File discovery/crawl parity: pkg/provider/crawl.go:22 `collectSourceFiles` mirrors CLI exclusions (gogenfilter, gitignore matcher, excluded dirs).
+
+Full prior coverage: art-dupl docs/review/libs/go-finding-toolsdk.md (15-row inventory; the one Missed Opportunity there — typed option accessors — lives in toolsdk, not here).
+
+## Capability inventory
+
+| # | Capability | Library evidence | art-dupl evidence | Status |
+| --- | --- | --- | --- | --- |
+| 1 | `Rule` interface + `RuleFunc` value type (identity, category, severity, `Check(ctx, dir)`) | go-linter-sdk/rule.go:115, 158, 306 | art-dupl has exactly ONE check (clone detection). A per-rule interface would wrap a single method (`cloneDetector.Detect`, pkg/provider/provider.go:135) in a second abstraction | N/A — single-rule tool, no rule multiplicity to manage |
+| 2 | `RuleMeta` validation | go-linter-sdk/rule.go:216 `Validate()`, :224 | Identity is the toolsdk Spec's `Name` + go-finding `ToolName`, validated by `TestProviderRegistersValidSpec` (pkg/provider/provider_test.go:82) against toolsdk's own `Register` validation | N/A — identity validation already owned by toolsdk at the same seam |
+| 3 | `Registry` + `Run` (drive rules → `finding.Report`) | go-linter-sdk/registry.go:76, 218 | art-dupl's execution engine is its own SDK (`artdupl.NewDetector` + `FindClones`, pkg/provider/provider.go:161–176); the *fleet* registry is toolsdk's process-global one (`toolsdk.All()`), which art-dupl already feeds | N/A — would be a third registry stacked under toolsdk's |
+| 4 | `RuleSet` (immutable bundle) | go-linter-sdk/ruleset.go:23, :98 `Check` | One rule; a bundle type solves a problem art-dupl does not have | N/A |
+| 5 | `FilterRules`/`SelectRules` enable-disable selection | go-linter-sdk/registry.go:450, 479 | art-dupl's single tunable is the `threshold` option (pkg/provider/provider.go:101–106, kind-checked by toolsdk) — CLI flags map via cmd/config_builder.go. Selection over rules is undefined with one rule | N/A |
+| 6 | `OptIn` wrapper | go-linter-sdk/rule.go:268, 275 | No opt-in/opt-out rule surface; the provider's only behavioral option is `emit-suppressed-accepted` (pkg/provider/provider.go:107–116), already a toolsdk Option | N/A |
+| 7 | **`CoverageReporter` (filesScanned evidence)** | go-linter-sdk/rule.go:148; v0.6.1 CHANGELOG: "coverage channel is live fleet-wide (first non-zero sweep)" — five walking-rule linters report `filesScanned`, BuildFlow consumes it via `dtool.DetectorV2FromFinding` | pkg/provider emits findings with NO scan-coverage evidence; the crawl (pkg/provider/crawl.go:22) counts exactly the files it walks but never reports the count. cmd/filter_stats.go tracks *filter* sources, not scanned-file coverage on the wire | **Partial (0.5)** — the capability is genuinely relevant (BuildFlow consumes coverage evidence fleet-wide and art-dupl is a BuildFlow tool), but the right vehicle is the toolsdk `DetectorV2` coverage contract, not this SDK's interface; adopting go-linter-sdk for this row would be the wrong delivery channel |
+| 8 | `ExitCodeFromReport` / `ExitCodeFromFindings` / `ExitCodeByConfidence` | go-linter-sdk/registry.go:415, 426, 512 | art-dupl's exit codes are a deliberate CLI product contract (cmd/exit_codes.go with integration/process tests, exit 130 for ctx-cancel etc.), not a linter's pass/fail gate; the provider path is severity-capped advisory by design (pkg/provider/provider.go:66–70 `maxAdvisorySeverity`) | N/A — different exit-code semantics, already specified locally |
+| 9 | Detector bridges (`DetectorFromRegistry`, `DetectV2`, `DetectorsFromRegistry`) | go-linter-sdk/registry.go:294, 319, 362 | art-dupl IS the detector other bridging exists to serve; wrapping itself in an SDK registry to then be unwrapped back into a `finding.Detector` is a full-circle no-op | N/A |
+| 10 | finding-native emission (no converter layer) | go-linter-sdk/rule.go:329 `NewFinding` builder shim; docs/ADOPTION.md verdicts | Already achieved natively: printer/finding/finding.go emits `finding.Finding` directly from clone groups — the SDK's headline value proposition is moot for a tool that never had an Issue/Violation intermediate type | N/A |
+| 11 | Context/dir convention (`workingDir(ctx)`) | go-linter-sdk/registry.go:270 | Provider uses `toolsdk.EnsureContext` + `gofinding.WorkingDirFromContext` (pkg/provider/provider.go:136–141) — the toolsdk channel, which is the one BuildFlow actually sets | N/A — conflicting conventions; toolsdk wins at this seam |
+| 12 | Error attribution (`wrapRuleError`, `ContinueOnError`) | go-linter-sdk/registry.go:170, 194 | Detection errors propagate as wrapped `DuplError`s via art-dupl's errors/ taxonomy (7 ErrorTypes); a linter-rule error family adds a second taxonomy | N/A |
+
+Score: 12 rows, 11 N/A (reasons above), A = 1, Σ = 0.5 → round(100 × 0.5 / 1) = **50 → moderate** (the only applicable capability, coverage evidence, is half-matched by local machinery and would be delivered via a different library anyway).
+
+## Overlapping-fleet-SDK analysis: dual-SDK exposure or split-brain?
+
+go-linter-sdk and go-finding/toolsdk are **complementary in the fleet but non-overlapping for art-dupl**:
+
+- A fleet *linter* combines: go-linter-sdk (rules→findings) + go-finding (model/wire) + toolsdk (host integration). cmdguard/lint does exactly this (go-linter-sdk/docs/ADOPTION.md consumer table: "BuildFlow provider via go-finding/toolsdk Spec").
+- art-dupl occupies only the last two layers. It is a **detector** whose single "rule" is its entire reason to exist, with its own mature SDK (pkg/artdupl), its own pipeline (job/), and its own CLI product. There is no rule set to registry-ify: a one-entry `Registry` wrapping a detector that is *already* a `finding.Detector` would be pure ceremony.
+
+**Would dual-SDK exposure be justified? No — it would be a split-brain.** Concretely, adopting go-linter-sdk in pkg/provider would force one of two bad shapes:
+
+1. Re-express art-dupl as a `linter.RuleFunc` and let BuildFlow consume it through `DetectorFromRegistry` — an extra indirection hop around pkg/provider/provider.go:135's direct `Detector` implementation, changing nothing observable while adding a dependency whose `Rule` semantics (directory-walking checks, enable/disable sets, confidence-based exit codes) fit clone detection poorly.
+2. Keep both registrations (toolsdk Spec + linter Registry) — two identities for one tool, two option channels (`toolsdk.Option` vs enable/disable maps) with no reconciliation, exactly the drift the fleet SDKs exist to kill.
+
+The honest division of labor: **toolsdk is the detector-side contract art-dupl correctly implements; go-linter-sdk is for repos whose core product is a catalogue of checks.** art-dupl's catalogue has one entry.
+
+The one real borrowable idea is row 7 (coverage evidence), and it is tracked to the correct lane: a counting decorator over `collectSourceFiles` (pkg/provider/crawl.go:22) feeding the toolsdk/`DetectorV2` coverage channel, mirroring what go-structure-linter's SDK adapter does — implementable in ~20 lines inside pkg/provider without importing go-linter-sdk.
+
+## Version currency
+
+| Item | Finding |
+| --- | --- |
+| Local tag | v0.6.1 (2026-11-19); HEAD = v0.6.1-8 |
+| Cadence | Fast and disciplined: v0.6.0/v0.6.1 within days of the 2026-11-19 fleet-sweep; slot rules explicit (PATCH for example/tooling tiers) |
+| [Unreleased] intent | No `[Unreleased]` section in go-linter-sdk/CHANGELOG.md — the 8 post-tag commits are docs/daemon churn (HEAD `1694dcb` fixes dangling DOMAIN_LANGUAGE citations); no queued API change |
+| pkg.go.dev | v0.4.0-era verification in TODO_LIST superseded by the doc-drift guard (`scripts/check-doc-versions.sh`); version pointers live in go.mod |
+| Open fleet item | go-linter-sdk/TODO_LIST.md #23 BLOCKED: revisit go-policy-dsl README mention when it tags a stable v1 — signals the SDK treats pre-v1 consumer exposure as a liability, consistent with this audit's caution |
+
+## Fleet argument
+
+The fleet argument **for** go-linter-sdk is the strongest of the three libraries here: it demonstrably deleted ~4,700 LOC of converter code in BuildFlow, standardized six consumers, and the coverage channel it introduced now flows fleet-wide into BuildFlow gates — collective improvements genuinely propagate. The argument **against for art-dupl specifically**: art-dupl predates its problem class (it never had a converter layer to delete) and its single-rule shape means the SDK's value (rule catalogue management) has zero denominator. Re-implementing *nothing* per-repo is the correct fleet posture here: art-dupl's local machinery (toolsdk provider + printer/finding adapter) is more precise than the SDK's linter-shaped abstraction, and its one gap (scan coverage) is better served inside the toolsdk lane it already pins.
+
+## Ranked opportunities
+
+| Rank | Opportunity | Impact | Ease | Notes |
+| --- | --- | --- | --- | --- |
+| 1 | Add scan-coverage evidence to the toolsdk provider (counting crawl decorator → `filesScanned` on the DetectV2/coverage channel) | Medium | Easy (~20 lines in pkg/provider) | Delivers row 7's value via the correct SDK; aligns art-dupl with the v0.6.1 fleet-wide coverage sweep. This is a **toolsdk** change, not a go-linter-sdk adoption |
+| 2 | (Watch) If art-dupl ever grows multiple independent checks (e.g. per-category clone classifiers exposed as separate rules), re-evaluate go-linter-sdk as the rule host | Low then | — | Flip trigger below |
+
+## RECONSIDER-WHEN (flip triggers)
+
+1. art-dupl's surface splits into **multiple independently toggleable checks** (e.g. separate Type-1/Type-2/templ rules with per-rule severity and enable/disable semantics) — then a `linter.Registry` stops being ceremony and go-linter-sdk becomes the natural host.
+2. BuildFlow makes the coverage channel **mandatory** for provider tools and expects the SDK adapter pattern — then adopt the interface shape (still possibly via toolsdk's own DetectorV2; re-audit which contract BuildFlow actually reads).
+3. art-dupl ever needs a companion *linter* (e.g. an `art-dupl-lint` enforcing accept-directive hygiene across the fleet) — that hypothetical tool should be born native on go-linter-sdk, like its six current consumers.
+
+## How to verify
+
+```bash
+cd /home/lars/projects/art-dupl && git rev-parse HEAD   # 02b42ff3c6768d23d9d9d257885d13e2fc666a77 at audit time
+cd /home/lars/projects/go-linter-sdk && git rev-parse HEAD && git describe --tags
+   # 1694dcb2ae13548bf5b6fc9440e0d40e8475bb8e / v0.6.1-8-g1694dcb
+grep -rn "go-linter-sdk" /home/lars/projects/art-dupl --include='*.go' --include='go.*'   # zero hits (not imported)
+grep -n "toolsdk.Register\|toolsdk.Spec" /home/lars/projects/art-dupl/pkg/provider/provider.go   # :87 self-registration
+grep -n "func collectSourceFiles" /home/lars/projects/art-dupl/pkg/provider/crawl.go            # :22 crawl, no coverage reporting
+grep -rn "filesScanned\|CoverageReporter" /home/lars/projects/art-dupl/pkg /home/lars/projects/art-dupl/cmd --include='*.go'   # zero hits (gap confirmed)
+sed -n '1,60p' /home/lars/projects/go-linter-sdk/docs/ADOPTION.md   # six-consumer evidence table
+```

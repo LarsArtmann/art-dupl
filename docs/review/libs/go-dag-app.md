@@ -4,7 +4,7 @@
 | --- | --- |
 | Library | `github.com/larsartmann/go-dag-app` |
 | Version reviewed | checkout HEAD `c2b6c99aeed4f5eabbef01888b4194145e2e52cf` = `git describe --tags` `v0.1.1-1-gc2b6c99` (v0.1.1 tagged 2026-11-02 at `d9934c8`; HEAD is one commit past it, dated 2026-11-20) |
-| Consumer | `/home/lars/projects/art-dupl` @ HEAD `fb062def83ae9e6551b0fdb582fa8fdad5b7ef90`, single Go module `github.com/LarsArtmann/art-dupl` (root go.mod only) |
+| Consumer | `/home/lars/projects/art-dupl` @ HEAD `02b42ff3c6768d23d9d9d257885d13e2fc666a77`, single Go module `github.com/LarsArtmann/art-dupl` (root go.mod only) |
 | Date | 2026-11-23 |
 | Auditor | group C fleet run (read-only on code; this file is the only write) |
 | Verdict | **NOT-ADOPTED** — score 0/100 (unrealized), see rubric note on the zero denominator |
@@ -73,7 +73,7 @@ None. There is no impact×ease cell with non-zero impact. If art-dupl ever grows
 ## How to verify
 
 ```bash
-cd /home/lars/projects/art-dupl && git rev-parse HEAD   # fb062def83ae9e6551b0fdb582fa8fdad5b7ef90 at audit time
+cd /home/lars/projects/art-dupl && git rev-parse HEAD   # 02b42ff3c6768d23d9d9d257885d13e2fc666a77 at audit time
 cd /home/lars/projects/go-dag-app && git rev-parse HEAD && git describe --tags
    # c2b6c99aeed4f5eabbef01888b4194145e2e52cf / v0.1.1-1-gc2b6c99
 git -C /home/lars/projects/go-dag-app log -1 --format='%h %ci' v0.1.1   # d9934c8 2026-11-02
