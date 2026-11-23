@@ -279,6 +279,20 @@
 
 ---
 
+## 💡 Worth Considering (fleet libraries, audited 2026-11-23)
+
+Verdicts from the fleet library review (`docs/review/libs/`, dashboard `docs/review/libs/index.html`). Each row is a deliberate NOT-ADOPTED with the condition that flips it:
+
+| Library                   | Status         | Description                                                                                                                                         |
+| ------------------------- | -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **linter-autoconfigure-sdk** | WORTH CONSIDERING | Not adopted: its value lands host-side (BuildFlow owns the pipeline). Flip: a consumer-side config-policy carve-out ships (asked in linter-autoconfigure-sdk#4) and the repo can keep auto-config ON with banned-linter exemptions. |
+| **go-policy-dsl**         | WORTH CONSIDERING | Not adopted: art-dupl has no policy author/engine; the DSL has no execution model. Flip: library-policy (or any fleet dep-gate) starts scanning art-dupl and repo-local policies become required. |
+| **go-dag-app**            | WORTH CONSIDERING | Not adopted: zero samber/do usage — no DI layer for a DAG app composition root to sit on. Flip: art-dupl grows a DI-based service layer.            |
+| **go-linter-sdk**         | WORTH CONSIDERING | Not adopted: dual-SDK split-brain (toolsdk already owns the registry lane). Coverage-IDEA borrowed via toolsdk `DetectV2` instead (shipped 2026-11-23). Flip: a rule-registry need the toolsdk spec cannot express. |
+| **go-compliance**         | WORTH CONSIDERING | Not adopted: art-dupl is the SUPPLIER (its provider feeds dupl-gate). Flip: a compliance-report need over art-dupl's own repo state.                |
+
+---
+
 ## 🚫 Known Limitations
 
 | Limitation                                         | Impact | Description                                                                                                                                                                                                                                                                                                                                                                                                                                               |

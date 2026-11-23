@@ -52,6 +52,11 @@ Every term below should mean the **same thing** to everyone who reads it.
 | Hashing Policy        | Fingerprint of the settings that change group hashes (cache version, detection mode, type-aware, suggest-generics, max-children, detector set) | `cmd/analyzerPolicyParts`                                                   |
 | Analyzer Identity     | What produced a baseline: binary version (provenance only), cache version, and hashing policy                                                  | `baseline.AnalyzerIdentity`, baseline JSON `analyzer` block                 |
 | Baseline Split        | A check run's accounting: groups the baseline accepts, groups that are new, groups suppressed elsewhere                                        | `printer.BaselineSplit`, JSON `baseline` block, text footer                 |
+| Coverage Evidence     | The measured scan proof a DetectorV2 run returns: FilesScanned (crawl count) + SkippedModules (always empty here, never-skip policy)           | `pkg/provider` `DetectV2`, `gofinding.DetectResult` (core v1.15.0+)         |
+| Run Property          | Per-run metadata recorded ONCE on the go-finding report propertyBag, not copied per finding                                                    | `finding.ToReport` `SetRunProperty("art-dupl/threshold"/"art-dupl/detection-method")` |
+| Checkout-Independent ID | Finding IDs regenerated from dir-relative slash paths, identical for the same clone fact on any machine                                       | `gofinding.Relativize` in the provider run core (upstream go-finding#47)    |
+| Mixed Pin             | Two submodules of one workspace repo pinned at different versions; resolved by bumping both to v1.16.0 (2026-11-23)                            | go.mod: core + toolsdk pins                                                 |
+| Stamp Defect          | A release tag whose CHANGELOG section was never stamped (v1.16.0 notes sat under [Unreleased]); filed upstream go-finding#54                   | go-finding CHANGELOG.md at tag 5f568e0                                      |
 
 ## Entities
 
