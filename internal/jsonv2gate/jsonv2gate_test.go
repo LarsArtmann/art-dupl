@@ -54,6 +54,16 @@ func TestNoDurationRiskyJSONV2Imports(t *testing.T) {
 				return filepath.SkipDir
 			}
 
+			// The nix sandbox materializes dependency sources at the repo
+			// root (gogenfilter-real/, flake preBuild); upstream imports are
+			// not ours to gate. Same rule as the fuzz-seed gate: any
+			// test-time tree walk must skip nested go.mod directories.
+			if path != root {
+				if info, statErr := os.Stat(filepath.Join(path, "go.mod")); statErr == nil && !info.IsDir() {
+					return filepath.SkipDir
+				}
+			}
+
 			return nil
 		}
 

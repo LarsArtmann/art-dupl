@@ -7,6 +7,7 @@ import (
 	"go/parser"
 	"go/token"
 	"io/fs"
+	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -89,6 +90,15 @@ func TestNoDuplicateErrorNewMessages(t *testing.T) {
 			switch d.Name() {
 			case "vendor", ".git", "node_modules", "tmp":
 				return filepath.SkipDir
+			}
+
+			// Nested go.mod dirs are foreign modules (the nix sandbox
+			// materializes gogenfilter-real/ at the repo root); their
+			// errors.New messages are not ours to deduplicate.
+			if path != rootDir {
+				if info, statErr := os.Stat(filepath.Join(path, "go.mod")); statErr == nil && !info.IsDir() {
+					return filepath.SkipDir
+				}
 			}
 
 			return nil
