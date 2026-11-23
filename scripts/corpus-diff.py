@@ -71,7 +71,9 @@ FOOTER_RE = re.compile(r"Detected (\d+) clone groups, (\d+) shown \(([^)]*)\)")
 FOUND_RE = re.compile(r"Found total (\d+) clone groups")
 
 
-def run_summary(binary: str, corpus: str, extra_args: list[str]) -> dict[str, Any] | None:
+def run_summary(
+    binary: str, corpus: str, extra_args: list[str]
+) -> dict[str, Any] | None:
     """Run one binary in text mode and parse its summary footer.
 
     The JSON document carries the shown groups but not the detected /
@@ -223,9 +225,7 @@ def main(argv: list[str]) -> int:
     if before_summary is None or after_summary is None:
         print("suppression summary: unavailable (no footer parsed)")
     elif before_summary != after_summary:
-        print(
-            f"suppression summary CHANGED: {before_summary} -> {after_summary}"
-        )
+        print(f"suppression summary CHANGED: {before_summary} -> {after_summary}")
     else:
         print(
             f"suppression summary: unchanged "

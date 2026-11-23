@@ -301,6 +301,9 @@
   .z-50 {
     z-index: 50;
   }
+  .row-8 {
+    grid-row: 8;
+  }
   .container {
     width: 100%;
     @media (width >= 40rem) {

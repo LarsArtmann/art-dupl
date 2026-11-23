@@ -8,6 +8,7 @@ the cited line range fits the file. En-dashes in ranges are normalized.
 
 Exit 0 = every citation resolves. Exit 1 = stale/broken citations (printed).
 """
+
 from __future__ import annotations
 
 import re
@@ -59,7 +60,7 @@ def resolve(raw: str) -> tuple[Path | None, str]:
         return (p if p.exists() else None), ""
     for prefix, root in sorted(LIB_ROOTS.items(), key=lambda kv: -len(kv[0])):
         if raw == prefix or raw.startswith(prefix + "/"):
-            candidate = root / raw[len(prefix):].lstrip("/")
+            candidate = root / raw[len(prefix) :].lstrip("/")
             return (candidate if candidate.exists() else None), ""
     candidate = ART_DUPL / raw
     if candidate.exists():
@@ -97,7 +98,9 @@ def sweep(report: Path) -> list[str]:
                 )
                 continue
             count = file_line_count(resolved)
-            if count >= 0 and (start < 1 or end < start or start > count or end > count):
+            if count >= 0 and (
+                start < 1 or end < start or start > count or end > count
+            ):
                 failures.append(
                     f"{report.name}:{lineno}  {path_raw}:{start}"
                     f"{('-' + str(end)) if end_raw else ''}  -> {resolved} has {count} lines"
@@ -125,7 +128,9 @@ def main() -> int:
         for failure in failures:
             print(f"  {failure}")
         total_failures += len(failures)
-    print(f"\ncitation sweep: {len(targets)} report(s), {total_failures} stale citation(s)")
+    print(
+        f"\ncitation sweep: {len(targets)} report(s), {total_failures} stale citation(s)"
+    )
     return 1 if total_failures else 0
 
 
