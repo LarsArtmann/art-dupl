@@ -167,7 +167,7 @@ The `DefaultThreshold == config.DefaultThreshold` drift-detection idea (from the
 | # | Task                                                                         | Priority | Effort |
 | - | ---------------------------------------------------------------------------- | -------- | ------ |
 | ~~1~~ done — counts pinned by cmd/docs_health_counts_test.go | ~~Verify AGENTS.md actionability pattern count (18) against `actionability.go`~~ | ~~Critical~~ | ~~2min~~ |
-| ~~2~~ **superseded — still open: the 6,000+ files claim remains in FEATURES.md, flagged by the 2026-10-05 audit banner.** | ~~Verify or remove "6,000+ Go files, 320+ templ files" claim in FEATURES.md~~ | ~~High~~ | ~~10min~~ |
+| ~~2~~ **superseded — resolved 2026-11-15: FEATURES.md now names the five corpus repos with re-derivable numbers (5,500+ Go files), so the unverifiable claim is gone.** | ~~Verify or remove "6,000+ Go files, 320+ templ files" claim in FEATURES.md~~ | ~~High~~ | ~~10min~~ |
 | ~~3~~ **Won't implement — dropped — no recorded repo-wide link check.** | ~~Run internal markdown link check (`grep -roE '\]\([^)]+\)' *.md docs/`)~~ | ~~High~~ | ~~5min~~ |
 | ~~4~~ done — HOW_TO_USE.md documents the accept-directive grammar | ~~Update HOW_TO_USE.md accept-directive section with UX fix details~~ | ~~Medium~~ | ~~15min~~ |
 

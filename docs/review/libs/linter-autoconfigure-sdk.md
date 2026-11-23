@@ -74,7 +74,7 @@ Lars's fleet already voted: `~/projects` go.mod files show `linter-autoconfigure
 
 ## Ranked opportunities (impact × ease)
 
-1. **Run `cmd/audit` as an ungated CI lane** (`go run .../cmd/audit` — no dependency, no go.mod change). Impact: medium (catches rename-drift like `exhaustruct_v5` at `.golangci.yml:359` and orphaned `//nolint`s). Ease: trivial once `v0.9.0` tags.
+1. **Run `cmd/audit` as an ungated CI lane** (`go run .../cmd/audit` — no dependency, no go.mod change). Impact: medium (catches rename-drift like `exhaustruct_v5` at `.golangci.yml:359` and orphaned `//nolint` directives). Ease: trivial once `v0.9.0` tags.
 2. **Host-side: propose a config-policy manifest in toolsdk** (consumer declares banned/protected config keys; rewriters consult before write). Impact: high — kills the entire recurrence ledger class (#16-#19) fleet-wide. Ease: hard, upstream, owner-gated (this is AGENTS.md's pending Q1, `AGENTS.md:371-373`).
 3. **Not recommended:** importing the SDK module into art-dupl for config I/O or provider bridging. Impact: nil (art-dupl already has both concerns, natively). Ease: easy but pointless — dependency weight (go-finding family) for zero capability delta.
 

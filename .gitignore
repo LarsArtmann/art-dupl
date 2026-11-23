@@ -118,3 +118,5 @@ htmlcov/
 # <<< buildflow-managed (.gitignore) <<<
 .check-intent
 .docs-gates-preflight.json
+.buildflow-fod-journal.json
+*-journal.json

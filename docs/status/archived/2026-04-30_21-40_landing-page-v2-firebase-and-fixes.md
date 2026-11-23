@@ -154,8 +154,8 @@ Nothing is totally fucked up. All previously identified bugs have been fixed:
 | ~~4~~ done — deployed via .github/workflows/deploy-site.yml; live at art-dupl.lars.software | ~~Run `firebase deploy` for first deployment~~ | ~~HIGH~~ | ~~5min~~ | ~~Deployment~~ |
 | ~~5~~ done — .github/workflows/deploy-site.yml | ~~Add Firebase deploy GitHub Actions workflow~~ | ~~MED~~ | ~~20min~~ | ~~CI/CD~~ |
 | ~~6~~ done — website/.htmlvalidate.json wired | ~~Verify page with W3C HTML validator~~ | ~~MED~~ | ~~10min~~ | ~~Quality~~ |
-| ~~7~~ **Superseded — Lighthouse CI still open in ROADMAP.md (Website and Presence).** | ~~Run Lighthouse audit on deployed page~~ | ~~MED~~ | ~~10min~~ | ~~Quality~~ |
-| ~~8~~ **Superseded — Lighthouse CI still open in ROADMAP.md (Website and Presence).** | ~~Fix any Lighthouse issues~~ | ~~VARIES~~ | ~~VARIES~~ | ~~Quality~~ |
+| ~~7~~ **Superseded — Lighthouse work tracked in ROADMAP.md (Website and Presence); outside this snapshot's scope.** | ~~Run Lighthouse audit on deployed page~~ | ~~MED~~ | ~~10min~~ | ~~Quality~~ |
+| ~~8~~ **Superseded — Lighthouse work tracked in ROADMAP.md (Website and Presence); outside this snapshot's scope.** | ~~Fix any Lighthouse issues~~ | ~~VARIES~~ | ~~VARIES~~ | ~~Quality~~ |
 | ~~9~~ done — website/public/og/home.png + og:image meta | ~~Generate OG image for social sharing~~ | ~~MED~~ | ~~30min~~ | ~~SEO~~ |
 | ~~10~~ done — art-dupl.lars.software | ~~Setup custom domain DNS~~ | ~~MED~~ | ~~30min~~ | ~~Deployment~~ |
 | ~~11~~ **Won't implement — dropped — not carried into the Astro site.** | ~~Replace particle canvas with suffix tree viz~~ | ~~HIGH~~ | ~~90min~~ | ~~Design~~ |

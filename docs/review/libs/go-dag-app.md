@@ -45,7 +45,7 @@ No, on all three counts:
 
 ### What art-dupl would actually have to change to adopt
 
-Hypothetically: add `samber/do/v2`, wrap cmd startup in `dagapp.NewContainer("ARTDUPL")`, register the detector/services as `do.Provider`s. Every step is negative-value: a new dependency for a pipeline that has exactly three services, plus a debug env var duplicating existing flag/env plumbing. No integration sketch is warranted.
+Hypothetically: add `samber/do/v2`, wrap cmd startup in `dagapp.NewContainer("ARTDUPL")`, register the detector/services as `do.Provider` instances. Every step is negative-value: a new dependency for a pipeline that has exactly three services, plus a debug env var duplicating existing flag/env plumbing. No integration sketch is warranted.
 
 ## Version currency
 

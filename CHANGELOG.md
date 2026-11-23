@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **`signature-fragment` actionability pattern** (2026-11-22): kills the Go-snippet signature-tail junk class in `.templ` files — two embedded helpers whose signatures merely end alike (`..., lang Lang) string`) no longer surface the shared tail as its own clone fragment at low thresholds (user-reported webphone `-t 3` junk). Fires only when every instance's root is a `GoSnippet` node with base type ∈ {FuncType, Field, FieldList} (the golang/templ node enums overlap numerically, so the flag reaches the actionability layer via `domain.CloneNode.GoSnippet`); statement fragments, markup, and plain `.go` files are untouched. Pattern count 42 → 43; five pinned corpora byte-identical at default threshold; SARIF golden regenerated for the new rule descriptor. See `docs/ACTIONABILITY_PATTERNS.md`.
+- **PATH-shadow warning on `version`** (2026-11-22): plain `art-dupl version` (`--json`/`--short` stay machine-clean) warns when multiple `art-dupl` binaries resolve on PATH, probing each foreign copy's own `version --short` (2s timeout) and naming which copy wins — the stale-binary diagnosis class (a 2026-10-18 build silently serving a 2026-11-22 debugging session) surfaced twice in one week (`cmd/path_shadow.go`).
 - **`check` reports the baseline split** (2026-11-06, #12): the summary line is now
   `Found total N clone groups (B in baseline, W new[, S suppressed])` instead of a single count that mixed
   baseline-accepted groups with newly introduced ones — the only number a CI verdict depends on no longer
