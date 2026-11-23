@@ -94,15 +94,26 @@ func recordCheckBaseline(t *testing.T, dir string, extraArgs ...string) string {
 	return path
 }
 
-// TestCheckSummarySplitsBaselineFromNew (issue #12): the summary line must
-// report how many detected groups the baseline already accepts and how many
-// are new, instead of a single count that conflates the two populations.
-func TestCheckSummarySplitsBaselineFromNew(t *testing.T) {
+// recordTwoFamilyBaseline writes the standard two-family fixture pair
+// ("a.go"/familyA + "b.go"/familyB) into a fresh temp dir, records a baseline
+// over it, and returns the fixture dir and the baseline path.
+func recordTwoFamilyBaseline(t *testing.T) (string, string) {
+	t.Helper()
+
 	dir := t.TempDir()
 	writeCheckFixture(t, dir, "a.go", checkFixtureFamilyA)
 	writeCheckFixture(t, dir, "b.go", checkFixtureFamilyB)
 
 	baselinePath := recordCheckBaseline(t, dir)
+
+	return dir, baselinePath
+}
+
+// TestCheckSummarySplitsBaselineFromNew (issue #12): the summary line must
+// report how many detected groups the baseline already accepts and how many
+// are new, instead of a single count that conflates the two populations.
+func TestCheckSummarySplitsBaselineFromNew(t *testing.T) {
+	dir, baselinePath := recordTwoFamilyBaseline(t)
 
 	output, err := executeTestCommand(t, []string{
 		binaryName, "check", "--baseline-path", baselinePath,
@@ -138,11 +149,7 @@ func TestCheckSummarySplitsBaselineFromNew(t *testing.T) {
 // split must say so rather than presenting a green verdict that merely hides
 // everything.
 func TestCheckSummaryReportsSuppressedGroups(t *testing.T) {
-	dir := t.TempDir()
-	writeCheckFixture(t, dir, "a.go", checkFixtureFamilyA)
-	writeCheckFixture(t, dir, "b.go", checkFixtureFamilyB)
-
-	baselinePath := recordCheckBaseline(t, dir)
+	dir, baselinePath := recordTwoFamilyBaseline(t)
 
 	output, err := executeTestCommand(t, []string{
 		binaryName, "check", "--baseline-path", baselinePath,
@@ -160,11 +167,7 @@ func TestCheckSummaryReportsSuppressedGroups(t *testing.T) {
 // TestCheckBaselineVersionMustMatchAcceptsSamePolicy: a check run whose
 // analyzer identity matches the baseline's must proceed normally.
 func TestCheckBaselineVersionMustMatchAcceptsSamePolicy(t *testing.T) {
-	dir := t.TempDir()
-	writeCheckFixture(t, dir, "a.go", checkFixtureFamilyA)
-	writeCheckFixture(t, dir, "b.go", checkFixtureFamilyB)
-
-	baselinePath := recordCheckBaseline(t, dir)
+	dir, baselinePath := recordTwoFamilyBaseline(t)
 
 	output, err := executeTestCommand(t, []string{
 		binaryName, "check", "--baseline-path", baselinePath,
@@ -184,11 +187,7 @@ func TestCheckBaselineVersionMustMatchAcceptsSamePolicy(t *testing.T) {
 // baseline recorded under different hash-affecting settings must be refused
 // with both identities named, instead of reporting the whole tree as new.
 func TestCheckBaselineVersionMustMatchRefusesDifferentPolicy(t *testing.T) {
-	dir := t.TempDir()
-	writeCheckFixture(t, dir, "a.go", checkFixtureFamilyA)
-	writeCheckFixture(t, dir, "b.go", checkFixtureFamilyB)
-
-	baselinePath := recordCheckBaseline(t, dir)
+	dir, baselinePath := recordTwoFamilyBaseline(t)
 
 	output, err := executeTestCommand(t, []string{
 		binaryName, "check", "--baseline-path", baselinePath,
@@ -213,11 +212,7 @@ func TestCheckBaselineVersionMustMatchRefusesDifferentPolicy(t *testing.T) {
 // before identity tracking cannot be verified, so the strict gate refuses it
 // rather than silently checking unverified hashes.
 func TestCheckBaselineVersionMustMatchRefusesLegacyBaseline(t *testing.T) {
-	dir := t.TempDir()
-	writeCheckFixture(t, dir, "a.go", checkFixtureFamilyA)
-	writeCheckFixture(t, dir, "b.go", checkFixtureFamilyB)
-
-	baselinePath := recordCheckBaseline(t, dir)
+	dir, baselinePath := recordTwoFamilyBaseline(t)
 
 	legacyPath := filepath.Join(t.TempDir(), "legacy.json")
 	stripAnalyzerIdentity(t, baselinePath, legacyPath)
@@ -239,11 +234,7 @@ func TestCheckBaselineVersionMustMatchRefusesLegacyBaseline(t *testing.T) {
 // TestCheckLegacyBaselineWithoutFlagStillWorks: the strict gate is opt-in, so
 // existing CI setups keep comparing unverified hashes.
 func TestCheckLegacyBaselineWithoutFlagStillWorks(t *testing.T) {
-	dir := t.TempDir()
-	writeCheckFixture(t, dir, "a.go", checkFixtureFamilyA)
-	writeCheckFixture(t, dir, "b.go", checkFixtureFamilyB)
-
-	baselinePath := recordCheckBaseline(t, dir)
+	dir, baselinePath := recordTwoFamilyBaseline(t)
 
 	legacyPath := filepath.Join(t.TempDir(), "legacy.json")
 	stripAnalyzerIdentity(t, baselinePath, legacyPath)
@@ -440,11 +431,7 @@ func runCheckJSON(t *testing.T, args []string) (printer.JSONOutput, error) {
 // OutputJSON and only the main analysis path called it. The document must
 // carry both the new groups and the baseline accounting.
 func TestCheckJSONEmitsDocumentAndBaselineSplit(t *testing.T) {
-	dir := t.TempDir()
-	writeCheckFixture(t, dir, "a.go", checkFixtureFamilyA)
-	writeCheckFixture(t, dir, "b.go", checkFixtureFamilyB)
-
-	baselinePath := recordCheckBaseline(t, dir)
+	dir, baselinePath := recordTwoFamilyBaseline(t)
 
 	doc, err := runCheckJSON(t, []string{
 		binaryName, "check", "--baseline-path", baselinePath, "--json",
@@ -503,11 +490,7 @@ func TestCheckJSONEmitsDocumentAndBaselineSplit(t *testing.T) {
 // stated on stderr so a reader can tell "no new clones" from "nothing was
 // comparable".
 func TestCheckWarnsOnIncomparableBaselineWithoutFlag(t *testing.T) {
-	dir := t.TempDir()
-	writeCheckFixture(t, dir, "a.go", checkFixtureFamilyA)
-	writeCheckFixture(t, dir, "b.go", checkFixtureFamilyB)
-
-	baselinePath := recordCheckBaseline(t, dir)
+	dir, baselinePath := recordTwoFamilyBaseline(t)
 
 	output, _ := executeTestCommand(t, []string{
 		binaryName, "check", "--baseline-path", baselinePath, "--exact",
@@ -531,11 +514,7 @@ func TestCheckWarnsOnIncomparableBaselineWithoutFlag(t *testing.T) {
 // TestCheckWarnsOnLegacyBaselineWithoutFlag: a baseline without identity
 // cannot be verified, which is worth saying even when the strict gate is off.
 func TestCheckWarnsOnLegacyBaselineWithoutFlag(t *testing.T) {
-	dir := t.TempDir()
-	writeCheckFixture(t, dir, "a.go", checkFixtureFamilyA)
-	writeCheckFixture(t, dir, "b.go", checkFixtureFamilyB)
-
-	baselinePath := recordCheckBaseline(t, dir)
+	dir, baselinePath := recordTwoFamilyBaseline(t)
 
 	legacyPath := filepath.Join(t.TempDir(), "legacy.json")
 	stripAnalyzerIdentity(t, baselinePath, legacyPath)
@@ -557,11 +536,7 @@ func TestCheckWarnsOnLegacyBaselineWithoutFlag(t *testing.T) {
 // too, so it must make the same statement instead of reporting the whole tree
 // as new and every recorded group as resolved.
 func TestDiffReportWarnsOnIncomparableBaseline(t *testing.T) {
-	dir := t.TempDir()
-	writeCheckFixture(t, dir, "a.go", checkFixtureFamilyA)
-	writeCheckFixture(t, dir, "b.go", checkFixtureFamilyB)
-
-	baselinePath := recordCheckBaseline(t, dir)
+	dir, baselinePath := recordTwoFamilyBaseline(t)
 
 	output, _ := executeTestCommand(t, []string{
 		binaryName, "--diff-report", baselinePath, "--exact",
@@ -578,11 +553,7 @@ func TestDiffReportWarnsOnIncomparableBaseline(t *testing.T) {
 // invocation. The gate verdict used to be a ValidationError (exit 2), which a
 // CI consumer keying on the documented code would misread as misconfiguration.
 func TestCheckNewClonesExitCodeIsOne(t *testing.T) {
-	dir := t.TempDir()
-	writeCheckFixture(t, dir, "a.go", checkFixtureFamilyA)
-	writeCheckFixture(t, dir, "b.go", checkFixtureFamilyB)
-
-	baselinePath := recordCheckBaseline(t, dir)
+	dir, baselinePath := recordTwoFamilyBaseline(t)
 
 	writeCheckFixture(t, dir, "c.go", checkFixtureFamilyC)
 	writeCheckFixture(t, dir, "d.go", checkFixtureFamilyD)
