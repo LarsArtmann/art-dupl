@@ -112,6 +112,13 @@ Status rubric: **Fully Leveraged / Partially Used / Missed Opportunity / Misused
   is invisible to it (§05.2 verdict, unchanged at these tags). **Not Applicable** as an adoption
   target for art-dupl; noted as an upstream visibility gap, not a consumer gap.
 
+> **Errata (2026-11-23, execution-plan run):** the `analysis/` N/A verdict above is re-dated
+> after the consumer's core bump v1.15.0 → v1.16.0. Re-verified live against
+> `/home/lars/projects/go-finding` @ `5f568e0` (v1.16.0): the submodule's newest tag is still
+> `analysis/v1.15.1` (2026-11-08) — no new go/analysis surface, and art-dupl still ships no
+> gopls/analyzer integration. The N/A verdict stands unchanged; its RECONSIDER-WHEN trigger
+> ("art-dupl ever ships a go/analysis analyzer integration") remains the only reopen path.
+
 ## Gap analysis
 
 Each Partially/Missed/Misused row: what the library offers, what art-dupl does instead, impact,

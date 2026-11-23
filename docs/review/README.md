@@ -44,3 +44,22 @@ deltas) and the struck **G8**/**T07b** rows.
   toolsdk, analysis, pipeline independently); immediately after T20 lands.
 - The five NOT-ADOPTED libraries: re-audit only when their report's
   RECONSIDER-WHEN trigger fires (each report names it in its Verdict section).
+
+## Archive policy (2026-11-23)
+
+Reports are point-in-time snapshots (same regime as `docs/status/archived/`).
+A re-review UPDATES its `libs/<lib>.md` in place — new header table, dated
+errata callouts for changed verdicts, never a wholesale history rewrite — and
+bumps the index row above. A report moves to `docs/review/archived/` only
+when its library leaves the fleet-review scope entirely, carrying a dated
+banner naming its replacement.
+
+Index drift is mechanically gated: `scripts/sync-review-index.py --check`
+derives every version cell and Date cell from the report header tables and
+fails on mismatch (wired into the flake `citation-sweep` check; `--fix`
+rewrites the drifted cells after any report-header edit).
+
+Reopen rule (verified 2026-11-23 against `go-compliance.md` and
+`go-dag-app.md`): a NOT-ADOPTED verdict reopens ONLY when that report's
+`## RECONSIDER-WHEN (flip triggers)` section fires. The refresh-triggers list
+above is the rollup of those per-report triggers, not an independent policy.
