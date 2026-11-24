@@ -166,16 +166,16 @@ From TODO_LIST.md (priority order):
 
 ### P2 — Infrastructure
 
-| #  | Task                                              | Impact                                          | Effort  |
-| -- | ------------------------------------------------- | ----------------------------------------------- | ------- |
-| 18 | Bump BDD test coverage to 80%+ (currently 70%)    | Reliability                                     | M       |
-| 19 | Add fuzz tests for templ parser                   | Robustness                                      | S       |
-| ~~ | 20                                                | CI pipeline audit — verify all checks run on PR | Process |
-| 21 | Update FEATURES.md — reflect templ position fixes | Docs accuracy                                   | S       |
-| 22 | SDK dogfooding — run art-dupl on itself           | Self-validation                                 | M       |
-| 23 | Performance benchmarking — pre/post SIMD          | Data-driven                                     | M       |
-| 24 | Nix flake check — verify `nix build` with latest  | Alternative build                               | S       |
-| 25 | Update HOW_TO_USE.md — add templ FAQ section      | User education                                  | S       |
+| #                                                                                                                                                                                    | Task                                                | Impact            | Effort |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------- | ----------------- | ------ |
+| 18                                                                                                                                                                                   | Bump BDD test coverage to 80%+ (currently 70%)      | Reliability       | M      |
+| 19                                                                                                                                                                                   | Add fuzz tests for templ parser                     | Robustness        | S      |
+| ~~20~~ **done — CI is push+PR triggered with nine workflows; the AGENTS.md CI Architecture table maps every gate to its flake mirror, re-verified 2026-11-24 in the red-CI repair.** | ~~CI pipeline audit — verify all checks run on PR~~ | ~~Process~~       |        |
+| 21                                                                                                                                                                                   | Update FEATURES.md — reflect templ position fixes   | Docs accuracy     | S      |
+| 22                                                                                                                                                                                   | SDK dogfooding — run art-dupl on itself             | Self-validation   | M      |
+| 23                                                                                                                                                                                   | Performance benchmarking — pre/post SIMD            | Data-driven       | M      |
+| 24                                                                                                                                                                                   | Nix flake check — verify `nix build` with latest    | Alternative build | S      |
+| 25                                                                                                                                                                                   | Update HOW_TO_USE.md — add templ FAQ section        | User education    | S      |
 
 ---
 

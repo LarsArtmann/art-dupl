@@ -191,15 +191,15 @@ The project is in excellent shape. No critical issues, no broken builds, no fail
 
 ### Medium Priority (Do Soon)
 
-| #  | Task                                          | Effort                                        | Impact  |
-| -- | --------------------------------------------- | --------------------------------------------- | ------- |
-| 6  | Implement TokenValue type with validation     | 3 hours                                       | HIGH    |
-| 7  | Create ADR for SARIF implementation           | 1 hour                                        | MEDIUM  |
-| 8  | Create ADR for semantic detection             | 1 hour                                        | MEDIUM  |
-| 9  | Add package examples for godoc                | 2 hours                                       | MEDIUM  |
-| 10 | Improve CLI package coverage (62.5% → 80%)    | 2 hours                                       | HIGH    |
-| 11 | Improve syntax package coverage (67.6% → 80%) | 2 hours                                       | MEDIUM  |
-| ~~ | 12                                            | Implement proper CSV output with encoding/csv | 2 hours |
+| #                                                                                                                                        | Task                                              | Effort      | Impact |
+| ---------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------- | ----------- | ------ |
+| 6                                                                                                                                        | Implement TokenValue type with validation         | 3 hours     | HIGH   |
+| 7                                                                                                                                        | Create ADR for SARIF implementation               | 1 hour      | MEDIUM |
+| 8                                                                                                                                        | Create ADR for semantic detection                 | 1 hour      | MEDIUM |
+| 9                                                                                                                                        | Add package examples for godoc                    | 2 hours     | MEDIUM |
+| 10                                                                                                                                       | Improve CLI package coverage (62.5% → 80%)        | 2 hours     | HIGH   |
+| 11                                                                                                                                       | Improve syntax package coverage (67.6% → 80%)     | 2 hours     | MEDIUM |
+| ~~12~~ **duplicate 2026-11-24 — same deliverable as the 2026-03-25 item 16; done via encoding/csv in printer/stats/stats_formatter.go.** | ~~Implement proper CSV output with encoding/csv~~ | ~~2 hours~~ |        |
 
 ### Low Priority (Do Eventually)
 

@@ -146,16 +146,16 @@ From TODO_LIST.md (priority order):
 
 <!-- check-rows:ledger -->
 
-| #                                                                                                  | Task                               | Effort            |
-| -------------------------------------------------------------------------------------------------- | ---------------------------------- | ----------------- |
-| ~~18~~ done — superseded — coverage is tracked by the CI Coverage job; per-package floors moved on | ~~Bump BDD test coverage to 80%+~~ | ~~M~~             |
-| 19                                                                                                 | Add fuzz tests for templ parser    | S                 |
-| ~~                                                                                                 | 20                                 | CI pipeline audit |
-| 21                                                                                                 | Update FEATURES.md                 | S                 |
-| ~~22~~ done — the SDK is dogfooded by the BuildFlow provider (pkg/provider; live since 2026-09-25) | ~~SDK dogfooding~~                 | ~~M~~             |
-| 23                                                                                                 | Performance benchmarking           | M                 |
-| ~~24~~ done — nix flake check is the CI gate (lint + format + race + alloc-gate)                   | ~~Nix flake check~~                | ~~S~~             |
-| 25                                                                                                 | Update HOW_TO_USE.md FAQ           | S                 |
+| #                                                                                                                                                                                    | Task                               | Effort |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------- | ------ |
+| ~~18~~ done — superseded — coverage is tracked by the CI Coverage job; per-package floors moved on                                                                                   | ~~Bump BDD test coverage to 80%+~~ | ~~M~~  |
+| 19                                                                                                                                                                                   | Add fuzz tests for templ parser    | S      |
+| ~~20~~ **done — CI is push+PR triggered with nine workflows; the AGENTS.md CI Architecture table maps every gate to its flake mirror, re-verified 2026-11-24 in the red-CI repair.** | ~~CI pipeline audit~~              |        |
+| 21                                                                                                                                                                                   | Update FEATURES.md                 | S      |
+| ~~22~~ done — the SDK is dogfooded by the BuildFlow provider (pkg/provider; live since 2026-09-25)                                                                                   | ~~SDK dogfooding~~                 | ~~M~~  |
+| 23                                                                                                                                                                                   | Performance benchmarking           | M      |
+| ~~24~~ done — nix flake check is the CI gate (lint + format + race + alloc-gate)                                                                                                     | ~~Nix flake check~~                | ~~S~~  |
+| 25                                                                                                                                                                                   | Update HOW_TO_USE.md FAQ           | S      |
 
 ---
 
