@@ -276,6 +276,18 @@
                   touch $out
                 '';
 
+            # actionlint gate (2026-11-24, harvested from the 2026-09-23
+            # self-review item 16): 9 hand-edited workflow files had zero
+            # local validation; workflow YAML/shellcheck errors now fail the
+            # flake before any push. The 4 pre-existing SC2129 style findings
+            # were fixed same-day (brace-grouped redirects in performance.yml
+            # + auto-tag.yml).
+            actionlint = pkgs.runCommand "art-dupl-actionlint" { nativeBuildInputs = [ pkgs.actionlint ]; } ''
+              cd ${pkgs.lib.cleanSource ./.}
+              actionlint .github/workflows/*.yml
+              touch $out
+            '';
+
             # arch-lint (TODO #40, 2026-09-23): the 2026-09-18 arch-lint break
             # only surfaced in CI. go/packages needs a Go toolchain + writable
             # module/build cache at runtime, which the sandbox DOES provide via

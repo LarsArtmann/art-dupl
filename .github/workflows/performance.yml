@@ -42,19 +42,23 @@ jobs:
 
       - name: Run benchmarks (baseline)
         run: |
-          echo "=== Running Suffix Tree Benchmarks ===" > baseline.txt
-          go test -bench=BenchmarkConstruction -benchtime=1s -count=5 ./suffixtree/ >> baseline.txt 2>&1
-          echo "" >> baseline.txt
-          echo "=== Running Hash Benchmarks ===" >> baseline.txt
-          go test -bench=BenchmarkHashSeq -benchtime=1s -count=5 ./syntax/ >> baseline.txt 2>&1
+          {
+            echo "=== Running Suffix Tree Benchmarks ==="
+            go test -bench=BenchmarkConstruction -benchtime=1s -count=5 ./suffixtree/
+            echo ""
+            echo "=== Running Hash Benchmarks ==="
+            go test -bench=BenchmarkHashSeq -benchtime=1s -count=5 ./syntax/
+          } > baseline.txt 2>&1
 
       - name: Run benchmarks (current)
         run: |
-          echo "=== Running Suffix Tree Benchmarks ===" > current.txt
-          go test -bench=BenchmarkConstruction -benchtime=1s -count=5 ./suffixtree/ >> current.txt 2>&1
-          echo "" >> current.txt
-          echo "=== Running Hash Benchmarks ===" >> current.txt
-          go test -bench=BenchmarkHashSeq -benchtime=1s -count=5 ./syntax/ >> current.txt 2>&1
+          {
+            echo "=== Running Suffix Tree Benchmarks ==="
+            go test -bench=BenchmarkConstruction -benchtime=1s -count=5 ./suffixtree/
+            echo ""
+            echo "=== Running Hash Benchmarks ==="
+            go test -bench=BenchmarkHashSeq -benchtime=1s -count=5 ./syntax/
+          } > current.txt 2>&1
 
       - name: Compare benchmarks
         run: |
@@ -105,11 +109,13 @@ jobs:
 
       - name: Run with GC tracing
         run: |
-          echo "=== Suffix Tree GC Profile ===" > gc_profile.txt
-          GODEBUG=gctrace=1 go test -bench=BenchmarkConstruction -benchtime=500ms ./suffixtree/ >> gc_profile.txt 2>&1
-          echo "" >> gc_profile.txt
-          echo "=== Hash GC Profile ===" >> gc_profile.txt
-          GODEBUG=gctrace=1 go test -bench=BenchmarkHashSeqLarge -benchtime=500ms ./syntax/ >> gc_profile.txt 2>&1
+          {
+            echo "=== Suffix Tree GC Profile ==="
+            GODEBUG=gctrace=1 go test -bench=BenchmarkConstruction -benchtime=500ms ./suffixtree/
+            echo ""
+            echo "=== Hash GC Profile ==="
+            GODEBUG=gctrace=1 go test -bench=BenchmarkHashSeqLarge -benchtime=500ms ./syntax/
+          } > gc_profile.txt 2>&1
 
       - name: Capture memory profiles
         run: |

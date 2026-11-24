@@ -47,9 +47,11 @@ jobs:
             exit 0
           fi
 
-          echo "version=$version" >> "$GITHUB_OUTPUT"
-          echo "tag=v${version}" >> "$GITHUB_OUTPUT"
-          echo "found=true" >> "$GITHUB_OUTPUT"
+          {
+            echo "version=$version"
+            echo "tag=v${version}"
+            echo "found=true"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Create tag if missing
         if: steps.version.outputs.found == 'true'
