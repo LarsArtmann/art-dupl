@@ -139,11 +139,12 @@ func (p *TextPrinter) writeFileDupeHeader(clones []domain.ProcessedClone) error 
 		len(clones),
 		fileSizeStr,
 	); err != nil {
-		return fmt.Errorf(
-			"write file duplicate header (hash: %s, files: %d): %w",
+		return duplerrors.Wrapf(
+			err,
+			duplerrors.InternalError,
+			"write file duplicate header (hash: %s, files: %d)",
 			hashPrefix,
 			len(clones),
-			err,
 		)
 	}
 
@@ -160,7 +161,7 @@ func (p *TextPrinter) writeCloneHeader(clones []domain.ProcessedClone) error {
 	}
 
 	if _, err := fmt.Fprintf(p.w, "found %d clones:\n", len(clones)); err != nil {
-		return fmt.Errorf("write clone count header (%d clones): %w", len(clones), err)
+		return duplerrors.Wrapf(err, duplerrors.InternalError, "write clone count header (%d clones)", len(clones))
 	}
 
 	return nil

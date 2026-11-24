@@ -5,6 +5,8 @@ import (
 	"errors"
 	"os"
 	"sync"
+
+	duplerrors "github.com/LarsArtmann/art-dupl/errors"
 )
 
 // captureMu serializes stdout/stderr replacement so that concurrent captures
@@ -45,7 +47,7 @@ func CaptureStdoutStderr(fn func() error) (stdout, stderr []byte, err error) {
 
 	stdoutR, stdoutW, pipeErr := os.Pipe()
 	if pipeErr != nil {
-		return nil, nil, pipeErr
+		return nil, nil, duplerrors.WrapIO(pipeErr, "stdout", "create capture pipe")
 	}
 
 	stderrR, stderrW, pipeErr := os.Pipe()
@@ -53,7 +55,7 @@ func CaptureStdoutStderr(fn func() error) (stdout, stderr []byte, err error) {
 		_ = stdoutR.Close()
 		_ = stdoutW.Close()
 
-		return nil, nil, pipeErr
+		return nil, nil, duplerrors.WrapIO(pipeErr, "stderr", "create capture pipe")
 	}
 
 	os.Stdout = stdoutW
