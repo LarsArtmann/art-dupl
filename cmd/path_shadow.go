@@ -108,6 +108,16 @@ func runningRealpath() string {
 // the copy that is running and the copy shell resolution would pick. Single
 // copy (or undeterminable): silent.
 func warnIfMultipleArtDuplInPath(stderr io.Writer, pathEnv string) {
+	warnIfMultipleArtDuplInPathWithProbe(stderr, pathEnv, probeArtDuplVersion)
+}
+
+// warnIfMultipleArtDuplInPathWithProbe is warnIfMultipleArtDuplInPath with the
+// version probe injected. The probe travels as a parameter so tests can stub
+// it without writing the package-level seam var: parallel tests reassigning a
+// global while other parallel tests read it through the version command is a
+// data race (-race caught it under -shuffle), and parameter injection removes
+// the writer entirely.
+func warnIfMultipleArtDuplInPathWithProbe(stderr io.Writer, pathEnv string, probe func(path string) string) {
 	candidates := artDuplPathCandidates(pathEnv)
 	if len(candidates) < 2 {
 		return
@@ -124,7 +134,7 @@ func warnIfMultipleArtDuplInPath(stderr io.Writer, pathEnv string) {
 		if candidate == running && running != "" {
 			version = GetVersion()
 		} else {
-			version = probeArtDuplVersion(candidate)
+			version = probe(candidate)
 		}
 
 		role := ""

@@ -3,6 +3,7 @@ package cmd
 import (
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 )
@@ -47,7 +48,10 @@ func TestArtDuplPathCandidatesDedupesSymlinks(t *testing.T) {
 }
 
 // TestArtDuplPathCandidatesSkipsNonExecutables pins that directory entries
-// and non-executable files are not reported as copies.
+// and non-executable files are not reported as copies. On windows there is
+// no exec bit: an existing art-dupl.exe runs regardless of its file mode, so
+// production deliberately skips the perm check there and the candidate IS
+// reported.
 func TestArtDuplPathCandidatesSkipsNonExecutables(t *testing.T) {
 	t.Parallel()
 
@@ -56,7 +60,16 @@ func TestArtDuplPathCandidatesSkipsNonExecutables(t *testing.T) {
 		t.Fatalf("write file: %v", err)
 	}
 
-	if got := artDuplPathCandidates(dataDir); len(got) != 0 {
+	got := artDuplPathCandidates(dataDir)
+	if runtime.GOOS == "windows" {
+		if len(got) != 1 {
+			t.Errorf("candidates = %v, want exactly the existing .exe (windows has no exec bit)", got)
+		}
+
+		return
+	}
+
+	if len(got) != 0 {
 		t.Errorf("candidates = %v, want none for a non-executable file", got)
 	}
 }
@@ -82,20 +95,21 @@ func TestWarnIfMultipleArtDuplInPath(t *testing.T) {
 	}
 	resolvedA, resolvedB := resolve(binA), resolve(binB)
 
-	original := probeArtDuplVersion
-	probeArtDuplVersion = func(path string) string {
+	stub := func(path string) string {
 		if path == resolvedB {
 			return "v9.9.9-test"
 		}
 
 		return "v0.0.0-test"
 	}
-	t.Cleanup(func() { probeArtDuplVersion = original })
+	// The probe rides the parameter (warnIfMultipleArtDuplInPathWithProbe):
+	// writing the package-level seam var from a parallel test raced with
+	// parallel readers of the version command (-race, -shuffle repro).
 
 	pathEnv := strings.Join([]string{dirA, dirB}, string(os.PathListSeparator))
 
 	var stderr strings.Builder
-	warnIfMultipleArtDuplInPath(&stderr, pathEnv)
+	warnIfMultipleArtDuplInPathWithProbe(&stderr, pathEnv, stub)
 
 	out := stderr.String()
 	for _, want := range []string{"2 times in PATH", resolvedA, resolvedB, "v9.9.9-test", "first in PATH, wins"} {

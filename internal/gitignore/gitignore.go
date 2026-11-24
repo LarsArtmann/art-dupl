@@ -161,22 +161,69 @@ func (m *GitignoreMatcher) IsIgnored(path string) bool {
 }
 
 // IsIgnoredDir reports whether the DIRECTORY at path is itself excluded.
-// It probes the directory as if a file lived directly beneath it:
-// directory-only patterns ("logs/") match paths that have the directory as a
-// component, but filepath.Rel strips trailing slashes, so the bare directory
-// entry would land as the final (excluded-from-matching) component and never
-// match. Callers use this to prune whole ignored subtrees during a walk (git
-// semantics: nothing beneath an excluded directory can be re-included).
+// Unlike IsIgnored (file semantics: a directory-only pattern matches paths
+// that HAVE the directory as a component), the directory entry here IS the
+// final path component, so directory-only patterns ("logs/") must be allowed
+// to match it — git matches `logs/` against the directory entry during a
+// walk. Callers use this to prune whole ignored subtrees (git semantics:
+// nothing beneath an excluded directory can be re-included).
+//
+// The previous implementation probed with a NUL byte
+// (`filepath.Join(path, "\x00")`) so the directory name would land in a
+// non-final component; windows filepath rejects NUL in paths
+// ("Abs: invalid argument"), silently disabling gitignore pruning on the
+// windows CI lane from 2026-10-24 to 2026-11-24. Direct matching with
+// dir-includes-self semantics removes the sentinel entirely.
 func (m *GitignoreMatcher) IsIgnoredDir(path string) bool {
 	if m == nil {
 		return false
 	}
 
-	return m.IsIgnored(filepath.Join(path, "\x00"))
+	abs, err := filepath.Abs(path)
+	if err != nil {
+		return false
+	}
+
+	ignored := false
+
+	for _, rule := range m.rules {
+		rel, err := filepath.Rel(rule.baseDir, abs)
+		if err != nil {
+			continue
+		}
+
+		// If the path is outside this rule's baseDir, skip
+		if strings.HasPrefix(rel, "..") {
+			continue
+		}
+
+		for _, pat := range rule.patterns {
+			if matchGitignorePatternDirEntry(pat, rel) {
+				ignored = !pat.negated
+			}
+		}
+	}
+
+	return ignored
 }
 
 // matchGitignorePattern checks if relPath matches a single gitignore pattern.
 func matchGitignorePattern(pat gitignorePattern, relPath string) bool {
+	return matchGitignorePatternSemantics(pat, relPath, false)
+}
+
+// matchGitignorePatternDirEntry is matchGitignorePattern with directory-entry
+// semantics: the path names a directory itself, so directory-only patterns
+// may match its final component (used by IsIgnoredDir).
+func matchGitignorePatternDirEntry(pat gitignorePattern, relPath string) bool {
+	return matchGitignorePatternSemantics(pat, relPath, true)
+}
+
+// matchGitignorePatternSemantics implements both matching modes. The two
+// modes differ ONLY in the directory-only branch: file semantics exclude the
+// final component from dir-name matching (it is a file name), directory
+// semantics include it (the directory itself is the entry being tested).
+func matchGitignorePatternSemantics(pat gitignorePattern, relPath string, dirIncludesSelf bool) bool {
 	cleanPath := filepath.ToSlash(relPath)
 
 	pattern := pat.raw
@@ -187,7 +234,12 @@ func matchGitignorePattern(pat gitignorePattern, relPath string) bool {
 		dirName := strings.TrimSuffix(pattern, "/")
 		parts := strings.Split(cleanPath, "/")
 
-		for _, part := range parts[:len(parts)-1] { // exclude the filename itself
+		end := len(parts)
+		if !dirIncludesSelf {
+			end-- // exclude the filename itself
+		}
+
+		for _, part := range parts[:end] {
 			if part == dirName || matchGlob(dirName, part) {
 				return true
 			}
