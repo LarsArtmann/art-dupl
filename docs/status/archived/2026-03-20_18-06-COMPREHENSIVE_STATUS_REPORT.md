@@ -223,10 +223,10 @@ Nearly identical flag parsing logic duplicated:
 
 | #                                                                        | Task                                  | Effort                        | Impact       | Priority Score  |
 | ------------------------------------------------------------------------ | ------------------------------------- | ----------------------------- | ------------ | --------------- |
-| ~~                                                                       | 6                                     | Extract flag parsing - Part 1 | 12min        | Maintainability |
-| ~~                                                                       | 7                                     | Extract flag parsing - Part 2 | 12min        | Maintainability |
-| ~~                                                                       | 8                                     | Extract flag parsing - Part 3 | 12min        | Maintainability |
-| ~~                                                                       | 9                                     | Extract flag parsing - Part 4 | 12min        | Maintainability |
+| ~~6~~ **done.** | ~~Extract flag parsing - Part 1~~ | ~~12min~~ | ~~Maintainability~~ | |
+| ~~7~~ **done.** | ~~Extract flag parsing - Part 2~~ | ~~12min~~ | ~~Maintainability~~ | |
+| ~~8~~ **done.** | ~~Extract flag parsing - Part 3~~ | ~~12min~~ | ~~Maintainability~~ | |
+| ~~9~~ **done.** | ~~Extract flag parsing - Part 4~~ | ~~12min~~ | ~~Maintainability~~ | |
 | 10                                                                       | Design SemanticHash DI approach       | 20min                         | Architecture | 7.5             |
 | 11                                                                       | Add SemanticHash to Config struct     | 15min                         | Type safety  | 10.0            |
 | 12                                                                       | Wire SemanticHash through transform   | 30min                         | Testability  | 5.0             |

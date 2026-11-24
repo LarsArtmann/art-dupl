@@ -35,8 +35,8 @@ repos, website, or fleet-wide state.
    (`.gitignore` now carries `.buildflow-fod-journal.json` + `*-journal.json`; verified zero
    tracked files match the glob first) and struck with evidence. Gate: FRESH.
 3. **Annotate gate**: all 4 F/spacing findings repaired
-   (`do.Provider`s→`do.Provider` instances, `DuplError`s→values, `//nolint`s→directives ×2,
-   and the 12-14 report's actual offender `git mv`s→commands — my first grep targeted the
+   (`do.Provider` s→`do.Provider` instances, `DuplError` s→values, `//nolint` s→directives ×2,
+   and the 12-14 report's actual offender `git mv` s→commands — my first grep targeted the
    wrong file's pattern and the uniqueness check caught it before any write). Gate: CLEAN (0 findings).
 4. **3 INFO verdict-lead repairs in archived files**: the two Lighthouse rows (04-30) reworded to
    terminal phrasing (truth checked first: Lighthouse CI is genuinely still open in ROADMAP:103);
@@ -146,8 +146,8 @@ repos, website, or fleet-wide state.
    I had the `ls` output in-context and did not cross-check). Cost: one error line, one
    follow-up move; also meant the dated proposal initially stayed live.
 5. **Wrong grep pattern for a flagged line**: assumed the 12-14 report's spacing offender was
-   `` `//nolint`s `` like its sibling file; uniqueness check returned 0 and the real offender
-   was `` `git mv`s ``. The check caught it — but I pattern-matched from the adjacent finding
+   `` `//nolint` s `` like its sibling file; uniqueness check returned 0 and the real offender
+   was `` `git mv` s ``. The check caught it — but I pattern-matched from the adjacent finding
    instead of reading the line I had already printed.
 6. **DF-churn whack-a-mole handled reactively**: my TODO_LIST/living-doc growth flipped
    previously-passing audit-all items below quorum TWICE (12→2→4→0). Each wave was resolved,
@@ -196,7 +196,7 @@ repos, website, or fleet-wide state.
 2. Sweep other machines/repos for multi-copy installs (TODO row).
 3. Re-word my README stamp to the true evidence class ("count gate re-derived", not
    "binary-verified") — one line, my residue.
-4. Wire `scripts/citation-sweep.py` into `flake.nix` checks (TODO row).
+~~4. Wire `scripts/citation-sweep.py` into `flake.nix` checks (TODO row).~~ done 2026-11-24 — the `citation-sweep` flake check landed 2026-11-23 (fleet-lib plan T6, `flake.nix:268`) with sandbox-safe targets + 23-probe `--self-test`; extended same session with the `sync-review-index --check` drift gate and `check-review-screenshot.sh` freshness guard wired into the same check. Evidence: docs/status/2026-11-23_04-27_execution-plan-run-tiers-1-to-100.md §a T6/T18.
 5. Document-or-decide the `test` flake check sandbox-exclusion list (TODO row).
 6. Buildflow-side: decide state-DB retention policy (VACUUM reclaims nothing; 1.1 GB is live
    data) — upstream question or local doc (TODO row).
