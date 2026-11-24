@@ -20,22 +20,29 @@ func writeExecutable(t *testing.T, dir, name string) string {
 
 // TestArtDuplPathCandidatesDedupesSymlinks pins the nix case: a system-path
 // symlink and its store target must count as ONE copy, in first-seen order.
+// Expectations compare against the RESOLVED target: on macOS t.TempDir sits
+// under /var (a symlink to /private/var), so candidates come back resolved
+// (/private/var/...) while writeExecutable's return value is unresolved.
 func TestArtDuplPathCandidatesDedupesSymlinks(t *testing.T) {
 	t.Parallel()
 
 	realDir := t.TempDir()
-	target := writeExecutable(t, realDir, "art-dupl")
+	target := writeExecutable(t, realDir, artDuplExecutableName())
+	resolvedTarget, err := filepath.EvalSymlinks(target)
+	if err != nil {
+		resolvedTarget = target
+	}
 
 	linkDir := t.TempDir()
-	if err := os.Symlink(target, filepath.Join(linkDir, "art-dupl")); err != nil {
+	if err := os.Symlink(target, filepath.Join(linkDir, artDuplExecutableName())); err != nil {
 		t.Skipf("symlink unavailable: %v", err)
 	}
 
 	emptyDir := t.TempDir()
 
 	got := artDuplPathCandidates(strings.Join([]string{linkDir, realDir, emptyDir}, string(os.PathListSeparator)))
-	if len(got) != 1 || got[0] != target {
-		t.Errorf("candidates = %v, want exactly [%s]", got, target)
+	if len(got) != 1 || got[0] != resolvedTarget {
+		t.Errorf("candidates = %v, want exactly [%s]", got, resolvedTarget)
 	}
 }
 
@@ -45,7 +52,7 @@ func TestArtDuplPathCandidatesSkipsNonExecutables(t *testing.T) {
 	t.Parallel()
 
 	dataDir := t.TempDir()
-	if err := os.WriteFile(filepath.Join(dataDir, "art-dupl"), []byte("x"), 0o644); err != nil {
+	if err := os.WriteFile(filepath.Join(dataDir, artDuplExecutableName()), []byte("x"), 0o644); err != nil {
 		t.Fatalf("write file: %v", err)
 	}
 
@@ -56,18 +63,28 @@ func TestArtDuplPathCandidatesSkipsNonExecutables(t *testing.T) {
 
 // TestWarnIfMultipleArtDuplInPath covers the warning text: both copies named
 // with versions, the running one marked, the PATH winner marked. The version
-// probe is stubbed so no child binaries execute.
+// probe is stubbed so no child binaries execute. Assertions use the RESOLVED
+// paths — candidates are realpath'd (macOS /var -> /private/var), and the
+// stub matches the resolved form of binB for the same reason.
 func TestWarnIfMultipleArtDuplInPath(t *testing.T) {
 	t.Parallel()
 
 	dirA := t.TempDir()
-	binA := writeExecutable(t, dirA, "art-dupl")
+	binA := writeExecutable(t, dirA, artDuplExecutableName())
 	dirB := t.TempDir()
-	binB := writeExecutable(t, dirB, "art-dupl")
+	binB := writeExecutable(t, dirB, artDuplExecutableName())
+	resolve := func(p string) string {
+		r, err := filepath.EvalSymlinks(p)
+		if err != nil {
+			return p
+		}
+		return r
+	}
+	resolvedA, resolvedB := resolve(binA), resolve(binB)
 
 	original := probeArtDuplVersion
 	probeArtDuplVersion = func(path string) string {
-		if path == binB {
+		if path == resolvedB {
 			return "v9.9.9-test"
 		}
 
@@ -81,7 +98,7 @@ func TestWarnIfMultipleArtDuplInPath(t *testing.T) {
 	warnIfMultipleArtDuplInPath(&stderr, pathEnv)
 
 	out := stderr.String()
-	for _, want := range []string{"2 times in PATH", binA, binB, "v9.9.9-test", "first in PATH, wins"} {
+	for _, want := range []string{"2 times in PATH", resolvedA, resolvedB, "v9.9.9-test", "first in PATH, wins"} {
 		if !strings.Contains(out, want) {
 			t.Errorf("warning missing %q in:\n%s", want, out)
 		}

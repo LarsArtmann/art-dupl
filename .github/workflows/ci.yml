@@ -36,7 +36,11 @@ jobs:
       - name: golangci-lint
         uses: golangci/golangci-lint-action@ba0d7d2ec06a0ea1cb5fa41b2e4a3ab91d21278a # v9.3.0
         with:
-          version: v2.13.2
+          # v2.15.0: v2.13.2's bundled go/types cannot read Go 1.27.4 export
+          # data ("export data version 5 is greater than maximum supported
+          # version 4") and typechecks everything as errors. 2.15.0 is the
+          # local devshell version (0 findings there).
+          version: v2.15.0
 
   fetchability:
     name: Fetchability
