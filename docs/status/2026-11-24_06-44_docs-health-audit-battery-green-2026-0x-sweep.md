@@ -196,64 +196,64 @@ repos, website, or fleet-wide state.
 2. Sweep other machines/repos for multi-copy installs (TODO row).
 3. Re-word my README stamp to the true evidence class ("count gate re-derived", not
    "binary-verified") — one line, my residue.
-~~4. Wire `scripts/citation-sweep.py` into `flake.nix` checks (TODO row).~~ done 2026-11-24 — the `citation-sweep` flake check landed 2026-11-23 (fleet-lib plan T6, `flake.nix:268`) with sandbox-safe targets + 23-probe `--self-test`; extended same session with the `sync-review-index --check` drift gate and `check-review-screenshot.sh` freshness guard wired into the same check. Evidence: docs/status/2026-11-23_04-27_execution-plan-run-tiers-1-to-100.md §a T6/T18.
-5. Document-or-decide the `test` flake check sandbox-exclusion list (TODO row).
-6. Buildflow-side: decide state-DB retention policy (VACUUM reclaims nothing; 1.1 GB is live
+   ~~4. Wire `scripts/citation-sweep.py` into `flake.nix` checks (TODO row).~~ done 2026-11-24 — the `citation-sweep` flake check landed 2026-11-23 (fleet-lib plan T6, `flake.nix:268`) with sandbox-safe targets + 23-probe `--self-test`; extended same session with the `sync-review-index --check` drift gate and `check-review-screenshot.sh` freshness guard wired into the same check. Evidence: docs/status/2026-11-23_04-27_execution-plan-run-tiers-1-to-100.md §a T6/T18.
+4. Document-or-decide the `test` flake check sandbox-exclusion list (TODO row).
+5. Buildflow-side: decide state-DB retention policy (VACUUM reclaims nothing; 1.1 GB is live
    data) — upstream question or local doc (TODO row).
-7. Archive the ~29 undated legacy status reports (pre-existing row; subagent extraction recipe).
-8. check-rows leveling pass over the 160 pass-3-wave archived files (pre-existing row).
-9. FEATURES.md job-fitness pass (my b1 gap): audience question before fact-check.
-10. Explicit AGENTS.md update-consideration pass (my b2 gap): DF-churn lesson, VACUUM finding.
-11. Write `scripts/archive-doc.sh` (gate-before-move + manifest, per e2).
-12. Upstream docs-gates: audit-all fixpoint/flip mode (e1).
-13. Upstream docs-gates: ledger-marker trailing-note tolerance (e3).
-14. Upstream docs-gates annotator fixes (pre-existing rows): status-items per-cell strikes,
+6. Archive the ~29 undated legacy status reports (pre-existing row; subagent extraction recipe).
+7. check-rows leveling pass over the 160 pass-3-wave archived files (pre-existing row).
+8. FEATURES.md job-fitness pass (my b1 gap): audience question before fact-check.
+9. Explicit AGENTS.md update-consideration pass (my b2 gap): DF-churn lesson, VACUUM finding.
+10. Write `scripts/archive-doc.sh` (gate-before-move + manifest, per e2).
+11. Upstream docs-gates: audit-all fixpoint/flip mode (e1).
+12. Upstream docs-gates: ledger-marker trailing-note tolerance (e3).
+13. Upstream docs-gates annotator fixes (pre-existing rows): status-items per-cell strikes,
     ambiguous-key warning.
-15. Trust-but-verify pass over the second session's `392d9222` (v1.16.0 adoption + citation-sweep
+14. Trust-but-verify pass over the second session's `392d9222` (v1.16.0 adoption + citation-sweep
     rewrite landed adjacent to my work; gates green, claims unverified by me).
-16. Verify the webphone §c NOT-STARTED tail actually shipped somewhere (nix flake check on the
+15. Verify the webphone §c NOT-STARTED tail actually shipped somewhere (nix flake check on the
     feature tree, `--full` boundary, recall audit, determinism re-check, pin registry row).
-17. Release the markup-identity + check-json work (CacheVersion 9; release note must say
+16. Release the markup-identity + check-json work (CacheVersion 9; release note must say
     "re-run `art-dupl baseline`") — owner-gated, pre-existing.
-18. Decision-sheet answers: g1/g2/g3/binfmt — owner.
-19. Threshold + test-inclusion in analyzer policy — owner question, pre-existing.
-20. Branch protection with required checks + failure notifications (#18).
-21. go-paperless v0.4.3 tag + release (#20, memo exists).
-22. Windows exe-start fix: one green windows-lane confirm, then close (#4).
-23. G9: retire the windows GOEXPERIMENT env split if the crash class is gone.
-24. G11: toolsdk upstream per-value validation hook (upstream-gated).
-25. D3: lane-overlap measurement post-soak (jscpd vs art-dupl findings per repo).
-26. Fleet rollout of the core-lane blank-import pattern to other consumer repos.
-27. Sweep gogenfilter consumers to v3.6.1 (9 repos with red baselines, M17 checklist).
-28. Fleet audit: `filepath.Separator` matching in other repos (#15).
-29. pma auto-commit daemon blind spot (mid-edit unformatted commits) — BuildFlow-side.
-30. statix + govet lanes for `flake.nix` (pre-existing).
-31. `cmd/run_suppression.go` carve-out (pre-existing).
-32. empty-snapshot guard C in `check-docs-freshness.sh` (pre-existing row; proposal file kept
+17. Decision-sheet answers: g1/g2/g3/binfmt — owner.
+18. Threshold + test-inclusion in analyzer policy — owner question, pre-existing.
+19. Branch protection with required checks + failure notifications (#18).
+20. go-paperless v0.4.3 tag + release (#20, memo exists).
+21. Windows exe-start fix: one green windows-lane confirm, then close (#4).
+22. G9: retire the windows GOEXPERIMENT env split if the crash class is gone.
+23. G11: toolsdk upstream per-value validation hook (upstream-gated).
+24. D3: lane-overlap measurement post-soak (jscpd vs art-dupl findings per repo).
+25. Fleet rollout of the core-lane blank-import pattern to other consumer repos.
+26. Sweep gogenfilter consumers to v3.6.1 (9 repos with red baselines, M17 checklist).
+27. Fleet audit: `filepath.Separator` matching in other repos (#15).
+28. pma auto-commit daemon blind spot (mid-edit unformatted commits) — BuildFlow-side.
+29. statix + govet lanes for `flake.nix` (pre-existing).
+30. `cmd/run_suppression.go` carve-out (pre-existing).
+31. empty-snapshot guard C in `check-docs-freshness.sh` (pre-existing row; proposal file kept
     live as its fuel).
-33. DescribeTable skill-recipe decision (owner-gated, pre-existing).
-34. bandit lane INFO-chatter exclusion (pre-existing).
-35. sqlite resume-DB policy doc or busy_timeout upstream (pre-existing).
-36. file-size-check policy (82 findings, owner call, pre-existing).
-37. ROADMAP: Lighthouse CI + `lighthouserc.json` wiring (confirmed still open this pass).
-38. ROADMAP: golden-corpus recall harness.
-39. ROADMAP: same-function clone tag.
-40. ROADMAP: `unknown` category → AST-type fallback.
-41. Fix the non-UTF-8 bytes in whichever status report crashes byte-exact tooling (11-15 §f45).
-42. Decide `2026-10-05_pass-verdicts/` fate (pre-existing).
-43. AGENTS.md size reduction (≈375 → ≤220 lines; buildflow finding persists).
-44. Record "verify the stimulus before the measurement" in crush-config lessons (parked twice).
-45. Inventory live `docs/brainstorming/`, `docs/analysis/`, `docs/reviews/` for undated
+32. DescribeTable skill-recipe decision (owner-gated, pre-existing).
+33. bandit lane INFO-chatter exclusion (pre-existing).
+34. sqlite resume-DB policy doc or busy_timeout upstream (pre-existing).
+35. file-size-check policy (82 findings, owner call, pre-existing).
+36. ROADMAP: Lighthouse CI + `lighthouserc.json` wiring (confirmed still open this pass).
+37. ROADMAP: golden-corpus recall harness.
+38. ROADMAP: same-function clone tag.
+39. ROADMAP: `unknown` category → AST-type fallback.
+40. Fix the non-UTF-8 bytes in whichever status report crashes byte-exact tooling (11-15 §f45).
+41. Decide `2026-10-05_pass-verdicts/` fate (pre-existing).
+42. AGENTS.md size reduction (≈375 → ≤220 lines; buildflow finding persists).
+43. Record "verify the stimulus before the measurement" in crush-config lessons (parked twice).
+44. Inventory live `docs/brainstorming/`, `docs/analysis/`, `docs/reviews/` for undated
     stragglers (my b4 scope gap).
-46. Refresh `docs/status/README.md` if it still describes the pre-archive corpus (not checked).
-47. Consider a scheduled `docs-gates run .` (cron/systemd timer) so drift is caught between
+45. Refresh `docs/status/README.md` if it still describes the pre-archive corpus (not checked).
+46. Consider a scheduled `docs-gates run .` (cron/systemd timer) so drift is caught between
     sessions, not only at session starts.
-48. Re-check `/tmp` scratch binaries' existence at next session (/tmp rots; the TODO row
+47. Re-check `/tmp` scratch binaries' existence at next session (/tmp rots; the TODO row
     cites a 2026-11-23 observation).
-49. Extend `docs-gates purge` usage: cadence says PURGE-HEALTHY (0 struck rows counted) but
+48. Extend `docs-gates purge` usage: cadence says PURGE-HEALTHY (0 struck rows counted) but
     TODO_LIST visually carries many `- [x] ~~...~~ DONE` rows — reconcile the scanner's
     definition with the visible ledger (why does cadence count 0?).
-50. Archive-gate the two planning HTML banners for formatter stability (dprint was live
+49. Archive-gate the two planning HTML banners for formatter stability (dprint was live
     mid-session; the inserted banner divs should be re-verified after the next format pass).
 
 ## g) QUESTIONS I CANNOT FIGURE OUT MYSELF

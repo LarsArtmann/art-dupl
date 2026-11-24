@@ -125,6 +125,7 @@ corrections were absorbed mid-session (AND/OR semantics; BuildFlow as a sixth re
 ## f) Up to 50 things to get done next
 
 **Owner-gated (decision row already in TODO_LIST):**
+
 1. Decide architecture: E-only, E-then-A, or other mix (the proposal's recommendation: E now, A when fidelity earns it)
 2. Q1: snapshot history home, committed `.art-dupl/history.jsonl` vs `$XDG_DATA_HOME`
 3. Q2: go-compliance hub adoption timing (wait for tag + series API?)
@@ -204,6 +205,6 @@ corrections were absorbed mid-session (AND/OR semantics; BuildFlow as a sixth re
 
 ---
 
-*Report written per status-report skill (user format wins: .md, sections a-g, 50 next things, 3
+_Report written per status-report skill (user format wins: .md, sections a-g, 50 next things, 3
 questions). Not committed manually; the auto-commit daemon picks it up. Section (f) is brainstorm
-fuel pending the owner's architecture decision; HARVEST routing rigor applies.*
+fuel pending the owner's architecture decision; HARVEST routing rigor applies._
