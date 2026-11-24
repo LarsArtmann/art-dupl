@@ -166,9 +166,9 @@ Built a complete Astro + Starlight documentation website, rewrote the README as 
 41. Audit and consolidate USAGE.md, HOW_TO_USE.md — these now overlap with website docs
 42. Audit WHAT_THIS_PROJECT_IS_NOT.md — useful or stale?
     ~~43. Audit PARTS.md — is this still relevant?~~ done — moot — PARTS.md no longer exists in the tree
-~~43. Audit MIGRATION_QUICK_START.md, MIGRATION_TO_NIX_FLAKES_PROPOSAL.md — still needed?~~ done 2026-11-24 — those files no longer exist under those names; the content was consolidated into docs/MIGRATION_GUIDE.md (current, carries the skip-validate-annotated snippets) — nothing left to audit.
-~~44. Audit PERFORMANCE_OPTIMIZATION.md — accurate or stale?~~ done 2026-11-24 — consolidated into docs/PERFORMANCE.md (exists at repo docs/); the stale-named file is gone.
-45. Remove or archive `docs/status/archive/` (hundreds of historical status files)
+    ~~43. Audit MIGRATION_QUICK_START.md, MIGRATION_TO_NIX_FLAKES_PROPOSAL.md — still needed?~~ done 2026-11-24 — those files no longer exist under those names; the content was consolidated into docs/MIGRATION_GUIDE.md (current, carries the skip-validate-annotated snippets) — nothing left to audit.
+    ~~44. Audit PERFORMANCE_OPTIMIZATION.md — accurate or stale?~~ done 2026-11-24 — consolidated into docs/PERFORMANCE.md (exists at repo docs/); the stale-named file is gone.
+43. Remove or archive `docs/status/archive/` (hundreds of historical status files)
 
 ### Infrastructure
 

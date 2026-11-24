@@ -163,8 +163,8 @@ Nothing this session. All changes were verified: build, test (919 tests), vet, a
 9. Consider extracting `syntaxToCloneNode` to `internal/` package shared between `printer` and `actionability` test code
 10. Add a pipeline test for the control-flow guard: two functions with different string literals but if-statements should remain actionable
 11. Add a pipeline test for the parameterizability veto: two functions with different literals and NO control-flow should be non-actionable
-~~12. Audit whether `syntax_test.go` at 585 lines should be split — serialization tests could move to `syntax_serialize_test.go`~~ not-do 2026-11-24 — deliberate: it is the core package's single comprehensive test file (still 585 lines, unchanged since the ask); test-file size is governed by the file-size-check policy row (owner call, 82 findings), not per-file splits.
-13. Add a property-based test that `serial()` preserves all fields for ANY node tree, not just the two hand-crafted examples
+    ~~12. Audit whether `syntax_test.go` at 585 lines should be split — serialization tests could move to `syntax_serialize_test.go`~~ not-do 2026-11-24 — deliberate: it is the core package's single comprehensive test file (still 585 lines, unchanged since the ask); test-file size is governed by the file-size-check policy row (owner call, 82 findings), not per-file splits.
+12. Add a property-based test that `serial()` preserves all fields for ANY node tree, not just the two hand-crafted examples
 
 ### Improvements to the actionability engine
 
@@ -179,14 +179,14 @@ Nothing this session. All changes were verified: build, test (919 tests), vet, a
 ### Code quality and maintainability
 
 21. Consider replacing the `serial()` manual field copy with `reflect.ShallowCopy` or a code-generated copy to prevent future field omission
-~~22. Extract the `cloneNodeFromSyntax` helper to a shared internal package to prevent drift between production and test code~~ superseded — the helper no longer exists; the syntax→domain bridge is syntaxToCloneNode in printer/clone_processor.go (single conversion point, carries GoSnippet/VarType/EnclosingReturnArity/InterfaceMethod), so the drift the item feared is structurally impossible.
-23. Document the `Node` struct fields in a single canonical location — currently the field semantics are spread across `transform.go`, `syntax.go`, and AGENTS.md
-24. Consider adding a `lint:fieldcopy` annotation or linter rule that verifies all struct fields are copied in serialization functions
-25. The `pipeline_integration_test.go` `runPipeline` helper duplicates `job.BuildTree` logic — consider extracting a test-visible pipeline runner to `internal/testutil/`
-26. Run `art-dupl` against more codebases to find additional false-positive patterns (the tool is only as good as the codebases it's been tested against)
-27. Consider adding property-based/fuzz tests for the suffix tree → actionability pipeline
-28. Add a benchmark for the full pipeline to track performance regressions
-29. Consider whether the `GenDecl` defensive guard in `isAtomicDeclaration` should have a `//nolint:unreachable` or similar annotation
+    ~~22. Extract the `cloneNodeFromSyntax` helper to a shared internal package to prevent drift between production and test code~~ superseded — the helper no longer exists; the syntax→domain bridge is syntaxToCloneNode in printer/clone_processor.go (single conversion point, carries GoSnippet/VarType/EnclosingReturnArity/InterfaceMethod), so the drift the item feared is structurally impossible.
+22. Document the `Node` struct fields in a single canonical location — currently the field semantics are spread across `transform.go`, `syntax.go`, and AGENTS.md
+23. Consider adding a `lint:fieldcopy` annotation or linter rule that verifies all struct fields are copied in serialization functions
+24. The `pipeline_integration_test.go` `runPipeline` helper duplicates `job.BuildTree` logic — consider extracting a test-visible pipeline runner to `internal/testutil/`
+25. Run `art-dupl` against more codebases to find additional false-positive patterns (the tool is only as good as the codebases it's been tested against)
+26. Consider adding property-based/fuzz tests for the suffix tree → actionability pipeline
+27. Add a benchmark for the full pipeline to track performance regressions
+28. Consider whether the `GenDecl` defensive guard in `isAtomicDeclaration` should have a `//nolint:unreachable` or similar annotation
 
 ### From the previous status report (still relevant)
 

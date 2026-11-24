@@ -122,6 +122,7 @@ and skill references, NOT from reading its source.
 ## f) Up to 50 things to get done next
 
 **Owner-gated (blocking everything below):**
+
 1. Architecture decision: E-now-then-A (as recommended) or another mix
 2. Q1: store placement — dedicated tiny host (recommended) vs overview vs discovery daemon; engine sqlite vs pebble
 3. Q2: go-compliance hub endgame yes/no (flip trigger #3)
@@ -202,7 +203,7 @@ and skill references, NOT from reading its source.
 
 ---
 
-*Report per status-report skill (user format wins). Round 2 of the session; the 11:27 report
+_Report per status-report skill (user format wins). Round 2 of the session; the 11:27 report
 stands as history. Not committed manually; the auto-commit daemon picks this up. Section (f)
 items remain contingent on the owner's architecture decision; HARVEST routing rigor applies at
-the 2026-12-14 cadence.*
+the 2026-12-14 cadence._

@@ -176,28 +176,28 @@ Everything below is from this session's run only.
 12. Investigate the detected-group drift (1256→1260) for unexplained
     families (may be my directive comment lines shifting line numbers →
     clone ranges; confirm benign).
-~~13. Extract or formalize the shared `.go`-filter helper (pkg/artdupl~~ not-do 2026-11-24 — deliberate: the provider crawl mirrors the CLI defaults (only .go/.templ, skip dot-dirs/vendor/node_modules/examples, gogenfilter FilterAll) as a documented mirror kept honest by the crawl-equivalence tests; a shared helper would couple cmd internals into pkg/ against the arch-lint component boundaries.
+    ~~13. Extract or formalize the shared `.go`-filter helper (pkg/artdupl~~ not-do 2026-11-24 — deliberate: the provider crawl mirrors the CLI defaults (only .go/.templ, skip dot-dirs/vendor/node_modules/examples, gogenfilter FilterAll) as a documented mirror kept honest by the crawl-equivalence tests; a shared helper would couple cmd internals into pkg/ against the arch-lint component boundaries.
     combined.go + detector_pipeline.go mirror) if the mirror grows a third
     copy.
-14. Per-module type-load breakdown in `--timing` (nearest-go.mod grouping
+13. Per-module type-load breakdown in `--timing` (nearest-go.mod grouping
     already exists in the loader).
-15. Bench: measure the new pattern matcher's cost on the big corpus
+14. Bench: measure the new pattern matcher's cost on the big corpus
     (actionability isn't alloc-gated today).
-16. v0.8.0 release (parked on owner; TODO_LIST #18 branch-protection recipe).
-17. Raise or restructure the buildflow lint budget (1m32s vs 1m on cold
+15. v0.8.0 release (parked on owner; TODO_LIST #18 branch-protection recipe).
+16. Raise or restructure the buildflow lint budget (1m32s vs 1m on cold
     cache) or accept and silence knowingly.
-18. The performance-budget/husk/lychee preflight warnings should block or
+17. The performance-budget/husk/lychee preflight warnings should block or
     be fixed — right now they warn into the void.
-19. Consider committing the directive-placement script (currently /tmp) as
+18. Consider committing the directive-placement script (currently /tmp) as
     `scripts/` tooling for future self-scans, with the group-level placement
     rule documented.
-20. Ledger: add an "October cadence completed 2026-10-16" pointer to the
+19. Ledger: add an "October cadence completed 2026-10-16" pointer to the
     AGENTS monthly-cadence bullet so the next session doesn't re-run it.
-21. Review the 32 directive sites by hand at leisure; upgrade any
+20. Review the 32 directive sites by hand at leisure; upgrade any
     class-level rationale that reads generic for its actual shape.
-22. `caseClauseIsTrivialLabel`: consider templ-native case/comm equivalents
+21. `caseClauseIsTrivialLabel`: consider templ-native case/comm equivalents
     (templ switch/case node types) if templ label clones ever surface.
-23. Document the HTML-comment directive form in the `//art-dupl:accept`
+22. Document the HTML-comment directive form in the `//art-dupl:accept`
     AGENTS bullet (it's currently only in the ledger).
 
 ## g) QUESTIONS FOR LARS (cannot be answered from the repo)

@@ -237,11 +237,11 @@ issues), and `nix flake check` (12/12) all pass at `aea30779`.
    top-level JSON type and the presence of its documented fields.
 6. Golden-test the identity warning block (exact `baseline:`/`running:`/
    `effect:`/`fix:` lines).
-~~7. Reject directory paths in the SDK with an actionable error (or crawl them).~~ done 2026-11-14 — validateInputs rejects existing-but-non-regular paths with ErrNotARegularFile naming the path and remedy (the false-clean ErrNoDuplicatesFound class is dead); nonexistent paths keep skip-with-warning semantics (pinned).
-8. Add `summary.total_clone_groups`-vs-`baseline.total` semantics to the
+   ~~7. Reject directory paths in the SDK with an actionable error (or crawl them).~~ done 2026-11-14 — validateInputs rejects existing-but-non-regular paths with ErrNotARegularFile naming the path and remedy (the false-clean ErrNoDuplicatesFound class is dead); nonexistent paths keep skip-with-warning semantics (pinned).
+7. Add `summary.total_clone_groups`-vs-`baseline.total` semantics to the
    `check --json` test so the documented distinction is enforced.
-9. Sweep `--type-aware` and combined mode on 2 templ corpora after CSS hashing.
-10. Add a `golangci-lint` version-parity check between devshell and flake.
+8. Sweep `--type-aware` and combined mode on 2 templ corpora after CSS hashing.
+9. Add a `golangci-lint` version-parity check between devshell and flake.
 
 ### Release / packaging
 

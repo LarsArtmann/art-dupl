@@ -180,15 +180,15 @@ Sorted by **Impact / Effort ratio** (highest first).
 
 ### Medium (Medium Effort, Medium Impact)
 
-| #  | Task                                                                                  | Effort | Impact        |
-| -- | ------------------------------------------------------------------------------------- | ------ | ------------- |
-| 11 | Split `printer/` into `printer/text`, `printer/html`, `printer/json`, `printer/sarif` | 4h     | Architecture  |
-| 12 | Consolidate 7 Clone types → fewer with shared interfaces                              | 4h     | Architecture  |
-| 13 | Move AST constants out of `syntax/golang` into domain types                           | 2h     | Decoupling    |
-| 14 | Update AGENTS.md with `slices.SortFunc` migration note                                | 10 min | Documentation |
-| 15 | Add cache SHA-256 end-to-end test                                                     | 1h     | Coverage      |
-| 16 | Profile and optimize `syntaxToCloneNode` recursive allocation                         | 2h     | Performance   |
-| 17 | Add SARIF spec validation to CI                                                       | 1h     | CI quality    |
+| #  | Task                                                          | Effort                                                                                | Impact        |
+| -- | ------------------------------------------------------------- | ------------------------------------------------------------------------------------- | ------------- |
+| ~~ | 11                                                            | Split `printer/` into `printer/text`, `printer/html`, `printer/json`, `printer/sarif` | 4h            |
+| 12 | Consolidate 7 Clone types → fewer with shared interfaces      | 4h                                                                                    | Architecture  |
+| 13 | Move AST constants out of `syntax/golang` into domain types   | 2h                                                                                    | Decoupling    |
+| 14 | Update AGENTS.md with `slices.SortFunc` migration note        | 10 min                                                                                | Documentation |
+| 15 | Add cache SHA-256 end-to-end test                             | 1h                                                                                    | Coverage      |
+| 16 | Profile and optimize `syntaxToCloneNode` recursive allocation | 2h                                                                                    | Performance   |
+| 17 | Add SARIF spec validation to CI                               | 1h                                                                                    | CI quality    |
 
 ### Strategic (High Effort, High Impact)
 

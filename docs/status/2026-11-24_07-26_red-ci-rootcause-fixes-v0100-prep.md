@@ -70,38 +70,38 @@
 16. Clean-dir `go get github.com/LarsArtmann/art-dupl@v0.10.0` (the definitive consumer test).
 17. pkg.go.dev fetch trigger.
 18. BuildFlow: `git status` lease-check → `go get github.com/LarsArtmann/art-dupl@v0.10.0` (raises go-finding core to v1.16.0, fixing the main skew).
-~~19. BuildFlow: bump nested `domain/tool` module pins (art-dupl + go-finding).~~ duplicate 2026-11-24 — tracked by the open TODO_LIST row "BuildFlow consumes art-dupl FilesScanned (T07b last mile)" (row carries the nested `domain/tool` module pins bump + the foreign-session lease note); all tokens of this item went DF-generic after the 11-24 TODO growth, so the matcher can no longer see the row.
-20. BuildFlow lane-soak: provider DetectV2 auto-selects (sdk_registry.go type assertion), `filesScanned != 0` in `internal/render/findings_table.go` output.
-21. go-compliance: ci.yml dupl-gate pin → `go install .../cmd/art-dupl@v0.10.0`.
-22. go-compliance: re-run the dry-run gate with the TAGGED binary (worktree ≠ tag content).
-23. Strike TODO_LIST rows: "BuildFlow consumes FilesScanned (last mile)" + "Cut next release" after soak evidence.
-24. Harvest this session into TODO_LIST: sync-review-index gate, screenshot guard, fetchability lane, red-CI lessons.
-25. Annotate 04-27 report §g Q1/Q2 as answered-by-execution; Q3 already resolved inline.
-26. Update AGENTS.md: CI table Fetchability row (first live run), lint bullet (v2.13.2 export-data rot), crawl-pruning bullet (windows fix + root cause), path-shadow bullet (realpath'd candidates test contract).
-27. AGENTS.md session-tooling note (g1): update with this session's subagent facts.
-28. Record the "rare pushes hide red lanes" lesson + Phase-0 `gh run list` addition in the go-release skill (fleet improvement, SKILLS repo — leased, check first).
-29. Verify the dprint-reformatted scripts (9bf17036) still pass their gates: `citation-sweep --self-test` + flake check (dup of 10's scope — fold).
-30. Post-release status snapshot in docs/status (this report's successor).
-31. Sweep fleet repos for golangci-lint-action `version:` pins < v2.15.0 (go-ecosystem-upgrade pattern).
-32. Sweep fleet repos for push-triggered CI lanes that haven't run since ~October (silent-red discovery generalization).
-33. go-finding: the CHANGELOG stamp rides master — next go-finding release should pick it up; note in go-finding TODO/ROADMAP if present.
-34. Watch linter-autoconfigure-sdk#4 (fleet intent issue) for owner response.
-35. Confirm `internal/pipelineconfig` + jsonv2gate invariants stay green through the release cycle (boundary runs cover; keep the discipline).
-36. If windows lane still red after the fix: STOP and re-diagnose with a new diag cycle rather than retry-spamming.
-37. After release: re-check `.art-dupl-t3-accepted.json` (BuildFlow foreign lease) untouched.
-38. Verify Homebrew tap update landed (release workflow step).
-39. Cross-check AGENTS.md "Nine GitHub workflows; six are gates" wording still accurate with the Fetchability job (table already updated; prose counts unchanged).
-40. Decide + record: go-finding pre-commit hook dprint exit-14 bug (empty staged set fails ANY no-format commit) — fix upstream in go-finding flake devShell hook or leave.
-41. Release-adjacent: consider `--baseline-version-must-match` advisory for consumers bumping binaries across CacheVersions (docs polish, low priority).
-42. Re-run `python3 scripts/citation-sweep.py` full sweep (with sibling roots) after release — ship gate re-affirmation.
-43. Keep the review-dashboard screenshot stamp in sync if any dashboard edit slips in during 1–30 (guard enforces).
-44. Confirm CI Fetchability lane survives proxy hiccups gracefully (retry semantics are implicit in runner; note-only).
-45. Re-read TODO_LIST fully at next session start (docs-health rules: re-derive, don't trust plan rows).
-46. Optional: propagate the "test fixtures must use platform executable names / resolved paths" lesson into TESTING.md.
-47. Optional: `docs/review/README.md` screenshot-guard mention already landed — verify the text matches the final skip semantics.
-48. Optional: annotate docs/planning/2026-11-23 execution plan rows T9/T14/T15/T16–T18/T22/T23 as done with pointers (plan is a snapshot; harvest rules say TODO_LIST is the living home — keep plan untouched per archive policy, or follow the fleet's plan-annotation convention).
-49. Post-release: verify art-dupl self-scan invariant on the release tree (CI Self-Analysis lane green).
-50. Close out: this report's §g questions answered or carried; next session starts from TODO_LIST per docs-health cadence.
+    ~~19. BuildFlow: bump nested `domain/tool` module pins (art-dupl + go-finding).~~ duplicate 2026-11-24 — tracked by the open TODO_LIST row "BuildFlow consumes art-dupl FilesScanned (T07b last mile)" (row carries the nested `domain/tool` module pins bump + the foreign-session lease note); all tokens of this item went DF-generic after the 11-24 TODO growth, so the matcher can no longer see the row.
+19. BuildFlow lane-soak: provider DetectV2 auto-selects (sdk_registry.go type assertion), `filesScanned != 0` in `internal/render/findings_table.go` output.
+20. go-compliance: ci.yml dupl-gate pin → `go install .../cmd/art-dupl@v0.10.0`.
+21. go-compliance: re-run the dry-run gate with the TAGGED binary (worktree ≠ tag content).
+22. Strike TODO_LIST rows: "BuildFlow consumes FilesScanned (last mile)" + "Cut next release" after soak evidence.
+23. Harvest this session into TODO_LIST: sync-review-index gate, screenshot guard, fetchability lane, red-CI lessons.
+24. Annotate 04-27 report §g Q1/Q2 as answered-by-execution; Q3 already resolved inline.
+25. Update AGENTS.md: CI table Fetchability row (first live run), lint bullet (v2.13.2 export-data rot), crawl-pruning bullet (windows fix + root cause), path-shadow bullet (realpath'd candidates test contract).
+26. AGENTS.md session-tooling note (g1): update with this session's subagent facts.
+27. Record the "rare pushes hide red lanes" lesson + Phase-0 `gh run list` addition in the go-release skill (fleet improvement, SKILLS repo — leased, check first).
+28. Verify the dprint-reformatted scripts (9bf17036) still pass their gates: `citation-sweep --self-test` + flake check (dup of 10's scope — fold).
+29. Post-release status snapshot in docs/status (this report's successor).
+30. Sweep fleet repos for golangci-lint-action `version:` pins < v2.15.0 (go-ecosystem-upgrade pattern).
+31. Sweep fleet repos for push-triggered CI lanes that haven't run since ~October (silent-red discovery generalization).
+32. go-finding: the CHANGELOG stamp rides master — next go-finding release should pick it up; note in go-finding TODO/ROADMAP if present.
+33. Watch linter-autoconfigure-sdk#4 (fleet intent issue) for owner response.
+34. Confirm `internal/pipelineconfig` + jsonv2gate invariants stay green through the release cycle (boundary runs cover; keep the discipline).
+35. If windows lane still red after the fix: STOP and re-diagnose with a new diag cycle rather than retry-spamming.
+36. After release: re-check `.art-dupl-t3-accepted.json` (BuildFlow foreign lease) untouched.
+37. Verify Homebrew tap update landed (release workflow step).
+38. Cross-check AGENTS.md "Nine GitHub workflows; six are gates" wording still accurate with the Fetchability job (table already updated; prose counts unchanged).
+39. Decide + record: go-finding pre-commit hook dprint exit-14 bug (empty staged set fails ANY no-format commit) — fix upstream in go-finding flake devShell hook or leave.
+40. Release-adjacent: consider `--baseline-version-must-match` advisory for consumers bumping binaries across CacheVersions (docs polish, low priority).
+41. Re-run `python3 scripts/citation-sweep.py` full sweep (with sibling roots) after release — ship gate re-affirmation.
+42. Keep the review-dashboard screenshot stamp in sync if any dashboard edit slips in during 1–30 (guard enforces).
+43. Confirm CI Fetchability lane survives proxy hiccups gracefully (retry semantics are implicit in runner; note-only).
+44. Re-read TODO_LIST fully at next session start (docs-health rules: re-derive, don't trust plan rows).
+45. Optional: propagate the "test fixtures must use platform executable names / resolved paths" lesson into TESTING.md.
+46. Optional: `docs/review/README.md` screenshot-guard mention already landed — verify the text matches the final skip semantics.
+47. Optional: annotate docs/planning/2026-11-23 execution plan rows T9/T14/T15/T16–T18/T22/T23 as done with pointers (plan is a snapshot; harvest rules say TODO_LIST is the living home — keep plan untouched per archive policy, or follow the fleet's plan-annotation convention).
+48. Post-release: verify art-dupl self-scan invariant on the release tree (CI Self-Analysis lane green).
+49. Close out: this report's §g questions answered or carried; next session starts from TODO_LIST per docs-health cadence.
 
 ## g) QUESTIONS FOR THE OWNER (3)
 

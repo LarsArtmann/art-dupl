@@ -157,16 +157,16 @@ From TODO_LIST.md (prioritized by impact):
 
 ### P2 — Infrastructure
 
-| #  | Task                                                               | Impact                   | Effort |
-| -- | ------------------------------------------------------------------ | ------------------------ | ------ |
-| 18 | **Bump test coverage to 80%+** on bdd (currently 70%)              | Reliability              | M      |
-| 19 | **Add fuzz tests for templ parser** — property-based edge cases    | Robustness               | S      |
-| 20 | **CI pipeline audit** — verify all checks run on PR                | Process                  | S      |
-| 21 | **Update FEATURES.md** — reflect templ false-positive fix          | Docs accuracy            | S      |
-| 22 | **SDK dogfooding** — run art-dupl on itself, publish results       | Self-validation          | M      |
-| 23 | **Performance benchmarking** — compare pre/post SIMD               | Data-driven optimization | M      |
-| 24 | **Nix flake check** — verify `nix build` works with latest changes | Alternative build        | S      |
-| 25 | **Update HOW_TO_USE.md** — add templ false-positive section to FAQ | User education           | S      |
+| #  | Task                                                               | Impact                                              | Effort  |
+| -- | ------------------------------------------------------------------ | --------------------------------------------------- | ------- |
+| 18 | **Bump test coverage to 80%+** on bdd (currently 70%)              | Reliability                                         | M       |
+| 19 | **Add fuzz tests for templ parser** — property-based edge cases    | Robustness                                          | S       |
+| ~~ | 20                                                                 | **CI pipeline audit** — verify all checks run on PR | Process |
+| 21 | **Update FEATURES.md** — reflect templ false-positive fix          | Docs accuracy                                       | S       |
+| 22 | **SDK dogfooding** — run art-dupl on itself, publish results       | Self-validation                                     | M       |
+| 23 | **Performance benchmarking** — compare pre/post SIMD               | Data-driven optimization                            | M       |
+| 24 | **Nix flake check** — verify `nix build` works with latest changes | Alternative build                                   | S       |
+| 25 | **Update HOW_TO_USE.md** — add templ false-positive section to FAQ | User education                                      | S       |
 
 ---
 

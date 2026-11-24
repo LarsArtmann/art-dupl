@@ -192,10 +192,10 @@
 ### P1 - High Priority
 
 6. 📝 Fix top 10 lint issues (err113, revive, exhaustruct)
-~~7. 📝 Add tests for cmd/art-dupl package~~ done — cmd/ carries an extensive suite (exit codes, flags, crawl pruning, path shadow, filter stats, docs count gates); the main-package smoke is covered by cmd/art-dupl main_test where applicable and the BDD suite exercises the built binary end-to-end.
-8. 📝 Document semantic detection feature properly
+   ~~7. 📝 Add tests for cmd/art-dupl package~~ done — cmd/ carries an extensive suite (exit codes, flags, crawl pruning, path shadow, filter stats, docs count gates); the main-package smoke is covered by cmd/art-dupl main_test where applicable and the BDD suite exercises the built binary end-to-end.
+7. 📝 Document semantic detection feature properly
    ~~9. 📝 Add performance benchmarks for hash detection~~ done — hash detection is benchmarked (docs/benchmarks/; alloc-gate)
-9. 📝 Improve error messages with actionable suggestions
+8. 📝 Improve error messages with actionable suggestions
 
 ### P2 - Medium Priority
 

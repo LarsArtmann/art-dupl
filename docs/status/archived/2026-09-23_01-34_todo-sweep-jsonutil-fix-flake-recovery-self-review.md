@@ -94,38 +94,38 @@
 13. `nix flake check --all-systems` — aarch64-darwin/aarch64-linux/x86_64-darwin checks are omitted locally; verify at least aarch64-linux in CI or document the omission.
 14. Add a `-count=1` parity job to CI? (CI already runs fresh; document WHY cache-parity differs locally so the next session doesn't relearn it.)
 15. Run `erraudit lint ./... --type-aware` in CI as an opt-in gate (or record the decision NOT to, per fleet convention).
-~~16. Add `.github/workflows` lint (actionlint) — 9 hand-edited workflow files, zero local validation.~~ decided 2026-11-24 — harvested as the open TODO_LIST row "Add the actionlint lane for .github/workflows" (9 hand-edited workflow files, zero local validation); still open by choice, now tracked.
-17. SARIF committed integration test (from the 22:40 report P0 item 1): run the CLI with `--sarif`, pipe through `FindingsFromSARIF`, assert GroupIDs restore.
+    ~~16. Add `.github/workflows` lint (actionlint) — 9 hand-edited workflow files, zero local validation.~~ decided 2026-11-24 — harvested as the open TODO_LIST row "Add the actionlint lane for .github/workflows" (9 hand-edited workflow files, zero local validation); still open by choice, now tracked.
+16. SARIF committed integration test (from the 22:40 report P0 item 1): run the CLI with `--sarif`, pipe through `FindingsFromSARIF`, assert GroupIDs restore.
     ~~20. go-finding adoption ADR (status item 23 still open; the 22:40 report flags it) — record the library-only-surface decision.~~ resolved by alternative — AGENTS verdict + ADR-0025
-18. Link the go-finding evaluation doc into this repo (status item 24; readers hit a dead end today).
-19. `jsonutil`: golden-file property test — assert v1-API output is byte-identical to recorded v2-era outputs for the real wire payloads (SARIF, JSON report, config, baseline) — protects the "byte-compatible" CHANGELOG claim forever.
-20. Duration round-trip property test at the config boundary (any struct field adding `time.Duration` in the future must not reintroduce the v2 refusal).
-21. `t.Setenv` sweep — same intent-completeness gap as the `t.Chdir` sweep (tests mutating process env with manual save/restore).
+17. Link the go-finding evaluation doc into this repo (status item 24; readers hit a dead end today).
+18. `jsonutil`: golden-file property test — assert v1-API output is byte-identical to recorded v2-era outputs for the real wire payloads (SARIF, JSON report, config, baseline) — protects the "byte-compatible" CHANGELOG claim forever.
+19. Duration round-trip property test at the config boundary (any struct field adding `time.Duration` in the future must not reintroduce the v2 refusal).
+20. `t.Setenv` sweep — same intent-completeness gap as the `t.Chdir` sweep (tests mutating process env with manual save/restore).
     ~~25. `sortedStageNames` (gopls unusedfunc, `cmd/timing.go:144`) — delete or wire; it's the only project diagnostic open.~~ done — deleted from cmd/timing.go (2026-09-28 audit; zero callers)
-22. Make `scripts/self-scan.sh` emit machine-readable output (`--json`) so the ledger can be diffed mechanically between months.
-23. Ledger tooling: `scripts/ledger-diff.sh` — diff this month's shown groups vs `docs/SELF_CLEAN_LEDGER.md` entries to auto-surface NEW groups (kills re-litigation).
-24. Pre-release script: add `--dry-run` mode (checks only, no test rerun) for quick pre-flight during release prep.
-25. Pre-release script: support monorepo/`go.work` shape (currently single-module assumption; fine for this repo, matters if fleet-copied).
-26. shellcheck the 3 new scripts (self-scan, go-env-doctor, pre-release-check) — treefmt doesn't cover `scripts/*.sh`.
-27. Add the scripts to `nix flake check` (a `scripts-syntax` check running `bash -n` over `scripts/*.sh`) so syntax rot fails CI.
-28. Corpus drift automation: nightly `art-dupl -t 2 go-cqrs-lite` + compare vs the ledger; alert on unexplained count jumps (the 2665→2670 class).
-29. Determinism guard: nightly sorted-set hash comparison across parallel/sequential (the 2026-09-23 verification, automated).
-30. Windows: bisect `TestExitCodes_Process` with a minimal exe-spawn repro; file upstream if it's a runner/AV artifact (#4).
-31. Fleet audit #15 kickoff: grep all repos for `filepath.Separator` matching + `strings.Split(_, ":")` path parsing; art-dupl is clean (slash-normalization invariant + tests) — export the pattern as the fix template.
-32. `nix flake check` runtime: the full check takes minutes; split `alloc-gate`/`bench` into a nightly check if PR latency matters (measure first).
-33. Benchmark re-baseline: `docs/benchmarks/` baselines predate the jsonutil v1 rewrite — re-run the JSON-output benchmarks if they exist; otherwise skip.
+21. Make `scripts/self-scan.sh` emit machine-readable output (`--json`) so the ledger can be diffed mechanically between months.
+22. Ledger tooling: `scripts/ledger-diff.sh` — diff this month's shown groups vs `docs/SELF_CLEAN_LEDGER.md` entries to auto-surface NEW groups (kills re-litigation).
+23. Pre-release script: add `--dry-run` mode (checks only, no test rerun) for quick pre-flight during release prep.
+24. Pre-release script: support monorepo/`go.work` shape (currently single-module assumption; fine for this repo, matters if fleet-copied).
+25. shellcheck the 3 new scripts (self-scan, go-env-doctor, pre-release-check) — treefmt doesn't cover `scripts/*.sh`.
+26. Add the scripts to `nix flake check` (a `scripts-syntax` check running `bash -n` over `scripts/*.sh`) so syntax rot fails CI.
+27. Corpus drift automation: nightly `art-dupl -t 2 go-cqrs-lite` + compare vs the ledger; alert on unexplained count jumps (the 2665→2670 class).
+28. Determinism guard: nightly sorted-set hash comparison across parallel/sequential (the 2026-09-23 verification, automated).
+29. Windows: bisect `TestExitCodes_Process` with a minimal exe-spawn repro; file upstream if it's a runner/AV artifact (#4).
+30. Fleet audit #15 kickoff: grep all repos for `filepath.Separator` matching + `strings.Split(_, ":")` path parsing; art-dupl is clean (slash-normalization invariant + tests) — export the pattern as the fix template.
+31. `nix flake check` runtime: the full check takes minutes; split `alloc-gate`/`bench` into a nightly check if PR latency matters (measure first).
+32. Benchmark re-baseline: `docs/benchmarks/` baselines predate the jsonutil v1 rewrite — re-run the JSON-output benchmarks if they exist; otherwise skip.
     ~~38. ADR-0025: go-finding adoption decision (formalizes item 21 above).~~ done — docs/adr/0025-sdk-findings-classification-free.md
     ~~39. CHANGELOG: add the missing gogenfilter v3.6.1 entry upstream if the convention exists (carried TODO #21 from the 09-19 report — still open).~~ done — pushed to gogenfilter 2026-09-19; TODO_LIST records it
-34. FEATURES.md: decide whether dev-tooling (scripts) belongs in the inventory; currently undocumented either way.
-35. Review `.golangci.yml` `nestif`/`tagalign` configs after a month — confirm they stay at 0 findings (they're free until they're not).
-36. `docs/SELF_CLEAN_LEDGER.md`: backfill the 2026-08-16 sweep's per-group table (currently summarized, the detail lives in status reports).
-37. pma commit strategy: consider `require_clean_build: true` or a post-format gate so unformatted mid-edit files stop landing (the 2026-09-22/23 pattern).
-38. Investigate WHY `go test` cached a pass for tests that fail on re-run (cache-key inspection: GOEXPERIMENT? go.sum-only changes?) — if the key is missing an input, that's a Go toolchain issue worth an upstream report.
-39. Add the `-count=1` lesson to the fleet `references/lessons.md` in crush-config (cross-project: any repo with GOEXPERIMENT flips can hit this).
-40. Fork-branch hygiene: `fork` is the default branch AND the working branch — consider a PR flow to `main` (if main is the published branch) or document that fork IS canonical.
-41. Verify `website/` builds after the templ regeneration (pnpm/esbuild approvals were a past incident; not touched this session).
-42. Run gitleaks + codespell on-demand (`buildflow -s gitleaks -s codespell`) — never run in pipeline modes; due diligence before the next release.
-43. Write the release checklist INTO the go-release skill's learnings (tag collision, CI-green gate, toolchain pinning — carried TODO #36 from 09-19, still open).
+33. FEATURES.md: decide whether dev-tooling (scripts) belongs in the inventory; currently undocumented either way.
+34. Review `.golangci.yml` `nestif`/`tagalign` configs after a month — confirm they stay at 0 findings (they're free until they're not).
+35. `docs/SELF_CLEAN_LEDGER.md`: backfill the 2026-08-16 sweep's per-group table (currently summarized, the detail lives in status reports).
+36. pma commit strategy: consider `require_clean_build: true` or a post-format gate so unformatted mid-edit files stop landing (the 2026-09-22/23 pattern).
+37. Investigate WHY `go test` cached a pass for tests that fail on re-run (cache-key inspection: GOEXPERIMENT? go.sum-only changes?) — if the key is missing an input, that's a Go toolchain issue worth an upstream report.
+38. Add the `-count=1` lesson to the fleet `references/lessons.md` in crush-config (cross-project: any repo with GOEXPERIMENT flips can hit this).
+39. Fork-branch hygiene: `fork` is the default branch AND the working branch — consider a PR flow to `main` (if main is the published branch) or document that fork IS canonical.
+40. Verify `website/` builds after the templ regeneration (pnpm/esbuild approvals were a past incident; not touched this session).
+41. Run gitleaks + codespell on-demand (`buildflow -s gitleaks -s codespell`) — never run in pipeline modes; due diligence before the next release.
+42. Write the release checklist INTO the go-release skill's learnings (tag collision, CI-green gate, toolchain pinning — carried TODO #36 from 09-19, still open).
     ~~50. Close the loop on this report: docs-health HARVEST of section (f) into TODO_LIST/ROADMAP (items 1–12 bounded → TODO_LIST; the rest → ROADMAP).~~ done — TODO_LIST harvest cites it
 
 ## g) Questions I cannot figure out myself

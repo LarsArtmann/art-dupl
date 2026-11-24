@@ -165,23 +165,23 @@ From TODO_LIST.md and FEATURES.md:
 ### Medium (P2)
 
 11. Update README with semantic detection defaults
-~~12. Implement proper CSV output via `encoding/csv`~~ duplicate 2026-11-24 — same deliverable as the 2026-03-25 item; done via encoding/csv in printer/stats/stats_formatter.go.
-13. Split `printer/stats.go` (727 lines)
+    ~~12. Implement proper CSV output via `encoding/csv`~~ duplicate 2026-11-24 — same deliverable as the 2026-03-25 item; done via encoding/csv in printer/stats/stats_formatter.go.
+12. Split `printer/stats.go` (727 lines)
     ~~14. Split `domain/clone.go` (495 lines)~~ superseded — domain/clone.go no longer exists
-14. Increase `internal/filtertest` coverage above 80%
-15. Increase `bdd` coverage above 80%
-16. Archive old `docs/status/` reports (>30 days)
-17. Remove or implement SIMD scaffolding (7 TODOs)
+13. Increase `internal/filtertest` coverage above 80%
+14. Increase `bdd` coverage above 80%
+15. Archive old `docs/status/` reports (>30 days)
+16. Remove or implement SIMD scaffolding (7 TODOs)
 
 ### Low (P3)
 
 19. Add godoc to all exported symbols
-~~20. Implement `--profile` flag~~ duplicate 2026-11-24 — done 2026-02: `--profile` exists as a hidden flag (cmd/flags.go:23), count-gated.
-21. Implement `--timeout` flag
-22. Add cross-platform binary builds to CI
-23. Add `examples/` tests or convert to documentation
-24. Audit and fix phantom type issues (545 identified)
-25. Audit and eliminate unnecessary panic conditions (532 identified)
+    ~~20. Implement `--profile` flag~~ duplicate 2026-11-24 — done 2026-02: `--profile` exists as a hidden flag (cmd/flags.go:23), count-gated.
+20. Implement `--timeout` flag
+21. Add cross-platform binary builds to CI
+22. Add `examples/` tests or convert to documentation
+23. Audit and fix phantom type issues (545 identified)
+24. Audit and eliminate unnecessary panic conditions (532 identified)
 
 ---
 

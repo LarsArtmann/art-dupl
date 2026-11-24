@@ -138,8 +138,8 @@ The documentation update is sitting in the working tree, uncommitted. The code i
 14. **Extract defense-in-depth logic into gogenfilter library** itself (upstream contribution)
 15. **Annotate old status report** `docs/status/2026-07-24_23-11_full-todo-execution-sprint.md` as SUPERSEDED (describes removed stub flags as "partially done")
 16. **Resolve SDK DefaultOptions threshold split-brain** (SDK=15 vs CLI=5)
-~~17. **Fix SDK TypeAware fallback test** that asserts nothing (`_ = result; _ = err`)~~ done — the asserting-nothing test was replaced; pkg/artdupl/detector_type_aware_test.go covers the graceful-fallback path with real assertions (AGENTS.md SDK TypeAware bullet: covered by 3 unit tests).
-18. **Fix progress test parallelism issue** (`os.Stderr` manipulation without parallel guard)
+    ~~17. **Fix SDK TypeAware fallback test** that asserts nothing (`_ = result; _ = err`)~~ done — the asserting-nothing test was replaced; pkg/artdupl/detector_type_aware_test.go covers the graceful-fallback path with real assertions (AGENTS.md SDK TypeAware bullet: covered by 3 unit tests).
+17. **Fix progress test parallelism issue** (`os.Stderr` manipulation without parallel guard)
 
 ### Low priority (polish)
 

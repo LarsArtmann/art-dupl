@@ -92,7 +92,7 @@
 3. Add a justfile recipe for `update-vendor-hash` to automate hash recomputation
 4. Update AGENTS.md with the private dependency flake pattern documentation
 5. Push changes to remote and verify CI passes
-   ~~6. Extract the dummy go.mod into a Nix `let` binding to reduce maintenance burden~~ not-do — the dummy go.mod stayed as-is
+~~6. Extract the dummy go.mod into a Nix `let` binding to reduce maintenance burden~~ not-do — the dummy go.mod stayed as-is
 6. Add CI check for flake.lock staleness (GitHub Action)
 7. Verify cross-platform builds (at minimum `nix flake check --all-systems`)
 8. Ensure CI has SSH key configured for gogenfilter private repo access
@@ -114,10 +114,10 @@
 19. Add shell completion generation to the Nix build
 20. Benchmark Nix build time vs justfile build time
 21. Investigate Nix caching for CI (cachix or GitHub Actions cache)
-~~22. Add `nix profile install` support documentation~~ decided 2026-11-24 — nix install docs intentionally stay on the flake-run form; README's install section names the module path + `nix run github:LarsArtmann/art-dupl` (the v0.10.0 release-notes template no longer advertises the nonexistent nur-packages pipe; the go-compliance-style `nix profile install` recipe was judged redundant with the flake-run form).
-23. Create a Homebrew formula update script tied to Nix build
-24. Explore generating the dummy go.mod from the actual gogenfilter flake input
-25. Evaluate migrating from justfile to pure Nix task runner (taskforge, etc.)
+    ~~22. Add `nix profile install` support documentation~~ decided 2026-11-24 — nix install docs intentionally stay on the flake-run form; README's install section names the module path + `nix run github:LarsArtmann/art-dupl` (the v0.10.0 release-notes template no longer advertises the nonexistent nur-packages pipe; the go-compliance-style `nix profile install` recipe was judged redundant with the flake-run form).
+22. Create a Homebrew formula update script tied to Nix build
+23. Explore generating the dummy go.mod from the actual gogenfilter flake input
+24. Evaluate migrating from justfile to pure Nix task runner (taskforge, etc.)
 
 ---
 

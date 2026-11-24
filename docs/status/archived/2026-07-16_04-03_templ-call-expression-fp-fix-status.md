@@ -159,33 +159,33 @@ This session continued from the 15-project validation that found 2 false positiv
 
 ### Tier 3: Medium Impact, Low Effort
 
-| #  | Task                                                                        | Impact                     | Effort |
-| -- | --------------------------------------------------------------------------- | -------------------------- | ------ |
-| 21 | Add benchmark comparing semantic vs exact vs structural                     | Perf visibility            | 30 min |
-| 22 | Unify Type/Fingerprint model (remove `DecodeBaseType`)                      | Code clarity               | 2h     |
-| 23 | Remove import cycle workaround in `fingerprint_test.go`                     | Test hygiene               | 15 min |
-| 24 | Add property-based/fuzz test for normalization pipeline                     | Edge case discovery        | 1h     |
-| 25 | Add benchmark for callee name extraction                                    | Perf regression guard      | 10 min |
-| 26 | Add `.art-duplignore` config file support                                   | User flexibility           | 2h     |
-| 27 | Add pattern-aware weighting (not binary actionable/non-actionable)          | Nuance                     | 4h+    |
-| 28 | Add test for `extractCalleeName` with Go method call syntax (`pkg.Func()`)  | Edge case coverage         | 5 min  |
-| 29 | Verify `extractCalleeName` handles templ `@{expr}` syntax correctly         | Edge case                  | 10 min |
-| 30 | Add test coverage for `transformTemplElementExpression` with block children | Verify block-call encoding | 10 min |
+| #  | Task                                                                        | Impact                                                             | Effort |
+| -- | --------------------------------------------------------------------------- | ------------------------------------------------------------------ | ------ |
+| 21 | Add benchmark comparing semantic vs exact vs structural                     | Perf visibility                                                    | 30 min |
+| 22 | Unify Type/Fingerprint model (remove `DecodeBaseType`)                      | Code clarity                                                       | 2h     |
+| 23 | Remove import cycle workaround in `fingerprint_test.go`                     | Test hygiene                                                       | 15 min |
+| 24 | Add property-based/fuzz test for normalization pipeline                     | Edge case discovery                                                | 1h     |
+| 25 | Add benchmark for callee name extraction                                    | Perf regression guard                                              | 10 min |
+| 26 | Add `.art-duplignore` config file support                                   | User flexibility                                                   | 2h     |
+| ~~ | 27                                                                          | Add pattern-aware weighting (not binary actionable/non-actionable) | Nuance |
+| 28 | Add test for `extractCalleeName` with Go method call syntax (`pkg.Func()`)  | Edge case coverage                                                 | 5 min  |
+| 29 | Verify `extractCalleeName` handles templ `@{expr}` syntax correctly         | Edge case                                                          | 10 min |
+| 30 | Add test coverage for `transformTemplElementExpression` with block children | Verify block-call encoding                                         | 10 min |
 
 ### Tier 4: Medium Impact, Medium Effort
 
-| #                                                                                            | Task                                                 | Impact                 | Effort     |
-| -------------------------------------------------------------------------------------------- | ---------------------------------------------------- | ---------------------- | ---------- |
-| 31                                                                                           | Improve error wrapping detection (2-stmt bodies)     | More FP suppression    | 30 min     |
-| 32                                                                                           | Lower builder callback threshold from 3 to 2 calls   | More FP suppression    | 15 min     |
-| 33                                                                                           | Add clone refactoring suggestions in output          | User value             | 1h         |
-| 34                                                                                           | Add SARIF rule metadata for actionability            | CI integration         | 30 min     |
-| 35                                                                                           | Improve data dominance ratio for small clones        | FP reduction           | 30 min     |
-| ~~36~~ **superseded — the HTML report ships with stable anchors and permalinks (AGENTS.md)** | ~~Add HTML report grouping by actionability status~~ | ~~UX~~                 | ~~1h~~     |
-| 37                                                                                           | Cache versioning for serialization format changes    | Cache safety           | 1h         |
-| 38                                                                                           | Add `--since` flag for git-ref-based file filtering  | CI speed               | 2h         |
-| ~~39~~ **struck — website content work; the website ships (website/)**                       | ~~Add website docs for templ semantic mode~~         | ~~User communication~~ | ~~30 min~~ |
-| 40                                                                                           | Add CI/CD integration guide for templ projects       | User onboarding        | 30 min     |
+| #                                                                                            | Task                                                 | Impact                                    | Effort         |
+| -------------------------------------------------------------------------------------------- | ---------------------------------------------------- | ----------------------------------------- | -------------- |
+| 31                                                                                           | Improve error wrapping detection (2-stmt bodies)     | More FP suppression                       | 30 min         |
+| 32                                                                                           | Lower builder callback threshold from 3 to 2 calls   | More FP suppression                       | 15 min         |
+| 33                                                                                           | Add clone refactoring suggestions in output          | User value                                | 1h             |
+| ~~                                                                                           | 34                                                   | Add SARIF rule metadata for actionability | CI integration |
+| 35                                                                                           | Improve data dominance ratio for small clones        | FP reduction                              | 30 min         |
+| ~~36~~ **superseded — the HTML report ships with stable anchors and permalinks (AGENTS.md)** | ~~Add HTML report grouping by actionability status~~ | ~~UX~~                                    | ~~1h~~         |
+| 37                                                                                           | Cache versioning for serialization format changes    | Cache safety                              | 1h             |
+| 38                                                                                           | Add `--since` flag for git-ref-based file filtering  | CI speed                                  | 2h             |
+| ~~39~~ **struck — website content work; the website ships (website/)**                       | ~~Add website docs for templ semantic mode~~         | ~~User communication~~                    | ~~30 min~~     |
+| 40                                                                                           | Add CI/CD integration guide for templ projects       | User onboarding                           | 30 min         |
 
 ### Tier 5: Lower Priority / Future
 

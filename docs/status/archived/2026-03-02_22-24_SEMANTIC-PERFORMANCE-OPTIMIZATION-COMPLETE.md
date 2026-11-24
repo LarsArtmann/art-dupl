@@ -180,8 +180,8 @@ Minor issues:
 
 ~~6. 🔄 Run full benchmark comparison (before/after)~~ done — comparisons live as committed baselines + benchstat workflow (docs/benchmarks/baseline-2026-08-16-v3.txt + _notes.md ±CI analysis; alloc budgets in scripts/alloc-budgets.txt enforced by the alloc-gate flake check).
 7. 🔄 Code review with team
-   ~~8. 🔄 Test on large codebase (e.g., kubernetes, golang/go)~~ done — the corpus validations run on real repos per release (AGENTS.md actionability bullet)
-   ~~9. 🔄 Update README with performance section~~ verified 2026-11-14 — README references performance
+~~8. 🔄 Test on large codebase (e.g., kubernetes, golang/go)~~ done — the corpus validations run on real repos per release (AGENTS.md actionability bullet)
+~~9. 🔄 Update README with performance section~~ verified 2026-11-14 — README references performance
 8. 🔄 Create TokenValue type alias
 
 ### Priority 3: Medium (Next 2 Weeks)

@@ -200,19 +200,19 @@ The previous session had 3 critical bugs. This session fixed all 3. However:
 
 11. **Add `--recommend-threshold` CLI handler test** — test the filesystem walk and output format
 12. **Expand `normalizeExprValue` to handle standalone identifiers** — `Component(user, group)` where only `user`/`group` differ
-~~13. **Add SARIF `rule.tags` metadata** — emit actionability pattern as a SARIF rule tag (not just result property)~~ done — SARIF rule descriptors carry tags ([maintainability duplicate-code design], printer/sarif.go:371) and every result carries the actionability label via the non_actionable_pattern property (printer/sarif.go:248-249); byte-level golden pins the wire.
-14. **Add SARIF rule for each clone type** — separate rules for type-1/2/3 so GitHub Security can filter
-15. **Split `printer/` package** — extract `printer/actionability/` sub-package to reduce file count
-16. **Add `--config-format` flag** — explicit format override (currently auto-detected by extension only)
-17. **Add `--html-out` browser-open test** — verify `openHTMLOutput` calls the right platform command
-18. **Add `RecommendThreshold` negative input test** — `RecommendThreshold(-1)` should probably return the small-codebase threshold
-19. **Consolidate actionability check functions into fewer files** — 8 files for 20 patterns is too many
-20. **Add `version --json` test** — verify structured version output
-21. **Add `--quiet` suppression test** — verify `printBuildingStatus` is skipped when `cfg.Quiet` is true
-22. **Add `--no-color` test** — verify `NO_COLOR=1` env var is set
-23. **Document the YAML config key naming convention** — clarify that keys must match JSON tags (snake_case)
-24. **Add a YAML config example to the `examples/` directory**
-25. **Add `--diff-report --json` output structure test** — verify JSON diff report schema
+    ~~13. **Add SARIF `rule.tags` metadata** — emit actionability pattern as a SARIF rule tag (not just result property)~~ done — SARIF rule descriptors carry tags ([maintainability duplicate-code design], printer/sarif.go:371) and every result carries the actionability label via the non_actionable_pattern property (printer/sarif.go:248-249); byte-level golden pins the wire.
+13. **Add SARIF rule for each clone type** — separate rules for type-1/2/3 so GitHub Security can filter
+14. **Split `printer/` package** — extract `printer/actionability/` sub-package to reduce file count
+15. **Add `--config-format` flag** — explicit format override (currently auto-detected by extension only)
+16. **Add `--html-out` browser-open test** — verify `openHTMLOutput` calls the right platform command
+17. **Add `RecommendThreshold` negative input test** — `RecommendThreshold(-1)` should probably return the small-codebase threshold
+18. **Consolidate actionability check functions into fewer files** — 8 files for 20 patterns is too many
+19. **Add `version --json` test** — verify structured version output
+20. **Add `--quiet` suppression test** — verify `printBuildingStatus` is skipped when `cfg.Quiet` is true
+21. **Add `--no-color` test** — verify `NO_COLOR=1` env var is set
+22. **Document the YAML config key naming convention** — clarify that keys must match JSON tags (snake_case)
+23. **Add a YAML config example to the `examples/` directory**
+24. **Add `--diff-report --json` output structure test** — verify JSON diff report schema
 
 ### MEDIUM Priority — Code Health
 

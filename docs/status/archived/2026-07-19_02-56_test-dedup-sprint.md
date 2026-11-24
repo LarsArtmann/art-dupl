@@ -137,9 +137,9 @@ Honest self-critique on this session:
 2. Run `go test -race ./printer/... ./syntax/golang/... ./syntax/templ/...` to verify no goroutine issues
 3. Update `AGENTS.md` with the new `cloneGroupMetrics` shared-var pattern under "Critical Conventions"
 4. Add a direct unit test for `SortCloneGroups` (covers the production path that uses the new shared var)
-~~5. Generalize `assertCanonicalized` to optionally check the canonical name (`v0`, `v1`, ...) — some tests could use the stronger assertion~~ done — the helper already accepts the expected canonical name (`assertCanonicalized(t, n, "v")`, syntax/golang/normalizer_test.go:41): the optional-check ask is how it works.
-6. Reconsider `parseTwoComponentRenderers` signature style (drop named returns)
-7. Consider moving `assignWithErrorCheckSeq` to a shared `printer/testfixtures_test.go` file if the package grows more actionability tests
+   ~~5. Generalize `assertCanonicalized` to optionally check the canonical name (`v0`, `v1`, ...) — some tests could use the stronger assertion~~ done — the helper already accepts the expected canonical name (`assertCanonicalized(t, n, "v")`, syntax/golang/normalizer_test.go:41): the optional-check ask is how it works.
+5. Reconsider `parseTwoComponentRenderers` signature style (drop named returns)
+6. Consider moving `assignWithErrorCheckSeq` to a shared `printer/testfixtures_test.go` file if the package grows more actionability tests
 
 ### Broader dedup work (in-scope for the skill)
 
@@ -150,12 +150,12 @@ Honest self-critique on this session:
 12. Run `art-dupl --include-generated` to audit generated code quality
 13. Run `art-dupl --vendor` to check vendored code consistency
 14. Audit `cmd/` package for CLI flag wiring duplication
-~~15. Audit `printer/` output formatters (text/json/html/sarif/plumbing/stats) for shared boilerplate~~ done — the audit's outcome shipped: sortGroupsByCriteria/sort_unified.go unified the 4-criteria switch, toJSONClone became the single conversion point, everySequenceMatch was extracted (AGENTS.md conventions bullets).
-16. Audit `syntax/golang/` and `syntax/templ/` for parallel transformation logic that could share code
-17. Audit `job/` goroutine patterns (parse, buildtree, incremental) for channel-send duplication
-~~18. Audit `errors/` for the 6 typed error types — likely share boilerplate~~ done — errors/ consolidated to the single DuplError struct + 7 ErrorType categories (AGENTS.md errors bullet); the boilerplate class the audit targeted is gone.
-19. Audit `cache/` vs `job/incremental.go` for duplicated content-hash logic
-20. Check if `GroupMetrics[[]domain.ProcessedClone]` in the text printer could use a shared var pattern like the one I introduced
+    ~~15. Audit `printer/` output formatters (text/json/html/sarif/plumbing/stats) for shared boilerplate~~ done — the audit's outcome shipped: sortGroupsByCriteria/sort_unified.go unified the 4-criteria switch, toJSONClone became the single conversion point, everySequenceMatch was extracted (AGENTS.md conventions bullets).
+15. Audit `syntax/golang/` and `syntax/templ/` for parallel transformation logic that could share code
+16. Audit `job/` goroutine patterns (parse, buildtree, incremental) for channel-send duplication
+    ~~18. Audit `errors/` for the 6 typed error types — likely share boilerplate~~ done — errors/ consolidated to the single DuplError struct + 7 ErrorType categories (AGENTS.md errors bullet); the boilerplate class the audit targeted is gone.
+17. Audit `cache/` vs `job/incremental.go` for duplicated content-hash logic
+18. Check if `GroupMetrics[[]domain.ProcessedClone]` in the text printer could use a shared var pattern like the one I introduced
 
 ### Product / mechanism improvements
 
@@ -196,11 +196,11 @@ Honest self-critique on this session:
 
 44. Verify the 9 test sites using `cloneGroupMetrics` actually exercise the same fields (visual diff each call site)
 45. Add a test that asserts `cloneGroupMetrics` is used by `SortCloneGroups` (refactor-protection)
-~~46. Verify `assignWithErrorCheckSeq()` returns a fresh slice each call (no shared mutable state) — code review only, already correct~~ verified 2026-11-24 — the helper returns a fresh composite literal per call (printer/actionability/actionability_boilerplate_test.go), no shared mutable state.
-47. Benchmark that `cloneGroupMetrics` shared var adds zero overhead vs inline literal (should be identical, but verify)
-48. Re-run art-dupl on the 5 changed files specifically to confirm no new local duplication introduced
-49. Run `git diff` review with a critical eye for accidental whitespace changes
-50. Consider whether `sortGroupsByCriteria` itself now deserves to take `cloneGroupMetrics` as a default (varargs pattern) — probably no, but think about it
+    ~~46. Verify `assignWithErrorCheckSeq()` returns a fresh slice each call (no shared mutable state) — code review only, already correct~~ verified 2026-11-24 — the helper returns a fresh composite literal per call (printer/actionability/actionability_boilerplate_test.go), no shared mutable state.
+46. Benchmark that `cloneGroupMetrics` shared var adds zero overhead vs inline literal (should be identical, but verify)
+47. Re-run art-dupl on the 5 changed files specifically to confirm no new local duplication introduced
+48. Run `git diff` review with a critical eye for accidental whitespace changes
+49. Consider whether `sortGroupsByCriteria` itself now deserves to take `cloneGroupMetrics` as a default (varargs pattern) — probably no, but think about it
 
 ---
 

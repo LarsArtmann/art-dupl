@@ -152,16 +152,16 @@ after = `v0.9.1-0.20261106063509-1ce6a7b3f64e`.
 37. Add the identity guard to any future baseline consumer (LSP/diff-report) via a shared helper — currently one call site.
 38. Re-run the monthly self-scan cadence and record decisions.
 39. Consider exporting the algorithm revision in `version --json` (useful for CI pin debugging).
-~~40. Review whether `check` should print the analyzer identity on the _green_ path for auditability.~~ decided 2026-11-06 — green path stays quiet by design (a matching identity must proceed normally, pinned by TestCheckBaselineVersionMustMatch*); only mismatches announce, and --baseline-version-must-match is the strict opt-in (ADR-0029).
-41. Add a TODO entry for `<pre>`/whitespace-sensitive text tolerance and measure real cases.
-42. Check `bdd/discordsync_regression_test.go` expectations against the new DiscordSync counts (suite green, but the fixture corpus may be synthetic).
-43. Re-verify `--show-suppressed` surfaces text-divergent groups correctly (they no longer exist as groups, so nothing to show — confirm no regression in the suppression accounting).
-44. Confirm the `trivial-fragment` label still fires for identical single-element runs after text hashing.
-45. Document the "0 groups" fixture (issue #14 repro) somewhere durable — currently only in the BDD spec.
-46. Clean up `docs/drafts/2026-11-06_issue-closures.md` (archive under docs/drafts/README or delete).
-47. Add a CHANGELOG bullet for the split-arithmetic fix (currently only the feature bullet).
-48. Re-check `.buildflow.yml` skip list — `golangci-lint-auto-configure` is still skipped; decide if it can be restored now that lint is green.
-49. Re-read `HOW_TO_USE.md` check section against the actual `--help` output for drift.
+    ~~40. Review whether `check` should print the analyzer identity on the _green_ path for auditability.~~ decided 2026-11-06 — green path stays quiet by design (a matching identity must proceed normally, pinned by TestCheckBaselineVersionMustMatch*); only mismatches announce, and --baseline-version-must-match is the strict opt-in (ADR-0029).
+40. Add a TODO entry for `<pre>`/whitespace-sensitive text tolerance and measure real cases.
+41. Check `bdd/discordsync_regression_test.go` expectations against the new DiscordSync counts (suite green, but the fixture corpus may be synthetic).
+42. Re-verify `--show-suppressed` surfaces text-divergent groups correctly (they no longer exist as groups, so nothing to show — confirm no regression in the suppression accounting).
+43. Confirm the `trivial-fragment` label still fires for identical single-element runs after text hashing.
+44. Document the "0 groups" fixture (issue #14 repro) somewhere durable — currently only in the BDD spec.
+45. Clean up `docs/drafts/2026-11-06_issue-closures.md` (archive under docs/drafts/README or delete).
+46. Add a CHANGELOG bullet for the split-arithmetic fix (currently only the feature bullet).
+47. Re-check `.buildflow.yml` skip list — `golangci-lint-auto-configure` is still skipped; decide if it can be restored now that lint is green.
+48. Re-read `HOW_TO_USE.md` check section against the actual `--help` output for drift.
 
 ---
 

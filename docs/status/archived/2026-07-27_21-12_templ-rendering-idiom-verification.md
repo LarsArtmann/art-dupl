@@ -105,8 +105,8 @@ The unit-level proof is solid (real AST → real CloneNode → pattern matches),
 8. Rename the pattern from `templ-rendering-idiom` to `empty-state-rendering` or `len-zero-else-range` (more honest about what it matches)
 9. Extract `cloneNodeFromSyntax` to `domain` or `internal/testutil` to avoid duplication between test and production code
 10. Check if any OTHER actionability patterns have the same `.templ` scope gap (they all use `golang.*` node types)
-~~11. Audit all 22 patterns for whether they work on templ-detected clones (likely many don't, since templ uses different node types)~~ done — the pattern set grew to the 43-label canon (38 denylist + 1 shape + 4 property, count-gated) with templ-specific coverage proven in production: templ-rendering-idiom, templ-children-idiom (issue #7), signature-fragment (2026-11-22 webphone), plus the GoSnippet classification routing; corpus re-validations ran 2026-09/10/11 (docs/ACTIONABILITY_PATTERNS.md).
-12. Add a test that asserts `AllActionabilityPatterns()` length matches the priority-order list in `docs/ACTIONABILITY_PATTERNS.md` (docs/code sync)
+    ~~11. Audit all 22 patterns for whether they work on templ-detected clones (likely many don't, since templ uses different node types)~~ done — the pattern set grew to the 43-label canon (38 denylist + 1 shape + 4 property, count-gated) with templ-specific coverage proven in production: templ-rendering-idiom, templ-children-idiom (issue #7), signature-fragment (2026-11-22 webphone), plus the GoSnippet classification routing; corpus re-validations ran 2026-09/10/11 (docs/ACTIONABILITY_PATTERNS.md).
+11. Add a test that asserts `AllActionabilityPatterns()` length matches the priority-order list in `docs/ACTIONABILITY_PATTERNS.md` (docs/code sync)
 
 ### Low Priority (Polish)
 

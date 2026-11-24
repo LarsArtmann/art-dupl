@@ -177,11 +177,11 @@
 ### Detection
 
 39. Type-aware detection: support `--incremental` mode (currently incompatible)
-~~40. Type-aware detection: cache `go/packages` results between runs~~ decided 2026-11-24 — long-term performance item, lives in ROADMAP Performance ("Caching for type-checking results"); no near-term dispatch (the incremental AST cache already carries mode+type-aware key isolation).
-41. Semantic mode: encode `SelectStmt` column names (prevent `SELECT a FROM t` matching `SELECT b FROM t`)
-42. Semantic mode: encode `RangeClause` context (table names are API surface)
-43. Add detection for Go generics instantiation patterns (`Foo[int]` vs `Foo[string]`)
-44. Structural mode: add option to ignore comments (currently always included)
+    ~~40. Type-aware detection: cache `go/packages` results between runs~~ decided 2026-11-24 — long-term performance item, lives in ROADMAP Performance ("Caching for type-checking results"); no near-term dispatch (the incremental AST cache already carries mode+type-aware key isolation).
+40. Semantic mode: encode `SelectStmt` column names (prevent `SELECT a FROM t` matching `SELECT b FROM t`)
+41. Semantic mode: encode `RangeClause` context (table names are API surface)
+42. Add detection for Go generics instantiation patterns (`Foo[int]` vs `Foo[string]`)
+43. Structural mode: add option to ignore comments (currently always included)
 
 ### Infrastructure
 

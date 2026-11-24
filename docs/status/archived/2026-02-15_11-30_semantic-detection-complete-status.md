@@ -105,12 +105,12 @@ The semantic detection feature is working correctly. No critical issues.
 
 ### Medium Impact / Low Effort
 
-| #  | Task                                                       | Effort | Impact | Category     |
-| -- | ---------------------------------------------------------- | ------ | ------ | ------------ |
-| 12 | Convert `SemanticHashEnabled` from global to struct field  | Low    | Low    | Architecture |
-| 13 | Add domain types to `domain/options.go` Paths field        | Low    | Medium | Type Safety  |
-| 14 | Address TODO at `syntax/syntax.go:110-115` for type safety | Low    | Medium | Type Safety  |
-| 15 | Add BasicLit semantic encoding (if needed)                 | Medium | Low    | Feature      |
+| #  | Task                                                       | Effort                                                    | Impact | Category    |
+| -- | ---------------------------------------------------------- | --------------------------------------------------------- | ------ | ----------- |
+| ~~ | 12                                                         | Convert `SemanticHashEnabled` from global to struct field | Low    | Low         |
+| 13 | Add domain types to `domain/options.go` Paths field        | Low                                                       | Medium | Type Safety |
+| 14 | Address TODO at `syntax/syntax.go:110-115` for type safety | Low                                                       | Medium | Type Safety |
+| 15 | Add BasicLit semantic encoding (if needed)                 | Medium                                                    | Low    | Feature     |
 
 ### Lower Priority / Future Work
 

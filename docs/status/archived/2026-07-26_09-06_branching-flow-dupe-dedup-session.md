@@ -108,9 +108,9 @@ Ordered by impact (Pareto-style: highest leverage first). Items 1-10 are most li
 20. Add a unit test for `NewDiffReport` that doesn't depend on Ginkgo (currently only BDD-tested). **→ BDD coverage accepted for diff reports**
 21. Profile `branching-flow dupe` runtime on the codebase — see if any package is a hotspot. **→ external tool profiling**
 22. Sweep `internal/` for similar type-duplication opportunities. **→ no internal/ duplication opportunities recorded**
-~~23. Add `docs/feedback/<date>_branching_flow_dupe_findings.md` to record this session's observations. **→ session observations live in docs/status (this report)**~~ superseded — the follow-up proved branching-flow's dupe findings come from their OWN composition analyzer, not art-dupl (TODO_LIST T17.3 verdict, pinned worktree dbdeb0f1); the lessons live in docs/research/2026-10-11_branching-flow-generics-lessons.html + the bdd/discordsync-style regression corpus, so the feedback doc would document a non-interaction.
-24. Triage the `branching-flow all` findings once #4 is run — likely several actionable items. **→ external tool triage**
-25. ~~Run art-dupl against itself (dogfooding) to confirm `ResolvedClone` change doesn't surface as a new clone.~~ done — self-analysis gate in CI
+    ~~23. Add `docs/feedback/<date>_branching_flow_dupe_findings.md` to record this session's observations. **→ session observations live in docs/status (this report)**~~ superseded — the follow-up proved branching-flow's dupe findings come from their OWN composition analyzer, not art-dupl (TODO_LIST T17.3 verdict, pinned worktree dbdeb0f1); the lessons live in docs/research/2026-10-11_branching-flow-generics-lessons.html + the bdd/discordsync-style regression corpus, so the feedback doc would document a non-interaction.
+23. Triage the `branching-flow all` findings once #4 is run — likely several actionable items. **→ external tool triage**
+24. ~~Run art-dupl against itself (dogfooding) to confirm `ResolvedClone` change doesn't surface as a new clone.~~ done — self-analysis gate in CI
 
 ### Tier 3 — Parking lot / nice-to-haves
 
