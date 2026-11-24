@@ -170,7 +170,12 @@ nfpms:
         Bugs: https://github.com/LarsArtmann/art-dupl/issues
 nix:
   - name: art-dupl
-    skip_upload: auto
+    # skip_upload: true, not auto: the target repo LarsArtmann/nur-packages does
+    # not exist (404), and GoReleaser v2.20 hard-fails the whole release on the
+    # default-branch probe under skip_upload: auto — the v0.10.0 run published
+    # every asset, then died on this pipe. Flip to skip_upload: auto only when
+    # the repo exists (same era as the brews/scoops "no token yet" skips).
+    skip_upload: true
     repository:
       owner: LarsArtmann
       name: nur-packages
@@ -215,7 +220,6 @@ release:
 
     **Nix:**
     ```bash
-    nix run github:LarsArtmann/nur-packages#art-dupl
     nix run github:LarsArtmann/art-dupl
     ```
 
