@@ -135,15 +135,25 @@ else
 	say "SKIP: pass --version vX.Y.Z to run the tag-collision check"
 fi
 
-# 12. CI green on default branch
+# 12. CI green on default branch. Scoped to the CI workflow (ci.yml): other
+# workflows' runs masked a red CI run once — 2026-11-24, run 45345801153
+# finished AFTER faster siblings, and the unfiltered 5-run window read green.
+# The newest run must also be completed/success: an in-flight run has no
+# failure conclusion yet, which the red-count alone would wave through.
 if [ "$SKIP_CI" -eq 1 ]; then
 	say "SKIP: CI gate overridden by --skip-ci"
 elif command -v gh >/dev/null 2>&1; then
 	default_branch=$(gh repo view --json defaultBranchRef --jq .defaultBranchRef.name)
-	red=$(gh run list --branch "$default_branch" --limit 5 --json conclusion \
+	red=$(gh run list --branch "$default_branch" --workflow ci.yml --limit 5 --json conclusion \
 		--jq '[.[] | select(.conclusion == "failure" or .conclusion == "cancelled")] | length')
-	[ "$red" -eq 0 ] || fail "$red of the last 5 runs on $default_branch are red — green CI is a release prerequisite"
-	say "CI green on $default_branch (last 5 runs)"
+	[ "$red" -eq 0 ] || fail "$red of the last 5 CI runs on $default_branch are red — green CI is a release prerequisite"
+	newest_status=$(gh run list --branch "$default_branch" --workflow ci.yml --limit 1 --json status \
+		--jq '.[0].status')
+	newest_conclusion=$(gh run list --branch "$default_branch" --workflow ci.yml --limit 1 --json conclusion \
+		--jq '.[0].conclusion')
+	{ [ "$newest_status" = "completed" ] && [ "$newest_conclusion" = "success" ]; } ||
+		fail "newest CI run on $default_branch is $newest_status/$newest_conclusion, not completed/success — wait for green CI"
+	say "CI green on $default_branch (last 5 CI runs, newest completed/success)"
 else
 	fail "gh CLI not available — cannot verify CI state (use --skip-ci to override consciously)"
 fi

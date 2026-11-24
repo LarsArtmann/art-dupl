@@ -665,7 +665,9 @@ func TestCrawlPrunesGitignoredDirs(t *testing.T) {
 		),
 	)
 
-	want := []string{filepath.Join(tmpDir, "keep.go")}
+	// The crawl emits ToSlash-normalized paths on every OS (the windows
+	// crawl-path invariant), so the expectation is normalized too.
+	want := []string{filepath.ToSlash(filepath.Join(tmpDir, "keep.go"))}
 
 	if len(got) != len(want) || got[0] != want[0] {
 		t.Errorf("crawl emitted %v, want exactly %v (ignored subtrees must be pruned)", got, want)
