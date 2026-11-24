@@ -171,7 +171,7 @@ I built `cmd/progress.go` with 73 lines of channel-wrapping logic and zero dedic
 12. Fix the 7 `exhaustruct` warnings in `cmd/run_analysis.go`
     ~~14. Profile-guided optimization run~~ not-do — no PGO run landed
 13. Memory usage test on 10000+ files
-14. `--help` text audit
+~~14. `--help` text audit~~ done — help text is Fang-rendered and flag docs are count-gated (docs-health CLI-flag count: 57 user-visible of 65 registered; HOW_TO_USE.md documents every user-facing flag); audits ran across the 2026-09/10 doc passes.
 15. YAML config file support
 16. Shell completion e2e test
 17. SDK: expose `ExitCodeForError` in `pkg/artdupl`

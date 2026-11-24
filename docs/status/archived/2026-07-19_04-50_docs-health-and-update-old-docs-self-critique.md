@@ -264,8 +264,8 @@ A proper audit would either parse the markdown, extract every `art-dupl ...` inv
 16. Verify `docs/ACTIONABILITY_PATTERNS.md` (referenced from AGENTS.md — must be current)
     ~~18. Verify `docs/SMART_FILTERING.md` (likely current)~~ done — docs/SMART_FILTERING.md exists (verified 2026-11-14)
     ~~19. Verify `docs/TROUBLESHOOTING.md` (likely current)~~ done — docs/TROUBLESHOOTING.md exists (verified 2026-11-14)
-17. Audit `docs/api/` contents (auto-generated? hand-written? current?)
-18. Audit `docs/architecture-understanding/` (may contain stale architecture)
+~~17. Audit `docs/api/` contents (auto-generated? hand-written? current?)~~ verified 2026-11-24 — docs/api holds API.md (hand-maintained index) + api-go.txt (godoc dump) + README.md; current against the SDK surface (Detector, Options, DefaultThreshold mirror).
+~~18. Audit `docs/architecture-understanding/` (may contain stale architecture)~~ done 2026-11-24 — the 06-15/06-20 generations were archived with SUPERSEDED banners in the 2026-11-24 06-44 docs-health sweep (docs/architecture-understanding/archived/); the newest 06-23 generation stays live.
 19. Audit `docs/modularization/` (modularization proposals — historical?)
 20. Audit `docs/planning/` (likely all historical — confirm)
 21. Audit `docs/quality/` (quality reports — historical?)

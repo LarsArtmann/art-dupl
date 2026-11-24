@@ -332,7 +332,7 @@ theirs; their §4 sequence is the path when you give the go.
 26. gogenfilter sweep: erraudit, auto-deduplicate, branching-flow (build failures).
 27. gogenfilter sweep: Cyberdom, overview, project-discovery-daemon (test failures).
 28. gogenfilter sweep: BuildFlow itself (its own red baseline).
-29. Fleet audit #14: json/v2 imports across the other LarsArtmann repos on Go 1.27.
+~~29. Fleet audit #14: json/v2 imports across the other LarsArtmann repos on Go 1.27.~~ duplicate 2026-11-24 — tracked by the open TODO_LIST fleet-audit row ("Check every OTHER LarsArtmann repo on Go 1.27 for the breakage class"); in-repo slice complete since 2026-10-11.
 30. Fleet audit #15: filepath.Separator/colon-parsing sweep across the other repos.
 31. Branch protection + failure notifications (owner action).
 32. Windows `TestExitCodes_Process` root-cause experiment on a windows runner.

@@ -229,7 +229,7 @@ I fixed it for the 3rd time. The root cause is still unknown. The daemon reforma
 20. **Templ Phase 3: expression normalization** — `{ id.String() }` vs `{ groupID.String() }`
 21. **Semantic mode: encode `SelectStmt` column names** — prevent `SELECT a FROM t` matching `SELECT b FROM t`
 22. **Type-aware detection: support `--incremental` mode** — currently incompatible
-23. **Type-aware detection: cache `go/packages` results** — between runs
+~~23. **Type-aware detection: cache `go/packages` results** — between runs~~ duplicate 2026-11-24 — same ask as the 2026-07-25_07-47 item; lives in ROADMAP Performance ("Caching for type-checking results").
 24. **Structural mode: option to ignore comments** — currently always included
 25. **Generics instantiation detection** — `Foo[int]` vs `Foo[string]`
 

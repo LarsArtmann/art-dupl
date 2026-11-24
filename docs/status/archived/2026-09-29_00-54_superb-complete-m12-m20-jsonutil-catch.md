@@ -89,7 +89,7 @@
 22. Provider test-gap bundle (TODO_LIST: equivalence test, GroupID pin, GOOS=windows live crawl, ctx-cancellation…).
 23. HTML goldens: one real clone group (the lone M07 residue; TODO_LIST).
 24. `--explain` structured JSON explanation object.
-25. SARIF rule metadata for actionability patterns.
+~~25. SARIF rule metadata for actionability patterns.~~ duplicate 2026-11-24 — shipped: non_actionable_pattern result property (printer/sarif.go:248) + rule tags (printer/sarif.go:371), golden-pinned.
 26. YAML vs JSON config: YAML shipped — decide whether the Pareto Tier-1 item is closed or needs parity work.
 ~~27. CopyToBuffer silent `io.Copy` error drop.~~ fixed — the done channel carries the io.Copy error (internal/testutil/bdd_helpers.go:345)
 28. Rich-text preview E2E test.
@@ -111,7 +111,7 @@
 44. SDK_DESIGN.md refresh (ADR-0025 + provider diagram) — struck-open twice; still open.
 45. CHANGELOG ADR cross-reference verification (04-50 e6, left bare twice).
 46. Linter-count Pareto review (100+ linters — 07-22 f20).
-47. CI workflow architecture doc in AGENTS (07-22 f22).
+~~47. CI workflow architecture doc in AGENTS (07-22 f22).~~ done — AGENTS.md carries the CI Architecture section with the nine-workflow gate table incl. the 2026-11-23 Fetchability row.
 48. LSP-hint cleanup + stale gopls cache hygiene note (recurring).
 49. `docs/reviews/archived/` renders: delete or refresh after the next major release.
 50. Next docs-health pass: 2026-10-28 (cadence recorded in AGENTS) — harvest from this report's f-section first.

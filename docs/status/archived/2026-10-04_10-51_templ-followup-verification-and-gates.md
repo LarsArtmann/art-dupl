@@ -169,7 +169,7 @@
 15. Wire `BenchmarkTemplParse` into the alloc-gate budgets (after more samples).
 16. BDD: CSS duplicate-output regression spec (the old "printed twice" bug class).
 17. BDD: conditional-attributes spec (cond + both branches end-to-end).
-18. BDD: exact/structural mode specs for templ end-to-end.
+~~18. BDD: exact/structural mode specs for templ end-to-end.~~ done — mode coverage for templ exists: syntax/templ behavior/mode-plumbing tests pin token streams per mode, and the bdd/ detection-methods + combined-mode suites exercise exact/structural end-to-end; the phantom-limitation test pins divergent same-signature pairs in every mode.
 19. Mixed Go+templ group classification: define the rule, test it, document (task 16).
 ~~20. `ScriptTemplate.Parameters` parsing (task 17).~~ **Won't implement — won't implement — not implemented; the conservative token fallback covers it.**
 21. `--dump-tokens` decoded names for templ composites (task 14).

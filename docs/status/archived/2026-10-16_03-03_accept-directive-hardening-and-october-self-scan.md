@@ -176,7 +176,7 @@ Everything below is from this session's run only.
 12. Investigate the detected-group drift (1256→1260) for unexplained
     families (may be my directive comment lines shifting line numbers →
     clone ranges; confirm benign).
-13. Extract or formalize the shared `.go`-filter helper (pkg/artdupl
+~~13. Extract or formalize the shared `.go`-filter helper (pkg/artdupl~~ not-do 2026-11-24 — deliberate: the provider crawl mirrors the CLI defaults (only .go/.templ, skip dot-dirs/vendor/node_modules/examples, gogenfilter FilterAll) as a documented mirror kept honest by the crawl-equivalence tests; a shared helper would couple cmd internals into pkg/ against the arch-lint component boundaries.
     combined.go + detector_pipeline.go mirror) if the mirror grows a third
     copy.
 14. Per-module type-load breakdown in `--timing` (nearest-go.mod grouping

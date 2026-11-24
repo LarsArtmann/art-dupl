@@ -204,8 +204,8 @@ The regression tests (`TestSerializePreservesIsAlias`, `TestCheckParameterizabil
    ~~10. Write `TestControlFlowCloneWithDifferentLiteralsActionable` — full pipeline test: parse `processUser`/`processProduct` pattern, verify clones ARE found (not over-suppressed)~~ not-do — the named test never landed
 9. Audit all other pattern matchers that use `n.IsAlias` — verify they now work correctly
 10. Audit all other consumers of `collectStringLiterals` — verify they now receive actual values
-11. Audit ALL `Node` struct fields against `serial()` copy — find any other missing fields
-12. Audit ALL `Node` struct fields against `Clone()` copy — find any other missing fields
+~~11. Audit ALL `Node` struct fields against `serial()` copy — find any other missing fields~~ done — TestSerializePreservesAllFields (syntax/syntax_test.go) checks every field survives serialization on both paths; the arena serializer's field-preservation hazard is documented in AGENTS.md with the IsAlias incident as the canary.
+~~12. Audit ALL `Node` struct fields against `Clone()` copy — find any other missing fields~~ done — cache.TestFileCache_PreservesNodeClassificationFields round-trips every classification field through the gob path (canary-verified by removing GoSnippet); the LRU/incremental paths deep-clone via syntax.CloneNodes.
 
 #### Documentation
 

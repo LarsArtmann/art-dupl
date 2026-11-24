@@ -196,7 +196,7 @@ The closest thing to a problem: the first test iteration checked `result` (type 
 16. Benchmark `LoadTypeAwareData` memory usage on large file sets
 17. Consider streaming type loading (load per-package instead of per-file)
 18. Add progress reporting during type loading (can be slow for 1000+ files)
-19. Surface go/packages errors to user (missing imports, type errors)
+~~19. Surface go/packages errors to user (missing imports, type errors)~~ done — load failures log loudly ("type-aware mode failed, falling back to syntax-only", cmd/type_aware.go:91) and ctx cancellation aborts with exit 130 instead of degrading (2026-10-24 type-load cancellation fix, AGENTS.md context-propagation bullet).
 20. Consider type-aware for `BasicLit` (distinguish `int` literal from `float64` literal)
 21. Consider encoding function signatures (not just variable types)
 22. Consider type-aware for `CallExpr` callee resolution
@@ -215,7 +215,7 @@ The closest thing to a problem: the first test iteration checked `result` (type 
 32. Add caching for type-checking results (similar to AST cache)
 33. Consider incremental type checking (only re-check changed packages)
 34. Add `--type-aware-timeout` flag for large codebases
-35. Profile go/packages memory allocation patterns
+~~35. Profile go/packages memory allocation patterns~~ decided 2026-11-24 — long-term profiling belongs in ROADMAP Performance (alongside incremental type checking / type-checking-result caching); no near-term dispatch.
 36. Consider using `go/packages` with `NeedDeps` for cross-package type resolution
 37. Document type-aware mode in `README.md`
 38. Add type-aware to the `version` subcommand feature list

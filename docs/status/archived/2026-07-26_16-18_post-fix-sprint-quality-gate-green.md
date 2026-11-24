@@ -200,7 +200,7 @@ The previous session had 3 critical bugs. This session fixed all 3. However:
 
 11. **Add `--recommend-threshold` CLI handler test** — test the filesystem walk and output format
 12. **Expand `normalizeExprValue` to handle standalone identifiers** — `Component(user, group)` where only `user`/`group` differ
-13. **Add SARIF `rule.tags` metadata** — emit actionability pattern as a SARIF rule tag (not just result property)
+~~13. **Add SARIF `rule.tags` metadata** — emit actionability pattern as a SARIF rule tag (not just result property)~~ done — SARIF rule descriptors carry tags ([maintainability duplicate-code design], printer/sarif.go:371) and every result carries the actionability label via the non_actionable_pattern property (printer/sarif.go:248-249); byte-level golden pins the wire.
 14. **Add SARIF rule for each clone type** — separate rules for type-1/2/3 so GitHub Security can filter
 15. **Split `printer/` package** — extract `printer/actionability/` sub-package to reduce file count
 16. **Add `--config-format` flag** — explicit format override (currently auto-detected by extension only)

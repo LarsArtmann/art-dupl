@@ -210,7 +210,7 @@ BenchmarkHashSeqLarge-8       100K ops/sec   12 µs/op    16 B/op    1 alloc/op
 
 ### Short-Term (Next 2 Weeks)
 
-5. **Implement --profile flag**
+~~5. **Implement --profile flag**~~ done — `--profile` exists (cmd/flags.go:23, hidden flag), counted in the docs-health CLI-flag count gate (57 user-visible of 65 registered).
    - Add pprof integration
    - Generate CPU/memory profiles
 
@@ -253,7 +253,7 @@ BenchmarkHashSeqLarge-8       100K ops/sec   12 µs/op    16 B/op    1 alloc/op
 
 ### 🟠 HIGH (This Week)
 
-5. Implement --profile flag functionality
+~~5. Implement --profile flag functionality~~ done — `--profile` exists (cmd/flags.go:23, hidden flag), counted in the docs-health CLI-flag count gate (57 user-visible of 65 registered).
 6. Implement --timeout flag functionality
 7. Add concurrent file processing
 8. Improve test coverage to 80%+

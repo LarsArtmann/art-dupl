@@ -194,7 +194,7 @@
 
 14. Fix JSON output format inconsistency (detection_method vs detection_methods)
 15. Fix TotalDuplicateLines double-counting bug
-16. Implement proper CSV output with encoding/csv
+~~16. Implement proper CSV output with encoding/csv~~ done — CSV output ships via encoding/csv in printer/stats/stats_formatter.go; the output-format canon (text, HTML, JSON, CSV, plumbing, SARIF, simple-json) is documented in docs/DOMAIN_LANGUAGE.md and count-gated.
 17. Optimize memory layouts for SIMD
 18. Implement string interning
 

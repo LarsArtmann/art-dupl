@@ -1319,7 +1319,7 @@ func processData(data string) error {
 30. **Add CI/CD integration tests** - Real-world usage scenarios (60 min)
 31. **Review and update AGENTS.md** - Document new patterns and conventions (30 min)
 32. **Create test development guide** - How to write new tests (45 min)
-33. **Add integration test coverage** - End-to-end workflows (60 min)
+~~33. **Add integration test coverage** - End-to-end workflows (60 min)~~ done — the bdd/ Ginkgo suite IS the end-to-end layer (372+ specs across detection, incremental, filters, accept directives, SARIF integration incl. bdd/sarif_gofinding_integration_test.go); suite green in CI daily.
 34. **Implement test fixture system** - Shared test data management (90 min)
 35. **Add test cleanup verification** - Ensure no temp files left behind (30 min)
 

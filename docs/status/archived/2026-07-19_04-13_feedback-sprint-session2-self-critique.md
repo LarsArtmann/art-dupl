@@ -237,7 +237,7 @@ I tested default text mode (preview appears) and `--plumbing` (no preview). I di
 20. HTML `--out` flag (write directly to file instead of stdout redirect)
 21. HTML anchor IDs (`id="clone-N"`) for deep-linking
 22. `--recommend-threshold` heuristic
-23. Honor `.gitignore` in file crawl
+~~23. Honor `.gitignore` in file crawl~~ done — internal/gitignore ships LoadGitignore (CLI walk-up) + LoadTree (provider nested discovery), wired into CrawlOptions and dir-level pruning (handleWalkEntry SkipDir, 2026-10-24); --include-ignored overrides.
 24. `--diff-report` mode (overlaps with existing baseline/check)
 
 ### Investigation items from the evaluation

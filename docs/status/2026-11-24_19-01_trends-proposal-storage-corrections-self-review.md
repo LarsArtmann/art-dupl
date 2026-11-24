@@ -131,7 +131,7 @@ and skill references, NOT from reading its source.
 **Verification debts (cheap, before trusting cross-repo rows):**
 6. Verify overview cites firsthand (enrichment_engine.go:44-81, compliance_source.go:18-44, hotspot_source.go:37,148-184)
 7. Verify go-compliance cites firsthand (cache.go:34-46, queries.go:60, fold.go:113, reporter.go:62, v1.go:19-32)
-8. Verify remaining BuildFlow cites (history_cmd.go, compliance_1.go:83-97, timings_setup.go:20)
+~~8. Verify remaining BuildFlow cites (history_cmd.go, compliance_1.go:83-97, timings_setup.go:20)~~ decided 2026-11-24 — verification debts harvested into the open TODO_LIST row "Verify the duplication-trends proposal's cross-repo cites" (with the 11-27 session's debts 6-15).
 9. Query the real DB once: step_outputs shape for step='art-dupl', one repo, 90-day row count
 10. Cached-run behavior: does a cache hit re-record the count?
 11. Label appendix rows firsthand-vs-explorer (one-line amendment)
@@ -154,7 +154,7 @@ and skill references, NOT from reading its source.
 24. metaengine Query[Q,R] read models: per-project series, cohort sets, fleet rollup
 25. Decide event vs command ingest surface (ingest command with idempotency middleware?)
 26. systemscenario BDD: Given snapshots When query Then series (frozen ManualClock)
-27. metaengine.ServeSSE dashlet for live latest-values
+~~27. metaengine.ServeSSE dashlet for live latest-values~~ decided 2026-11-24 — proposal Phase-2+ surface, rides the open decision row "Decide the duplication-trends dashboard architecture" (TODO_LIST); no standalone dispatch.
 28. Engine A/B: sqlite vs pebble via cqrs-bench if write volume matters
 29. `art-dupl snapshot` subcommand (reuses stats pipeline; emits NDJSON)
 30. AnalyzerIdentity + git head captured per datapoint; policy-break marker semantics
@@ -168,7 +168,7 @@ and skill references, NOT from reading its source.
 
 **Phase 2: overview panel (if approved):**
 38. Trends-store query client (overview stays database-free — queries only)
-39. Time-axis/sparkline component (first in repo)
+~~39. Time-axis/sparkline component (first in repo)~~ decided 2026-11-24 — proposal Phase-2 rendering concern, rides the open decision row "Decide the duplication-trends dashboard architecture" (TODO_LIST); no standalone dispatch.
 40. Fleet heatmap + per-project rows + cohort-churn table
 41. Family-age metric (oldest surviving GroupID)
 42. TTL/SSE refresh wiring via enrichmentEngine[T]

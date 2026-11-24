@@ -152,7 +152,7 @@ The `pkg/artdupl/detector_conversion.go::convertFragmentToClone` still independe
 2. Verify concurrent session's type-aware detection work doesn't break existing detection modes
 3. Run full BDD test suite to verify no behavioral regressions from concurrent changes
 4. Review the 12 concurrent commits for correctness (type-aware detection is a major feature)
-5. Check if `go/types` integration (type-aware detection) has adequate test coverage
+~~5. Check if `go/types` integration (type-aware detection) has adequate test coverage~~ done — type-aware detection carries dedicated coverage: pkg/artdupl/detector_type_aware_test.go + detector_combined_test.go (3+ unit tests incl. graceful fallback), bdd/ combined-mode specs, and the incremental-cache ta/sg key isolation tests.
 6. Resolve SB-4: Unify error sentinels (`config.ErrInvalidThreshold` vs `pkg/artdupl.ErrInvalidThreshold`)
 
 ### Medium Priority

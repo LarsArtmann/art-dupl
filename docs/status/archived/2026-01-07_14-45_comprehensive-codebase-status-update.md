@@ -1671,7 +1671,7 @@
 
 **Steps:**
 
-1. Profile with `go tool pprof`
+~~1. Profile with `go tool pprof`~~ done 2026-01..2026-08 — profiling methodology landed as the committed benchstat baselines + the alloc-gate (scripts/alloc-budgets.txt, docs/benchmarks/baseline-2026-08-16-v3_notes.md with ±CI analysis); wall-clock pprof sessions were superseded by the deterministic allocation-count gate (ADR-0022).
 2. ~~Identify bottlenecks~~ done — ADR-0022 stage timing evidence + alloc budgets
 3. ~~Optimize hot paths~~ done — ADR-0022 stage timing evidence + alloc budgets
 4. Benchmark improvements

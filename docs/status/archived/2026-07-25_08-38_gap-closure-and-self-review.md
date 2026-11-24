@@ -197,7 +197,7 @@ Grouped by theme, rough priority order within each group.
 
 ### F6. Detection & UX
 
-42. Type-aware detection: cache `go/packages` results between runs (TODO #23)
+~~42. Type-aware detection: cache `go/packages` results between runs (TODO #23)~~ duplicate 2026-11-24 — third copy of the same ask; lives in ROADMAP Performance ("Caching for type-checking results").
 43. Structural mode: option to ignore comments (TODO #24)
 44. Generics instantiation detection: `Foo[int]` vs `Foo[string]` (TODO #25)
 45. Progress output: ETA calculation for large codebases (TODO #45)

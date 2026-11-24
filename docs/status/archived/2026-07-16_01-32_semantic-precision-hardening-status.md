@@ -179,8 +179,8 @@ The previous session (first session) had one issue that was fixed this session:
 ### Tier 3: Medium Impact, Low Effort
 
 18. **Add BDD test** for Lock+Defer Unlock suppression
-19. **Add BDD test** for generics normalization
-20. **Add BDD test** for literal normalization
+~~19. **Add BDD test** for generics normalization~~ done — generics normalization coverage exists at three layers: syntax/golang/normalizer_test.go (canonical names incl. type params), printer/generics_parity_test.go (syntax-gate vs printer parity), and the bdd/ suite exercising suggest-generics end-to-end.
+~~20. **Add BDD test** for literal normalization~~ done — literal normalization (BasicLit VALUE→KIND in semantic mode) is covered by syntax/golang normalizer/transform tests and the bdd/ detection-methods specs; Type-2 renamed-clone detection is pinned end-to-end.
 21. **Document literal normalization** in website docs (getting-started, detection-methods)
 22. **Update `docs/guides/detection-methods.mdx`** with Type-2 examples
 23. **Add `--dump-tokens` debug flag** for inspecting the serialized token stream
@@ -193,9 +193,9 @@ The previous session (first session) had one issue that was fixed this session:
 27. **Add builder callback pattern detection** improvement - lower threshold from 3 to 2 calls
 28. **Improve test scaffolding category buckets** - currently max 4 categories; add more granularity
 29. **Add `.art-duplignore` config file** support (feedback suggestion)
-30. **Add pattern-aware weighting** instead of binary actionable/non-actionable (feedback suggestion)
+~~30. **Add pattern-aware weighting** instead of binary actionable/non-actionable (feedback suggestion)~~ done — superseded by the property-based extractability engine (ADR-0017): 4 properties + confidence scoring + three-tier output (actionable / low-confidence / non-actionable) replaced any binary weighting; calibration stays a ROADMAP item.
 31. **Add clone refactoring suggestions** ("Extract helper", "Acceptable structural similarity", etc.)
-32. **Add SARIF rule metadata** for actionability classification
+~~32. **Add SARIF rule metadata** for actionability classification~~ done — SARIF results carry the actionability classification (`non_actionable_pattern` property, printer/sarif.go:248-249) and rule descriptors carry tags (maintainability/duplicate-code/design, printer/sarif.go:371); the SARIF golden pins the wire.
 33. **Improve data dominance ratio** - currently 0.6; consider different thresholds for small vs large clones
 
 ### Tier 5: Lower Priority

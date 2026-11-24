@@ -94,7 +94,7 @@
 13. `nix flake check --all-systems` — aarch64-darwin/aarch64-linux/x86_64-darwin checks are omitted locally; verify at least aarch64-linux in CI or document the omission.
 14. Add a `-count=1` parity job to CI? (CI already runs fresh; document WHY cache-parity differs locally so the next session doesn't relearn it.)
 15. Run `erraudit lint ./... --type-aware` in CI as an opt-in gate (or record the decision NOT to, per fleet convention).
-16. Add `.github/workflows` lint (actionlint) — 9 hand-edited workflow files, zero local validation.
+~~16. Add `.github/workflows` lint (actionlint) — 9 hand-edited workflow files, zero local validation.~~ decided 2026-11-24 — harvested as the open TODO_LIST row "Add the actionlint lane for .github/workflows" (9 hand-edited workflow files, zero local validation); still open by choice, now tracked.
 17. SARIF committed integration test (from the 22:40 report P0 item 1): run the CLI with `--sarif`, pipe through `FindingsFromSARIF`, assert GroupIDs restore.
     ~~20. go-finding adoption ADR (status item 23 still open; the 22:40 report flags it) — record the library-only-surface decision.~~ resolved by alternative — AGENTS verdict + ADR-0025
 18. Link the go-finding evaluation doc into this repo (status item 24; readers hit a dead end today).

@@ -165,7 +165,7 @@ From TODO_LIST.md and FEATURES.md:
 ### Medium (P2)
 
 11. Update README with semantic detection defaults
-12. Implement proper CSV output via `encoding/csv`
+~~12. Implement proper CSV output via `encoding/csv`~~ duplicate 2026-11-24 — same deliverable as the 2026-03-25 item; done via encoding/csv in printer/stats/stats_formatter.go.
 13. Split `printer/stats.go` (727 lines)
     ~~14. Split `domain/clone.go` (495 lines)~~ superseded — domain/clone.go no longer exists
 14. Increase `internal/filtertest` coverage above 80%
@@ -176,7 +176,7 @@ From TODO_LIST.md and FEATURES.md:
 ### Low (P3)
 
 19. Add godoc to all exported symbols
-20. Implement `--profile` flag
+~~20. Implement `--profile` flag~~ duplicate 2026-11-24 — done 2026-02: `--profile` exists as a hidden flag (cmd/flags.go:23), count-gated.
 21. Implement `--timeout` flag
 22. Add cross-platform binary builds to CI
 23. Add `examples/` tests or convert to documentation

@@ -87,7 +87,7 @@
 
 ### High Priority (Build/Infrastructure)
 
-1. Run `nix flake check` (full, including test derivation) to verify tests pass in Nix sandbox
+~~1. Run `nix flake check` (full, including test derivation) to verify tests pass in Nix sandbox~~ done — `nix flake check` runs in CI daily (the Nix Flake Check gate replays the whole checks attrset incl. test/race/alloc-gate lanes) and locally per task boundary; green on the 2026-11-24 tree.
 2. Investigate and commit or revert the `printer/stats_visualization.go` change
 3. Add a justfile recipe for `update-vendor-hash` to automate hash recomputation
 4. Update AGENTS.md with the private dependency flake pattern documentation
@@ -114,7 +114,7 @@
 19. Add shell completion generation to the Nix build
 20. Benchmark Nix build time vs justfile build time
 21. Investigate Nix caching for CI (cachix or GitHub Actions cache)
-22. Add `nix profile install` support documentation
+~~22. Add `nix profile install` support documentation~~ decided 2026-11-24 — nix install docs intentionally stay on the flake-run form; README's install section names the module path + `nix run github:LarsArtmann/art-dupl` (the v0.10.0 release-notes template no longer advertises the nonexistent nur-packages pipe; the go-compliance-style `nix profile install` recipe was judged redundant with the flake-run form).
 23. Create a Homebrew formula update script tied to Nix build
 24. Explore generating the dummy go.mod from the actual gogenfilter flake input
 25. Evaluate migrating from justfile to pure Nix task runner (taskforge, etc.)

@@ -134,7 +134,7 @@ corrections were absorbed mid-session (AND/OR semantics; BuildFlow as a sixth re
 
 **Verification debts from this session (cheap, before trusting the proposal fully):**
 6. Personally verify BuildFlow cites: `schema_state.sql`/`migrations.go:96,211`, `step_outputs` columns
-7. Personally verify `pipeline_phases_2.go:226-233` (findings_json = counts only)
+~~7. Personally verify `pipeline_phases_2.go:226-233` (findings_json = counts only)~~ decided 2026-11-24 — verification debts (items 6-15) harvested into the new TODO_LIST row "Verify the duplication-trends proposal's cross-repo cites"; owner-gated items 1-5 ride the existing decision row.
 8. Personally verify `timings_setup.go:20` (90-day retention) and GC-on-startup behavior
 9. Personally verify overview cites: `enrichment_engine.go:44-81`, `compliance_source.go:18-44`, `hotspot_source.go:37,148-184`
 10. Personally verify go-compliance cites: `cache.go:34-46`, `queries.go:60`, `fold.go:113`, `reporter.go:62`, `v1.go:19-32`

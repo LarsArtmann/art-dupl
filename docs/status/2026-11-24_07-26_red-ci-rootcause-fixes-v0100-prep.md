@@ -70,7 +70,7 @@
 16. Clean-dir `go get github.com/LarsArtmann/art-dupl@v0.10.0` (the definitive consumer test).
 17. pkg.go.dev fetch trigger.
 18. BuildFlow: `git status` lease-check → `go get github.com/LarsArtmann/art-dupl@v0.10.0` (raises go-finding core to v1.16.0, fixing the main skew).
-19. BuildFlow: bump nested `domain/tool` module pins (art-dupl + go-finding).
+~~19. BuildFlow: bump nested `domain/tool` module pins (art-dupl + go-finding).~~ duplicate 2026-11-24 — tracked by the open TODO_LIST row "BuildFlow consumes art-dupl FilesScanned (T07b last mile)" (row carries the nested `domain/tool` module pins bump + the foreign-session lease note); all tokens of this item went DF-generic after the 11-24 TODO growth, so the matcher can no longer see the row.
 20. BuildFlow lane-soak: provider DetectV2 auto-selects (sdk_registry.go type assertion), `filesScanned != 0` in `internal/render/findings_table.go` output.
 21. go-compliance: ci.yml dupl-gate pin → `go install .../cmd/art-dupl@v0.10.0`.
 22. go-compliance: re-run the dry-run gate with the TAGGED binary (worktree ≠ tag content).

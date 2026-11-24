@@ -152,7 +152,7 @@ after = `v0.9.1-0.20261106063509-1ce6a7b3f64e`.
 37. Add the identity guard to any future baseline consumer (LSP/diff-report) via a shared helper — currently one call site.
 38. Re-run the monthly self-scan cadence and record decisions.
 39. Consider exporting the algorithm revision in `version --json` (useful for CI pin debugging).
-40. Review whether `check` should print the analyzer identity on the _green_ path for auditability.
+~~40. Review whether `check` should print the analyzer identity on the _green_ path for auditability.~~ decided 2026-11-06 — green path stays quiet by design (a matching identity must proceed normally, pinned by TestCheckBaselineVersionMustMatch*); only mismatches announce, and --baseline-version-must-match is the strict opt-in (ADR-0029).
 41. Add a TODO entry for `<pre>`/whitespace-sensitive text tolerance and measure real cases.
 42. Check `bdd/discordsync_regression_test.go` expectations against the new DiscordSync counts (suite green, but the fixture corpus may be synthetic).
 43. Re-verify `--show-suppressed` surfaces text-divergent groups correctly (they no longer exist as groups, so nothing to show — confirm no regression in the suppression accounting).

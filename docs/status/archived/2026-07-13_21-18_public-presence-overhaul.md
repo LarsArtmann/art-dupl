@@ -166,13 +166,13 @@ Built a complete Astro + Starlight documentation website, rewrote the README as 
 41. Audit and consolidate USAGE.md, HOW_TO_USE.md — these now overlap with website docs
 42. Audit WHAT_THIS_PROJECT_IS_NOT.md — useful or stale?
     ~~43. Audit PARTS.md — is this still relevant?~~ done — moot — PARTS.md no longer exists in the tree
-43. Audit MIGRATION_QUICK_START.md, MIGRATION_TO_NIX_FLAKES_PROPOSAL.md — still needed?
-44. Audit PERFORMANCE_OPTIMIZATION.md — accurate or stale?
+~~43. Audit MIGRATION_QUICK_START.md, MIGRATION_TO_NIX_FLAKES_PROPOSAL.md — still needed?~~ done 2026-11-24 — those files no longer exist under those names; the content was consolidated into docs/MIGRATION_GUIDE.md (current, carries the skip-validate-annotated snippets) — nothing left to audit.
+~~44. Audit PERFORMANCE_OPTIMIZATION.md — accurate or stale?~~ done 2026-11-24 — consolidated into docs/PERFORMANCE.md (exists at repo docs/); the stale-named file is gone.
 45. Remove or archive `docs/status/archive/` (hundreds of historical status files)
 
 ### Infrastructure
 
-47. Add `website/` to the root `flake.nix` if cross-referencing is needed
+~~47. Add `website/` to the root `flake.nix` if cross-referencing is needed~~ won't implement 2026-11-24 — the conditional ("if cross-referencing is needed") never materialized; the website builds and deploys independently (deploy-site.yml, own pnpm toolchain) and the flake stays Go-only.
 48. Consider adding html-validate to CI as a separate job
 49. Set up Firebase preview channels for PR previews
 50. Add a `Makefile` target or `flake.nix` app for `nix run .#website-dev`

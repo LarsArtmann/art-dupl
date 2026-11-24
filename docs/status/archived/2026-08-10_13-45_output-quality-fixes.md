@@ -159,7 +159,7 @@ Nothing. All changes are clean, tested, and build successfully.
 27. The `writeExplanation` function builds parts as `[]string` then joins with `|` — consider structured formatting
 28. `cls.Suggestion` is shown as `fix:` for actionable and `why:` for non-actionable — consider `hint:` for generics candidates
 29. Add `--output-width` flag to control preview truncation and hint wrapping
-30. Golden file tests should cover singular and plural token/line counts
+~~30. Golden file tests should cover singular and plural token/line counts~~ done — the golden suite pins both shapes: TestSARIFOutputGolden (multi-result wire) and TestTextCloneOutputGolden_FileFallback (singular/fallback text), plus HTML goldens incl. diff variants (printer/testdata/).
 31. `previewFirstLine` truncates at 60 runes — consider making this configurable
 32. The `generics:` hint always uses `same algorithm, different types:` prefix — redundant with the `generics:` label
     ~~36. Consider adding the generics hint to the JSON output as `generics_hint` field (verify it's there)~~ done — generics_hint/generics_candidate JSON fields verified present (printer/json.go)
