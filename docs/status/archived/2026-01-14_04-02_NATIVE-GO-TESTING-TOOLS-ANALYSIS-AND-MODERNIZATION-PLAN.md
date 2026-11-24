@@ -86,6 +86,7 @@ require (
 **Table-Driven Tests (Good Pattern):**
 
 ```go
+// skip-validate
 // suffixtree_test.go
 func TestCanonize(t *testing.T) {
     testCases := []struct {

@@ -219,6 +219,7 @@ $ ./art-dupl /tmp/test-sqlc --threshold 5
 **Issue:**
 
 ```go
+// skip-validate
 $ go mod tidy
 # No changes - dependency remains indirect
 ```
@@ -330,6 +331,7 @@ $ art-dupl . --verbose
 **b) `cmd/root.go` Help Text**
 Update examples to mention auto-detection:
 ```go
+// skip-validate
 Examples:
   art-dupl ./src                    # Auto-detects and filters sqlc/templ code
   art-dupl ./src --verbose          # Shows auto-detection messages

@@ -73,6 +73,7 @@ if !isSQLCFile && strings.HasSuffix(filename, ".sql.go") {
 **New Types:**
 
 ```go
+// skip-validate
 type FilterReason string  // Enum: sqlc, templ, include-pattern, exclude-pattern, not-filtered
 type Metrics struct       // Thread-safe metrics collector
 type FilterStats struct   // Immutable statistics snapshot

@@ -132,6 +132,7 @@ The fact that zero holds from `-t 50` down to `-t 10` is strong evidence that th
 This is not art-dupl's fault, but it is a real workflow obstacle worth documenting. The standard golden-test pattern in this project was:
 
 ```go
+// skip-validate
 var _ = Describe("Golden File Tests", func() {
     Context("...", func() {
         DescribeTable(
@@ -273,6 +274,7 @@ This was raised in `2026-07-19_cyberdom_t25_...` and remains the highest-value l
 The session's biggest extraction was collapsing 7 `golden_test.go` files into a declarative `DefineGoldenSuite` call. The shape that flagged them was:
 
 ```go
+// skip-validate
 var _ = Describe("...", func() {
     Context("...", func() {
         DescribeTable("...", func(name string) { ... }, Entry(...), Entry(...), ...)

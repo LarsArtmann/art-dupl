@@ -57,6 +57,7 @@ func (sc *SortCriteria) UnmarshalJSON(data []byte) error {
 ### After (6 lines total, 22 lines eliminated):
 
 ```go
+// skip-validate
 // All three types now use:
 func (type *Type) UnmarshalJSON(data []byte) error {
     return UnmarshalJSONForEnum(type, data, "type name")

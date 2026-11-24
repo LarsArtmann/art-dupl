@@ -117,12 +117,14 @@ Currently, the `Only` field in Config is a `string`, but we created a proper `Fi
 **Current:**
 
 ```go
+// skip-validate
 Only string `json:"only,omitempty"`  // "go", "templ", or ""
 ```
 
 **Recommended:**
 
 ```go
+// skip-validate
 Only FileType `json:"only,omitempty"`  // FileTypeGo, FileTypeTempl, or FileTypeAll
 ```
 

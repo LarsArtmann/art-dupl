@@ -167,6 +167,7 @@ main.go → Cobra CLI → analyzer.go → file processing → output
 **Technical Issue:**
 
 ```go
+// skip-validate
 // Current problematic structure
 cmd := &cobra.Command{
     Use:   "dupl [flags] [paths...]",

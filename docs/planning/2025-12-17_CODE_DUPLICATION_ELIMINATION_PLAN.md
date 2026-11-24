@@ -329,6 +329,7 @@ default:
 #### After: Refactored with createPrinter()
 
 ```go
+// skip-validate
 func createPrinter(format config.OutputFormat, w io.Writer, fread printer.ReadFile) printer.Printer {
     switch format {
     case config.OutputFormatHTML:

@@ -943,6 +943,7 @@ import "maps"
 **Error Pattern:**
 
 ```go
+// skip-validate
 exit status 1
 {
     ProcessState: {

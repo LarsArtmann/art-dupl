@@ -82,6 +82,7 @@ This is the detector doing its job. The clone was real, the extraction is clean,
 Six test functions (`TestNew_IfNoneMatch_Matches`, `_Star`, `_ListContainsMatch`, `_WeakClientStrongServer`, `_ListContainsWeakMatch`, `_WeakClientNoMatch`) each had the identical 12-line setup:
 
 ```go
+// skip-validate
 t.Parallel()
 handler := New(DefaultETagConfig())(newWriteStatusHandler(http.StatusOK, "hello world"))
 req := newTestRequest(http.MethodGet)
@@ -181,6 +182,7 @@ The asymmetry was intentional: `Hijack()` takes over the raw TCP connection. Onc
 To eliminate the `w.flushed = true` clone, I extracted a `markFlushed()` helper and called it from all three sites. But to also eliminate the `w.writeHeaderToUnderlying()` clone (which appeared in `flush` and `Flush` but not `Hijack`), I **added `w.writeHeaderToUnderlying()` to `Hijack()`** so that all three sites had the same 2-statement shape:
 
 ```go
+// skip-validate
 // AFTER — all three sites now identical:
 w.markFlushed()
 w.writeHeaderToUnderlying()
@@ -271,6 +273,7 @@ This is not a detector bug — it's a **protocol design issue** at the skill/ins
 The `w.flushed = true` clone (and the `w.writeHeaderToUnderlying()` clone) are the canonical "1-line state mutation in multiple interface methods" pattern. This is structurally identical to:
 
 ```go
+// skip-validate
 func (s *Server) Start() { s.running = true; ... }
 func (s *Server) Restart() { s.running = true; ... }
 ```

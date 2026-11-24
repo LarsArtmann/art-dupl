@@ -32,6 +32,7 @@ All major components have been successfully implemented, tested, and verified:
 **Before**:
 
 ```go
+// skip-validate
 Filename Filepath (16B + heap)
 Fragment string   (16B + heap)
 Hash     Hash     (16B + heap)
@@ -41,6 +42,7 @@ Hash     Hash     (16B + heap)
 **After**:
 
 ```go
+// skip-validate
 Filename StringID (4B, interned)
 Fragment StringID (4B, interned)
 Hash     StringID (4B, interned)

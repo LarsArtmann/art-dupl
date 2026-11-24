@@ -148,6 +148,7 @@ go vet ./...
 1. Create `go.work`:
 
    ```go
+   // skip-validate
    go 1.26.2
 
    use (

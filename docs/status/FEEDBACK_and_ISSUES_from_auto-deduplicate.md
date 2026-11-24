@@ -32,6 +32,7 @@ type ProgressReporter interface {
 **Current art-dupl provides**:
 
 ```go
+// skip-validate
 // pkg/artdupl/types.go
 ProgressCallback func(*Progress) error
 ```
@@ -142,6 +143,7 @@ type CachedResult struct {
 **Current art-dupl provides**:
 
 ```go
+// skip-validate
 FindClonesStream(ctx context.Context, files []string) (<-chan *CloneGroup, error)
 ```
 
@@ -168,6 +170,7 @@ type StreamOptions struct {
 **What auto-deduplicate uses**:
 
 ```go
+// skip-validate
 DetectionMethods []DetectionMethod
 ```
 

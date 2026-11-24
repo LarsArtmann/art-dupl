@@ -91,6 +91,7 @@ A threshold of 5 statements filters most trivial matches while still catching re
 **File:** `config/config_validate.go:40-43`
 
 ```go
+// skip-validate
 // Before:
 func validateThreshold(threshold int) error {
     if threshold < 1 {
@@ -113,6 +114,7 @@ This prevents users from accidentally generating noise. Also update `domain.ErrI
 **Fix:** In `syntax/golang/transform.go`, mark `ValueSpec` nodes inside `GenDecl` as statement-equivalent, so they get fingerprinted into single composite tokens:
 
 ```go
+// skip-validate
 // In the GenDecl case or a new post-processing pass:
 // Mark each ValueSpec child of a GenDecl as Statement = true
 case *ast.GenDecl:
@@ -181,6 +183,7 @@ This way, if only 4 of 5 tokens matched, the fragment shows only the matched pre
 Most clone detection tools have both a token/statement threshold AND a minimum line count. A clone must satisfy BOTH to be reported. This filters single-statement clones that happen to be long (like a deeply nested struct literal).
 
 ```go
+// skip-validate
 // In config:
 MinLines int `json:"minLines,omitempty"`
 

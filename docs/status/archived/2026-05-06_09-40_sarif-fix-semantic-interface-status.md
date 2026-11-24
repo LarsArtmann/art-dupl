@@ -65,6 +65,7 @@
 **Changes:**
 
 ```go
+// skip-validate
 // transform.go - In FuncType case:
 case *ast.FuncType:
     if t.config.Mode.IsSemantic() && t.inInterface {

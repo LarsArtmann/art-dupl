@@ -168,6 +168,7 @@ content, err := os.ReadFile("test.txt")
 **Pattern:**
 
 ```go
+// skip-validate
 // Before
 for i := 0; i < len(items); i++
 
@@ -196,6 +197,7 @@ m = min(m, n)
 **Files:** `errors/types.go:170,186,206`
 
 ```go
+// skip-validate
 // Before
 var duplErr *DuplError
 if errors.As(err, &duplErr)

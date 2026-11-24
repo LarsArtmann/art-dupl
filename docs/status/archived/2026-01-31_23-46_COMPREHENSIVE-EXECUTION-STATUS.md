@@ -1022,6 +1022,7 @@ package syntax
 - **Module Doc Structure**:
 
 ```go
+// skip-validate
 // art-dupl is a fast, type-safe code duplication detector for Go projects.
 //
 // FEATURES:

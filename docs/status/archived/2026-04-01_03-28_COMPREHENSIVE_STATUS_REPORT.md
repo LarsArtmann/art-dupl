@@ -61,6 +61,7 @@ Additionally, cmd package has **uncommitted refactoring** (struct parameter patt
 **Files:** `pkg/position/lines.go`, `pkg/position/lines_test.go`
 
 ```go
+// skip-validate
 // Before: start == end caused incorrect defaults
 if offset == start { lineStart = line }  // Never reached when start == end
 if offset == end-1 { ... break }        // Break at start-1

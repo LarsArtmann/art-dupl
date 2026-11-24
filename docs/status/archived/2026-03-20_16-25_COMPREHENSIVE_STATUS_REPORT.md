@@ -198,6 +198,7 @@ go/types.(*Checker).builtin-range1
 **Evidence**:
 
 ```go
+// skip-validate
 // Missing 'type' keyword
 Stack[T any] struct {  // Should be: type Stack[T any] struct {
 

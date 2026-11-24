@@ -719,6 +719,7 @@ func (id CloneID) String() string { ... }
 **Architecture**:
 
 ```go
+// skip-validate
 // Use types.Result instead of (T, error)
 func NewCloneID(s string) Result[CloneID, ValidationError] {
     if s == "" {
@@ -802,6 +803,7 @@ func NewCloneID(s string) (CloneID, error) {
 **Architecture**:
 
 ```go
+// skip-validate
 // For Clone struct (not simple types)
 type CloneBuilder struct {
     id         CloneID

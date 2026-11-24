@@ -1,6 +1,6 @@
 # art-dupl
 
-**Last Updated:** 2026-11-23 (claims re-verified against the binary: actionability pattern totals now 43 incl. signature-fragment, node-type counts, output formats, transition layout; count gate green)
+**Last Updated:** 2026-11-23 (claims re-derived via the count gate, code-derived numbers not a binary run: actionability pattern totals now 43 incl. signature-fragment, node-type counts, output formats, transition layout; `go test ./cmd/ -run Docs` green)
 
 [![CI](https://github.com/LarsArtmann/art-dupl/actions/workflows/ci.yml/badge.svg)](https://github.com/LarsArtmann/art-dupl/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-e8a020.svg)](LICENSE)

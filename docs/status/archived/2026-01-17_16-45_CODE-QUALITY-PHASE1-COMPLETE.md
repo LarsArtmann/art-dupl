@@ -48,6 +48,7 @@ Successfully resolved **16 high-impact, low-effort linter issues** across 7 file
 - **Implementation:**
 
 ```go
+// skip-validate
 case SortByTotalTokens:
     sort.Slice(keys, func(i, j int) bool {
         tokensI := 0
@@ -187,6 +188,7 @@ grandchild.Filename = testFilename
 - **Implementation:**
 
 ```go
+// skip-validate
 // Before (shadowing):
 ctx, cancel = context.WithTimeout(ctx, ...)
 

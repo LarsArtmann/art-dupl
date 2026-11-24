@@ -163,6 +163,7 @@ Clone Size Distribution:
 **Algorithm:**
 
 ```go
+// skip-validate
 maxCount := findMax(distribution)
 for each range:
     barWidth := int(float64(count) / float64(maxCount) * 20)
@@ -1058,6 +1059,7 @@ func (p *stats) calculateHealthScore() string {
 **3. String-Based Health Scores (Type Safety Issue)**
 
 ```go
+// skip-validate
 HealthScore string  // Can be any string, not just "A"-"F"
 ```
 

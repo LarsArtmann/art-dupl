@@ -124,6 +124,7 @@ for i := 0; i < len(nodeSeq); {
 **Test Cases Fixed:**
 
 ```go
+// skip-validate
 {"a8 a0 a2 a0", 3, []int{2}},
   - Got: []      (incorrectly rejected)
   - Want: [2]    ✅ FIXED
@@ -153,6 +154,7 @@ Commit 905f317 shortened test case sequences, making them too short for the inde
 **Example Failure:**
 
 ```go
+// skip-validate
 Test Case: 'a0', indexes [0, 1]
 Sequence:  [a]  (length = 1)
 Indexes:   [0, 1]
@@ -167,6 +169,7 @@ Fix:       Restore to 'a0 a0' (length = 2, indexes valid)
 **Test Case 1 (Line 80):**
 
 ```go
+// skip-validate
 // BROKEN (commit 905f317):
 {"a0", []int{0, 1}, true}
 
@@ -180,6 +183,7 @@ Impact:     Test now passes
 **Test Case 2 (Line 86):**
 
 ```go
+// skip-validate
 // BROKEN (commit 905f317):
 {"a1 ", []int{0, 4], false}
 
@@ -193,6 +197,7 @@ Impact:     Test now passes
 **Test Case 3 (Line 87):**
 
 ```go
+// skip-validate
 // BROKEN (commit 905f317):
 {"a2 b0 a2 b0 a2 b0 a2 b0 a2 b0", []int{0, 3, 6, 9, 12}, true}
 
@@ -582,6 +587,7 @@ default:
 **Solution:**
 
 ```go
+// skip-validate
 // REPLACE:
 switch d.opts.DetectionMethods[0] {
 
@@ -599,6 +605,7 @@ matchesChan = multiDetector.FindDuplOver(threshold)
 **Code:**
 
 ```go
+// skip-validate
 case MethodAll:
     // For now, use art-dupl method when MethodAll is specified
     // TODO: Implement multi-detection method support
@@ -622,6 +629,7 @@ case MethodAll:
 **Solution:**
 
 ```go
+// skip-validate
 // REPLACE:
 case MethodAll:
     // For now, use art-dupl method when MethodAll is specified
@@ -657,6 +665,7 @@ DetectionMethods *string // NOT PRESENT
 **Existing Sort Flag (Example):**
 
 ```go
+// skip-validate
 SortBy: flag.String("sort", "size",
     "sort clone groups by: size, occurrence, hash, total-tokens"),
 ```
@@ -664,6 +673,7 @@ SortBy: flag.String("sort", "size",
 **Should Add:**
 
 ```go
+// skip-validate
 DetectionMethod: flag.String("method", "art-dupl",
     "detection method: art-dupl, hash, todos, legacy, all"),
 
@@ -1408,6 +1418,7 @@ func (p *Profiler) PrintStats() {
 **Add:**
 
 ```go
+// skip-validate
 ProfileCPU *string
 ProfileMem *string
 ProfileGoroutines *string

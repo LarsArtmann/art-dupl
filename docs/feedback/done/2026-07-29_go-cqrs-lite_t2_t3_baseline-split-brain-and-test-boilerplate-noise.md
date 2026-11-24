@@ -79,6 +79,7 @@ These 9 groups bury the 24 genuinely actionable production-code groups. The repo
 Add a built-in suppression for the `t.Parallel()` + single-setup-line pattern in test files. Classify it as `test-boilerplate` (like the existing `--suppress-test-low` category) with a lower priority. The pattern is:
 
 ```go
+// skip-validate
 func TestX(t *testing.T) {
     t.Parallel()
     <one statement>

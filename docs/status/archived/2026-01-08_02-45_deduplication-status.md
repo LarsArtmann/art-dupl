@@ -81,6 +81,7 @@ func (dm DetectionMethod) MarshalJSON() ([]byte, error) {
 **Code Change**:
 
 ```go
+// skip-validate
 // New helper function
 func (p *text) printCloneList(clones []clone) error {
     for _, cl := range clones {
@@ -233,6 +234,7 @@ func (as AnalysisStats) IsValid() error {
 All enums are string-based with runtime validation:
 
 ```go
+// skip-validate
 type DetectionMethod string
 type AnalysisMode string
 type FileProcessingState string
@@ -266,6 +268,7 @@ func (dm DetectionMethod) IsValid() bool {
 Using raw `error` returns instead of typed `Result[T]`:
 
 ```go
+// skip-validate
 // Current pattern
 func (p *text) PrintClones(dups [][]*syntax.Node) error {
     clones, err := prepareClonesInfo(p.ReadFile, sortedDups)

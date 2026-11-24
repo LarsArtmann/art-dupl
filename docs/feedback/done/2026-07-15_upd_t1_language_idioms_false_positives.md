@@ -70,6 +70,7 @@ A group should be marked `NonActionable` if every clone is one of these atomic i
 When a clone group consists entirely of calls to the _same user-defined function or method_, treat it as `NonActionable` or a new category `helper-reuse`. For example:
 
 ```go
+// skip-validate
 usageBlankLine(w)        // 4 call sites in config.go
 r.renderBorder("top", ...) // 3 call sites in render.go
 ```

@@ -111,6 +111,7 @@ func b() {}`
 **After:**
 
 ```go
+// skip-validate
 // Configuration Management block completely removed
 var _ = Describe("File Targeting Scenarios", func() {
     // ... next Describe block starts ...
@@ -1519,6 +1520,7 @@ json.Unmarshal(output, &result)
   ```
 - Implement option types for configuration:
   ```go
+  // skip-validate
   setup.WithOptions(OptionTimeout(30s), OptionRetries(3))
   ```
 
@@ -1680,6 +1682,7 @@ json.Unmarshal(output, &result)
 - Use functional composition where appropriate
 - Create pipeline helpers:
   ```go
+  // skip-validate
   result := setup.
       CreateFiles(...).
       RunArtDupl(...).
@@ -1982,6 +1985,7 @@ json.Unmarshal(output, &result)
 
 - Use typed errors in testutil:
   ```go
+  // skip-validate
   func (s *BDDTestSetup) CreateFiles(...) error {
       // ... file creation ...
       if err != nil {

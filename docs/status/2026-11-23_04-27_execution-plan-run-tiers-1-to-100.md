@@ -102,7 +102,7 @@ Non-self-caused incidents absorbed (foreign sessions, handled per collision doct
 20. Flake lane for the audit trial (`linter-autoconfigure-sdk audit` in CI with the false-positive whitelist documented) (M36 follow-up).
 21. File the linter-autoconfigure-sdk issue: audit's linter-name DB is stale (`exhaustruct_v5` + `exhaustruct` both flagged unknown, both real in 2.15.0 — binary-verified) (M36 evidence).
 22. M52: re-date the `analysis/` N/A verdict errata in go-linter-sdk.md (plan task 22).
-23. M51: review-corpus archive-ritual decision + reopen-rule verify + README-screenshot guard note (plan task 22).
+~~23. M51: review-corpus archive-ritual decision + reopen-rule verify + README-screenshot guard note (plan task 22).~~ done 2026-11-24 — executed as T22 in the 2026-11-24 07-26 session: archive-policy section landed in docs/review/README.md, reopen rule verified live (go-compliance.md + go-dag-app.md RECONSIDER-WHEN), analysis/ N/A verdict re-dated with dated errata, README screenshot regenerated with freshness guard (SHA-256 stamp + flake wiring). Evidence: docs/status/2026-11-24_07-26_red-ci-rootcause-fixes-v0100-prep.md §a T22.
 24. M43: derive docs/review/README.md version cells from report headers (script or manual + note) (task 18).
 25. M39–M41: dashboard polish — link contrast, band column, per-row group provenance, READMEs point to dashboard as canonical (task 17).
 26. M44: add the proxy-fetchability CI lane (`go mod download …@v1.16.0` step) (task 16).

@@ -1446,6 +1446,7 @@ func processData(data string) error {
 ### Current Implementation Status
 
 ```go
+// skip-validate
 ✅ CORRECT PATTERN:
 var _ = Describe("File Targeting Scenarios", func() {
     var setup *testutil.BDDTestSetup  // Independent per Describe

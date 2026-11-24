@@ -31,6 +31,7 @@ art-dupl --type-aware --semantic -t 3 .
 ## The Accept Directive
 
 ```go
+// skip-validate
 // Place on the line above or within the clone's line range:
 
 //art-dupl:accept idiomatic boilerplate

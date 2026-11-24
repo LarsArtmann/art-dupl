@@ -813,6 +813,7 @@ func LoadConfig(filename string) (*Config, error) {
 **Proposed Pattern (using cockroachdb/errors):**
 
 ```go
+// skip-validate
 import "github.com/cockroachdb/errors"
 
 func LoadConfig(filename string) (*Config, error) {
@@ -875,6 +876,7 @@ func NewJSON(w io.Writer, readFile FileReader) printer.Printer {
 **Proposed Pattern:**
 
 ```go
+// skip-validate
 // Option 1: Return concrete type
 func NewJSON(w io.Writer, readFile FileReader) *JSONPrinter {
     return &JSONPrinter{...}

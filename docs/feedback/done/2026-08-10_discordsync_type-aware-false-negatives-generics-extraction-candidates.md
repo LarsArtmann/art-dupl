@@ -169,6 +169,7 @@ The filter would need to recognize that the **range loop body is type-parametric
 ### What art-dupl matched (without `--type-aware`)
 
 ```go
+// skip-validate
 // internal/web/activity_helpers.go:191
 func totalAuthorKindCount(kinds []db.AuthorKindActivity) int64 {
 	var total int64

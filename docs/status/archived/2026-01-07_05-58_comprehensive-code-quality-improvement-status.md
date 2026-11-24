@@ -655,6 +655,7 @@ func isZeroValue(v reflect.Value) bool {
 **Implementation 1:** Old `Run()` function (lines 28-139)
 
 ```go
+// skip-validate
 // Uses standard flag package
 var (
     cliCfg = RuntimeConfig{}
@@ -1346,6 +1347,7 @@ func SortBy(dups [][]*syntax.Node, strategy SortStrategy) [][]*syntax.Node {
 **Usage:**
 
 ```go
+// skip-validate
 // BEFORE (4 separate functions):
 sorted := SortClonesBySize(clones)
 sorted := SortClonesByHash(clones)
@@ -1573,6 +1575,7 @@ Outcome: ❌ Failed
 **Option B: Create separate utility module**
 
 ```go
+// skip-validate
 // pkg/position/lines.go already exists
 // Add:
 func SplitLines(content []byte) []string {
@@ -1803,6 +1806,7 @@ return err // Not wrapping at all
 **Proposed Solution:**
 
 ```go
+// skip-validate
 // errors/handlers.go
 package errors
 
@@ -2170,6 +2174,7 @@ repos:
 - Run tests to verify
 
 ```go
+// skip-validate
 // Add to pkg/position/lines.go:
 func SplitLines(content []byte) []string {
     return strings.Split(string(content), "\n")
@@ -2569,6 +2574,7 @@ return position.JoinLines(fragmentLines)
 **System 1:** Old CLI (lines 28-139)
 
 ```go
+// skip-validate
 // Uses standard library flag package
 var (
     cliCfg = RuntimeConfig{}

@@ -68,6 +68,7 @@ func DecodeSemanticHash(t int32) int32
 Added to `config.Config`:
 
 ```go
+// skip-validate
 // Semantic enables semantic-aware duplicate detection
 // When true, identifier names are included in the type hash
 Semantic bool `json:"semantic,omitempty"`

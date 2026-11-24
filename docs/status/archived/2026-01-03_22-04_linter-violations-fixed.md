@@ -176,6 +176,7 @@ var (
 - **Impact**: No code change, documented correct behavior
 
 ```go
+// skip-validate
 if err := printDupls(...); err != nil {
     fmt.Fprintf(os.Stderr, "error: %v\n", err)
     if outputFile != nil {

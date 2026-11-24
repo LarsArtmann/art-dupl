@@ -213,6 +213,7 @@ PASS
 **Updated Examples:**
 
 ```go
+// skip-validate
 // OLD examples:
 art-dupl stats                    # Show stats for current directory (text format)
 art-dupl stats -f json .          # Show stats in JSON format

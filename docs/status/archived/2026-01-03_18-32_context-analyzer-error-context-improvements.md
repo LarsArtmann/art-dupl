@@ -515,6 +515,7 @@ func UnmarshalStringToEnum[T ~string](
 #### Option B: Debug Mode - Verbose Reflection
 
 ```go
+// skip-validate
 if debugMode {
     funcName := runtime.FuncForPC(reflect.ValueOf(enumType).Pointer()).Name()
     return fmt.Errorf("enum validation failed (function: %s, ...)", funcName, ...)

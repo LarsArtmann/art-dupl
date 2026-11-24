@@ -67,6 +67,7 @@ The remaining 15 groups (at 2-4 tokens each) are all Go idioms or test patterns 
 ### Table-driven test data (5 groups)
 
 ```go
+// skip-validate
 // Group #7 — two test fixture lines, different data
 {Name: "alpha", Path: "/home/user/alpha", Languages: []domain.Language{"Go"}},
 {Name: "beta", Path: "/home/user/beta", Languages: []domain.Language{"Python"}},

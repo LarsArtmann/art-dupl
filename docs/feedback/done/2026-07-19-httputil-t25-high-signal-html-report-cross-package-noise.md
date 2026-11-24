@@ -47,6 +47,7 @@ were correctly unified into a single clone group despite **different status code
 Likewise, the CORS test bodies that differed only in input origin + expected value were correctly unified:
 
 ```go
+// skip-validate
 // 4 sites, same shape, only cfg.Origins / req origin / expectation differ
 cfg := CORSConfig{ AllowedOrigins: ..., AllowedMethods: ... }
 middleware := CORS(cfg)

@@ -352,6 +352,7 @@ Both enums implement:
 ### The Methods
 
 ```go
+// skip-validate
 func (e ErrorHandlingStatus) MarshalJSON() ([]byte, error) {
     return json.Marshal(string(e))  // Just delegates to string marshal!
 }

@@ -153,6 +153,7 @@
   **DetectionMethod**:
 
   ```go
+  // skip-validate
   type DetectionMethod string
   const (
     DetectionMethodHash, DetectionMethodArtDupl,

@@ -269,6 +269,7 @@ type StatsData struct {
 **Before**:
 
 ```go
+// skip-validate
 func SafeMarshal(v any, context string) ([]byte, error) {
     data, err := json.Marshal(v)
     if err != nil { return nil, HandleMarshalingError(...) }
@@ -391,6 +392,7 @@ git revert <commit-hash>    # Revert specific commits
 Don't remove old APIs - keep both versions:
 
 ```go
+// skip-validate
 // Old API (safe, known to work)
 func FindSyntaxUnits(..., threshold int) Match
 

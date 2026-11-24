@@ -115,6 +115,7 @@ The 26-occurrence group is a near-perfect signal that a linter rule
 specific shape:
 
 ```go
+// skip-validate
 t.Parallel()
 <single helper call or assignment>
 ```

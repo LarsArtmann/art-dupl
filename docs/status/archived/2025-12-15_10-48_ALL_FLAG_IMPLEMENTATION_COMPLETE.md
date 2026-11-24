@@ -107,6 +107,7 @@ for method := range detectionMethods {
 ### Priority 1: Extract ALL Mode Package
 
 ```go
+// skip-validate
 // Proposed Structure
 /cmd
   /cli.go          // Clean CLI interface only
@@ -152,6 +153,7 @@ func (afw *AtomicFileWriter) Commit() error {
 ### Priority 4: Add Comprehensive Testing
 
 ```go
+// skip-validate
 // Proposed BDD Tests
 Feature: ALL Flag Generation
   Scenario: Generate all formats for both methods

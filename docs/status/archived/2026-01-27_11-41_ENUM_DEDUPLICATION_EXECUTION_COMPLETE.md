@@ -144,6 +144,7 @@ Closes dead code duplication identified by art-dupl analysis.
 1. Replaced manual map creation with `EnumValidator[T]`:
 
    ```go
+   // skip-validate
    // BEFORE:
    var qualityLevelValidMap = newEnumValidMap(...)
    var qualityLevelValidValues = newEnumValidValues(...)

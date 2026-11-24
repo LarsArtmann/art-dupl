@@ -113,6 +113,7 @@
 ### **Current Architecture (STABLE):**
 
 ```go
+// skip-validate
 // Bridge Pattern - Working Approach
 main.go:   Cobra + Fang
      ↓
@@ -131,6 +132,7 @@ cli.go:     Global Variables + Business Logic (existing)
 ### **Future Architecture (Target):**
 
 ```go
+// skip-validate
 // Dependency Injection - Target State
 main.go:   Cobra + Fang
      ↓

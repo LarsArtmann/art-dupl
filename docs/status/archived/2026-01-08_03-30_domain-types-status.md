@@ -191,6 +191,7 @@
 ### Before (Generic Types):
 
 ```go
+// skip-validate
 // Easy to make mistakes, no type safety
 type Clone struct {
     ID         string   // Could be anything, not validated
@@ -211,6 +212,7 @@ grep "\"clone-"  // Too broad
 ### After (Domain Types):
 
 ```go
+// skip-validate
 // Type-safe, validated at construction time
 type Clone struct {
     ID         domain.CloneID   // Must use CloneID type
@@ -287,6 +289,7 @@ func NewCloneID(s string) (CloneID, error) { ... }
 ### Why Accessors for Underlying Type?
 
 ```go
+// skip-validate
 type LineNumber uint
 
 func (ln LineNumber) Uint() uint { ... }

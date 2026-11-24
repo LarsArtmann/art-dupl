@@ -130,6 +130,7 @@
 ### **Current State (EXCELLENT):**
 
 ```go
+// skip-validate
 // Working Bridge Pattern - PRODUCTION READY
 main.go:   Cobra + Fang (Professional CLI)
      ↓
@@ -149,6 +150,7 @@ cli.go:     Global Variables + Business Logic (Proven)
 ### **Target Migration Path:**
 
 ```go
+// skip-validate
 // Future State - Ready When Needed
 main.go:   Cobra + Fang
      ↓

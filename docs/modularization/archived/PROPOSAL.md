@@ -315,6 +315,7 @@ Since every edge points from a higher layer to a strictly lower layer, the graph
 ### go.work file
 
 ```go
+// skip-validate
 go 1.26.2
 
 use (

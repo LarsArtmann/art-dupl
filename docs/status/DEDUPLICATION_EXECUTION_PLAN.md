@@ -166,6 +166,7 @@ After removing cli.go, this won't be duplicated anymore. However, we can still i
 Extract the format generation loop into a function:
 
 ```go
+// skip-validate
 func generateAllFormats(cfg *config.Config, matches []syntax.Match, ...) error
 ```
 

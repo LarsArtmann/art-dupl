@@ -37,6 +37,7 @@ The art-dupl codebase is in excellent condition with the critical `--sort occurr
 **Fix Applied** (previously):
 
 ```go
+// skip-validate
 // Before Fix (incorrect):
 case SortByOccurrence:
     sort.Slice(keys, func(i, j int) bool {

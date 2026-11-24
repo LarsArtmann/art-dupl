@@ -55,6 +55,7 @@ Successfully implemented memory layout optimizations for core data structures, a
 **Before**:
 
 ```go
+// skip-validate
 type Clone struct {
     Filename   Filepath            (16B)
     StartLine  LineNumber          (8B)
@@ -73,6 +74,7 @@ type Clone struct {
 **After**:
 
 ```go
+// skip-validate
 type Clone struct {
     // 8B fields grouped (48B, no padding)
     StartLine  LineNumber      (8B)
@@ -109,6 +111,7 @@ type Clone struct {
 **Before**:
 
 ```go
+// skip-validate
 type Node struct {
     Type     int    (8B)
     Filename string  (16B)
@@ -122,6 +125,7 @@ type Node struct {
 **After**:
 
 ```go
+// skip-validate
 type Node struct {
     Type     int    (8B)
     Pos, End int    (16B)

@@ -23,6 +23,7 @@ The body of a `for _, tt := range tests` loop in table-driven tests is often fla
 ### Example (False Positive)
 
 ```go
+// skip-validate
 // File A: TestResolveNodeKey
 for _, tt := range tests {
     t.Run(tt.name, func(t *testing.T) {
@@ -110,6 +111,7 @@ Go's standard testing convention uses `testdata/` directories with paired `input
 ### Example (False Positive)
 
 ```go
+// skip-validate
 // testdata/errors_as_in_package/golden.go
 package main
 

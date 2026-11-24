@@ -227,6 +227,7 @@
 ### config/config.go
 
 ```go
+// skip-validate
 // LoadOptionalConfig loads configuration from file if filename is not empty.
 // Returns nil if filename is empty, allowing optional config file usage.
 //

@@ -45,6 +45,7 @@ The premise of a gap mostly does not hold: **art-dupl does not hand-roll a libra
 **1. Baseline policy hashing ≠ library policy.** `cmd/baseline_identity.go:24-34` folds hash-affecting settings into an xxh3 fingerprint (`cache=%d;mode=%s;typeAware=%t;...`) that `check --baseline-version-must-match` compares against the recorded baseline:
 
 ```go
+// skip-validate
 // cmd/baseline_identity.go:26-33
 return fmt.Sprintf(
     "cache=%d;mode=%s;typeAware=%t;suggestGenerics=%t;maxChildren=%d;methods=%s",

@@ -73,6 +73,7 @@ func GetCloneSize(group [][]*syntax.Node) int
 **Before (Duplicate Code):**
 
 ```go
+// skip-validate
 // FindTodos had this pattern
 nodesByFile := make(map[string][]*syntax.Node)
 for _, node := range data {
@@ -92,6 +93,7 @@ for filename, nodes := range nodesByFile {
 **After (Extracted Generic Function):**
 
 ```go
+// skip-validate
 func findIssuesInFile[T any](
     data []*syntax.Node,
     finder func(filename string, nodes []*syntax.Node) []T,

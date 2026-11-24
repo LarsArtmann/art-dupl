@@ -223,6 +223,7 @@ type Metrics interface {
 ### 6.1 Glob Matching: doublestar
 
 ```go
+// skip-validate
 // Current
 func matchPattern(path, pattern string) bool { ... }
 
@@ -318,6 +319,7 @@ log.Warn().
 Adding new fields to `StatsData` breaks backward compatibility:
 
 ```go
+// skip-validate
 // Current StatsData
 type StatsData struct {
     TotalFiles    int `json:"total_files"`

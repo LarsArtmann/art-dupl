@@ -362,6 +362,7 @@
 3. **Add type constraints**
 
    ```go
+   // skip-validate
    type Enum[T ~string] interface {
        IsValid() bool
        String() string

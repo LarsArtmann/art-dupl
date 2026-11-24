@@ -72,6 +72,7 @@ Original intent: detect refactored code where variable names changed but logic i
 **Implementation** (`syntax/golang/transform.go`):
 
 ```go
+// skip-validate
 case *ast.SelectorExpr:
     o.Type = SelectorExpr
     if sel, ok := n.Sel.(*ast.Ident); ok {

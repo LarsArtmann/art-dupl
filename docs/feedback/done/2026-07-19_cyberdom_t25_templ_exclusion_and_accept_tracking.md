@@ -70,6 +70,7 @@ Either way, this is the single highest-impact fix: 20 phantom clones drowned out
 After excluding templ, the top remaining group was 4 occurrences of the `CompleteWithTools` method signature:
 
 ```go
+// skip-validate
 func (c *Client) CompleteWithTools(
     ctx context.Context,
     systemPrompt string,
@@ -164,6 +165,7 @@ This single fix would have cut the initial report from 43 to 23 occurrences and 
 Implement inline comment parsing:
 
 ```go
+// skip-validate
 // artdupl:accept: interface implementation — signature must match ai.ClientWithTools
 func (c *Client) CompleteWithTools(...) (*ai.Response, error) {
 ```

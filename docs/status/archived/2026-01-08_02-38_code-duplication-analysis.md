@@ -822,6 +822,7 @@ config/
 **Current:**
 
 ```go
+// skip-validate
 type clone struct { ... }              // ❌ Generic
 func SortNodesByCriteria(...) { ... }  // ❌ Vague
 type Result struct { ... }             // ❌ Generic
@@ -831,6 +832,7 @@ func prepareClonesInfo(...) error { ... } // ❌ Imprecise
 **Improved:**
 
 ```go
+// skip-validate
 type CodeClone struct { ... }                       // ✅ Specific
 func SortCodeNodesBySimilarityScore(...) { ... }   // ✅ Precise
 type DetectionResult struct { ... }                 // ✅ Contextual

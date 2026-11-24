@@ -96,6 +96,7 @@ Successfully fixed **CRITICAL BUG** where `--detection-methods/-m` flag was defi
 **Evidence:**
 
 ```go
+// skip-validate
 // main.go uses Cobra
 cmd.NewRootCommand()
 cmd.AddFlags(rootCmd)

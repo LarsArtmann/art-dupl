@@ -47,6 +47,7 @@ Clone groups were sorted by **number of unique files** containing clones, which:
 ### Bug Code
 
 ```go
+// skip-validate
 case SortByOccurrence:
     sort.Slice(keys, func(i, j int) bool {
         return uniqueCounts[keys[i]] > uniqueCounts[keys[j]]  // ❌ WRONG
@@ -291,6 +292,7 @@ func SortClonesByOccurrence(dups [][]*syntax.Node) [][]*syntax.Node {
 **File**: `printer/sorter.go:16-19`
 
 ```go
+// skip-validate
 case SortByOccurrence:
     sort.Slice(groups, func(i, j int) bool {
         return len(groups[i].Files) > len(groups[j].Files)

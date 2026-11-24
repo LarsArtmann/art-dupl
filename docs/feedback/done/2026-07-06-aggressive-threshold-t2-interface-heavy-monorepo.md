@@ -31,6 +31,7 @@ After extracting `pendingCall`, art-dupl reported the two call sites as a new 2-
 ### 1. Extracted `rangeBodySingleIf` (5 sites eliminated)
 
 ```go
+// skip-validate
 // Before — duplicated in loop_detection.go, detection_equal_join.go, rewriter.go
 if len(rangeStmt.Body.List) != 1 {
     return false
@@ -65,6 +66,7 @@ The remaining 11 groups are all Go idioms or contractual patterns:
 ### Shared domain type references (Groups #1, #2, #3 — 82 occurrences)
 
 ```go
+// skip-validate
 // 39 sites report this as a "clone" — it's just using the shared type
 func readFile(path domain.PathString) ([]byte, error) {
 func writeToFile(path domain.PathString, content []byte) error {
@@ -76,6 +78,7 @@ Every function that accepts a `domain.PathString` parameter triggers a clone mat
 ### Interface method signatures (Group #7 — 3 implementations)
 
 ```go
+// skip-validate
 // All three migrators MUST have identical signatures — it's the interface contract
 func (m *Migrator) Name() domain.MigratorName { return Name }
 func (m *Migrator) Description() string { return "..." }

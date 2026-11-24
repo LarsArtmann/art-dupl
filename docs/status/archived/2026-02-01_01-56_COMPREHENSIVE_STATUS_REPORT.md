@@ -775,6 +775,7 @@ All critical issues were found and fixed as part of A3 above.
 **Location 1:** examples/domain_types_usage.go - Lines 122, 123-124
 
 ```go
+// skip-validate
 // Warning: Direct type casting in example code
 type CloneLocation struct {
     Filepath domain.Filepath("/path/to/file.go"),  // ⚠️ Not using NewFilepath()
@@ -831,6 +832,7 @@ token.Uint()    // ✅ Clearly TokenCount
 **Location 1:** syntax/syntax.go - Lines 111-120
 
 ```go
+// skip-validate
 // TODO: TYPE SAFETY ISSUE - This function uses int for positions and thresholds
 // but the domain package has strongly-typed LineNumber, BytePosition, TokenCount, Threshold.
 // Consider:
@@ -1194,6 +1196,7 @@ Only adopt if:
 **Current Approach:**
 
 ```go
+// skip-validate
 // Constructor function validates at construction time
 func NewThreshold(t uint) (Threshold, error) {
     if t == 0 {
@@ -1301,6 +1304,7 @@ Only adopt if:
 **Current Design:**
 
 ```go
+// skip-validate
 // Custom error types with context
 type Error interface {
     error
@@ -2123,6 +2127,7 @@ Evaluate if `go-playground/validator` is needed for complex validation scenarios
 **Current Capabilities:**
 
 ```go
+// skip-validate
 // Constructor-based validation works well for:
 ✅ Single-field validation (threshold > 0)
 ✅ Simple rules (non-empty strings, non-zero numbers)
@@ -2168,6 +2173,7 @@ Evaluate if `go-playground/validator` is needed for complex validation scenarios
 **Decision Framework:**
 
 ```go
+// skip-validate
 // Keep constructor-based validation if:
 ✅ All validation is simple (single-field rules)
 ✅ No cross-field validation needed
@@ -2382,6 +2388,7 @@ Mix of generic `.Uint()` and type-specific `.Uint16()`, `.Uint32()` methods redu
 **Proposed Standardization:**
 
 ```go
+// skip-validate
 // Remove generic .Uint() method, keep only type-specific:
 
 // Current (ambiguous):
@@ -2715,6 +2722,7 @@ func ProcessConfig(cfg *config.Config) (*domain.DetectionOptions, error) {
 ### Pattern 3: Default Values
 
 ```go
+// skip-validate
 func GetThresholdWithDefault(cfg *config.Config, default uint) domain.Threshold {
     threshold, err := cfg.GetThresholdAsDomain()
     if err != nil {
@@ -2850,6 +2858,7 @@ threshold, _ := domain.NewThreshold(validThreshold)
 
 1. **High String Duplication**
    ```go
+   // skip-validate
    // File paths repeated across many clones
    /path/to/file.go appears in 100+ clones
    // → Pool it: GlobalPool().Intern("/path/to/file.go")
@@ -3023,6 +3032,7 @@ str := pool.Lookup(id)    // Hashmap lookup: O(1) average
 ### Example Decision Framework:
 
 ```go
+// skip-validate
 // Decision matrix
 func ShouldPool(str string, frequency int) bool {
     return frequency > 10 && len(str) > 10
@@ -3662,6 +3672,7 @@ func ExampleFilepath() {
 **Implementation:**
 
 ```go
+// skip-validate
 // Before (generic):
 "errors.NewValidationError("invalid threshold", nil)
 

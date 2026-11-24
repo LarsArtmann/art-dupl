@@ -85,6 +85,7 @@ func (s SortBy) String() string
 **Solution:**
 
 ```go
+// skip-validate
 // Extracted functions:
 func buildCloneGroups(duplChan <-chan syntax.Match) map[string][][]*syntax.Node
 func computeUniqueCounts(groups map[string][][]*syntax.Node) map[string]int

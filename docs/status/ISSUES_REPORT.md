@@ -94,6 +94,7 @@ Command: `just check` and `just fd`
 - **Location**: `cli.go:444`
 
   ```go
+  // skip-validate
   func filesFeed() chan string {
   ```
 

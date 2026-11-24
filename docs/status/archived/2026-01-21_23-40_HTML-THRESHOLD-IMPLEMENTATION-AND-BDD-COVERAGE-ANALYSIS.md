@@ -440,6 +440,7 @@ func (p *htmlprinter) PrintHeader() error {
 ### Threshold Propagation
 
 ```go
+// skip-validate
 // cmd/run.go
 func createPrinter(outputFormat config.OutputFormat, threshold int) func(io.Writer, printer.ReadFile) printer.Printer {
     switch outputFormat {

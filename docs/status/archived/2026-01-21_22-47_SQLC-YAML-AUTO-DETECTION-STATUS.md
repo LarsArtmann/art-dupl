@@ -513,6 +513,7 @@ art-dupl --no-sqlc-auto ./myapp  # (Need to implement this flag)
 
 **Update examples:**
 ```go
+// skip-validate
 Example: `  art-dupl ./src                  # Auto-detects sqlc.yaml and filters sqlc files
   art-dupl --include-sqlc ./src    # Include sqlc files despite sqlc.yaml
   art-dupl --filter-generated ./src # Explicit filtering (auto-detection + other generators)

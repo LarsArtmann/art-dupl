@@ -195,6 +195,7 @@ $ golangci-lint run ./migration/...
 ### Domain Validation Pattern
 
 ```go
+// skip-validate
 // Preferred approach in this codebase:
 func (c Clone) IsValid() error {
     if c.EndLine < c.StartLine {

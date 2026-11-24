@@ -140,6 +140,7 @@
 ### **Current State (EXCELLENT - Production Ready):**
 
 ```go
+// skip-validate
 // Working Bridge Pattern - PRODUCTION READY
 main.go:   Cobra + Fang + Custom Errors + Themes
      ↓
@@ -160,6 +161,7 @@ cli.go:     Global Variables + Business Logic (Proven)
 ### **Future Migration Path:**
 
 ```go
+// skip-validate
 // Future State - Ready When Needed
 main.go:   Cobra + Fang + Enhanced Features
      ↓
