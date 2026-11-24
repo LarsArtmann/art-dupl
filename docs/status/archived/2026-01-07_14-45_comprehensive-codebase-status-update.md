@@ -267,14 +267,14 @@
 
 ### Summary: FULLY DONE (11 Major Items)
 
-| Category               | Count        | Impact                          |
-| ---------------------- | ------------ | ------------------------------- |
-| ~~**Recent refactoring**~~ **Superseded — superseded — January measurement snapshot, stale by design.** | ~~3 tasks~~ | ~~-105 lines duplicate code~~ |
-| ~~**Infrastructure**~~ **Superseded — superseded — January measurement snapshot, stale by design.** | ~~2 items~~ | ~~Profiling, error handling~~ |
-| ~~**Linting cleanup**~~ **Superseded — superseded — January measurement snapshot, stale by design.** | ~~1 task~~ | ~~0 linter issues~~ |
-| ~~**Blocker resolution**~~ **Superseded — superseded — January measurement snapshot, stale by design.** | ~~1 task~~ | ~~8 tasks unblocked~~ |
-| ~~**Major features**~~ **Superseded — superseded — January measurement snapshot, stale by design.** | ~~4 features~~ | ~~Complete CLI, detection, output~~ |
-| ~~**Total**~~ **Superseded — superseded — January measurement snapshot, stale by design.** | ~~**11 items**~~ | ~~**Production-ready**~~ |
+| Category                                                                                                | Count            | Impact                              |
+| ------------------------------------------------------------------------------------------------------- | ---------------- | ----------------------------------- |
+| ~~**Recent refactoring**~~ **Superseded — superseded — January measurement snapshot, stale by design.** | ~~3 tasks~~      | ~~-105 lines duplicate code~~       |
+| ~~**Infrastructure**~~ **Superseded — superseded — January measurement snapshot, stale by design.**     | ~~2 items~~      | ~~Profiling, error handling~~       |
+| ~~**Linting cleanup**~~ **Superseded — superseded — January measurement snapshot, stale by design.**    | ~~1 task~~       | ~~0 linter issues~~                 |
+| ~~**Blocker resolution**~~ **Superseded — superseded — January measurement snapshot, stale by design.** | ~~1 task~~       | ~~8 tasks unblocked~~               |
+| ~~**Major features**~~ **Superseded — superseded — January measurement snapshot, stale by design.**     | ~~4 features~~   | ~~Complete CLI, detection, output~~ |
+| ~~**Total**~~ **Superseded — superseded — January measurement snapshot, stale by design.**              | ~~**11 items**~~ | ~~**Production-ready**~~            |
 
 ---
 
@@ -390,13 +390,13 @@
 
 ### Summary: PARTIALLY DONE (4 Major Areas)
 
-| Area                  | Status         | Progress    | Remaining Effort |
-| --------------------- | -------------- | ----------- | ---------------- |
-| ~~**Improvement plan**~~ **Superseded — superseded — January measurement snapshot, stale by design.** | ~~🟡 In Progress~~ | ~~12%~~ | ~~~20 hours~~ |
-| ~~**Documentation**~~ **Superseded — superseded — January measurement snapshot, stale by design.** | ~~🟡 Partial~~ | ~~40%~~ | ~~~3-4 hours~~ |
-| ~~**Test coverage**~~ **Superseded — superseded — January measurement snapshot, stale by design.** | ~~🟡 Good~~ | ~~85%~~ | ~~~2-3 hours~~ |
-| ~~**Code organization**~~ **Superseded — superseded — January measurement snapshot, stale by design.** | ~~🟡 Improving~~ | ~~30%~~ | ~~~5-6 hours~~ |
-| ~~**Total**~~ **Superseded — superseded — January measurement snapshot, stale by design.** | ~~**4 areas**~~ | ~~**42% avg**~~ | ~~**~30-33 hours**~~ |
+| Area                                                                                                   | Status             | Progress        | Remaining Effort     |
+| ------------------------------------------------------------------------------------------------------ | ------------------ | --------------- | -------------------- |
+| ~~**Improvement plan**~~ **Superseded — superseded — January measurement snapshot, stale by design.**  | ~~🟡 In Progress~~ | ~~12%~~         | ~~~20 hours~~        |
+| ~~**Documentation**~~ **Superseded — superseded — January measurement snapshot, stale by design.**     | ~~🟡 Partial~~     | ~~40%~~         | ~~~3-4 hours~~       |
+| ~~**Test coverage**~~ **Superseded — superseded — January measurement snapshot, stale by design.**     | ~~🟡 Good~~        | ~~85%~~         | ~~~2-3 hours~~       |
+| ~~**Code organization**~~ **Superseded — superseded — January measurement snapshot, stale by design.** | ~~🟡 Improving~~   | ~~30%~~         | ~~~5-6 hours~~       |
+| ~~**Total**~~ **Superseded — superseded — January measurement snapshot, stale by design.**             | ~~**4 areas**~~    | ~~**42% avg**~~ | ~~**~30-33 hours**~~ |
 
 ---
 
@@ -771,13 +771,13 @@
 
 ### Summary: NOT STARTED (25 Tasks Remaining)
 
-| Priority     | Tasks        | Estimated Time   | Impact                        |
-| ------------ | ------------ | ---------------- | ----------------------------- |
-| ~~**CRITICAL**~~ **Superseded — superseded — January measurement snapshot, stale by design.** | ~~1~~ | ~~15 min~~ | ~~Unblocks 8 tasks~~ |
-| ~~**HIGH**~~ **Superseded — superseded — January measurement snapshot, stale by design.** | ~~6~~ | ~~6.1 hours~~ | ~~Major improvements~~ |
-| ~~**MEDIUM**~~ **Superseded — superseded — January measurement snapshot, stale by design.** | ~~7~~ | ~~5.6 hours~~ | ~~Quality & organization~~ |
-| ~~**LOW**~~ **Superseded — superseded — January measurement snapshot, stale by design.** | ~~11~~ | ~~8-10 hours~~ | ~~Future enhancements~~ |
-| ~~**Total**~~ **Superseded — superseded — January measurement snapshot, stale by design.** | ~~**25 tasks**~~ | ~~**~20-22 hours**~~ | ~~**Comprehensive improvement**~~ |
+| Priority                                                                                      | Tasks            | Estimated Time       | Impact                            |
+| --------------------------------------------------------------------------------------------- | ---------------- | -------------------- | --------------------------------- |
+| ~~**CRITICAL**~~ **Superseded — superseded — January measurement snapshot, stale by design.** | ~~1~~            | ~~15 min~~           | ~~Unblocks 8 tasks~~              |
+| ~~**HIGH**~~ **Superseded — superseded — January measurement snapshot, stale by design.**     | ~~6~~            | ~~6.1 hours~~        | ~~Major improvements~~            |
+| ~~**MEDIUM**~~ **Superseded — superseded — January measurement snapshot, stale by design.**   | ~~7~~            | ~~5.6 hours~~        | ~~Quality & organization~~        |
+| ~~**LOW**~~ **Superseded — superseded — January measurement snapshot, stale by design.**      | ~~11~~           | ~~8-10 hours~~       | ~~Future enhancements~~           |
+| ~~**Total**~~ **Superseded — superseded — January measurement snapshot, stale by design.**    | ~~**25 tasks**~~ | ~~**~20-22 hours**~~ | ~~**Comprehensive improvement**~~ |
 
 ---
 
@@ -1141,15 +1141,15 @@
 
 ### Summary: WHAT WE SHOULD IMPROVE (6 Areas)
 
-| Area                | Current State                  | Recommended                   | Effort          | Impact          |
-| ------------------- | ------------------------------ | ----------------------------- | --------------- | --------------- |
-| ~~**Tooling**~~ **Superseded — superseded — January measurement snapshot, stale by design.** | ~~String-based tools~~ | ~~Go-specific refactoring tools~~ | ~~2-3 hours~~ | ~~HIGH~~ |
-| ~~**Time Management**~~ **Superseded — superseded — January measurement snapshot, stale by design.** | ~~No limits~~ | ~~10-minute rule, tracking~~ | ~~1-2 hours~~ | ~~MEDIUM~~ |
-| ~~**Code Review**~~ **Superseded — superseded — January measurement snapshot, stale by design.** | ~~Self-review only~~ | ~~Structured checklist~~ | ~~Ongoing~~ | ~~HIGH~~ |
-| ~~**Testing**~~ **Superseded — superseded — January measurement snapshot, stale by design.** | ~~Good unit, missing integration~~ | ~~Test pyramid, automation~~ | ~~4-6 hours~~ | ~~HIGH~~ |
-| ~~**Documentation**~~ **Superseded — superseded — January measurement snapshot, stale by design.** | ~~Status reports only~~ | ~~Package docs, ARCHITECTURE.md~~ | ~~3-4 hours~~ | ~~MEDIUM~~ |
-| ~~**Process**~~ **Superseded — superseded — January measurement snapshot, stale by design.** | ~~Ad-hoc~~ | ~~Weekly sprints, metrics~~ | ~~2-3 hours~~ | ~~MEDIUM~~ |
-| ~~**Total**~~ **Superseded — superseded — January measurement snapshot, stale by design.** | ~~**6 areas**~~ | ~~**Systematic improvement**~~ | ~~**12-18 hours**~~ | ~~**Significant**~~ |
+| Area                                                                                                 | Current State                      | Recommended                       | Effort              | Impact              |
+| ---------------------------------------------------------------------------------------------------- | ---------------------------------- | --------------------------------- | ------------------- | ------------------- |
+| ~~**Tooling**~~ **Superseded — superseded — January measurement snapshot, stale by design.**         | ~~String-based tools~~             | ~~Go-specific refactoring tools~~ | ~~2-3 hours~~       | ~~HIGH~~            |
+| ~~**Time Management**~~ **Superseded — superseded — January measurement snapshot, stale by design.** | ~~No limits~~                      | ~~10-minute rule, tracking~~      | ~~1-2 hours~~       | ~~MEDIUM~~          |
+| ~~**Code Review**~~ **Superseded — superseded — January measurement snapshot, stale by design.**     | ~~Self-review only~~               | ~~Structured checklist~~          | ~~Ongoing~~         | ~~HIGH~~            |
+| ~~**Testing**~~ **Superseded — superseded — January measurement snapshot, stale by design.**         | ~~Good unit, missing integration~~ | ~~Test pyramid, automation~~      | ~~4-6 hours~~       | ~~HIGH~~            |
+| ~~**Documentation**~~ **Superseded — superseded — January measurement snapshot, stale by design.**   | ~~Status reports only~~            | ~~Package docs, ARCHITECTURE.md~~ | ~~3-4 hours~~       | ~~MEDIUM~~          |
+| ~~**Process**~~ **Superseded — superseded — January measurement snapshot, stale by design.**         | ~~Ad-hoc~~                         | ~~Weekly sprints, metrics~~       | ~~2-3 hours~~       | ~~MEDIUM~~          |
+| ~~**Total**~~ **Superseded — superseded — January measurement snapshot, stale by design.**           | ~~**6 areas**~~                    | ~~**Systematic improvement**~~    | ~~**12-18 hours**~~ | ~~**Significant**~~ |
 
 ---
 
@@ -1169,9 +1169,9 @@
 1. Delete `func Run()` from `cli.go:28-134` (107 lines)
 2. Run `go test ./...` to verify no regressions
 3. ~~Run `go build` to verify compilation~~ done — executed in the January sprint; suite and CI gates green since
-~~4. Run `./art-dupl --help` to verify CLI works~~ done 2026-11-15 — CLI operational at HEAD (Fang/Cobra root help renders; the docs-health count gate re-derives all registered flags every CI run).
-5. Commit: "refactor(cli): remove deprecated Run() function - dual CLI elimination"
-6. Push to remote
+   ~~4. Run `./art-dupl --help` to verify CLI works~~ done 2026-11-15 — CLI operational at HEAD (Fang/Cobra root help renders; the docs-health count gate re-derives all registered flags every CI run).
+4. Commit: "refactor(cli): remove deprecated Run() function - dual CLI elimination"
+5. Push to remote
 
 **Expected Outcome:**
 
@@ -1470,9 +1470,11 @@
 ~~1. Create `errors/handlers.go`~~ **Superseded — superseded — the typed errors package and cmd.ExitCodeForError own this.**
 ~~2. Implement `ExitWithError()` function~~ **Superseded — superseded — the typed errors package and cmd.ExitCodeForError own this.**
 3. Standardize error format:
-   - Clear description
-   - Suggested fix
-   - Help command reference
+
+- Clear description
+- Suggested fix
+- Help command reference
+
 4. Update all error messages
 5. ~~Add tests~~ done — executed in the January sprint; suite and CI gates green since
 6. ~~Run tests to verify~~ done — executed in the January sprint; suite and CI gates green since
@@ -1579,8 +1581,8 @@
 1. Continue adding package comments
 2. Add README.md for main packages
 3. Add usage examples
-~~4. Create ARCHITECTURE.md~~ **Superseded — superseded — AGENTS.md and docs/DOMAIN_LANGUAGE.md carry the architecture record.**
-5. Commit and push
+   ~~4. Create ARCHITECTURE.md~~ **Superseded — superseded — AGENTS.md and docs/DOMAIN_LANGUAGE.md carry the architecture record.**
+4. Commit and push
 
 **Expected Outcome:**
 
@@ -1784,10 +1786,10 @@
 
 1. Define migration format
 2. Implement migration tool
-~~3. Add `--migrate` command~~ **Superseded — superseded — internal config/config_migrate.go owns migration, not a CLI command.**
-4. ~~Add tests~~ done — executed in the January sprint; suite and CI gates green since
-5. ~~Add documentation~~ done — executed in the January sprint; suite and CI gates green since
-6. Commit and push
+   ~~3. Add `--migrate` command~~ **Superseded — superseded — internal config/config_migrate.go owns migration, not a CLI command.**
+3. ~~Add tests~~ done — executed in the January sprint; suite and CI gates green since
+4. ~~Add documentation~~ done — executed in the January sprint; suite and CI gates green since
+5. Commit and push
 
 **Expected Outcome:**
 
@@ -1798,13 +1800,13 @@
 
 ### Summary: TOP #25 THINGS TO DO NEXT
 
-| Priority     | Tasks        | Time             | Impact                        | Status        |
-| ------------ | ------------ | ---------------- | ----------------------------- | ------------- |
-| ~~**CRITICAL**~~ **Superseded — superseded — January measurement snapshot, stale by design.** | ~~1~~ | ~~15 min~~ | ~~Unblocks 8 tasks~~ | ~~READY 🚀~~ |
-| ~~**HIGH**~~ **Superseded — superseded — January measurement snapshot, stale by design.** | ~~6~~ | ~~6.1 hours~~ | ~~Major improvements~~ | ~~READY 🚀~~ |
-| ~~**MEDIUM**~~ **Superseded — superseded — January measurement snapshot, stale by design.** | ~~7~~ | ~~5.6 hours~~ | ~~Quality & organization~~ | ~~READY 🚀~~ |
-| ~~**LOW**~~ **Superseded — superseded — January measurement snapshot, stale by design.** | ~~11~~ | ~~8-10 hours~~ | ~~Future enhancements~~ | ~~READY ⏸️~~ |
-| ~~**Total**~~ **Superseded — superseded — January measurement snapshot, stale by design.** | ~~**25 tasks**~~ | ~~**~20-22 hours**~~ | ~~**Comprehensive improvement**~~ | ~~**ALL READY**~~ |
+| Priority                                                                                      | Tasks            | Time                 | Impact                            | Status            |
+| --------------------------------------------------------------------------------------------- | ---------------- | -------------------- | --------------------------------- | ----------------- |
+| ~~**CRITICAL**~~ **Superseded — superseded — January measurement snapshot, stale by design.** | ~~1~~            | ~~15 min~~           | ~~Unblocks 8 tasks~~              | ~~READY 🚀~~      |
+| ~~**HIGH**~~ **Superseded — superseded — January measurement snapshot, stale by design.**     | ~~6~~            | ~~6.1 hours~~        | ~~Major improvements~~            | ~~READY 🚀~~      |
+| ~~**MEDIUM**~~ **Superseded — superseded — January measurement snapshot, stale by design.**   | ~~7~~            | ~~5.6 hours~~        | ~~Quality & organization~~        | ~~READY 🚀~~      |
+| ~~**LOW**~~ **Superseded — superseded — January measurement snapshot, stale by design.**      | ~~11~~           | ~~8-10 hours~~       | ~~Future enhancements~~           | ~~READY ⏸️~~       |
+| ~~**Total**~~ **Superseded — superseded — January measurement snapshot, stale by design.**    | ~~**25 tasks**~~ | ~~**~20-22 hours**~~ | ~~**Comprehensive improvement**~~ | ~~**ALL READY**~~ |
 
 ---
 
@@ -1904,15 +1906,15 @@ This decision impacts:
 
 ### Current State Assessment
 
-| Category            | Status       | Score |
-| ------------------- | ------------ | ----- |
-| ~~**Code Quality**~~ **Superseded — superseded — January measurement snapshot, stale by design.** | ~~🟢 Excellent~~ | ~~9/10~~ |
-| ~~**Test Coverage**~~ **Superseded — superseded — January measurement snapshot, stale by design.** | ~~🟢 Good~~ | ~~8/10~~ |
-| ~~**Linting**~~ **Superseded — superseded — January measurement snapshot, stale by design.** | ~~🟢 Perfect~~ | ~~10/10~~ |
-| ~~**Documentation**~~ **Superseded — superseded — January measurement snapshot, stale by design.** | ~~🟡 Partial~~ | ~~6/10~~ |
-| ~~**Architecture**~~ **Superseded — superseded — January measurement snapshot, stale by design.** | ~~🟡 Improving~~ | ~~7/10~~ |
-| ~~**Maintainability**~~ **Superseded — superseded — January measurement snapshot, stale by design.** | ~~🟢 Good~~ | ~~8/10~~ |
-| ~~**Overall Health**~~ **Superseded — superseded — January measurement snapshot, stale by design.** | ~~🟢 EXCELLENT~~ | ~~8/10~~ |
+| Category                                                                                             | Status           | Score     |
+| ---------------------------------------------------------------------------------------------------- | ---------------- | --------- |
+| ~~**Code Quality**~~ **Superseded — superseded — January measurement snapshot, stale by design.**    | ~~🟢 Excellent~~ | ~~9/10~~  |
+| ~~**Test Coverage**~~ **Superseded — superseded — January measurement snapshot, stale by design.**   | ~~🟢 Good~~      | ~~8/10~~  |
+| ~~**Linting**~~ **Superseded — superseded — January measurement snapshot, stale by design.**         | ~~🟢 Perfect~~   | ~~10/10~~ |
+| ~~**Documentation**~~ **Superseded — superseded — January measurement snapshot, stale by design.**   | ~~🟡 Partial~~   | ~~6/10~~  |
+| ~~**Architecture**~~ **Superseded — superseded — January measurement snapshot, stale by design.**    | ~~🟡 Improving~~ | ~~7/10~~  |
+| ~~**Maintainability**~~ **Superseded — superseded — January measurement snapshot, stale by design.** | ~~🟢 Good~~      | ~~8/10~~  |
+| ~~**Overall Health**~~ **Superseded — superseded — January measurement snapshot, stale by design.**  | ~~🟢 EXCELLENT~~ | ~~8/10~~  |
 
 ### Progress Overview
 

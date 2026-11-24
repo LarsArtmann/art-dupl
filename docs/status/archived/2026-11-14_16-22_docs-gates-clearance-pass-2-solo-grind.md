@@ -9,12 +9,13 @@
 ## Executive metric line
 
 <!-- check-rows:ledger -->
-| Metric                  | Session start | Now  |
-| ----------------------- | ------------- | ---- |
-| annotate findings       | 290           | 69   |
-| audit-all unharvested   | 495           | 383  |
-| struck items (annotate) | 4,137         | 4,795 |
-| files fully gate-clean  | 0             | 60   |
+
+| Metric                  | Session start | Now                 |
+| ----------------------- | ------------- | ------------------- |
+| annotate findings       | 290           | 69                  |
+| audit-all unharvested   | 495           | 383                 |
+| struck items (annotate) | 4,137         | 4,795               |
+| files fully gate-clean  | 0             | 60                  |
 | cadence unarchived      | 169           | 169 (wave deferred) |
 
 ## a) FULLY DONE

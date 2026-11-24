@@ -231,21 +231,21 @@ Actual: "Found total 0 clone groups"
 11. Fix gosec G115 (integer overflow) issues
 12. Fix gosec G301/G304/G306 (file permissions)
 13. Reduce cyclomatic complexity (cyclop/gocognit)
-~~14. Fix nestif (nested if statements)~~ done — lint is 106-linter clean (AGENTS.md)
-~~15. Fix gochecknoinits~~ done — lint is 106-linter clean (AGENTS.md)
-16. Fix dupword (duplicate words in comments)
-17. Fix containedctx (context in structs)
-18. Fix fatcontext (context usage)
-19. Fix unparam (unused parameters)
-20. Fix mnd (magic numbers)
+    ~~14. Fix nestif (nested if statements)~~ done — lint is 106-linter clean (AGENTS.md)
+    ~~15. Fix gochecknoinits~~ done — lint is 106-linter clean (AGENTS.md)
+14. Fix dupword (duplicate words in comments)
+15. Fix containedctx (context in structs)
+16. Fix fatcontext (context usage)
+17. Fix unparam (unused parameters)
+18. Fix mnd (magic numbers)
 
 ### Priority 4: Features (P3)
 
 21. Complete --profile flag implementation
-~~22. Implement proper CSV output~~ done — CSV is an OutputFormat value (AGENTS.md)
-~~23. Add SARIF output format~~ done — SARIF ships with a byte-level golden (AGENTS.md)
-24. Resolve config/domain import cycle
-25. Add integration tests for hash-based detection
+    ~~22. Implement proper CSV output~~ done — CSV is an OutputFormat value (AGENTS.md)
+    ~~23. Add SARIF output format~~ done — SARIF ships with a byte-level golden (AGENTS.md)
+22. Resolve config/domain import cycle
+23. Add integration tests for hash-based detection
 
 ---
 

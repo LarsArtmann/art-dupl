@@ -104,11 +104,11 @@ Nothing. The fix is correct, minimal, well-tested, and verified end-to-end. No r
 ### High Priority — Close This Session's Gaps
 
 1. Update `AGENTS.md:103` to document that `single-call-expression` now covers `ExprStmt(CallExpr)` including `t.Parallel()`, `fmt.Println()`, `log.Fatal()`, etc.
-~~2. Update `docs/ACTIONABILITY_PATTERNS.md:16` table row for Single call pattern.~~ done — the pattern doc carries the single-call row (docs/ACTIONABILITY_PATTERNS.md)
-3. Run `golangci-lint run --timeout 5m ./...` and fix any findings in changed files.
-4. Run `nix flake check` to verify reproducible CI passes.
-5. Audit ALL actionability patterns in `printer/actionability*.go` for the same ExprStmt-wrapping blind spot — check every `BaseType == golang.XXX` comparison.
-6. Consider extracting a shared `unwrapExprStmt(n *domain.CloneNode) *domain.CloneNode` helper for patterns that need to look inside ExprStmt wrappers.
+   ~~2. Update `docs/ACTIONABILITY_PATTERNS.md:16` table row for Single call pattern.~~ done — the pattern doc carries the single-call row (docs/ACTIONABILITY_PATTERNS.md)
+2. Run `golangci-lint run --timeout 5m ./...` and fix any findings in changed files.
+3. Run `nix flake check` to verify reproducible CI passes.
+4. Audit ALL actionability patterns in `printer/actionability*.go` for the same ExprStmt-wrapping blind spot — check every `BaseType == golang.XXX` comparison.
+5. Consider extracting a shared `unwrapExprStmt(n *domain.CloneNode) *domain.CloneNode` helper for patterns that need to look inside ExprStmt wrappers.
 
 ### Medium Priority — Related Improvements
 

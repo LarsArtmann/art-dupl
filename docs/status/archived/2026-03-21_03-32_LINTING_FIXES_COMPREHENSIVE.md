@@ -165,11 +165,11 @@ The following violations remain but are acceptable:
 18. Address thelper violations (t.Helper() calls)
 19. Fix nonamedreturns in domain types test
 20. Add bounds checking for slice operations (gosec G602)
-~~21. Fix ireturn violation in pkg/logger/logger.go~~ done — lint is 106-linter clean (AGENTS.md)
-22. Address nestif violations in other files
-23. Fix gosmopolitan violations (if not intentional)
-24. Add comprehensive comments for exported functions (revive)
-25. Refactor files over 350 lines (long-term effort)
+    ~~21. Fix ireturn violation in pkg/logger/logger.go~~ done — lint is 106-linter clean (AGENTS.md)
+21. Address nestif violations in other files
+22. Fix gosmopolitan violations (if not intentional)
+23. Add comprehensive comments for exported functions (revive)
+24. Refactor files over 350 lines (long-term effort)
 
 ---
 

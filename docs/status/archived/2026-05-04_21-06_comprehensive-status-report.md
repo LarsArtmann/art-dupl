@@ -14,13 +14,13 @@
 
 ## Executive Summary
 
-| Metric             | Status                                                                                                                                                                                                                                           |
-| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| ~~**Build**~~ done — verified — 2026-05-04 snapshot, historical | ~~✅ PASSING~~ |
-| ~~**Lint**~~ done — verified — 2026-05-04 snapshot, historical | ~~✅ 0 issues~~ |
-| ~~**Tests**~~ done — verified — 2026-05-04 snapshot, historical | ~~✅ ALL PASSING (22 packages)~~ |
-| ~~**Coverage**~~ done — coverage gated by scripts/check-coverage.sh baseline (75.2% at capture) | 
-| ~~**Git Status**~~ done — verified — 2026-05-04 snapshot, historical | ~~Clean (pushed to origin/fork)~~ |
+| Metric                                                                                          | Status                            |
+| ----------------------------------------------------------------------------------------------- | --------------------------------- |
+| ~~**Build**~~ done — verified — 2026-05-04 snapshot, historical                                 | ~~✅ PASSING~~                    |
+| ~~**Lint**~~ done — verified — 2026-05-04 snapshot, historical                                  | ~~✅ 0 issues~~                   |
+| ~~**Tests**~~ done — verified — 2026-05-04 snapshot, historical                                 | ~~✅ ALL PASSING (22 packages)~~  |
+| ~~**Coverage**~~ done — coverage gated by scripts/check-coverage.sh baseline (75.2% at capture) |                                   |
+| ~~**Git Status**~~ done — verified — 2026-05-04 snapshot, historical                            | ~~Clean (pushed to origin/fork)~~ |
 
 ---
 
@@ -28,51 +28,51 @@
 
 ### A) FULLY DONE ✅
 
-| Feature                                                | Status      | Notes                                    |
-| ------------------------------------------------------ | ----------- | ---------------------------------------- |
-| ~~Suffix tree detection (art-dupl)~~ done — verified — 2026-05-04 snapshot; still accurate per AGENTS.md | ~~✅ COMPLETE~~ | ~~Core algorithm working~~ |
-| ~~Hash-based detection~~ done — verified — 2026-05-04 snapshot; still accurate per AGENTS.md | ~~✅ COMPLETE~~ | ~~Alternative method~~ |
-| ~~Semantic detection~~ done — verified — 2026-05-04 snapshot; still accurate per AGENTS.md | ~~✅ COMPLETE~~ | ~~`--semantic` flag~~ |
-| ~~Incremental mode with caching~~ done — verified — 2026-05-04 snapshot; still accurate per AGENTS.md | ~~✅ COMPLETE~~ | ~~`--incremental` flag~~ |
-| ~~Multi-method detection~~ done — verified — 2026-05-04 snapshot; still accurate per AGENTS.md | ~~✅ COMPLETE~~ | ~~`-m hash,art-dupl`~~ |
-| ~~Output formats (text, json, html, plumbing, sarif)~~ done — verified — 2026-05-04 snapshot; still accurate per AGENTS.md | ~~✅ COMPLETE~~ | ~~All working~~ |
-| ~~Stats subcommand~~ done — verified — 2026-05-04 snapshot; still accurate per AGENTS.md | ~~✅ COMPLETE~~ | ~~`art-dupl stats`~~ |
-| ~~Filtering (SQLC, templ, protobuf, mockgen, stringer)~~ done — verified — 2026-05-04 snapshot; still accurate per AGENTS.md | ~~✅ COMPLETE~~ | ~~`--filter-generated`~~ |
-| ~~File type filtering (--only go/templ)~~ done — verified — 2026-05-04 snapshot; still accurate per AGENTS.md | ~~✅ COMPLETE~~ | ~~Working~~ |
-| ~~Include/Exclude patterns~~ done — verified — 2026-05-04 snapshot; still accurate per AGENTS.md | ~~✅ COMPLETE~~ | ~~`--include-pattern`, `--exclude-pattern`~~ |
-| ~~Sorting options (size, occurrence, hash, total-tokens)~~ done — verified — 2026-05-04 snapshot; still accurate per AGENTS.md | ~~✅ COMPLETE~~ | ~~`-s` flag~~ |
-| ~~Config file support (JSON)~~ done — verified — 2026-05-04 snapshot; still accurate per AGENTS.md | ~~✅ COMPLETE~~ | ~~`-c` flag~~ |
-| ~~Parallel parsing (--workers)~~ done — verified — 2026-05-04 snapshot; still accurate per AGENTS.md | ~~✅ COMPLETE~~ | ~~Auto-detection working~~ |
-| ~~Diff visualization (HTML)~~ done — verified — 2026-05-04 snapshot; still accurate per AGENTS.md | ~~✅ COMPLETE~~ | ~~`--diff` flag~~ |
-| ~~Version info~~ done — verified — 2026-05-04 snapshot; still accurate per AGENTS.md | ~~✅ COMPLETE~~ | ~~`--version` flag~~ |
-| ~~Shell completion~~ done — verified — 2026-05-04 snapshot; still accurate per AGENTS.md | ~~✅ COMPLETE~~ | ~~bash/zsh/fish/powershell~~ |
-| ~~**node_modules exclusion fix**~~ done — verified — 2026-05-04 snapshot; still accurate per AGENTS.md | ~~✅ COMPLETE~~ | ~~**BUG FIX 2026-05-04**~~ |
-| ~~**gogenfilter integration**~~ done — verified — 2026-05-04 snapshot; still accurate per AGENTS.md | ~~✅ COMPLETE~~ | ~~Updated to v0.2.1~~ |
+| Feature                                                                                                                        | Status          | Notes                                        |
+| ------------------------------------------------------------------------------------------------------------------------------ | --------------- | -------------------------------------------- |
+| ~~Suffix tree detection (art-dupl)~~ done — verified — 2026-05-04 snapshot; still accurate per AGENTS.md                       | ~~✅ COMPLETE~~ | ~~Core algorithm working~~                   |
+| ~~Hash-based detection~~ done — verified — 2026-05-04 snapshot; still accurate per AGENTS.md                                   | ~~✅ COMPLETE~~ | ~~Alternative method~~                       |
+| ~~Semantic detection~~ done — verified — 2026-05-04 snapshot; still accurate per AGENTS.md                                     | ~~✅ COMPLETE~~ | ~~`--semantic` flag~~                        |
+| ~~Incremental mode with caching~~ done — verified — 2026-05-04 snapshot; still accurate per AGENTS.md                          | ~~✅ COMPLETE~~ | ~~`--incremental` flag~~                     |
+| ~~Multi-method detection~~ done — verified — 2026-05-04 snapshot; still accurate per AGENTS.md                                 | ~~✅ COMPLETE~~ | ~~`-m hash,art-dupl`~~                       |
+| ~~Output formats (text, json, html, plumbing, sarif)~~ done — verified — 2026-05-04 snapshot; still accurate per AGENTS.md     | ~~✅ COMPLETE~~ | ~~All working~~                              |
+| ~~Stats subcommand~~ done — verified — 2026-05-04 snapshot; still accurate per AGENTS.md                                       | ~~✅ COMPLETE~~ | ~~`art-dupl stats`~~                         |
+| ~~Filtering (SQLC, templ, protobuf, mockgen, stringer)~~ done — verified — 2026-05-04 snapshot; still accurate per AGENTS.md   | ~~✅ COMPLETE~~ | ~~`--filter-generated`~~                     |
+| ~~File type filtering (--only go/templ)~~ done — verified — 2026-05-04 snapshot; still accurate per AGENTS.md                  | ~~✅ COMPLETE~~ | ~~Working~~                                  |
+| ~~Include/Exclude patterns~~ done — verified — 2026-05-04 snapshot; still accurate per AGENTS.md                               | ~~✅ COMPLETE~~ | ~~`--include-pattern`, `--exclude-pattern`~~ |
+| ~~Sorting options (size, occurrence, hash, total-tokens)~~ done — verified — 2026-05-04 snapshot; still accurate per AGENTS.md | ~~✅ COMPLETE~~ | ~~`-s` flag~~                                |
+| ~~Config file support (JSON)~~ done — verified — 2026-05-04 snapshot; still accurate per AGENTS.md                             | ~~✅ COMPLETE~~ | ~~`-c` flag~~                                |
+| ~~Parallel parsing (--workers)~~ done — verified — 2026-05-04 snapshot; still accurate per AGENTS.md                           | ~~✅ COMPLETE~~ | ~~Auto-detection working~~                   |
+| ~~Diff visualization (HTML)~~ done — verified — 2026-05-04 snapshot; still accurate per AGENTS.md                              | ~~✅ COMPLETE~~ | ~~`--diff` flag~~                            |
+| ~~Version info~~ done — verified — 2026-05-04 snapshot; still accurate per AGENTS.md                                           | ~~✅ COMPLETE~~ | ~~`--version` flag~~                         |
+| ~~Shell completion~~ done — verified — 2026-05-04 snapshot; still accurate per AGENTS.md                                       | ~~✅ COMPLETE~~ | ~~bash/zsh/fish/powershell~~                 |
+| ~~**node_modules exclusion fix**~~ done — verified — 2026-05-04 snapshot; still accurate per AGENTS.md                         | ~~✅ COMPLETE~~ | ~~**BUG FIX 2026-05-04**~~                   |
+| ~~**gogenfilter integration**~~ done — verified — 2026-05-04 snapshot; still accurate per AGENTS.md                            | ~~✅ COMPLETE~~ | ~~Updated to v0.2.1~~                        |
 
 ### B) PARTIALLY DONE 🔄
 
-| Feature                        | Status     | Notes                                    |
-| ------------------------------ | ---------- | ---------------------------------------- |
-| ~~BDD test coverage~~ done — verified — 2026-05-04 snapshot, historical | ~~🔄 80%~~ | ~~18.9s test time, good coverage~~ |
-| ~~Code coverage~~ done — verified — 2026-05-04 snapshot, historical | ~~🔄 ~85%~~ | ~~Some packages <80% (cmd, detection, job)~~ |
-| ~~Documentation~~ done — verified — 2026-05-04 snapshot, historical | ~~🔄 Ongoing~~ | ~~Many status docs, README current~~ |
-| ~~Error handling standardization~~ done — verified — 2026-05-04 snapshot, historical | ~~🔄 Ongoing~~ | ~~Hierarchical errors implemented~~ |
+| Feature                                                                              | Status         | Notes                                        |
+| ------------------------------------------------------------------------------------ | -------------- | -------------------------------------------- |
+| ~~BDD test coverage~~ done — verified — 2026-05-04 snapshot, historical              | ~~🔄 80%~~     | ~~18.9s test time, good coverage~~           |
+| ~~Code coverage~~ done — verified — 2026-05-04 snapshot, historical                  | ~~🔄 ~85%~~    | ~~Some packages <80% (cmd, detection, job)~~ |
+| ~~Documentation~~ done — verified — 2026-05-04 snapshot, historical                  | ~~🔄 Ongoing~~ | ~~Many status docs, README current~~         |
+| ~~Error handling standardization~~ done — verified — 2026-05-04 snapshot, historical | ~~🔄 Ongoing~~ | ~~Hierarchical errors implemented~~          |
 
 ### C) NOT STARTED ⏳
 
-| Feature                                    | Priority | Notes                                    |
-| ------------------------------------------ | -------- | ---------------------------------------- |
-| ~~Regression test for node_modules filtering~~ done — node_modules exclusion pinned by tests (cmd/cmd_utils_test.go) | ~~Medium~~ | ~~Should add to prevent future breakage~~ |
-| ~~Printer DTO refactor~~ done at `7e5a5cb` | ~~Low~~ | ~~Would improve architecture but works now~~ |
-| ~~Three Clone types consolidation~~ done — CloneRef consolidation (ADR-0005) | ~~Low~~ | ~~Technical debt, low priority~~ |
+| Feature                                                                                                              | Priority   | Notes                                        |
+| -------------------------------------------------------------------------------------------------------------------- | ---------- | -------------------------------------------- |
+| ~~Regression test for node_modules filtering~~ done — node_modules exclusion pinned by tests (cmd/cmd_utils_test.go) | ~~Medium~~ | ~~Should add to prevent future breakage~~    |
+| ~~Printer DTO refactor~~ done at `7e5a5cb`                                                                           | ~~Low~~    | ~~Would improve architecture but works now~~ |
+| ~~Three Clone types consolidation~~ done — CloneRef consolidation (ADR-0005)                                         | ~~Low~~    | ~~Technical debt, low priority~~             |
 
 ### D) TOTALLY FUCKED UP ❌
 
-| Issue                              | Status   | Fix Applied                 |
-| ---------------------------------- | -------- | --------------------------- |
-| ~~**node_modules hardcoded to true**~~ done at `cbb120c` | ~~✅ FIXED~~ | ~~`cbb120c` commit~~ |
-| ~~**gogenfilter err type conflict**~~ done at `cbb120c` | ~~✅ FIXED~~ | ~~`filterErr` variable naming~~ |
-| ~~**Lint debt accumulated**~~ done at `cbb120c` | ~~✅ FIXED~~ | ~~golangci-lint --fix~~ |
+| Issue                                                    | Status       | Fix Applied                     |
+| -------------------------------------------------------- | ------------ | ------------------------------- |
+| ~~**node_modules hardcoded to true**~~ done at `cbb120c` | ~~✅ FIXED~~ | ~~`cbb120c` commit~~            |
+| ~~**gogenfilter err type conflict**~~ done at `cbb120c`  | ~~✅ FIXED~~ | ~~`filterErr` variable naming~~ |
+| ~~**Lint debt accumulated**~~ done at `cbb120c`          | ~~✅ FIXED~~ | ~~golangci-lint --fix~~         |
 
 ---
 
@@ -121,11 +121,11 @@ $ art-dupl -t 15 . --semantic 2>&1 | grep -i node_modules
 
 ### Identified Issues (from AGENTS.md)
 
-| Issue                                       | Severity | Status                          |
-| ------------------------------------------- | -------- | ------------------------------- |
-| ~~Printer ↔ syntax.Node coupling~~ done — decoupled/split/consolidated 2026-07-01..26 (CloneNode DTO, CloneRef, printer split) | ~~Medium~~ | ~~Deferred - 111 test call sites~~ |
-| ~~Three parallel Clone types~~ done — decoupled/split/consolidated 2026-07-01..26 (CloneNode DTO, CloneRef, printer split) | ~~Low~~ | ~~Technical debt~~ |
-| ~~printer/clone_classify.go language coupling~~ done — decoupled/split/consolidated 2026-07-01..26 (CloneNode DTO, CloneRef, printer split) | ~~Low~~ | ~~Moves with Printer DTO refactor~~ |
+| Issue                                                                                                                                       | Severity   | Status                              |
+| ------------------------------------------------------------------------------------------------------------------------------------------- | ---------- | ----------------------------------- |
+| ~~Printer ↔ syntax.Node coupling~~ done — decoupled/split/consolidated 2026-07-01..26 (CloneNode DTO, CloneRef, printer split)              | ~~Medium~~ | ~~Deferred - 111 test call sites~~  |
+| ~~Three parallel Clone types~~ done — decoupled/split/consolidated 2026-07-01..26 (CloneNode DTO, CloneRef, printer split)                  | ~~Low~~    | ~~Technical debt~~                  |
+| ~~printer/clone_classify.go language coupling~~ done — decoupled/split/consolidated 2026-07-01..26 (CloneNode DTO, CloneRef, printer split) | ~~Low~~    | ~~Moves with Printer DTO refactor~~ |
 
 ### Recommendations
 
@@ -137,27 +137,27 @@ $ art-dupl -t 15 . --semantic 2>&1 | grep -i node_modules
 
 ## Test Coverage by Package
 
-| Package             | Coverage  | Status              |
-| ------------------- | --------- | ------------------- |
-| ~~pkg/format~~ done — verified — 2026-05-04 coverage snapshot, historical | ~~100.0%~~ | ~~✅ Excellent~~ |
-| ~~pkg/position~~ done — verified — 2026-05-04 coverage snapshot, historical | ~~100.0%~~ | ~~✅ Excellent~~ |
-| ~~config~~ done — verified — 2026-05-04 coverage snapshot, historical | ~~94.7%~~ | ~~✅ Excellent~~ |
-| ~~syntax/golang~~ done — verified — 2026-05-04 coverage snapshot, historical | ~~94.3%~~ | ~~✅ Excellent~~ |
-| ~~internal/simd~~ done — verified — 2026-05-04 coverage snapshot, historical | ~~95.8%~~ | ~~✅ Excellent~~ |
-| ~~hash~~ done — verified — 2026-05-04 coverage snapshot, historical | ~~96.6%~~ | ~~✅ Excellent~~ |
-| ~~internal/utils~~ done — verified — 2026-05-04 coverage snapshot, historical | ~~93.2%~~ | ~~✅ Excellent~~ |
-| ~~pkg/artdupl~~ done — verified — 2026-05-04 coverage snapshot, historical | ~~92.1%~~ | ~~✅ Excellent~~ |
-| ~~suffixtree~~ done — verified — 2026-05-04 coverage snapshot, historical | ~~91.0%~~ | ~~✅ Excellent~~ |
-| ~~syntax~~ done — verified — 2026-05-04 coverage snapshot, historical | ~~91.6%~~ | ~~✅ Excellent~~ |
-| ~~errors~~ done — verified — 2026-05-04 coverage snapshot, historical | ~~89.4%~~ | ~~✅ Excellent~~ |
-| ~~cache~~ done — verified — 2026-05-04 coverage snapshot, historical | ~~87.3%~~ | ~~✅ Good~~ |
-| ~~pkg/logger~~ done — verified — 2026-05-04 coverage snapshot, historical | ~~87.5%~~ | ~~✅ Good~~ |
-| ~~printer~~ done — verified — 2026-05-04 coverage snapshot, historical | ~~84.9%~~ | ~~✅ Good~~ |
-| ~~syntax/templ~~ done — verified — 2026-05-04 coverage snapshot, historical | ~~85.3%~~ | ~~✅ Good~~ |
-| ~~**cmd**~~ done — verified — 2026-05-04 coverage snapshot, historical | ~~**75.5%**~~ | ~~⚠️ Needs improvement~~ |
-| ~~**detection**~~ done — verified — 2026-05-04 coverage snapshot, historical | ~~**78.3%**~~ | ~~⚠️ Needs improvement~~ |
-| ~~**job**~~ done — verified — 2026-05-04 coverage snapshot, historical | ~~**76.7%**~~ | ~~⚠️ Needs improvement~~ |
-| ~~internal/filtertest~~ done — verified — 2026-05-04 coverage snapshot, historical | ~~50.0%~~ | ~~⚠️ Low~~ |
+| Package                                                                            | Coverage      | Status                  |
+| ---------------------------------------------------------------------------------- | ------------- | ----------------------- |
+| ~~pkg/format~~ done — verified — 2026-05-04 coverage snapshot, historical          | ~~100.0%~~    | ~~✅ Excellent~~        |
+| ~~pkg/position~~ done — verified — 2026-05-04 coverage snapshot, historical        | ~~100.0%~~    | ~~✅ Excellent~~        |
+| ~~config~~ done — verified — 2026-05-04 coverage snapshot, historical              | ~~94.7%~~     | ~~✅ Excellent~~        |
+| ~~syntax/golang~~ done — verified — 2026-05-04 coverage snapshot, historical       | ~~94.3%~~     | ~~✅ Excellent~~        |
+| ~~internal/simd~~ done — verified — 2026-05-04 coverage snapshot, historical       | ~~95.8%~~     | ~~✅ Excellent~~        |
+| ~~hash~~ done — verified — 2026-05-04 coverage snapshot, historical                | ~~96.6%~~     | ~~✅ Excellent~~        |
+| ~~internal/utils~~ done — verified — 2026-05-04 coverage snapshot, historical      | ~~93.2%~~     | ~~✅ Excellent~~        |
+| ~~pkg/artdupl~~ done — verified — 2026-05-04 coverage snapshot, historical         | ~~92.1%~~     | ~~✅ Excellent~~        |
+| ~~suffixtree~~ done — verified — 2026-05-04 coverage snapshot, historical          | ~~91.0%~~     | ~~✅ Excellent~~        |
+| ~~syntax~~ done — verified — 2026-05-04 coverage snapshot, historical              | ~~91.6%~~     | ~~✅ Excellent~~        |
+| ~~errors~~ done — verified — 2026-05-04 coverage snapshot, historical              | ~~89.4%~~     | ~~✅ Excellent~~        |
+| ~~cache~~ done — verified — 2026-05-04 coverage snapshot, historical               | ~~87.3%~~     | ~~✅ Good~~             |
+| ~~pkg/logger~~ done — verified — 2026-05-04 coverage snapshot, historical          | ~~87.5%~~     | ~~✅ Good~~             |
+| ~~printer~~ done — verified — 2026-05-04 coverage snapshot, historical             | ~~84.9%~~     | ~~✅ Good~~             |
+| ~~syntax/templ~~ done — verified — 2026-05-04 coverage snapshot, historical        | ~~85.3%~~     | ~~✅ Good~~             |
+| ~~**cmd**~~ done — verified — 2026-05-04 coverage snapshot, historical             | ~~**75.5%**~~ | ~~⚠️ Needs improvement~~ |
+| ~~**detection**~~ done — verified — 2026-05-04 coverage snapshot, historical       | ~~**78.3%**~~ | ~~⚠️ Needs improvement~~ |
+| ~~**job**~~ done — verified — 2026-05-04 coverage snapshot, historical             | ~~**76.7%**~~ | ~~⚠️ Needs improvement~~ |
+| ~~internal/filtertest~~ done — verified — 2026-05-04 coverage snapshot, historical | ~~50.0%~~     | ~~⚠️ Low~~               |
 
 ---
 

@@ -288,18 +288,18 @@ go/types.isString({0x0?, 0x0?})
 
 ### Priority 4: Nice to Have (Future)
 
-| #  | Task                           | Effort | Impact |
-| -- | ------------------------------ | ------ | ------ |
-| 16 | Add JavaScript parsing support | 24h    | Medium |
-| 17 | Add Python parsing support     | 24h    | Medium |
-| 18 | Implement ML-based detection   | 40h    | Low    |
-| 19 | Add cloud processing support   | 40h    | Low    |
-| ~~20~~ **won't implement — enterprise SSO is out of scope for a CLI tool** |~~Add enterprise SSO integration~~|~~24h~~|~~Low~~|
-| 21 | Create real-time analysis mode | 16h    | Low    |
-| 22 | Add audit logging              | 8h     | Low    |
-| 23 | Implement role-based access    | 16h    | Low    |
-| ~~24~~ **won't implement — distributed analysis is out of scope** |~~Add distributed processing~~|~~40h~~|~~Low~~|
-| 25 | Create mobile dashboard        | 24h    | Low    |
+| #                                                                          | Task                               | Effort  | Impact  |
+| -------------------------------------------------------------------------- | ---------------------------------- | ------- | ------- |
+| 16                                                                         | Add JavaScript parsing support     | 24h     | Medium  |
+| 17                                                                         | Add Python parsing support         | 24h     | Medium  |
+| 18                                                                         | Implement ML-based detection       | 40h     | Low     |
+| 19                                                                         | Add cloud processing support       | 40h     | Low     |
+| ~~20~~ **won't implement — enterprise SSO is out of scope for a CLI tool** | ~~Add enterprise SSO integration~~ | ~~24h~~ | ~~Low~~ |
+| 21                                                                         | Create real-time analysis mode     | 16h     | Low     |
+| 22                                                                         | Add audit logging                  | 8h      | Low     |
+| 23                                                                         | Implement role-based access        | 16h     | Low     |
+| ~~24~~ **won't implement — distributed analysis is out of scope**          | ~~Add distributed processing~~     | ~~40h~~ | ~~Low~~ |
+| 25                                                                         | Create mobile dashboard            | 24h     | Low     |
 
 ---
 

@@ -271,19 +271,19 @@ wasted analysis effort on the wrong primary cause.
     positives in string literals / block comments
 22. **Support `/* art-dupl:accept */` block comment style** (currently only `//`)
 23. **Support range directives** (`//art-dupl:accept-line 10-15`) for multi-line accepts
-~~24. **Add `--list-accepted` flag** to show which groups are accepted and why~~ not-do — no --list-accepted flag landed
-25. **Warn on directives that match nothing** (orphaned directives after refactoring)
+    ~~24. **Add `--list-accepted` flag** to show which groups are accepted and why~~ not-do — no --list-accepted flag landed
+24. **Warn on directives that match nothing** (orphaned directives after refactoring)
 
 ### Code quality
 
 ~~26. **Run `nix flake check`** — only ran `go build`/`go test`, never the full~~ done — nix flake check gates every CI run (AGENTS.md CI table)
-    Nix CI pipeline
+Nix CI pipeline
 27. **Fix pre-existing `gci` formatting issue** on `printer/actionability.go:46`
 28. **Run `golangci-lint` on the full repo** and triage the 93 pre-existing issues
 29. **Add `acceptDirectiveScanAbove` to config** — currently hardcoded to 5;
-    should be configurable for edge cases
+should be configurable for edge cases
 30. **Consider extracting `firstChild` helper** — it's generic enough to be reused
-    by other pattern checkers
+by other pattern checkers
 
 ### Architecture / design
 
@@ -305,15 +305,15 @@ wasted analysis effort on the wrong primary cause.
     said they were unrelated to this work, but they all pass now. Correlation?
 38. **Verify the `max()` builtin works on Go 1.26** (project uses GOEXPERIMENT=jsonv2)
 39. **Check if `go vet` passes** (separate from golangci-lint)
-~~40. **Run tests with `-race` flag** on the modified packages~~ done — go test -race ./... runs on every nix flake check (AGENTS.md -race cadence)
+    ~~40. **Run tests with `-race` flag** on the modified packages~~ done — go test -race ./... runs on every nix flake check (AGENTS.md -race cadence)
 
 ### Future patterns to consider
 
 41. **`context.WithCancel` + `defer cancel()`** — common boilerplate pair
-~~42. **`if !ok { return }` type-assertion guard** — map/index guard idiom~~ not-do — no type-assertion-guard pattern landed
-43. **`switch v := x.(type)` dispatch** — type-switch boilerplate
-~~44. **`for _, x := range` + single append** — loop-accumulate idiom~~ superseded — the append-collector-tail pattern covers loop-accumulate shapes (AGENTS.md)
-45. **`errgroup.Group` setup** — concurrent error handling boilerplate
+    ~~42. **`if !ok { return }` type-assertion guard** — map/index guard idiom~~ not-do — no type-assertion-guard pattern landed
+42. **`switch v := x.(type)` dispatch** — type-switch boilerplate
+    ~~44. **`for _, x := range` + single append** — loop-accumulate idiom~~ superseded — the append-collector-tail pattern covers loop-accumulate shapes (AGENTS.md)
+43. **`errgroup.Group` setup** — concurrent error handling boilerplate
 
 ### Process improvements
 

@@ -190,22 +190,22 @@ The regression tests (`TestSerializePreservesIsAlias`, `TestCheckParameterizabil
 #### Immediate (lint + cleanup)
 
 1. Fix `gocyclo` on `getSuggestion` — refactor switch to map lookup
-~~2. Fix `gofumpt` formatting on `clone_classify_test.go`~~ done — formatting is treefmt/gofmt-enforced and clean
-~~3. Fix `wsl_v5` whitespace in `recommend_threshold.go`~~ done — lint is 106-linter clean (AGENTS.md)
-4. Apply `slices.ContainsFunc` modernization in `extractability_engine.go` (2 sites)
-5. Verify whether the `isAtomicDeclaration` GenDecl case (commit b6853f43) is dead code; remove if so
-6. Run `golangci-lint run --timeout 5m ./...` on the full project, not just changed packages
-7. Run `gofumpt -extra -w .` (the project requires the `-extra` flag per file-and-image-renamer AGENTS.md patterns)
+   ~~2. Fix `gofumpt` formatting on `clone_classify_test.go`~~ done — formatting is treefmt/gofmt-enforced and clean
+   ~~3. Fix `wsl_v5` whitespace in `recommend_threshold.go`~~ done — lint is 106-linter clean (AGENTS.md)
+2. Apply `slices.ContainsFunc` modernization in `extractability_engine.go` (2 sites)
+3. Verify whether the `isAtomicDeclaration` GenDecl case (commit b6853f43) is dead code; remove if so
+4. Run `golangci-lint run --timeout 5m ./...` on the full project, not just changed packages
+5. Run `gofumpt -extra -w .` (the project requires the `-extra` flag per file-and-image-renamer AGENTS.md patterns)
 
 #### Integration tests
 
 8. Write `TestTypeAliasReExportNotActionable` — full pipeline test: parse two .go files with `type X = pkg.Y`, verify 0 actionable clones
-~~9. Write `TestHelperCallDifferentArgsNotActionable` — full pipeline test: parse two .go files with `printHeading("A", "=", 50)` and `printHeading("B", "=", 50)`, verify 0 actionable clones~~ not-do — the named test never landed
-~~10. Write `TestControlFlowCloneWithDifferentLiteralsActionable` — full pipeline test: parse `processUser`/`processProduct` pattern, verify clones ARE found (not over-suppressed)~~ not-do — the named test never landed
-11. Audit all other pattern matchers that use `n.IsAlias` — verify they now work correctly
-12. Audit all other consumers of `collectStringLiterals` — verify they now receive actual values
-13. Audit ALL `Node` struct fields against `serial()` copy — find any other missing fields
-14. Audit ALL `Node` struct fields against `Clone()` copy — find any other missing fields
+   ~~9. Write `TestHelperCallDifferentArgsNotActionable` — full pipeline test: parse two .go files with `printHeading("A", "=", 50)` and `printHeading("B", "=", 50)`, verify 0 actionable clones~~ not-do — the named test never landed
+   ~~10. Write `TestControlFlowCloneWithDifferentLiteralsActionable` — full pipeline test: parse `processUser`/`processProduct` pattern, verify clones ARE found (not over-suppressed)~~ not-do — the named test never landed
+9. Audit all other pattern matchers that use `n.IsAlias` — verify they now work correctly
+10. Audit all other consumers of `collectStringLiterals` — verify they now receive actual values
+11. Audit ALL `Node` struct fields against `serial()` copy — find any other missing fields
+12. Audit ALL `Node` struct fields against `Clone()` copy — find any other missing fields
 
 #### Documentation
 
@@ -250,7 +250,7 @@ The regression tests (`TestSerializePreservesIsAlias`, `TestCheckParameterizabil
 
 39. Add JSON output format for `--recommend-threshold` (currently text-only)
 40. Consider file-type-aware recommendations (Go vs templ vs mixed)
-~~41. Add `--threshold-sweep` as a subcommand or flag~~ not-do — no threshold-sweep flag landed
+    ~~41. Add `--threshold-sweep` as a subcommand or flag~~ not-do — no threshold-sweep flag landed
 
 #### Code quality
 

@@ -264,12 +264,12 @@
 2. **Add `NewProcessedCloneGroup` unit test** — Direct test for the new constructor.
 3. **Improve `validateNonNegative` error messages** — Include flag names (e.g., "--workers must be non-negative" not "workers must be non-negative").
 4. **Cross-link `docs/ACTIONABILITY_PATTERNS.md`** — Link from HOW_TO_USE.md and AGENTS.md.
-~~5. **Add progress output for long runs** — Simple file count or spinner to stderr when not `--quiet`.~~ done — progress output ships (cmd/progress.go; AGENTS.md)
-6. **True exit code integration test** — Run `exec.Command` and check actual process exit code, not just `ExitCodeForError` return value.
-7. **Audit all flag descriptions in `--help`** — Verify every flag's `Short` and usage string is accurate and helpful.
-8. **Test `--workers 0` auto-detection** — Verify 0 defaults to NumCPU.
-9. **Document `NO_COLOR` env var more prominently** — Already mentioned in HOW_TO_USE.md but could be more visible.
-10. **SDK: expose `ExitCodeForError`** — Consider adding to `pkg/artdupl` for library consumers.
+   ~~5. **Add progress output for long runs** — Simple file count or spinner to stderr when not `--quiet`.~~ done — progress output ships (cmd/progress.go; AGENTS.md)
+5. **True exit code integration test** — Run `exec.Command` and check actual process exit code, not just `ExitCodeForError` return value.
+6. **Audit all flag descriptions in `--help`** — Verify every flag's `Short` and usage string is accurate and helpful.
+7. **Test `--workers 0` auto-detection** — Verify 0 defaults to NumCPU.
+8. **Document `NO_COLOR` env var more prominently** — Already mentioned in HOW_TO_USE.md but could be more visible.
+9. **SDK: expose `ExitCodeForError`** — Consider adding to `pkg/artdupl` for library consumers.
 
 ### Medium priority (code quality)
 
@@ -277,22 +277,22 @@
 12. **Refactor `dispatchAnalysis` to accept parameters** — Instead of reading flags directly, for testability.
 13. **Test `--quiet` with `--json`** — Verify JSON output to stdout is unaffected by quiet mode.
 14. **Test `--no-color` with `--rich-text`** — Verify badges still show but without color codes.
-~~15. **Add `--verbose` to version subcommand** — Show GC stats, build flags.~~ not-do — version has --json/--short, no --verbose
-16. **YAML config file support** — `.artdupl.yml` parser alongside existing JSON support.
-~~17. **Config file structure validation** — Validate JSON/YAML config on load.~~ done — ValidateConfig validates on load (config/config_validate.go)
-~~18. **Progress bar for `--all` mode** — Show which format/method is being generated.~~ not-do — no --all progress bar landed
-19. **Deprecation warning for `--semantic`** — It's the default now; flag is redundant.
-20. **Shell completion end-to-end test** — Verify `art-dupl completion bash` produces valid bash.
-21. **Profile-guided optimization** — Run with `--profile` and check for hot spots.
-22. **Memory usage for large repos** — Test on 10000+ files.
-~~23. **Cache invalidation on version change** — Verify `CacheVersion` bump works.~~ done 2026-11-15 — `cache/file_cache_test.go` pins the version gate (`metadata.Version == CacheVersion`; stale-version paths) and `CacheVersion` has since bumped 5→9 through five sanctioned invalidations with the gate green.
-24. **Templ actionability patterns** — No actionability checks for templ files currently.
-25. **Benchmark `NewProcessedCloneGroup` vs inline** — Verify no perf regression.
-26. **Add `cmd.OutOrStderr()` to `printBuildingStatus`/`printSearchStatus`** — Currently uses raw `os.Stderr`. Should use cobra's writer for testability.
-27. **Consider `NoColor bool` in Config** — Current `os.Setenv("NO_COLOR", "1")` is a global side effect. A typed config flag through to the printer would be cleaner.
-28. **Test wrapped internal errors through full pipeline** — Not just `ExitCodeForError` but actual `runCmd` → `main.go` → `os.Exit`.
-29. **Add goconst documentation** — Document the cross-file goconst behavior for contributors.
-30. **Verify Nix flake CI passes** — `nix flake check` with new flags.
+    ~~15. **Add `--verbose` to version subcommand** — Show GC stats, build flags.~~ not-do — version has --json/--short, no --verbose
+15. **YAML config file support** — `.artdupl.yml` parser alongside existing JSON support.
+    ~~17. **Config file structure validation** — Validate JSON/YAML config on load.~~ done — ValidateConfig validates on load (config/config_validate.go)
+    ~~18. **Progress bar for `--all` mode** — Show which format/method is being generated.~~ not-do — no --all progress bar landed
+16. **Deprecation warning for `--semantic`** — It's the default now; flag is redundant.
+17. **Shell completion end-to-end test** — Verify `art-dupl completion bash` produces valid bash.
+18. **Profile-guided optimization** — Run with `--profile` and check for hot spots.
+19. **Memory usage for large repos** — Test on 10000+ files.
+    ~~23. **Cache invalidation on version change** — Verify `CacheVersion` bump works.~~ done 2026-11-15 — `cache/file_cache_test.go` pins the version gate (`metadata.Version == CacheVersion`; stale-version paths) and `CacheVersion` has since bumped 5→9 through five sanctioned invalidations with the gate green.
+20. **Templ actionability patterns** — No actionability checks for templ files currently.
+21. **Benchmark `NewProcessedCloneGroup` vs inline** — Verify no perf regression.
+22. **Add `cmd.OutOrStderr()` to `printBuildingStatus`/`printSearchStatus`** — Currently uses raw `os.Stderr`. Should use cobra's writer for testability.
+23. **Consider `NoColor bool` in Config** — Current `os.Setenv("NO_COLOR", "1")` is a global side effect. A typed config flag through to the printer would be cleaner.
+24. **Test wrapped internal errors through full pipeline** — Not just `ExitCodeForError` but actual `runCmd` → `main.go` → `os.Exit`.
+25. **Add goconst documentation** — Document the cross-file goconst behavior for contributors.
+26. **Verify Nix flake CI passes** — `nix flake check` with new flags.
 
 ### Lower priority (polish)
 
@@ -304,18 +304,18 @@
 36. **SDK: expose `VersionInfo`** — For library consumers who want version metadata.
 37. **Add `--dry-run` flag** — Show what would be analyzed without running detection.
 38. **Add `--progress` flag** — Explicit progress control (always/never/auto).
-~~39. **HTML report: add exit code info** — Show exit code in HTML summary.~~ not-do — the HTML summary carries no exit code
-40. **SARIF: add exit code to rule metadata** — For CI tooling integration.
-41. **Config: add `Config.NoColor` field** — Complement `os.Setenv` approach.
-42. **Config: validate `DetectionMode` mutually exclusive flags** — `--semantic`/`--exact`/`--structural`.
-43. **Test: `config.ValidateConfig` with all fields set** — Comprehensive validation test.
-44. **Doc: add `docs/CLI_FLAGS.md`** — Comprehensive flag reference with examples.
-45. **Doc: add exit codes to README.md** — Currently only in HOW_TO_USE.md.
-46. **Refactor: extract `StatusPrinter` interface** — Bundle `printBuildingStatus` + `printSearchStatus` into a struct.
-47. **Test: concurrent `ExitCodeForError` calls** — Verify thread safety.
-48. **Lint: add `testifylint`** — Enforce testify usage patterns.
-49. **Lint: verify `wrapcheck` covers new files** — Check error wrapping in `dispatchAnalysis`.
-50. **ADR: document `NewProcessedCloneGroup` constructor pattern** — When to use constructor vs struct literal.
+    ~~39. **HTML report: add exit code info** — Show exit code in HTML summary.~~ not-do — the HTML summary carries no exit code
+39. **SARIF: add exit code to rule metadata** — For CI tooling integration.
+40. **Config: add `Config.NoColor` field** — Complement `os.Setenv` approach.
+41. **Config: validate `DetectionMode` mutually exclusive flags** — `--semantic`/`--exact`/`--structural`.
+42. **Test: `config.ValidateConfig` with all fields set** — Comprehensive validation test.
+43. **Doc: add `docs/CLI_FLAGS.md`** — Comprehensive flag reference with examples.
+44. **Doc: add exit codes to README.md** — Currently only in HOW_TO_USE.md.
+45. **Refactor: extract `StatusPrinter` interface** — Bundle `printBuildingStatus` + `printSearchStatus` into a struct.
+46. **Test: concurrent `ExitCodeForError` calls** — Verify thread safety.
+47. **Lint: add `testifylint`** — Enforce testify usage patterns.
+48. **Lint: verify `wrapcheck` covers new files** — Check error wrapping in `dispatchAnalysis`.
+49. **ADR: document `NewProcessedCloneGroup` constructor pattern** — When to use constructor vs struct literal.
 
 ---
 

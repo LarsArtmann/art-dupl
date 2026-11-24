@@ -207,30 +207,30 @@ All major issues have been resolved. The codebase is in good shape.
 
 ### Priority 3: Nice to Have (Do This Quarter)
 
-| #  | Task                              | Impact | Effort | Score |
-| -- | --------------------------------- | ------ | ------ | ----- |
-| 9  | Implement TokenValue type         | Medium | Medium | 🔥    |
-| 10 | Generic SortStrategy[T] interface | Medium | Medium | 🔥    |
-| 11 | Memory layout optimization        | Medium | High   | 🔥    |
-| ~~12~~ **superseded — CloneID is gone from domain (verified 2026-11-14)** |~~Remove CloneID from Clone struct~~|~~Low~~|~~Low~~|~~🔥~~|
+| #                                                                         | Task                                 | Impact  | Effort  | Score  |
+| ------------------------------------------------------------------------- | ------------------------------------ | ------- | ------- | ------ |
+| 9                                                                         | Implement TokenValue type            | Medium  | Medium  | 🔥     |
+| 10                                                                        | Generic SortStrategy[T] interface    | Medium  | Medium  | 🔥     |
+| 11                                                                        | Memory layout optimization           | Medium  | High    | 🔥     |
+| ~~12~~ **superseded — CloneID is gone from domain (verified 2026-11-14)** | ~~Remove CloneID from Clone struct~~ | ~~Low~~ | ~~Low~~ | ~~🔥~~ |
 
 ### Priority 4: Future Consideration
 
-| #  | Task                                          | Impact | Effort    |
-| -- | --------------------------------------------- | ------ | --------- |
-| 13 | Split printer/stats_test.go (955 lines)       | Medium | Medium    |
-| 14 | Split detection/detection_test.go (830 lines) | Medium | Medium    |
-| 15 | Improve printer/ coverage (64.1% → 80%)       | Medium | Medium    |
-| 16 | Improve syntax/ coverage (67.6% → 80%)        | Medium | Medium    |
-| 17 | Create API documentation                      | Medium | Medium    |
-| 18 | Add performance benchmarks                    | Medium | Medium    |
-| 19 | Implement concurrent file processing          | High   | High      |
-| 20 | Add Git integration for change detection      | Medium | High      |
-| 21 | Create VS Code extension                      | Low    | High      |
-| 22 | Add GitHub Action                             | Medium | Low       |
-| ~~23~~ **not-do — no Homebrew formula landed** |~~Create Homebrew formula~~|~~Low~~|~~Low~~|
-| 24 | Add more language support (JS, TS, Python)    | High   | Very High |
-| 25 | Create web UI for reports                     | Medium | Very High |
+| #                                              | Task                                          | Impact  | Effort    |
+| ---------------------------------------------- | --------------------------------------------- | ------- | --------- |
+| 13                                             | Split printer/stats_test.go (955 lines)       | Medium  | Medium    |
+| 14                                             | Split detection/detection_test.go (830 lines) | Medium  | Medium    |
+| 15                                             | Improve printer/ coverage (64.1% → 80%)       | Medium  | Medium    |
+| 16                                             | Improve syntax/ coverage (67.6% → 80%)        | Medium  | Medium    |
+| 17                                             | Create API documentation                      | Medium  | Medium    |
+| 18                                             | Add performance benchmarks                    | Medium  | Medium    |
+| 19                                             | Implement concurrent file processing          | High    | High      |
+| 20                                             | Add Git integration for change detection      | Medium  | High      |
+| 21                                             | Create VS Code extension                      | Low     | High      |
+| 22                                             | Add GitHub Action                             | Medium  | Low       |
+| ~~23~~ **not-do — no Homebrew formula landed** | ~~Create Homebrew formula~~                   | ~~Low~~ | ~~Low~~   |
+| 24                                             | Add more language support (JS, TS, Python)    | High    | Very High |
+| 25                                             | Create web UI for reports                     | Medium  | Very High |
 
 ---
 

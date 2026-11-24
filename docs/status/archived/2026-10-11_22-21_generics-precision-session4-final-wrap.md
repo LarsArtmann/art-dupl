@@ -68,18 +68,18 @@ See §f. Highlights: stdlib-answerable hint surface, tail-only fragment filterin
 6. Guard-idiom pattern wave 3 (5 survivors: `317cc006 3b6f94d5 67b45181 6aea5e28 dfba5738`) — each with the T13 FP-guard treatment.
 7. Mutex+append gap (`3a847748` — 3-stmt raii-defer form).
 8. Near-miss hint sweep over go-sse / go-paperless / DiscordSync / branching-flow directives.
-~~9. DiscordSync 0-candidate cause (queued since session 3).~~ done — the DiscordSync corpus was re-measured in the 2026-10-30 precision pass (AGENTS.md)
-10. Self-scan `--type-aware`/`--suggest-generics` clone-free invariant re-check (self grew new similar test helpers).
-11. `MinDivergentPositions=2` re-evaluation against the 29-family population (now cheap).
-12. Per-module load-time delta measurement on go-cqrs-lite (~3.4k files).
-13. jsonv2 daemon-hardening owner decision (§g Q3; 7 recurrences, recipe well-oiled but each costs a slice).
-14. Docs-health cadence due 2026-10-28 (incl. A-lite→A re-keying follow-up).
-15. Monthly self-scan due 2026-10-22 (`scripts/self-scan.sh` + SELF_CLEAN_LEDGER).
-16. `TestBlockIsCollectorOnlyAll` dedicated ANY/ALL unit pin (session-3 f-item).
-17. Criterion-drift family `3ea5b01b` (serialization twins): consider documenting the s2/strict disagreement on it as the canonical example.
-18. Wrapper-vs-generic reuse — record final decline in ROADMAP.
-19. Open v0.9-era TODOs: branch protection (#18, owner action), windows exe-start confirm (#4), gogenfilter fleet sweep.
-20. Consider `--explain` verdict+reason taxonomy (parked by plan; revisit with the dual-criterion data).
+   ~~9. DiscordSync 0-candidate cause (queued since session 3).~~ done — the DiscordSync corpus was re-measured in the 2026-10-30 precision pass (AGENTS.md)
+9. Self-scan `--type-aware`/`--suggest-generics` clone-free invariant re-check (self grew new similar test helpers).
+10. `MinDivergentPositions=2` re-evaluation against the 29-family population (now cheap).
+11. Per-module load-time delta measurement on go-cqrs-lite (~3.4k files).
+12. jsonv2 daemon-hardening owner decision (§g Q3; 7 recurrences, recipe well-oiled but each costs a slice).
+13. Docs-health cadence due 2026-10-28 (incl. A-lite→A re-keying follow-up).
+14. Monthly self-scan due 2026-10-22 (`scripts/self-scan.sh` + SELF_CLEAN_LEDGER).
+15. `TestBlockIsCollectorOnlyAll` dedicated ANY/ALL unit pin (session-3 f-item).
+16. Criterion-drift family `3ea5b01b` (serialization twins): consider documenting the s2/strict disagreement on it as the canonical example.
+17. Wrapper-vs-generic reuse — record final decline in ROADMAP.
+18. Open v0.9-era TODOs: branch protection (#18, owner action), windows exe-start confirm (#4), gogenfilter fleet sweep.
+19. Consider `--explain` verdict+reason taxonomy (parked by plan; revisit with the dual-criterion data).
 
 ## g) QUESTIONS (cannot figure out myself)
 

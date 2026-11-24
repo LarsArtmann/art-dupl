@@ -90,11 +90,11 @@ found it in (for this dimension).
 
 1. Decide how to handle the concurrent auto-committing agent (see Q1) — this is blocking every durable fix.
 2. Re-remove `exhaustruct` + `tagliatelle` from `.golangci.yml` (3 blocks: lines 43, 110, 154) **only after** the racing-agent problem is solved.
-~~3. Run `nix flake check` and get it to exit 0.~~ done — nix flake check gates every CI run (AGENTS.md CI table)
-4. Add `scripts/check-disabled-linters.sh` to the **pre-commit hook** (not just flake check) so the re-add can't land in the first place.
-5. Fix `cmd/run_analysis.go:165` `nlreturn` (blank line before the `return`).
-6. Triage `detection/config.go:20` godoclint hit — likely add `//nolint:godoclint` on the directive line or teach godoclint to ignore `//art-dupl:` directives.
-7. Re-run `golangci-lint run --timeout 5m ./...` and drive to zero issues that aren't intentional.
+   ~~3. Run `nix flake check` and get it to exit 0.~~ done — nix flake check gates every CI run (AGENTS.md CI table)
+3. Add `scripts/check-disabled-linters.sh` to the **pre-commit hook** (not just flake check) so the re-add can't land in the first place.
+4. Fix `cmd/run_analysis.go:165` `nlreturn` (blank line before the `return`).
+5. Triage `detection/config.go:20` godoclint hit — likely add `//nolint:godoclint` on the directive line or teach godoclint to ignore `//art-dupl:` directives.
+6. Re-run `golangci-lint run --timeout 5m ./...` and drive to zero issues that aren't intentional.
 
 **Tier 2 — CI / infra** 8. Right-size the CI runner memory or lower nix parallelism so `nix build` stops OOMing. 9. Increase `--max-time` / `--default-step-timeout` for the `nix-hash-fix` step specifically. 10. Make the `buildflow` pre-commit hook actually invoke the disabled-linters guard (the hook currently only runs `--staged-only` buildflow, which clearly doesn't cover it). 11. Confirm `CGO_ENABLED=1` is set in the CI test-race step (it must be, since CI ran `-race`; but verify the devShell matches so local repros CI). 12. Add a `verify` justfile/flake target that runs `nix flake check` + `go test -race ./...` + the guard in one shot.
 

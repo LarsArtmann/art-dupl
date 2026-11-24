@@ -9,13 +9,14 @@
 ## Executive metric line
 
 <!-- check-rows:ledger -->
-| Metric                        | Pass 2 end (16:22) | Pass 3 end (17:12) | Now (18:28) |
-| ----------------------------- | ------------------ | ------------------ | ----------- |
-| annotate findings             | 69                 | 0                  | 0 (CLEAN)   |
-| audit-all unharvested         | 383                | 0                  | 0           |
-| cadence unarchived / oldest   | 169 / 197d         | 10 / 21d           | 11 / 21d    |
-| freshness / routing           | PASS               | PASS               | PASS        |
-| pass-3 report check-rows      | —                  | not measured       | complete + clean |
+
+| Metric                      | Pass 2 end (16:22) | Pass 3 end (17:12) | Now (18:28)      |
+| --------------------------- | ------------------ | ------------------ | ---------------- |
+| annotate findings           | 69                 | 0                  | 0 (CLEAN)        |
+| audit-all unharvested       | 383                | 0                  | 0                |
+| cadence unarchived / oldest | 169 / 197d         | 10 / 21d           | 11 / 21d         |
+| freshness / routing         | PASS               | PASS               | PASS             |
+| pass-3 report check-rows    | —                  | not measured       | complete + clean |
 
 ## a) FULLY DONE
 

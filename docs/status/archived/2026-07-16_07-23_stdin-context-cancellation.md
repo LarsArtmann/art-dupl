@@ -32,6 +32,7 @@
 ### 3. Three race-clean tests (`cmd/run_crawl_stdin_test.go`)
 
 <!-- check-rows:ledger -->
+
 | Test                                  | What it verifies                                                                       |
 | ------------------------------------- | -------------------------------------------------------------------------------------- |
 | `TestStdinFeed_CancelUnblocksScanner` | Idle pipe + cancel ctx → channel closes within 2s timeout (would hang without the fix) |
@@ -128,15 +129,15 @@ I initially recommended an `io.Pipe` intermediary as the "best" solution. On fur
 ### Direct follow-ups from this session
 
 1. Add test for `feedFromStdin` with active `gogenfilter.Filter` + `FileTypeGo` filtering
-~~2. Add test verifying stderr suppression (`ctx.Err() == nil` guard on line 83)~~ done — the stdin-cancellation tests shipped (cmd/run_crawl_stdin_test.go; AGENTS.md stdin bullet)
-3. Add test for `feedFromStdin` with `./` prefix stripping (line 64)
-4. Refactor `RunArtDuplWithStdin` to actually exercise the stdin pipe path
-5. Add `--stdin` cancellation behavior to HOW_TO_USE.md
-~~6. Run `go build ./...` to verify clean compilation (not just tests)~~ done — go build ./... is green (boundary gate runs it every task)
-~~7. Run `nix flake check` for full CI validation~~ done — nix flake check is the CI gate (lint + format + race + alloc-gate)
-8. Consider adding `defer close(done)` via restructuring to make cleanup symmetric
-9. Add an integration test: pipe real Go file paths via stdin to the CLI binary, verify clone detection works
-10. Verify `feedFromStdin` handles `\r\n` line endings (bufio.Scanner default split is `ScanLines` which handles this)
+   ~~2. Add test verifying stderr suppression (`ctx.Err() == nil` guard on line 83)~~ done — the stdin-cancellation tests shipped (cmd/run_crawl_stdin_test.go; AGENTS.md stdin bullet)
+2. Add test for `feedFromStdin` with `./` prefix stripping (line 64)
+3. Refactor `RunArtDuplWithStdin` to actually exercise the stdin pipe path
+4. Add `--stdin` cancellation behavior to HOW_TO_USE.md
+   ~~6. Run `go build ./...` to verify clean compilation (not just tests)~~ done — go build ./... is green (boundary gate runs it every task)
+   ~~7. Run `nix flake check` for full CI validation~~ done — nix flake check is the CI gate (lint + format + race + alloc-gate)
+5. Consider adding `defer close(done)` via restructuring to make cleanup symmetric
+6. Add an integration test: pipe real Go file paths via stdin to the CLI binary, verify clone detection works
+7. Verify `feedFromStdin` handles `\r\n` line endings (bufio.Scanner default split is `ScanLines` which handles this)
 
 ### Architecture / code quality
 
@@ -214,6 +215,7 @@ The BDD test helper `RunArtDuplWithStdin` claims to test stdin but actually conv
 ## Session Metrics
 
 <!-- check-rows:ledger -->
+
 | Metric                 | Value                                                                            |
 | ---------------------- | -------------------------------------------------------------------------------- |
 | Files changed          | 4 (`run_crawl.go`, `run_crawl_stdin_test.go` [new], `AGENTS.md`, `TODO_LIST.md`) |

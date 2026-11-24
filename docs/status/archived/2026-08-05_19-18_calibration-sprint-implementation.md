@@ -159,10 +159,10 @@ The AGENTS.md explicitly says: "Never use bare `bool/int/int` for suppression, a
 1. Add `Assign` field to `syntax.Node` + `domain.CloneNode` to fix the type-alias-block false-negative risk
 2. Re-run calibration to verify precision improvement (target: 91%+)
 3. Commit the 87 labeled clone groups as a regression dataset
-~~4. Write a CI test that runs on the regression dataset and asserts no precision regression~~ not-do — no regression-dataset CI test landed
-~~5. Add `test_plugin/` and `test_temp/` to `exampleDirNames`~~ not-do — exampleDirNames never gained the entries
-6. Add `isTerminalStatement` ExprStmt(UnaryExpr) test case
-7. Document the type-alias-block alias-vs-named-type limitation in a code comment
+   ~~4. Write a CI test that runs on the regression dataset and asserts no precision regression~~ not-do — no regression-dataset CI test landed
+   ~~5. Add `test_plugin/` and `test_temp/` to `exampleDirNames`~~ not-do — exampleDirNames never gained the entries
+4. Add `isTerminalStatement` ExprStmt(UnaryExpr) test case
+5. Document the type-alias-block alias-vs-named-type limitation in a code comment
 
 ### Medium Priority (completeness)
 
@@ -191,10 +191,10 @@ The AGENTS.md explicitly says: "Never use bare `bool/int/int` for suppression, a
 ### Architecture / Refactoring
 
 26. Consider making actionability patterns extensible via plugins (the pattern table is now 25 entries)
-~~27. Move `exampleDirNames` from a global var to a config field~~ superseded — the example-dir handling moved to the crawl pruning path (AGENTS.md)
-28. Consider a `SkipConfig` or `CrawlFilter` struct that bundles all skip-related fields
-29. Extract `pathContainsExampleDir` and vendor/node_modules checks into a unified `pathFilter` type
-30. Consider whether the 4 bools in `CrawlOptions` (IncludeVendor, IncludeNodeMods, IncludeExamples, and potentially more) should be a nested `IncludeConfig` struct
+    ~~27. Move `exampleDirNames` from a global var to a config field~~ superseded — the example-dir handling moved to the crawl pruning path (AGENTS.md)
+27. Consider a `SkipConfig` or `CrawlFilter` struct that bundles all skip-related fields
+28. Extract `pathContainsExampleDir` and vendor/node_modules checks into a unified `pathFilter` type
+29. Consider whether the 4 bools in `CrawlOptions` (IncludeVendor, IncludeNodeMods, IncludeExamples, and potentially more) should be a nested `IncludeConfig` struct
 
 ### Testing
 

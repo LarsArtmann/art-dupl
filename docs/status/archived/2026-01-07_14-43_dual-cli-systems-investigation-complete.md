@@ -160,7 +160,7 @@ grep -r "\.Run()" --include="*.md" .
   - `docs/status/2026-01-07_05-58_comprehensive-code-quality-improvement-status.md`
     - `err := cmd.Run()` - Cobra command execution
   - `docs/status/2025-12-17_19-43_API-SDK-ANALYSIS.md`
-    - `- ❌ **Limited Public API**: Only basic `lib.Run()` interface available`
+    - `- ❌ **Limited Public API**: Only basic`lib.Run()`interface available`
 
 **Finding:** Documentation references are about Cobra's `cmd.Run()`, NOT the old `Run()` function.
 

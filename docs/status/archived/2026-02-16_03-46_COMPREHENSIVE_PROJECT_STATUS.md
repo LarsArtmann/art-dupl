@@ -193,8 +193,9 @@ BenchmarkHashSeqLarge-8       100K ops/sec   12 µs/op    16 B/op    1 alloc/op
 ### Immediate (This Week)
 
 ~~1. **Fix SetGlobalPoolForTesting undefined**~~ fixed — the pool helper is gone from the tree (verified 2026-11-14)
-   - Implement function in `domain/stringpool.go` OR
-   - Remove test calls from `domain/coverage_test.go`
+
+- Implement function in `domain/stringpool.go` OR
+- Remove test calls from `domain/coverage_test.go`
 
 2. **Fix detector_utils.go imports**
    - Remove unused `"strings"` import
@@ -257,8 +258,8 @@ BenchmarkHashSeqLarge-8       100K ops/sec   12 µs/op    16 B/op    1 alloc/op
 7. Add concurrent file processing
 8. Improve test coverage to 80%+
 9. Fix all linter warnings
-~~10. Generate API documentation~~ done — godoc carries the API documentation
-11. Create SDK usage examples
+   ~~10. Generate API documentation~~ done — godoc carries the API documentation
+10. Create SDK usage examples
 
 ### 🟡 MEDIUM (Next 2 Weeks)
 
@@ -276,9 +277,9 @@ BenchmarkHashSeqLarge-8       100K ops/sec   12 µs/op    16 B/op    1 alloc/op
 
 21. Create plugin system architecture
 22. Add clone impact analysis
-~~23. Implement cross-repository analysis~~ not-do — cross-repository analysis never landed
-~~24. Add ML-powered detection~~ won't implement — the engine is deterministic; no ML (AGENTS.md)
-~~25. Create SaaS offering~~ won't implement — out of scope for a CLI tool
+    ~~23. Implement cross-repository analysis~~ not-do — cross-repository analysis never landed
+    ~~24. Add ML-powered detection~~ won't implement — the engine is deterministic; no ML (AGENTS.md)
+    ~~25. Create SaaS offering~~ won't implement — out of scope for a CLI tool
 
 ---
 

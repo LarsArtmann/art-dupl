@@ -121,33 +121,33 @@ Should suppress:
 
 ## F) TOP 25 THINGS TO DO NEXT
 
-| #  | Task                                            | Impact | Effort | Time  |
-| -- | ----------------------------------------------- | ------ | ------ | ----- |
-| 1  | Commit current changes with detailed message    | High   | Low    | 2min  |
-| 2  | Create `.hierarchical-errors.yml` config file   | Medium | Low    | 5min  |
-| 3  | Push changes to remote                          | High   | Low    | 1min  |
-| 4  | Update planning doc with completion status      | Low    | Low    | 5min  |
-| 5  | Run `just ci` to verify all checks pass         | High   | Low    | 5min  |
-| 6  | Create typed errors for cache package           | Medium | Medium | 15min |
-| 7  | Create typed errors for config package          | Medium | Medium | 15min |
-| 8  | Add nolint comments for idiomatic patterns      | Low    | Low    | 5min  |
-| ~~9~~ **superseded — examples/sdk_demo.go no longer exists (verified 2026-11-14)** |~~Review examples/sdk_demo.go silent swallows~~|~~Low~~|~~Low~~|~~10min~~|
-| 10 | Document acceptable error patterns in AGENTS.md | Medium | Low    | 10min |
-| 11 | Create error handling style guide               | Medium | Medium | 20min |
-| 12 | Add integration test for error scenarios        | Medium | Medium | 15min |
-| 13 | Review printer package error handling           | Low    | Medium | 10min |
-| 14 | Add error metrics/telemetry                     | Low    | High   | 30min |
-| 15 | Create error recovery middleware                | Low    | High   | 30min |
-| 16 | Review detection package for edge cases         | Medium | Medium | 20min |
-| 17 | Add fuzz tests for error handling               | Medium | High   | 30min |
-| 18 | Create error documentation for users            | Medium | Low    | 15min |
-| 19 | Review hash package error propagation           | Medium | Low    | 10min |
-| 20 | Add context to all error returns                | Low    | High   | 45min |
-| 21 | Create error inspection tooling                 | Low    | High   | 60min |
-| 22 | Review job package error handling               | Medium | Low    | 10min |
-| 23 | Add error chain visualization                   | Low    | High   | 60min |
-| 24 | Create error recovery tests                     | Medium | Medium | 20min |
-| 25 | Document silent swallow patterns                | Low    | Low    | 10min |
+| #                                                                                  | Task                                            | Impact  | Effort  | Time      |
+| ---------------------------------------------------------------------------------- | ----------------------------------------------- | ------- | ------- | --------- |
+| 1                                                                                  | Commit current changes with detailed message    | High    | Low     | 2min      |
+| 2                                                                                  | Create `.hierarchical-errors.yml` config file   | Medium  | Low     | 5min      |
+| 3                                                                                  | Push changes to remote                          | High    | Low     | 1min      |
+| 4                                                                                  | Update planning doc with completion status      | Low     | Low     | 5min      |
+| 5                                                                                  | Run `just ci` to verify all checks pass         | High    | Low     | 5min      |
+| 6                                                                                  | Create typed errors for cache package           | Medium  | Medium  | 15min     |
+| 7                                                                                  | Create typed errors for config package          | Medium  | Medium  | 15min     |
+| 8                                                                                  | Add nolint comments for idiomatic patterns      | Low     | Low     | 5min      |
+| ~~9~~ **superseded — examples/sdk_demo.go no longer exists (verified 2026-11-14)** | ~~Review examples/sdk_demo.go silent swallows~~ | ~~Low~~ | ~~Low~~ | ~~10min~~ |
+| 10                                                                                 | Document acceptable error patterns in AGENTS.md | Medium  | Low     | 10min     |
+| 11                                                                                 | Create error handling style guide               | Medium  | Medium  | 20min     |
+| 12                                                                                 | Add integration test for error scenarios        | Medium  | Medium  | 15min     |
+| 13                                                                                 | Review printer package error handling           | Low     | Medium  | 10min     |
+| 14                                                                                 | Add error metrics/telemetry                     | Low     | High    | 30min     |
+| 15                                                                                 | Create error recovery middleware                | Low     | High    | 30min     |
+| 16                                                                                 | Review detection package for edge cases         | Medium  | Medium  | 20min     |
+| 17                                                                                 | Add fuzz tests for error handling               | Medium  | High    | 30min     |
+| 18                                                                                 | Create error documentation for users            | Medium  | Low     | 15min     |
+| 19                                                                                 | Review hash package error propagation           | Medium  | Low     | 10min     |
+| 20                                                                                 | Add context to all error returns                | Low     | High    | 45min     |
+| 21                                                                                 | Create error inspection tooling                 | Low     | High    | 60min     |
+| 22                                                                                 | Review job package error handling               | Medium  | Low     | 10min     |
+| 23                                                                                 | Add error chain visualization                   | Low     | High    | 60min     |
+| 24                                                                                 | Create error recovery tests                     | Medium  | Medium  | 20min     |
+| 25                                                                                 | Document silent swallow patterns                | Low     | Low     | 10min     |
 
 ---
 

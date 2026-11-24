@@ -7,6 +7,7 @@
 ## Scope — what this report VERIFIED vs NOT
 
 **VERIFIED (fresh command output this session):**
+
 - Dogfood scan run #1: `go run ./cmd/art-dupl --sort total-tokens -t 1 --suggest-generics --type-aware --timing .` → **1360 detected / 6 shown**, total 22.3s (type-load 19.9s), captured in `/tmp/dogfood-scan.out`.
 - Re-scan after all edits: **1362 detected / 0 shown** (1057 non-actionable, 305 filtered suppressed), 23.7s total; `-t 5 .` self-scan → 62 detected / 0 shown.
 - jsonv2gate red mid-session naming the six poisoned files; green after restore (`go test -count=1 ./internal/jsonv2gate/`).
@@ -17,10 +18,11 @@
 - Pins after restore: `go 1.27.1` (go.mod), unquoted `go: 1.27.1` (.golangci.yml) — and `cmd/go_line_pin_test.go` exists and passed in the full suite.
 
 **NOT verified (and why):**
+
 - **WHO deletes `.buildflow.yml`** — git only names the packaging daemon commits; the deleting agent is not identifiable from inside the repo (owner question).
 - **Skip behavior in a REAL pipeline** — verified via `--dry-run` only; the second live pipeline (pid 2140725) was still running at report time and its full behavior was not observed end-to-end.
 - **`nix flake check`** — not run; `flake.nix` vendorHash was mid-repair during the session (BuildFlow's own FOD repair; it self-completed to the correct hash `sha256-AFkwR+…` and the tree is clean now).
-- **Arch-lint machine run** — not run; the new `internal/pipelineconfig` package imports stdlib only, so no boundary risk was *reasoned*, but `go-arch-lint` was not executed.
+- **Arch-lint machine run** — not run; the new `internal/pipelineconfig` package imports stdlib only, so no boundary risk was _reasoned_, but `go-arch-lint` was not executed.
 - **Detected-count drift attribution (1360 → 1362)** — expected (new helper fragments re-match the 4-fixture variant/fixture helpers at sub-threshold windows) but not verified per-family with `--show-suppressed`; same eyeball-level caveat as the 2026-10-24 session's drift note.
 - **Fate of the helper↔395 shared 3-statement prefix** — predicted as a possible residue group; the re-scan shows 0 shown, so it is suppressed or subsumed, but I did not inspect WHICH mechanism.
 - **BDD suite explicitly** — covered only via the full race suite pass, not run isolated.
@@ -45,7 +47,7 @@
 1. **Destroyer investigation**: two deletion commits identified (`8ce90a47`, `57782482`) and the deletion pattern characterized (rides daemon auto-commit packaging, "N changed file(s)" messages don't list the deletion) — but the ACTOR is unknown. Detection is now automated; prevention is not.
 2. **Go-line pin stability**: restored and test-verified, but the pin has now flipped in three separate commits across two days (#19, #20-era `a9d1a0f8`, #21) despite `respect_patch_floor` supposedly ending the flip-flop war. Something still rewrites go.mod; the rewriter is not identified. Also discovered `fb34125f` (the #20 remediation commit itself) shipped the flipped pin — "pin tests green" was true only because no full suite ran between flip and restore, NOT because the landed content was correct.
 3. **Skip verification**: `--dry-run` proves the config is live, but no real post-fix pipeline has been observed running WITH the restored config yet (the second pipeline pre-dates parts of the session and its steps were not tracked to completion).
-4. **Session-start hygiene convention**: I checked `pgrep buildflow` at session start per the #16 lesson but did NOT check `.buildflow.yml` existence — the #20 "skip verified live" claim was trusted instead of re-verified. The new gate converts this into an enforced invariant, but the *convention* (check the file, not the claim) is only now documented, not yet ritualized in any session-start checklist.
+4. **Session-start hygiene convention**: I checked `pgrep buildflow` at session start per the #16 lesson but did NOT check `.buildflow.yml` existence — the #20 "skip verified live" claim was trusted instead of re-verified. The new gate converts this into an enforced invariant, but the _convention_ (check the file, not the claim) is only now documented, not yet ritualized in any session-start checklist.
 5. **Docs loop**: ledger + AGENTS.md updated, but section (f) of this report has not yet been harvested into `TODO_LIST.md`/`ROADMAP.md` (docs-health HARVEST ritual — explicitly left open per the status-report skill).
 
 ## c) NOT STARTED
@@ -58,13 +60,13 @@
 
 ## d) TOTALLY FUCKED UP
 
-1. **The destroyer has now struck TWICE with the same fingerprint** (deletion of `.buildflow.yml` inside a daemon auto-commit whose message doesn't list the file: `8ce90a47` "8 changed files", `57782482` "13 changed files"). Each strike converts the very next pipeline into an unmitigated re-poisoner. The repo spent ~20 minutes tonight in a poisoned state *during active work* — caught only because the sweep ran a config-touching test. Without that coincidence, the poison would have been committed and possibly pushed.
+1. **The destroyer has now struck TWICE with the same fingerprint** (deletion of `.buildflow.yml` inside a daemon auto-commit whose message doesn't list the file: `8ce90a47` "8 changed files", `57782482` "13 changed files"). Each strike converts the very next pipeline into an unmitigated re-poisoner. The repo spent ~20 minutes tonight in a poisoned state _during active work_ — caught only because the sweep ran a config-touching test. Without that coincidence, the poison would have been committed and possibly pushed.
 2. **The remediation pipeline itself shipped a flipped pin** (`fb34125f`): the #20 close-out claimed "pin tests green" but the LANDED commit content carried `go 1.27` + quoted `.golangci.yml` line. The claim was about a working-tree state, not the commit that captured it. This is the same "ledger entry committed by the daemon in the same commit as a re-migration is not evidence" class from #9 — now confirmed for remediation commits too.
 3. **My replace_all self-cannibalization**: I inserted the G1 helper BEFORE running the block replacement, so `replace_all` rewrote the helper's own body into a self-call — infinite recursion, caught by the suite as a stack overflow. Mechanical error, zero production impact, one wasted test cycle. Root cause: ran the replacement before re-counting occurrences post-insertion. Now documented in the ledger.
 
 ## e) WHAT WE SHOULD IMPROVE (brutal self-review: what I forgot / could do better)
 
-1. **Trust nothing point-in-time — verify existence, not claims.** I opened the session with `pgrep buildflow` + jsonv2gate but skipped a 1-command `ls .buildflow.yml`. The #20 header said "skip verified live"; 20 minutes later the file was gone. The lesson is now a gate, but *I* should have caught it at session start.
+1. **Trust nothing point-in-time — verify existence, not claims.** I opened the session with `pgrep buildflow` + jsonv2gate but skipped a 1-command `ls .buildflow.yml`. The #20 header said "skip verified live"; 20 minutes later the file was gone. The lesson is now a gate, but _I_ should have caught it at session start.
 2. **Order of edit operations**: new code that CONTAINS the block you're about to `replace_all` must be inserted AFTER the replacement (or the replacement scoped away from it). The suite caught my mistake; my review of the edit plan should have.
 3. **Residue verification depth**: after the G1 extraction I accepted "0 shown" as proof of no residue. I should have run `--show-suppressed` once to confirm the helper↔395 3-statement prefix fate (suppressed-by-pattern vs subsumed) — the difference matters if the pattern layer ever changes.
 4. **Detected-count drift attribution**: I repeated the exact shortcut the 2026-10-24 ledger entry already flagged ("attribution eyeballed, not verified per-family"). Same shortcut, second occurrence — the corpus-diff ritual (`scripts/corpus-diff.py`, pinned worktrees) exists for exactly this and went unused because the corpus here is the repo itself.
@@ -75,7 +77,7 @@
 
 ## f) TOP 30 THINGS TO GET DONE NEXT
 
-*User asked for up to 50; 30 honest items beat 50 padded ones. Sorted by impact. Items 1–8 are the session's direct follow-ups; 9–30 are adjacent work this session surfaced. Most of 12–30 are ROADMAP fuel per the docs-health HARVEST routing rules.*
+_User asked for up to 50; 30 honest items beat 50 padded ones. Sorted by impact. Items 1–8 are the session's direct follow-ups; 9–30 are adjacent work this session surfaced. Most of 12–30 are ROADMAP fuel per the docs-health HARVEST routing rules._
 
 1. **HARVEST this report's section into `TODO_LIST.md`/`ROADMAP.md`** (docs-health ritual; this list is the input).
 2. **Extend `.githooks/pre-commit` to also run `go test -count=1 ./cmd/ -run TestGoLinePin`** (or the whole pin test package) — the flipped-pin-in-a-commit class needs the same mechanical gate jsonv2gate has. Cheap, tonight-justified.
@@ -116,4 +118,4 @@
 
 ---
 
-*Point-in-time snapshot — goes stale. Section (f) items 1 and 9–13 are docs-health HARVEST inputs; the rest are routing candidates. WAITING FOR INSTRUCTIONS.*
+_Point-in-time snapshot — goes stale. Section (f) items 1 and 9–13 are docs-health HARVEST inputs; the rest are routing candidates. WAITING FOR INSTRUCTIONS._

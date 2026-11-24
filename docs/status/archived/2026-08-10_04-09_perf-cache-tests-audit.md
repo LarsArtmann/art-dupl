@@ -110,26 +110,26 @@
 
 ## f) Up to 50 Things We Should Get Done Next
 
-| #  | Priority | Task                                                                                                         |
-| -- | -------- | ------------------------------------------------------------------------------------------------------------ |
-| 1  | HIGH     | Bump `CacheVersion` to 3 (or document that old caches are orphaned)                                          |
-| 2  | HIGH     | Re-run benchmark baseline with `count=5` on idle machine, save with benchstat                                |
-| 3  | HIGH     | Investigate 65 gopls go1.27 warnings — real issue or false positive from GOEXPERIMENT?                       |
-| 4  | HIGH     | Add cache error-path tests (corrupt gob, permission denied, write failure)                                   |
-| 5  | MED      | Add concurrent Prune + Set race test                                                                         |
-| 6  | MED      | Add in-memory LRU layer to FileCache (eliminate redundant gob deserialization)                               |
-| 7  | MED      | Implement batch pruning (110%/90% hysteresis)                                                                |
-| 8  | MED      | Encode `CacheVersion` into the key itself (auto-invalidation on version bump)                                |
-| 9  | MED      | Tighten perf regression test thresholds (50ms → realistic numbers)                                           |
-| 10 | MED      | Add benchstat comparison step to CI (fail on >15% regression)                                                |
-| 11 | MED      | Benchmark `testAndSplit` with `start <= end` path (transition split)                                         |
-| 12 | LOW      | Add `CacheStats` method to `IncrementalParser` for programmatic hit/miss/size query                          |
-| 13 | LOW      | Document `TypeAwareData` invariant: all entries share the same `EraseHash`                                   |
-| ~~14~~ **not-do — no BDD perf benchmark landed** |~~LOW~~|~~Run BDD semantic performance benchmarks and compare with baseline~~|
-| 15 | LOW      | Add cache size metric to `--profile` output (disk bytes used by cache)                                       |
-| 16 | LOW      | Consider `sync.Pool` for `[]byte` buffers in gob serialization                                               |
-| 17 | LOW      | Add `cache.KeyWithParams` to the SDK boundary (`pkg/artdupl`) if incremental caching is ever exposed there   |
-| 18 | LOW      | Consider content-hash-based cache invalidation for `CacheVersion` changes (check version at key-lookup time) |
+| #                                                | Priority | Task                                                                                                         |
+| ------------------------------------------------ | -------- | ------------------------------------------------------------------------------------------------------------ |
+| 1                                                | HIGH     | Bump `CacheVersion` to 3 (or document that old caches are orphaned)                                          |
+| 2                                                | HIGH     | Re-run benchmark baseline with `count=5` on idle machine, save with benchstat                                |
+| 3                                                | HIGH     | Investigate 65 gopls go1.27 warnings — real issue or false positive from GOEXPERIMENT?                       |
+| 4                                                | HIGH     | Add cache error-path tests (corrupt gob, permission denied, write failure)                                   |
+| 5                                                | MED      | Add concurrent Prune + Set race test                                                                         |
+| 6                                                | MED      | Add in-memory LRU layer to FileCache (eliminate redundant gob deserialization)                               |
+| 7                                                | MED      | Implement batch pruning (110%/90% hysteresis)                                                                |
+| 8                                                | MED      | Encode `CacheVersion` into the key itself (auto-invalidation on version bump)                                |
+| 9                                                | MED      | Tighten perf regression test thresholds (50ms → realistic numbers)                                           |
+| 10                                               | MED      | Add benchstat comparison step to CI (fail on >15% regression)                                                |
+| 11                                               | MED      | Benchmark `testAndSplit` with `start <= end` path (transition split)                                         |
+| 12                                               | LOW      | Add `CacheStats` method to `IncrementalParser` for programmatic hit/miss/size query                          |
+| 13                                               | LOW      | Document `TypeAwareData` invariant: all entries share the same `EraseHash`                                   |
+| ~~14~~ **not-do — no BDD perf benchmark landed** | ~~LOW~~  | ~~Run BDD semantic performance benchmarks and compare with baseline~~                                        |
+| 15                                               | LOW      | Add cache size metric to `--profile` output (disk bytes used by cache)                                       |
+| 16                                               | LOW      | Consider `sync.Pool` for `[]byte` buffers in gob serialization                                               |
+| 17                                               | LOW      | Add `cache.KeyWithParams` to the SDK boundary (`pkg/artdupl`) if incremental caching is ever exposed there   |
+| 18                                               | LOW      | Consider content-hash-based cache invalidation for `CacheVersion` changes (check version at key-lookup time) |
 
 ---
 

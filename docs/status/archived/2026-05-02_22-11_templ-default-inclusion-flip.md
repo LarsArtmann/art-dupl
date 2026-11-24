@@ -24,6 +24,7 @@ Successfully flipped the default behavior so `.templ` files are **included** in 
 ### Core Source Changes (11 files, +117/-59 lines)
 
 <!-- check-rows:ledger -->
+
 | File                             | Change                                                                        | Status |
 | -------------------------------- | ----------------------------------------------------------------------------- | ------ |
 | `config/config.go:92`            | `IncludeTempl` default flipped `false` → `true`                               | ✓      |
@@ -39,6 +40,7 @@ Successfully flipped the default behavior so `.templ` files are **included** in 
 ### BDD Test Updates (5 files)
 
 <!-- check-rows:ledger -->
+
 | File                                | Changes                                                                                              | Status |
 | ----------------------------------- | ---------------------------------------------------------------------------------------------------- | ------ |
 | `bdd/templ_clone_detection_test.go` | Removed `--include-templ`, added `--exclude-templ` for exclusion test                                | ✓      |
@@ -119,17 +121,17 @@ Nothing. The change was clean with no regressions. The two bugs found were in ex
 8. **Refactor `applyBooleanFlags`** — Track "was explicitly set" per flag, always apply explicit values regardless of true/false.
 9. **Refactor `mergeCLIConfig`** — Replace `skipZeroValues` with explicit "set" tracking.
 10. **Fix `internal/utils.TestFindProjectRoot`** — Pre-existing failure, should be fixed.
-~~11. **Add test for `--exclude-templ` + config file interaction** — Verify JSON config `excludeTempl` field works.~~ superseded — the `excludeTempl` config field was removed by this very flip: templ files are unconditionally included today (no exclusion flag survives in `config/` or `cmd/`), so there is no field left to test.
-12. **Add regression test for bool=false propagation** — Ensure no future bool flag with true-default gets silently dropped.
+    ~~11. **Add test for `--exclude-templ` + config file interaction** — Verify JSON config `excludeTempl` field works.~~ superseded — the `excludeTempl` config field was removed by this very flip: templ files are unconditionally included today (no exclusion flag survives in `config/` or `cmd/`), so there is no field left to test.
+11. **Add regression test for bool=false propagation** — Ensure no future bool flag with true-default gets silently dropped.
 
 ### Priority 3 — Architecture (From Outstanding Issues)
 
 13. **Introduce ProcessedClone DTO** — Break Printer ↔ syntax.Node coupling.
 14. **Consolidate Clone types** — Unify `printer.clone`, `pkg/artdupl.Clone`, `CloneGroup`.
-~~15. **Extract responsibilities from `cmd/run_analysis.go`** — Split the god file.~~ done — 2026-10 — runCmd split: parseOutputFormat + runStandardAnalysis live in cmd/run_flags.go (gocyclo under threshold; AGENTS.md Critical Conventions)
-16. **Move `printer/clone_classify.go` language-specific code** — Break direct syntax/golang import.
-17. **Review all `//nolint` directives** — Ensure they're still warranted.
-18. **Add integration test for full CLI flag matrix** — All flag combinations tested.
+    ~~15. **Extract responsibilities from `cmd/run_analysis.go`** — Split the god file.~~ done — 2026-10 — runCmd split: parseOutputFormat + runStandardAnalysis live in cmd/run_flags.go (gocyclo under threshold; AGENTS.md Critical Conventions)
+15. **Move `printer/clone_classify.go` language-specific code** — Break direct syntax/golang import.
+16. **Review all `//nolint` directives** — Ensure they're still warranted.
+17. **Add integration test for full CLI flag matrix** — All flag combinations tested.
 
 ### Priority 4 — Polish & DX
 
@@ -139,7 +141,7 @@ Nothing. The change was clean with no regressions. The two bugs found were in ex
 22. **Review verbose output** for all filter flags — Consistency pass.
 23. **Consider deprecation warning** if someone passes `--include-templ` (backward compat).
 24. **Review `MIGRATION_GUIDE.md`** — Add entry for this flag rename.
-~~25. **Run `just ci`** — Full CI pipeline including lint, format, race tests.~~ **Won't implement — won't implement — justfile is deprecated fleet-wide; the CI equivalent is nix flake check (lint + format + race + alloc-gate).**
+    ~~25. **Run `just ci`** — Full CI pipeline including lint, format, race tests.~~ **Won't implement — won't implement — justfile is deprecated fleet-wide; the CI equivalent is nix flake check (lint + format + race + alloc-gate).**
 
 ---
 

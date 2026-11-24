@@ -117,33 +117,33 @@ Verified: these fail identically without our 6 commits applied.
 
 ### HIGH IMPACT (real code, not tests)
 
-| # | What                                                                                      | Files                                                      | Impact | Effort |
-| - | ----------------------------------------------------------------------------------------- | ---------------------------------------------------------- | ------ | ------ |
-| ~~1~~ done — fixed in commit 130dc43 | ~~Fix 6 failing BDD tests (pre-existing)~~ | ~~`bdd/filter_features_test.go`, `bdd/cli_commands_test.go`~~ | ~~HIGH~~ | ~~Medium~~ |
-| ~~2~~ done — printer init consolidated (`printer/clone_processor.go`) | ~~Extract printer interface initialization pattern (7 clones)~~ | ~~`printer/{html,json,plumbing,printer,sarif,stats,text}.go`~~ | ~~HIGH~~ | ~~Medium~~ |
-| ~~3~~ done — consolidated into `compareByNameThenPos` (`printer/sorter.go:8`, commit 4b228be) | ~~Deduplicate `printer/sorter.go` filename+pos comparison (4 clones at lines 90,94,157,161)~~ | ~~`printer/sorter.go`~~ | ~~Medium~~ | ~~Low~~ |
-| 4 **→ transform.go refactor remains open** | Extract AST traversal pattern in `syntax/golang/transform.go` (4 clones) | `syntax/golang/transform.go` | Medium | Medium |
-| 5 **→ detector channel patterns refactored in later sessions** | Deduplicate hash/detector.go and hash/file_detector.go channel send pattern (3 clones) | `hash/detector.go`, `hash/file_detector.go` | Medium | Low |
-| ~~6~~ done — stats validation extracted (`config/config_validate.go` path) | ~~Extract `cmd/stats.go` repeated stats validation (2 clones at 190-192, 209-211)~~ | ~~`cmd/stats.go`~~ | ~~Low~~ | ~~Low~~ |
-| ~~7~~ done — diff comparison helpers (`printer/diff.go`, 015e4b7) | ~~Extract `printer/diff.go` repeated clone comparison (3 clones at 132, 142, 181)~~ | ~~`printer/diff.go`~~ | ~~Medium~~ | ~~Low~~ |
+| #                                                                                             | What                                                                                          | Files                                                          | Impact     | Effort     |
+| --------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- | -------------------------------------------------------------- | ---------- | ---------- |
+| ~~1~~ done — fixed in commit 130dc43                                                          | ~~Fix 6 failing BDD tests (pre-existing)~~                                                    | ~~`bdd/filter_features_test.go`, `bdd/cli_commands_test.go`~~  | ~~HIGH~~   | ~~Medium~~ |
+| ~~2~~ done — printer init consolidated (`printer/clone_processor.go`)                         | ~~Extract printer interface initialization pattern (7 clones)~~                               | ~~`printer/{html,json,plumbing,printer,sarif,stats,text}.go`~~ | ~~HIGH~~   | ~~Medium~~ |
+| ~~3~~ done — consolidated into `compareByNameThenPos` (`printer/sorter.go:8`, commit 4b228be) | ~~Deduplicate `printer/sorter.go` filename+pos comparison (4 clones at lines 90,94,157,161)~~ | ~~`printer/sorter.go`~~                                        | ~~Medium~~ | ~~Low~~    |
+| 4 **→ transform.go refactor remains open**                                                    | Extract AST traversal pattern in `syntax/golang/transform.go` (4 clones)                      | `syntax/golang/transform.go`                                   | Medium     | Medium     |
+| 5 **→ detector channel patterns refactored in later sessions**                                | Deduplicate hash/detector.go and hash/file_detector.go channel send pattern (3 clones)        | `hash/detector.go`, `hash/file_detector.go`                    | Medium     | Low        |
+| ~~6~~ done — stats validation extracted (`config/config_validate.go` path)                    | ~~Extract `cmd/stats.go` repeated stats validation (2 clones at 190-192, 209-211)~~           | ~~`cmd/stats.go`~~                                             | ~~Low~~    | ~~Low~~    |
+| ~~7~~ done — diff comparison helpers (`printer/diff.go`, 015e4b7)                             | ~~Extract `printer/diff.go` repeated clone comparison (3 clones at 132, 142, 181)~~           | ~~`printer/diff.go`~~                                          | ~~Medium~~ | ~~Low~~    |
 
 ### MEDIUM IMPACT (test code)
 
-| #  | What                                                                               | Files                                     | Impact | Effort |
-| -- | ---------------------------------------------------------------------------------- | ----------------------------------------- | ------ | ------ |
-| 8 **→ SDK test helper residue accepted** | Extract `assertErrNoFiles` helper in detector_validation_test.go (5 clones) | `pkg/artdupl/detector_validation_test.go` | Medium | Low |
-| ~~9~~ done — table-driven ranges tests | ~~Deduplicate `pkg/position/lines_test.go` table test patterns (18 clones)~~ | ~~`pkg/position/lines_test.go`~~ | ~~Medium~~ | ~~Medium~~ |
-| ~~10~~ done — `internal/testutil/` shared helpers | ~~Extract `internal/utils/file_test.go` assertion pattern (6 clones)~~ | ~~`internal/utils/file_test.go`~~ | ~~Medium~~ | ~~Low~~ |
-| ~~11~~ done — `internal/testutil/` shared helpers | ~~Extract `internal/utils/utils_test.go` assertion pattern (6 clones)~~ | ~~`internal/utils/utils_test.go`~~ | ~~Medium~~ | ~~Low~~ |
-| ~~12~~ done — domain tests split by concern | ~~Deduplicate `domain/domain_types_test.go` test struct patterns (8 clones)~~ | ~~`domain/domain_types_test.go`~~ | ~~Medium~~ | ~~Medium~~ |
-| ~~13~~ done — moot — `git/` package removed | ~~Extract `git/change_detector_test.go` temp dir setup pattern (3 clones)~~ | ~~`git/change_detector_test.go`~~ | ~~Low~~ | ~~Low~~ |
-| 14 **→ bdd assertion residue accepted** | Deduplicate `bdd/semantic_detection_test.go` assertion patterns (6 clones) | `bdd/semantic_detection_test.go` | Medium | Low |
-| ~~15~~ done — bdd shared setup (`internal/testutil/bdd.go`) | ~~Extract `bdd/detection_methods_test.go` file creation pattern (8 clones)~~ | ~~`bdd/detection_methods_test.go`~~ | ~~Medium~~ | ~~Medium~~ |
-| 16 **→ SDK test construction residue accepted** | Deduplicate `pkg/artdupl/detector_types_test.go` assertion patterns (11 clones) | `pkg/artdupl/detector_types_test.go` | Medium | Low |
-| 17 **→ bdd plumbing residue accepted** | Extract `bdd/plumbing_output_test.go` verification patterns (4+3 clones) | `bdd/plumbing_output_test.go` | Medium | Low |
-| ~~18~~ done — moot — `internal/enum` removed (helpers in `pkg/enum`) | ~~Deduplicate `internal/enum/marshal_test.go` test body patterns (5+3 clones)~~ | ~~`internal/enum/marshal_test.go`~~ | ~~Medium~~ | ~~Medium~~ |
-| ~~19~~ done — errors tests centralized | ~~Extract `errors/types_test.go` + `errors/marshal_test.go` test patterns (6 clones)~~ | ~~`errors/`~~ | ~~Low~~ | ~~Low~~ |
-| 20 **→ cache assertion residue accepted** | Deduplicate `cache/file_cache_test.go` assertion patterns (4 clones) | `cache/file_cache_test.go` | Low | Low |
+| #                                                                    | What                                                                                   | Files                                     | Impact     | Effort     |
+| -------------------------------------------------------------------- | -------------------------------------------------------------------------------------- | ----------------------------------------- | ---------- | ---------- |
+| 8 **→ SDK test helper residue accepted**                             | Extract `assertErrNoFiles` helper in detector_validation_test.go (5 clones)            | `pkg/artdupl/detector_validation_test.go` | Medium     | Low        |
+| ~~9~~ done — table-driven ranges tests                               | ~~Deduplicate `pkg/position/lines_test.go` table test patterns (18 clones)~~           | ~~`pkg/position/lines_test.go`~~          | ~~Medium~~ | ~~Medium~~ |
+| ~~10~~ done — `internal/testutil/` shared helpers                    | ~~Extract `internal/utils/file_test.go` assertion pattern (6 clones)~~                 | ~~`internal/utils/file_test.go`~~         | ~~Medium~~ | ~~Low~~    |
+| ~~11~~ done — `internal/testutil/` shared helpers                    | ~~Extract `internal/utils/utils_test.go` assertion pattern (6 clones)~~                | ~~`internal/utils/utils_test.go`~~        | ~~Medium~~ | ~~Low~~    |
+| ~~12~~ done — domain tests split by concern                          | ~~Deduplicate `domain/domain_types_test.go` test struct patterns (8 clones)~~          | ~~`domain/domain_types_test.go`~~         | ~~Medium~~ | ~~Medium~~ |
+| ~~13~~ done — moot — `git/` package removed                          | ~~Extract `git/change_detector_test.go` temp dir setup pattern (3 clones)~~            | ~~`git/change_detector_test.go`~~         | ~~Low~~    | ~~Low~~    |
+| 14 **→ bdd assertion residue accepted**                              | Deduplicate `bdd/semantic_detection_test.go` assertion patterns (6 clones)             | `bdd/semantic_detection_test.go`          | Medium     | Low        |
+| ~~15~~ done — bdd shared setup (`internal/testutil/bdd.go`)          | ~~Extract `bdd/detection_methods_test.go` file creation pattern (8 clones)~~           | ~~`bdd/detection_methods_test.go`~~       | ~~Medium~~ | ~~Medium~~ |
+| 16 **→ SDK test construction residue accepted**                      | Deduplicate `pkg/artdupl/detector_types_test.go` assertion patterns (11 clones)        | `pkg/artdupl/detector_types_test.go`      | Medium     | Low        |
+| 17 **→ bdd plumbing residue accepted**                               | Extract `bdd/plumbing_output_test.go` verification patterns (4+3 clones)               | `bdd/plumbing_output_test.go`             | Medium     | Low        |
+| ~~18~~ done — moot — `internal/enum` removed (helpers in `pkg/enum`) | ~~Deduplicate `internal/enum/marshal_test.go` test body patterns (5+3 clones)~~        | ~~`internal/enum/marshal_test.go`~~       | ~~Medium~~ | ~~Medium~~ |
+| ~~19~~ done — errors tests centralized                               | ~~Extract `errors/types_test.go` + `errors/marshal_test.go` test patterns (6 clones)~~ | ~~`errors/`~~                             | ~~Low~~    | ~~Low~~    |
+| 20 **→ cache assertion residue accepted**                            | Deduplicate `cache/file_cache_test.go` assertion patterns (4 clones)                   | `cache/file_cache_test.go`                | Low        | Low        |
 
 ### INFRASTRUCTURE / PROCESS
 
@@ -181,6 +181,7 @@ These tests may be testing features that are **not yet implemented** (spec tests
 ### Clone Distribution (remaining 139 groups)
 
 <!-- check-rows:ledger -->
+
 | Category                  | Count | Example                                                |
 | ------------------------- | ----- | ------------------------------------------------------ |
 | Table test boilerplate    | ~35   | `pkg/position/lines_test.go` (18 clones alone)         |

@@ -10,11 +10,11 @@
 
 Completed a comprehensive test coverage improvement sprint focusing on four key packages. All target coverage goals exceeded. Full test suite passes with no failures.
 
-| Metric           | Before | After     | Change |
-| ---------------- | ------ | --------- | ------ |
-| ~~**pkg/position**~~ done at `b00646c` | ~~46.9%~~ | ~~**100%**~~ | ~~+53.1%~~ |
-| ~~**lib**~~ done at `a488be2` | ~~56.9%~~ | ~~**96.1%**~~ | ~~+39.2%~~ |
-| ~~**pkg/filter**~~ done at `ba6a948` | ~~55.0%~~ | ~~**82.5%**~~ | ~~+27.5%~~ |
+| Metric                                                                                     | Before    | After         | Change     |
+| ------------------------------------------------------------------------------------------ | --------- | ------------- | ---------- |
+| ~~**pkg/position**~~ done at `b00646c`                                                     | ~~46.9%~~ | ~~**100%**~~  | ~~+53.1%~~ |
+| ~~**lib**~~ done at `a488be2`                                                              | ~~56.9%~~ | ~~**96.1%**~~ | ~~+39.2%~~ |
+| ~~**pkg/filter**~~ done at `ba6a948`                                                       | ~~55.0%~~ | ~~**82.5%**~~ | ~~+27.5%~~ |
 | ~~**pkg/artdupl**~~ done — pkg/artdupl detector tests (pkg/artdupl/detector_test.go today) | ~~54.6%~~ | ~~**86.3%**~~ | ~~+31.7%~~ |
 
 ---
@@ -75,15 +75,15 @@ Completed a comprehensive test coverage improvement sprint focusing on four key 
 
 Packages below 70% coverage that need attention:
 
-| Package             | Coverage | Priority |
-| ------------------- | -------- | -------- |
-| ~~syntax~~ **Superseded — 2026-03-02 snapshot; packages restructured and coverage re-targeted since (see 2026-06-20 coverage tables).** | ~~66.2%~~ | ~~Medium~~ |
-| ~~printer~~ **Superseded — 2026-03-02 snapshot; packages restructured and coverage re-targeted since (see 2026-06-20 coverage tables).** | ~~67.3%~~ | ~~Medium~~ |
-| ~~cli~~ **Superseded — 2026-03-02 snapshot; packages restructured and coverage re-targeted since (see 2026-06-20 coverage tables).** | ~~70.6%~~ | ~~Low~~ |
-| ~~cmd~~ **Superseded — 2026-03-02 snapshot; packages restructured and coverage re-targeted since (see 2026-06-20 coverage tables).** | ~~71.3%~~ | ~~Low~~ |
-| ~~internal/filtertest~~ **Superseded — 2026-03-02 snapshot; packages restructured and coverage re-targeted since (see 2026-06-20 coverage tables).** | ~~58.3%~~ | ~~Low~~ |
-| ~~hash~~ **Superseded — 2026-03-02 snapshot; packages restructured and coverage re-targeted since (see 2026-06-20 coverage tables).** | ~~75.0%~~ | ~~Low~~ |
-| ~~job~~ **Superseded — 2026-03-02 snapshot; packages restructured and coverage re-targeted since (see 2026-06-20 coverage tables).** | ~~75.9%~~ | ~~Low~~ |
+| Package                                                                                                                                              | Coverage  | Priority   |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------- | --------- | ---------- |
+| ~~syntax~~ **Superseded — 2026-03-02 snapshot; packages restructured and coverage re-targeted since (see 2026-06-20 coverage tables).**              | ~~66.2%~~ | ~~Medium~~ |
+| ~~printer~~ **Superseded — 2026-03-02 snapshot; packages restructured and coverage re-targeted since (see 2026-06-20 coverage tables).**             | ~~67.3%~~ | ~~Medium~~ |
+| ~~cli~~ **Superseded — 2026-03-02 snapshot; packages restructured and coverage re-targeted since (see 2026-06-20 coverage tables).**                 | ~~70.6%~~ | ~~Low~~    |
+| ~~cmd~~ **Superseded — 2026-03-02 snapshot; packages restructured and coverage re-targeted since (see 2026-06-20 coverage tables).**                 | ~~71.3%~~ | ~~Low~~    |
+| ~~internal/filtertest~~ **Superseded — 2026-03-02 snapshot; packages restructured and coverage re-targeted since (see 2026-06-20 coverage tables).** | ~~58.3%~~ | ~~Low~~    |
+| ~~hash~~ **Superseded — 2026-03-02 snapshot; packages restructured and coverage re-targeted since (see 2026-06-20 coverage tables).**                | ~~75.0%~~ | ~~Low~~    |
+| ~~job~~ **Superseded — 2026-03-02 snapshot; packages restructured and coverage re-targeted since (see 2026-06-20 coverage tables).**                 | ~~75.9%~~ | ~~Low~~    |
 
 ---
 
@@ -213,18 +213,18 @@ Packages below 70% coverage that need attention:
 
 ### Coverage by Package (Top 10)
 
-| Package       | Coverage | Status       |
-| ------------- | -------- | ------------ |
-| ~~pkg/format~~ done — verified — 2026-03-02 snapshot, historical | ~~100.0%~~ | ~~✅ Excellent~~ |
-| ~~pkg/position~~ done — verified — 2026-03-02 snapshot, historical | ~~100.0%~~ | ~~✅ Excellent~~ |
-| ~~syntax/golang~~ done — verified — 2026-03-02 snapshot, historical | ~~98.5%~~ | ~~✅ Excellent~~ |
-| ~~domain~~ done — verified — 2026-03-02 snapshot, historical | ~~97.0%~~ | ~~✅ Excellent~~ |
-| ~~lib~~ done — verified — 2026-03-02 snapshot, historical | ~~96.1%~~ | ~~✅ Excellent~~ |
-| ~~internal/simd~~ done — verified — 2026-03-02 snapshot, historical | ~~95.8%~~ | ~~✅ Excellent~~ |
-| ~~adapter~~ done — verified — 2026-03-02 snapshot, historical | ~~97.6%~~ | ~~✅ Excellent~~ |
-| ~~syntax/templ~~ done — verified — 2026-03-02 snapshot, historical | ~~80.6%~~ | ~~✅ Good~~ |
-| ~~pkg/filter~~ done — verified — 2026-03-02 snapshot, historical | ~~82.5%~~ | ~~✅ Good~~ |
-| ~~pkg/artdupl~~ done — verified — 2026-03-02 snapshot, historical | ~~86.3%~~ | ~~✅ Good~~ |
+| Package                                                             | Coverage   | Status           |
+| ------------------------------------------------------------------- | ---------- | ---------------- |
+| ~~pkg/format~~ done — verified — 2026-03-02 snapshot, historical    | ~~100.0%~~ | ~~✅ Excellent~~ |
+| ~~pkg/position~~ done — verified — 2026-03-02 snapshot, historical  | ~~100.0%~~ | ~~✅ Excellent~~ |
+| ~~syntax/golang~~ done — verified — 2026-03-02 snapshot, historical | ~~98.5%~~  | ~~✅ Excellent~~ |
+| ~~domain~~ done — verified — 2026-03-02 snapshot, historical        | ~~97.0%~~  | ~~✅ Excellent~~ |
+| ~~lib~~ done — verified — 2026-03-02 snapshot, historical           | ~~96.1%~~  | ~~✅ Excellent~~ |
+| ~~internal/simd~~ done — verified — 2026-03-02 snapshot, historical | ~~95.8%~~  | ~~✅ Excellent~~ |
+| ~~adapter~~ done — verified — 2026-03-02 snapshot, historical       | ~~97.6%~~  | ~~✅ Excellent~~ |
+| ~~syntax/templ~~ done — verified — 2026-03-02 snapshot, historical  | ~~80.6%~~  | ~~✅ Good~~      |
+| ~~pkg/filter~~ done — verified — 2026-03-02 snapshot, historical    | ~~82.5%~~  | ~~✅ Good~~      |
+| ~~pkg/artdupl~~ done — verified — 2026-03-02 snapshot, historical   | ~~86.3%~~  | ~~✅ Good~~      |
 
 ### Test Execution Summary
 

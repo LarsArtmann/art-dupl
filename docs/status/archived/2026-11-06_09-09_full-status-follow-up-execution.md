@@ -57,6 +57,7 @@ backlog that falls out of it. No new research beyond the session's own work.
 ### What could I have done better?
 
 <!-- check-rows:ledger -->
+
 | # | Better version                                                                                              | Why it matters                                                                                                                                                                                        |
 | - | ----------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 1 | Grep for **dead exported functions** at session start (`OutputSimpleJSON` had zero callers since inception) | The `--simple-json` defect sat in plain sight; a `grep -rn "func (p \*JSONPrinter) Output" --include=*.go \| xargs` call-site check finds it in seconds                                               |
@@ -92,6 +93,7 @@ Everything below is verified on this tree; `go test ./... -count=1`,
 issues), and `nix flake check` (12/12) all pass at `aea30779`.
 
 <!-- check-rows:ledger -->
+
 | #  | Item                                                                                                                                                                                                                         | Evidence                                                                                                                                                                            |
 | -- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 1  | **nix build repaired** — stale `vendorHash` FOD whose cached content predated the dep sweeps; refreshed to `sha256-AFkwR+czRL1litT7pMz0L1ZeUYfq/H23tACxWzgFn8I=`                                                             | `nix build .#art-dupl` builds; `./result/bin/art-dupl version` → `0.9.0`; root cause recorded in `AGENTS.md`                                                                        |
@@ -123,6 +125,7 @@ issues), and `nix flake check` (12/12) all pass at `aea30779`.
 ## b) PARTIALLY DONE
 
 <!-- check-rows:ledger -->
+
 | # | Item                                             | What is there                                                                       | What is missing                                                                                                                                                                        |
 | - | ------------------------------------------------ | ----------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 1 | **`--diff-report` identity guard**               | Text mode warns; JSON stays silent by design                                        | No strict mode. The requested `--baseline-version-must-match`-equivalent for diff-report does not exist (needs a root-level flag + website doc row)                                    |
@@ -160,6 +163,7 @@ issues), and `nix flake check` (12/12) all pass at `aea30779`.
 ### Fixed (was badly broken before this session)
 
 <!-- check-rows:ledger -->
+
 | Defect                                                           | Blast radius                                                                                                            |
 | ---------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
 | **`nix build` broken repo-wide** since 2026-11-04                | Every nix consumer, CI's nix lane, the release path — invisible to `go build`/`go test`                                 |
@@ -254,17 +258,17 @@ issues), and `nix flake check` (12/12) all pass at `aea30779`.
 16. Run the overdue docs-health pass (HARVEST Feb–Oct status reports into TODO).
 17. Replace the January-2026 status table in `docs/status/README.md` with
     measured numbers, or delete it.
-~~18. Index the Feb–Oct status reports in `docs/status/README.md`.~~ done — docs/status/README.md indexes the reports (verified 2026-11-14)
-19. Add ADR-0013 amendment for the `check` verdict exit code.
-~~20. Document `corpus-diff.py` in `CONTRIBUTING.md` (it is only in~~ not-do — CONTRIBUTING.md still lacks the corpus-diff note (verified 2026-11-14)
+    ~~18. Index the Feb–Oct status reports in `docs/status/README.md`.~~ done — docs/status/README.md indexes the reports (verified 2026-11-14)
+18. Add ADR-0013 amendment for the `check` verdict exit code.
+    ~~20. Document `corpus-diff.py` in `CONTRIBUTING.md` (it is only in~~ not-do — CONTRIBUTING.md still lacks the corpus-diff note (verified 2026-11-14)
     `docs/benchmarks/README.md`).
-21. Add a "markup identity" subsection to `HOW_TO_USE.md` covering text,
+19. Add a "markup identity" subsection to `HOW_TO_USE.md` covering text,
     attributes, and CSS values together with the CacheVersion history.
-22. Record the CSS-value defect + CacheVersion 9 in the templ limitation list in
+20. Record the CSS-value defect + CacheVersion 9 in the templ limitation list in
     `AGENTS.md`'s Known Limitations (it is currently only in the templ bullet).
-23. Refresh `docs/benchmarks/templ-text-precision-2026-11-06.md` with a pointer
+21. Refresh `docs/benchmarks/templ-text-precision-2026-11-06.md` with a pointer
     to its CSS sibling so the pair is discoverable.
-24. Re-check `FEATURES.md`'s "8 output formats" claim against the enum
+22. Re-check `FEATURES.md`'s "8 output formats" claim against the enum
     (8 = text/html/json/csv/plumbing/simple-json/sarif/lsp; rich-text and
     LSP-vs-CSV wording needs one canonical sentence).
 
@@ -274,12 +278,12 @@ issues), and `nix flake check` (12/12) all pass at `aea30779`.
 26. Add a BDD spec for `check --json` (currently cmd-level only).
 27. Add a test that a `-t` mismatch produces the (item 1) warning.
 28. Add a fuzz seed or property test for `normalizeConstantAttributeValue` /
-    CSS value normalization.
+CSS value normalization.
 29. Add a test asserting `OutputSimpleJSON` sorts (two groups, reverse input).
 30. Add a race test around `JSONPrinter.SetBaselineSplit` + `OutputJSON`
-    (both now mutate printer state).
+(both now mutate printer state).
 31. Add an alloc-budget test for the CSS value path (`syntax/alloc_budget_test.go`
-    sibling) since it adds a concat per constant property.
+sibling) since it adds a concat per constant property.
 
 ### Architecture / cleanup
 
@@ -353,6 +357,7 @@ issues), and `nix flake check` (12/12) all pass at `aea30779`.
 ## Verification log (this tree, `aea30779`)
 
 <!-- check-rows:ledger -->
+
 | Gate             | Command                                                                                      | Result                              |
 | ---------------- | -------------------------------------------------------------------------------------------- | ----------------------------------- |
 | Build            | `go build ./...`                                                                             | PASS                                |

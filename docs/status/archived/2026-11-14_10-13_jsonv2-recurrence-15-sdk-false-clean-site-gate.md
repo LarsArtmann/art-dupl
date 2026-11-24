@@ -13,6 +13,7 @@
 **Verified this session (command → result):**
 
 <!-- check-rows:ledger -->
+
 | Claim                          | Evidence                                                                                                                                       |
 | ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------- |
 | Tree was red (recurrence #15)  | `go test -count=1 ./internal/jsonv2gate/` → FAIL naming all three files, pre-restore                                                           |

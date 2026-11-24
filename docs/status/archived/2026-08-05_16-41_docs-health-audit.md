@@ -254,14 +254,14 @@ Build passes. The two issues are:
 ### Testing (MEDIUM)
 
 16. Run `go test ./...` to confirm no regressions from doc changes.
-~~17. Run `go test -race ./...` for the full race-detector pass.~~ done — go test -race ./... runs on every nix flake check (AGENTS.md -race cadence)
-18. Add `FuzzFindDuplOverParallel` fuzz test (TODO_LIST item).
-19. Parameterize property tests for parallel search (TODO_LIST item).
-20. Add BDD test for `--search-workers` (TODO_LIST item).
-21. Add FuncLit flag-reset test (TODO_LIST item).
-22. Add SDK `InterfaceMethod` flag test (TODO_LIST item).
-23. Add lazy-read nil-content regression test (TODO_LIST item).
-24. Add extractability engine integration test (TODO_LIST item).
+    ~~17. Run `go test -race ./...` for the full race-detector pass.~~ done — go test -race ./... runs on every nix flake check (AGENTS.md -race cadence)
+17. Add `FuzzFindDuplOverParallel` fuzz test (TODO_LIST item).
+18. Parameterize property tests for parallel search (TODO_LIST item).
+19. Add BDD test for `--search-workers` (TODO_LIST item).
+20. Add FuncLit flag-reset test (TODO_LIST item).
+21. Add SDK `InterfaceMethod` flag test (TODO_LIST item).
+22. Add lazy-read nil-content regression test (TODO_LIST item).
+23. Add extractability engine integration test (TODO_LIST item).
 
 ### CHANGELOG Polish (LOW)
 
@@ -274,9 +274,9 @@ Build passes. The two issues are:
 
 ~~29. Verify all status labels are accurate (spot-check 5 FULLY_FUNCTIONAL).~~ done — the docs-health count gate re-derives the doc numbers (AGENTS.md)
 30. Consider whether Property-Based Extractability Engine should be
-    upgraded from PARTIALLY_DONE based on recent calibration work.
+upgraded from PARTIALLY_DONE based on recent calibration work.
 31. Update "Tuned on real-world Go projects" line with updated file counts
-    if the corpus has grown.
+if the corpus has grown.
 
 ### ROADMAP.md Polish (LOW)
 

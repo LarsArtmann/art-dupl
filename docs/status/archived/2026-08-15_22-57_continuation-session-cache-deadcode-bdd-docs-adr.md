@@ -67,12 +67,13 @@
 ## a) FULLY DONE (verified this session)
 
 <!-- check-rows:ledger -->
+
 | #  | Item                                                                                                                                                                                                                                                                                                                                                                                                  | Evidence                                                          |
 | -- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
 | 1  | **Cache benchmark**: `BenchmarkFileCacheGet` proves LRU-hit is 5.3x faster than disk-hit (76,785 vs 408,406 ns/op; 767 vs 2,805 allocs) on a 255-node tree                                                                                                                                                                                                                                            | `cache/file_cache_test.go`, commit `f9320174`                     |
 | 2  | **GetShared design rejected with rationale**: a no-clone shared cache API is UNSAFE because `stampFilename` mutates in place — documented in `job/incremental.go::parseFile` comment so no future session re-proposes it                                                                                                                                                                              | commit `f9320174`                                                 |
 | 3  | **Dead code deleted**: `printer.Issuer`/`MakeIssues`/`Issue` — zero production callers, only self-tests                                                                                                                                                                                                                                                                                               | `printer/issuer.go` + `issuer_test.go` removed, commit `80be8dc6` |
-| 4  | **Ghost system wired instead of deleted**: `printer.NodesToGroup` was test-only while `cmd/run_output.go` and `cmd/diff_report.go` inlined the identical sequence — now the canonical constructor everywhere, takes `ProcessOption` values, returns typed `AnalysisError`                                                                                                                                   | commit `80be8dc6`                                                 |
+| 4  | **Ghost system wired instead of deleted**: `printer.NodesToGroup` was test-only while `cmd/run_output.go` and `cmd/diff_report.go` inlined the identical sequence — now the canonical constructor everywhere, takes `ProcessOption` values, returns typed `AnalysisError`                                                                                                                             | commit `80be8dc6`                                                 |
 | 5  | **4 BDD scenarios for `--suggest-generics`** (hint shown / absent without flag / min-lines gate / identical-types no-hint), each behavior verified e2e against the real CLI in /tmp BEFORE encoding                                                                                                                                                                                                   | `bdd/suggest_generics_test.go`, commit `3afc4ae6`                 |
 | 6  | **DiscordSync re-validation** (was "blocked" — repo WAS available at `/home/lars/projects/DiscordSync`; handoff's case-sensitive check was wrong): **296 detected → 2 shown, 0 FPs**, both survivors manually inspected as genuine (one is itself a textbook generics candidate)                                                                                                                      | real runs this session                                            |
 | 7  | **Docs pass**: `error-guard-fallthrough` added to ACTIONABILITY_PATTERNS (table + priority #17, count 29→30); pattern-count drift fixed in 5 locations (FEATURES ×3, ROADMAP ×2); AGENTS.md updated (LRU/benchmark/CloneNodes/GetShared-unsafe, 30 patterns, precision gates, SARIF); HOW_TO_USE.md (`--suggest-generics-min-lines`); FEATURES.md (generics enhancer → FULLY_FUNCTIONAL, cache flags) | commit `9cae480d`                                                 |
@@ -85,12 +86,12 @@
 
 ## b) PARTIALLY DONE
 
-| Item | Done                           | Remaining                                                          |
-| ---- | ------------------------------ | ------------------------------------------------------------------ |
-| ~~Cache stats ghost integration~~ **done — shipped (AGENTS.md cache stats bullet).** | ~~MemHits in Stats, printed in verbose mode (printCacheStats)~~ |
-| ~~Suggest-generics output polish~~ **done — the hints dedup via divergenceKey (AGENTS.md).** | ~~Hint dedup (divergenceKey), path stripping (shortenTypeString)~~ |
-| ~~Sprint commit hygiene~~ **done — the daemon commits; the gates hold.** | ~~This session's 5 work commits are logical + detailed~~ |
-| ~~Self-review HTML~~ **done — written per skill spec.** | ~~Written per skill spec (34KB, Bauhaus template)~~ |
+| Item                                                                                         | Done                                                               | Remaining |
+| -------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ | --------- |
+| ~~Cache stats ghost integration~~ **done — shipped (AGENTS.md cache stats bullet).**         | ~~MemHits in Stats, printed in verbose mode (printCacheStats)~~    |           |
+| ~~Suggest-generics output polish~~ **done — the hints dedup via divergenceKey (AGENTS.md).** | ~~Hint dedup (divergenceKey), path stripping (shortenTypeString)~~ |           |
+| ~~Sprint commit hygiene~~ **done — the daemon commits; the gates hold.**                     | ~~This session's 5 work commits are logical + detailed~~           |           |
+| ~~Self-review HTML~~ **done — written per skill spec.**                                      | ~~Written per skill spec (34KB, Bauhaus template)~~                |           |
 
 ## c) NOT STARTED (known, deliberately deferred — from prior sprint scope)
 

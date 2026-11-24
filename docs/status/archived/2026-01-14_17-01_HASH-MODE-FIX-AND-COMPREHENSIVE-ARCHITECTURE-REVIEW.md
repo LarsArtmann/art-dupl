@@ -150,18 +150,18 @@ Use `config.DefaultDetectionMethod().String()` instead of hardcoded "art-dupl"
 
 **Files >350 lines (excluding generated files):**
 
-| File                            | Lines | Action Required                              |
-| ------------------------------- | ----- | -------------------------------------------- |
-| ~~`domain/domain_types_test.go`~~ done — split across `domain/*_test.go` | ~~1,353~~ | ~~CRITICAL - Split into multiple test files~~ |
-| ~~`bdd/bdd_test.go`~~ done — ~50 scenario files in `bdd/` | ~~742~~ | ~~URGENT - Split by scenario~~ |
-| ~~`cli.go`~~ done — deleted | ~~605~~ | ~~DELETE - Dead code~~ |
-| ~~`domain/domain_types.go`~~ done — split by concern | ~~548~~ | ~~Split into domain files~~ |
-| ~~`pkg/artdupl/detector.go`~~ done — split (detector_pipeline.go etc.) | ~~528~~ | ~~Split by responsibility~~ |
-| ~~`cmd/run.go`~~ done — run_analysis/run_flags/run_output/run_crawl | ~~489~~ | ~~Split into functions/commands~~ |
-| ~~`domain/clone.go`~~ done — clone_node.go/clone_ref.go/processed_clone.go | ~~440~~ | ~~Split by functionality~~ |
-| ~~`config/config_test.go`~~ routed — still 628L, accepted | ~~409~~ | ~~Split by test groups~~ |
-| ~~`suffixtree/suffixtree_test.go`~~ done — split (fuzz_test.go etc.) | ~~294~~ | ~~Split by test type~~ |
-| ~~`syntax/golang/golang.go`~~ done — reorganized (`transform.go`, `parse.go`) | ~~361~~ | ~~Split by concern~~ |
+| File                                                                          | Lines     | Action Required                               |
+| ----------------------------------------------------------------------------- | --------- | --------------------------------------------- |
+| ~~`domain/domain_types_test.go`~~ done — split across `domain/*_test.go`      | ~~1,353~~ | ~~CRITICAL - Split into multiple test files~~ |
+| ~~`bdd/bdd_test.go`~~ done — ~50 scenario files in `bdd/`                     | ~~742~~   | ~~URGENT - Split by scenario~~                |
+| ~~`cli.go`~~ done — deleted                                                   | ~~605~~   | ~~DELETE - Dead code~~                        |
+| ~~`domain/domain_types.go`~~ done — split by concern                          | ~~548~~   | ~~Split into domain files~~                   |
+| ~~`pkg/artdupl/detector.go`~~ done — split (detector_pipeline.go etc.)        | ~~528~~   | ~~Split by responsibility~~                   |
+| ~~`cmd/run.go`~~ done — run_analysis/run_flags/run_output/run_crawl           | ~~489~~   | ~~Split into functions/commands~~             |
+| ~~`domain/clone.go`~~ done — clone_node.go/clone_ref.go/processed_clone.go    | ~~440~~   | ~~Split by functionality~~                    |
+| ~~`config/config_test.go`~~ routed — still 628L, accepted                     | ~~409~~   | ~~Split by test groups~~                      |
+| ~~`suffixtree/suffixtree_test.go`~~ done — split (fuzz_test.go etc.)          | ~~294~~   | ~~Split by test type~~                        |
+| ~~`syntax/golang/golang.go`~~ done — reorganized (`transform.go`, `parse.go`) | ~~361~~   | ~~Split by concern~~                          |
 
 **Impact:**
 

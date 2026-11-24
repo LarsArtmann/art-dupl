@@ -186,11 +186,11 @@ This is a **stale gopls cache issue**. To fix:
 
 ### 🔴 Critical (Today)
 
-| # | Task                       | Effort | Impact |
-| - | -------------------------- | ------ | ------ |
-| 1 | Commit uncommitted changes | Low    | High   |
-| 2 | Add `.templ` to README     | Low    | Medium |
-| ~~3~~ **not-do — session action, long stale** |~~Restart LSP server~~|~~Low~~|~~Low~~|
+| #                                             | Task                       | Effort  | Impact  |
+| --------------------------------------------- | -------------------------- | ------- | ------- |
+| 1                                             | Commit uncommitted changes | Low     | High    |
+| 2                                             | Add `.templ` to README     | Low     | Medium  |
+| ~~3~~ **not-do — session action, long stale** | ~~Restart LSP server~~     | ~~Low~~ | ~~Low~~ |
 
 ### 🟠 High Priority (This Week)
 
@@ -204,15 +204,15 @@ This is a **stale gopls cache issue**. To fix:
 
 ### 🟡 Medium Priority (This Month)
 
-| #  | Task                                | Effort | Impact |
-| -- | ----------------------------------- | ------ | ------ |
-| ~~9~~ **not-do — the test file stayed whole** |~~Split `bdd/plumbing_output_test.go`~~|~~Low~~|~~Low~~|
-| 10 | Extract vendor/SQLC helpers         | Medium | Medium |
-| 11 | Add CSV output format               | Medium | Medium |
-| 12 | Add SARIF output format             | Medium | High   |
-| 13 | Complete `--profile` flag           | Low    | Medium |
-| 14 | Complete `--timeout` flag           | Low    | Medium |
-| 15 | Add concurrent file processing      | Medium | High   |
+| #                                             | Task                                    | Effort  | Impact  |
+| --------------------------------------------- | --------------------------------------- | ------- | ------- |
+| ~~9~~ **not-do — the test file stayed whole** | ~~Split `bdd/plumbing_output_test.go`~~ | ~~Low~~ | ~~Low~~ |
+| 10                                            | Extract vendor/SQLC helpers             | Medium  | Medium  |
+| 11                                            | Add CSV output format                   | Medium  | Medium  |
+| 12                                            | Add SARIF output format                 | Medium  | High    |
+| 13                                            | Complete `--profile` flag               | Low     | Medium  |
+| 14                                            | Complete `--timeout` flag               | Low     | Medium  |
+| 15                                            | Add concurrent file processing          | Medium  | High    |
 
 ### 🟢 Lower Priority (Eventually)
 

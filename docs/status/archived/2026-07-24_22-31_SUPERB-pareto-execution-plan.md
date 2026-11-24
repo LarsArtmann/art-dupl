@@ -60,48 +60,48 @@ Everything below the 80% line: features, architecture, intelligence, performance
 
 Sorted by: Impact (descending) > Effort (ascending) > Customer Value (descending)
 
-| #   | Task                                           | Category                        | Impact   | Effort | Customer Value | Depends On |
-| --- | ---------------------------------------------- | ------------------------------- | -------- | ------ | -------------- | ---------- |
-| M01 | `//art-dupl:accept` inline directive           | Feature                         | Critical | 150min | Critical       | -          |
-| M02 | `.gitignore` honoring during file enumeration  | Feature                         | Critical | 60min  | Critical       | -          |
-| M03 | Generated `_templ.go` auto-exclusion           | Feature                         | Critical | 30min  | Critical       | M02        |
-| M04 | `--type-aware` + `--structural` validation     | Feature                         | High     | 15min  | High           | -          |
-| M05 | `--type-aware` + `--incremental` warning       | Feature                         | High     | 15min  | High           | -          |
-| M06 | GitHub Release for v0.4.0                      | Release                         | High     | 5min   | High           | -          |
-| M07 | RELEASE.md checklist                           | Process                         | High     | 30min  | Medium         | -          |
-| M08 | CI guard: prevent re-adding disabled linters   | CI                              | High     | 45min  | Medium         | -          |
-| M09 | Remove orphaned exhaustruct exclusion rules    | Lint Config                     | Medium   | 10min  | Low            | -          |
-| M10 | Verify HOW_TO_USE.md flag examples (21 broken) | Docs                            | High     | 30min  | High           | -          |
-| M11 | Verify TESTING.md GOEXPERIMENT=jsonv2          | Docs                            | Medium   | 10min  | Medium         | -          |
-| M12 | Check CONTRIBUTING.md for stale `just` refs    | Docs                            | Medium   | 10min  | Medium         | -          |
-| M13 | Run `go test -race ./...` full suite           | Testing                         | High     | 15min  | Medium         | -          |
-| M14 | BDD test for type-aware mode                   | Testing                         | High     | 60min  | Medium         | -          |
-| M15 | Clean em-dashes in AGENTS.md                   | Style                           | Medium   | 30min  | Low            | -          |
-| M16 | Clean em-dashes in ADR docs (0002-0008)        | Style                           | Low      | 20min  | Low            | -          |
-| M17 | SDK_DESIGN.md disposition                      | Docs                            | Medium   | 45min  | Low            | -          |
-| M18 | ADR-0015: Type-aware detection design          | Docs                            | Medium   | 45min  | Low            | -          |
-| M19 | Annotate stale planning HTML files             | Docs                            | Low      | 20min  | Low            | -          |
-| M20 | Unit tests for `cmd/progress.go`               | Testing                         | Medium   | 45min  | Low            | -          |
-| M21 | Progress output in hash-only mode              | Feature                         | Medium   | 30min  | Low            | M20        |
-| M22 | JSON tag convention unification                | Code Quality                    | High     | 120min | Medium         | -          |
-| M23 | Deprecation warning for `--semantic`           | UX                              | Low      | 15min  | Low            | -          |
-| M24 | SDK `Options.TypeAware` field                  | SDK                             | Medium   | 60min  | Medium         | -          |
-| M25 | "unknown" category to AST type fallback        | UX                              | Medium   | 45min  | Medium         | -          |
-|| ~~M26~~ **done 2026-07-24 — executed in the sprint** | ~~YAML config file support~~ | ~~Feature~~ | ~~Medium~~ | ~~90min~~ | ~~Medium~~ |
-|| ~~M27~~ **done 2026-07-24 — executed in the sprint** | ~~`--diff-report <baseline>` mode~~ | ~~Feature~~ | ~~Medium~~ | ~~90min~~ | ~~Medium~~ |
-|| ~~M28~~ **done 2026-07-24 — executed in the sprint** | ~~`--explain` flag~~ | ~~Feature~~ | ~~Medium~~ | ~~60min~~ | ~~Medium~~ |
-|| ~~M29~~ **done 2026-07-24 — executed in the sprint** | ~~HTML report improvements~~ | ~~Feature~~ | ~~Low~~ | ~~60min~~ | ~~Low~~ |
-|| ~~M30~~ **done 2026-07-24 — executed in the sprint** | ~~`--recommend-threshold`~~ | ~~Feature~~ | ~~Low~~ | ~~45min~~ | ~~Low~~ |
+| #   | Task                                                 | Category                            | Impact      | Effort     | Customer Value | Depends On |
+| --- | ---------------------------------------------------- | ----------------------------------- | ----------- | ---------- | -------------- | ---------- |
+| M01 | `//art-dupl:accept` inline directive                 | Feature                             | Critical    | 150min     | Critical       | -          |
+| M02 | `.gitignore` honoring during file enumeration        | Feature                             | Critical    | 60min      | Critical       | -          |
+| M03 | Generated `_templ.go` auto-exclusion                 | Feature                             | Critical    | 30min      | Critical       | M02        |
+| M04 | `--type-aware` + `--structural` validation           | Feature                             | High        | 15min      | High           | -          |
+| M05 | `--type-aware` + `--incremental` warning             | Feature                             | High        | 15min      | High           | -          |
+| M06 | GitHub Release for v0.4.0                            | Release                             | High        | 5min       | High           | -          |
+| M07 | RELEASE.md checklist                                 | Process                             | High        | 30min      | Medium         | -          |
+| M08 | CI guard: prevent re-adding disabled linters         | CI                                  | High        | 45min      | Medium         | -          |
+| M09 | Remove orphaned exhaustruct exclusion rules          | Lint Config                         | Medium      | 10min      | Low            | -          |
+| M10 | Verify HOW_TO_USE.md flag examples (21 broken)       | Docs                                | High        | 30min      | High           | -          |
+| M11 | Verify TESTING.md GOEXPERIMENT=jsonv2                | Docs                                | Medium      | 10min      | Medium         | -          |
+| M12 | Check CONTRIBUTING.md for stale `just` refs          | Docs                                | Medium      | 10min      | Medium         | -          |
+| M13 | Run `go test -race ./...` full suite                 | Testing                             | High        | 15min      | Medium         | -          |
+| M14 | BDD test for type-aware mode                         | Testing                             | High        | 60min      | Medium         | -          |
+| M15 | Clean em-dashes in AGENTS.md                         | Style                               | Medium      | 30min      | Low            | -          |
+| M16 | Clean em-dashes in ADR docs (0002-0008)              | Style                               | Low         | 20min      | Low            | -          |
+| M17 | SDK_DESIGN.md disposition                            | Docs                                | Medium      | 45min      | Low            | -          |
+| M18 | ADR-0015: Type-aware detection design                | Docs                                | Medium      | 45min      | Low            | -          |
+| M19 | Annotate stale planning HTML files                   | Docs                                | Low         | 20min      | Low            | -          |
+| M20 | Unit tests for `cmd/progress.go`                     | Testing                             | Medium      | 45min      | Low            | -          |
+| M21 | Progress output in hash-only mode                    | Feature                             | Medium      | 30min      | Low            | M20        |
+| M22 | JSON tag convention unification                      | Code Quality                        | High        | 120min     | Medium         | -          |
+| M23 | Deprecation warning for `--semantic`                 | UX                                  | Low         | 15min      | Low            | -          |
+| M24 | SDK `Options.TypeAware` field                        | SDK                                 | Medium      | 60min      | Medium         | -          |
+| M25 | "unknown" category to AST type fallback              | UX                                  | Medium      | 45min      | Medium         | -          |
+|     | ~~M26~~ **done 2026-07-24 — executed in the sprint** | ~~YAML config file support~~        | ~~Feature~~ | ~~Medium~~ | ~~90min~~      | ~~Medium~~ |
+|     | ~~M27~~ **done 2026-07-24 — executed in the sprint** | ~~`--diff-report <baseline>` mode~~ | ~~Feature~~ | ~~Medium~~ | ~~90min~~      | ~~Medium~~ |
+|     | ~~M28~~ **done 2026-07-24 — executed in the sprint** | ~~`--explain` flag~~                | ~~Feature~~ | ~~Medium~~ | ~~60min~~      | ~~Medium~~ |
+|     | ~~M29~~ **done 2026-07-24 — executed in the sprint** | ~~HTML report improvements~~        | ~~Feature~~ | ~~Low~~    | ~~60min~~      | ~~Low~~    |
+|     | ~~M30~~ **done 2026-07-24 — executed in the sprint** | ~~`--recommend-threshold`~~         | ~~Feature~~ | ~~Low~~    | ~~45min~~      | ~~Low~~    |
 
 **Deferred / Architecturally Constrained (not scheduled):**
 
-| #  | Task | Blocker                                 |
-| -- | ---- | --------------------------------------- |
-|| ~~D01~~ **done 2026-07-24 — executed in the sprint** | ~~Split `printer/` into sub-packages~~ |
-|| ~~D02~~ **done 2026-07-24 — executed in the sprint** | ~~Branded `NodeType int32`~~ |
-|| ~~D03~~ **done 2026-07-24 — executed in the sprint** | ~~Hide `syntax/golang` behind facade~~ |
-| ~~~~D04~~ **won't implement — never built; the findings surface settled on SARIF + the provider**~~ **won't implement — never built; the findings surface settled on SARIF + the provider** | ~~~~Hybrid slice/map transition storage~~~~ |
-|| ~~D05~~ **done 2026-07-24 — executed in the sprint** | ~~Templ Phase 3: expression normalization~~ |
+| #                                                                                                                                                                                           | Task                                                 | Blocker                                     |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- | ------------------------------------------- |
+|                                                                                                                                                                                             | ~~D01~~ **done 2026-07-24 — executed in the sprint** | ~~Split `printer/` into sub-packages~~      |
+|                                                                                                                                                                                             | ~~D02~~ **done 2026-07-24 — executed in the sprint** | ~~Branded `NodeType int32`~~                |
+|                                                                                                                                                                                             | ~~D03~~ **done 2026-07-24 — executed in the sprint** | ~~Hide `syntax/golang` behind facade~~      |
+| ~~~~D04~~ **won't implement — never built; the findings surface settled on SARIF + the provider**~~ **won't implement — never built; the findings surface settled on SARIF + the provider** | ~~~~Hybrid slice/map transition storage~~~~          |                                             |
+|                                                                                                                                                                                             | ~~D05~~ **done 2026-07-24 — executed in the sprint** | ~~Templ Phase 3: expression normalization~~ |
 
 ---
 

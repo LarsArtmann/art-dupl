@@ -194,31 +194,31 @@ To:
 ### High Priority (Do Soon)
 
 6. **Split printer/stats.go** - 757 lines → multiple services
-~~7. **Split domain/domain_types.go** - 540 lines → focused types~~ superseded — domain/domain_types.go no longer exists; focused type files landed
-8. **Split cmd/run.go** - 510 lines → focused modules
-9. **Split pkg/artdupl/detector.go** - 569 lines → focused detectors
-10. **Add unique duplicate line counting** - New metric alongside total
+   ~~7. **Split domain/domain_types.go** - 540 lines → focused types~~ superseded — domain/domain_types.go no longer exists; focused type files landed
+7. **Split cmd/run.go** - 510 lines → focused modules
+8. **Split pkg/artdupl/detector.go** - 569 lines → focused detectors
+9. **Add unique duplicate line counting** - New metric alongside total
 
 ### Medium Priority (Do Next)
 
 11. **Add concurrent file processing** - Performance improvement
 12. **Complete --profile flag implementation** - Performance debugging
 13. **Complete --timeout flag implementation** - Safety limit
-~~14. **Add CSV output format** - Spreadsheet integration~~ done — CSV is an OutputFormat value (AGENTS.md)
-15. **Add SARIF output format** - GitHub Advanced Security integration
-16. **Add API documentation** - godoc generation
-17. **Add package examples** - Runnable examples
-18. **Create ignore file support** - `.duplignore` file
+    ~~14. **Add CSV output format** - Spreadsheet integration~~ done — CSV is an OutputFormat value (AGENTS.md)
+14. **Add SARIF output format** - GitHub Advanced Security integration
+15. **Add API documentation** - godoc generation
+16. **Add package examples** - Runnable examples
+17. **Create ignore file support** - `.duplignore` file
 
 ### Lower Priority (Do Eventually)
 
 19. **Add TypeScript/JavaScript support** - Multi-language
 20. **Add Python support** - Multi-language
-~~21. **Add web UI for visualization** - Better UX~~ not-do — no web UI landed
-~~22. **Add IDE plugins** - VS Code, JetBrains~~ not-do — no IDE plugins landed
-23. **Add historical trend analysis** - Track over time
-24. **Add clone suppression rules** - False positive reduction
-25. **Add similarity scoring** - Near-duplicate detection
+    ~~21. **Add web UI for visualization** - Better UX~~ not-do — no web UI landed
+    ~~22. **Add IDE plugins** - VS Code, JetBrains~~ not-do — no IDE plugins landed
+21. **Add historical trend analysis** - Track over time
+22. **Add clone suppression rules** - False positive reduction
+23. **Add similarity scoring** - Near-duplicate detection
 
 ---
 

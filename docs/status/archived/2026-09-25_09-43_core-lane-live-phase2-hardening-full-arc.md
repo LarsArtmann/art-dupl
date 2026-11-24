@@ -81,6 +81,7 @@
 ## f) Up to 50 things we should get done next
 
 **P0 — unblock the gates (needs you/root)**
+
 1. ~~`sudo mkdir -p /run/binfmt` (instant stopgap) and/or SystemNix `boot.binfmt.emulatedSystems` (permanent) — every nix gate on this host depends on it.~~ done at 2026-09-28 — /run/binfmt exists (host stopgap applied)
 2. After binfmt: run `nix run .#update-vendor-hash` in BuildFlow and `nix build .` in both repos; expect exactly one hash cycle from my post-tidy go.sum change. **→ binfmt/vendorHash — BuildFlow environment**
 3. ~~Push BuildFlow `master` once the nix gate is green (7+ commits ahead, includes the lane inversion).~~ done at 2026-09-28 — BuildFlow master in sync with origin/master

@@ -223,9 +223,9 @@ The `RunArtDuplWithStdin` refactor replaces `os.Stdin` globally. If tests run in
 15. Deprecation warning for `--semantic` flag (it's the default now)
 16. Cross-link `docs/ACTIONABILITY_PATTERNS.md` from HOW_TO_USE.md and AGENTS.md
 17. Test config file loading with `--config` flag end-to-end
-~~18. Test baseline `check` subcommand with real CI scenario~~ done — the CI Clone Detection gate runs check against the baseline (AGENTS.md CI table)
-19. Test `--all` output format with all file types present
-20. Test SARIF output schema validity against the SARIF spec
+    ~~18. Test baseline `check` subcommand with real CI scenario~~ done — the CI Clone Detection gate runs check against the baseline (AGENTS.md CI table)
+18. Test `--all` output format with all file types present
+19. Test SARIF output schema validity against the SARIF spec
 
 #### Code Quality
 

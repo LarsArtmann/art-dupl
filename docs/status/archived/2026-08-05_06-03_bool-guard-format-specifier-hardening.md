@@ -103,7 +103,7 @@ Nothing. All changes compile, lint clean, tests green (including race detector).
 1. Calibrate confidence values against 3-5 real OSS Go projects — measure FP/FN rates.
 2. Add property engine labels to `--list-patterns` output or document as internal-only.
 3. Integration test: `EvaluateExtractability` with format-specifier-differing `CloneNode` trees.
-~~4. Integration test: `isAssignWithBoolGuard` with real DiscordSync-style AST from `syntax.Serialize`.~~ done — actionability_boolguard_test.go covers the guard shapes
+   ~~4. Integration test: `isAssignWithBoolGuard` with real DiscordSync-style AST from `syntax.Serialize`.~~ done — actionability_boolguard_test.go covers the guard shapes
 
 ### Actionability Pattern Hardening
 
@@ -111,19 +111,19 @@ Nothing. All changes compile, lint clean, tests green (including race detector).
 6. Update `docs/ACTIONABILITY_PATTERNS.md` bool-guard section with broadened name set.
 7. Consider type-aware bool-guard validation (leverage `Node.VarType` from `--type-aware`).
 8. Consider prefix-based bool name matching (`is*`, `has*`, `can*`) instead of fixed denylist.
-~~9. Add valid-verb-character validation to `scanFormatSpecifier` (only `vTbtcdoqxXgGeEfFsUcp`).~~ not-do — no verb-character validation landed
-10. Add test for reordered width/precision via arg index (`%[2]*.[1]*f`).
-~~11. Test `hasFormatSpecifierDifferences` with 3+ clones to verify all-pairs semantics.~~ not-do — no dedicated test landed
+   ~~9. Add valid-verb-character validation to `scanFormatSpecifier` (only `vTbtcdoqxXgGeEfFsUcp`).~~ not-do — no verb-character validation landed
+9. Add test for reordered width/precision via arg index (`%[2]*.[1]*f`).
+   ~~11. Test `hasFormatSpecifierDifferences` with 3+ clones to verify all-pairs semantics.~~ not-do — no dedicated test landed
 
 ### Missing Test Coverage (actionability package)
 
 12. `isBoolGuardIf` — no direct unit test (only tested via `isAssignWithBoolGuard`).
-~~13. `isNotOkExpr` — no unit test.~~ not-do — no dedicated unit test landed
-~~14. `isReturnOnlyBody` — no unit test.~~ not-do — no dedicated unit test landed
-~~15. `literalsDifferOnlyInValues` — no unit test.~~ not-do — no dedicated unit test landed
-~~16. `sameLiteralCount` — no unit test.~~ not-do — no dedicated unit test landed
-17. `collectStringLiterals` — no unit test.
-18. `hasFormatSpecifierDifferences` — no unit test (only the inner function is tested now).
+    ~~13. `isNotOkExpr` — no unit test.~~ not-do — no dedicated unit test landed
+    ~~14. `isReturnOnlyBody` — no unit test.~~ not-do — no dedicated unit test landed
+    ~~15. `literalsDifferOnlyInValues` — no unit test.~~ not-do — no dedicated unit test landed
+    ~~16. `sameLiteralCount` — no unit test.~~ not-do — no dedicated unit test landed
+13. `collectStringLiterals` — no unit test.
+14. `hasFormatSpecifierDifferences` — no unit test (only the inner function is tested now).
 
 ### Extractability Engine Gaps
 

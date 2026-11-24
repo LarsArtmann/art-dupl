@@ -92,10 +92,10 @@
 3. Add a justfile recipe for `update-vendor-hash` to automate hash recomputation
 4. Update AGENTS.md with the private dependency flake pattern documentation
 5. Push changes to remote and verify CI passes
-~~6. Extract the dummy go.mod into a Nix `let` binding to reduce maintenance burden~~ not-do — the dummy go.mod stayed as-is
-7. Add CI check for flake.lock staleness (GitHub Action)
-8. Verify cross-platform builds (at minimum `nix flake check --all-systems`)
-9. Ensure CI has SSH key configured for gogenfilter private repo access
+   ~~6. Extract the dummy go.mod into a Nix `let` binding to reduce maintenance burden~~ not-do — the dummy go.mod stayed as-is
+6. Add CI check for flake.lock staleness (GitHub Action)
+7. Verify cross-platform builds (at minimum `nix flake check --all-systems`)
+8. Ensure CI has SSH key configured for gogenfilter private repo access
 
 ### Medium Priority (Code Quality)
 

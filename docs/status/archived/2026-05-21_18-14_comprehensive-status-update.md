@@ -25,6 +25,7 @@ The project is in **strong shape** with 23/25 packages passing, 72% total covera
 
 <!-- check-rows:ledger -->
 <!-- check-rows:ledger -->
+
 | Metric                        | Value           | Status                   |
 | ----------------------------- | --------------- | ------------------------ |
 | Total Go files                | 214             | Stable                   |
@@ -114,16 +115,16 @@ The project is in **strong shape** with 23/25 packages passing, 72% total covera
 
 ## c) NOT STARTED
 
-| Item                         | Priority | Complexity            | Notes                                  |
-| ---------------------------- | -------- | --------------------- | -------------------------------------- |
-| ~~`ProcessedClone` DTO~~ done — `domain/processed_clone.go` | ~~MEDIUM~~ | ~~High (111 test sites)~~ | ~~Decouples Printer from `syntax.Node`~~ |
-| ~~Consolidate 3 Clone types~~ **Superseded — ADR-0005 split-brain type unification.** | ~~MEDIUM~~ | ~~High~~ | ~~Blocked by ProcessedClone DTO~~ |
-| ~~`TokenValue` type~~ done — `suffixtree/suffixtree.go` `TokenValue` | ~~HIGH~~ | ~~Medium~~ | ~~Validation for suffixtree/syntax~~ |
-| ~~Unify enum patterns~~ done — `pkg/enum/enum.go` + `config/enum_helpers.go` | ~~MEDIUM~~ | ~~Medium~~ | ~~Domain → config generic helpers~~ |
-| Refactor `transform.go` 355L **→ still 560L — refactor remains open** | LOW | Medium | Extract visitors |
-| ~~Archive old status files~~ **Superseded — docs-health archival pass 2026-11.** | ~~LOW~~ | ~~Low~~ | ~~Move to `docs/status/archive/`~~ |
-| ~~String interning~~ done — `syntax/intern.go` | ~~MEDIUM~~ | ~~Low~~ | ~~Memory optimization~~ |
-| ~~SIMD ARM64 TODOs~~ done — SIMD notes in `hash/` (`internal/simd` removed) | ~~LOW~~ | ~~Low~~ | ~~2 actionable TODOs in `internal/simd/`~~ |
+| Item                                                                                  | Priority   | Complexity                | Notes                                      |
+| ------------------------------------------------------------------------------------- | ---------- | ------------------------- | ------------------------------------------ |
+| ~~`ProcessedClone` DTO~~ done — `domain/processed_clone.go`                           | ~~MEDIUM~~ | ~~High (111 test sites)~~ | ~~Decouples Printer from `syntax.Node`~~   |
+| ~~Consolidate 3 Clone types~~ **Superseded — ADR-0005 split-brain type unification.** | ~~MEDIUM~~ | ~~High~~                  | ~~Blocked by ProcessedClone DTO~~          |
+| ~~`TokenValue` type~~ done — `suffixtree/suffixtree.go` `TokenValue`                  | ~~HIGH~~   | ~~Medium~~                | ~~Validation for suffixtree/syntax~~       |
+| ~~Unify enum patterns~~ done — `pkg/enum/enum.go` + `config/enum_helpers.go`          | ~~MEDIUM~~ | ~~Medium~~                | ~~Domain → config generic helpers~~        |
+| Refactor `transform.go` 355L **→ still 560L — refactor remains open**                 | LOW        | Medium                    | Extract visitors                           |
+| ~~Archive old status files~~ **Superseded — docs-health archival pass 2026-11.**      | ~~LOW~~    | ~~Low~~                   | ~~Move to `docs/status/archive/`~~         |
+| ~~String interning~~ done — `syntax/intern.go`                                        | ~~MEDIUM~~ | ~~Low~~                   | ~~Memory optimization~~                    |
+| ~~SIMD ARM64 TODOs~~ done — SIMD notes in `hash/` (`internal/simd` removed)           | ~~LOW~~    | ~~Low~~                   | ~~2 actionable TODOs in `internal/simd/`~~ |
 
 ---
 
@@ -193,33 +194,33 @@ The previous session reported "254/255 BDD specs passing" but this was only true
 
 ## f) Top 25 Things to Do Next
 
-| #  | Item                                                        | Impact   | Effort | Category     |
-| -- | ----------------------------------------------------------- | -------- | ------ | ------------ |
-| ~~1~~ done — error-channel pipeline (`cmd/run_crawl.go`) | ~~Fix `os.Exit(1)` in `statError` — return errors via channel~~ | ~~Critical~~ | ~~Medium~~ | ~~Bug fix~~ |
-| ~~2~~ done — flag parsing reworked (`cmd/flags.go`) | ~~Fix `prepareSubcommandArgs` — parse flags properly~~ | ~~High~~ | ~~Small~~ | ~~Bug fix~~ |
-| ~~3~~ done — 0 lint findings (AGENTS.md Linter Pareto) | ~~Add nolint directives for pre-existing lint warnings~~ | ~~Medium~~ | ~~Small~~ | ~~Quality~~ |
-| ~~4~~ done — `docs/status/README.md` refreshed | ~~Update `docs/status/README.md` with real metrics~~ | ~~Medium~~ | ~~Small~~ | ~~Docs~~ |
-| ~~5~~ done — `suffixtree/suffixtree.go` `TokenValue` | ~~Implement `TokenValue` type with validation~~ | ~~High~~ | ~~Medium~~ | ~~Architecture~~ |
-| ~~6~~ done — `domain/processed_clone.go` | ~~Create `ProcessedClone` DTO for printer decoupling~~ | ~~High~~ | ~~High~~ | ~~Architecture~~ |
-| ~~7~~ **Superseded — ADR-0005 split-brain type unification.** | ~~Consolidate 3 Clone types into unified types~~ | ~~High~~ | ~~High~~ | ~~Architecture~~ |
-| ~~8~~ done — moved to `printer/actionability/clone_classify.go` | ~~Move `clone_classify.go` language maps behind interface~~ | ~~Medium~~ | ~~Medium~~ | ~~Architecture~~ |
-| ~~9~~ **Superseded — docs-health archival pass 2026-11.** | ~~Archive old `docs/status/` files (304)~~ | ~~Medium~~ | ~~Small~~ | ~~Cleanup~~ |
-| 10 **→ upstream templ issue; tracked upstream** | Add `ConstantCSSProperty` position tracking upstream issue | Medium | Small | Upstream |
-| ~~11~~ done — `pkg/enum/enum.go` + `config/enum_helpers.go` | ~~Unify enum patterns across config/~~ | ~~Medium~~ | ~~Medium~~ | ~~Refactor~~ |
-| 12 **→ still 560L — refactor remains open** | Refactor `transform.go` 300-line switch | Medium | Medium | Refactor |
-| ~~13~~ done — SIMD notes documented in `hash/` | ~~Implement remaining SIMD optimizations~~ | ~~Medium~~ | ~~Medium~~ | ~~Performance~~ |
-| ~~14~~ done — CSV via `encoding/csv` in `printer/stats/stats_formatter.go` | ~~Use `encoding/csv` for clone CSV output~~ | ~~Low~~ | ~~Small~~ | ~~Quality~~ |
-| ~~15~~ done — `syntax/intern.go` | ~~String interning for suffix tree tokens~~ | ~~Medium~~ | ~~Medium~~ | ~~Performance~~ |
-| ~~16~~ done — `bdd/all_format_generation_test.go` | ~~Add integration test for `--all` flag~~ | ~~Medium~~ | ~~Small~~ | ~~Testing~~ |
-| ~~17~~ done — `syntax/templ/fuzz_test.go` | ~~Add fuzz tests for templ parser edge cases~~ | ~~Medium~~ | ~~Small~~ | ~~Testing~~ |
-| ~~18~~ done at `c0261563` | ~~Fix remaining LSP hints~~ | ~~Low~~ | ~~Small~~ | ~~Quality~~ |
-| 19 **→ in-process BDD harness (`internal/testutil/`) adopted** | Add benchmark: in-process vs subprocess BDD | Medium | Small | Testing |
-| ~~20~~ done — `performance.yml` gc profiling | ~~Profile memory usage during large repo analysis~~ | ~~Medium~~ | ~~Medium~~ | ~~Performance~~ |
-| 21 **→ templ templates compiled (`printer/report_templ.go`); embed not needed** | Consider `go:embed` for HTML template | Low | Small | Quality |
-| ~~22~~ done — `bdd/sarif_gofinding_integration_test.go` | ~~Add SARIF output integration test~~ | ~~Low~~ | ~~Small~~ | ~~Testing~~ |
-| 23 **→ upstream templ issue; tracked upstream** | Evaluate `a-h/templ` v3 for `ConstantCSSProperty` Range | Low | Small | Upstream |
-| ~~24~~ done — `.github/workflows/release.yml` | ~~Create GitHub release workflow~~ | ~~Medium~~ | ~~Medium~~ | ~~CI/CD~~ |
-| ~~25~~ done — version subcommand (`cmd/version_cmd.go`) | ~~Add `--version` flag registration in `NewRootCommand`~~ | ~~Low~~ | ~~Small~~ | ~~Bug fix~~ |
+| #                                                                               | Item                                                            | Impact       | Effort     | Category         |
+| ------------------------------------------------------------------------------- | --------------------------------------------------------------- | ------------ | ---------- | ---------------- |
+| ~~1~~ done — error-channel pipeline (`cmd/run_crawl.go`)                        | ~~Fix `os.Exit(1)` in `statError` — return errors via channel~~ | ~~Critical~~ | ~~Medium~~ | ~~Bug fix~~      |
+| ~~2~~ done — flag parsing reworked (`cmd/flags.go`)                             | ~~Fix `prepareSubcommandArgs` — parse flags properly~~          | ~~High~~     | ~~Small~~  | ~~Bug fix~~      |
+| ~~3~~ done — 0 lint findings (AGENTS.md Linter Pareto)                          | ~~Add nolint directives for pre-existing lint warnings~~        | ~~Medium~~   | ~~Small~~  | ~~Quality~~      |
+| ~~4~~ done — `docs/status/README.md` refreshed                                  | ~~Update `docs/status/README.md` with real metrics~~            | ~~Medium~~   | ~~Small~~  | ~~Docs~~         |
+| ~~5~~ done — `suffixtree/suffixtree.go` `TokenValue`                            | ~~Implement `TokenValue` type with validation~~                 | ~~High~~     | ~~Medium~~ | ~~Architecture~~ |
+| ~~6~~ done — `domain/processed_clone.go`                                        | ~~Create `ProcessedClone` DTO for printer decoupling~~          | ~~High~~     | ~~High~~   | ~~Architecture~~ |
+| ~~7~~ **Superseded — ADR-0005 split-brain type unification.**                   | ~~Consolidate 3 Clone types into unified types~~                | ~~High~~     | ~~High~~   | ~~Architecture~~ |
+| ~~8~~ done — moved to `printer/actionability/clone_classify.go`                 | ~~Move `clone_classify.go` language maps behind interface~~     | ~~Medium~~   | ~~Medium~~ | ~~Architecture~~ |
+| ~~9~~ **Superseded — docs-health archival pass 2026-11.**                       | ~~Archive old `docs/status/` files (304)~~                      | ~~Medium~~   | ~~Small~~  | ~~Cleanup~~      |
+| 10 **→ upstream templ issue; tracked upstream**                                 | Add `ConstantCSSProperty` position tracking upstream issue      | Medium       | Small      | Upstream         |
+| ~~11~~ done — `pkg/enum/enum.go` + `config/enum_helpers.go`                     | ~~Unify enum patterns across config/~~                          | ~~Medium~~   | ~~Medium~~ | ~~Refactor~~     |
+| 12 **→ still 560L — refactor remains open**                                     | Refactor `transform.go` 300-line switch                         | Medium       | Medium     | Refactor         |
+| ~~13~~ done — SIMD notes documented in `hash/`                                  | ~~Implement remaining SIMD optimizations~~                      | ~~Medium~~   | ~~Medium~~ | ~~Performance~~  |
+| ~~14~~ done — CSV via `encoding/csv` in `printer/stats/stats_formatter.go`      | ~~Use `encoding/csv` for clone CSV output~~                     | ~~Low~~      | ~~Small~~  | ~~Quality~~      |
+| ~~15~~ done — `syntax/intern.go`                                                | ~~String interning for suffix tree tokens~~                     | ~~Medium~~   | ~~Medium~~ | ~~Performance~~  |
+| ~~16~~ done — `bdd/all_format_generation_test.go`                               | ~~Add integration test for `--all` flag~~                       | ~~Medium~~   | ~~Small~~  | ~~Testing~~      |
+| ~~17~~ done — `syntax/templ/fuzz_test.go`                                       | ~~Add fuzz tests for templ parser edge cases~~                  | ~~Medium~~   | ~~Small~~  | ~~Testing~~      |
+| ~~18~~ done at `c0261563`                                                       | ~~Fix remaining LSP hints~~                                     | ~~Low~~      | ~~Small~~  | ~~Quality~~      |
+| 19 **→ in-process BDD harness (`internal/testutil/`) adopted**                  | Add benchmark: in-process vs subprocess BDD                     | Medium       | Small      | Testing          |
+| ~~20~~ done — `performance.yml` gc profiling                                    | ~~Profile memory usage during large repo analysis~~             | ~~Medium~~   | ~~Medium~~ | ~~Performance~~  |
+| 21 **→ templ templates compiled (`printer/report_templ.go`); embed not needed** | Consider `go:embed` for HTML template                           | Low          | Small      | Quality          |
+| ~~22~~ done — `bdd/sarif_gofinding_integration_test.go`                         | ~~Add SARIF output integration test~~                           | ~~Low~~      | ~~Small~~  | ~~Testing~~      |
+| 23 **→ upstream templ issue; tracked upstream**                                 | Evaluate `a-h/templ` v3 for `ConstantCSSProperty` Range         | Low          | Small      | Upstream         |
+| ~~24~~ done — `.github/workflows/release.yml`                                   | ~~Create GitHub release workflow~~                              | ~~Medium~~   | ~~Medium~~ | ~~CI/CD~~        |
+| ~~25~~ done — version subcommand (`cmd/version_cmd.go`)                         | ~~Add `--version` flag registration in `NewRootCommand`~~       | ~~Low~~      | ~~Small~~  | ~~Bug fix~~      |
 
 ---
 

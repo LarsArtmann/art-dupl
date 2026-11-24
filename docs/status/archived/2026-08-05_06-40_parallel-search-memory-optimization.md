@@ -198,7 +198,7 @@ Implement two ROADMAP items:
 17. Design per-file position offset map to eliminate the flat `[]*syntax.Node` in `BuildTree`
 18. Prototype suffix array construction (DC3/skew) as alternative to Ukkonen's for parallelism
 19. Investigate whether the hash-based detector (`hashAdapter`) could also benefit from parallel search
-~~20. Design a `StreamingDetector` interface that processes files one-at-a-time without buffering~~ not-do — the interface was never designed
+    ~~20. Design a `StreamingDetector` interface that processes files one-at-a-time without buffering~~ not-do — the interface was never designed
 
 ### Code Quality
 

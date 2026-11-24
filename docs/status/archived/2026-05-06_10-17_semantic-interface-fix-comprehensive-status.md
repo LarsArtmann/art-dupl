@@ -123,29 +123,29 @@
 
 ### Lint Issues (2 pre-existing)
 
-| Issue               | File                            | Detail                                                                                                              |
-| ------------------- | ------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| Issue                                                      | File                                | Detail                                                                                                                  |
+| ---------------------------------------------------------- | ----------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
 | ~~`gocognit: 37 > 35`~~ done — resolved — lint clean today | ~~`syntax/golang/transform.go:13`~~ | ~~The `trans()` function's cognitive complexity is 2 over threshold. The 366-line switch statement is the root cause.~~ |
-| ~~`unused`~~ done — resolved — lint clean today | ~~`bdd/stats_command_test.go:84`~~ | ~~`assertGeneratedFilesFilteredWithFlag` function declared but never called. Dead test helper.~~ |
+| ~~`unused`~~ done — resolved — lint clean today            | ~~`bdd/stats_command_test.go:84`~~  | ~~`assertGeneratedFilesFilteredWithFlag` function declared but never called. Dead test helper.~~                        |
 
 ### LSP Diagnostics (pre-existing, non-blocking)
 
-| Type             | Count | Location                                                          |
-| ---------------- | ----- | ----------------------------------------------------------------- |
-| ~~`unusedwrite`~~ done — resolved — lint clean today | ~~6~~ | ~~`detection_test.go`, `detector_test.go`, `detector_types_test.go`~~ |
-| ~~`unusedfunc`~~ done — resolved — lint clean today | ~~1~~ | ~~`bdd/stats_command_test.go`~~ |
-| ~~`infertypeargs`~~ done — resolved — lint clean today | ~~1~~ | ~~`config/enum_helpers.go:78`~~ |
-| ~~`gci` formatting~~ done — resolved — lint clean today | ~~1~~ | ~~`config/config.go:163`~~ |
+| Type                                                    | Count | Location                                                              |
+| ------------------------------------------------------- | ----- | --------------------------------------------------------------------- |
+| ~~`unusedwrite`~~ done — resolved — lint clean today    | ~~6~~ | ~~`detection_test.go`, `detector_test.go`, `detector_types_test.go`~~ |
+| ~~`unusedfunc`~~ done — resolved — lint clean today     | ~~1~~ | ~~`bdd/stats_command_test.go`~~                                       |
+| ~~`infertypeargs`~~ done — resolved — lint clean today  | ~~1~~ | ~~`config/enum_helpers.go:78`~~                                       |
+| ~~`gci` formatting~~ done — resolved — lint clean today | ~~1~~ | ~~`config/config.go:163`~~                                            |
 
 ### Test Coverage Gaps
 
-| Package                      | Coverage | Risk                                                                     |
-| ---------------------------- | -------- | ------------------------------------------------------------------------ |
-| ~~`cmd/art-dupl` (main binary)~~ done — verified — main entry still tested via cmd/ package | ~~0.0%~~ | ~~No direct test of the main entry point (tested via cmd/ package instead)~~ |
-| ~~`domain`~~ **Superseded — domain has extensive tests now (62.2%).** | ~~0.0%~~ | ~~Pure types, validated at construction sites~~ |
-| ~~`examples`~~ done — verified — demo code | ~~0.0%~~ | ~~Demo code, not production~~ |
-| ~~`internal/testhelpers`~~ done — verified — test infrastructure | ~~0.0%~~ | ~~Test infrastructure~~ |
-| ~~`internal/filtertest`~~ **Superseded — internal/filtertest retained as a test utility.** | ~~50.0%~~ | ~~Missing edge case coverage~~ |
+| Package                                                                                     | Coverage  | Risk                                                                         |
+| ------------------------------------------------------------------------------------------- | --------- | ---------------------------------------------------------------------------- |
+| ~~`cmd/art-dupl` (main binary)~~ done — verified — main entry still tested via cmd/ package | ~~0.0%~~  | ~~No direct test of the main entry point (tested via cmd/ package instead)~~ |
+| ~~`domain`~~ **Superseded — domain has extensive tests now (62.2%).**                       | ~~0.0%~~  | ~~Pure types, validated at construction sites~~                              |
+| ~~`examples`~~ done — verified — demo code                                                  | ~~0.0%~~  | ~~Demo code, not production~~                                                |
+| ~~`internal/testhelpers`~~ done — verified — test infrastructure                            | ~~0.0%~~  | ~~Test infrastructure~~                                                      |
+| ~~`internal/filtertest`~~ **Superseded — internal/filtertest retained as a test utility.**  | ~~50.0%~~ | ~~Missing edge case coverage~~                                               |
 
 ### Architecture Debt
 
@@ -186,33 +186,33 @@
 
 ## f) Top #25 Things We Should Get Done Next
 
-| #  | Priority | Item                                                                      | Est. Effort | Impact              |
-| -- | -------- | ------------------------------------------------------------------------- | ----------- | ------------------- |
-| ~~1~~ **Superseded — semantic suite pins behavior; no dedicated interface-impl spec.** | ~~🔴 HIGH~~ | ~~Add BDD test for interface semantic false-positive fix~~ | ~~30min~~ | ~~Correctness~~ |
-| ~~2~~ done — resolved — lint clean today | ~~🔴 HIGH~~ | ~~Delete dead `assertGeneratedFilesFilteredWithFlag` test helper~~ | ~~5min~~ | ~~Clean code~~ |
-| ~~3~~ done — resolved — lint clean today | ~~🔴 HIGH~~ | ~~Fix gci formatting in `config/config.go:163`~~ | ~~2min~~ | ~~Clean code~~ |
-| ~~4~~ done — resolved — lint clean today | ~~🔴 HIGH~~ | ~~Fix 6 unused writes in test files~~ | ~~15min~~ | ~~Clean code~~ |
-| ~~5~~ done — docs/status/archived/ regime | ~~🔴 HIGH~~ | ~~Archive `docs/status/` — keep last 30 days, compress rest~~ | ~~30min~~ | ~~Repo hygiene~~ |
-| ~~6~~ **Superseded — Todo/Legacy detectors removed.** | ~~🟡 MED~~ | ~~Wire TODO/Legacy detectors to CLI flags (`-m todos`, `-m legacy`)~~ | ~~1hr~~ | ~~Feature complete~~ |
-| ~~7~~ **Won't implement — dropped — clone CSV keeps manual formatting.** | ~~🟡 MED~~ | ~~Implement `encoding/csv` for clone CSV output~~ | ~~2hr~~ | ~~Correctness~~ |
-| ~~8~~ done — TokenValue type | ~~🟡 MED~~ | ~~Implement TokenValue type with validation~~ | ~~3hr~~ | ~~Type safety~~ |
-| ~~9~~ done — resolved — lint clean today | ~~🟡 MED~~ | ~~Extract AST node handlers from `transform.go` to reduce gocognit~~ | ~~4hr~~ | ~~Maintainability~~ |
-| ~~10~~ done at `7e5a5cb` | ~~🟡 MED~~ | ~~Introduce ProcessedClone DTO to decouple Printer from syntax.Node~~ | ~~8hr~~ | ~~Architecture~~ |
-| ~~11~~ done — CloneRef embed + format DTOs (ADR-0005) | ~~🟡 MED~~ | ~~Consolidate three Clone types into unified domain model~~ | ~~6hr~~ | ~~Architecture~~ |
-| ~~12~~ done — file-kind-scoped dispatch in printer/actionability/clone_classify.go (AGENTS.md) | ~~🟡 MED~~ | ~~Move `printer/clone_classify.go` language-specific logic behind interface~~ | ~~3hr~~ | ~~Multi-language prep~~ |
-| ~~13~~ **Superseded — internal/filtertest retained as a test utility.** | ~~🟡 MED~~ | ~~Add coverage for `internal/filtertest` (50% → 80%)~~ | ~~2hr~~ | ~~Quality~~ |
-| ~~14~~ done — FEATURES.md maintained under the docs-health count gate | ~~🟡 MED~~ | ~~Update FEATURES.md to reflect semantic interface tracking~~ | ~~15min~~ | ~~Documentation~~ |
-| ~~15~~ done — TODO_LIST.md maintained | ~~🟡 MED~~ | ~~Update TODO_LIST.md to mark completed items~~ | ~~15min~~ | ~~Documentation~~ |
-| ~~16~~ done — AGENTS.md documents semantic-mode interface handling | ~~🟡 MED~~ | ~~Update AGENTS.md with interface context tracking decision~~ | ~~10min~~ | ~~Memory~~ |
-| ~~17~~ done — domain enums use pkg/enum helpers | ~~🟢 LOW~~ | ~~Unify domain enums to use config's generic helpers~~ | ~~2hr~~ | ~~Consistency~~ |
-| ~~18~~ **Won't implement — dropped — memory-compact tree chosen instead (ADR-0022).** | ~~🟢 LOW~~ | ~~Implement string interning for repeated identifiers~~ | ~~3hr~~ | ~~Performance~~ |
-| ~~19~~ **Superseded — internal/simd removed.** | ~~🟢 LOW~~ | ~~Enable ARM64 SIMD detection in `internal/simd/`~~ | ~~4hr~~ | ~~Performance~~ |
-| ~~20~~ **Superseded — parser fuzzing landed instead (syntax/templ/fuzz_test.go).** | ~~🟢 LOW~~ | ~~Add fuzz tests for semantic encoding (FNV collision detection)~~ | ~~2hr~~ | ~~Robustness~~ |
-| ~~21~~ done — BenchmarkSemanticVsExactVsStructural (syntax/golang/benchmark_test.go) | ~~🟢 LOW~~ | ~~Benchmark: semantic vs structural mode performance comparison~~ | ~~1hr~~ | ~~Documentation~~ |
-| ~~22~~ **Won't implement — dropped — no --dry-run flag.** | ~~🟢 LOW~~ | ~~Add `--dry-run` flag that shows what would be analyzed without running~~ | ~~2hr~~ | ~~UX~~ |
-| ~~23~~ done — nix flake is the primary build (justfile removed) | ~~🟢 LOW~~ | ~~Migrate justfile recipes to nix flake~~ | ~~4hr~~ | ~~Build system~~ |
-| ~~24~~ **Won't implement — dropped — no .git-blame-ignore-revs.** | ~~🟢 LOW~~ | ~~Add `.git-blame-ignore-revs` for mass-refactor commits~~ | ~~10min~~ | ~~DX~~ |
-| ~~25~~ **Won't implement — dropped — Go + templ only (AGENTS.md).** | ~~🟢 LOW~~ | ~~Investigate supporting Rust/TypeScript via tree-sitter~~ | ~~Research~~ | ~~Multi-language~~ |
+| #                                                                                              | Priority    | Item                                                                          | Est. Effort  | Impact                  |
+| ---------------------------------------------------------------------------------------------- | ----------- | ----------------------------------------------------------------------------- | ------------ | ----------------------- |
+| ~~1~~ **Superseded — semantic suite pins behavior; no dedicated interface-impl spec.**         | ~~🔴 HIGH~~ | ~~Add BDD test for interface semantic false-positive fix~~                    | ~~30min~~    | ~~Correctness~~         |
+| ~~2~~ done — resolved — lint clean today                                                       | ~~🔴 HIGH~~ | ~~Delete dead `assertGeneratedFilesFilteredWithFlag` test helper~~            | ~~5min~~     | ~~Clean code~~          |
+| ~~3~~ done — resolved — lint clean today                                                       | ~~🔴 HIGH~~ | ~~Fix gci formatting in `config/config.go:163`~~                              | ~~2min~~     | ~~Clean code~~          |
+| ~~4~~ done — resolved — lint clean today                                                       | ~~🔴 HIGH~~ | ~~Fix 6 unused writes in test files~~                                         | ~~15min~~    | ~~Clean code~~          |
+| ~~5~~ done — docs/status/archived/ regime                                                      | ~~🔴 HIGH~~ | ~~Archive `docs/status/` — keep last 30 days, compress rest~~                 | ~~30min~~    | ~~Repo hygiene~~        |
+| ~~6~~ **Superseded — Todo/Legacy detectors removed.**                                          | ~~🟡 MED~~  | ~~Wire TODO/Legacy detectors to CLI flags (`-m todos`, `-m legacy`)~~         | ~~1hr~~      | ~~Feature complete~~    |
+| ~~7~~ **Won't implement — dropped — clone CSV keeps manual formatting.**                       | ~~🟡 MED~~  | ~~Implement `encoding/csv` for clone CSV output~~                             | ~~2hr~~      | ~~Correctness~~         |
+| ~~8~~ done — TokenValue type                                                                   | ~~🟡 MED~~  | ~~Implement TokenValue type with validation~~                                 | ~~3hr~~      | ~~Type safety~~         |
+| ~~9~~ done — resolved — lint clean today                                                       | ~~🟡 MED~~  | ~~Extract AST node handlers from `transform.go` to reduce gocognit~~          | ~~4hr~~      | ~~Maintainability~~     |
+| ~~10~~ done at `7e5a5cb`                                                                       | ~~🟡 MED~~  | ~~Introduce ProcessedClone DTO to decouple Printer from syntax.Node~~         | ~~8hr~~      | ~~Architecture~~        |
+| ~~11~~ done — CloneRef embed + format DTOs (ADR-0005)                                          | ~~🟡 MED~~  | ~~Consolidate three Clone types into unified domain model~~                   | ~~6hr~~      | ~~Architecture~~        |
+| ~~12~~ done — file-kind-scoped dispatch in printer/actionability/clone_classify.go (AGENTS.md) | ~~🟡 MED~~  | ~~Move `printer/clone_classify.go` language-specific logic behind interface~~ | ~~3hr~~      | ~~Multi-language prep~~ |
+| ~~13~~ **Superseded — internal/filtertest retained as a test utility.**                        | ~~🟡 MED~~  | ~~Add coverage for `internal/filtertest` (50% → 80%)~~                        | ~~2hr~~      | ~~Quality~~             |
+| ~~14~~ done — FEATURES.md maintained under the docs-health count gate                          | ~~🟡 MED~~  | ~~Update FEATURES.md to reflect semantic interface tracking~~                 | ~~15min~~    | ~~Documentation~~       |
+| ~~15~~ done — TODO_LIST.md maintained                                                          | ~~🟡 MED~~  | ~~Update TODO_LIST.md to mark completed items~~                               | ~~15min~~    | ~~Documentation~~       |
+| ~~16~~ done — AGENTS.md documents semantic-mode interface handling                             | ~~🟡 MED~~  | ~~Update AGENTS.md with interface context tracking decision~~                 | ~~10min~~    | ~~Memory~~              |
+| ~~17~~ done — domain enums use pkg/enum helpers                                                | ~~🟢 LOW~~  | ~~Unify domain enums to use config's generic helpers~~                        | ~~2hr~~      | ~~Consistency~~         |
+| ~~18~~ **Won't implement — dropped — memory-compact tree chosen instead (ADR-0022).**          | ~~🟢 LOW~~  | ~~Implement string interning for repeated identifiers~~                       | ~~3hr~~      | ~~Performance~~         |
+| ~~19~~ **Superseded — internal/simd removed.**                                                 | ~~🟢 LOW~~  | ~~Enable ARM64 SIMD detection in `internal/simd/`~~                           | ~~4hr~~      | ~~Performance~~         |
+| ~~20~~ **Superseded — parser fuzzing landed instead (syntax/templ/fuzz_test.go).**             | ~~🟢 LOW~~  | ~~Add fuzz tests for semantic encoding (FNV collision detection)~~            | ~~2hr~~      | ~~Robustness~~          |
+| ~~21~~ done — BenchmarkSemanticVsExactVsStructural (syntax/golang/benchmark_test.go)           | ~~🟢 LOW~~  | ~~Benchmark: semantic vs structural mode performance comparison~~             | ~~1hr~~      | ~~Documentation~~       |
+| ~~22~~ **Won't implement — dropped — no --dry-run flag.**                                      | ~~🟢 LOW~~  | ~~Add `--dry-run` flag that shows what would be analyzed without running~~    | ~~2hr~~      | ~~UX~~                  |
+| ~~23~~ done — nix flake is the primary build (justfile removed)                                | ~~🟢 LOW~~  | ~~Migrate justfile recipes to nix flake~~                                     | ~~4hr~~      | ~~Build system~~        |
+| ~~24~~ **Won't implement — dropped — no .git-blame-ignore-revs.**                              | ~~🟢 LOW~~  | ~~Add `.git-blame-ignore-revs` for mass-refactor commits~~                    | ~~10min~~    | ~~DX~~                  |
+| ~~25~~ **Won't implement — dropped — Go + templ only (AGENTS.md).**                            | ~~🟢 LOW~~  | ~~Investigate supporting Rust/TypeScript via tree-sitter~~                    | ~~Research~~ | ~~Multi-language~~      |
 
 ---
 

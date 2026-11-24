@@ -12,6 +12,7 @@
 ## TL;DR
 
 <!-- check-rows:ledger -->
+
 | Metric                      | Before | After                   |
 | --------------------------- | ------ | ----------------------- |
 | Clone groups at `-t 50`     | 8      | **3**                   |
@@ -49,6 +50,7 @@ All extracted duplication was real maintenance burden. All accepted duplication 
 ### Accepted duplication (3 groups, rationale recorded)
 
 <!-- check-rows:ledger -->
+
 | Group | File                                        | Why accepted                                                                                                                                            |
 | ----- | ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 6     | `printer/semantic_precision_test.go:60-116` | The literal Go source IS the test data — Lock/Unlock vs RLock/RUnlock. Inline visibility required.                                                      |
@@ -161,7 +163,7 @@ Honest self-critique on this session:
 22. Add a CI gate: `art-dupl --semantic -t 25 --plumbing | check_threshold` (or similar)
 23. Generate HTML report on each PR as an artifact
 24. Add `--diff` mode to art-dupl: show only clones introduced since main
-~~25. Add a `--since <ref>` flag that runs git-aware dedup~~ **struck — tracked on ROADMAP (UX and Defaults: `--since` scan scope, landed 2026-11-14).**
+    ~~25. Add a `--since <ref>` flag that runs git-aware dedup~~ **struck — tracked on ROADMAP (UX and Defaults: `--since` scan scope, landed 2026-11-14).**
 
 ### Documentation / project hygiene
 
@@ -186,9 +188,9 @@ Honest self-critique on this session:
 38. When a skill instruction conflicts with a global rule, ASK THE USER instead of silently picking one
 39. Always run `-race` after non-trivial test refactors
 40. Always update `AGENTS.md` when introducing new patterns (per the global update protocol)
-~~41. View HTML output when I generate it — don't waste the tool call~~ done — moot — process note, not a work item
-42. Check cross-package reuse potential before extracting helpers (avoid reinvention)
-43. Add a direct test for any production function whose body becomes a 1-line delegation
+    ~~41. View HTML output when I generate it — don't waste the tool call~~ done — moot — process note, not a work item
+41. Check cross-package reuse potential before extracting helpers (avoid reinvention)
+42. Add a direct test for any production function whose body becomes a 1-line delegation
 
 ### Quality gates for the refactors I shipped
 
@@ -226,6 +228,7 @@ syntax/templ/transform_components_test.go |  57 ++++----
 ## Helpers introduced this session
 
 <!-- check-rows:ledger -->
+
 | Helper                         | Location                                    | Replaces                                                                       |
 | ------------------------------ | ------------------------------------------- | ------------------------------------------------------------------------------ |
 | `cloneGroupMetrics`            | `printer/sorter.go` (prod)                  | 10 inline `GroupMetrics[CloneGroup]{...}` literals                             |

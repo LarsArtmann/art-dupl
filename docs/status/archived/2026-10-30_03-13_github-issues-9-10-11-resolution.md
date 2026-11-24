@@ -11,6 +11,7 @@
 ## a) FULLY DONE
 
 <!-- check-rows:ledger -->
+
 | #  | Item                                                                                                                                                                                                                                                                                                                                                                                                      | Evidence                                                                                                                                                                                                                                                                                        |
 | -- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 1  | **Issue #9 fixed**: accept directives in templ markup — `<!-- art-dupl:accept … -->` HTML-comment form recognized (no nested `//`), trailing `-->` stripped before hash/description grammar; bare, hex-precision, and description forms all work; prose guard preserved                                                                                                                                   | `internal/accept/accept.go` (`acceptDirectiveHTMLCommentRe`, `findAcceptDirective`); 8 unit cases in `cmd/accept_directive_test.go`; 4 BDD specs in `bdd/templ_accept_directive_test.go`; all green                                                                                             |
@@ -27,6 +28,7 @@
 ### Corpus before/after (default threshold unless noted)
 
 <!-- check-rows:ledger -->
+
 | Corpus                          | Before                | After         | Dropped groups verified                                                                                             |
 | ------------------------------- | --------------------- | ------------- | ------------------------------------------------------------------------------------------------------------------- |
 | nsfw-classifier `-t 3` plain    | 71 shown              | 46 shown      | mega-group, mixed groups, 1-line templ junk (12)                                                                    |

@@ -14,19 +14,19 @@ Conducted a deep audit of all 7 site files (2,588 lines). Found 11 real issues (
 
 ## A) FULLY DONE
 
-| #  | Issue Found                                                                                          | Fix Applied                                                                                                      |
-| -- | ---------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| 1  | Typewriter effect dead code — `.term-line` class never used in HTML                                  | Replaced raw terminal body with `.term-line` divs with `data-delay` attributes (30-200ms)                        |
-| 2  | Before/After grid not responsive — inline `grid-template-columns` can't be overridden by media query | Moved to `.diff-grid` CSS class with responsive breakpoint at 768px                                              |
-| 3  | SDK/Config grid not responsive — same inline style problem                                           | Moved to `.sdk-grid` CSS class with responsive breakpoint at 768px                                               |
-| 4  | ~40+ inline styles on Before/After + SDK sections                                                    | Replaced all with CSS classes: `.diff-section`, `.diff-panel`, `.diff-header`, `.sdk-section`, `.sdk-card`, etc. |
-| 5  | Missing ARIA accessible names on new sections                                                        | Added `id="refactoring"` and `id="sdk"` to new sections                                                          |
-| 6  | `<code>` elements unstyled in feature cards                                                          | Added `.feature-card code` rule with mono font, accent color, background                                         |
-| 7  | Inline padding conflicts with section rhythm                                                         | New sections now use CSS classes with consistent `padding: 80px 0`                                               |
-| ~~8~~ fixed — the visibilitychange listener pauses/resumes the animation | ~~Canvas rAF loop never cancelled, no visibilitychange~~ | ~~Added `visibilitychange` listener to pause/resume animation~~|
-| ~~9~~ fixed — a deterministic offset replaced Math.random | ~~`Math.random()` causes suffix tree rebuild jitter~~ | ~~Replaced with deterministic offset: `(i * 7 + key.charCodeAt(0)) % 15`~~|
-| ~~10~~ fixed — the 404 page carries the Google Fonts link | ~~404.html missing Google Fonts~~ | ~~Added full Google Fonts `<link>` tag~~ |
-| 11 | 404.html relative `style.css` path fails on deep 404s                                                | Changed to absolute `/style.css`                                                                                 |
+| #                                                                        | Issue Found                                                                                          | Fix Applied                                                                                                      |
+| ------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| 1                                                                        | Typewriter effect dead code — `.term-line` class never used in HTML                                  | Replaced raw terminal body with `.term-line` divs with `data-delay` attributes (30-200ms)                        |
+| 2                                                                        | Before/After grid not responsive — inline `grid-template-columns` can't be overridden by media query | Moved to `.diff-grid` CSS class with responsive breakpoint at 768px                                              |
+| 3                                                                        | SDK/Config grid not responsive — same inline style problem                                           | Moved to `.sdk-grid` CSS class with responsive breakpoint at 768px                                               |
+| 4                                                                        | ~40+ inline styles on Before/After + SDK sections                                                    | Replaced all with CSS classes: `.diff-section`, `.diff-panel`, `.diff-header`, `.sdk-section`, `.sdk-card`, etc. |
+| 5                                                                        | Missing ARIA accessible names on new sections                                                        | Added `id="refactoring"` and `id="sdk"` to new sections                                                          |
+| 6                                                                        | `<code>` elements unstyled in feature cards                                                          | Added `.feature-card code` rule with mono font, accent color, background                                         |
+| 7                                                                        | Inline padding conflicts with section rhythm                                                         | New sections now use CSS classes with consistent `padding: 80px 0`                                               |
+| ~~8~~ fixed — the visibilitychange listener pauses/resumes the animation | ~~Canvas rAF loop never cancelled, no visibilitychange~~                                             | ~~Added `visibilitychange` listener to pause/resume animation~~                                                  |
+| ~~9~~ fixed — a deterministic offset replaced Math.random                | ~~`Math.random()` causes suffix tree rebuild jitter~~                                                | ~~Replaced with deterministic offset: `(i * 7 + key.charCodeAt(0)) % 15`~~                                       |
+| ~~10~~ fixed — the 404 page carries the Google Fonts link                | ~~404.html missing Google Fonts~~                                                                    | ~~Added full Google Fonts `<link>` tag~~                                                                         |
+| 11                                                                       | 404.html relative `style.css` path fails on deep 404s                                                | Changed to absolute `/style.css`                                                                                 |
 
 ## B) PARTIALLY DONE
 
@@ -36,18 +36,18 @@ Nothing — all identified issues are fully resolved.
 
 Remaining items from previous reports that are NOT bugs but enhancements:
 
-| #  | Item                                                                 | Priority | Effort |
-| -- | -------------------------------------------------------------------- | -------- | ------ |
-| 1  | Interactive live demo (Cloud Run backend)                            | HIGH     | 4hr    |
-| 2  | Custom domain DNS setup                                              | MED      | 30min  |
-| 3  | CSS/JS minification build step                                       | LOW      | 10min  |
-| 4  | Self-host Google Fonts                                               | LOW      | 15min  |
-| 5  | Dark/light theme toggle                                              | LOW      | 20min  |
-| 6  | PNG version of OG image (SVG may not render on all social platforms) | MED      | 10min  |
-| 7  | W3C HTML validation pass                                             | MED      | 10min  |
-| ~~8~~ not-do — no Lighthouse audit pass recorded | ~~Lighthouse audit on deployed site~~ | ~~MED~~ | ~~10min~~|
-| ~~9~~ not-do — no axe-core audit pass recorded | ~~axe-core accessibility audit~~ | ~~MED~~ | ~~15min~~|
-| ~~10~~ not-do — no manifest.json landed | ~~`manifest.json` for PWA~~ | ~~LOW~~ | ~~10min~~|
+| #                                                | Item                                                                 | Priority | Effort    |
+| ------------------------------------------------ | -------------------------------------------------------------------- | -------- | --------- |
+| 1                                                | Interactive live demo (Cloud Run backend)                            | HIGH     | 4hr       |
+| 2                                                | Custom domain DNS setup                                              | MED      | 30min     |
+| 3                                                | CSS/JS minification build step                                       | LOW      | 10min     |
+| 4                                                | Self-host Google Fonts                                               | LOW      | 15min     |
+| 5                                                | Dark/light theme toggle                                              | LOW      | 20min     |
+| 6                                                | PNG version of OG image (SVG may not render on all social platforms) | MED      | 10min     |
+| 7                                                | W3C HTML validation pass                                             | MED      | 10min     |
+| ~~8~~ not-do — no Lighthouse audit pass recorded | ~~Lighthouse audit on deployed site~~                                | ~~MED~~  | ~~10min~~ |
+| ~~9~~ not-do — no axe-core audit pass recorded   | ~~axe-core accessibility audit~~                                     | ~~MED~~  | ~~15min~~ |
+| ~~10~~ not-do — no manifest.json landed          | ~~`manifest.json` for PWA~~                                          | ~~LOW~~  | ~~10min~~ |
 
 ## D) TOTALLY FUCKED UP
 
@@ -70,33 +70,33 @@ Remaining items from previous reports that are NOT bugs but enhancements:
 
 ## F) TOP #25 NEXT STEPS (by Impact × Ease)
 
-| #  | Task                                          | Impact | Effort | Type     |
-| -- | --------------------------------------------- | ------ | ------ | -------- |
-| 1  | `firebase login` + `firebase deploy`          | HIGH   | 5min   | Deploy   |
-| 2  | Add `FIREBASE_TOKEN` to GitHub secrets        | HIGH   | 2min   | Deploy   |
-| 3  | Run Lighthouse audit                          | MED    | 10min  | Quality  |
-| 4  | Fix any Lighthouse issues found               | VARIES | VARIES | Quality  |
-| 5  | Run axe-core accessibility scan               | MED    | 15min  | A11y     |
-| 6  | W3C HTML validation                           | MED    | 10min  | Quality  |
-| 7  | Generate PNG OG image                         | MED    | 10min  | SEO      |
-| ~~8~~ **not-do — no CSS minification pipeline landed** |~~CSS minification~~|~~MED~~|~~10min~~|~~Perf~~|
-| ~~9~~ **not-do — no JS minification pipeline landed** |~~JS minification~~|~~MED~~|~~10min~~|~~Perf~~|
-| ~~10~~ **not-do — fonts stayed on the CDN** |~~Self-host Google Fonts~~|~~LOW~~|~~15min~~|~~Privacy~~|
-| 11 | Custom domain DNS                             | MED    | 30min  | Deploy   |
-| ~~12~~ **not-do — the suffix-tree interaction never landed** |~~Build suffix tree mouse interaction~~|~~MED~~|~~30min~~|~~Design~~|
-| ~~13~~ **not-do — no manifest.json landed** |~~Add `manifest.json`~~|~~LOW~~|~~10min~~|~~PWA~~|
-| 14 | Add Apple Touch Icon                          | LOW    | 5min   | iOS      |
-| 15 | Dark/light theme toggle                       | LOW    | 20min  | UX       |
-| ~~16~~ **not-do — no analytics landed** |~~Add Plausible/Fathom analytics~~|~~LOW~~|~~10min~~|~~Tracking~~|
-| ~~17~~ **not-do — no device QA pass recorded** |~~Test on real mobile devices~~|~~MED~~|~~15min~~|~~QA~~|
-| ~~18~~ **not-do — animated edges never landed** |~~Add animated edge drawing to suffix tree~~|~~MED~~|~~20min~~|~~Design~~|
-| ~~19~~ **not-do — color-coded depths never landed** |~~Add color-coded node depths~~|~~LOW~~|~~10min~~|~~Design~~|
-| 20 | Build interactive live demo                   | HIGH   | 4hr    | Feature  |
-| 21 | Add `sitemap.xml` to Google Search Console    | LOW    | 5min   | SEO      |
-| 22 | Add structured data testing                   | LOW    | 5min   | SEO      |
-| 23 | Add `preconnect` for badge images             | LOW    | 2min   | Perf     |
-| 24 | Split CSS into partials (if build step added) | LOW    | 15min  | Maint    |
-| 25 | Add `crossorigin` to Google Fonts CSS         | LOW    | 1min   | Perf     |
+| #                                                            | Task                                          | Impact  | Effort    | Type         |
+| ------------------------------------------------------------ | --------------------------------------------- | ------- | --------- | ------------ |
+| 1                                                            | `firebase login` + `firebase deploy`          | HIGH    | 5min      | Deploy       |
+| 2                                                            | Add `FIREBASE_TOKEN` to GitHub secrets        | HIGH    | 2min      | Deploy       |
+| 3                                                            | Run Lighthouse audit                          | MED     | 10min     | Quality      |
+| 4                                                            | Fix any Lighthouse issues found               | VARIES  | VARIES    | Quality      |
+| 5                                                            | Run axe-core accessibility scan               | MED     | 15min     | A11y         |
+| 6                                                            | W3C HTML validation                           | MED     | 10min     | Quality      |
+| 7                                                            | Generate PNG OG image                         | MED     | 10min     | SEO          |
+| ~~8~~ **not-do — no CSS minification pipeline landed**       | ~~CSS minification~~                          | ~~MED~~ | ~~10min~~ | ~~Perf~~     |
+| ~~9~~ **not-do — no JS minification pipeline landed**        | ~~JS minification~~                           | ~~MED~~ | ~~10min~~ | ~~Perf~~     |
+| ~~10~~ **not-do — fonts stayed on the CDN**                  | ~~Self-host Google Fonts~~                    | ~~LOW~~ | ~~15min~~ | ~~Privacy~~  |
+| 11                                                           | Custom domain DNS                             | MED     | 30min     | Deploy       |
+| ~~12~~ **not-do — the suffix-tree interaction never landed** | ~~Build suffix tree mouse interaction~~       | ~~MED~~ | ~~30min~~ | ~~Design~~   |
+| ~~13~~ **not-do — no manifest.json landed**                  | ~~Add `manifest.json`~~                       | ~~LOW~~ | ~~10min~~ | ~~PWA~~      |
+| 14                                                           | Add Apple Touch Icon                          | LOW     | 5min      | iOS          |
+| 15                                                           | Dark/light theme toggle                       | LOW     | 20min     | UX           |
+| ~~16~~ **not-do — no analytics landed**                      | ~~Add Plausible/Fathom analytics~~            | ~~LOW~~ | ~~10min~~ | ~~Tracking~~ |
+| ~~17~~ **not-do — no device QA pass recorded**               | ~~Test on real mobile devices~~               | ~~MED~~ | ~~15min~~ | ~~QA~~       |
+| ~~18~~ **not-do — animated edges never landed**              | ~~Add animated edge drawing to suffix tree~~  | ~~MED~~ | ~~20min~~ | ~~Design~~   |
+| ~~19~~ **not-do — color-coded depths never landed**          | ~~Add color-coded node depths~~               | ~~LOW~~ | ~~10min~~ | ~~Design~~   |
+| 20                                                           | Build interactive live demo                   | HIGH    | 4hr       | Feature      |
+| 21                                                           | Add `sitemap.xml` to Google Search Console    | LOW     | 5min      | SEO          |
+| 22                                                           | Add structured data testing                   | LOW     | 5min      | SEO          |
+| 23                                                           | Add `preconnect` for badge images             | LOW     | 2min      | Perf         |
+| 24                                                           | Split CSS into partials (if build step added) | LOW     | 15min     | Maint        |
+| 25                                                           | Add `crossorigin` to Google Fonts CSS         | LOW     | 1min      | Perf         |
 
 ## G) TOP #1 QUESTION
 

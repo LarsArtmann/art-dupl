@@ -150,6 +150,7 @@ b) Or use subprocess-based testing for commands that exit
 ### Linter: 20 Issues
 
 <!-- check-rows:ledger -->
+
 | Category    | Count | Severity |
 | ----------- | ----- | -------- |
 | errcheck    | 10    | MEDIUM   |
@@ -206,33 +207,33 @@ b) Or use subprocess-based testing for commands that exit
 
 ## f) Top #25 Things We Should Get Done Next
 
-| #  | Task                                                                  | Priority | Effort | Impact           |
-| -- | --------------------------------------------------------------------- | -------- | ------ | ---------------- |
-| ~~1~~ done — in-process harness resolved os.Exit flakiness | ~~Fix os.Exit test flakiness (bdd + cmd packages)~~ | ~~CRITICAL~~ | ~~M~~ | ~~CI trust~~ |
-| ~~2~~ done — 0 lint findings | ~~Fix 10 errcheck issues in test code~~ | ~~HIGH~~ | ~~S~~ | ~~Linter clean~~ |
-| 3 **→ buildJSONData accepted** | Extract buildJSONData into smaller functions (gocyclo 16→<10) | HIGH | S | Maintainability |
-| ~~4~~ done — test constants extracted | ~~Extract `--threshold` and `art-dupl` string constants in tests~~ | ~~LOW~~ | ~~S~~ | ~~Linter clean~~ |
-| ~~5~~ **Superseded — ADR-0028 go-finding adapter.** | ~~Wire TodoDetector and LegacyDetector to CLI `-m` flag~~ | ~~HIGH~~ | ~~M~~ | ~~Feature complete~~ |
-| ~~6~~ done — exhaustruct removed from enable list | ~~Fix 2 exhaustruct issues in testutil~~ | ~~LOW~~ | ~~S~~ | ~~Linter clean~~ |
-| ~~7~~ done — typed errors (`errors/`) | ~~Fix 2 err113 issues in testutil~~ | ~~LOW~~ | ~~S~~ | ~~Linter clean~~ |
-| ~~8~~ done — `domain/processed_clone.go` | ~~Introduce ProcessedClone DTO to decouple Printer from syntax.Node~~ | ~~HIGH~~ | ~~L~~ | ~~Architecture~~ |
-| ~~9~~ **Superseded — ADR-0005 split-brain type unification.** | ~~Consolidate 3 parallel Clone types~~ | ~~MEDIUM~~ | ~~L~~ | ~~Simplicity~~ |
-| ~~10~~ done — `encoding/csv` | ~~Implement proper CSV output using encoding/csv~~ | ~~MEDIUM~~ | ~~S~~ | ~~Correctness~~ |
-| ~~11~~ done — `suffixtree/suffixtree.go` `TokenValue` | ~~Implement TokenValue type with validation~~ | ~~HIGH~~ | ~~M~~ | ~~Type safety~~ |
-| ~~12~~ done — `pkg/enum/enum.go` | ~~Unify enum patterns (domain → config generic helpers)~~ | ~~MEDIUM~~ | ~~M~~ | ~~Consistency~~ |
-| 13 **→ still 560L — refactor remains open** | Refactor transform.go (369L, 300L switch) | MEDIUM | M | Maintainability |
-| ~~14~~ done — interning landed; SIMD layout notes in `hash/` | ~~Optimize memory layouts for SIMD-friendly structures~~ | ~~MEDIUM~~ | ~~L~~ | ~~Performance~~ |
-| ~~15~~ done — `syntax/intern.go` | ~~Implement string interning for large codebases~~ | ~~LOW~~ | ~~M~~ | ~~Memory~~ |
-| ~~16~~ done — SIMD notes documented; `internal/simd` removed | ~~Wire remaining SIMD TODOs (6 items)~~ | ~~LOW~~ | ~~M~~ | ~~Performance~~ |
-| 17 **→ upstream templ issue; tracked upstream** | Fix ConstantCSSProperty position (upstream PR or workaround) | LOW | S | Correctness |
-| ~~18~~ **Superseded — docs-health archival pass 2026-11.** | ~~Archive old docs/status/ files (keep last 30 days)~~ | ~~LOW~~ | ~~S~~ | ~~Cleanliness~~ |
-| ~~19~~ done at `c0261563` | ~~Fix remaining LSP hints: unused params, unnecessary type args~~ | ~~LOW~~ | ~~S~~ | ~~Cleanliness~~ |
-| ~~20~~ done — SDK implemented (`pkg/artdupl/`) | ~~Implement SDK from SDK_DESIGN.md~~ | ~~LOW~~ | ~~XL~~ | ~~Extensibility~~ |
-| ~~21~~ done — fuzz tests in `suffixtree/`, `syntax/templ/` | ~~Add more fuzz tests for edge cases~~ | ~~LOW~~ | ~~M~~ | ~~Robustness~~ |
-| ~~22~~ done — coverage grown; Coverage job in CI | ~~Coverage improvement: domain (67%), job (77%), detection (78%)~~ | ~~MEDIUM~~ | ~~M~~ | ~~Quality~~ |
-| ~~23~~ done — `performance.yml` regression CI tuned | ~~Add benchmark regression CI (performance.yml exists but needs tuning)~~ | ~~MEDIUM~~ | ~~S~~ | ~~Performance~~ |
-| ~~24~~ **Won't implement — modularization not adopted — single module.** | ~~Consider modularization (go-modularize skill exists)~~ | ~~LOW~~ | ~~XL~~ | ~~Architecture~~ |
-| ~~25~~ done — Nix flake is the tooling; no justfile | ~~Migrate justfile → nix flake (per AGENTS.md preference)~~ | ~~LOW~~ | ~~M~~ | ~~Tooling~~ |
+| #                                                                        | Task                                                                      | Priority     | Effort | Impact               |
+| ------------------------------------------------------------------------ | ------------------------------------------------------------------------- | ------------ | ------ | -------------------- |
+| ~~1~~ done — in-process harness resolved os.Exit flakiness               | ~~Fix os.Exit test flakiness (bdd + cmd packages)~~                       | ~~CRITICAL~~ | ~~M~~  | ~~CI trust~~         |
+| ~~2~~ done — 0 lint findings                                             | ~~Fix 10 errcheck issues in test code~~                                   | ~~HIGH~~     | ~~S~~  | ~~Linter clean~~     |
+| 3 **→ buildJSONData accepted**                                           | Extract buildJSONData into smaller functions (gocyclo 16→<10)             | HIGH         | S      | Maintainability      |
+| ~~4~~ done — test constants extracted                                    | ~~Extract `--threshold` and `art-dupl` string constants in tests~~        | ~~LOW~~      | ~~S~~  | ~~Linter clean~~     |
+| ~~5~~ **Superseded — ADR-0028 go-finding adapter.**                      | ~~Wire TodoDetector and LegacyDetector to CLI `-m` flag~~                 | ~~HIGH~~     | ~~M~~  | ~~Feature complete~~ |
+| ~~6~~ done — exhaustruct removed from enable list                        | ~~Fix 2 exhaustruct issues in testutil~~                                  | ~~LOW~~      | ~~S~~  | ~~Linter clean~~     |
+| ~~7~~ done — typed errors (`errors/`)                                    | ~~Fix 2 err113 issues in testutil~~                                       | ~~LOW~~      | ~~S~~  | ~~Linter clean~~     |
+| ~~8~~ done — `domain/processed_clone.go`                                 | ~~Introduce ProcessedClone DTO to decouple Printer from syntax.Node~~     | ~~HIGH~~     | ~~L~~  | ~~Architecture~~     |
+| ~~9~~ **Superseded — ADR-0005 split-brain type unification.**            | ~~Consolidate 3 parallel Clone types~~                                    | ~~MEDIUM~~   | ~~L~~  | ~~Simplicity~~       |
+| ~~10~~ done — `encoding/csv`                                             | ~~Implement proper CSV output using encoding/csv~~                        | ~~MEDIUM~~   | ~~S~~  | ~~Correctness~~      |
+| ~~11~~ done — `suffixtree/suffixtree.go` `TokenValue`                    | ~~Implement TokenValue type with validation~~                             | ~~HIGH~~     | ~~M~~  | ~~Type safety~~      |
+| ~~12~~ done — `pkg/enum/enum.go`                                         | ~~Unify enum patterns (domain → config generic helpers)~~                 | ~~MEDIUM~~   | ~~M~~  | ~~Consistency~~      |
+| 13 **→ still 560L — refactor remains open**                              | Refactor transform.go (369L, 300L switch)                                 | MEDIUM       | M      | Maintainability      |
+| ~~14~~ done — interning landed; SIMD layout notes in `hash/`             | ~~Optimize memory layouts for SIMD-friendly structures~~                  | ~~MEDIUM~~   | ~~L~~  | ~~Performance~~      |
+| ~~15~~ done — `syntax/intern.go`                                         | ~~Implement string interning for large codebases~~                        | ~~LOW~~      | ~~M~~  | ~~Memory~~           |
+| ~~16~~ done — SIMD notes documented; `internal/simd` removed             | ~~Wire remaining SIMD TODOs (6 items)~~                                   | ~~LOW~~      | ~~M~~  | ~~Performance~~      |
+| 17 **→ upstream templ issue; tracked upstream**                          | Fix ConstantCSSProperty position (upstream PR or workaround)              | LOW          | S      | Correctness          |
+| ~~18~~ **Superseded — docs-health archival pass 2026-11.**               | ~~Archive old docs/status/ files (keep last 30 days)~~                    | ~~LOW~~      | ~~S~~  | ~~Cleanliness~~      |
+| ~~19~~ done at `c0261563`                                                | ~~Fix remaining LSP hints: unused params, unnecessary type args~~         | ~~LOW~~      | ~~S~~  | ~~Cleanliness~~      |
+| ~~20~~ done — SDK implemented (`pkg/artdupl/`)                           | ~~Implement SDK from SDK_DESIGN.md~~                                      | ~~LOW~~      | ~~XL~~ | ~~Extensibility~~    |
+| ~~21~~ done — fuzz tests in `suffixtree/`, `syntax/templ/`               | ~~Add more fuzz tests for edge cases~~                                    | ~~LOW~~      | ~~M~~  | ~~Robustness~~       |
+| ~~22~~ done — coverage grown; Coverage job in CI                         | ~~Coverage improvement: domain (67%), job (77%), detection (78%)~~        | ~~MEDIUM~~   | ~~M~~  | ~~Quality~~          |
+| ~~23~~ done — `performance.yml` regression CI tuned                      | ~~Add benchmark regression CI (performance.yml exists but needs tuning)~~ | ~~MEDIUM~~   | ~~S~~  | ~~Performance~~      |
+| ~~24~~ **Won't implement — modularization not adopted — single module.** | ~~Consider modularization (go-modularize skill exists)~~                  | ~~LOW~~      | ~~XL~~ | ~~Architecture~~     |
+| ~~25~~ done — Nix flake is the tooling; no justfile                      | ~~Migrate justfile → nix flake (per AGENTS.md preference)~~               | ~~LOW~~      | ~~M~~  | ~~Tooling~~          |
 
 ---
 
@@ -255,6 +256,7 @@ This decision affects the os.Exit fix strategy and long-term test architecture.
 ## Metrics Summary
 
 <!-- check-rows:ledger -->
+
 | Metric                        | Value                           |
 | ----------------------------- | ------------------------------- |
 | Go files                      | 214                             |
@@ -280,6 +282,7 @@ This decision affects the os.Exit fix strategy and long-term test architecture.
 ### Passing Packages (21/23)
 
 <!-- check-rows:ledger -->
+
 | Package             | Coverage |
 | ------------------- | -------- |
 | pkg/format          | 100%     |
@@ -307,6 +310,7 @@ This decision affects the os.Exit fix strategy and long-term test architecture.
 ### Failing Packages (2/23)
 
 <!-- check-rows:ledger -->
+
 | Package | Status                                    | Root Cause       |
 | ------- | ----------------------------------------- | ---------------- |
 | bdd     | FAIL (all 255 specs pass, exit non-zero)  | os.Exit in Cobra |

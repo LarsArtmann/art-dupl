@@ -54,6 +54,7 @@ layer now operates exclusively on `[][]*domain.CloneNode`, not
 `[][]*syntax.Node`.
 
 <!-- check-rows:ledger -->
+
 | File                                         | Change                                                                                                           |
 | -------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
 | `domain/clone_node.go` (NEW)                 | `CloneNode` type with `HasChildren()` method                                                                     |
@@ -95,17 +96,17 @@ banners marking the 4 CRITICALs as RESOLVED.
 
 ## c) NOT STARTED (remaining Pareto plan items)
 
-| Task                             | Priority | Effort | Notes                                        |
-| -------------------------------- | -------- | ------ | -------------------------------------------- |
-| ~~T25 Split printer/~~ done — docs/benchmarks/ baselines + the Performance gate + alloc-gate | ~~P1~~ | ~~90m~~ | ~~Unblocked — next architectural step~~ |
-| ~~T36 Perf regression CI~~ done — printer sub-packages + CloneRef + the sort comparator factory landed (AGENTS.md) | ~~P1~~ | ~~40m~~ | ~~Benchmarks exist, need threshold gating~~ |
-| ~~T23 CloneRef unification~~ done — printer sub-packages + CloneRef + the sort comparator factory landed (AGENTS.md) | ~~P2~~ | ~~80m~~ | ~~7 parallel Clone types → shared value object~~ |
-| ~~T28 Sort comparator factory~~ done — won't implement — the hash package stands as-is | ~~P3~~ | ~~12m~~ | ~~4 implementations over 3 representations~~ |
-| ~~T18 Hash pipeline consolidation~~ done — context cancellation threads through every feeder (AGENTS.md) | ~~P3~~ | ~~12m~~ | ~~Free fn vs method~~ |
-| ~~T41 Context through file feeders~~ done — won't implement — branded types are PARKED for breaking-change windows (TODO_LIST) | ~~P2~~ | ~~60m~~ | ~~Latent gap (process exits on cancel)~~ |
-| ~~T24 Branded NodeType~~ done — struck — tracked on ROADMAP (IDE and Tooling: watch mode) | ~~P2~~ | ~~180m~~ | ~~HIGH RISK — touches gob cache format~~ |
-| ~~T32 Watch mode~~ done — struck — tracked on ROADMAP (Language Support section) | ~~Future~~ | ~~1d~~ | ~~`--watch` continuous monitoring~~ |
-| ~~T38/T39 TypeScript/Python~~ done — struck — tracked on ROADMAP (Language Support section) | ~~Future~~ | ~~1w+~~ | ~~New language frontends~~ |
+| Task                                                                                                                           | Priority   | Effort   | Notes                                            |
+| ------------------------------------------------------------------------------------------------------------------------------ | ---------- | -------- | ------------------------------------------------ |
+| ~~T25 Split printer/~~ done — docs/benchmarks/ baselines + the Performance gate + alloc-gate                                   | ~~P1~~     | ~~90m~~  | ~~Unblocked — next architectural step~~          |
+| ~~T36 Perf regression CI~~ done — printer sub-packages + CloneRef + the sort comparator factory landed (AGENTS.md)             | ~~P1~~     | ~~40m~~  | ~~Benchmarks exist, need threshold gating~~      |
+| ~~T23 CloneRef unification~~ done — printer sub-packages + CloneRef + the sort comparator factory landed (AGENTS.md)           | ~~P2~~     | ~~80m~~  | ~~7 parallel Clone types → shared value object~~ |
+| ~~T28 Sort comparator factory~~ done — won't implement — the hash package stands as-is                                         | ~~P3~~     | ~~12m~~  | ~~4 implementations over 3 representations~~     |
+| ~~T18 Hash pipeline consolidation~~ done — context cancellation threads through every feeder (AGENTS.md)                       | ~~P3~~     | ~~12m~~  | ~~Free fn vs method~~                            |
+| ~~T41 Context through file feeders~~ done — won't implement — branded types are PARKED for breaking-change windows (TODO_LIST) | ~~P2~~     | ~~60m~~  | ~~Latent gap (process exits on cancel)~~         |
+| ~~T24 Branded NodeType~~ done — struck — tracked on ROADMAP (IDE and Tooling: watch mode)                                      | ~~P2~~     | ~~180m~~ | ~~HIGH RISK — touches gob cache format~~         |
+| ~~T32 Watch mode~~ done — struck — tracked on ROADMAP (Language Support section)                                               | ~~Future~~ | ~~1d~~   | ~~`--watch` continuous monitoring~~              |
+| ~~T38/T39 TypeScript/Python~~ done — struck — tracked on ROADMAP (Language Support section)                                    | ~~Future~~ | ~~1w+~~  | ~~New language frontends~~                       |
 
 ---
 
@@ -132,33 +133,33 @@ tests pass. Zero lint issues.
 
 ## f) TOP 25 THINGS TO DO NEXT
 
-| #  | Task                                                | Impact | Effort                 |
-| -- | --------------------------------------------------- | ------ | ---------------------- |
-| ~~1~~ done — the CI Performance gate + alloc-gate carry it | ~~T25 Split printer/ (stats, html, analyze)~~ | ~~HIGH~~ | ~~90m~~ |
-| ~~2~~ done — printer sub-packages + CloneRef + the sort comparator factory landed (AGENTS.md) | ~~T36 Perf regression CI (threshold assertions)~~ | ~~HIGH~~ | ~~40m~~ |
-| ~~3~~ done — printer sub-packages + CloneRef + the sort comparator factory landed (AGENTS.md) | ~~T23 CloneRef value object (unify 7 Clone types)~~ | ~~MED~~ | ~~80m~~ |
-| ~~4~~ done — the sort comparator factory landed (printer/sort_unified.go; AGENTS.md) | ~~T28 Sort comparator factory~~ | ~~LOW~~ | ~~12m~~ |
-| ~~5~~ **Won't implement — won't implement — the hash package stands as-is; the free-function/method split never consolidated.** | ~~T18 Hash pipeline consolidation~~ | ~~LOW~~ | ~~12m~~ |
-| ~~6~~ done — context cancellation threads through every feeder (AGENTS.md context propagation) | ~~T41 Context through file feeders~~ | ~~LOW~~ | ~~60m~~ |
-| ~~7~~ done — won't implement — branded types are PARKED for breaking-change windows (TODO_LIST) | ~~T24 Branded NodeType (HIGH RISK: cache format)~~ | ~~MED~~ | ~~180m~~ |
-| ~~8~~ done — .githooks/pre-commit runs the jsonv2gate (2026-10-24) | ~~Test GitHub Actions template in real CI~~ | ~~MED~~ | ~~30m~~ |
-| ~~9~~ done — the tracked pre-commit hook is E2E-verified (AGENTS.md recurrence #14) | ~~Test pre-commit hook template~~ | ~~MED~~ | ~~30m~~ |
-| ~~10~~ done — job/sendctx.go centralizes the pattern (AGENTS.md) | ~~Apply sendCtx to remaining 10 send sites~~ | ~~LOW~~ | ~~12m~~ |
-| ~~11~~ done — won't implement — version bumps re-parse via the cache key; no warning log exists | ~~Cache version-mismatch warning log~~ | ~~MED~~ | ~~8m~~ |
-| ~~12~~ done — config/config_migrate.go | ~~JSON config migration shim (semantic→detectionMode)~~ | ~~MED~~ | ~~10m~~ |
-| ~~13~~ done — docs/adr/0008-semantic-encoding-layout.md | ~~ADR for semantic encoding layout~~ | ~~LOW~~ | ~~30m~~ |
-| ~~14~~ done — HOW_TO_USE + the website docs carry it | ~~"How art-dupl detects clones" deep-dive~~ | ~~LOW~~ | ~~40m~~ |
-| ~~15~~ done — superseded — BuildFlow owns dependency freshness (2026-11-04 sweeps) | ~~go.mod dependency audit in CI~~ | ~~LOW~~ | ~~20m~~ |
-| ~~16~~ **Won't implement — won't implement — the HTML report ships anchors + perm links instead (printer/html_views.go).** | ~~HTML report: collapsible clone groups~~ | ~~LOW~~ | ~~40m~~ |
-| ~~17~~ done — struck — tracked on ROADMAP (Language Support section) | ~~T32 Watch mode (`--watch`)~~ | ~~MED~~ | ~~1d~~ |
-| ~~18~~ done — struck — tracked on ROADMAP (Language Support section) | ~~T38 TypeScript/JS support~~ | ~~HIGH~~ | ~~1w+~~ |
-| ~~19~~ done — struck — tracked on ROADMAP (Language Support section) | ~~T39 Python support~~ | ~~HIGH~~ | ~~1w+~~ |
-| ~~20~~ done — won't implement — the streaming surface settled (FindClonesStreamResult) | ~~SDK streaming backpressure handling~~ | ~~LOW~~ | ~~40m~~ |
-| ~~21~~ done — the SARIF property conventions landed (AGENTS.md SARIF bullet) | ~~SARIF rule metadata enrichment~~ | ~~LOW~~ | ~~20m~~ |
-| ~~22~~ done — hysteresis pruning shipped (cache.Prune 110/90; AGENTS.md) | ~~Cache eviction policy (beyond LRU)~~ | ~~LOW~~ | ~~40m~~ |
-| ~~23~~ done — the CLI runs Fang (AGENTS.md architecture map) | ~~T26 Fang v2 migration~~ | ~~LOW~~ | ~~blocked~~ |
-| ~~24~~ done — ADR-0024: the v1 API on the v2 engine | ~~T12 encoding/json v2 migration~~ | ~~LOW~~ | ~~blocked (Go 1.27)~~ |
-| ~~25~~ done — won't implement — the facade is PARKED (TODO_LIST Architecturally constrained) | ~~T40 syntax/golang facade~~ | ~~LOW~~ | ~~blocked (import cycle)~~ |
+| #                                                                                                                               | Task                                                    | Impact   | Effort                     |
+| ------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- | -------- | -------------------------- |
+| ~~1~~ done — the CI Performance gate + alloc-gate carry it                                                                      | ~~T25 Split printer/ (stats, html, analyze)~~           | ~~HIGH~~ | ~~90m~~                    |
+| ~~2~~ done — printer sub-packages + CloneRef + the sort comparator factory landed (AGENTS.md)                                   | ~~T36 Perf regression CI (threshold assertions)~~       | ~~HIGH~~ | ~~40m~~                    |
+| ~~3~~ done — printer sub-packages + CloneRef + the sort comparator factory landed (AGENTS.md)                                   | ~~T23 CloneRef value object (unify 7 Clone types)~~     | ~~MED~~  | ~~80m~~                    |
+| ~~4~~ done — the sort comparator factory landed (printer/sort_unified.go; AGENTS.md)                                            | ~~T28 Sort comparator factory~~                         | ~~LOW~~  | ~~12m~~                    |
+| ~~5~~ **Won't implement — won't implement — the hash package stands as-is; the free-function/method split never consolidated.** | ~~T18 Hash pipeline consolidation~~                     | ~~LOW~~  | ~~12m~~                    |
+| ~~6~~ done — context cancellation threads through every feeder (AGENTS.md context propagation)                                  | ~~T41 Context through file feeders~~                    | ~~LOW~~  | ~~60m~~                    |
+| ~~7~~ done — won't implement — branded types are PARKED for breaking-change windows (TODO_LIST)                                 | ~~T24 Branded NodeType (HIGH RISK: cache format)~~      | ~~MED~~  | ~~180m~~                   |
+| ~~8~~ done — .githooks/pre-commit runs the jsonv2gate (2026-10-24)                                                              | ~~Test GitHub Actions template in real CI~~             | ~~MED~~  | ~~30m~~                    |
+| ~~9~~ done — the tracked pre-commit hook is E2E-verified (AGENTS.md recurrence #14)                                             | ~~Test pre-commit hook template~~                       | ~~MED~~  | ~~30m~~                    |
+| ~~10~~ done — job/sendctx.go centralizes the pattern (AGENTS.md)                                                                | ~~Apply sendCtx to remaining 10 send sites~~            | ~~LOW~~  | ~~12m~~                    |
+| ~~11~~ done — won't implement — version bumps re-parse via the cache key; no warning log exists                                 | ~~Cache version-mismatch warning log~~                  | ~~MED~~  | ~~8m~~                     |
+| ~~12~~ done — config/config_migrate.go                                                                                          | ~~JSON config migration shim (semantic→detectionMode)~~ | ~~MED~~  | ~~10m~~                    |
+| ~~13~~ done — docs/adr/0008-semantic-encoding-layout.md                                                                         | ~~ADR for semantic encoding layout~~                    | ~~LOW~~  | ~~30m~~                    |
+| ~~14~~ done — HOW_TO_USE + the website docs carry it                                                                            | ~~"How art-dupl detects clones" deep-dive~~             | ~~LOW~~  | ~~40m~~                    |
+| ~~15~~ done — superseded — BuildFlow owns dependency freshness (2026-11-04 sweeps)                                              | ~~go.mod dependency audit in CI~~                       | ~~LOW~~  | ~~20m~~                    |
+| ~~16~~ **Won't implement — won't implement — the HTML report ships anchors + perm links instead (printer/html_views.go).**      | ~~HTML report: collapsible clone groups~~               | ~~LOW~~  | ~~40m~~                    |
+| ~~17~~ done — struck — tracked on ROADMAP (Language Support section)                                                            | ~~T32 Watch mode (`--watch`)~~                          | ~~MED~~  | ~~1d~~                     |
+| ~~18~~ done — struck — tracked on ROADMAP (Language Support section)                                                            | ~~T38 TypeScript/JS support~~                           | ~~HIGH~~ | ~~1w+~~                    |
+| ~~19~~ done — struck — tracked on ROADMAP (Language Support section)                                                            | ~~T39 Python support~~                                  | ~~HIGH~~ | ~~1w+~~                    |
+| ~~20~~ done — won't implement — the streaming surface settled (FindClonesStreamResult)                                          | ~~SDK streaming backpressure handling~~                 | ~~LOW~~  | ~~40m~~                    |
+| ~~21~~ done — the SARIF property conventions landed (AGENTS.md SARIF bullet)                                                    | ~~SARIF rule metadata enrichment~~                      | ~~LOW~~  | ~~20m~~                    |
+| ~~22~~ done — hysteresis pruning shipped (cache.Prune 110/90; AGENTS.md)                                                        | ~~Cache eviction policy (beyond LRU)~~                  | ~~LOW~~  | ~~40m~~                    |
+| ~~23~~ done — the CLI runs Fang (AGENTS.md architecture map)                                                                    | ~~T26 Fang v2 migration~~                               | ~~LOW~~  | ~~blocked~~                |
+| ~~24~~ done — ADR-0024: the v1 API on the v2 engine                                                                             | ~~T12 encoding/json v2 migration~~                      | ~~LOW~~  | ~~blocked (Go 1.27)~~      |
+| ~~25~~ done — won't implement — the facade is PARKED (TODO_LIST Architecturally constrained)                                    | ~~T40 syntax/golang facade~~                            | ~~LOW~~  | ~~blocked (import cycle)~~ |
 
 ---
 
@@ -175,6 +176,7 @@ the printer is decoupled — the foundation for either path is solid.
 ## Verification Gate
 
 <!-- check-rows:ledger -->
+
 | Check                               | Result                 |
 | ----------------------------------- | ---------------------- |
 | `go build ./...`                    | ✅ clean               |

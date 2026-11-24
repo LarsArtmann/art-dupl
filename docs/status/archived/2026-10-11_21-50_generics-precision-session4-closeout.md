@@ -65,18 +65,18 @@ See §f — the queued list from sessions 2–3 (DiscordSync 0-candidate cause, 
 6. Mutex+append family `3a847748` — raii-defer gap (3-statement form).
 7. Filter+collect `8635e4c4` — deliberately spared class; revisit only with maintainer data.
 8. Near-miss hint sweep over go-sse/paperless/DiscordSync/branching-flow directive placements.
-~~9. DiscordSync 0-candidate cause (queued since session 3).~~ done — the DiscordSync corpus was re-measured in the 2026-10-30 precision pass (AGENTS.md)
-10. Self-scan `--type-aware`/`--suggest-generics` clone-free invariant re-check.
-11. `MinDivergentPositions=2` re-evaluation against the 29-family population.
-12. Per-module load-time delta measurement on go-cqrs-lite.
-13. jsonv2 daemon-hardening owner decision (pre-commit hook vs exclusion list) — 7 recurrences.
-14. Docs-health A-lite→A re-keying follow-up (due with the 2026-10-28 cadence).
-15. Monthly self-scan due 2026-10-22 (`scripts/self-scan.sh` + SELF_CLEAN_LEDGER).
-16. Tag/release decision for the accumulated Unreleased section (SARIF parity + generics-precision cluster — sizeable; v0.10.0 candidate).
-17. Consider `--explain` verdict+reason taxonomy (parked, plan "explicitly NOT").
-18. Wrapper-vs-generic reuse ROADMAP candidate — record final decline.
-19. v0.9.0-era TODO items still open: branch protection (#18), windows exe-start confirm (#4), gogenfilter fleet sweep (#15-context).
-20. `TestBlockIsCollectorOnlyAll` dedicated ANY/ALL unit pin (session-3 f-item 28).
+   ~~9. DiscordSync 0-candidate cause (queued since session 3).~~ done — the DiscordSync corpus was re-measured in the 2026-10-30 precision pass (AGENTS.md)
+9. Self-scan `--type-aware`/`--suggest-generics` clone-free invariant re-check.
+10. `MinDivergentPositions=2` re-evaluation against the 29-family population.
+11. Per-module load-time delta measurement on go-cqrs-lite.
+12. jsonv2 daemon-hardening owner decision (pre-commit hook vs exclusion list) — 7 recurrences.
+13. Docs-health A-lite→A re-keying follow-up (due with the 2026-10-28 cadence).
+14. Monthly self-scan due 2026-10-22 (`scripts/self-scan.sh` + SELF_CLEAN_LEDGER).
+15. Tag/release decision for the accumulated Unreleased section (SARIF parity + generics-precision cluster — sizeable; v0.10.0 candidate).
+16. Consider `--explain` verdict+reason taxonomy (parked, plan "explicitly NOT").
+17. Wrapper-vs-generic reuse ROADMAP candidate — record final decline.
+18. v0.9.0-era TODO items still open: branch protection (#18), windows exe-start confirm (#4), gogenfilter fleet sweep (#15-context).
+19. `TestBlockIsCollectorOnlyAll` dedicated ANY/ALL unit pin (session-3 f-item 28).
 
 ## g) QUESTIONS (cannot figure out myself)
 

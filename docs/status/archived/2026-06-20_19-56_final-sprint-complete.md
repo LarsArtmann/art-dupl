@@ -11,61 +11,61 @@
 
 ### Phase 1: Foundation (4/5)
 
-| Task                          | Commit    | What changed                                                                |
-| ----------------------------- | --------- | --------------------------------------------------------------------------- |
-| ~~**T3** BasicLit Value Hashing~~ done at `1e37fd2` | ~~`1e37fd2`~~ | ~~`return 42` ≠ `return 999` in semantic mode~~ |
-| ~~**T4** Non-Commutative Hash~~ done at `d8a90e6` | ~~`d8a90e6`~~ | ~~FNV multiply-pair replaces XOR; `(A,B)≠(B,A)`~~ |
-| ~~**T2** Alpha-Normalization~~ done at `91554e5` | ~~`91554e5`~~ | ~~Per-function symbol table canonicalizes locals → **Type 2 clone detection**~~ |
-| ~~**T5** Three-Mode System~~ done at `91554e5` | ~~`91554e5`~~ | ~~`--semantic` (default), `--exact`, `--structural`; bool→DetectionMode enum~~ |
+| Task                                                | Commit        | What changed                                                                    |
+| --------------------------------------------------- | ------------- | ------------------------------------------------------------------------------- |
+| ~~**T3** BasicLit Value Hashing~~ done at `1e37fd2` | ~~`1e37fd2`~~ | ~~`return 42` ≠ `return 999` in semantic mode~~                                 |
+| ~~**T4** Non-Commutative Hash~~ done at `d8a90e6`   | ~~`d8a90e6`~~ | ~~FNV multiply-pair replaces XOR; `(A,B)≠(B,A)`~~                               |
+| ~~**T2** Alpha-Normalization~~ done at `91554e5`    | ~~`91554e5`~~ | ~~Per-function symbol table canonicalizes locals → **Type 2 clone detection**~~ |
+| ~~**T5** Three-Mode System~~ done at `91554e5`      | ~~`91554e5`~~ | ~~`--semantic` (default), `--exact`, `--structural`; bool→DetectionMode enum~~  |
 
 ### Phase 2: Detection Quality (3/3)
 
-| Task                               | Commit    | What changed                                          |
-| ---------------------------------- | --------- | ----------------------------------------------------- |
-| ~~**T6** Clone Type Classification~~ done at `359f3d7` | ~~`359f3d7`~~ | ~~type-1/2/3 labels in JSON, SARIF, rich-text~~ |
-| ~~**T7** Overlap Elimination~~ done at `6e211ea` | ~~`6e211ea`~~ | ~~Nested clones suppressed (81→~40 groups)~~ |
+| Task                                                     | Commit        | What changed                                              |
+| -------------------------------------------------------- | ------------- | --------------------------------------------------------- |
+| ~~**T6** Clone Type Classification~~ done at `359f3d7`   | ~~`359f3d7`~~ | ~~type-1/2/3 labels in JSON, SARIF, rich-text~~           |
+| ~~**T7** Overlap Elimination~~ done at `6e211ea`         | ~~`6e211ea`~~ | ~~Nested clones suppressed (81→~40 groups)~~              |
 | ~~**T8** Test-File Noise Suppression~~ done at `09f3b6f` | ~~`09f3b6f`~~ | ~~`--ignore-tests`, `--include-tests`, smarter defaults~~ |
 
 ### Phase 3: Refactoring Advisor (3/3)
 
-| Task                          | Commit    | What changed                                                  |
-| ----------------------------- | --------- | ------------------------------------------------------------- |
+| Task                                                | Commit        | What changed                                                      |
+| --------------------------------------------------- | ------------- | ----------------------------------------------------------------- |
 | ~~**T9** Actionability Patterns~~ done at `3cb2d11` | ~~`3cb2d11`~~ | ~~Assertion chains, error-wrapping, Cobra boilerplate detectors~~ |
-| ~~**T10** Baseline/CI Mode~~ done at `d620128` | ~~`d620128`~~ | ~~`baseline` + `check` subcommands, exit 1 on new clones~~ |
-| ~~**T11** Extractability Score~~ done at `c60e58b` | ~~`c60e58b`~~ | ~~`lines_saved` + `extractable` in JSON output~~ |
+| ~~**T10** Baseline/CI Mode~~ done at `d620128`      | ~~`d620128`~~ | ~~`baseline` + `check` subcommands, exit 1 on new clones~~        |
+| ~~**T11** Extractability Score~~ done at `c60e58b`  | ~~`c60e58b`~~ | ~~`lines_saved` + `extractable` in JSON output~~                  |
 
 ### Phase 4: Architecture (1/5)
 
-| Task                     | Commit    | What changed                   |
-| ------------------------ | --------- | ------------------------------ |
+| Task                                           | Commit        | What changed                       |
+| ---------------------------------------------- | ------------- | ---------------------------------- |
 | ~~**T12** ctx in run_crawl~~ done at `650a4b0` | ~~`650a4b0`~~ | ~~Last goroutine leak eliminated~~ |
 
 ### Phase 5: Testing (4/4)
 
-| Task                       | Commit    | What changed                                     |
-| -------------------------- | --------- | ------------------------------------------------ |
-| ~~**T17** Property Tests~~ done at `2dc1781` | ~~`2dc1781`~~ | ~~6 suffix-tree invariants verified~~ |
-| ~~**T18** Detection Coverage~~ done at `9fecc7f` | ~~`9fecc7f`~~ | ~~61.8% → **92.7%**~~ |
-| ~~**T19** Domain Coverage~~ done at `692c587` | ~~`692c587`~~ | ~~58.6% → **100%**~~ |
-| ~~**T20** Benchmarks~~ done at `ef77469` | ~~`ef77469`~~ | ~~STreeUpdate + FindDuplOver baselines established~~ |
+| Task                                             | Commit        | What changed                                         |
+| ------------------------------------------------ | ------------- | ---------------------------------------------------- |
+| ~~**T17** Property Tests~~ done at `2dc1781`     | ~~`2dc1781`~~ | ~~6 suffix-tree invariants verified~~                |
+| ~~**T18** Detection Coverage~~ done at `9fecc7f` | ~~`9fecc7f`~~ | ~~61.8% → **92.7%**~~                                |
+| ~~**T19** Domain Coverage~~ done at `692c587`    | ~~`692c587`~~ | ~~58.6% → **100%**~~                                 |
+| ~~**T20** Benchmarks~~ done at `ef77469`         | ~~`ef77469`~~ | ~~STreeUpdate + FindDuplOver baselines established~~ |
 
 ### Phase 6: Ecosystem (3/4)
 
-| Task                     | Commit    | What changed                           |
-| ------------------------ | --------- | -------------------------------------- |
-| ~~**T21** GitHub Actions~~ done at `5356d17` | ~~`5356d17`~~ | ~~`.github/workflows/art-dupl-check.yml`~~ |
-| ~~**T22** Pre-Commit Hook~~ done at `5356d17` | ~~`5356d17`~~ | ~~`.pre-commit-hooks.yaml`~~ |
-| ~~**T24** Rename Data→View~~ done at `b60aca6` | ~~`b60aca6`~~ | ~~5 `*Data` types renamed to `*View`~~ |
+| Task                                           | Commit        | What changed                               |
+| ---------------------------------------------- | ------------- | ------------------------------------------ |
+| ~~**T21** GitHub Actions~~ done at `5356d17`   | ~~`5356d17`~~ | ~~`.github/workflows/art-dupl-check.yml`~~ |
+| ~~**T22** Pre-Commit Hook~~ done at `5356d17`  | ~~`5356d17`~~ | ~~`.pre-commit-hooks.yaml`~~               |
+| ~~**T24** Rename Data→View~~ done at `b60aca6` | ~~`b60aca6`~~ | ~~5 `*Data` types renamed to `*View`~~     |
 
 ### Documentation & Cleanup
 
-| Commit    | What changed                                                                    |
-| --------- | ------------------------------------------------------------------------------- |
+| Commit                          | What changed                                                                        |
+| ------------------------------- | ----------------------------------------------------------------------------------- |
 | ~~`b86e7de`~~ done at `b86e7de` | ~~Reuse `syntax.Serialize` for clone-type walk; update AGENTS/HOW_TO_USE/FEATURES~~ |
-| ~~`f7f73af`~~ done at `f7f73af` | ~~Status report for alpha-normalization + three-mode~~ |
-| ~~`83dc554`~~ done at `83dc554` | ~~Comprehensive sprint status report~~ |
-| ~~`d27b727`~~ done at `d27b727` | ~~AGENTS.md architecture updated with baseline package~~ |
-| ~~`502a63c`~~ done at `502a63c` | ~~HOW_TO_USE/FEATURES/README updated with baseline/check, extractability, modes~~ |
+| ~~`f7f73af`~~ done at `f7f73af` | ~~Status report for alpha-normalization + three-mode~~                              |
+| ~~`83dc554`~~ done at `83dc554` | ~~Comprehensive sprint status report~~                                              |
+| ~~`d27b727`~~ done at `d27b727` | ~~AGENTS.md architecture updated with baseline package~~                            |
+| ~~`502a63c`~~ done at `502a63c` | ~~HOW_TO_USE/FEATURES/README updated with baseline/check, extractability, modes~~   |
 
 ---
 
@@ -77,13 +77,13 @@ Nothing. All 20 completed tasks are fully done: implementation, tests, lint, doc
 
 ## c) NOT STARTED (4 tasks — deferred with rationale)
 
-| Task                                        | Why deferred                                                                                                                                                                     |
-| ------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| ~~**T1** Statement-Level Tokenization~~ done — T1 shipped (ADR-0023) | ~~HIGH RISK: replaces `serial()` core algorithm. Cascading change through entire pipeline. Could destabilize detection. Needs dedicated branch. Property tests (T17) now guard it.~~ |
-| ~~**T13** Printer Decoupling from syntax.Node~~ done — printer decoupled 2026-07-26, bridge-only imports remain | ~~Medium effort. 13 production files import `syntax.Node`. Pure architecture — no user-facing impact.~~ |
-| ~~**T14** Clone Type Consolidation~~ done — CloneRef consolidation (ADR-0005) | ~~3 parallel Clone types (domain/printer/SDK). Risky refactor touching all layers.~~ |
-| ~~**T15/T16** Printer Split / Fragment Unify~~ done — printer split (stats, actionability, finding) + Fragment string everywhere | ~~Low impact, mechanical. Fragment `[]byte`↔`string` boundary conversion is minimal.~~ |
-| ~~**T23** json/v2 Migration~~ **NOT-DO — direct json/v2 imports rejected (ADR-0024 + internal/jsonv2gate).** | ~~`encoding/json/v2` exists in Go 1.26.3 but is experimental/unstable. Audited, deferred until stabilization.~~ |
+| Task                                                                                                                             | Why deferred                                                                                                                                                                         |
+| -------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| ~~**T1** Statement-Level Tokenization~~ done — T1 shipped (ADR-0023)                                                             | ~~HIGH RISK: replaces `serial()` core algorithm. Cascading change through entire pipeline. Could destabilize detection. Needs dedicated branch. Property tests (T17) now guard it.~~ |
+| ~~**T13** Printer Decoupling from syntax.Node~~ done — printer decoupled 2026-07-26, bridge-only imports remain                  | ~~Medium effort. 13 production files import `syntax.Node`. Pure architecture — no user-facing impact.~~                                                                              |
+| ~~**T14** Clone Type Consolidation~~ done — CloneRef consolidation (ADR-0005)                                                    | ~~3 parallel Clone types (domain/printer/SDK). Risky refactor touching all layers.~~                                                                                                 |
+| ~~**T15/T16** Printer Split / Fragment Unify~~ done — printer split (stats, actionability, finding) + Fragment string everywhere | ~~Low impact, mechanical. Fragment `[]byte`↔`string` boundary conversion is minimal.~~                                                                                               |
+| ~~**T23** json/v2 Migration~~ **NOT-DO — direct json/v2 imports rejected (ADR-0024 + internal/jsonv2gate).**                     | ~~`encoding/json/v2` exists in Go 1.26.3 but is experimental/unstable. Audited, deferred until stabilization.~~                                                                      |
 
 ---
 
@@ -116,33 +116,34 @@ Nothing. No regressions, no broken builds, no reverted changes.
 ## f) Top #25 Things to Get Done Next
 
 <!-- check-rows:ledger -->
-| #  | Task                                                            | Impact                                                              | Effort   | Risk  |
-| -- | --------------------------------------------------------------- | ------------------------------------------------------------------- | -------- | ----- |
-| ~~1~~ done — T1 shipped (ADR-0023) | ~~**T1 Statement Tokenization** (feature branch)~~ | ~~Critical~~ | ~~90min~~ |
-| ~~2~~ done — bdd/semantic_detection_test.go + bdd/generic_method_test.go renamed-clone scenario | ~~**BDD test: Type 2 clone detection**~~ | ~~High~~ | ~~30min~~ |
-| ~~3~~ done — decoupled 2026-07-26 without a ReadOnlyNode interface (bridge approach) | ~~**T13 Printer Decoupling** (ReadOnlyNode interface)~~ | ~~Medium~~ | ~~80min~~ |
-| ~~4~~ done — domain.CloneRef consolidation (ADR-0005) | ~~**T14 Clone Consolidation** (CloneLocation shared type)~~ | ~~Medium~~ | ~~90min~~ |
-| ~~5~~ **Superseded — nested-scope shadowing tracked in ROADMAP.md; go/types upgrade not adopted.** | ~~**go/types normalizer upgrade**~~ | ~~Medium~~ | ~~60min~~ |
-| ~~6~~ done — stats, actionability, finding extracted | ~~**T15 Printer Split** (stats/html/analyze sub-packages)~~ | ~~Low-Med~~ | ~~80min~~ |
-| ~~7~~ done — Fragment is string everywhere | ~~**T16 Fragment Unify** ([]byte vs string)~~ | ~~Low~~ | ~~40min~~ |
-| ~~8~~ **NOT-DO — ADR-0024 + internal/jsonv2gate.** | ~~**T23 json/v2** (when stable)~~ | ~~Low~~ | ~~40min~~ |
-| ~~9~~ done — validated during v0.7.0 calibration | ~~**Dogfood T9** against real noise patterns~~ | ~~High~~ | ~~20min~~ |
-| ~~10~~ done — CI creates and checks it (.github/workflows/art-dupl-check.yml) | ~~**`.art-dupl-baseline.json` for art-dupl itself**~~ | ~~Medium~~ | ~~10min~~ |
-| ~~11~~ **Superseded — coverage snapshot targets drift; printer 77.9% today, no 80% gate.** | ~~**Coverage: printer 75.8%→80%**~~ | ~~Medium~~ | ~~50min~~ |
-| ~~12~~ **Superseded — coverage snapshot targets drift; baseline 71.6% today, no 95% gate.** | ~~**Coverage: baseline 88.2%→95%**~~ | ~~Low~~ | ~~20min~~ | ~~Low~~ |
-| ~~13~~ done — docs/benchmarks/ baselines + benchstat CI gate | ~~**End-to-end benchmark** (parse→detect→report)~~ | ~~Medium~~ | ~~30min~~ |
-| ~~14~~ done — diff visualization flag (cmd/flags.go --diff) + cmd/diff_report.go | ~~**`check --diff` flag** (show what changed since baseline)~~ | ~~Medium~~ | ~~40min~~ |
-| ~~15~~ **Superseded — HTML carries classification badges; clone_type ships in JSON/SARIF/rich-text (printer/json.go).** | ~~**HTML report: clone type badge**~~ | ~~Low~~ | ~~20min~~ |
-| ~~16~~ **Superseded — extractability surfaces in JSON extractable/extractability fields, no HTML column.** | ~~**HTML report: extractability column**~~ | ~~Low~~ | ~~20min~~ | ~~Low~~ |
-| ~~17~~ **Superseded — SDK keeps the Semantic bool, mapped in pkg/artdupl/detector_utils.go.** | ~~**SDK: expose DetectionMode** (not just Semantic bool)~~ | ~~Medium~~ | ~~30min~~ | ~~Low~~ |
-| ~~18~~ **NOT-DO — single --mode alias not adopted; --semantic/--exact/--structural are the flags (cmd/config_builder.go).** | ~~**Config: `--mode` flag** (alias for semantic/exact/structural)~~ | ~~Low~~ | ~~15min~~ | ~~Low~~ |
-| ~~19~~ **Superseded — re-running art-dupl baseline updates the file (cmd/baseline_cmd.go).** | ~~**Baseline: `--update` flag** (add new clones to existing baseline)~~ | ~~Medium~~ | ~~30min~~ |
-| ~~20~~ **Superseded — surfaces as go-finding Confidence via printer/finding, not a SARIF property.** | ~~**SARIF: add extractability to properties**~~ | ~~Low~~ | ~~10min~~ | ~~Low~~ |
-| ~~21~~ done — templ alpha-normalization for Type 2 (syntax/templ) | ~~**Templ semantic mode** (alpha-normalization for .templ)~~ | ~~Medium~~ | ~~60min~~ |
-| ~~22~~ **Superseded — no diff subcommand; diff reporting ships via root flag path (cmd/run_flags.go, cmd/diff_report.go).** | ~~**`art-dupl diff` subcommand** (compare two baselines)~~ | ~~Low~~ | ~~30min~~ |
-| ~~23~~ done — bdd/semantic_performance_bench_test.go | ~~**Performance: profile normalizer overhead**~~ | ~~Medium~~ | ~~20min~~ | ~~Low~~ |
-| ~~24~~ done — README badges (CI, License, Go Reference, Website) | ~~**README: add badges (CI, coverage, Go version)**~~ | ~~Low~~ | ~~10min~~ |
-| 25 | **`art-dupl init` subcommand** (create config + baseline)       | Low                                                                 | 20min    | Low   |
+
+| #                                                                                                                           | Task                                                                    | Impact       | Effort    | Risk    |
+| --------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- | ------------ | --------- | ------- |
+| ~~1~~ done — T1 shipped (ADR-0023)                                                                                          | ~~**T1 Statement Tokenization** (feature branch)~~                      | ~~Critical~~ | ~~90min~~ |         |
+| ~~2~~ done — bdd/semantic_detection_test.go + bdd/generic_method_test.go renamed-clone scenario                             | ~~**BDD test: Type 2 clone detection**~~                                | ~~High~~     | ~~30min~~ |         |
+| ~~3~~ done — decoupled 2026-07-26 without a ReadOnlyNode interface (bridge approach)                                        | ~~**T13 Printer Decoupling** (ReadOnlyNode interface)~~                 | ~~Medium~~   | ~~80min~~ |         |
+| ~~4~~ done — domain.CloneRef consolidation (ADR-0005)                                                                       | ~~**T14 Clone Consolidation** (CloneLocation shared type)~~             | ~~Medium~~   | ~~90min~~ |         |
+| ~~5~~ **Superseded — nested-scope shadowing tracked in ROADMAP.md; go/types upgrade not adopted.**                          | ~~**go/types normalizer upgrade**~~                                     | ~~Medium~~   | ~~60min~~ |         |
+| ~~6~~ done — stats, actionability, finding extracted                                                                        | ~~**T15 Printer Split** (stats/html/analyze sub-packages)~~             | ~~Low-Med~~  | ~~80min~~ |         |
+| ~~7~~ done — Fragment is string everywhere                                                                                  | ~~**T16 Fragment Unify** ([]byte vs string)~~                           | ~~Low~~      | ~~40min~~ |         |
+| ~~8~~ **NOT-DO — ADR-0024 + internal/jsonv2gate.**                                                                          | ~~**T23 json/v2** (when stable)~~                                       | ~~Low~~      | ~~40min~~ |         |
+| ~~9~~ done — validated during v0.7.0 calibration                                                                            | ~~**Dogfood T9** against real noise patterns~~                          | ~~High~~     | ~~20min~~ |         |
+| ~~10~~ done — CI creates and checks it (.github/workflows/art-dupl-check.yml)                                               | ~~**`.art-dupl-baseline.json` for art-dupl itself**~~                   | ~~Medium~~   | ~~10min~~ |         |
+| ~~11~~ **Superseded — coverage snapshot targets drift; printer 77.9% today, no 80% gate.**                                  | ~~**Coverage: printer 75.8%→80%**~~                                     | ~~Medium~~   | ~~50min~~ |         |
+| ~~12~~ **Superseded — coverage snapshot targets drift; baseline 71.6% today, no 95% gate.**                                 | ~~**Coverage: baseline 88.2%→95%**~~                                    | ~~Low~~      | ~~20min~~ | ~~Low~~ |
+| ~~13~~ done — docs/benchmarks/ baselines + benchstat CI gate                                                                | ~~**End-to-end benchmark** (parse→detect→report)~~                      | ~~Medium~~   | ~~30min~~ |         |
+| ~~14~~ done — diff visualization flag (cmd/flags.go --diff) + cmd/diff_report.go                                            | ~~**`check --diff` flag** (show what changed since baseline)~~          | ~~Medium~~   | ~~40min~~ |         |
+| ~~15~~ **Superseded — HTML carries classification badges; clone_type ships in JSON/SARIF/rich-text (printer/json.go).**     | ~~**HTML report: clone type badge**~~                                   | ~~Low~~      | ~~20min~~ |         |
+| ~~16~~ **Superseded — extractability surfaces in JSON extractable/extractability fields, no HTML column.**                  | ~~**HTML report: extractability column**~~                              | ~~Low~~      | ~~20min~~ | ~~Low~~ |
+| ~~17~~ **Superseded — SDK keeps the Semantic bool, mapped in pkg/artdupl/detector_utils.go.**                               | ~~**SDK: expose DetectionMode** (not just Semantic bool)~~              | ~~Medium~~   | ~~30min~~ | ~~Low~~ |
+| ~~18~~ **NOT-DO — single --mode alias not adopted; --semantic/--exact/--structural are the flags (cmd/config_builder.go).** | ~~**Config: `--mode` flag** (alias for semantic/exact/structural)~~     | ~~Low~~      | ~~15min~~ | ~~Low~~ |
+| ~~19~~ **Superseded — re-running art-dupl baseline updates the file (cmd/baseline_cmd.go).**                                | ~~**Baseline: `--update` flag** (add new clones to existing baseline)~~ | ~~Medium~~   | ~~30min~~ |         |
+| ~~20~~ **Superseded — surfaces as go-finding Confidence via printer/finding, not a SARIF property.**                        | ~~**SARIF: add extractability to properties**~~                         | ~~Low~~      | ~~10min~~ | ~~Low~~ |
+| ~~21~~ done — templ alpha-normalization for Type 2 (syntax/templ)                                                           | ~~**Templ semantic mode** (alpha-normalization for .templ)~~            | ~~Medium~~   | ~~60min~~ |         |
+| ~~22~~ **Superseded — no diff subcommand; diff reporting ships via root flag path (cmd/run_flags.go, cmd/diff_report.go).** | ~~**`art-dupl diff` subcommand** (compare two baselines)~~              | ~~Low~~      | ~~30min~~ |         |
+| ~~23~~ done — bdd/semantic_performance_bench_test.go                                                                        | ~~**Performance: profile normalizer overhead**~~                        | ~~Medium~~   | ~~20min~~ | ~~Low~~ |
+| ~~24~~ done — README badges (CI, License, Go Reference, Website)                                                            | ~~**README: add badges (CI, coverage, Go version)**~~                   | ~~Low~~      | ~~10min~~ |         |
+| 25                                                                                                                          | **`art-dupl init` subcommand** (create config + baseline)               | Low          | 20min     | Low     |
 
 ---
 

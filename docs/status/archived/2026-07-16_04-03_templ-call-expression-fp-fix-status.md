@@ -144,18 +144,18 @@ This session continued from the 15-project validation that found 2 false positiv
 
 ### Tier 2: High Impact, Medium Effort
 
-| #  | Task                                                                                    | Impact                                                     | Effort |
-| -- | --------------------------------------------------------------------------------------- | ---------------------------------------------------------- | ------ |
-| 11 | Prototype `go/types` opt-in mode                                                        | Eliminate biggest FP source (`a.String()` vs `b.String()`) | 4h+    |
-| 12 | Add `--type-aware` CLI flag                                                             | User control                                               | 1h     |
-| 13 | Implement templ Phase 3 (expression normalization)                                      | More true positives                                        | 2h     |
-| 14 | Add BDD tests for templ semantic mode (multi-element, callee encoding)                  | Test coverage                                              | 1h     |
-| 15 | Consolidate clone types (7 → 2-3)                                                       | Architecture debt                                          | 4h+    |
-| 16 | Add `--min-lines` flag                                                                  | Complementary filter                                       | 1h     |
-| 17 | Improve `containsTRunCall` to match `t.Run` specifically                                | Fix false test pattern detection                           | 15 min |
-| 18 | Verify cobra detection checks parent Ident                                              | Fix imprecise pattern                                      | 15 min |
-| ~~19~~ **done — the templ BDD suite covers the pipeline end-to-end (bdd/; AGENTS.md)** |~~Add integration test: full pipeline on a synthetic templ project with known clones~~|~~End-to-end coverage~~|~~1h~~|
-| 20 | Verify the callee name fix doesn't break with templ v0.3.960 (go.sum has both versions) | Version safety                                             | 15 min |
+| #                                                                                      | Task                                                                                    | Impact                                                     | Effort |
+| -------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- | ---------------------------------------------------------- | ------ |
+| 11                                                                                     | Prototype `go/types` opt-in mode                                                        | Eliminate biggest FP source (`a.String()` vs `b.String()`) | 4h+    |
+| 12                                                                                     | Add `--type-aware` CLI flag                                                             | User control                                               | 1h     |
+| 13                                                                                     | Implement templ Phase 3 (expression normalization)                                      | More true positives                                        | 2h     |
+| 14                                                                                     | Add BDD tests for templ semantic mode (multi-element, callee encoding)                  | Test coverage                                              | 1h     |
+| 15                                                                                     | Consolidate clone types (7 → 2-3)                                                       | Architecture debt                                          | 4h+    |
+| 16                                                                                     | Add `--min-lines` flag                                                                  | Complementary filter                                       | 1h     |
+| 17                                                                                     | Improve `containsTRunCall` to match `t.Run` specifically                                | Fix false test pattern detection                           | 15 min |
+| 18                                                                                     | Verify cobra detection checks parent Ident                                              | Fix imprecise pattern                                      | 15 min |
+| ~~19~~ **done — the templ BDD suite covers the pipeline end-to-end (bdd/; AGENTS.md)** | ~~Add integration test: full pipeline on a synthetic templ project with known clones~~  | ~~End-to-end coverage~~                                    | ~~1h~~ |
+| 20                                                                                     | Verify the callee name fix doesn't break with templ v0.3.960 (go.sum has both versions) | Version safety                                             | 15 min |
 
 ### Tier 3: Medium Impact, Low Effort
 
@@ -174,33 +174,33 @@ This session continued from the 15-project validation that found 2 false positiv
 
 ### Tier 4: Medium Impact, Medium Effort
 
-| #  | Task                                                | Impact              | Effort |
-| -- | --------------------------------------------------- | ------------------- | ------ |
-| 31 | Improve error wrapping detection (2-stmt bodies)    | More FP suppression | 30 min |
-| 32 | Lower builder callback threshold from 3 to 2 calls  | More FP suppression | 15 min |
-| 33 | Add clone refactoring suggestions in output         | User value          | 1h     |
-| 34 | Add SARIF rule metadata for actionability           | CI integration      | 30 min |
-| 35 | Improve data dominance ratio for small clones       | FP reduction        | 30 min |
-| ~~36~~ **superseded — the HTML report ships with stable anchors and permalinks (AGENTS.md)** |~~Add HTML report grouping by actionability status~~|~~UX~~|~~1h~~|
-| 37 | Cache versioning for serialization format changes   | Cache safety        | 1h     |
-| 38 | Add `--since` flag for git-ref-based file filtering | CI speed            | 2h     |
-| ~~39~~ **struck — website content work; the website ships (website/)** |~~Add website docs for templ semantic mode~~|~~User communication~~|~~30 min~~|
-| 40 | Add CI/CD integration guide for templ projects      | User onboarding     | 30 min |
+| #                                                                                            | Task                                                 | Impact                 | Effort     |
+| -------------------------------------------------------------------------------------------- | ---------------------------------------------------- | ---------------------- | ---------- |
+| 31                                                                                           | Improve error wrapping detection (2-stmt bodies)     | More FP suppression    | 30 min     |
+| 32                                                                                           | Lower builder callback threshold from 3 to 2 calls   | More FP suppression    | 15 min     |
+| 33                                                                                           | Add clone refactoring suggestions in output          | User value             | 1h         |
+| 34                                                                                           | Add SARIF rule metadata for actionability            | CI integration         | 30 min     |
+| 35                                                                                           | Improve data dominance ratio for small clones        | FP reduction           | 30 min     |
+| ~~36~~ **superseded — the HTML report ships with stable anchors and permalinks (AGENTS.md)** | ~~Add HTML report grouping by actionability status~~ | ~~UX~~                 | ~~1h~~     |
+| 37                                                                                           | Cache versioning for serialization format changes    | Cache safety           | 1h         |
+| 38                                                                                           | Add `--since` flag for git-ref-based file filtering  | CI speed               | 2h         |
+| ~~39~~ **struck — website content work; the website ships (website/)**                       | ~~Add website docs for templ semantic mode~~         | ~~User communication~~ | ~~30 min~~ |
+| 40                                                                                           | Add CI/CD integration guide for templ projects       | User onboarding        | 30 min     |
 
 ### Tier 5: Lower Priority / Future
 
-| #  | Task                                                              |
-| -- | ----------------------------------------------------------------- |
-| 41 | Implement nested-scope shadowing in normalizer                    |
-| 42 | Add generics constraint normalization (`T any` vs `T comparable`) |
-| 43 | Add multi-language actionability for templ                        |
-| 44 | Add LSP integration for real-time detection                       |
-| 45 | Add WASM target for browser-based detection                       |
-| ~~46~~ **won't implement — Ukkonen construction is inherently sequential; parallel SEARCH shipped (AGENTS.md)** |~~Parallel suffix tree construction~~|
-| ~~47~~ **won't implement — the pattern engine is a deterministic denylist (AGENTS.md)** |~~Machine-learning-based actionability classification~~|
-| 48 | Add diff mode (compare two codebases)                             |
-| ~~49~~ **done — templ-rendering-idiom + templ-children-idiom patterns shipped (AGENTS.md)** |~~Add templ-specific actionability patterns (htmx boilerplate)~~|
-| 50 | Add composite literal array detection for test fixtures           |
+| #                                                                                                               | Task                                                              |
+| --------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| 41                                                                                                              | Implement nested-scope shadowing in normalizer                    |
+| 42                                                                                                              | Add generics constraint normalization (`T any` vs `T comparable`) |
+| 43                                                                                                              | Add multi-language actionability for templ                        |
+| 44                                                                                                              | Add LSP integration for real-time detection                       |
+| 45                                                                                                              | Add WASM target for browser-based detection                       |
+| ~~46~~ **won't implement — Ukkonen construction is inherently sequential; parallel SEARCH shipped (AGENTS.md)** | ~~Parallel suffix tree construction~~                             |
+| ~~47~~ **won't implement — the pattern engine is a deterministic denylist (AGENTS.md)**                         | ~~Machine-learning-based actionability classification~~           |
+| 48                                                                                                              | Add diff mode (compare two codebases)                             |
+| ~~49~~ **done — templ-rendering-idiom + templ-children-idiom patterns shipped (AGENTS.md)**                     | ~~Add templ-specific actionability patterns (htmx boilerplate)~~  |
+| 50                                                                                                              | Add composite literal array detection for test fixtures           |
 
 ---
 

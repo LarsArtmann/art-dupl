@@ -26,11 +26,11 @@
 
 **File:** `git/change_detector.go` (361 → 285 lines)
 
-| Extracted To             | Lines | Content                                    |
-| ------------------------ | ----- | ------------------------------------------ |
-| ~~`git/errors.go`~~ **Superseded — git package removed later (gitignore/ now).** | ~~34~~ | ~~GitError type, error variables~~ |
-| ~~`git/helpers.go`~~ **Superseded — git package removed later (gitignore/ now).** | ~~51~~ | ~~IsGitRepo, FindGitRoot, deduplicateChanges~~ |
-| ~~`git/change_detector.go`~~ **Superseded — git package removed later (gitignore/ now).** | ~~285~~ | ~~Core ChangeDetector struct~~ |
+| Extracted To                                                                              | Lines   | Content                                        |
+| ----------------------------------------------------------------------------------------- | ------- | ---------------------------------------------- |
+| ~~`git/errors.go`~~ **Superseded — git package removed later (gitignore/ now).**          | ~~34~~  | ~~GitError type, error variables~~             |
+| ~~`git/helpers.go`~~ **Superseded — git package removed later (gitignore/ now).**         | ~~51~~  | ~~IsGitRepo, FindGitRoot, deduplicateChanges~~ |
+| ~~`git/change_detector.go`~~ **Superseded — git package removed later (gitignore/ now).** | ~~285~~ | ~~Core ChangeDetector struct~~                 |
 
 **Commit:** 821027b\
 **Status:** Merged, tests pass
@@ -39,10 +39,10 @@
 
 **File:** `bdd/semantic_detection_test.go` (348 → 177 lines)
 
-| Extracted To                     | Lines | Content                         |
-| -------------------------------- | ----- | ------------------------------- |
-| ~~`bdd/semantic_testdata.go`~~ done at `3d432be` | ~~187~~ | ~~Test code samples (7 scenarios)~~ |
-| ~~`bdd/semantic_detection_test.go`~~ done at `3d432be` | ~~177~~ | ~~Test logic and assertions~~ |
+| Extracted To                                           | Lines   | Content                             |
+| ------------------------------------------------------ | ------- | ----------------------------------- |
+| ~~`bdd/semantic_testdata.go`~~ done at `3d432be`       | ~~187~~ | ~~Test code samples (7 scenarios)~~ |
+| ~~`bdd/semantic_detection_test.go`~~ done at `3d432be` | ~~177~~ | ~~Test logic and assertions~~       |
 
 **Test Data Scenarios:**
 
@@ -81,10 +81,10 @@
 
 **Discovered Issues:**
 
-| Type     | Count | Status    | Files                          |
-| -------- | ----- | --------- | ------------------------------ |
-| ~~depguard~~ done — resolved — 106 linters, 0 findings today (AGENTS.md lint config) | ~~30+~~ | ~~🔴 New~~ | ~~Multiple (import restrictions)~~ |
-| ~~cyclop~~ done — resolved — lint clean today | ~~1~~ | ~~🟡 Medium~~ | ~~job/parse.go:90~~ |
+| Type                                                                                 | Count   | Status        | Files                              |
+| ------------------------------------------------------------------------------------ | ------- | ------------- | ---------------------------------- |
+| ~~depguard~~ done — resolved — 106 linters, 0 findings today (AGENTS.md lint config) | ~~30+~~ | ~~🔴 New~~    | ~~Multiple (import restrictions)~~ |
+| ~~cyclop~~ done — resolved — lint clean today                                        | ~~1~~   | ~~🟡 Medium~~ | ~~job/parse.go:90~~                |
 
 **Note:** The original `noctx` and `errcheck` issues from the status report are not showing up in current linting. The main issues now are depguard (import restrictions) which may be configuration-related.
 
@@ -100,23 +100,23 @@
 
 ### High Priority (Remaining)
 
-| # | Task                                      | Original Status | Blocker                |
-| - | ----------------------------------------- | --------------- | ---------------------- |
-| ~~1~~ done — resolved — file size no longer a blocker; 106 linters 0 findings | ~~Split remaining 29 files >300 lines~~ | ~~Not started~~ | ~~Time constraint~~ |
-| ~~2~~ done — resolved — lint clean today | ~~Fix cyclop issue in job/parse.go~~ | ~~Not started~~ | ~~Needs refactoring~~ |
-| ~~3~~ done — resolved — depguard config settled in .golangci.yml; boundaries enforced by arch-lint | ~~Address depguard linting issues~~ | ~~Not started~~ | ~~Config or code changes~~ |
-| ~~4~~ done — mode mutual-exclusion validation (cmd/config_builder.go) + cmd/config_validation_test.go | ~~Add --semantic --structural conflict test~~ | ~~Not started~~ | ~~-~~ |
-| ~~5~~ done — addSharedFlags shared across commands (cmd/baseline_cmd.go) | ~~Extract common flag setup~~ | ~~Not started~~ | ~~-~~ |
-| ~~6~~ **Superseded — SemanticHashEnabled replaced by config.DetectionMode (ADR-0007).** | ~~Convert SemanticHashEnabled to DI~~ | ~~Not started~~ | ~~-~~ |
+| #                                                                                                     | Task                                          | Original Status | Blocker                    |
+| ----------------------------------------------------------------------------------------------------- | --------------------------------------------- | --------------- | -------------------------- |
+| ~~1~~ done — resolved — file size no longer a blocker; 106 linters 0 findings                         | ~~Split remaining 29 files >300 lines~~       | ~~Not started~~ | ~~Time constraint~~        |
+| ~~2~~ done — resolved — lint clean today                                                              | ~~Fix cyclop issue in job/parse.go~~          | ~~Not started~~ | ~~Needs refactoring~~      |
+| ~~3~~ done — resolved — depguard config settled in .golangci.yml; boundaries enforced by arch-lint    | ~~Address depguard linting issues~~           | ~~Not started~~ | ~~Config or code changes~~ |
+| ~~4~~ done — mode mutual-exclusion validation (cmd/config_builder.go) + cmd/config_validation_test.go | ~~Add --semantic --structural conflict test~~ | ~~Not started~~ | ~~-~~                      |
+| ~~5~~ done — addSharedFlags shared across commands (cmd/baseline_cmd.go)                              | ~~Extract common flag setup~~                 | ~~Not started~~ | ~~-~~                      |
+| ~~6~~ **Superseded — SemanticHashEnabled replaced by config.DetectionMode (ADR-0007).**               | ~~Convert SemanticHashEnabled to DI~~         | ~~Not started~~ | ~~-~~                      |
 
 ### Medium Priority
 
-| #  | Task                                 | Status      |
-| -- | ------------------------------------ | ----------- |
-| ~~7~~ **Superseded — TODO ledger lives in TODO_LIST.md.** | ~~Address 56 TODO comments~~ | ~~Not started~~ |
-| ~~8~~ **Superseded — codebase churned; TODO_LIST.md is the ledger.** | ~~Address 19 FIXME/XXX/HACK comments~~ | ~~Not started~~ |
+| #                                                                                          | Task                                     | Status          |
+| ------------------------------------------------------------------------------------------ | ---------------------------------------- | --------------- |
+| ~~7~~ **Superseded — TODO ledger lives in TODO_LIST.md.**                                  | ~~Address 56 TODO comments~~             | ~~Not started~~ |
+| ~~8~~ **Superseded — codebase churned; TODO_LIST.md is the ledger.**                       | ~~Address 19 FIXME/XXX/HACK comments~~   | ~~Not started~~ |
 | ~~9~~ done — bdd/semantic_performance_bench_test.go + BenchmarkSemanticVsExactVsStructural | ~~Add benchmark for semantic detection~~ | ~~Not started~~ |
-| ~~10~~ done — AGENTS.md extensively updated since | ~~Update AGENTS.md with new patterns~~ | ~~Not started~~ |
+| ~~10~~ done — AGENTS.md extensively updated since                                          | ~~Update AGENTS.md with new patterns~~   | ~~Not started~~ |
 
 ---
 
@@ -124,19 +124,19 @@
 
 ### Current Issues
 
-| Issue                     | Severity  | Why                                    | Action                      |
-| ------------------------- | --------- | -------------------------------------- | --------------------------- |
+| Issue                                                                                                | Severity      | Why                                        | Action                          |
+| ---------------------------------------------------------------------------------------------------- | ------------- | ------------------------------------------ | ------------------------------- |
 | ~~depguard linting errors~~ done — resolved — depguard config settled; arch-lint enforces boundaries | ~~🟡 Medium~~ | ~~Import restrictions causing 30+ errors~~ | ~~Review .golangci.yml config~~ |
-| ~~29 files still >300 lines~~ done — resolved — large-file splits completed or relaxed; lint clean | ~~🔴 High~~ | ~~AGENTS.md rule not fully enforced~~ | ~~Continue splitting~~ |
-| ~~cyclop complexity~~ done — resolved — lint clean today | ~~🟡 Medium~~ | ~~ParseParallel function too complex~~ | ~~Refactor~~ |
+| ~~29 files still >300 lines~~ done — resolved — large-file splits completed or relaxed; lint clean   | ~~🔴 High~~   | ~~AGENTS.md rule not fully enforced~~      | ~~Continue splitting~~          |
+| ~~cyclop complexity~~ done — resolved — lint clean today                                             | ~~🟡 Medium~~ | ~~ParseParallel function too complex~~     | ~~Refactor~~                    |
 
 ### Resolved Issues
 
-| Issue                                    | Resolution         | Commit  |
-| ---------------------------------------- | ------------------ | ------- |
-| ~~git/change_detector.go 361 lines~~ done at `821027b` | ~~Split into 3 files~~ | ~~821027b~~ |
-| ~~bdd/semantic_detection_test.go 348 lines~~ done at `3d432be` | ~~Split test data~~ | ~~3d432be~~ |
-| ~~cache.Clear() bug~~ done at `5009110` | ~~Added MkdirAll~~ | ~~5009110~~ |
+| Issue                                                          | Resolution             | Commit      |
+| -------------------------------------------------------------- | ---------------------- | ----------- |
+| ~~git/change_detector.go 361 lines~~ done at `821027b`         | ~~Split into 3 files~~ | ~~821027b~~ |
+| ~~bdd/semantic_detection_test.go 348 lines~~ done at `3d432be` | ~~Split test data~~    | ~~3d432be~~ |
+| ~~cache.Clear() bug~~ done at `5009110`                        | ~~Added MkdirAll~~     | ~~5009110~~ |
 
 ---
 
@@ -182,48 +182,48 @@
 
 ### 🔴 Critical - Today
 
-| # | Task                                    | Effort | Impact    | Status  |
-| - | --------------------------------------- | ------ | --------- | ------- |
-| ~~1~~ done — resolved — depguard settled; arch-lint enforces boundaries | ~~Fix depguard linting config~~ | ~~15 min~~ | ~~🔴 High~~ | ~~NEW~~ |
-| ~~2~~ done — resolved — lint clean today | ~~Fix cyclop in job/parse.go~~ | ~~30 min~~ | ~~🟡 Medium~~ | ~~PENDING~~ |
-| ~~3~~ done — syntax/templ split (parser.go, transform_*.go) | ~~Split syntax/templ/templ.go (622 lines)~~ | ~~1 hr~~ | ~~🔴 High~~ | ~~PENDING~~ |
-| ~~4~~ done — pushed (per session summary) | ~~Push current commits~~ | ~~1 min~~ | ~~🔴 High~~ | ~~✅ DONE~~ |
+| #                                                                       | Task                                        | Effort     | Impact        | Status      |
+| ----------------------------------------------------------------------- | ------------------------------------------- | ---------- | ------------- | ----------- |
+| ~~1~~ done — resolved — depguard settled; arch-lint enforces boundaries | ~~Fix depguard linting config~~             | ~~15 min~~ | ~~🔴 High~~   | ~~NEW~~     |
+| ~~2~~ done — resolved — lint clean today                                | ~~Fix cyclop in job/parse.go~~              | ~~30 min~~ | ~~🟡 Medium~~ | ~~PENDING~~ |
+| ~~3~~ done — syntax/templ split (parser.go, transform_*.go)             | ~~Split syntax/templ/templ.go (622 lines)~~ | ~~1 hr~~   | ~~🔴 High~~   | ~~PENDING~~ |
+| ~~4~~ done — pushed (per session summary)                               | ~~Push current commits~~                    | ~~1 min~~  | ~~🔴 High~~   | ~~✅ DONE~~ |
 
 ### 🟡 High Priority - This Week
 
-| #  | Task                                            | Effort | Impact    | Status  |
-| -- | ----------------------------------------------- | ------ | --------- | ------- |
-| ~~5~~ done — resolved — cmd tests split (cmd/cmd_test.go now 598 lines, focused *_test.go files) | ~~Split cmd/cmd_test.go (1070 lines)~~ | ~~1 hr~~ | ~~🟡 Medium~~ | ~~PENDING~~ |
-| ~~6~~ done — resolved — pkg/artdupl tests split (detector_test.go now 215 lines) | ~~Split pkg/artdupl/detector_test.go (1252 lines)~~ | ~~1 hr~~ | ~~🟡 Medium~~ | ~~PENDING~~ |
-| ~~7~~ done — mode mutual-exclusion validation | ~~Add --semantic --structural conflict test~~ | ~~15 min~~ | ~~🟡 Medium~~ | ~~PENDING~~ |
-| ~~8~~ done — addSharedFlags | ~~Extract common flag setup~~ | ~~30 min~~ | ~~🟡 Medium~~ | ~~PENDING~~ |
-| ~~9~~ **Superseded — config.DetectionMode (ADR-0007).** | ~~Convert SemanticHashEnabled to DI~~ | ~~1 hr~~ | ~~🟡 Medium~~ | ~~PENDING~~ |
-| ~~10~~ done — resolved — 106 linters, 0 findings | ~~Fix remaining linting issues~~ | ~~1 hr~~ | ~~🟡 Medium~~ | ~~PENDING~~ |
+| #                                                                                                | Task                                                | Effort     | Impact        | Status      |
+| ------------------------------------------------------------------------------------------------ | --------------------------------------------------- | ---------- | ------------- | ----------- |
+| ~~5~~ done — resolved — cmd tests split (cmd/cmd_test.go now 598 lines, focused *_test.go files) | ~~Split cmd/cmd_test.go (1070 lines)~~              | ~~1 hr~~   | ~~🟡 Medium~~ | ~~PENDING~~ |
+| ~~6~~ done — resolved — pkg/artdupl tests split (detector_test.go now 215 lines)                 | ~~Split pkg/artdupl/detector_test.go (1252 lines)~~ | ~~1 hr~~   | ~~🟡 Medium~~ | ~~PENDING~~ |
+| ~~7~~ done — mode mutual-exclusion validation                                                    | ~~Add --semantic --structural conflict test~~       | ~~15 min~~ | ~~🟡 Medium~~ | ~~PENDING~~ |
+| ~~8~~ done — addSharedFlags                                                                      | ~~Extract common flag setup~~                       | ~~30 min~~ | ~~🟡 Medium~~ | ~~PENDING~~ |
+| ~~9~~ **Superseded — config.DetectionMode (ADR-0007).**                                          | ~~Convert SemanticHashEnabled to DI~~               | ~~1 hr~~   | ~~🟡 Medium~~ | ~~PENDING~~ |
+| ~~10~~ done — resolved — 106 linters, 0 findings                                                 | ~~Fix remaining linting issues~~                    | ~~1 hr~~   | ~~🟡 Medium~~ | ~~PENDING~~ |
 
 ### 🟢 Medium Priority - Next 2 Weeks
 
-| #  | Task                                        | Effort | Impact    | Status  |
-| -- | ------------------------------------------- | ------ | --------- | ------- |
-| ~~11~~ done — resolved — large files split or rule relaxed | ~~Split remaining 26 large files~~ | ~~4 hrs~~ | ~~🟢 Low~~ | ~~PENDING~~ |
-| ~~12~~ **Superseded — TODO_LIST.md is the ledger.** | ~~Address 56 TODO comments~~ | ~~2 hrs~~ | ~~🟢 Low~~ | ~~PENDING~~ |
-| ~~13~~ **Superseded — codebase churned; TODO_LIST.md is the ledger.** | ~~Address 19 FIXME/XXX/HACK~~ | ~~1 hr~~ | ~~🟢 Low~~ | ~~PENDING~~ |
-| ~~14~~ done — bdd/semantic_performance_bench_test.go | ~~Add semantic detection benchmarks~~ | ~~30 min~~ | ~~🟢 Low~~ | ~~PENDING~~ |
-| ~~15~~ done — AGENTS.md extensively updated | ~~Update AGENTS.md patterns~~ | ~~30 min~~ | ~~🟢 Low~~ | ~~PENDING~~ |
-| ~~16~~ done — job/buildtree_test.go exists | ~~Add tests for job/buildtree.go~~ | ~~1 hr~~ | ~~🟡 Medium~~ | ~~PENDING~~ |
-| ~~17~~ done — detection coverage 91.1% today | ~~Add tests for detection/multidetector.go~~ | ~~1 hr~~ | ~~🟡 Medium~~ | ~~PENDING~~ |
-| ~~18~~ done — parallel search wired (--search-workers, ADR-0019) | ~~Complete worker pool wiring~~ | ~~2 hrs~~ | ~~🟡 Medium~~ | ~~PENDING~~ |
-| ~~19~~ **NOT-DO — three modes retained by design (ADR-0007).** | ~~Remove --structural flag (post-deprecation)~~ | ~~15 min~~ | ~~🟢 Low~~ | ~~PENDING~~ |
-| ~~20~~ done — docs/adr/ holds 29 ADRs | ~~Add Architecture Decision Records~~ | ~~4 hrs~~ | ~~🟢 Low~~ | ~~PENDING~~ |
+| #                                                                     | Task                                            | Effort     | Impact        | Status      |
+| --------------------------------------------------------------------- | ----------------------------------------------- | ---------- | ------------- | ----------- |
+| ~~11~~ done — resolved — large files split or rule relaxed            | ~~Split remaining 26 large files~~              | ~~4 hrs~~  | ~~🟢 Low~~    | ~~PENDING~~ |
+| ~~12~~ **Superseded — TODO_LIST.md is the ledger.**                   | ~~Address 56 TODO comments~~                    | ~~2 hrs~~  | ~~🟢 Low~~    | ~~PENDING~~ |
+| ~~13~~ **Superseded — codebase churned; TODO_LIST.md is the ledger.** | ~~Address 19 FIXME/XXX/HACK~~                   | ~~1 hr~~   | ~~🟢 Low~~    | ~~PENDING~~ |
+| ~~14~~ done — bdd/semantic_performance_bench_test.go                  | ~~Add semantic detection benchmarks~~           | ~~30 min~~ | ~~🟢 Low~~    | ~~PENDING~~ |
+| ~~15~~ done — AGENTS.md extensively updated                           | ~~Update AGENTS.md patterns~~                   | ~~30 min~~ | ~~🟢 Low~~    | ~~PENDING~~ |
+| ~~16~~ done — job/buildtree_test.go exists                            | ~~Add tests for job/buildtree.go~~              | ~~1 hr~~   | ~~🟡 Medium~~ | ~~PENDING~~ |
+| ~~17~~ done — detection coverage 91.1% today                          | ~~Add tests for detection/multidetector.go~~    | ~~1 hr~~   | ~~🟡 Medium~~ | ~~PENDING~~ |
+| ~~18~~ done — parallel search wired (--search-workers, ADR-0019)      | ~~Complete worker pool wiring~~                 | ~~2 hrs~~  | ~~🟡 Medium~~ | ~~PENDING~~ |
+| ~~19~~ **NOT-DO — three modes retained by design (ADR-0007).**        | ~~Remove --structural flag (post-deprecation)~~ | ~~15 min~~ | ~~🟢 Low~~    | ~~PENDING~~ |
+| ~~20~~ done — docs/adr/ holds 29 ADRs                                 | ~~Add Architecture Decision Records~~           | ~~4 hrs~~  | ~~🟢 Low~~    | ~~PENDING~~ |
 
 ### 🟢 Low Priority - Next Month
 
-| #  | Task                          | Effort | Impact  | Status  |
-| -- | ----------------------------- | ------ | ------- | ------- |
-| ~~21~~ **Superseded — HTML output evolved (views, badges, diff).** | ~~HTML template enhancements~~ | ~~2 hrs~~ | ~~🟢 Low~~ | ~~PENDING~~ |
-| ~~22~~ done — sort.Slice in printer/groups.go | ~~Advanced sorting options~~ | ~~1 hr~~ | ~~🟢 Low~~ | ~~PENDING~~ |
-| ~~23~~ done — config/config_migrate.go | ~~Configuration migration tools~~ | ~~4 hrs~~ | ~~🟢 Low~~ | ~~PENDING~~ |
-| ~~24~~ **NOT-DO — extension point is the toolsdk provider (pkg/provider, ADR-0025), not a plugin system.** | ~~Plugin architecture design~~ | ~~1 week~~ | ~~🔴 High~~ | ~~PENDING~~ |
-| ~~25~~ **Won't implement — dropped — no web UI; website is static docs.** | ~~Web interface prototype~~ | ~~1 week~~ | ~~🔴 High~~ | ~~PENDING~~ |
+| #                                                                                                          | Task                              | Effort     | Impact      | Status      |
+| ---------------------------------------------------------------------------------------------------------- | --------------------------------- | ---------- | ----------- | ----------- |
+| ~~21~~ **Superseded — HTML output evolved (views, badges, diff).**                                         | ~~HTML template enhancements~~    | ~~2 hrs~~  | ~~🟢 Low~~  | ~~PENDING~~ |
+| ~~22~~ done — sort.Slice in printer/groups.go                                                              | ~~Advanced sorting options~~      | ~~1 hr~~   | ~~🟢 Low~~  | ~~PENDING~~ |
+| ~~23~~ done — config/config_migrate.go                                                                     | ~~Configuration migration tools~~ | ~~4 hrs~~  | ~~🟢 Low~~  | ~~PENDING~~ |
+| ~~24~~ **NOT-DO — extension point is the toolsdk provider (pkg/provider, ADR-0025), not a plugin system.** | ~~Plugin architecture design~~    | ~~1 week~~ | ~~🔴 High~~ | ~~PENDING~~ |
+| ~~25~~ **Won't implement — dropped — no web UI; website is static docs.**                                  | ~~Web interface prototype~~       | ~~1 week~~ | ~~🔴 High~~ | ~~PENDING~~ |
 
 ---
 

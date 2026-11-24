@@ -268,8 +268,8 @@ check` surfaces this — `golangci-lint run` and `go test` don't. CI should
 30. Consider whether `InterfaceMethod` should be `InterfaceMethodSource` (enum: none/stdlib/type-aware)
 31. Verify `.go-arch-lint.yml` constraints aren't violated by new transformer field
 32. Check if `InterfaceMethod` needs to be in the SDK's `CloneNode` equivalent
-~~33. The `findBodyStatements` test helper could be promoted to a shared test utility~~ not-do — the helper stays local
-34. Consider whether the `EnclosingReturnArity` / `InterfaceMethod` save/restore should use defer instead of manual restore
+    ~~33. The `findBodyStatements` test helper could be promoted to a shared test utility~~ not-do — the helper stays local
+33. Consider whether the `EnclosingReturnArity` / `InterfaceMethod` save/restore should use defer instead of manual restore
 
 ### Testing Improvements
 

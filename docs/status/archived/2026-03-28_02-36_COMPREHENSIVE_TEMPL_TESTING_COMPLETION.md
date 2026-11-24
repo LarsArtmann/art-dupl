@@ -205,10 +205,10 @@ Successfully completed comprehensive analysis and enhancement of .templ file tes
 
 5. ⬜ Fix cyclomatic complexity in critical functions (cyclop)
 6. ⬜ Fix cognitive complexity issues (gocognit)
-~~7. ⬜ Update README with new default semantic behavior~~ done — README documents the semantic default (verified 2026-11-14)
-8. ⬜ Fix JSON output format inconsistencies (`detection_method` vs `detection_methods`)
-9. ⬜ Fix double-counting in TotalDuplicateLines
-10. ⬜ Complete test coverage for `transformCallTemplateExpression` (0% → 100%)
+   ~~7. ⬜ Update README with new default semantic behavior~~ done — README documents the semantic default (verified 2026-11-14)
+7. ⬜ Fix JSON output format inconsistencies (`detection_method` vs `detection_methods`)
+8. ⬜ Fix double-counting in TotalDuplicateLines
+9. ⬜ Complete test coverage for `transformCallTemplateExpression` (0% → 100%)
 
 ### P2 - Medium Priority (This Week/Next)
 
@@ -223,13 +223,13 @@ Successfully completed comprehensive analysis and enhancement of .templ file tes
 ### P3 - Low Priority (Next 2 Weeks)
 
 18. ⬜ Split `pkg/artdupl/detector.go` (546 lines)
-~~19. ⬜ Split `domain/clone.go` (495 lines)~~ superseded — domain/clone.go no longer exists
-~~20. ⬜ Split `domain/domain_types.go` (525 lines)~~ superseded — domain/domain_types.go no longer exists
-21. ⬜ Create Architecture Decision Records (ADRs)
-22. ⬜ Add package examples and godoc documentation
-23. ⬜ Create GitHub Actions workflow templates
-24. ⬜ Create performance baseline benchmarks
-25. ⬜ Add pre-commit hooks for code quality
+    ~~19. ⬜ Split `domain/clone.go` (495 lines)~~ superseded — domain/clone.go no longer exists
+    ~~20. ⬜ Split `domain/domain_types.go` (525 lines)~~ superseded — domain/domain_types.go no longer exists
+19. ⬜ Create Architecture Decision Records (ADRs)
+20. ⬜ Add package examples and godoc documentation
+21. ⬜ Create GitHub Actions workflow templates
+22. ⬜ Create performance baseline benchmarks
+23. ⬜ Add pre-commit hooks for code quality
 
 ---
 

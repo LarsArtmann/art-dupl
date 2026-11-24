@@ -180,17 +180,17 @@ Minor issues:
 
 6. 🔄 Run full benchmark comparison (before/after)
 7. 🔄 Code review with team
-~~8. 🔄 Test on large codebase (e.g., kubernetes, golang/go)~~ done — the corpus validations run on real repos per release (AGENTS.md actionability bullet)
-~~9. 🔄 Update README with performance section~~ verified 2026-11-14 — README references performance
-10. 🔄 Create TokenValue type alias
+   ~~8. 🔄 Test on large codebase (e.g., kubernetes, golang/go)~~ done — the corpus validations run on real repos per release (AGENTS.md actionability bullet)
+   ~~9. 🔄 Update README with performance section~~ verified 2026-11-14 — README references performance
+8. 🔄 Create TokenValue type alias
 
 ### Priority 3: Medium (Next 2 Weeks)
 
 11. 🔄 Implement hybrid slice/map approach
 12. 🔄 Benchmark memory vs performance trade-off
 13. 🔄 Add property-based tests (rapid or stdlib fuzzing)
-~~14. 🔄 CI benchmark regression detection~~ done — the CI Performance gate + alloc-gate carry it (AGENTS.md)
-15. 🔄 Memory profiling documentation
+    ~~14. 🔄 CI benchmark regression detection~~ done — the CI Performance gate + alloc-gate carry it (AGENTS.md)
+14. 🔄 Memory profiling documentation
 
 ### Priority 4: Nice-to-Have (Next Month)
 
@@ -198,15 +198,15 @@ Minor issues:
 17. 🔄 Memory pooling for tran objects
 18. 🔄 Swiss table evaluation
 19. 🔄 SIMD for token comparison (not transition search)
-~~20. 🔄 Performance comparison with other tools~~ not-do — no cross-tool comparison landed
+    ~~20. 🔄 Performance comparison with other tools~~ not-do — no cross-tool comparison landed
 
 ### Priority 5: Future (Later)
 
 21. 🔄 Distributed detection for massive codebases
 22. 🔄 Incremental analysis improvements
 23. 🔄 Cache optimization
-~~24. 🔄 GPU acceleration research~~ won't implement — out of scope for a CLI detector
-25. 🔄 WebAssembly port for browser usage
+    ~~24. 🔄 GPU acceleration research~~ won't implement — out of scope for a CLI detector
+24. 🔄 WebAssembly port for browser usage
 
 ---
 

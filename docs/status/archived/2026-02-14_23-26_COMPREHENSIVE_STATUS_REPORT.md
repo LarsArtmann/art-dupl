@@ -88,10 +88,10 @@
 
 ### High Priority Tasks
 
-| # | Task                           | Impact | Effort | Reason               |
-| - | ------------------------------ | ------ | ------ | -------------------- |
-| 1 | Commit uncommitted changes     | Medium | 2min   | Waiting for approval |
-| ~~2~~ **done — the tree is committed continuously (auto-commit daemon)** |~~Fix pre-existing linter issues~~|~~Low~~|~~15min~~|~~Not blocking~~|
+| #                                                                        | Task                               | Impact  | Effort    | Reason               |
+| ------------------------------------------------------------------------ | ---------------------------------- | ------- | --------- | -------------------- |
+| 1                                                                        | Commit uncommitted changes         | Medium  | 2min      | Waiting for approval |
+| ~~2~~ **done — the tree is committed continuously (auto-commit daemon)** | ~~Fix pre-existing linter issues~~ | ~~Low~~ | ~~15min~~ | ~~Not blocking~~     |
 
 ### Medium Priority Tasks
 
@@ -189,11 +189,11 @@ FAIL github.com/LarsArtmann/art-dupl/testutils [build failed]
 
 ### Priority 1: CRITICAL (Do First)
 
-| # | Task                                                  | Effort | Blocking? |
-| - | ----------------------------------------------------- | ------ | --------- |
-| 1 | **Free disk space** (clean Docker, downloads, caches) | 30min  | 🔴 YES    |
-| ~~2~~ **done — the tree is committed continuously (auto-commit daemon)** |~~Commit uncommitted test files~~|~~2min~~|~~No~~|
-| 3 | Fix pre-existing linter issues in git tests           | 15min  | No        |
+| #                                                                        | Task                                                  | Effort   | Blocking? |
+| ------------------------------------------------------------------------ | ----------------------------------------------------- | -------- | --------- |
+| 1                                                                        | **Free disk space** (clean Docker, downloads, caches) | 30min    | 🔴 YES    |
+| ~~2~~ **done — the tree is committed continuously (auto-commit daemon)** | ~~Commit uncommitted test files~~                     | ~~2min~~ | ~~No~~    |
+| 3                                                                        | Fix pre-existing linter issues in git tests           | 15min    | No        |
 
 ### Priority 2: HIGH (This Week)
 
@@ -207,30 +207,30 @@ FAIL github.com/LarsArtmann/art-dupl/testutils [build failed]
 
 ### Priority 3: MEDIUM (Next 2 Weeks)
 
-| #  | Task                                       | Effort | Impact |
-| -- | ------------------------------------------ | ------ | ------ |
-| 9  | Increase job package coverage to 80%       | 2h     | Medium |
-| 10 | Increase internal/utils coverage to 80%    | 1h     | Low    |
-| 11 | Add package examples for godoc             | 45min  | Low    |
-| 12 | Update README with latest install commands | 15min  | Low    |
-| 13 | Create GitHub issues for remaining tasks   | 30min  | Low    |
-| ~~14~~ **done — the BDD suite grew and stays green (bdd/)** |~~Add more BDD scenarios~~|~~2h~~|~~Medium~~|
-| 15 | Performance benchmark automation           | 1h     | Medium |
+| #                                                           | Task                                       | Effort | Impact     |
+| ----------------------------------------------------------- | ------------------------------------------ | ------ | ---------- |
+| 9                                                           | Increase job package coverage to 80%       | 2h     | Medium     |
+| 10                                                          | Increase internal/utils coverage to 80%    | 1h     | Low        |
+| 11                                                          | Add package examples for godoc             | 45min  | Low        |
+| 12                                                          | Update README with latest install commands | 15min  | Low        |
+| 13                                                          | Create GitHub issues for remaining tasks   | 30min  | Low        |
+| ~~14~~ **done — the BDD suite grew and stays green (bdd/)** | ~~Add more BDD scenarios~~                 | ~~2h~~ | ~~Medium~~ |
+| 15                                                          | Performance benchmark automation           | 1h     | Medium     |
 
 ### Priority 4: LOW (Nice to Have)
 
-| #  | Task                                        | Effort | Impact |
-| -- | ------------------------------------------- | ------ | ------ |
-| ~~16~~ **done — the docs-health passes review completeness monthly** |~~Documentation completeness review~~|~~1h~~|~~Low~~|
-| 17 | Add fuzz tests for edge cases               | 2h     | Low    |
-| 18 | Expand CI/CD with more workflows            | 1h     | Low    |
-| ~~19~~ **done — CONTRIBUTING.md exists (verified 2026-11-14)** |~~Create CONTRIBUTING.md~~|~~30min~~|~~Low~~|
-| ~~20~~ **not-do — README carries no troubleshooting section** |~~Add troubleshooting to README~~|~~30min~~|~~Low~~|
-| 21 | Create migration guide for version upgrades | 1h     | Low    |
-| 22 | Watch mode for continuous monitoring        | 4h     | Low    |
-| 23 | Git diff integration for PR reviews         | 4h     | Low    |
-| 24 | Web dashboard for visual reporting          | 8h     | Low    |
-| 25 | Multi-language support                      | 40h    | Low    |
+| #                                                                    | Task                                        | Effort    | Impact  |
+| -------------------------------------------------------------------- | ------------------------------------------- | --------- | ------- |
+| ~~16~~ **done — the docs-health passes review completeness monthly** | ~~Documentation completeness review~~       | ~~1h~~    | ~~Low~~ |
+| 17                                                                   | Add fuzz tests for edge cases               | 2h        | Low     |
+| 18                                                                   | Expand CI/CD with more workflows            | 1h        | Low     |
+| ~~19~~ **done — CONTRIBUTING.md exists (verified 2026-11-14)**       | ~~Create CONTRIBUTING.md~~                  | ~~30min~~ | ~~Low~~ |
+| ~~20~~ **not-do — README carries no troubleshooting section**        | ~~Add troubleshooting to README~~           | ~~30min~~ | ~~Low~~ |
+| 21                                                                   | Create migration guide for version upgrades | 1h        | Low     |
+| 22                                                                   | Watch mode for continuous monitoring        | 4h        | Low     |
+| 23                                                                   | Git diff integration for PR reviews         | 4h        | Low     |
+| 24                                                                   | Web dashboard for visual reporting          | 8h        | Low     |
+| 25                                                                   | Multi-language support                      | 40h       | Low     |
 
 ---
 

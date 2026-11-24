@@ -29,30 +29,30 @@
 
 <!-- check-rows:ledger -->
 
-| Package             | Coverage | Status           |
-| ------------------- | -------- | ---------------- |
-| pkg/enum            | 100.0%   | ✅               |
-| pkg/format          | 100.0%   | ✅               |
-| pkg/position        | 100.0%   | ✅               |
-| bdd                 | 93.3%    | ✅               |
-| syntax/golang       | 93.4%    | ✅               |
-| syntax              | 91.4%    | ✅               |
-| suffixtree          | 91.2%    | ✅               |
-| config              | 91.0%    | ✅               |
-| errors              | 89.6%    | ✅               |
-| pkg/artdupl (SDK)   | 88.4%    | ✅               |
-| hash                | 93.4%    | ✅               |
-| pkg/logger          | 87.5%    | ✅               |
-| cache               | 84.3%    | ✅               |
-| syntax/templ        | 84.6%    | ✅               |
-| printer             | 76.5%    | ⚠️                |
-| cmd                 | 75.1%    | ⚠️                |
-| job                 | 72.1%    | ⚠️                |
+| Package             | Coverage  | Status                                                                               |
+| ------------------- | --------- | ------------------------------------------------------------------------------------ |
+| pkg/enum            | 100.0%    | ✅                                                                                   |
+| pkg/format          | 100.0%    | ✅                                                                                   |
+| pkg/position        | 100.0%    | ✅                                                                                   |
+| bdd                 | 93.3%     | ✅                                                                                   |
+| syntax/golang       | 93.4%     | ✅                                                                                   |
+| syntax              | 91.4%     | ✅                                                                                   |
+| suffixtree          | 91.2%     | ✅                                                                                   |
+| config              | 91.0%     | ✅                                                                                   |
+| errors              | 89.6%     | ✅                                                                                   |
+| pkg/artdupl (SDK)   | 88.4%     | ✅                                                                                   |
+| hash                | 93.4%     | ✅                                                                                   |
+| pkg/logger          | 87.5%     | ✅                                                                                   |
+| cache               | 84.3%     | ✅                                                                                   |
+| syntax/templ        | 84.6%     | ✅                                                                                   |
+| printer             | 76.5%     | ⚠️                                                                                    |
+| cmd                 | 75.1%     | ⚠️                                                                                    |
+| job                 | 72.1%     | ⚠️                                                                                    |
 | domain              | ~~66.2%~~ | ~~🔴~~ superseded — 2026-06 snapshot; coverage is tracked by the CI Coverage job now |
 | detection           | ~~61.8%~~ | ~~🔴~~ superseded — 2026-06 snapshot; coverage is tracked by the CI Coverage job now |
-| internal/filtertest | 50.0%    | 🔴 (test infra)  |
-| examples            | 0.0%     | — (demo package) |
-| cmd/art-dupl        | 0.0%     | — (main package) |
+| internal/filtertest | 50.0%     | 🔴 (test infra)                                                                      |
+| examples            | 0.0%      | — (demo package)                                                                     |
+| cmd/art-dupl        | 0.0%      | — (main package)                                                                     |
 
 ---
 
@@ -106,42 +106,42 @@
 
 ## b) PARTIALLY DONE ⚠️
 
-| Area                         | Current State               | What Remains                                                                                                                        |
-| ---------------------------- | --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| ~~**Test Coverage**~~ done — resolved — coverage is CI-tracked (Coverage job); detection and domain are long past the 2026-06 61.8/66.2 numbers | ~~74.3% average~~ | ~~`detection` (61.8%) and `domain` (66.2%) below 80% target. Need integration tests for MultiDetector and enum MarshalJSON roundtrips~~ |
-| ~~**Concurrency**~~ done — resolved — every pipeline goroutine is ctx-aware (AGENTS.md context-propagation invariant); the crawl leaks were fixed the same week | ~~14/17 goroutines fixed~~ |
-| ~~**Printer Package**~~ done — resolved — printer split landed: printer/stats, printer/actionability, printer/finding | ~~~3500 lines across 29 files~~ | ~~Splitting into sub-packages (stats, html, analyze) deferred — needs core extraction first~~ |
-| ~~**Clone Type Consolidation**~~ done — resolved — domain.CloneRef embedded in every clone-bearing type (2026-07-01 consolidation) | ~~Field names aligned~~ | ~~5 parallel Clone types exist with identical field names but separate type definitions. Consolidation needs DTO architecture design~~ |
-| ~~**Fragment Type**~~ done — resolved — Fragment is string everywhere (ADR-0005) | ~~Works at boundaries~~ | ~~`[]byte` in domain vs `string` in SDK — flips at every boundary. Needs unified type decision~~ |
-| ~~**depguard**~~ done — resolved — import boundaries enforced by go-arch-lint in CI (arch-lint gate) | ~~Fixed and configured~~ | ~~Allow-list covers all 16 direct deps but config wasn't verified to actually block unapproved imports in CI~~ |
+| Area                                                                                                                                                            | Current State                   | What Remains                                                                                                                            |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| ~~**Test Coverage**~~ done — resolved — coverage is CI-tracked (Coverage job); detection and domain are long past the 2026-06 61.8/66.2 numbers                 | ~~74.3% average~~               | ~~`detection` (61.8%) and `domain` (66.2%) below 80% target. Need integration tests for MultiDetector and enum MarshalJSON roundtrips~~ |
+| ~~**Concurrency**~~ done — resolved — every pipeline goroutine is ctx-aware (AGENTS.md context-propagation invariant); the crawl leaks were fixed the same week | ~~14/17 goroutines fixed~~      |                                                                                                                                         |
+| ~~**Printer Package**~~ done — resolved — printer split landed: printer/stats, printer/actionability, printer/finding                                           | ~~~3500 lines across 29 files~~ | ~~Splitting into sub-packages (stats, html, analyze) deferred — needs core extraction first~~                                           |
+| ~~**Clone Type Consolidation**~~ done — resolved — domain.CloneRef embedded in every clone-bearing type (2026-07-01 consolidation)                              | ~~Field names aligned~~         | ~~5 parallel Clone types exist with identical field names but separate type definitions. Consolidation needs DTO architecture design~~  |
+| ~~**Fragment Type**~~ done — resolved — Fragment is string everywhere (ADR-0005)                                                                                | ~~Works at boundaries~~         | ~~`[]byte` in domain vs `string` in SDK — flips at every boundary. Needs unified type decision~~                                        |
+| ~~**depguard**~~ done — resolved — import boundaries enforced by go-arch-lint in CI (arch-lint gate)                                                            | ~~Fixed and configured~~        | ~~Allow-list covers all 16 direct deps but config wasn't verified to actually block unapproved imports in CI~~                          |
 
 ---
 
 ## c) NOT STARTED
 
-| Area                              | Description                                                                                                                                  |
-| --------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| ~~**ProcessedClone DTO**~~ done — resolved — serializable domain.CloneNode DTO bridges printer pattern evaluation (ADR-0006) | ~~Printer still imports `syntax.Node` directly (34 references) for pattern evaluation. Needs read-only interface design~~ |
-| ~~**Clone type consolidation**~~ done — CloneRef consolidation shipped 2026-07-01 | ~~5 parallel types: `printer.CloneGroup`, `pkg/artdupl.Clone`, `pkg/artdupl.CloneGroup`, `domain.ProcessedClone`, `domain.ProcessedCloneGroup`~~ |
-| ~~**printer/ sub-packages**~~ done — printer/stats + printer/actionability + printer/finding sub-packages exist | ~~Stats, HTML, and analysis code all in one package~~ |
-| ~~**`…Data` → `…View` rename**~~ done — CloneGroupView views with stable anchors (printer/html_views.go) | ~~5 view model types in `printer/html_views.go` use the `…Data` suffix~~ |
-| ~~**`encoding/json/v2` migration**~~ **NOT-DO — decided against — ADR-0024 pins the stable v1 API; Go 1.27 dropped the v2 struct-tag grammar and the jsonv2gate bans production v2 imports.** | ~~Go 1.26.3 supports it; all 6 production files still use v1~~ |
-| ~~**GeneratorFilter bitmask**~~ **Superseded — superseded — landed as the gogenfilter v3 integration: generatorIncludes keyed by gogenfilter.FilterReason (cmd/filter_stats.go).** | ~~6 `Include*` bools in `config.Config` should be a bitmask~~ |
-| ~~**detection test coverage**~~ done — detection adapter tests with real assertions; coverage CI-tracked | ~~61.8% — adapters, streamMatches, hasNonEmptyFrag at 0%~~ |
-| ~~**OpenTelemetry instrumentation**~~ **Won't implement — no tracing demand surfaced since; per-run cache stats and progress output cover observability.** | ~~No tracing/metrics in the pipeline~~ |
-| ~~**Benchmarks in CI**~~ done — CI Performance Tests workflow + flake alloc-gate (scripts/check-alloc-regression.sh) | ~~No performance regression detection~~ |
+| Area                                                                                                                                                                                          | Description                                                                                                                                      |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| ~~**ProcessedClone DTO**~~ done — resolved — serializable domain.CloneNode DTO bridges printer pattern evaluation (ADR-0006)                                                                  | ~~Printer still imports `syntax.Node` directly (34 references) for pattern evaluation. Needs read-only interface design~~                        |
+| ~~**Clone type consolidation**~~ done — CloneRef consolidation shipped 2026-07-01                                                                                                             | ~~5 parallel types: `printer.CloneGroup`, `pkg/artdupl.Clone`, `pkg/artdupl.CloneGroup`, `domain.ProcessedClone`, `domain.ProcessedCloneGroup`~~ |
+| ~~**printer/ sub-packages**~~ done — printer/stats + printer/actionability + printer/finding sub-packages exist                                                                               | ~~Stats, HTML, and analysis code all in one package~~                                                                                            |
+| ~~**`…Data` → `…View` rename**~~ done — CloneGroupView views with stable anchors (printer/html_views.go)                                                                                      | ~~5 view model types in `printer/html_views.go` use the `…Data` suffix~~                                                                         |
+| ~~**`encoding/json/v2` migration**~~ **NOT-DO — decided against — ADR-0024 pins the stable v1 API; Go 1.27 dropped the v2 struct-tag grammar and the jsonv2gate bans production v2 imports.** | ~~Go 1.26.3 supports it; all 6 production files still use v1~~                                                                                   |
+| ~~**GeneratorFilter bitmask**~~ **Superseded — superseded — landed as the gogenfilter v3 integration: generatorIncludes keyed by gogenfilter.FilterReason (cmd/filter_stats.go).**            | ~~6 `Include*` bools in `config.Config` should be a bitmask~~                                                                                    |
+| ~~**detection test coverage**~~ done — detection adapter tests with real assertions; coverage CI-tracked                                                                                      | ~~61.8% — adapters, streamMatches, hasNonEmptyFrag at 0%~~                                                                                       |
+| ~~**OpenTelemetry instrumentation**~~ **Won't implement — no tracing demand surfaced since; per-run cache stats and progress output cover observability.**                                    | ~~No tracing/metrics in the pipeline~~                                                                                                           |
+| ~~**Benchmarks in CI**~~ done — CI Performance Tests workflow + flake alloc-gate (scripts/check-alloc-regression.sh)                                                                          | ~~No performance regression detection~~                                                                                                          |
 
 ---
 
 ## d) TOTALLY FUCKED UP 🔴
 
-| Area                                        | What's Wrong                                                                                                                                                                                 | Impact                                                                                             |
-| ------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| ~~**3 goroutine leaks in `cmd/run_crawl.go`**~~ done — resolved — ctx threaded through the crawl feeders the same week (cmd/run_crawl.go select guards) | ~~`filesFeedWithOptions` goroutines have ZERO context awareness — `fchan <- path` blocking sends with no `ctx.Done()` select. stdin reader and filepath.Walk cannot be cancelled.~~ | ~~**MEDIUM** — process exits on cancellation anyway, but leaks during long crawls if consumer stalls~~ |
-| ~~**`detection` at 61.8% coverage**~~ done — resolved — adapter tests with real assertions shipped; coverage is CI-tracked | ~~Adapters (`suffixTreeAdapter.FindDuplOver`, `hashAdapter.FindDuplOver`), `streamMatches`, `hasNonEmptyFrag`, `detName` all at 0%. Tests only drain channels without asserting match content.~~ | ~~**HIGH** — core detection logic is untested~~ |
-| ~~**`examples/` package**~~ **Won't implement — examples/ stays as the SDK demo; crawls exclude it by default.** | ~~`RunSDKDemo()` exported but never called. Test file is tautological (creates structs, asserts same values back). Zero real SDK usage testing.~~ | ~~**LOW** — demo code, but gives false confidence~~ |
-| ~~**`go.sum` not tidy**~~ done — resolved — dependency management rides the BuildFlow sweeps; go.sum is tidy | ~~`go mod tidy -diff` shows drift (clipperhouse/displaywidth entry).~~ | ~~**LOW** — cosmetic but indicates inconsistent dependency management~~ |
-| ~~**wsl_v5 lint warnings**~~ done — resolved — lint sits at 0 findings across 106 linters (2026-09-29 baseline) | ~~`domain/health_test.go:52,64` have missing whitespace above assign statements.~~ | ~~**LOW** — golangci-lint passes (stale LSP cache), but should be clean~~ |
+| Area                                                                                                                                                    | What's Wrong                                                                                                                                                                                     | Impact                                                                                                 |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------ |
+| ~~**3 goroutine leaks in `cmd/run_crawl.go`**~~ done — resolved — ctx threaded through the crawl feeders the same week (cmd/run_crawl.go select guards) | ~~`filesFeedWithOptions` goroutines have ZERO context awareness — `fchan <- path` blocking sends with no `ctx.Done()` select. stdin reader and filepath.Walk cannot be cancelled.~~              | ~~**MEDIUM** — process exits on cancellation anyway, but leaks during long crawls if consumer stalls~~ |
+| ~~**`detection` at 61.8% coverage**~~ done — resolved — adapter tests with real assertions shipped; coverage is CI-tracked                              | ~~Adapters (`suffixTreeAdapter.FindDuplOver`, `hashAdapter.FindDuplOver`), `streamMatches`, `hasNonEmptyFrag`, `detName` all at 0%. Tests only drain channels without asserting match content.~~ | ~~**HIGH** — core detection logic is untested~~                                                        |
+| ~~**`examples/` package**~~ **Won't implement — examples/ stays as the SDK demo; crawls exclude it by default.**                                        | ~~`RunSDKDemo()` exported but never called. Test file is tautological (creates structs, asserts same values back). Zero real SDK usage testing.~~                                                | ~~**LOW** — demo code, but gives false confidence~~                                                    |
+| ~~**`go.sum` not tidy**~~ done — resolved — dependency management rides the BuildFlow sweeps; go.sum is tidy                                            | ~~`go mod tidy -diff` shows drift (clipperhouse/displaywidth entry).~~                                                                                                                           | ~~**LOW** — cosmetic but indicates inconsistent dependency management~~                                |
+| ~~**wsl_v5 lint warnings**~~ done — resolved — lint sits at 0 findings across 106 linters (2026-09-29 baseline)                                         | ~~`domain/health_test.go:52,64` have missing whitespace above assign statements.~~                                                                                                               | ~~**LOW** — golangci-lint passes (stale LSP cache), but should be clean~~                              |
 
 ---
 
@@ -183,33 +183,33 @@
 
 Sorted by **impact / effort ratio** (highest first).
 
-| #  | Task                                                                              | Impact                                                                                             | Effort  | Sprint  |
-| -- | --------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- | ------- | ------- |
-| ~~1~~ done — detection adapter tests with real assertions (detection/coverage_test.go) | ~~Add detection adapter tests (`suffixTreeAdapter`, `hashAdapter` FindDuplOver with real assertions)~~ | ~~🔴 HIGH~~ | ~~2h~~ |
-| ~~2~~ done — domain enum MarshalJSON tests incl. invalid cases | ~~Add `CloneCategory` + `CloneActionability` MarshalJSON/UnmarshalJSON tests~~ | ~~🟡 MED~~ | ~~30m~~ |
-| ~~3~~ done — go.sum managed by the BuildFlow dependency sweeps | ~~Run `go mod tidy` to fix go.sum drift~~ | ~~🟢 LOW~~ | ~~1m~~ |
-| ~~4~~ done — lint at 0 findings since 2026-09-29 | ~~Fix wsl_v5 warnings in `health_test.go` (blank line separation)~~ | ~~🟢 LOW~~ | ~~5m~~ |
-| ~~5~~ done — feeders take ctx and select on ctx.Done() (cmd/run_crawl.go) | ~~Thread `context.Context` through `cmd/run_crawl.go` file feeders~~ | ~~🔴 HIGH~~ | ~~4h~~ | ~~Next~~ |
-| ~~6~~ **NOT-DO — decided against — v1-only invariant (ADR-0024); jsonv2gate bans production v2 imports.** | ~~Migrate `encoding/json` → `encoding/json/v2` in 6 production files~~ | ~~🟡 MED~~ | ~~3h~~ |
-| ~~7~~ done — resolved — CloneRef + the ErrLineEndBeforeStart sentinel carry the line-range invariant | ~~Add `LineRange` value object (enforce `end >= start` at construction)~~ | ~~🟡 MED~~ | ~~4h~~ |
-| ~~8~~ done — resolved — Fragment is string everywhere (ADR-0005) | ~~Unify `Fragment` type (`[]byte` vs `string`) with branded `SourceFragment`~~ | ~~🟡 MED~~ | ~~6h~~ |
-| ~~9~~ **Superseded — superseded — clone identity is the XXH3 group hash surfaced via the printer GroupID contract (ADR-0028); a branded CloneHash type was never adopted.** | ~~Add `CloneHash` branded type with `Partial()` method~~ | ~~🟡 MED~~ | ~~2h~~ | ~~Later~~ |
-| ~~10~~ done — detection adapter assertions shipped | ~~Add real assertions to `detection/detection_test.go` (match count, hash, filenames)~~ | ~~🔴 HIGH~~ | ~~3h~~ |
-| ~~11~~ done — domain validation sentinels + cross-package alias tests | ~~Add domain `ProcessedClone.Validate()` roundtrip tests~~ | ~~🟡 MED~~ | ~~1h~~ |
-| ~~12~~ done — CloneRef consolidation (2026-07-01) | ~~Consolidate 5 Clone types into `CloneLocation` + format-specific extensions~~ | ~~🔴 HIGH~~ | ~~8h~~ |
-| ~~13~~ **Superseded — superseded — decoupled via the serializable CloneNode DTO (ADR-0006) instead of a NodeReader interface.** | ~~Extract `NodeReader` interface to decouple printer from `syntax.Node`~~ | ~~🟡 MED~~ | ~~6h~~ |
-| ~~14~~ done — printer/stats + printer/actionability + printer/finding | ~~Split `printer/` into sub-packages (stats, html, analyze)~~ | ~~🟡 MED~~ | ~~8h~~ |
-| ~~15~~ done — CloneGroupView naming (printer/html_views.go) | ~~Rename `…Data` view models to `…View` in printer (requires templ regen)~~ | ~~🟢 LOW~~ | ~~3h~~ |
-| ~~16~~ **Superseded — superseded — generator filtering landed as gogenfilter integration: generatorIncludes keyed by gogenfilter.FilterReason.** | ~~Add `GeneratorFilter` bitmask to replace 6 `Include*` bools in config~~ | ~~🟡 MED~~ | ~~4h~~ | ~~Later~~ |
-| ~~17~~ done — suffixtree alloc benchmarks pinned (docs/benchmarks/ baselines + alloc_budget_test.go) | ~~Add benchmarks for suffix tree construction + search~~ | ~~🟡 MED~~ | ~~3h~~ |
-| ~~18~~ done — CI Performance Tests workflow + flake alloc-gate | ~~Add CI performance regression detection~~ | ~~🟢 LOW~~ | ~~4h~~ |
-| ~~19~~ **Won't implement — examples/ stays as the SDK demo; crawls exclude it by default.** | ~~Wire `examples/` package or delete it (currently orphaned)~~ | ~~🟢 LOW~~ | ~~1h~~ | ~~Next~~ |
-| ~~20~~ done — coverage is CI-tracked; domain well past 75% | ~~Add `domain` coverage to reach 75%+ (currently 66.2%)~~ | ~~🟡 MED~~ | ~~3h~~ | ~~Next~~ |
-| ~~21~~ done — coverage is CI-tracked; detection well past 75% | ~~Add `detection` coverage to reach 75%+ (currently 61.8%)~~ | ~~🟡 MED~~ | ~~4h~~ | ~~Next~~ |
-| ~~22~~ done — coverage is CI-tracked (92.7% average by the 2026-10-05 audit) | ~~Add `cmd/` coverage to reach 80%+ (currently 75.1%)~~ | ~~🟡 MED~~ | ~~3h~~ | ~~Later~~ |
-| ~~23~~ done — resolved — go-udiff is already in the module graph (indirect); sergi/go-diff stays direct; no swap was ever needed | ~~Evaluate `go-udiff` as replacement for `sergi/go-diff` (already a transitive dep)~~ | ~~🟢 LOW~~ | ~~2h~~ | ~~Later~~ |
-| ~~24~~ **Won't implement — no tracing demand surfaced since.** | ~~Add OpenTelemetry spans to pipeline stages (parse → serialize → detect → print)~~ | ~~🟢 LOW~~ | ~~6h~~ | ~~Later~~ |
-| ~~25~~ **Won't implement — the import cycle persists; boundaries are enforced by go-arch-lint instead.** | ~~Hide `syntax/golang` behind facade (BLOCKED by import cycle)~~ | ~~🟢 LOW~~ | ~~8h~~ | ~~Blocked~~ |
+| #                                                                                                                                                                           | Task                                                                                                   | Impact      | Effort  | Sprint      |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ | ----------- | ------- | ----------- |
+| ~~1~~ done — detection adapter tests with real assertions (detection/coverage_test.go)                                                                                      | ~~Add detection adapter tests (`suffixTreeAdapter`, `hashAdapter` FindDuplOver with real assertions)~~ | ~~🔴 HIGH~~ | ~~2h~~  |             |
+| ~~2~~ done — domain enum MarshalJSON tests incl. invalid cases                                                                                                              | ~~Add `CloneCategory` + `CloneActionability` MarshalJSON/UnmarshalJSON tests~~                         | ~~🟡 MED~~  | ~~30m~~ |             |
+| ~~3~~ done — go.sum managed by the BuildFlow dependency sweeps                                                                                                              | ~~Run `go mod tidy` to fix go.sum drift~~                                                              | ~~🟢 LOW~~  | ~~1m~~  |             |
+| ~~4~~ done — lint at 0 findings since 2026-09-29                                                                                                                            | ~~Fix wsl_v5 warnings in `health_test.go` (blank line separation)~~                                    | ~~🟢 LOW~~  | ~~5m~~  |             |
+| ~~5~~ done — feeders take ctx and select on ctx.Done() (cmd/run_crawl.go)                                                                                                   | ~~Thread `context.Context` through `cmd/run_crawl.go` file feeders~~                                   | ~~🔴 HIGH~~ | ~~4h~~  | ~~Next~~    |
+| ~~6~~ **NOT-DO — decided against — v1-only invariant (ADR-0024); jsonv2gate bans production v2 imports.**                                                                   | ~~Migrate `encoding/json` → `encoding/json/v2` in 6 production files~~                                 | ~~🟡 MED~~  | ~~3h~~  |             |
+| ~~7~~ done — resolved — CloneRef + the ErrLineEndBeforeStart sentinel carry the line-range invariant                                                                        | ~~Add `LineRange` value object (enforce `end >= start` at construction)~~                              | ~~🟡 MED~~  | ~~4h~~  |             |
+| ~~8~~ done — resolved — Fragment is string everywhere (ADR-0005)                                                                                                            | ~~Unify `Fragment` type (`[]byte` vs `string`) with branded `SourceFragment`~~                         | ~~🟡 MED~~  | ~~6h~~  |             |
+| ~~9~~ **Superseded — superseded — clone identity is the XXH3 group hash surfaced via the printer GroupID contract (ADR-0028); a branded CloneHash type was never adopted.** | ~~Add `CloneHash` branded type with `Partial()` method~~                                               | ~~🟡 MED~~  | ~~2h~~  | ~~Later~~   |
+| ~~10~~ done — detection adapter assertions shipped                                                                                                                          | ~~Add real assertions to `detection/detection_test.go` (match count, hash, filenames)~~                | ~~🔴 HIGH~~ | ~~3h~~  |             |
+| ~~11~~ done — domain validation sentinels + cross-package alias tests                                                                                                       | ~~Add domain `ProcessedClone.Validate()` roundtrip tests~~                                             | ~~🟡 MED~~  | ~~1h~~  |             |
+| ~~12~~ done — CloneRef consolidation (2026-07-01)                                                                                                                           | ~~Consolidate 5 Clone types into `CloneLocation` + format-specific extensions~~                        | ~~🔴 HIGH~~ | ~~8h~~  |             |
+| ~~13~~ **Superseded — superseded — decoupled via the serializable CloneNode DTO (ADR-0006) instead of a NodeReader interface.**                                             | ~~Extract `NodeReader` interface to decouple printer from `syntax.Node`~~                              | ~~🟡 MED~~  | ~~6h~~  |             |
+| ~~14~~ done — printer/stats + printer/actionability + printer/finding                                                                                                       | ~~Split `printer/` into sub-packages (stats, html, analyze)~~                                          | ~~🟡 MED~~  | ~~8h~~  |             |
+| ~~15~~ done — CloneGroupView naming (printer/html_views.go)                                                                                                                 | ~~Rename `…Data` view models to `…View` in printer (requires templ regen)~~                            | ~~🟢 LOW~~  | ~~3h~~  |             |
+| ~~16~~ **Superseded — superseded — generator filtering landed as gogenfilter integration: generatorIncludes keyed by gogenfilter.FilterReason.**                            | ~~Add `GeneratorFilter` bitmask to replace 6 `Include*` bools in config~~                              | ~~🟡 MED~~  | ~~4h~~  | ~~Later~~   |
+| ~~17~~ done — suffixtree alloc benchmarks pinned (docs/benchmarks/ baselines + alloc_budget_test.go)                                                                        | ~~Add benchmarks for suffix tree construction + search~~                                               | ~~🟡 MED~~  | ~~3h~~  |             |
+| ~~18~~ done — CI Performance Tests workflow + flake alloc-gate                                                                                                              | ~~Add CI performance regression detection~~                                                            | ~~🟢 LOW~~  | ~~4h~~  |             |
+| ~~19~~ **Won't implement — examples/ stays as the SDK demo; crawls exclude it by default.**                                                                                 | ~~Wire `examples/` package or delete it (currently orphaned)~~                                         | ~~🟢 LOW~~  | ~~1h~~  | ~~Next~~    |
+| ~~20~~ done — coverage is CI-tracked; domain well past 75%                                                                                                                  | ~~Add `domain` coverage to reach 75%+ (currently 66.2%)~~                                              | ~~🟡 MED~~  | ~~3h~~  | ~~Next~~    |
+| ~~21~~ done — coverage is CI-tracked; detection well past 75%                                                                                                               | ~~Add `detection` coverage to reach 75%+ (currently 61.8%)~~                                           | ~~🟡 MED~~  | ~~4h~~  | ~~Next~~    |
+| ~~22~~ done — coverage is CI-tracked (92.7% average by the 2026-10-05 audit)                                                                                                | ~~Add `cmd/` coverage to reach 80%+ (currently 75.1%)~~                                                | ~~🟡 MED~~  | ~~3h~~  | ~~Later~~   |
+| ~~23~~ done — resolved — go-udiff is already in the module graph (indirect); sergi/go-diff stays direct; no swap was ever needed                                            | ~~Evaluate `go-udiff` as replacement for `sergi/go-diff` (already a transitive dep)~~                  | ~~🟢 LOW~~  | ~~2h~~  | ~~Later~~   |
+| ~~24~~ **Won't implement — no tracing demand surfaced since.**                                                                                                              | ~~Add OpenTelemetry spans to pipeline stages (parse → serialize → detect → print)~~                    | ~~🟢 LOW~~  | ~~6h~~  | ~~Later~~   |
+| ~~25~~ **Won't implement — the import cycle persists; boundaries are enforced by go-arch-lint instead.**                                                                    | ~~Hide `syntax/golang` behind facade (BLOCKED by import cycle)~~                                       | ~~🟢 LOW~~  | ~~8h~~  | ~~Blocked~~ |
 
 ---
 

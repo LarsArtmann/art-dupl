@@ -17,36 +17,40 @@
 
 ### Code Fixes (6 commits, all verified)
 
-| #  | Commit    | What                                                                     | Impact                           |
+| # | Commit | What | Impact |
+
 <!-- check-rows:ledger -->
+
 | -- | --------- | ------------------------------------------------------------------------ | -------------------------------- |
-| 1  | `d25028f` | gosec G115 lint fixes in FNV hash conversions                            | Lint: 2→0 issues                 |
-| 2  | `d25028f` | Fix broken SDK godoc (`FindClonesStreamResult.esult`)                    | Public API doc now correct       |
-| 3  | `d25028f` | Update stale clone-type classification comment                           | Docs match 3-mode architecture   |
-| 4  | `8c1ef0e` | Fix suffixtree canonize error swallow (`_` discard → panic-with-context) | Prevents nil-pointer crash       |
-| 5  | `8c1ef0e` | Fix cache atomic read race (`Stats()`/`GetStats()` → `atomic.LoadInt64`) | Prevents torn reads              |
-| 6  | `8c1ef0e` | Remove dead `DuplError.Line` field (never set, always `:0`)              | Cleaner error type               |
-| 7  | `1d49da1` | Remove dead `SortNodesByCriteria` (zero callers)                         | -20 LOC dead code                |
-| 8  | `1d49da1` | Remove dead SARIF rules (todo/legacy never produced)                     | -22 LOC, cleaner SARIF           |
-| 9  | `4ec0f90` | Unify `FileReaderFunc` across domain/printer/SDK                         | Eliminates split-brain func type |
-| 10 | `4ec0f90` | Add `Config.Validate()` method                                           | Single validation entry point    |
-| 11 | `4eba87b` | Replace stringly-typed JSON DTO fields with domain enums                 | Type-safe JSON output            |
-| 12 | `cdd04bc` | Fix stale AGENTS.md build commands (just→go/nix)                         | Docs match reality               |
+| 1 | `d25028f` | gosec G115 lint fixes in FNV hash conversions | Lint: 2→0 issues |
+| 2 | `d25028f` | Fix broken SDK godoc (`FindClonesStreamResult.esult`) | Public API doc now correct |
+| 3 | `d25028f` | Update stale clone-type classification comment | Docs match 3-mode architecture |
+| 4 | `8c1ef0e` | Fix suffixtree canonize error swallow (`_` discard → panic-with-context) | Prevents nil-pointer crash |
+| 5 | `8c1ef0e` | Fix cache atomic read race (`Stats()`/`GetStats()` → `atomic.LoadInt64`) | Prevents torn reads |
+| 6 | `8c1ef0e` | Remove dead `DuplError.Line` field (never set, always `:0`) | Cleaner error type |
+| 7 | `1d49da1` | Remove dead `SortNodesByCriteria` (zero callers) | -20 LOC dead code |
+| 8 | `1d49da1` | Remove dead SARIF rules (todo/legacy never produced) | -22 LOC, cleaner SARIF |
+| 9 | `4ec0f90` | Unify `FileReaderFunc` across domain/printer/SDK | Eliminates split-brain func type |
+| 10 | `4ec0f90` | Add `Config.Validate()` method | Single validation entry point |
+| 11 | `4eba87b` | Replace stringly-typed JSON DTO fields with domain enums | Type-safe JSON output |
+| 12 | `cdd04bc` | Fix stale AGENTS.md build commands (just→go/nix) | Docs match reality |
 
 ### Skills Executed (9 of 14 fully completed)
 
-| Skill                          | Output                                                                                       | Status                                                          |
+| Skill | Output | Status |
+
 <!-- check-rows:ledger -->
+
 | ------------------------------ | -------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
-| **code-quality-scan**          | `docs/reviews/2026-06-23_07-16_code-quality-scan.html`                                       | ✅ Build/lint/test/duplication verified, 2 gosec fixes on sight |
-| **architecture-review**        | `docs/architecture-understanding/2026-06-23_07-21_architecture-review.html`                  | ✅ 8-layer DAG mapped, 3 coupling hotspots identified           |
-| **architecture-visualization** | `docs/architecture-understanding/2026-06-23_07_22-architecture.d2/.svg` (current + improved) | ✅ D2 diagrams rendered                                         |
-| **data-model-review**          | `docs/brainstorming/2026-06-23_data-model-review.html`                                       | ✅ 60+ types cataloged, redesign proposed                       |
-| **deduplicate-code**           | (inline — 0 clones at t=15)                                                                  | ✅ Zero harmful duplication confirmed                           |
-| **naming-review**              | `docs/reviews/2026-06-23_07-35_naming-review.html`                                           | ✅ 0 honesty violations, 6 clarity issues found                 |
-| **full-code-review**           | (inline — 143 production files reviewed via sub-agents)                                      | ✅ ~30 issues found, 8 fixed on sight                           |
-| **features-audit**             | `FEATURES.md` updated                                                                        | ✅ All statuses verified against code                           |
-| **docs-freshness-check**       | `AGENTS.md` fixed                                                                            | ✅ Stale `just` commands replaced                               |
+| **code-quality-scan** | `docs/reviews/2026-06-23_07-16_code-quality-scan.html` | ✅ Build/lint/test/duplication verified, 2 gosec fixes on sight |
+| **architecture-review** | `docs/architecture-understanding/2026-06-23_07-21_architecture-review.html` | ✅ 8-layer DAG mapped, 3 coupling hotspots identified |
+| **architecture-visualization** | `docs/architecture-understanding/2026-06-23_07_22-architecture.d2/.svg` (current + improved) | ✅ D2 diagrams rendered |
+| **data-model-review** | `docs/brainstorming/2026-06-23_data-model-review.html` | ✅ 60+ types cataloged, redesign proposed |
+| **deduplicate-code** | (inline — 0 clones at t=15) | ✅ Zero harmful duplication confirmed |
+| **naming-review** | `docs/reviews/2026-06-23_07-35_naming-review.html` | ✅ 0 honesty violations, 6 clarity issues found |
+| **full-code-review** | (inline — 143 production files reviewed via sub-agents) | ✅ ~30 issues found, 8 fixed on sight |
+| **features-audit** | `FEATURES.md` updated | ✅ All statuses verified against code |
+| **docs-freshness-check** | `AGENTS.md` fixed | ✅ Stale `just` commands replaced |
 
 ### Architecture Diagrams (D2 → SVG)
 
@@ -59,29 +63,31 @@
 
 ### Skills Started But Not Completed
 
-| Skill | What's Done           | What Remains                                                           |
-| ----- | --------------------- | ---------------------------------------------------------------------- |
+| Skill | What's Done | What Remains |
+| ----- | ----------- | ------------ |
+
 <!-- check-rows:ledger -->
-|       | ~~**full-code-review**~~ **done — executed in-session.** | ~~All 143 production files reviewed, 8 issues fixed, findings catalogued~~ |
-|       | ~~**data-model-review**~~ **done — executed in-session.** | ~~HTML report written with redesign proposals~~ |
-|       | ~~**todo-list-builder**~~ **done — executed in-session.** | ~~TODO_LIST.md updated with session findings~~ |
+
+| | ~~**full-code-review**~~ **done — executed in-session.** | ~~All 143 production files reviewed, 8 issues fixed, findings catalogued~~ |
+| | ~~**data-model-review**~~ **done — executed in-session.** | ~~HTML report written with redesign proposals~~ |
+| | ~~**todo-list-builder**~~ **done — executed in-session.** | ~~TODO_LIST.md updated with session findings~~ |
 
 ### Code Review Findings Identified But Not Fixed
 
-| #  | Finding                                                                       | Severity                                               | Why Deferred                                                    |
-| -- | ----------------------------------------------------------------------------- | ------------------------------------------------------ | --------------------------------------------------------------- |
-| ~~1~~ done — the deep-clone cache design killed the shared-node race (job/incremental.go) | ~~Incremental cache data race (`job/incremental.go:139` — mutate shared cached nodes)~~ | ~~Medium~~ | ~~Prevents cache corruption~~ |
-| ~~2~~ done — verified — the guard remains a deliberate transformer boundary (syntax/golang/parse.go addWithNilCheck); no change demanded since | ~~Broad panic recovery in `addWithNilCheck` (`syntax/golang/parse.go:63`)~~ | ~~High~~ | ~~Scoping requires understanding what AST nodes actually panic~~ |
-| ~~3~~ done — DuplError no longer captures debug.Stack() (AGENTS.md errors section) | ~~`debug.Stack()` on every error (`errors/types.go:39`)~~ | ~~Medium~~ | ~~Needs gating behind debug flag — touches all error constructors~~ |
-| ~~4~~ **Superseded — superseded — the cited site was reworked; hash dedup now flows through filterDuplicateGroups.** | ~~Non-deterministic map iteration in hash detector (`hash/file_detector.go:58`)~~ | ~~Medium~~ | ~~Needs sort keys like suffixtree already does~~ |
-| ~~5~~ **Superseded — superseded — the SDK pipeline was rebuilt around detector_pipeline.go; the June conversion path no longer describes the code.** | ~~Repeated file reads per clone in SDK (`detector_conversion.go:78`)~~ | ~~Medium~~ | ~~Needs per-filename content cache~~ |
-| ~~6~~ resolved — no chan bool remains in cmd (the feeder channels were retyped) | ~~`chan bool` signal in `buildtree.go` (should be `chan struct{}`)~~ | ~~Low~~ |
-| ~~7~~ struck — deliberate; the []*Node floor is the documented PARKED tradeoff (TODO_LIST deferred row) | ~~`*[]*syntax.Node` return in `buildtree.go` (should be `[]*syntax.Node`)~~ | ~~Low~~ |
-| ~~8~~ decided — never demanded since | ~~Magic sentinel `Type: -1` in `detector_pipeline.go:81`~~ | ~~Low~~ |
-| ~~9~~ resolved — pkg/logger.Logger is the shared interface alias | ~~`NewLogger` returns unexported `*charmLogger`~~ | ~~Low~~ |
-| ~~10~~ decided — the names stayed (ProcessClones remains the canonical printer entry) | ~~`FileProcessor` / `ProcessClones` vague naming~~ | ~~Low~~ |
-| ~~11~~ resolved — the detection package was rewritten; the stale comment is gone | ~~Stale comment in `detection/detector.go` referencing `[]string`~~ | ~~Low~~ |
-| ~~12~~ decided — cache logging stayed as-is; never demanded since | ~~`cache/file_cache.go` uses `fmt.Fprintf(os.Stderr)` instead of logger~~ | ~~Low~~ |
+| #                                                                                                                                                    | Finding                                                                                 | Severity   | Why Deferred                                                        |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- | ---------- | ------------------------------------------------------------------- |
+| ~~1~~ done — the deep-clone cache design killed the shared-node race (job/incremental.go)                                                            | ~~Incremental cache data race (`job/incremental.go:139` — mutate shared cached nodes)~~ | ~~Medium~~ | ~~Prevents cache corruption~~                                       |
+| ~~2~~ done — verified — the guard remains a deliberate transformer boundary (syntax/golang/parse.go addWithNilCheck); no change demanded since       | ~~Broad panic recovery in `addWithNilCheck` (`syntax/golang/parse.go:63`)~~             | ~~High~~   | ~~Scoping requires understanding what AST nodes actually panic~~    |
+| ~~3~~ done — DuplError no longer captures debug.Stack() (AGENTS.md errors section)                                                                   | ~~`debug.Stack()` on every error (`errors/types.go:39`)~~                               | ~~Medium~~ | ~~Needs gating behind debug flag — touches all error constructors~~ |
+| ~~4~~ **Superseded — superseded — the cited site was reworked; hash dedup now flows through filterDuplicateGroups.**                                 | ~~Non-deterministic map iteration in hash detector (`hash/file_detector.go:58`)~~       | ~~Medium~~ | ~~Needs sort keys like suffixtree already does~~                    |
+| ~~5~~ **Superseded — superseded — the SDK pipeline was rebuilt around detector_pipeline.go; the June conversion path no longer describes the code.** | ~~Repeated file reads per clone in SDK (`detector_conversion.go:78`)~~                  | ~~Medium~~ | ~~Needs per-filename content cache~~                                |
+| ~~6~~ resolved — no chan bool remains in cmd (the feeder channels were retyped)                                                                      | ~~`chan bool` signal in `buildtree.go` (should be `chan struct{}`)~~                    | ~~Low~~    |                                                                     |
+| ~~7~~ struck — deliberate; the []*Node floor is the documented PARKED tradeoff (TODO_LIST deferred row)                                              | ~~`*[]*syntax.Node` return in `buildtree.go` (should be `[]*syntax.Node`)~~             | ~~Low~~    |                                                                     |
+| ~~8~~ decided — never demanded since                                                                                                                 | ~~Magic sentinel `Type: -1` in `detector_pipeline.go:81`~~                              | ~~Low~~    |                                                                     |
+| ~~9~~ resolved — pkg/logger.Logger is the shared interface alias                                                                                     | ~~`NewLogger` returns unexported `*charmLogger`~~                                       | ~~Low~~    |                                                                     |
+| ~~10~~ decided — the names stayed (ProcessClones remains the canonical printer entry)                                                                | ~~`FileProcessor` / `ProcessClones` vague naming~~                                      | ~~Low~~    |                                                                     |
+| ~~11~~ resolved — the detection package was rewritten; the stale comment is gone                                                                     | ~~Stale comment in `detection/detector.go` referencing `[]string`~~                     | ~~Low~~    |                                                                     |
+| ~~12~~ decided — cache logging stayed as-is; never demanded since                                                                                    | ~~`cache/file_cache.go` uses `fmt.Fprintf(os.Stderr)` instead of logger~~               | ~~Low~~    |                                                                     |
 
 ---
 
@@ -89,21 +95,21 @@
 
 ### Skills Assessed But Skipped (with rationale)
 
-| Skill | Rationale               |
-| ----- | ----------------------- |
-| ~~**go-modularize**~~ **NOT-DO — decided — deliberate non-adoption; the rationale is recorded in this section.** |
-| ~~**nix-flake-migration**~~ **NOT-DO — decided — deliberate non-adoption; the rationale is recorded in this section.** |
-| ~~**copywriting**~~ **NOT-DO — decided — deliberate non-adoption; the rationale is recorded in this section.** |
-| ~~**frontend-design**~~ **NOT-DO — decided — deliberate non-adoption; the rationale is recorded in this section.** |
+| Skill                                                                                                                  | Rationale |
+| ---------------------------------------------------------------------------------------------------------------------- | --------- |
+| ~~**go-modularize**~~ **NOT-DO — decided — deliberate non-adoption; the rationale is recorded in this section.**       |           |
+| ~~**nix-flake-migration**~~ **NOT-DO — decided — deliberate non-adoption; the rationale is recorded in this section.** |           |
+| ~~**copywriting**~~ **NOT-DO — decided — deliberate non-adoption; the rationale is recorded in this section.**         |           |
+| ~~**frontend-design**~~ **NOT-DO — decided — deliberate non-adoption; the rationale is recorded in this section.**     |           |
 
 ### Type Safety Improvements Not Started
 
-| Item                                          | Risk                                             | Why Deferred                                                                      |
-| --------------------------------------------- | ------------------------------------------------ | --------------------------------------------------------------------------------- |
-| ~~Branded `NodeType int32`~~ **NOT-DO — decided — deliberate non-adoption; the rationale is recorded in this section.** | ~~HIGH~~ |
-| ~~Shared `CloneRef` value object~~ done — domain.CloneRef embedded everywhere (2026-07-01) |
-| ~~Relocate `SortCriteria`/`OutputFormat` to domain~~ decided — the enums stayed in config (the documented convention, AGENTS.md) |
-| ~~`Name()` method on `MethodDetector` interface~~ done — MethodDetector.Name() shipped (the detName type switch is gone) | ~~LOW~~ |
+| Item                                                                                                                             | Risk     | Why Deferred |
+| -------------------------------------------------------------------------------------------------------------------------------- | -------- | ------------ |
+| ~~Branded `NodeType int32`~~ **NOT-DO — decided — deliberate non-adoption; the rationale is recorded in this section.**          | ~~HIGH~~ |              |
+| ~~Shared `CloneRef` value object~~ done — domain.CloneRef embedded everywhere (2026-07-01)                                       |          |              |
+| ~~Relocate `SortCriteria`/`OutputFormat` to domain~~ decided — the enums stayed in config (the documented convention, AGENTS.md) |          |              |
+| ~~`Name()` method on `MethodDetector` interface~~ done — MethodDetector.Name() shipped (the detName type switch is gone)         | ~~LOW~~  |              |
 
 ---
 
@@ -146,48 +152,48 @@
 
 ### 🔴 Critical (Do First)
 
-| #  | Task                                                                                                          | Effort                                                                                  | Impact                          |
-| -- | ------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- | ------------------------------- |
-| ~~1~~ done — MethodDetector.Name() shipped (AGENTS.md); the detName type switch is gone | ~~Fix incremental cache data race (`job/incremental.go:139` — mutate shared cached nodes)~~ | ~~Medium~~ |
-| ~~2~~ done — MethodDetector.Name() shipped (AGENTS.md); the detName type switch is gone | ~~Add `Name()` to `MethodDetector` interface, eliminate type switch at `multidetector.go:117`~~ | ~~Small~~ | ~~Removes encapsulation leak~~ |
-| ~~3~~ superseded — the cited site was reworked; hash dedup flows through filterDuplicateGroups | ~~Fix non-deterministic hash detector output (`hash/file_detector.go:58` — sort map keys)~~ | ~~Small~~ | ~~Reproducible CI results~~ |
+| #                                                                                                                         | Task                                                                                                              | Effort     | Impact                              |
+| ------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- | ---------- | ----------------------------------- |
+| ~~1~~ done — MethodDetector.Name() shipped (AGENTS.md); the detName type switch is gone                                   | ~~Fix incremental cache data race (`job/incremental.go:139` — mutate shared cached nodes)~~                       | ~~Medium~~ |                                     |
+| ~~2~~ done — MethodDetector.Name() shipped (AGENTS.md); the detName type switch is gone                                   | ~~Add `Name()` to `MethodDetector` interface, eliminate type switch at `multidetector.go:117`~~                   | ~~Small~~  | ~~Removes encapsulation leak~~      |
+| ~~3~~ superseded — the cited site was reworked; hash dedup flows through filterDuplicateGroups                            | ~~Fix non-deterministic hash detector output (`hash/file_detector.go:58` — sort map keys)~~                       | ~~Small~~  | ~~Reproducible CI results~~         |
 | ~~4~~ verified — the guard remains a deliberate transformer boundary (parse.go addWithNilCheck); no change demanded since | ~~Scope `addWithNilCheck` panic recovery (`syntax/golang/parse.go:63`) — catches ALL panics including real bugs~~ | ~~Medium~~ | ~~Prevents silent incomplete ASTs~~ |
 
 ### 🟡 High (Do Next Sprint)
 
-| #  | Task                                                                                                  | Effort                                                        | Impact                            |
-| -- | ----------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- | --------------------------------- |
-| ~~5~~ done — DuplError no longer captures debug.Stack() (AGENTS.md errors section) | ~~Gate `debug.Stack()` behind debug flag (`errors/types.go:39`)~~ | ~~Medium~~ | ~~Faster error paths~~ |
-| ~~6~~ **Superseded — superseded — the SDK pipeline was rebuilt around detector_pipeline.go (crawl feeds content once per file).** | ~~Add per-filename content cache in SDK (`detector_conversion.go:78` — reads file N times for N clones)~~ | ~~Small~~ | ~~Major perf win for large analyses~~ |
-| ~~7~~ **NOT-DO — decided — the names stayed; ProcessClones remains the canonical printer entry.** | ~~Rename `FileProcessor` → `FileStore`, `ProcessClones` → `BuildProcessedClones` (naming review)~~ | ~~Medium~~ | ~~Clearer intent~~ |
-| ~~8~~ **NOT-DO — decided — never demanded since.** | ~~Cache package: replace `fmt.Fprintf(os.Stderr)` with `logger.Default`~~ | ~~Small~~ | ~~Consistent logging~~ |
-| ~~9~~ **NOT-DO — decided — never demanded since; the sentinel stays inline.** | ~~Extract magic sentinel `Type: -1` to `syntax.SentinelType` constant~~ | ~~Small~~ | ~~Self-documenting~~ |
-| ~~10~~ resolved — no chan bool remains in cmd (the feeder channels were retyped) | ~~Fix `chan bool` → `chan struct{}` in `buildtree.go`~~ | ~~Small~~ | ~~Idiomatic signalling~~ |
+| #                                                                                                                                 | Task                                                                                                      | Effort     | Impact                                |
+| --------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- | ---------- | ------------------------------------- |
+| ~~5~~ done — DuplError no longer captures debug.Stack() (AGENTS.md errors section)                                                | ~~Gate `debug.Stack()` behind debug flag (`errors/types.go:39`)~~                                         | ~~Medium~~ | ~~Faster error paths~~                |
+| ~~6~~ **Superseded — superseded — the SDK pipeline was rebuilt around detector_pipeline.go (crawl feeds content once per file).** | ~~Add per-filename content cache in SDK (`detector_conversion.go:78` — reads file N times for N clones)~~ | ~~Small~~  | ~~Major perf win for large analyses~~ |
+| ~~7~~ **NOT-DO — decided — the names stayed; ProcessClones remains the canonical printer entry.**                                 | ~~Rename `FileProcessor` → `FileStore`, `ProcessClones` → `BuildProcessedClones` (naming review)~~        | ~~Medium~~ | ~~Clearer intent~~                    |
+| ~~8~~ **NOT-DO — decided — never demanded since.**                                                                                | ~~Cache package: replace `fmt.Fprintf(os.Stderr)` with `logger.Default`~~                                 | ~~Small~~  | ~~Consistent logging~~                |
+| ~~9~~ **NOT-DO — decided — never demanded since; the sentinel stays inline.**                                                     | ~~Extract magic sentinel `Type: -1` to `syntax.SentinelType` constant~~                                   | ~~Small~~  | ~~Self-documenting~~                  |
+| ~~10~~ resolved — no chan bool remains in cmd (the feeder channels were retyped)                                                  | ~~Fix `chan bool` → `chan struct{}` in `buildtree.go`~~                                                   | ~~Small~~  | ~~Idiomatic signalling~~              |
 
 ### 🔵 Medium (Do This Quarter)
 
-| #  | Task                                                                   | Effort                                                                                         | Impact                          |
-| -- | ---------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- | ------------------------------- |
-| ~~11~~ done — domain.CloneRef embedded everywhere (2026-07-01) | ~~Introduce shared `CloneRef` value object in domain (embed across 7 Clone types)~~ | ~~Medium~~ | ~~Kills conversion sprawl~~ |
-| ~~12~~ decided — the enums stayed in config (the documented convention, AGENTS.md) | ~~Relocate `SortCriteria`/`OutputFormat` from config to domain~~ | ~~Medium~~ | ~~Domain purity~~ |
-| ~~13~~ done — printer/stats, printer/actionability, printer/finding | ~~Split `printer/` into sub-packages (stats, html, analyze)~~ | ~~Large~~ | ~~Package hygiene~~ |
-| ~~14~~ resolved — Config.Validate() ships (this report’s commits table records adding it); entry-point coverage followed the validation rework | ~~Add `Config.Validate()` calls at all entry points (currently exists but not called everywhere)~~ | ~~Small~~ | ~~Fail fast~~ |
-| ~~15~~ done — resolved — pkg/logger.Logger is the shared interface alias (ADR-0005 family) | ~~Fix `NewLogger` to return `Logger` interface instead of `*charmLogger`~~ | ~~Small~~ | ~~Proper encapsulation~~ |
-| ~~16~~ done — struck — tracked on ROADMAP (language support rows) | ~~Add language parser registry (SDK hardcodes `syntax/golang`)~~ | ~~Large~~ | ~~Unblocks multi-language support~~ |
-| ~~17~~ resolved — Duration marshals as integer nanoseconds under the stable v1 API (AGENTS.md json conventions) | ~~Fix `AnalysisTime` JSON tag (`time.Duration` marshals as ns, tag says `_ms`)~~ | ~~Small~~ | ~~Correct wire format~~ |
-| ~~18~~ done — the crawl feeders take ctx and select on ctx.Done() | ~~Thread `context.Context` through `cmd/run_crawl.go` file feeders~~ | ~~Medium~~ | ~~Clean cancellation~~ |
-| ~~19~~ superseded — group sorting consolidated through the sortGroupsByCriteria factory (printer/sort_unified.go) | ~~Unexport dead `SortClonesBy*` functions in `printer/sorter.go` (only test callers remain)~~ | ~~Small~~ | ~~Less API surface~~ |
-| ~~20~~ superseded — the split-brain resolution sprint consolidated the duplicate paths (2026-06-22) | ~~Consolidate `countDiffStats` and `countDiffLineStats` (split-brain duplicate)~~ | ~~Small~~ | ~~Single source of truth~~ |
+| #                                                                                                                                              | Task                                                                                               | Effort     | Impact                              |
+| ---------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- | ---------- | ----------------------------------- |
+| ~~11~~ done — domain.CloneRef embedded everywhere (2026-07-01)                                                                                 | ~~Introduce shared `CloneRef` value object in domain (embed across 7 Clone types)~~                | ~~Medium~~ | ~~Kills conversion sprawl~~         |
+| ~~12~~ decided — the enums stayed in config (the documented convention, AGENTS.md)                                                             | ~~Relocate `SortCriteria`/`OutputFormat` from config to domain~~                                   | ~~Medium~~ | ~~Domain purity~~                   |
+| ~~13~~ done — printer/stats, printer/actionability, printer/finding                                                                            | ~~Split `printer/` into sub-packages (stats, html, analyze)~~                                      | ~~Large~~  | ~~Package hygiene~~                 |
+| ~~14~~ resolved — Config.Validate() ships (this report’s commits table records adding it); entry-point coverage followed the validation rework | ~~Add `Config.Validate()` calls at all entry points (currently exists but not called everywhere)~~ | ~~Small~~  | ~~Fail fast~~                       |
+| ~~15~~ done — resolved — pkg/logger.Logger is the shared interface alias (ADR-0005 family)                                                     | ~~Fix `NewLogger` to return `Logger` interface instead of `*charmLogger`~~                         | ~~Small~~  | ~~Proper encapsulation~~            |
+| ~~16~~ done — struck — tracked on ROADMAP (language support rows)                                                                              | ~~Add language parser registry (SDK hardcodes `syntax/golang`)~~                                   | ~~Large~~  | ~~Unblocks multi-language support~~ |
+| ~~17~~ resolved — Duration marshals as integer nanoseconds under the stable v1 API (AGENTS.md json conventions)                                | ~~Fix `AnalysisTime` JSON tag (`time.Duration` marshals as ns, tag says `_ms`)~~                   | ~~Small~~  | ~~Correct wire format~~             |
+| ~~18~~ done — the crawl feeders take ctx and select on ctx.Done()                                                                              | ~~Thread `context.Context` through `cmd/run_crawl.go` file feeders~~                               | ~~Medium~~ | ~~Clean cancellation~~              |
+| ~~19~~ superseded — group sorting consolidated through the sortGroupsByCriteria factory (printer/sort_unified.go)                              | ~~Unexport dead `SortClonesBy*` functions in `printer/sorter.go` (only test callers remain)~~      | ~~Small~~  | ~~Less API surface~~                |
+| ~~20~~ superseded — the split-brain resolution sprint consolidated the duplicate paths (2026-06-22)                                            | ~~Consolidate `countDiffStats` and `countDiffLineStats` (split-brain duplicate)~~                  | ~~Small~~  | ~~Single source of truth~~          |
 
 ### ⚪ Lower Priority
 
-| #  | Task                                                                 | Effort                                                          | Impact                          |
-| -- | -------------------------------------------------------------------- | --------------------------------------------------------------- | ------------------------------- |
-| ~~21~~ struck — deliberately deferred (TODO_LIST architecturally-constrained row; ADR-0008 documents the 8-bit encoding) | ~~Branded `NodeType int32` type (prevents cross-package constant collision)~~ | ~~Large~~ |
-| ~~22~~ done — resolved — the crawl was reworked; crawlDirectoryWithOpts owns it (no dead crawlPaths) | ~~Remove dead `crawlPaths` in `cmd/run_crawl.go` (only test callers)~~ | ~~Small~~ | ~~Dead code cleanup~~ |
-| ~~23~~ done — resolved — lint sits at 0 findings across 106 linters | ~~Fix broken BDD test variable assignments (5 ginkgolinter warnings)~~ | ~~Small~~ | ~~Lint clean~~ |
-| ~~24~~ **NOT-DO — decided — never demanded since.** | ~~Add gosec `#nosec` audit — review all suppressions are still needed~~ | ~~Small~~ | ~~Security hygiene~~ |
-| ~~25~~ **NOT-DO — decided — the in-repo errors package stayed; go-error-family was never adopted.** | ~~Consider `go-error-family` library (flagged by library-policy check)~~ | ~~Medium~~ | ~~Structured error classification~~ |
+| #                                                                                                                        | Task                                                                          | Effort     | Impact                              |
+| ------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------- | ---------- | ----------------------------------- |
+| ~~21~~ struck — deliberately deferred (TODO_LIST architecturally-constrained row; ADR-0008 documents the 8-bit encoding) | ~~Branded `NodeType int32` type (prevents cross-package constant collision)~~ | ~~Large~~  |                                     |
+| ~~22~~ done — resolved — the crawl was reworked; crawlDirectoryWithOpts owns it (no dead crawlPaths)                     | ~~Remove dead `crawlPaths` in `cmd/run_crawl.go` (only test callers)~~        | ~~Small~~  | ~~Dead code cleanup~~               |
+| ~~23~~ done — resolved — lint sits at 0 findings across 106 linters                                                      | ~~Fix broken BDD test variable assignments (5 ginkgolinter warnings)~~        | ~~Small~~  | ~~Lint clean~~                      |
+| ~~24~~ **NOT-DO — decided — never demanded since.**                                                                      | ~~Add gosec `#nosec` audit — review all suppressions are still needed~~       | ~~Small~~  | ~~Security hygiene~~                |
+| ~~25~~ **NOT-DO — decided — the in-repo errors package stayed; go-error-family was never adopted.**                      | ~~Consider `go-error-family` library (flagged by library-policy check)~~      | ~~Medium~~ | ~~Structured error classification~~ |
 
 ---
 
@@ -210,22 +216,23 @@ The project gitignores all `*.html` files (line 22 of `.gitignore`). This makes 
 ## Session Metrics
 
 <!-- check-rows:ledger -->
-| Metric                                     | Value                                          |
-| ------------------------------------------ | ---------------------------------------------- |
-| Commits                                    | 7                                              |
-| Files changed                              | 14                                             |
-| Lines added                                | ~520                                           |
-| Lines removed                              | ~90                                            |
-| Build status                               | GREEN                                          |
-| Test packages                              | 24/24 pass                                     |
-| Lint issues (production)                   | 0                                              |
+
+| Metric                                                                                                                               | Value                                          |
+| ------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------- |
+| Commits                                                                                                                              | 7                                              |
+| Files changed                                                                                                                        | 14                                             |
+| Lines added                                                                                                                          | ~520                                           |
+| Lines removed                                                                                                                        | ~90                                            |
+| Build status                                                                                                                         | GREEN                                          |
+| Test packages                                                                                                                        | 24/24 pass                                     |
+| Lint issues (production)                                                                                                             | 0                                              |
 | ~~Lint issues (test only)~~ done — fixed — lint is 106-linter clean since 2026-09-29 (AGENTS.md); the flaky os.Exit tests were fixed | ~~56 (ginkgolinter + makezero, pre-existing)~~ |
-| Skills requested                           | 14                                             |
-| Skills fully executed                      | 9                                              |
-| Skills assessed + skipped (with rationale) | 4                                              |
-| Reports generated (on disk)                | 5 HTML + 2 D2/SVG                              |
-| Reports committed to git                   | 2 D2/SVG (HTML gitignored)                     |
-| Real bugs fixed                            | 3 (error swallow, atomic race, dead field)     |
-| Dead code removed                          | 2 functions + 2 SARIF rules                    |
-| Type safety improvements                   | 3 (FileReaderFunc, Config.Validate, JSON DTOs) |
-| Docs fixed                                 | 3 (AGENTS.md, doc.go, clone_processor comment) |
+| Skills requested                                                                                                                     | 14                                             |
+| Skills fully executed                                                                                                                | 9                                              |
+| Skills assessed + skipped (with rationale)                                                                                           | 4                                              |
+| Reports generated (on disk)                                                                                                          | 5 HTML + 2 D2/SVG                              |
+| Reports committed to git                                                                                                             | 2 D2/SVG (HTML gitignored)                     |
+| Real bugs fixed                                                                                                                      | 3 (error swallow, atomic race, dead field)     |
+| Dead code removed                                                                                                                    | 2 functions + 2 SARIF rules                    |
+| Type safety improvements                                                                                                             | 3 (FileReaderFunc, Config.Validate, JSON DTOs) |
+| Docs fixed                                                                                                                           | 3 (AGENTS.md, doc.go, clone_processor comment) |

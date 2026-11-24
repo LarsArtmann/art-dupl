@@ -184,7 +184,7 @@ Recent issues fixed:
 2. **Add comprehensive tests for internal/utils** (37.5% coverage)
 3. **Complete --profile flag implementation**
 4. **Complete --timeout flag implementation**
-~~5. **Split domain/coverage_test.go** (1,277 lines)~~ not-do — the test file stayed whole
+   ~~5. **Split domain/coverage_test.go** (1,277 lines)~~ not-do — the test file stayed whole
 
 ### High Priority (6-15)
 

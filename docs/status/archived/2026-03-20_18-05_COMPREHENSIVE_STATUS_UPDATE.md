@@ -247,15 +247,15 @@ Top Categories:
 
 ## Comparison with Previous Report (16:25)
 
-| Metric        | 16:25 | 18:05 | Change  |
-| ------------- | ----- | ----- | ------- |
-| ~~Test Packages~~ done — verified — 2026-03-20 snapshot, historical | ~~32~~ | ~~32~~ | ~~-~~ |
-| ~~Passing~~ done — verified — 2026-03-20 snapshot, historical | ~~29~~ | ~~29~~ | ~~-~~ |
-| ~~Failing~~ done — verified — 2026-03-20 snapshot, historical | ~~1~~ | ~~1~~ | ~~-~~ |
-| ~~Build~~ done — verified — 2026-03-20 snapshot, historical | ~~✅~~ | ~~✅~~ | ~~-~~ |
-| ~~BDD Time~~ done — verified — 2026-03-20 snapshot, historical | ~~13.7s~~ | ~~10.1s~~ | ~~-3.6s ⬇️~~ |
-| ~~Commits~~ done — verified — 2026-03-20 snapshot, historical | ~~807~~ | ~~808~~ | ~~+1 ⬆️~~ |
-| ~~TODO Items~~ done — verified — 2026-03-20 snapshot, historical | ~~60~~ | ~~60~~ | ~~-~~ |
+| Metric                                                              | 16:25     | 18:05     | Change      |
+| ------------------------------------------------------------------- | --------- | --------- | ----------- |
+| ~~Test Packages~~ done — verified — 2026-03-20 snapshot, historical | ~~32~~    | ~~32~~    | ~~-~~       |
+| ~~Passing~~ done — verified — 2026-03-20 snapshot, historical       | ~~29~~    | ~~29~~    | ~~-~~       |
+| ~~Failing~~ done — verified — 2026-03-20 snapshot, historical       | ~~1~~     | ~~1~~     | ~~-~~       |
+| ~~Build~~ done — verified — 2026-03-20 snapshot, historical         | ~~✅~~    | ~~✅~~    | ~~-~~       |
+| ~~BDD Time~~ done — verified — 2026-03-20 snapshot, historical      | ~~13.7s~~ | ~~10.1s~~ | ~~-3.6s ⬇️~~ |
+| ~~Commits~~ done — verified — 2026-03-20 snapshot, historical       | ~~807~~   | ~~808~~   | ~~+1 ⬆️~~    |
+| ~~TODO Items~~ done — verified — 2026-03-20 snapshot, historical    | ~~60~~    | ~~60~~    | ~~-~~       |
 
 **Summary**: No functional changes, only the status report commit added.
 

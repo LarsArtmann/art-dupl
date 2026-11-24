@@ -131,7 +131,7 @@
 3. `--diff-report <baseline>` — show new/resolved/suppressed clones vs baseline
 4. Fix auto-git daemon reverting `.golangci.yml` — investigate why it re-adds removed linters
 5. Add `disabled-linters` check to CI pipeline (not just local Nix)
-~~6. Add filter benchmarks to `nix build .#checks.x86_64-linux.bench`~~ not-do — filter benchmarks never entered the nix bench check
+   ~~6. Add filter benchmarks to `nix build .#checks.x86_64-linux.bench`~~ not-do — filter benchmarks never entered the nix bench check
 
 ### Tier 2 — 4% effort, 64% impact
 
@@ -141,12 +141,12 @@
 10. YAML config support (`.artdupl.yml`) via `go-faster/yaml`
 11. YAML config: add `MarshalYAML`/`UnmarshalYAML` hooks to domain enums
 12. Config file discovery (`.artdupl.yml` / `.artdupl.json` in cwd or parent dirs)
-~~13. `--config <path>` flag for explicit config file~~ done — the --config/-c flag ships (cmd/flags.go:13)
-14. Refactor `generatorIncludes` to `map[GenerationCategory]bool` (if new categories are planned)
-15. Add `GenerationCategory` domain enum type (follow existing `DetectionMode` pattern)
-~~16. Baseline diff: implement `baseline.Diff(old, new)` returning `New/Resolved/Unchanged` sets~~ done — --diff-report compares baselines (cmd/baseline_cmd.go; AGENTS.md)
-17. `--diff-report` JSON output format for CI integration
-18. Property-based test for `matchedGeneratedCategory` (any input without header → false)
+    ~~13. `--config <path>` flag for explicit config file~~ done — the --config/-c flag ships (cmd/flags.go:13)
+13. Refactor `generatorIncludes` to `map[GenerationCategory]bool` (if new categories are planned)
+14. Add `GenerationCategory` domain enum type (follow existing `DetectionMode` pattern)
+    ~~16. Baseline diff: implement `baseline.Diff(old, new)` returning `New/Resolved/Unchanged` sets~~ done — --diff-report compares baselines (cmd/baseline_cmd.go; AGENTS.md)
+15. `--diff-report` JSON output format for CI integration
+16. Property-based test for `matchedGeneratedCategory` (any input without header → false)
 
 ### Tier 3 — 20% effort, 80% impact
 
@@ -165,14 +165,14 @@
 
 29. Split `printer/` into sub-packages (blocked by circular dep on `StatsPrinter`)
 30. Move `Printer`/`ReadFile`/`StatsPrinter` interfaces to `printer/base/`
-~~31. Extract HTML printer to `printer/html/`~~ not-do — printer/html stayed at the root (AGENTS.md architecture)
-~~32. Extract JSON printer to `printer/json/`~~ not-do — printer/json stayed at the root (AGENTS.md architecture)
-~~33. Extract text printer to `printer/text/`~~ not-do — printer/text stayed at the root (AGENTS.md architecture)
-~~34. Extract SARIF printer to `printer/sarif/`~~ not-do — printer/sarif stayed at the root (AGENTS.md architecture)
-35. `printer/actionability.go` still imports `syntax.Node` directly — decouple via `domain.ProcessedClone`
-36. Eliminate `printer.simpleJSONClone` — fold into `JSONClone`
-37. Consolidate `printer.CloneGroup` / `CloneGroupView` / `pkg/artdupl.CloneGroup` (legitimately different DTOs, but verify)
-38. Add `context.Context` to `Printer` interface methods (currently context-less)
+    ~~31. Extract HTML printer to `printer/html/`~~ not-do — printer/html stayed at the root (AGENTS.md architecture)
+    ~~32. Extract JSON printer to `printer/json/`~~ not-do — printer/json stayed at the root (AGENTS.md architecture)
+    ~~33. Extract text printer to `printer/text/`~~ not-do — printer/text stayed at the root (AGENTS.md architecture)
+    ~~34. Extract SARIF printer to `printer/sarif/`~~ not-do — printer/sarif stayed at the root (AGENTS.md architecture)
+31. `printer/actionability.go` still imports `syntax.Node` directly — decouple via `domain.ProcessedClone`
+32. Eliminate `printer.simpleJSONClone` — fold into `JSONClone`
+33. Consolidate `printer.CloneGroup` / `CloneGroupView` / `pkg/artdupl.CloneGroup` (legitimately different DTOs, but verify)
+34. Add `context.Context` to `Printer` interface methods (currently context-less)
 
 ### Detection
 

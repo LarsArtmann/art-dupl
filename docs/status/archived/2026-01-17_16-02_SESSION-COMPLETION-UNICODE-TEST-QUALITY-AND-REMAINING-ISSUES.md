@@ -394,10 +394,11 @@ Path resolution issues between test execution context and manual terminal execut
     - Effort: 30 minutes
 
 ~~14. **❌ Fix gosec G301**~~ y
-    - File: `cmd/run.go`
-    - Issue: Directory permissions `0o755` should be `0o750`
-    - Impact: Security vulnerability
-    - Effort: 5 minutes
+
+- File: `cmd/run.go`
+- Issue: Directory permissions `0o755` should be `0o750`
+- Impact: Security vulnerability
+- Effort: 5 minutes
 
 15. **❌ Fix gosec G304**
     - File: `cmd/run.go`
@@ -744,15 +745,15 @@ func crawlPaths(args []domain.Filepath, filter *filter.Filter, verbosity Verbosi
 ### **🟡 HIGH PRIORITY**:
 
 9. **Reduce crawlPaths Complexity** (3-4 hours)
-~~10. **Extract Flag Parsing** (2-3 hours)~~ done 2026-11-15 — flag parsing is extracted: `cmd/flags.go`, `cmd/run_flags.go`, `cmd/config_builder.go` hold it (`runCmd` itself dropped under the gocyclo threshold via the `parseOutputFormat`/`runStandardAnalysis` split).
-11. **Fix gosec G304** (30 minutes)
-12. **Fix gosec G301** (5 minutes)
-13. **Reduce TestThreshold Complexity** (2-3 hours)
-~~14. **Add t.Parallel()** (4-6 hours)~~ done — the suite uses t.Parallel() in 800+ places (verified 2026-11-14)
-15. **Fix Ginkgo Linter** (1 hour)
-~~16. **Generate Coverage Report** (5 minutes)~~ done — the CI Coverage job produces the report (AGENTS.md CI table)
-~~17. **Verify JSON Output** (15 minutes)~~ done — the JSON wire is pinned by goldens (printer testdata; AGENTS.md)
-~~18. **Verify HTML Output** (15 minutes)~~ done — the HTML report ships (printer/report.templ)
+   ~~10. **Extract Flag Parsing** (2-3 hours)~~ done 2026-11-15 — flag parsing is extracted: `cmd/flags.go`, `cmd/run_flags.go`, `cmd/config_builder.go` hold it (`runCmd` itself dropped under the gocyclo threshold via the `parseOutputFormat`/`runStandardAnalysis` split).
+10. **Fix gosec G304** (30 minutes)
+11. **Fix gosec G301** (5 minutes)
+12. **Reduce TestThreshold Complexity** (2-3 hours)
+    ~~14. **Add t.Parallel()** (4-6 hours)~~ done — the suite uses t.Parallel() in 800+ places (verified 2026-11-14)
+13. **Fix Ginkgo Linter** (1 hour)
+    ~~16. **Generate Coverage Report** (5 minutes)~~ done — the CI Coverage job produces the report (AGENTS.md CI table)
+    ~~17. **Verify JSON Output** (15 minutes)~~ done — the JSON wire is pinned by goldens (printer testdata; AGENTS.md)
+    ~~18. **Verify HTML Output** (15 minutes)~~ done — the HTML report ships (printer/report.templ)
 
 ### **🟢 MEDIUM PRIORITY**:
 

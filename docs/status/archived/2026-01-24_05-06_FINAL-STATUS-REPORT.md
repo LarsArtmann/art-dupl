@@ -657,12 +657,12 @@ $ go build ./bdd/...
 1. `docs(status): Add comprehensive codebase improvement plan`
 2. `Refactor(bdd_test): Remove disabled Configuration Management tests`
 3. `Feat(testutil): Add subdirectory and file creation helpers`
-~~4. `Refactor(bdd_test): Convert File Targeting Scenarios to use setup pattern`~~ done — the BDD suite is green today (bdd/)
-~~5. `Refactor(bdd_test): Convert Integration Scenarios to use setup pattern`~~ done — the BDD suite is green today (bdd/)
-6. `docs(status): Add comprehensive BDD refactoring session report`
-7. `Refactor(detection_methods_test): Begin refactoring to use setup pattern`
-8. `Refactor(detection_methods_test): Continue refactoring - 4 tests converted`
-9. `Refactor(detection_methods_test): Complete full refactoring to setup pattern`
+   ~~4. `Refactor(bdd_test): Convert File Targeting Scenarios to use setup pattern`~~ done — the BDD suite is green today (bdd/)
+   ~~5. `Refactor(bdd_test): Convert Integration Scenarios to use setup pattern`~~ done — the BDD suite is green today (bdd/)
+4. `docs(status): Add comprehensive BDD refactoring session report`
+5. `Refactor(detection_methods_test): Begin refactoring to use setup pattern`
+6. `Refactor(detection_methods_test): Continue refactoring - 4 tests converted`
+7. `Refactor(detection_methods_test): Complete full refactoring to setup pattern`
 
 ---
 
@@ -2099,14 +2099,14 @@ json.Unmarshal(output, &result)
 ### IMMEDIATE (Today) - Critical
 
 1. ✅ **DONE**: Fix original `:=` error at bdd_test.go:131
-~~2. ✅ **DONE**: Remove dead code from bdd_test.go (136 lines)~~ done — the BDD suite is green today (bdd/)
-3. ✅ **DONE**: Add 3 helper methods to testutil (CreateSubdirectories, CreateFileWithContent, RunArtDuplAndCapture)
-~~4. ✅ **DONE**: Refactor File Targeting Scenarios in bdd_test.go~~ done — the BDD suite is green today (bdd/)
-~~5. ✅ **DONE**: Refactor Integration Scenarios in bdd_test.go~~ done — the BDD suite is green today (bdd/)
-6. ✅ **DONE**: Refactor detection_methods_test.go (8 tests, fully refactored)
-7. ⏳ **NEXT**: Complete filter_features_test.go refactoring (19 tests, 60 min estimated)
-8. ⏳ **NEXT**: Verify all BDD tests pass (100% success rate)
-9. ⏳ **NEXT**: Commit and push all changes
+   ~~2. ✅ **DONE**: Remove dead code from bdd_test.go (136 lines)~~ done — the BDD suite is green today (bdd/)
+2. ✅ **DONE**: Add 3 helper methods to testutil (CreateSubdirectories, CreateFileWithContent, RunArtDuplAndCapture)
+   ~~4. ✅ **DONE**: Refactor File Targeting Scenarios in bdd_test.go~~ done — the BDD suite is green today (bdd/)
+   ~~5. ✅ **DONE**: Refactor Integration Scenarios in bdd_test.go~~ done — the BDD suite is green today (bdd/)
+3. ✅ **DONE**: Refactor detection_methods_test.go (8 tests, fully refactored)
+4. ⏳ **NEXT**: Complete filter_features_test.go refactoring (19 tests, 60 min estimated)
+5. ⏳ **NEXT**: Verify all BDD tests pass (100% success rate)
+6. ⏳ **NEXT**: Commit and push all changes
 
 ### SHORT TERM (This Week) - High Priority
 
@@ -2121,9 +2121,9 @@ json.Unmarshal(output, &result)
 
 16. ⏳ **NEXT**: Implement type-safe flag builder methods (WithThreshold, WithJSON, etc., 30 min)
 17. ⏳ **NEXT**: Implement typed output builder methods (RunArtDuplJSON, RunArtDuplTyped, 30 min)
-~~18. ⏳ **NEXT**: Split bdd/bdd_test.go (558 lines → 3 files ~186 lines each)~~ not-do — the test file stayed whole
-19. ⏳ **NEXT**: Split bdd/filter_features_test.go (463 lines → 2 files ~231 lines each)
-~~20. ⏳ **NEXT**: Split bdd/error_handling_test.go (400 lines → 2 files ~200 lines each)~~ not-do — the test file stayed whole
+    ~~18. ⏳ **NEXT**: Split bdd/bdd_test.go (558 lines → 3 files ~186 lines each)~~ not-do — the test file stayed whole
+18. ⏳ **NEXT**: Split bdd/filter_features_test.go (463 lines → 2 files ~231 lines each)
+    ~~20. ⏳ **NEXT**: Split bdd/error_handling_test.go (400 lines → 2 files ~200 lines each)~~ not-do — the test file stayed whole
 
 ### LONG TERM (Next Quarter) - Quality & Performance
 

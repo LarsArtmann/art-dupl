@@ -26,76 +26,82 @@ Statement-level tokenization (T1) is **complete and verified**. The core algorit
 
 ### T1: Statement-Level Tokenization (This Session)
 
-| Item                                              | Status  | Detail                                                           |
+| Item | Status | Detail |
+
 <!-- check-rows:ledger -->
+
 | ------------------------------------------------- | ------- | ---------------------------------------------------------------- |
-| Core algorithm (`serial()`, `fingerprintSubtree`) | ✅ Done | FNV-1a composite hashing, committed in `008ccf9`                 |
-| Structural wrapper false-positive fix             | ✅ Done | `dataContainsStatements()` guard in `FindSyntaxUnits()`          |
-| Size sort bug fix                                 | ✅ Done | `GetCloneSize` now uses fragment length, not broken `Owns` field |
-| BDD test calibration (240+ specs)                 | ✅ Done | Thresholds rescaled: node-level (8-15) → statement-level (1-3)   |
-| Templ threshold preservation                      | ✅ Done | Templ uses legacy tokenization; thresholds kept at 3+            |
-| Full test suite green                             | ✅ Done | 24/24 packages, 0 failures, stable across 5 runs                 |
+| Core algorithm (`serial()`, `fingerprintSubtree`) | ✅ Done | FNV-1a composite hashing, committed in `008ccf9` |
+| Structural wrapper false-positive fix | ✅ Done | `dataContainsStatements()` guard in `FindSyntaxUnits()` |
+| Size sort bug fix | ✅ Done | `GetCloneSize` now uses fragment length, not broken `Owns` field |
+| BDD test calibration (240+ specs) | ✅ Done | Thresholds rescaled: node-level (8-15) → statement-level (1-3) |
+| Templ threshold preservation | ✅ Done | Templ uses legacy tokenization; thresholds kept at 3+ |
+| Full test suite green | ✅ Done | 24/24 packages, 0 failures, stable across 5 runs |
 
 ### Previously Completed (Prior Sprints)
 
-| Area                                | Status  | Highlight                                                                                     |
+| Area | Status | Highlight |
+
 <!-- check-rows:ledger -->
+
 | ----------------------------------- | ------- | --------------------------------------------------------------------------------------------- |
-| Semantic detection (3 modes)        | ✅ Done | Structural, semantic (default), hash-based                                                    |
-| Alpha-normalization (Type 2 clones) | ✅ Done | Identifier name normalization                                                                 |
-| SDK decoupling                      | ✅ Done | `pkg/artdupl` has ZERO imports from `config/` or `errors/`                                    |
-| Goroutine leak elimination          | ✅ Done | 11 leaks fixed across SDK, job, cmd packages                                                  |
-| Actionability classification        | ✅ Done | 10 non-actionable patterns detected                                                           |
-| Baseline recording + CI check       | ✅ Done | `baseline` + `check` subcommands                                                              |
-| Extractability scoring              | ✅ Done | JSON output includes `extractable` + `lines_saved`                                            |
-| Output formats (7 total)            | ✅ Done | Text, HTML, JSON, Simple-JSON, Plumbing, SARIF, CSV                                           |
-| Sorting (4 criteria)                | ✅ Done | Size, occurrence, hash, total-tokens                                                          |
-| Context propagation                 | ✅ Done | All detection goroutines respect `context.Context`                                            |
-| Dead code removal                   | ✅ Done | Ghost systems eliminated (Filepath/LineNumber branded types, 5 dead error constructors, etc.) |
-| Error handling cleanup              | ✅ Done | SDK uses stdlib only, no `debug.Stack()` on hot paths                                         |
+| Semantic detection (3 modes) | ✅ Done | Structural, semantic (default), hash-based |
+| Alpha-normalization (Type 2 clones) | ✅ Done | Identifier name normalization |
+| SDK decoupling | ✅ Done | `pkg/artdupl` has ZERO imports from `config/` or `errors/` |
+| Goroutine leak elimination | ✅ Done | 11 leaks fixed across SDK, job, cmd packages |
+| Actionability classification | ✅ Done | 10 non-actionable patterns detected |
+| Baseline recording + CI check | ✅ Done | `baseline` + `check` subcommands |
+| Extractability scoring | ✅ Done | JSON output includes `extractable` + `lines_saved` |
+| Output formats (7 total) | ✅ Done | Text, HTML, JSON, Simple-JSON, Plumbing, SARIF, CSV |
+| Sorting (4 criteria) | ✅ Done | Size, occurrence, hash, total-tokens |
+| Context propagation | ✅ Done | All detection goroutines respect `context.Context` |
+| Dead code removal | ✅ Done | Ghost systems eliminated (Filepath/LineNumber branded types, 5 dead error constructors, etc.) |
+| Error handling cleanup | ✅ Done | SDK uses stdlib only, no `debug.Stack()` on hot paths |
 
 ### Quality Metrics
 
-| Metric               | Value                                                   |
+| Metric | Value |
+
 <!-- check-rows:ledger -->
+
 | -------------------- | ------------------------------------------------------- |
-| Production code      | ~20,200 lines                                           |
-| Test code            | ~31,000 lines (1.53x ratio)                             |
-| BDD specs            | ~240 `It` blocks across 20 test files                   |
-| Domain coverage      | **100%**                                                |
-| Detection coverage   | **92.7%**                                               |
-| SDK coverage         | **84.3%**                                               |
-| Syntax coverage      | **78.5%**                                               |
-| Printer coverage     | **75.8%**                                               |
-| Job coverage         | **71.6%**                                               |
+| Production code | ~20,200 lines |
+| Test code | ~31,000 lines (1.53x ratio) |
+| BDD specs | ~240 `It` blocks across 20 test files |
+| Domain coverage | **100%** |
+| Detection coverage | **92.7%** |
+| SDK coverage | **84.3%** |
+| Syntax coverage | **78.5%** |
+| Printer coverage | **75.8%** |
+| Job coverage | **71.6%** |
 | golangci-lint issues | 5 (3 exhaustruct in test helpers, 2 pre-existing gosec) |
-| ADRs                 | 4                                                       |
+| ADRs | 4 |
 
 ---
 
 ## b) PARTIALLY DONE 🟡
 
-| Area               | What's Done                                     | What Remains                                                             |
-| ------------------ | ----------------------------------------------- | ------------------------------------------------------------------------ |
-| ~~**Clone type consolidation**~~ done — domain.CloneRef consolidation (2026-07-01) | ~~Field names aligned (`LineStart`/`LineEnd` canonical across all 5 types)~~ |
-| ~~**Printer package split**~~ done — printer/stats, printer/actionability, printer/finding | ~~Actionability split into 4 files; view models renamed to `*View`~~ |
-| ~~**Context propagation**~~ done — every pipeline goroutine is ctx-aware (AGENTS.md invariant) | ~~All detection goroutines + suffix tree respect ctx~~ |
-| ~~**Templ semantic mode**~~ done — templ semantic mode landed 2026-10-04 (expression-aware detection) | ~~Templ detection works (structural mode)~~ |
-| ~~**InternFilename**~~ done — the wiring stands (the row is its own record) | ~~Wired into all 4 transformer construction sites~~ | ~~Type-safe RWMutex+map (could use further profiling)~~ |
-| ~~**Performance benchmarks**~~ done — docs/benchmarks baselines + the CI performance workflow | ~~Suffix tree benchmarks added (T20)~~ |
+| Area                                                                                                  | What's Done                                                                  | What Remains                                            |
+| ----------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ------------------------------------------------------- |
+| ~~**Clone type consolidation**~~ done — domain.CloneRef consolidation (2026-07-01)                    | ~~Field names aligned (`LineStart`/`LineEnd` canonical across all 5 types)~~ |                                                         |
+| ~~**Printer package split**~~ done — printer/stats, printer/actionability, printer/finding            | ~~Actionability split into 4 files; view models renamed to `*View`~~         |                                                         |
+| ~~**Context propagation**~~ done — every pipeline goroutine is ctx-aware (AGENTS.md invariant)        | ~~All detection goroutines + suffix tree respect ctx~~                       |                                                         |
+| ~~**Templ semantic mode**~~ done — templ semantic mode landed 2026-10-04 (expression-aware detection) | ~~Templ detection works (structural mode)~~                                  |                                                         |
+| ~~**InternFilename**~~ done — the wiring stands (the row is its own record)                           | ~~Wired into all 4 transformer construction sites~~                          | ~~Type-safe RWMutex+map (could use further profiling)~~ |
+| ~~**Performance benchmarks**~~ done — docs/benchmarks baselines + the CI performance workflow         | ~~Suffix tree benchmarks added (T20)~~                                       |                                                         |
 
 ---
 
 ## c) NOT STARTED ⬜
 
-| Item           | Priority                            | Notes                                       |
-| -------------- | ----------------------------------- | ------------------------------------------- |
-| ~~TypeScript/JavaScript support~~ done — struck — still on ROADMAP (TypeScript/JavaScript support row) | ~~Roadmap~~ |
-| ~~Python support~~ done — struck — still on ROADMAP (Python support row) | ~~Roadmap~~ | ~~Would need new AST transformer in `syntax/`~~ |
-| ~~Watch mode (incremental)~~ done — struck — still on ROADMAP (watch mode row) | ~~Roadmap~~ |
-| ~~Hybrid slice/map transition storage~~ **Superseded — superseded — sorted []tran transition slices (ADR-0022).** | ~~Medium~~ |
-| ~~Performance regression suite~~ done — the Performance Tests workflow + flake alloc-gate | ~~Roadmap~~ |
-| ~~More ADRs~~ done — the ADR set now spans 0024-0029 and beyond | ~~Roadmap~~ |
+| Item                                                                                                              | Priority    | Notes                                           |
+| ----------------------------------------------------------------------------------------------------------------- | ----------- | ----------------------------------------------- |
+| ~~TypeScript/JavaScript support~~ done — struck — still on ROADMAP (TypeScript/JavaScript support row)            | ~~Roadmap~~ |                                                 |
+| ~~Python support~~ done — struck — still on ROADMAP (Python support row)                                          | ~~Roadmap~~ | ~~Would need new AST transformer in `syntax/`~~ |
+| ~~Watch mode (incremental)~~ done — struck — still on ROADMAP (watch mode row)                                    | ~~Roadmap~~ |                                                 |
+| ~~Hybrid slice/map transition storage~~ **Superseded — superseded — sorted []tran transition slices (ADR-0022).** | ~~Medium~~  |                                                 |
+| ~~Performance regression suite~~ done — the Performance Tests workflow + flake alloc-gate                         | ~~Roadmap~~ |                                                 |
+| ~~More ADRs~~ done — the ADR set now spans 0024-0029 and beyond                                                   | ~~Roadmap~~ |                                                 |
 
 ---
 
@@ -175,48 +181,48 @@ The `fingerprintSubtree` function has 2 gosec G115 warnings (int32→uint32 over
 
 ### 🔴 Critical (Do First)
 
-| #  | Task | Impact                                                                     | Effort                   |
-| -- | ---- | -------------------------------------------------------------------------- | ------------------------ |
-| ~~1~~ done — the commit shipped and origin carries every later release | ~~**Push commit to origin**~~ | ~~Unblocks CI~~ |
-| ~~2~~ done — resolved — lint sits at 0 findings across 106 linters | ~~**Annotate gosec G115 in `fingerprintSubtree`**~~ | ~~Clean lint~~ |
-| ~~3~~ done — resolved — exhaustruct stays banned via the disabled-linters guard | ~~**Fix exhaustruct in `internal/testutil/node.go`** (add `Statement` field)~~ | ~~Clean lint~~ |
-| ~~4~~ done — resolved — the design landed as ADR-0023 (2026-09-14) | ~~**Write ADR-0005: Statement-Level Tokenization**~~ | ~~Document critical design~~ |
-| ~~5~~ done — HOW_TO_USE.md documents threshold semantics | ~~**Update HOW_TO_USE.md with new threshold semantics**~~ | ~~User-facing docs~~ |
+| #                                                                               | Task                                                                           | Impact                       | Effort |
+| ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ | ---------------------------- | ------ |
+| ~~1~~ done — the commit shipped and origin carries every later release          | ~~**Push commit to origin**~~                                                  | ~~Unblocks CI~~              |        |
+| ~~2~~ done — resolved — lint sits at 0 findings across 106 linters              | ~~**Annotate gosec G115 in `fingerprintSubtree`**~~                            | ~~Clean lint~~               |        |
+| ~~3~~ done — resolved — exhaustruct stays banned via the disabled-linters guard | ~~**Fix exhaustruct in `internal/testutil/node.go`** (add `Statement` field)~~ | ~~Clean lint~~               |        |
+| ~~4~~ done — resolved — the design landed as ADR-0023 (2026-09-14)              | ~~**Write ADR-0005: Statement-Level Tokenization**~~                           | ~~Document critical design~~ |        |
+| ~~5~~ done — HOW_TO_USE.md documents threshold semantics                        | ~~**Update HOW_TO_USE.md with new threshold semantics**~~                      | ~~User-facing docs~~         |        |
 
 ### 🟡 High Value
 
-| #  | Task                                             | Impact                                                      | Effort                     |
-| -- | ------------------------------------------------ | ----------------------------------------------------------- | -------------------------- |
-| ~~6~~ done — domain.CloneRef consolidation (2026-07-01) | ~~**Consolidate Clone types** (5 → 2: internal DTO + SDK DTO)~~ | ~~Eliminates conversion bugs~~ |
-| ~~7~~ done — printer/stats, printer/actionability, printer/finding | ~~**Split `printer/` into sub-packages**~~ | ~~Maintainability~~ |
-| ~~8~~ done — ADR-0023 templ statements landed | ~~**Add templ statement-level tokenization**~~ | ~~Semantic mode for templ~~ |
-| ~~9~~ done — ctx threaded through the feeders | ~~**Thread context through `cmd/run_crawl.go`**~~ | ~~Last cancellation gap~~ |
-| ~~10~~ **NOT-DO — decided — the Owns field stayed; the rename was never demanded.** | ~~**Increase job package coverage** (71.6% → 85%+)~~ | ~~Test confidence~~ | ~~4 hours~~ |
-| ~~11~~ done — the Performance Tests workflow + the flake alloc-gate | ~~**Add performance regression CI job**~~ | ~~Test confidence~~ |
-| ~~12~~ deliberate — the Owns field stayed; the rename was never demanded | ~~**Rename/deprecate `Owns` field**~~ | ~~Clarity~~ |
+| #                                                                                   | Task                                                            | Impact                         | Effort      |
+| ----------------------------------------------------------------------------------- | --------------------------------------------------------------- | ------------------------------ | ----------- |
+| ~~6~~ done — domain.CloneRef consolidation (2026-07-01)                             | ~~**Consolidate Clone types** (5 → 2: internal DTO + SDK DTO)~~ | ~~Eliminates conversion bugs~~ |             |
+| ~~7~~ done — printer/stats, printer/actionability, printer/finding                  | ~~**Split `printer/` into sub-packages**~~                      | ~~Maintainability~~            |             |
+| ~~8~~ done — ADR-0023 templ statements landed                                       | ~~**Add templ statement-level tokenization**~~                  | ~~Semantic mode for templ~~    |             |
+| ~~9~~ done — ctx threaded through the feeders                                       | ~~**Thread context through `cmd/run_crawl.go`**~~               | ~~Last cancellation gap~~      |             |
+| ~~10~~ **NOT-DO — decided — the Owns field stayed; the rename was never demanded.** | ~~**Increase job package coverage** (71.6% → 85%+)~~            | ~~Test confidence~~            | ~~4 hours~~ |
+| ~~11~~ done — the Performance Tests workflow + the flake alloc-gate                 | ~~**Add performance regression CI job**~~                       | ~~Test confidence~~            |             |
+| ~~12~~ deliberate — the Owns field stayed; the rename was never demanded            | ~~**Rename/deprecate `Owns` field**~~                           | ~~Clarity~~                    |             |
 
 ### 🟢 Medium Value
 
-| #  | Task                                               | Impact                                                                | Effort                |
-| -- | -------------------------------------------------- | --------------------------------------------------------------------- | --------------------- |
-| ~~13~~ deliberate — never demanded since | ~~**Add `--min-statements` alias for `--threshold`**~~ | ~~UX clarity~~ |
-| ~~14~~ done — docs/benchmarks baselines committed | ~~**Create performance baseline JSON**~~ | ~~Regression tracking~~ |
-| ~~15~~ done — struck — still on ROADMAP (TypeScript/JavaScript support row) | ~~**Add TypeScript AST transformer (research spike)**~~ | ~~Language expansion~~ |
-| ~~16~~ done — struck — still on ROADMAP (watch mode row) | ~~**Implement watch mode**~~ | ~~Continuous monitoring~~ |
-| ~~17~~ done — resolved — the diff-report flow covers comparison | ~~**Add `--diff` support for all output formats** (currently HTML only)~~ | ~~Feature completeness~~ |
-| ~~18~~ done — content-hash keys + CacheVersion own invalidation (AGENTS.md) | ~~**Cache invalidation strategy for incremental mode**~~ | ~~Performance~~ |
-| ~~19~~ done — exclude-pattern exists with zero-match warnings (AGENTS.md) | ~~**Add `--exclude-pattern` glob support**~~ | ~~Filtering flexibility~~ |
-| ~~20~~ done — SDK_DESIGN.md + the README SDK section | ~~**Document SDK usage patterns with examples**~~ | ~~Adoption~~ |
+| #                                                                           | Task                                                                      | Impact                    | Effort |
+| --------------------------------------------------------------------------- | ------------------------------------------------------------------------- | ------------------------- | ------ |
+| ~~13~~ deliberate — never demanded since                                    | ~~**Add `--min-statements` alias for `--threshold`**~~                    | ~~UX clarity~~            |        |
+| ~~14~~ done — docs/benchmarks baselines committed                           | ~~**Create performance baseline JSON**~~                                  | ~~Regression tracking~~   |        |
+| ~~15~~ done — struck — still on ROADMAP (TypeScript/JavaScript support row) | ~~**Add TypeScript AST transformer (research spike)**~~                   | ~~Language expansion~~    |        |
+| ~~16~~ done — struck — still on ROADMAP (watch mode row)                    | ~~**Implement watch mode**~~                                              | ~~Continuous monitoring~~ |        |
+| ~~17~~ done — resolved — the diff-report flow covers comparison             | ~~**Add `--diff` support for all output formats** (currently HTML only)~~ | ~~Feature completeness~~  |        |
+| ~~18~~ done — content-hash keys + CacheVersion own invalidation (AGENTS.md) | ~~**Cache invalidation strategy for incremental mode**~~                  | ~~Performance~~           |        |
+| ~~19~~ done — exclude-pattern exists with zero-match warnings (AGENTS.md)   | ~~**Add `--exclude-pattern` glob support**~~                              | ~~Filtering flexibility~~ |        |
+| ~~20~~ done — SDK_DESIGN.md + the README SDK section                        | ~~**Document SDK usage patterns with examples**~~                         | ~~Adoption~~              |        |
 
 ### 🔵 Polish
 
-| #  | Task                                                | Impact                                               | Effort       |
-| -- | --------------------------------------------------- | ---------------------------------------------------- | ------------ |
-| ~~21~~ done — Fang serves shell completions (charmbracelet/fang) | ~~**Add shell completion generation** (Cobra built-in)~~ | ~~CLI UX~~ |
-| ~~22~~ **NOT-DO — decided — never demanded since.** | ~~**Add `art-dupl init` for config file scaffolding**~~ | ~~Onboarding~~ | ~~2 hours~~ |
-| ~~23~~ **NOT-DO — decided — never demanded since.** | ~~**Add `--format table` interactive output**~~ | ~~Terminal UX~~ | ~~4 hours~~ |
-| ~~24~~ **NOT-DO — decided — never demanded since.** | ~~**Internationalize error messages**~~ | ~~Accessibility~~ | ~~1 day~~ |
-| ~~25~~ **NOT-DO — decided — never demanded since; nix is the install path.** | ~~**Add Homebrew formula**~~ | ~~Distribution~~ |
+| #                                                                            | Task                                                     | Impact            | Effort      |
+| ---------------------------------------------------------------------------- | -------------------------------------------------------- | ----------------- | ----------- |
+| ~~21~~ done — Fang serves shell completions (charmbracelet/fang)             | ~~**Add shell completion generation** (Cobra built-in)~~ | ~~CLI UX~~        |             |
+| ~~22~~ **NOT-DO — decided — never demanded since.**                          | ~~**Add `art-dupl init` for config file scaffolding**~~  | ~~Onboarding~~    | ~~2 hours~~ |
+| ~~23~~ **NOT-DO — decided — never demanded since.**                          | ~~**Add `--format table` interactive output**~~          | ~~Terminal UX~~   | ~~4 hours~~ |
+| ~~24~~ **NOT-DO — decided — never demanded since.**                          | ~~**Internationalize error messages**~~                  | ~~Accessibility~~ | ~~1 day~~   |
+| ~~25~~ **NOT-DO — decided — never demanded since; nix is the install path.** | ~~**Add Homebrew formula**~~                             | ~~Distribution~~  |             |
 
 ---
 

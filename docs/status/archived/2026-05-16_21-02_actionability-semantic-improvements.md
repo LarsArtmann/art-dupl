@@ -47,11 +47,11 @@ const (
 
 `EvaluateActionability(nodeSeqs [][]*syntax.Node) CloneActionability`
 
-| Pattern Detected                | Why Non-Actionable                           | Example                                |
-| ------------------------------- | -------------------------------------------- | -------------------------------------- |
-| ~~Single `FuncDecl` across files~~ done — verified — design rationale, historical | ~~Interface method **must** match signature~~ | ~~`func (s *Store) Save(ctx, ...) error`~~ |
-| ~~Single `DeferStmt` across files~~ done — verified — design rationale, historical | ~~RAII pattern, extraction breaks semantics~~ | ~~`defer mu.Unlock()`~~ |
-| ~~Single `IfStmt` across files~~ done — verified — design rationale, historical | ~~Go has no macro system for error propagation~~ | ~~`if err != nil { return err }`~~ |
+| Pattern Detected                                                                   | Why Non-Actionable                               | Example                                    |
+| ---------------------------------------------------------------------------------- | ------------------------------------------------ | ------------------------------------------ |
+| ~~Single `FuncDecl` across files~~ done — verified — design rationale, historical  | ~~Interface method **must** match signature~~    | ~~`func (s *Store) Save(ctx, ...) error`~~ |
+| ~~Single `DeferStmt` across files~~ done — verified — design rationale, historical | ~~RAII pattern, extraction breaks semantics~~    | ~~`defer mu.Unlock()`~~                    |
+| ~~Single `IfStmt` across files~~ done — verified — design rationale, historical    | ~~Go has no macro system for error propagation~~ | ~~`if err != nil { return err }`~~         |
 
 Logic: **skip entire group ONLY if ALL clones match the same boilerplate pattern**. Conservative — one clone with real body means the whole group stays.
 
@@ -177,33 +177,33 @@ Nothing. All tests pass, all builds clean, all changes are minimal and focused.
 
 ### f) Top #25 Things To Do Next
 
-| #  | Task                                                                    | Priority | Effort | Impact                                             |
-| -- | ----------------------------------------------------------------------- | -------- | ------ | -------------------------------------------------- |
-| ~~1~~ done — property-based engine (ADR-0017) | ~~Weighted token analysis for actionability (not just single-node)~~ | ~~P0~~ | ~~Medium~~ | ~~Fixes real false positives on partial-body matches~~ |
-| ~~2~~ done — line-range notation in printer/text.go | ~~Standardize text output line notation `:` → `-`~~ | ~~P1~~ | ~~Low~~ | ~~UX fix user explicitly complained about~~ |
-| ~~3~~ done — Actionability in JSON (printer/json.go) | ~~Add `Actionability` to JSON output~~ | ~~P1~~ | ~~Low~~ | ~~CI pipelines need structured actionability data~~ |
-| ~~4~~ **Won't implement — dropped — HTML shows classification badges, no actionability filter.** | ~~Extend `--rich-text` to HTML (filter badges)~~ | ~~P1~~ | ~~Medium~~ | ~~HTML already rich, should show actionability~~ |
-| ~~5~~ done — real error-propagation inspection (T9 patterns) | ~~Implement real `isPureErrorPropagation` (inspect IfStmt body)~~ | ~~P2~~ | ~~Medium~~ | ~~Current is a heuristic placeholder~~ |
-| ~~6~~ done — defer-target inspection via RAII list | ~~Implement real `isPureDeferPattern` (inspect call target)~~ | ~~P2~~ | ~~Medium~~ | ~~Distinguish `Unlock` from business defer~~ |
-| ~~7~~ done — stats counts actionability (printer/stats/stats.go) | ~~Actionability filtering for `stats` subcommand~~ | ~~P2~~ | ~~Low~~ | ~~Consistent behavior across commands~~ |
-| ~~8~~ done — BenchmarkEvaluateActionability_SyntaxOnly | ~~Benchmark `EvaluateActionability` overhead on large repos~~ | ~~P2~~ | ~~Low~~ | ~~Performance confidence~~ |
-| ~~9~~ done — HOW_TO_USE.md documents --rich-text | ~~Add `--rich-text` behavior docs / `--help` examples~~ | ~~P2~~ | ~~Low~~ | ~~User discoverability~~ |
-| ~~10~~ **Won't implement — dropped — goroutine pattern never added.** | ~~Extend actionability to goroutine patterns~~ | ~~P3~~ | ~~Medium~~ | ~~`go func() { ... }()` is common boilerplate~~ |
-| ~~11~~ **Won't implement — dropped — WithCancel pattern never added.** | ~~Extend actionability to context.WithCancel patterns~~ | ~~P3~~ | ~~Low~~ | ~~Standard Go pattern~~ |
-| ~~12~~ done — PatternInterfaceImpl with PriorityLow (printer/actionability/clone_classify.go) | ~~Add `CategoryInterfaceImpl` to `CloneCategory` enum~~ | ~~P3~~ | ~~Low~~ | ~~Precise classification vs generic `method`~~ |
-| ~~13~~ **Won't implement — dropped — no actionability filter in HTML.** | ~~Add actionability filter buttons to HTML report~~ | ~~P3~~ | ~~Medium~~ | ~~Parity with Production/Test/Category filters~~ |
-| ~~14~~ done — interface-impl suggestion string (clone_classify.go) | ~~Actionability should set `Suggestion` to "Required by interface"~~ | ~~P3~~ | ~~Low~~ | ~~Better UX on non-actionable reports~~ |
-| ~~15~~ done — bdd/actionability_test.go suppresses identical interface method signatures | ~~Add BDD test for `--semantic` suppressing interface signatures~~ | ~~P3~~ | ~~Medium~~ | ~~Integration test for core feature~~ |
-| ~~16~~ done — bdd/actionability_test.go --rich-text spec | ~~Add BDD test for `--rich-text` flag~~ | ~~P3~~ | ~~Low~~ | ~~CLI behavior coverage~~ |
-| ~~17~~ **Won't implement — dropped — no ActionabilityThreshold config.** | ~~Consider `ActionabilityThreshold` config (weighted score cutoff)~~ | ~~P4~~ | ~~Medium~~ | ~~Tunable strictness~~ |
-| ~~18~~ done — docs/ACTIONABILITY_PATTERNS.md + count gate | ~~Document actionability patterns in FEATURES.md / AGENTS.md~~ | ~~P4~~ | ~~Low~~ | ~~Keep documentation current~~ |
-| ~~19~~ **Won't implement — dropped — no --only-actionable flag.** | ~~Add `--only-actionable` as alias (if user debate continues)~~ | ~~P4~~ | ~~Low~~ | ~~Future-proofing~~ |
-| ~~20~~ **Won't implement — dropped — no recorded follow-up.** | ~~Check `RunWithSetAnalysisData` in text output for rich-text~~ | ~~P5~~ | ~~Low~~ | ~~Text output has two paths~~ |
-| ~~21~~ **Won't implement — dropped — errors.Is/As pattern never added.** | ~~Error handling pattern detection: inspect `errors.Is` / `As`~~ | ~~P5~~ | ~~Medium~~ | ~~More Go idioms~~ |
-| ~~22~~ **Won't implement — dropped — nil-check pattern never added.** | ~~`nil` check patterns: `if x == nil { return nil, err }`~~ | ~~P5~~ | ~~Low~~ | ~~Common boilerplate~~ |
-| ~~23~~ **Won't implement — dropped — type-assertion pattern never added.** | ~~Type assertion boilerplate: `if v, ok := x.(T); ok { ... }`~~ | ~~P5~~ | ~~Low~~ | ~~Go idiom~~ |
-| ~~24~~ done — verified — vendor exclusion already handled | ~~Vendor directory exclusion in actionability (already handled by filter)~~ | ~~P5~~ | ~~Low~~ | ~~Already works~~ |
-| ~~25~~ done — decided — semantic is the default (ADR-0002) | ~~Investigate if semantic mode should become default~~ | ~~P5~~ | ~~High~~ | ~~Big UX shift, needs user validation~~ |
+| #                                                                                                | Task                                                                        | Priority | Effort     | Impact                                                 |
+| ------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------- | -------- | ---------- | ------------------------------------------------------ |
+| ~~1~~ done — property-based engine (ADR-0017)                                                    | ~~Weighted token analysis for actionability (not just single-node)~~        | ~~P0~~   | ~~Medium~~ | ~~Fixes real false positives on partial-body matches~~ |
+| ~~2~~ done — line-range notation in printer/text.go                                              | ~~Standardize text output line notation `:` → `-`~~                         | ~~P1~~   | ~~Low~~    | ~~UX fix user explicitly complained about~~            |
+| ~~3~~ done — Actionability in JSON (printer/json.go)                                             | ~~Add `Actionability` to JSON output~~                                      | ~~P1~~   | ~~Low~~    | ~~CI pipelines need structured actionability data~~    |
+| ~~4~~ **Won't implement — dropped — HTML shows classification badges, no actionability filter.** | ~~Extend `--rich-text` to HTML (filter badges)~~                            | ~~P1~~   | ~~Medium~~ | ~~HTML already rich, should show actionability~~       |
+| ~~5~~ done — real error-propagation inspection (T9 patterns)                                     | ~~Implement real `isPureErrorPropagation` (inspect IfStmt body)~~           | ~~P2~~   | ~~Medium~~ | ~~Current is a heuristic placeholder~~                 |
+| ~~6~~ done — defer-target inspection via RAII list                                               | ~~Implement real `isPureDeferPattern` (inspect call target)~~               | ~~P2~~   | ~~Medium~~ | ~~Distinguish `Unlock` from business defer~~           |
+| ~~7~~ done — stats counts actionability (printer/stats/stats.go)                                 | ~~Actionability filtering for `stats` subcommand~~                          | ~~P2~~   | ~~Low~~    | ~~Consistent behavior across commands~~                |
+| ~~8~~ done — BenchmarkEvaluateActionability_SyntaxOnly                                           | ~~Benchmark `EvaluateActionability` overhead on large repos~~               | ~~P2~~   | ~~Low~~    | ~~Performance confidence~~                             |
+| ~~9~~ done — HOW_TO_USE.md documents --rich-text                                                 | ~~Add `--rich-text` behavior docs / `--help` examples~~                     | ~~P2~~   | ~~Low~~    | ~~User discoverability~~                               |
+| ~~10~~ **Won't implement — dropped — goroutine pattern never added.**                            | ~~Extend actionability to goroutine patterns~~                              | ~~P3~~   | ~~Medium~~ | ~~`go func() { ... }()` is common boilerplate~~        |
+| ~~11~~ **Won't implement — dropped — WithCancel pattern never added.**                           | ~~Extend actionability to context.WithCancel patterns~~                     | ~~P3~~   | ~~Low~~    | ~~Standard Go pattern~~                                |
+| ~~12~~ done — PatternInterfaceImpl with PriorityLow (printer/actionability/clone_classify.go)    | ~~Add `CategoryInterfaceImpl` to `CloneCategory` enum~~                     | ~~P3~~   | ~~Low~~    | ~~Precise classification vs generic `method`~~         |
+| ~~13~~ **Won't implement — dropped — no actionability filter in HTML.**                          | ~~Add actionability filter buttons to HTML report~~                         | ~~P3~~   | ~~Medium~~ | ~~Parity with Production/Test/Category filters~~       |
+| ~~14~~ done — interface-impl suggestion string (clone_classify.go)                               | ~~Actionability should set `Suggestion` to "Required by interface"~~        | ~~P3~~   | ~~Low~~    | ~~Better UX on non-actionable reports~~                |
+| ~~15~~ done — bdd/actionability_test.go suppresses identical interface method signatures         | ~~Add BDD test for `--semantic` suppressing interface signatures~~          | ~~P3~~   | ~~Medium~~ | ~~Integration test for core feature~~                  |
+| ~~16~~ done — bdd/actionability_test.go --rich-text spec                                         | ~~Add BDD test for `--rich-text` flag~~                                     | ~~P3~~   | ~~Low~~    | ~~CLI behavior coverage~~                              |
+| ~~17~~ **Won't implement — dropped — no ActionabilityThreshold config.**                         | ~~Consider `ActionabilityThreshold` config (weighted score cutoff)~~        | ~~P4~~   | ~~Medium~~ | ~~Tunable strictness~~                                 |
+| ~~18~~ done — docs/ACTIONABILITY_PATTERNS.md + count gate                                        | ~~Document actionability patterns in FEATURES.md / AGENTS.md~~              | ~~P4~~   | ~~Low~~    | ~~Keep documentation current~~                         |
+| ~~19~~ **Won't implement — dropped — no --only-actionable flag.**                                | ~~Add `--only-actionable` as alias (if user debate continues)~~             | ~~P4~~   | ~~Low~~    | ~~Future-proofing~~                                    |
+| ~~20~~ **Won't implement — dropped — no recorded follow-up.**                                    | ~~Check `RunWithSetAnalysisData` in text output for rich-text~~             | ~~P5~~   | ~~Low~~    | ~~Text output has two paths~~                          |
+| ~~21~~ **Won't implement — dropped — errors.Is/As pattern never added.**                         | ~~Error handling pattern detection: inspect `errors.Is` / `As`~~            | ~~P5~~   | ~~Medium~~ | ~~More Go idioms~~                                     |
+| ~~22~~ **Won't implement — dropped — nil-check pattern never added.**                            | ~~`nil` check patterns: `if x == nil { return nil, err }`~~                 | ~~P5~~   | ~~Low~~    | ~~Common boilerplate~~                                 |
+| ~~23~~ **Won't implement — dropped — type-assertion pattern never added.**                       | ~~Type assertion boilerplate: `if v, ok := x.(T); ok { ... }`~~             | ~~P5~~   | ~~Low~~    | ~~Go idiom~~                                           |
+| ~~24~~ done — verified — vendor exclusion already handled                                        | ~~Vendor directory exclusion in actionability (already handled by filter)~~ | ~~P5~~   | ~~Low~~    | ~~Already works~~                                      |
+| ~~25~~ done — decided — semantic is the default (ADR-0002)                                       | ~~Investigate if semantic mode should become default~~                      | ~~P5~~   | ~~High~~   | ~~Big UX shift, needs user validation~~                |
 
 ---
 

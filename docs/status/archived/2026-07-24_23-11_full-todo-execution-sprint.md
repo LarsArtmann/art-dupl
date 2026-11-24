@@ -206,14 +206,14 @@ All 30 tasks from the plan have been at least started (flag + config field added
 
 21. **Extract type-aware data loading** to shared helper (deduplicate CLI + SDK)
 22. **Replace manual gitignore parser with library** (handle `**`, char classes, etc.)
-~~23. **Make accept directive AST-aware** (don't match inside strings/comments)~~ won't implement — the scanner is line-based by design (AGENTS.md accept-directive bullet)
-24. **Add `//art-dupl:accept` to baseline format** (persist accepted groups)
-~~25. **Add `--accept-show` flag** to list all accepted directives and their groups~~ not-do — no --accept-show flag landed
-26. **Profile type-aware mode performance** and document expected slowdown
-27. **Add progress bar** (not just file count) for large codebases
-28. **Add `--watch` mode** for continuous monitoring (ROADMAP item)
-29. **Investigate SARIF validation** against GitHub schema (ROADMAP item)
-30. **Add awesome-go submission** preparation (ROADMAP item)
+    ~~23. **Make accept directive AST-aware** (don't match inside strings/comments)~~ won't implement — the scanner is line-based by design (AGENTS.md accept-directive bullet)
+23. **Add `//art-dupl:accept` to baseline format** (persist accepted groups)
+    ~~25. **Add `--accept-show` flag** to list all accepted directives and their groups~~ not-do — no --accept-show flag landed
+24. **Profile type-aware mode performance** and document expected slowdown
+25. **Add progress bar** (not just file count) for large codebases
+26. **Add `--watch` mode** for continuous monitoring (ROADMAP item)
+27. **Investigate SARIF validation** against GitHub schema (ROADMAP item)
+28. **Add awesome-go submission** preparation (ROADMAP item)
 
 ### Quality hardening
 

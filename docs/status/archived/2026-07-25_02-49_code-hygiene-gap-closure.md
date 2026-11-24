@@ -23,14 +23,15 @@ This session addressed 6 gaps from the previous session's self-review. All code 
 ## A) FULLY DONE (and verified)
 
 <!-- check-rows:ledger -->
-| # | Gap from previous report                     | What was done                                                                                                                                                                                                                                                  | Verification                                                      |
-| - | -------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
-| 1 | `doc.go:31` stale `Threshold: 15`            | Changed to `artdupl.DefaultThreshold` in godoc example                                                                                                                                                                                                         | `rg "Threshold:\s+15" pkg/artdupl/` returns 0 results             |
-| 2 | 8 hardcoded `Threshold: 15` in test fixtures | Replaced ALL occurrences across 3 files: `detector_validation_test.go` (11), `detector_test.go` (5), `basic_test.go` (1)                                                                                                                                       | `rg "Threshold:\s+15" pkg/artdupl/` returns 0 results             |
-| 3 | `SourceBreakdown()` dead code                | Fully wired into stats output: new `SetFilterSourceStats` method on `StatsPrinter` interface, new `FilterSourceBreakdown` field in `StatsView` + `StatsConfig`, rendered in both text ("Filter Source:" section) and JSON (`filterSourceBreakdown` key) output | Build passes, `nix flake check` passes, existing tests pass       |
-| 4 | CHANGELOG.md not updated                     | Added entries for `DefaultThreshold` constant, filter source tracking, progress `io.Writer` injection, `//nolint:exhaustruct` cleanup, threshold consistency, type-aware fallback test hardening                                                               | Reviewed against actual changes                                   |
-| 5 | Race detector never run                      | `CGO_ENABLED=1 go test -race ./...` — all 27 packages pass with zero data races                                                                                                                                                                                | Full output captured in session                                   |
-| ~~6~~ done — fixed — lint is 106-linter clean since 2026-09-29 (AGENTS.md); the flaky os.Exit tests were fixed | ~~`nix flake check` never run~~ | ~~All 9 checks pass (fmt, lint, test, race, bench, disabled-linters, build, etc.)~~ | ~~Required 2 fixes: gofmt on struct alignment + `wsl_v5` blank line~~ |
+
+| #                                                                                                              | Gap from previous report                     | What was done                                                                                                                                                                                                                                                  | Verification                                                          |
+| -------------------------------------------------------------------------------------------------------------- | -------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| 1                                                                                                              | `doc.go:31` stale `Threshold: 15`            | Changed to `artdupl.DefaultThreshold` in godoc example                                                                                                                                                                                                         | `rg "Threshold:\s+15" pkg/artdupl/` returns 0 results                 |
+| 2                                                                                                              | 8 hardcoded `Threshold: 15` in test fixtures | Replaced ALL occurrences across 3 files: `detector_validation_test.go` (11), `detector_test.go` (5), `basic_test.go` (1)                                                                                                                                       | `rg "Threshold:\s+15" pkg/artdupl/` returns 0 results                 |
+| 3                                                                                                              | `SourceBreakdown()` dead code                | Fully wired into stats output: new `SetFilterSourceStats` method on `StatsPrinter` interface, new `FilterSourceBreakdown` field in `StatsView` + `StatsConfig`, rendered in both text ("Filter Source:" section) and JSON (`filterSourceBreakdown` key) output | Build passes, `nix flake check` passes, existing tests pass           |
+| 4                                                                                                              | CHANGELOG.md not updated                     | Added entries for `DefaultThreshold` constant, filter source tracking, progress `io.Writer` injection, `//nolint:exhaustruct` cleanup, threshold consistency, type-aware fallback test hardening                                                               | Reviewed against actual changes                                       |
+| 5                                                                                                              | Race detector never run                      | `CGO_ENABLED=1 go test -race ./...` — all 27 packages pass with zero data races                                                                                                                                                                                | Full output captured in session                                       |
+| ~~6~~ done — fixed — lint is 106-linter clean since 2026-09-29 (AGENTS.md); the flaky os.Exit tests were fixed | ~~`nix flake check` never run~~              | ~~All 9 checks pass (fmt, lint, test, race, bench, disabled-linters, build, etc.)~~                                                                                                                                                                            | ~~Required 2 fixes: gofmt on struct alignment + `wsl_v5` blank line~~ |
 
 ### Previous session Q1 answered
 
@@ -163,17 +164,17 @@ Missing blank line between consecutive `if` blocks inside `fillJSONOverview`. My
 37. **Add CSV support for filter breakdowns**: Currently CSV only shows raw filtered count
 38. **Review `DefaultThreshold` naming**: `DefaultThreshold` vs `DefaultCloneThreshold`?
 39. **Consolidate test helpers**: Extract shared setup to testutil
-~~40. **Add contract test between gogenfilter and art-dupl**: Verify filter behavior matches~~ done — TestMarkersMatchGogenfilter cross-validates the markers (AGENTS.md)
-41. **Review `t.Context()` usage**: Go 1.24+ feature consistency
-42. **Audit `io.Discard` vs capture**: Consider capturing progress output for failed test debugging
-43. **Review error handling in `shouldIncludeFile`**: `os.ReadFile` error returns `true` (include)
-44. **Add ADR for FilterSource**: Document why defense-in-depth tracking was added
-45. **Add `FilterSource` to domain layer**: Currently in `cmd/`, consider if SDK needs it
-46. **Review progress goroutine lifecycle**: Verify no goroutine leak on context cancellation
-47. **Add snapshot test for stats output**: Golden file test for text/JSON/CSV output stability
-48. **Review `FilterSource` enum pattern**: Uses raw strings, not `pkg/enum` helpers like other domain enums
-49. **Check if `examples_sdk_demo.go` has other stale values**: Full audit of example files
-50. **Run `gofmt -l ./...` as a CI check**: Catch formatting issues before they reach `nix flake check`
+    ~~40. **Add contract test between gogenfilter and art-dupl**: Verify filter behavior matches~~ done — TestMarkersMatchGogenfilter cross-validates the markers (AGENTS.md)
+40. **Review `t.Context()` usage**: Go 1.24+ feature consistency
+41. **Audit `io.Discard` vs capture**: Consider capturing progress output for failed test debugging
+42. **Review error handling in `shouldIncludeFile`**: `os.ReadFile` error returns `true` (include)
+43. **Add ADR for FilterSource**: Document why defense-in-depth tracking was added
+44. **Add `FilterSource` to domain layer**: Currently in `cmd/`, consider if SDK needs it
+45. **Review progress goroutine lifecycle**: Verify no goroutine leak on context cancellation
+46. **Add snapshot test for stats output**: Golden file test for text/JSON/CSV output stability
+47. **Review `FilterSource` enum pattern**: Uses raw strings, not `pkg/enum` helpers like other domain enums
+48. **Check if `examples_sdk_demo.go` has other stale values**: Full audit of example files
+49. **Run `gofmt -l ./...` as a CI check**: Catch formatting issues before they reach `nix flake check`
 
 ---
 

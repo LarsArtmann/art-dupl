@@ -206,14 +206,14 @@ Nothing this session. All changes were verified: build, test (919 tests), vet, a
 
 41. Update `TESTING.md` with the new pipeline integration test pattern
 42. Document the `runPipeline` helper in the testing guide so future tests follow the pattern
-~~43. Add an ADR for the `serial()` field-preservation testing strategy~~ superseded — AGENTS.md carries the serial() field-preservation contract + regression guards
-44. Consider documenting the full actionability pipeline architecture (parse → serialize → suffix tree → FindSyntaxUnits → CloneNode → patterns → property engine) in a single diagram
-45. Document the relationship between `syntax.Node`, `domain.CloneNode`, and the serialization/conversion bridges
-46. Update `docs/ACTIONABILITY_PATTERNS.md` with the new `productionSuggestions` map structure
-47. The `clone_classify.go` file is now 300 lines (over the 250-line policy for production files) — consider splitting `productionSuggestions` and `patternLabelConfigs` into a `clone_suggestions.go` file
-48. Consider adding `file_size_check` to the CI that fails on files >250 lines for non-test, non-generated files
-49. The `extractability_engine.go` is 498 lines — may need splitting if more checks are added
-50. Consider creating a `docs/CROSS_LAYER_TESTING.md` guide documenting the pipeline integration test pattern and why it's necessary
+    ~~43. Add an ADR for the `serial()` field-preservation testing strategy~~ superseded — AGENTS.md carries the serial() field-preservation contract + regression guards
+43. Consider documenting the full actionability pipeline architecture (parse → serialize → suffix tree → FindSyntaxUnits → CloneNode → patterns → property engine) in a single diagram
+44. Document the relationship between `syntax.Node`, `domain.CloneNode`, and the serialization/conversion bridges
+45. Update `docs/ACTIONABILITY_PATTERNS.md` with the new `productionSuggestions` map structure
+46. The `clone_classify.go` file is now 300 lines (over the 250-line policy for production files) — consider splitting `productionSuggestions` and `patternLabelConfigs` into a `clone_suggestions.go` file
+47. Consider adding `file_size_check` to the CI that fails on files >250 lines for non-test, non-generated files
+48. The `extractability_engine.go` is 498 lines — may need splitting if more checks are added
+49. Consider creating a `docs/CROSS_LAYER_TESTING.md` guide documenting the pipeline integration test pattern and why it's necessary
 
 ---
 

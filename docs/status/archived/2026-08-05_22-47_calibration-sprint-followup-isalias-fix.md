@@ -132,13 +132,13 @@
 1. Remove `tagliatelle` from `.golangci.yml` (pre-existing regression from auto-commit daemon)
 2. Re-run calibration on 6 projects to verify precision improvement after IsAlias fix
 3. Commit 87 labeled clone groups as machine-readable regression dataset (JSON/YAML)
-~~4. Write CI test that runs on regression dataset and asserts no precision regression~~ not-do — no regression-dataset CI test landed
-5. Add `IsAlias` documentation to AGENTS.md actionability patterns section
-6. Document the `subtreeHasType` SelectorExpr limitation for local-type aliases
-7. Add integration test: run art-dupl on a project with `examples/` dir, verify exclusion
-8. Add test for `isPackageTypeAlias` with `Ident` type references (no SelectorExpr — should NOT match)
-~~9. Add test for `pathContainsExampleDir` with nested paths (`pkg/examples/sub/file.go`)~~ not-do — no nested-path test landed
-10. Verify the Nix self-test (`art-dupl -t 1 --plumbing .`) still passes after IsAlias change
+   ~~4. Write CI test that runs on regression dataset and asserts no precision regression~~ not-do — no regression-dataset CI test landed
+4. Add `IsAlias` documentation to AGENTS.md actionability patterns section
+5. Document the `subtreeHasType` SelectorExpr limitation for local-type aliases
+6. Add integration test: run art-dupl on a project with `examples/` dir, verify exclusion
+7. Add test for `isPackageTypeAlias` with `Ident` type references (no SelectorExpr — should NOT match)
+   ~~9. Add test for `pathContainsExampleDir` with nested paths (`pkg/examples/sub/file.go`)~~ not-do — no nested-path test landed
+8. Verify the Nix self-test (`art-dupl -t 1 --plumbing .`) still passes after IsAlias change
 
 ### Medium Priority (completeness)
 
@@ -161,12 +161,12 @@
 ### Architecture / Refactoring
 
 26. Consider making actionability patterns extensible via plugins (the pattern table is now 25 entries)
-~~27. Move `exampleDirNames` from a global var to a config field~~ superseded — the example-dir handling moved to the crawl pruning path (AGENTS.md)
-28. Consider a `SkipConfig` or `CrawlFilter` struct that bundles all skip-related fields
-29. Extract `pathContainsExampleDir` and vendor/node_modules checks into a unified `pathFilter` type
-30. Consider whether the 4 bools in `CrawlOptions` (IncludeVendor, IncludeNodeMods, IncludeExamples, and potentially more) should be a nested `IncludeConfig` struct
-31. Add `Assign` field to `syntax.Node` serialization (for cache round-trip) if needed
-32. Consider whether `IsAlias` should be encoded into the semantic Type hash (so alias and non-alias TypeSpecs produce different tokens and don't match as clones at all)
+    ~~27. Move `exampleDirNames` from a global var to a config field~~ superseded — the example-dir handling moved to the crawl pruning path (AGENTS.md)
+27. Consider a `SkipConfig` or `CrawlFilter` struct that bundles all skip-related fields
+28. Extract `pathContainsExampleDir` and vendor/node_modules checks into a unified `pathFilter` type
+29. Consider whether the 4 bools in `CrawlOptions` (IncludeVendor, IncludeNodeMods, IncludeExamples, and potentially more) should be a nested `IncludeConfig` struct
+30. Add `Assign` field to `syntax.Node` serialization (for cache round-trip) if needed
+31. Consider whether `IsAlias` should be encoded into the semantic Type hash (so alias and non-alias TypeSpecs produce different tokens and don't match as clones at all)
 
 ### Testing
 

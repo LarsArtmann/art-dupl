@@ -54,6 +54,7 @@ Everything carried in the 08:18 report §c plus the 07:39 report's P0/P1 items t
 ## f) Up to 50 Things To Get Done Next (prioritized)
 
 **P0 — this session's direct residues**
+
 1. Answer Q1 (go-auto-upgrade: skip / upstream exclusion / migrate) — the tree is green NOW but the next `buildflow --fix` re-poisons; every day of delay is a future restore.
 2. Add `go-auto-upgrade` to `.buildflow.yml` `skip_steps` per the Q1 answer (precedent: the `golangci-lint-auto-configure` skip).
 3. Prove formatter-stability of this wave's ~120 per-cell strikes: run one dprint/treefmt pass over the 14 newly archived files + 12 status reports, then `check-rows` them again (the skipped canon leg).
@@ -121,4 +122,4 @@ Everything carried in the 08:18 report §c plus the 07:39 report's P0/P1 items t
 
 ---
 
-*Session artifacts (this pass): 6 Go files restored + gates green; 14 docs archived across planning/reviews/feedback/analysis with 118 M-rows struck per-cell, ~115 tables ledger-marked, 7 resolution/superseded banners; 12 suggestion verdicts inline; 2 stale ledger cells corrected; 2 ROADMAP + 5 TODO_LIST routing rows; 3 old-report residuals annotated; 2 broken citations repaired; 1 report §b1 corrected. Gates at close: docs-gates 5/5 PASS, count gates 5/5 PASS, full suite 34 pkgs green, boundary fast OK. Part 1 of this wave: `docs/status/2026-11-15_08-18_docs-health-cadence-wave-and-2026-0x-docs-triage.md`.*
+_Session artifacts (this pass): 6 Go files restored + gates green; 14 docs archived across planning/reviews/feedback/analysis with 118 M-rows struck per-cell, ~115 tables ledger-marked, 7 resolution/superseded banners; 12 suggestion verdicts inline; 2 stale ledger cells corrected; 2 ROADMAP + 5 TODO_LIST routing rows; 3 old-report residuals annotated; 2 broken citations repaired; 1 report §b1 corrected. Gates at close: docs-gates 5/5 PASS, count gates 5/5 PASS, full suite 34 pkgs green, boundary fast OK. Part 1 of this wave: `docs/status/2026-11-15_08-18_docs-health-cadence-wave-and-2026-0x-docs-triage.md`._

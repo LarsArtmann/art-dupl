@@ -18,6 +18,7 @@ The docs-health gap-fix sprint had 14 tasks across 4 Pareto layers. Tasks 1-9 we
 ## a) FULLY DONE (Committed to HEAD)
 
 These changes from the prior session made it into committed code and are verified present at HEAD:
+
 <!-- check-rows:ledger -->
 
 | #   | Task                                                          | File                             | Verification                                   |
@@ -35,17 +36,18 @@ All 7 items are in committed history across commits `493eb006` and `cc01dffb`.
 ## b) PARTIALLY DONE (Staged but NOT committed)
 
 <!-- check-rows:ledger -->
-| #  | Task                      | File                                                              | Status                                                                                                                                       |
-| -- | ------------------------- | ----------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-|       | ~~10~~ **done — FEATURES carries both rows.** | ~~Add TypeAware + SuggestGenerics rows to FEATURES.md SDK table~~ | ~~FEATURES.md~~ |
-|       | ~~11~~ **done — the tagliatelle item is resolved (Lint Config Guard).** | ~~Remove tagliatelle item from TODO_LIST.md HIGH priority section~~ | ~~TODO_LIST.md~~ |
-| 12 | Build + test verification | —                                                                 | **PASSED** — `go build ./...` clean, `go test ./...` 28/28 packages pass                                                                     |
-| 13 | Lint verification         | —                                                                 | **PASSED** — golangci-lint has only 2 pre-existing warnings (nestif, varnamelen in untouched files). Tagliatelle's 50 violations eliminated. |
+
+| #  | Task                                                                    | File                                                                | Status                                                                                                                                       |
+| -- | ----------------------------------------------------------------------- | ------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+|    | ~~10~~ **done — FEATURES carries both rows.**                           | ~~Add TypeAware + SuggestGenerics rows to FEATURES.md SDK table~~   | ~~FEATURES.md~~                                                                                                                              |
+|    | ~~11~~ **done — the tagliatelle item is resolved (Lint Config Guard).** | ~~Remove tagliatelle item from TODO_LIST.md HIGH priority section~~ | ~~TODO_LIST.md~~                                                                                                                             |
+| 12 | Build + test verification                                               | —                                                                   | **PASSED** — `go build ./...` clean, `go test ./...` 28/28 packages pass                                                                     |
+| 13 | Lint verification                                                       | —                                                                   | **PASSED** — golangci-lint has only 2 pre-existing warnings (nestif, varnamelen in untouched files). Tagliatelle's 50 violations eliminated. |
 
 ## c) NOT STARTED
 
-| Task | Why      |
-| ---- | -------- |
+| Task                                           | Why                       |
+| ---------------------------------------------- | ------------------------- |
 | ~~Git push~~ **done — pushed to origin/fork.** | ~~landed on origin/fork~~ |
 
 ## d) TOTALLY FUCKED UP
@@ -170,6 +172,7 @@ The pre-commit hook's `templ-fmt` step reformatted this file (22 lines). It's no
 ---
 
 ## Session Metrics
+
 <!-- check-rows:ledger -->
 
 | Metric                     | Value                                                              |

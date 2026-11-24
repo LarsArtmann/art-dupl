@@ -276,15 +276,15 @@ func SetSemanticConfig(cfg SemanticConfig) func()  // returns reset func
 
 ## Appendix: Current Metrics
 
-| Metric                     | Value                   |
-| -------------------------- | ----------------------- |
-| ~~Build Status~~ done — verified — 2026-03-20 snapshot, historical | ~~✅ PASSING~~ |
-| ~~Test Status~~ done — verified — 2026-03-20 snapshot, historical | ~~✅ ALL PASSING~~ |
-| ~~Test Coverage~~ done — verified — 2026-03-20 snapshot, historical | ~~~80%+~~ |
-| ~~Compiler Errors~~ done — verified — 2026-03-20 snapshot, historical | ~~0 (actual)~~ |
-| ~~LSP Phantom Errors~~ done — verified — 2026-03-20 snapshot, historical | ~~~70 (cache)~~ |
-| ~~Lines of Dead Code Removed~~ done — verified — 2026-03-20 snapshot, historical | ~~46 (writeDiffPanel)~~ |
-| ~~Ghost Systems Eliminated~~ done — verified — 2026-03-20 snapshot, historical | ~~2 (cli/config.go, lib/)~~ |
+| Metric                                                                           | Value                       |
+| -------------------------------------------------------------------------------- | --------------------------- |
+| ~~Build Status~~ done — verified — 2026-03-20 snapshot, historical               | ~~✅ PASSING~~              |
+| ~~Test Status~~ done — verified — 2026-03-20 snapshot, historical                | ~~✅ ALL PASSING~~          |
+| ~~Test Coverage~~ done — verified — 2026-03-20 snapshot, historical              | ~~~80%+~~                   |
+| ~~Compiler Errors~~ done — verified — 2026-03-20 snapshot, historical            | ~~0 (actual)~~              |
+| ~~LSP Phantom Errors~~ done — verified — 2026-03-20 snapshot, historical         | ~~~70 (cache)~~             |
+| ~~Lines of Dead Code Removed~~ done — verified — 2026-03-20 snapshot, historical | ~~46 (writeDiffPanel)~~     |
+| ~~Ghost Systems Eliminated~~ done — verified — 2026-03-20 snapshot, historical   | ~~2 (cli/config.go, lib/)~~ |
 
 ---
 

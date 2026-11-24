@@ -346,9 +346,9 @@ Successfully implemented comprehensive BDD (Behavior-Driven Development) test su
 
 16. **Optimize test execution speed** (reduce from 1.5s to <500ms)
 17. **Enable parallel test execution** where safe
-~~18. **Add benchmarks** for performance regression detection~~ done — the alloc-gate guards the hot paths (AGENTS.md)
-19. **Mock art-dupl execution** for faster unit tests
-20. **Add test data fixtures** for consistent testing
+    ~~18. **Add benchmarks** for performance regression detection~~ done — the alloc-gate guards the hot paths (AGENTS.md)
+18. **Mock art-dupl execution** for faster unit tests
+19. **Add test data fixtures** for consistent testing
 
 ### Priority 5 - Documentation & CI/CD
 

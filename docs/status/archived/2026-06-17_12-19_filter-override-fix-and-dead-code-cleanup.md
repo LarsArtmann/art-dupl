@@ -150,7 +150,7 @@ None. All changes compile, all 22 packages pass tests, no regressions introduced
 
 ~~16. Standardize test helper naming (`createTestNode` vs `setupXxx` vs `mustXxx`)~~ not-do — helper naming stays heterogeneous by design
 17. Add `//go:build` integration test tags for slower BDD tests
-    ~~18. Update `SDK_DESIGN.md` if it references `Finding` or `PrintFindings`~~ done — SDK_DESIGN.md rewritten; zero Finding references remain
+~~18. Update `SDK_DESIGN.md` if it references `Finding` or `PrintFindings`~~ done — SDK_DESIGN.md rewritten; zero Finding references remain
 18. Introduce `buildflow` allowlist for `duplications-checker` (art-dupl has legitimate structural duplication)
 19. Add `--method` flag simplification (only 2 valid methods now)
 

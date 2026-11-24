@@ -16,16 +16,19 @@ Issue #1 is implemented, tested, and verified end-to-end: art-dupl clone groups 
 The honest caveats: ~~the adapter itself has **no production caller** (library API + tests only — a partial ghost system pending a product-surface decision)~~ pkg/provider calls the adapter since ADR-0025; the toolsdk provider is the production surface., the severity ladder is now implemented in **two places** (test-pinned, but a real split brain), and the session raced the auto-commit daemon and a concurrent agent session badly enough that 12 heuristic commits carry the work and one of my fixes was clobbered and had to be re-applied.
 
 <!-- check-rows:ledger -->
-| Category                                | Count |
-| --------------------------------------- | ----- |
+
+| Category | Count |
+| -------- | ----- |
+
 <!-- check-rows:ledger -->
-| a) Fully done                           | 9     |
-| b) Partially done                       | 4     |
-| c) Not started (deliberate scope cuts)  | 7     |
-| d) Totally fucked up (session mistakes) | 6     |
-| e) Improvement themes                   | 7     |
-| f) Next tasks brainstormed              | 50    |
-| g) Questions for Lars                   | 3     |
+
+| a) Fully done | 9 |
+| b) Partially done | 4 |
+| c) Not started (deliberate scope cuts) | 7 |
+| d) Totally fucked up (session mistakes) | 6 |
+| e) Improvement themes | 7 |
+| f) Next tasks brainstormed | 50 |
+| g) Questions for Lars | 3 |
 
 ---
 
@@ -168,14 +171,15 @@ Impact-sorted brainstorm (per the skill: a large N is brainstorm, not commitment
 ## Verification Evidence (what "done" is anchored to)
 
 <!-- check-rows:ledger -->
-| Claim                  | Evidence                                                                                                                     |
-| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| Dep resolves           | `go list -m -versions` → v1.12.0 present; `go.mod` direct require                                                            |
-| Adapter builds         | `go build ./...` clean; `go vet` clean                                                                                       |
-| Tests                  | `go test -count=1 ./...` → 28/28 packages ok                                                                                 |
-| ~~Lint~~ done — fixed — lint is 106-linter clean since 2026-09-29 (AGENTS.md); the flaky os.Exit tests were fixed | ~~`golangci-lint run ./printer/...` → zero findings on touched files (remaining: documented tagliatelle)~~ |
-| ~~Arch-lint~~ done — fixed — lint is 106-linter clean since 2026-09-29 (AGENTS.md); the flaky os.Exit tests were fixed | ~~`go-arch-lint check` → "OK - No warnings found"~~ |
-| ~~Disabled-linters guard~~ done — fixed — lint is 106-linter clean since 2026-09-29 (AGENTS.md); the flaky os.Exit tests were fixed | ~~`scripts/check-disabled-linters.sh` → "OK: no disabled linters"~~ |
-| Nix                    | `nix build .#default` green; `nix flake check` → "all checks passed!" (race + alloc budgets + treefmt + vendor-hash + guard) |
-| E2E                    | CLI `--sarif` on synthetic dup: 2 results, one `go-finding/groupId`, identical across two runs                               |
-| Issue criteria         | 3 dedicated tests, all passing (named in a.4)                                                                                |
+
+| Claim                                                                                                                               | Evidence                                                                                                                     |
+| ----------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| Dep resolves                                                                                                                        | `go list -m -versions` → v1.12.0 present; `go.mod` direct require                                                            |
+| Adapter builds                                                                                                                      | `go build ./...` clean; `go vet` clean                                                                                       |
+| Tests                                                                                                                               | `go test -count=1 ./...` → 28/28 packages ok                                                                                 |
+| ~~Lint~~ done — fixed — lint is 106-linter clean since 2026-09-29 (AGENTS.md); the flaky os.Exit tests were fixed                   | ~~`golangci-lint run ./printer/...` → zero findings on touched files (remaining: documented tagliatelle)~~                   |
+| ~~Arch-lint~~ done — fixed — lint is 106-linter clean since 2026-09-29 (AGENTS.md); the flaky os.Exit tests were fixed              | ~~`go-arch-lint check` → "OK - No warnings found"~~                                                                          |
+| ~~Disabled-linters guard~~ done — fixed — lint is 106-linter clean since 2026-09-29 (AGENTS.md); the flaky os.Exit tests were fixed | ~~`scripts/check-disabled-linters.sh` → "OK: no disabled linters"~~                                                          |
+| Nix                                                                                                                                 | `nix build .#default` green; `nix flake check` → "all checks passed!" (race + alloc budgets + treefmt + vendor-hash + guard) |
+| E2E                                                                                                                                 | CLI `--sarif` on synthetic dup: 2 results, one `go-finding/groupId`, identical across two runs                               |
+| Issue criteria                                                                                                                      | 3 dedicated tests, all passing (named in a.4)                                                                                |

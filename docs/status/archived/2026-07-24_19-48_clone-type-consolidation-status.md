@@ -33,24 +33,25 @@ The clone type consolidation task from `TODO_LIST.md` is **DONE in the codebase*
 The following changes are **live in the codebase** (committed by the concurrent session, verified identical to this session's edits):
 
 <!-- check-rows:ledger -->
-| Change                                                                                     | Files                                          | Status   |
-| ------------------------------------------------------------------------------------------ | ---------------------------------------------- | -------- |
-| ~~`printer.JSONClone` now embeds `domain.CloneRef` instead of 4 duplicate fields~~ done — printer sub-packages + CloneRef + the sort comparator factory landed (AGENTS.md) | ~~`printer/json.go`~~ | ~~Done~~ |
-| ~~`printer.CloneOccurrenceView` now embeds `domain.CloneRef` instead of 4 duplicate fields~~ done — printer sub-packages + CloneRef + the sort comparator factory landed (AGENTS.md) | ~~`printer/html_views.go`~~ | ~~Done~~ |
-| ~~`printer.CloneWithContent` now embeds `domain.CloneRef` instead of `CloneWithContentMixin`~~ done — printer sub-packages + CloneRef + the sort comparator factory landed (AGENTS.md) | ~~`printer/diff.go`~~ | ~~Done~~ |
-| ~~`printer.FileInfo` now embeds `domain.CloneRef` instead of `CloneWithContentMixin`~~ done — printer sub-packages + CloneRef + the sort comparator factory landed (AGENTS.md) | ~~`printer/file_processor.go`~~ | ~~Done~~ |
-| ~~`printer.simpleJSONClone` now embeds `domain.CloneRef` instead of `LineRangeMixin`~~ done — printer sub-packages + CloneRef + the sort comparator factory landed (AGENTS.md) | ~~`printer/json.go`~~ | ~~Done~~ |
-| **`printer.CloneWithContentMixin` type eliminated**                                        | `printer/diff.go`                              | Done     |
-| **`printer.LineRangeMixin` type eliminated**                                               | `printer/json.go`                              | Done     |
-| `toJSONClone()` shared conversion helper created                                           | `printer/json.go`                              | Done     |
-| `simpleCloneGroup` field names aligned (`Instances`→`Clones`, `Score`→`Size`)              | `printer/json.go`                              | Done     |
-| ~~`sarif.go` stale comment updated (`LineRangeMixin`→`CloneRef`)~~ done — printer sub-packages + CloneRef + the sort comparator factory landed (AGENTS.md) | ~~`printer/sarif.go`~~ | ~~Done~~ |
-| All test files updated for new struct literal syntax                                       | `printer/json_test.go`, `printer/html_test.go` | Done     |
-| `TODO_LIST.md` marked as done                                                              | `TODO_LIST.md`                                 | Done     |
-| `AGENTS.md` updated with consolidation notes                                               | `AGENTS.md`                                    | Done     |
-| Build passes                                                                               | `go build ./...`                               | Verified |
-| All tests pass                                                                             | `go test ./...` (26 packages)                  | Verified |
-| ~~No new lint errors~~ done — fixed — lint is 106-linter clean since 2026-09-29 (AGENTS.md); the flaky os.Exit tests were fixed | ~~`golangci-lint`~~ | ~~Verified~~ |
+
+| Change                                                                                                                                                                                 | Files                                          | Status       |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- | ------------ |
+| ~~`printer.JSONClone` now embeds `domain.CloneRef` instead of 4 duplicate fields~~ done — printer sub-packages + CloneRef + the sort comparator factory landed (AGENTS.md)             | ~~`printer/json.go`~~                          | ~~Done~~     |
+| ~~`printer.CloneOccurrenceView` now embeds `domain.CloneRef` instead of 4 duplicate fields~~ done — printer sub-packages + CloneRef + the sort comparator factory landed (AGENTS.md)   | ~~`printer/html_views.go`~~                    | ~~Done~~     |
+| ~~`printer.CloneWithContent` now embeds `domain.CloneRef` instead of `CloneWithContentMixin`~~ done — printer sub-packages + CloneRef + the sort comparator factory landed (AGENTS.md) | ~~`printer/diff.go`~~                          | ~~Done~~     |
+| ~~`printer.FileInfo` now embeds `domain.CloneRef` instead of `CloneWithContentMixin`~~ done — printer sub-packages + CloneRef + the sort comparator factory landed (AGENTS.md)         | ~~`printer/file_processor.go`~~                | ~~Done~~     |
+| ~~`printer.simpleJSONClone` now embeds `domain.CloneRef` instead of `LineRangeMixin`~~ done — printer sub-packages + CloneRef + the sort comparator factory landed (AGENTS.md)         | ~~`printer/json.go`~~                          | ~~Done~~     |
+| **`printer.CloneWithContentMixin` type eliminated**                                                                                                                                    | `printer/diff.go`                              | Done         |
+| **`printer.LineRangeMixin` type eliminated**                                                                                                                                           | `printer/json.go`                              | Done         |
+| `toJSONClone()` shared conversion helper created                                                                                                                                       | `printer/json.go`                              | Done         |
+| `simpleCloneGroup` field names aligned (`Instances`→`Clones`, `Score`→`Size`)                                                                                                          | `printer/json.go`                              | Done         |
+| ~~`sarif.go` stale comment updated (`LineRangeMixin`→`CloneRef`)~~ done — printer sub-packages + CloneRef + the sort comparator factory landed (AGENTS.md)                             | ~~`printer/sarif.go`~~                         | ~~Done~~     |
+| All test files updated for new struct literal syntax                                                                                                                                   | `printer/json_test.go`, `printer/html_test.go` | Done         |
+| `TODO_LIST.md` marked as done                                                                                                                                                          | `TODO_LIST.md`                                 | Done         |
+| `AGENTS.md` updated with consolidation notes                                                                                                                                           | `AGENTS.md`                                    | Done         |
+| Build passes                                                                                                                                                                           | `go build ./...`                               | Verified     |
+| All tests pass                                                                                                                                                                         | `go test ./...` (26 packages)                  | Verified     |
+| ~~No new lint errors~~ done — fixed — lint is 106-linter clean since 2026-09-29 (AGENTS.md); the flaky os.Exit tests were fixed                                                        | ~~`golangci-lint`~~                            | ~~Verified~~ |
 
 ### Concurrent Work (NOT by this session)
 
@@ -78,13 +79,13 @@ The document should either be updated with resolution annotations or moved to an
 
 These items from the original analysis were NOT addressed by this session or the concurrent session:
 
-| ID   | Issue                                                                                                                                          | Status                                                            |
-| ---- | ---------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
-| ~~SB-2~~ done — Clones naming aligned with JSON tags preserved (AGENTS.md) | ~~Clone group types field naming (`CloneGroup.Files` was renamed to `Clones` in printer, but `simpleCloneGroup` JSON tag is still `"instances"`)~~ | ~~JSON tags preserved for backward compat — intentional~~ |
-| ~~SB-3~~ done — fixed — DetectionMethod defined once in domain, aliased everywhere (AGENTS.md) | ~~Triple `DetectionMethod` definition~~ | ~~Already resolved via aliasing in prior sessions~~ |
-| ~~SB-4~~ done — fixed — the sentinel convention + the cross-package alias test (AGENTS.md) | ~~Parallel error sentinels (`config.ErrInvalidThreshold` vs `pkg/artdupl.ErrInvalidThreshold`)~~ | ~~Not addressed — medium risk~~ |
-| ~~SB-7~~ done — fixed — Logger aliased from pkg/logger (ADR-0005) | ~~Logger interface implicit vs explicit~~ | ~~Already resolved via `Logger = logger.Logger` alias~~ |
-| ~~SB-8~~ done — fixed — Timeout is time.Duration (AGENTS.md) | ~~Timeout `int` vs `time.Duration`~~ | ~~Already resolved (`config.Config.Timeout` is now `time.Duration`)~~ |
+| ID                                                                                             | Issue                                                                                                                                              | Status                                                                |
+| ---------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| ~~SB-2~~ done — Clones naming aligned with JSON tags preserved (AGENTS.md)                     | ~~Clone group types field naming (`CloneGroup.Files` was renamed to `Clones` in printer, but `simpleCloneGroup` JSON tag is still `"instances"`)~~ | ~~JSON tags preserved for backward compat — intentional~~             |
+| ~~SB-3~~ done — fixed — DetectionMethod defined once in domain, aliased everywhere (AGENTS.md) | ~~Triple `DetectionMethod` definition~~                                                                                                            | ~~Already resolved via aliasing in prior sessions~~                   |
+| ~~SB-4~~ done — fixed — the sentinel convention + the cross-package alias test (AGENTS.md)     | ~~Parallel error sentinels (`config.ErrInvalidThreshold` vs `pkg/artdupl.ErrInvalidThreshold`)~~                                                   | ~~Not addressed — medium risk~~                                       |
+| ~~SB-7~~ done — fixed — Logger aliased from pkg/logger (ADR-0005)                              | ~~Logger interface implicit vs explicit~~                                                                                                          | ~~Already resolved via `Logger = logger.Logger` alias~~               |
+| ~~SB-8~~ done — fixed — Timeout is time.Duration (AGENTS.md)                                   | ~~Timeout `int` vs `time.Duration`~~                                                                                                               | ~~Already resolved (`config.Config.Timeout` is now `time.Duration`)~~ |
 
 ### SDK Conversion Path Still Independent
 
@@ -99,6 +100,7 @@ The `pkg/artdupl/detector_conversion.go::convertFragmentToClone` still independe
 **This is the big one.** A concurrent session/agent was actively committing to the same branch (`fork`) during this session. Timeline:
 
 <!-- check-rows:ledger -->
+
 | Time         | Event                                                                        |
 | ------------ | ---------------------------------------------------------------------------- |
 | ~19:21       | Concurrent session starts committing (type-aware detection)                  |
@@ -159,11 +161,11 @@ The `pkg/artdupl/detector_conversion.go::convertFragmentToClone` still independe
 8. Create `domain.NewCloneRef()` constructor with validation
 9. Add compile-time interface assertion for CloneRef embedding
 10. Consider extracting `toSDKClone` helper in `pkg/artdupl/detector_conversion.go`
-~~11. Review whether `printer.CloneGroupView` should embed a domain type~~ done — CloneRef is embedded in every clone-bearing type incl. CloneGroupView (AGENTS.md)
-12. Update `CHANGELOG.md` with the clone consolidation entry
-13. Split `printer/` package (blocked by circular dep — see TODO_LIST)
-14. Add integration test that verifies JSON output format is unchanged after CloneRef embedding
-~~15. Document the `simpleCloneGroup` JSON tag preservation decision~~ done — the tag-preservation decision is documented (AGENTS.md simpleCloneGroup note)
+    ~~11. Review whether `printer.CloneGroupView` should embed a domain type~~ done — CloneRef is embedded in every clone-bearing type incl. CloneGroupView (AGENTS.md)
+11. Update `CHANGELOG.md` with the clone consolidation entry
+12. Split `printer/` package (blocked by circular dep — see TODO_LIST)
+13. Add integration test that verifies JSON output format is unchanged after CloneRef embedding
+    ~~15. Document the `simpleCloneGroup` JSON tag preservation decision~~ done — the tag-preservation decision is documented (AGENTS.md simpleCloneGroup note)
 
 ### Lower Priority
 
@@ -173,10 +175,10 @@ The `pkg/artdupl/detector_conversion.go::convertFragmentToClone` still independe
 19. Consider a shared `CloneLocation` interface for types that have location but not fragment
 20. Review all `[]byte(base.Fragment)` casts in diff.go — now redundant since Fragment is string
 21. Consider using `strings.NewReader` instead of `[]byte()` for diff input
-~~22. Add ADR for the clone type consolidation decision~~ done — docs/adr/0005-split-brain-type-unification.md
-23. Review if `printer.simpleJSONClone` should be unexported or removed entirely
-24. Check SARIF output still validates after CloneRef embedding
-25. Review HTML report rendering with embedded CloneRef
+    ~~22. Add ADR for the clone type consolidation decision~~ done — docs/adr/0005-split-brain-type-unification.md
+22. Review if `printer.simpleJSONClone` should be unexported or removed entirely
+23. Check SARIF output still validates after CloneRef embedding
+24. Review HTML report rendering with embedded CloneRef
 
 ### Documentation
 
@@ -236,6 +238,7 @@ The SPLIT-BRAIN analysis document is now substantially stale — SB-1, SB-5, SB-
 ## Session Metrics
 
 <!-- check-rows:ledger -->
+
 | Metric                                        | Value                                         |
 | --------------------------------------------- | --------------------------------------------- |
 | Files edited                                  | ~10 (all overlapped with concurrent commits)  |

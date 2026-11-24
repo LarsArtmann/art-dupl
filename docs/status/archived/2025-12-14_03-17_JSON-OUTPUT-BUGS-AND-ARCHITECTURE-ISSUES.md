@@ -203,9 +203,9 @@ if jsonPrinter, ok := p.(*printer.JSONPrinter); ok {
 
 6. **Fix line counting** - Replace character count with actual line count
 7. **Fix token counting** - Calculate actual size in tokens
-~~8. **Add integration tests** for JSON output validation~~ done — the JSON wire is pinned by goldens + the jsonv2gate (AGENTS.md)
-9. **Extract common logic** - Consolidate duplicate code across printers
-10. **Improve printer interface** - Design better abstraction for metadata
+   ~~8. **Add integration tests** for JSON output validation~~ done — the JSON wire is pinned by goldens + the jsonv2gate (AGENTS.md)
+8. **Extract common logic** - Consolidate duplicate code across printers
+9. **Improve printer interface** - Design better abstraction for metadata
 
 ### **🟢 MEDIUM PRIORITY (Fix in Next 4 Hours)**
 
@@ -218,10 +218,10 @@ if jsonPrinter, ok := p.(*printer.JSONPrinter); ok {
 ### **🔵 LOWER PRIORITY (Fix in Next Day)**
 
 16. **Add JSON schema validation** - Ensure output consistency
-~~17. **Performance testing** - Large codebase validation~~ done — docs/benchmarks/ carries the baselines (AGENTS.md)
-18. **Memory optimization** - Efficient handling of large outputs
-19. **Add progress reporting** - Long-running analysis feedback
-20. **Internationalization support** - Non-ASCII character handling
+    ~~17. **Performance testing** - Large codebase validation~~ done — docs/benchmarks/ carries the baselines (AGENTS.md)
+17. **Memory optimization** - Efficient handling of large outputs
+18. **Add progress reporting** - Long-running analysis feedback
+19. **Internationalization support** - Non-ASCII character handling
 
 ### **🟣 ENHANCEMENTS (Future Improvements)**
 

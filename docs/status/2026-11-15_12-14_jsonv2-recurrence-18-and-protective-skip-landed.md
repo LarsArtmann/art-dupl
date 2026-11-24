@@ -58,6 +58,7 @@ Final state at 12:14: docs-gates 5/5 PASS, full fresh suite green (34 pkgs, `-co
 ## f) Up to 50 Things To Get Done Next (prioritized)
 
 **P0 — this session's direct residues**
+
 1. Answer Q1 (§g): keep the `go-auto-upgrade` skip permanently / negotiate an upstream exclusion mechanism (e.g. file-level `//jsonv1:invariant` the rewriter honors) / migrate art-dupl to the v2 API. The skip makes this non-urgent for the first time in the class's history.
 2. Confirm the skip survives a full day of pipeline relaunches (four observed today; check jsonv2gate green at next session start — the session-start gate remains the canary).
 3. Root-cause the pre-commit hook bypass (`2a9291ba` + the #15-era pass-throughs): reproduce the daemon's exact git env, then decide the G5 daemon-gate deployment.
@@ -123,4 +124,4 @@ Final state at 12:14: docs-gates 5/5 PASS, full fresh suite green (34 pkgs, `-co
 
 ---
 
-*Session artifacts: restore + skip landed via daemon commits `d9e66e58`/`c00f3222`; annotation batches in `e2464aed`/`ecb1b87d`; poison source `e0142e27`. Authoritative green evidence: full fresh suite (34 pkgs) green DURING a live post-skip pipeline, jsonv2gate green under a fourth live pipeline at close, docs-gates 5/5, boundary fast OK (11s). Cross-repo: crush-config lesson commit `f5832c2`.*
+_Session artifacts: restore + skip landed via daemon commits `d9e66e58`/`c00f3222`; annotation batches in `e2464aed`/`ecb1b87d`; poison source `e0142e27`. Authoritative green evidence: full fresh suite (34 pkgs) green DURING a live post-skip pipeline, jsonv2gate green under a fourth live pipeline at close, docs-gates 5/5, boundary fast OK (11s). Cross-repo: crush-config lesson commit `f5832c2`._

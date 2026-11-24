@@ -10,6 +10,7 @@
 ## Executive Summary
 
 <!-- check-rows:ledger -->
+
 | Metric       | Status                               |
 | ------------ | ------------------------------------ |
 | **Build**    | ✅ SUCCESS                           |
@@ -59,6 +60,7 @@
 ### Test Coverage
 
 <!-- check-rows:ledger -->
+
 | Package       | Coverage | Target | Gap       |
 | ------------- | -------- | ------ | --------- |
 | domain        | 94.5%    | 80%    | ✅        |

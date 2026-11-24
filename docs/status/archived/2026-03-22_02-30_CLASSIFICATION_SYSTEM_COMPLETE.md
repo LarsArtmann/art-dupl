@@ -171,10 +171,10 @@ The implementation is solid. No major issues found.
 ### Short-term (This Week):
 
 6. **Add category breakdown to `stats` subcommand**
-~~7. **Write benchmark for classification** - Performance baseline~~ not-do — no classification benchmark landed
-8. **Add priority distribution chart** to HTML summary
-9. **Create example gallery** of HTML reports
-10. **Add keyboard shortcuts** for filtering in HTML
+   ~~7. **Write benchmark for classification** - Performance baseline~~ not-do — no classification benchmark landed
+7. **Add priority distribution chart** to HTML summary
+8. **Create example gallery** of HTML reports
+9. **Add keyboard shortcuts** for filtering in HTML
 
 ### Medium-term (This Month):
 

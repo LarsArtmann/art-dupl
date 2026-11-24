@@ -147,16 +147,16 @@
 
 ### Tier 2: Important, Should Do Soon (11-18)
 
-| #  | Task                                                         | Impact | Effort | Est. Time | Category        |
-| -- | ------------------------------------------------------------ | ------ | ------ | --------- | --------------- |
-| 11 | Split printer/stats.go (727 lines → ~350 each)               | MEDIUM | Medium | 1h        | Maintainability |
-| 12 | Split cmd/run.go (528 lines) into focused files              | MEDIUM | Medium | 1h        | Maintainability |
-| 13 | Split domain/clone.go (495 lines) into sub-files             | MEDIUM | Low    | 30min     | Maintainability |
-| 14 | Implement CSV output using encoding/csv                      | MEDIUM | Medium | 2h        | Robustness      |
-| 15 | Add Go Example\* functions for key packages                  | LOW    | Medium | 3h        | Docs            |
-| ~~16~~ **struck — the cadence gate owns the docs/status archive wave (in flight)** |~~Archive/clean up old status reports in docs/status/~~|~~LOW~~|~~Low~~|~~30min~~|~~Housekeeping~~|
-| 17 | Add integration test for full pipeline with new filter types | MEDIUM | Medium | 2h        | Test Quality    |
-| ~~18~~ **not-do — no go.work contributor doc landed (verified 2026-11-14)** |~~Document go.work setup for contributors~~|~~LOW~~|~~Low~~|~~15min~~|~~Docs~~|
+| #                                                                                  | Task                                                         | Impact  | Effort  | Est. Time | Category         |
+| ---------------------------------------------------------------------------------- | ------------------------------------------------------------ | ------- | ------- | --------- | ---------------- |
+| 11                                                                                 | Split printer/stats.go (727 lines → ~350 each)               | MEDIUM  | Medium  | 1h        | Maintainability  |
+| 12                                                                                 | Split cmd/run.go (528 lines) into focused files              | MEDIUM  | Medium  | 1h        | Maintainability  |
+| 13                                                                                 | Split domain/clone.go (495 lines) into sub-files             | MEDIUM  | Low     | 30min     | Maintainability  |
+| 14                                                                                 | Implement CSV output using encoding/csv                      | MEDIUM  | Medium  | 2h        | Robustness       |
+| 15                                                                                 | Add Go Example\* functions for key packages                  | LOW     | Medium  | 3h        | Docs             |
+| ~~16~~ **struck — the cadence gate owns the docs/status archive wave (in flight)** | ~~Archive/clean up old status reports in docs/status/~~      | ~~LOW~~ | ~~Low~~ | ~~30min~~ | ~~Housekeeping~~ |
+| 17                                                                                 | Add integration test for full pipeline with new filter types | MEDIUM  | Medium  | 2h        | Test Quality     |
+| ~~18~~ **not-do — no go.work contributor doc landed (verified 2026-11-14)**        | ~~Document go.work setup for contributors~~                  | ~~LOW~~ | ~~Low~~ | ~~15min~~ | ~~Docs~~         |
 
 ### Tier 3: Nice to Have (19-25)
 

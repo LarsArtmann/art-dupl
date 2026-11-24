@@ -1180,15 +1180,15 @@ func main() {
 ### **🟡 HIGH PRIORITY**:
 
 11. **Reduce crawlPaths Complexity** (3-4 hours)
-~~12. **Extract Flag Parsing** (2-3 hours)~~ done 2026-11-15 — flag parsing is extracted: `cmd/flags.go`, `cmd/run_flags.go`, `cmd/config_builder.go` hold it (`runCmd` itself dropped under the gocyclo threshold via the `parseOutputFormat`/`runStandardAnalysis` split).
-13. **Fix gosec G304** (30 minutes)
-14. **Fix gosec G301** (5 minutes)
-15. **Reduce TestThreshold Complexity** (2-3 hours)
-~~16. **Add t.Parallel()** (4-6 hours)~~ done — the suite uses t.Parallel() in 800+ places (verified 2026-11-14)
-17. **Fix Ginkgo Linter** (1 hour)
-~~18. **Check Test Coverage** (5 minutes)~~ done — the CI Coverage job produces the report (AGENTS.md CI table)
-~~19. **Verify JSON Output** (15 minutes)~~ done — the JSON wire is pinned by goldens (printer testdata; AGENTS.md)
-~~20. **Verify HTML Output** (15 minutes)~~ done — the HTML report ships (printer/report.templ)
+    ~~12. **Extract Flag Parsing** (2-3 hours)~~ done 2026-11-15 — flag parsing is extracted: `cmd/flags.go`, `cmd/run_flags.go`, `cmd/config_builder.go` hold it (`runCmd` itself dropped under the gocyclo threshold via the `parseOutputFormat`/`runStandardAnalysis` split).
+12. **Fix gosec G304** (30 minutes)
+13. **Fix gosec G301** (5 minutes)
+14. **Reduce TestThreshold Complexity** (2-3 hours)
+    ~~16. **Add t.Parallel()** (4-6 hours)~~ done — the suite uses t.Parallel() in 800+ places (verified 2026-11-14)
+15. **Fix Ginkgo Linter** (1 hour)
+    ~~18. **Check Test Coverage** (5 minutes)~~ done — the CI Coverage job produces the report (AGENTS.md CI table)
+    ~~19. **Verify JSON Output** (15 minutes)~~ done — the JSON wire is pinned by goldens (printer testdata; AGENTS.md)
+    ~~20. **Verify HTML Output** (15 minutes)~~ done — the HTML report ships (printer/report.templ)
 
 ### **🟢 MEDIUM PRIORITY**:
 

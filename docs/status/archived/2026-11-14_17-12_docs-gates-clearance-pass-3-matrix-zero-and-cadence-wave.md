@@ -9,14 +9,15 @@
 ## Executive metric line
 
 <!-- check-rows:ledger -->
-| Metric                  | Pass 2 end (16:22) | Now (17:12) |
-| ----------------------- | ------------------ | ----------- |
-| annotate findings       | 69                 | **0**       |
-| audit-all unharvested   | 383                | **0**       |
-| files ground this pass  | —                  | ~110 (18 annotate-flagged + ~96 audit-flagged) |
-| cadence unarchived      | 169                | **10** (threshold 15) |
-| cadence oldest          | 197 d              | **21 d** (threshold 21) |
-| routing                 | 0 unrouted         | 0 unrouted  |
+
+| Metric                 | Pass 2 end (16:22) | Now (17:12)                                    |
+| ---------------------- | ------------------ | ---------------------------------------------- |
+| annotate findings      | 69                 | **0**                                          |
+| audit-all unharvested  | 383                | **0**                                          |
+| files ground this pass | —                  | ~110 (18 annotate-flagged + ~96 audit-flagged) |
+| cadence unarchived     | 169                | **10** (threshold 15)                          |
+| cadence oldest         | 197 d              | **21 d** (threshold 21)                        |
+| routing                | 0 unrouted         | 0 unrouted                                     |
 
 ## a) FULLY DONE
 

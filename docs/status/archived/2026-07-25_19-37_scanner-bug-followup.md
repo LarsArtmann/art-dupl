@@ -18,6 +18,7 @@
 ## Headline Result
 
 <!-- check-rows:ledger -->
+
 | Metric                               | Start of session | End of session                               |
 | ------------------------------------ | ---------------- | -------------------------------------------- |
 | Known latent bugs from prior session | 2                | **0**                                        |
@@ -147,16 +148,16 @@ Ranked by impact/effort. Items marked **[THIS SESSION GAP]** are gaps I left in 
 11. Add a "directive health" check: warn (or fail) when a `//art-dupl:accept <hash>` directive's hash matches no current group (catches stale directives).
 12. Add a test that a directive in a `_test.go` file is honored (not just non-test files).
 13. Document the `helper()` extraction pattern in AGENTS.md testutil conventions.
-~~14. Sweep test files for `if err != nil { t.Fatalf(...) }` that could use `AssertFatalNoError` (may be more than the 1 I fixed).~~ done — AssertFatalNoError shipped (internal/testutil/assert.go:128); the sweep was absorbed
-15. Investigate whether the daemon's commit messages can be improved or if I should always pre-empt.
-16. Add a `docs/reviews/README.md` explaining the review doc convention.
-17. Resolve the `gopls stdversion` jsonv2 warnings in testutil (pre-existing, not mine).
-18. Consider typed `FilterReason`/`FilterSource` maps IF the printer API is also typed (bigger refactor, currently low ROI).
-19. The `diffStatTable` could drive `diffStatTypes` (single source of truth) instead of maintaining both.
-20. Add a regression test that `art-dupl --html` output contains the inline-directive-suppressed group ZERO times (end-to-end).
-21. Check if `nix flake check` passes with this session's changes (didn't run it).
-22. Verify the templ `report.templ` accept directive survives a fresh `templ generate` (did last session, reconfirm).
-23. Consider whether the daemon should be paused during multi-step refactors (process question for user).
+    ~~14. Sweep test files for `if err != nil { t.Fatalf(...) }` that could use `AssertFatalNoError` (may be more than the 1 I fixed).~~ done — AssertFatalNoError shipped (internal/testutil/assert.go:128); the sweep was absorbed
+14. Investigate whether the daemon's commit messages can be improved or if I should always pre-empt.
+15. Add a `docs/reviews/README.md` explaining the review doc convention.
+16. Resolve the `gopls stdversion` jsonv2 warnings in testutil (pre-existing, not mine).
+17. Consider typed `FilterReason`/`FilterSource` maps IF the printer API is also typed (bigger refactor, currently low ROI).
+18. The `diffStatTable` could drive `diffStatTypes` (single source of truth) instead of maintaining both.
+19. Add a regression test that `art-dupl --html` output contains the inline-directive-suppressed group ZERO times (end-to-end).
+20. Check if `nix flake check` passes with this session's changes (didn't run it).
+21. Verify the templ `report.templ` accept directive survives a fresh `templ generate` (did last session, reconfirm).
+22. Consider whether the daemon should be paused during multi-step refactors (process question for user).
 
 (23 concrete items; remaining slots would be speculation beyond scope.)
 
@@ -175,6 +176,7 @@ Ranked by impact/effort. Items marked **[THIS SESSION GAP]** are gaps I left in 
 ## Files touched this session
 
 <!-- check-rows:ledger -->
+
 | File                                                   | Change                                           | Committed by      |
 | ------------------------------------------------------ | ------------------------------------------------ | ----------------- |
 | `cmd/accept_directive.go`                              | `HasPrefix` → `Index` (inline directive support) | daemon `766c2e1b` |

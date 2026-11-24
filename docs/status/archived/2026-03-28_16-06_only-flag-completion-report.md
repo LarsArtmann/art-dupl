@@ -213,17 +213,17 @@ For large codebases, we could optimize by:
 
 1. ✅ Migrate `Only` field from `string` to `FileType` enum for type safety
 2. ✅ Extract file extension constants (`.go`, `.templ`) to package level
-~~3. ✅ Add integration tests in `bdd/` package~~ done — the BDD suite is green today (bdd/)
-4. ✅ Update README.md with `--only` documentation
-5. ✅ Add shell completion for `--only` flag values
+   ~~3. ✅ Add integration tests in `bdd/` package~~ done — the BDD suite is green today (bdd/)
+3. ✅ Update README.md with `--only` documentation
+4. ✅ Add shell completion for `--only` flag values
 
 ### Medium Priority (User Experience)
 
 6. Improve error messages with more context
 7. Add verbose logging showing how many files were filtered
-~~8. Document flag interactions in help text~~ done — every flag carries help text (cobra usage)
-9. Create example usage in `examples/` directory
-10. Update HOW_TO_USE.md with `--only` examples
+   ~~8. Document flag interactions in help text~~ done — every flag carries help text (cobra usage)
+8. Create example usage in `examples/` directory
+9. Update HOW_TO_USE.md with `--only` examples
 
 ### Code Quality
 
@@ -239,7 +239,7 @@ For large codebases, we could optimize by:
 17. Test interaction with `--filter-generated` flag
 18. Test with symlinked directories
 19. Test with deeply nested directory structures
-~~20. Test performance with 10k+ files~~ done — the corpus benchmarks run on real repos (docs/benchmarks/)
+    ~~20. Test performance with 10k+ files~~ done — the corpus benchmarks run on real repos (docs/benchmarks/)
 
 ### Documentation
 

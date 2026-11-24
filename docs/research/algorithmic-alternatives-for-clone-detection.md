@@ -20,12 +20,12 @@ art-dupl uses **Ukkonen's algorithm** (1995) to build an online suffix tree over
 
 **Memory layout (N = total tokens):**
 
-| Component                     | Bytes/token | Source                                          |
-| ----------------------------- | ----------- | ----------------------------------------------- |
-| ~~`STree.data` (`[]TokenValue`)~~ done — verified — analysis record, historical (decision: ADR-0020) | ~~4N~~ | ~~suffixtree/suffixtree.go~~ |
-| ~~Tree states + transitions~~ done — verified — analysis record, historical (decision: ADR-0020) | ~~~12-20N~~ | ~~`map[TokenValue]*tran` per state, pointer-heavy~~ |
-| ~~`[]*syntax.Node` (BuildTree)~~ done — verified — analysis record, historical (decision: ADR-0020) | ~~8N~~ | ~~job/buildtree.go~~ |
-| ~~**Total**~~ done — verified — analysis record, historical (decision: ADR-0020) | ~~**~24-32N**~~ | ~~~~ |
+| Component                                                                                            | Bytes/token     | Source                                              |
+| ---------------------------------------------------------------------------------------------------- | --------------- | --------------------------------------------------- |
+| ~~`STree.data` (`[]TokenValue`)~~ done — verified — analysis record, historical (decision: ADR-0020) | ~~4N~~          | ~~suffixtree/suffixtree.go~~                        |
+| ~~Tree states + transitions~~ done — verified — analysis record, historical (decision: ADR-0020)     | ~~~12-20N~~     | ~~`map[TokenValue]*tran` per state, pointer-heavy~~ |
+| ~~`[]*syntax.Node` (BuildTree)~~ done — verified — analysis record, historical (decision: ADR-0020)  | ~~8N~~          | ~~job/buildtree.go~~                                |
+| ~~**Total**~~ done — verified — analysis record, historical (decision: ADR-0020)                     | ~~**~24-32N**~~ | ~~~~                                                |
 
 Recent optimization (ADR-0019): data changed from `[]Token` (16N) to `[]TokenValue` (4N), but the tree's internal states/transitions are still pointer-heavy maps. Parallel search was added (`FindDuplOverParallel`), giving 1.5-3.4x search speedup.
 
@@ -37,14 +37,14 @@ Recent optimization (ADR-0019): data changed from `[]Token` (16N) to `[]TokenVal
 
 **Ukkonen's algorithm** builds a suffix tree in O(n) time for constant alphabets, O(n log n) for general. It is **online** — the tree can be incrementally updated as new tokens arrive.
 
-| Property                  | Value                                                                  |
-| ------------------------- | ---------------------------------------------------------------------- |
-| ~~Construction time~~ done — verified — analysis record, historical (decision: ADR-0020) | ~~O(n) sequential~~ |
-| ~~Parallel construction~~ done — verified — analysis record, historical (decision: ADR-0020) | ~~**Not possible** (active-point state propagation through suffix links)~~ |
-| ~~Search (maximal repeats)~~ done — verified — analysis record, historical (decision: ADR-0020) | ~~O(n) via DFS~~ |
-| ~~Memory~~ done — verified — analysis record, historical (decision: ADR-0020) | ~~10-20n bytes (pointer-heavy, poor cache locality)~~ |
-| ~~Implementation complexity~~ done — verified — analysis record, historical (decision: ADR-0020) | ~~High (canonize, suffix links, testAndSplit)~~ |
-| ~~Online/incremental~~ done — verified — analysis record, historical (decision: ADR-0020) | ~~Yes~~ |
+| Property                                                                                         | Value                                                                      |
+| ------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------- |
+| ~~Construction time~~ done — verified — analysis record, historical (decision: ADR-0020)         | ~~O(n) sequential~~                                                        |
+| ~~Parallel construction~~ done — verified — analysis record, historical (decision: ADR-0020)     | ~~**Not possible** (active-point state propagation through suffix links)~~ |
+| ~~Search (maximal repeats)~~ done — verified — analysis record, historical (decision: ADR-0020)  | ~~O(n) via DFS~~                                                           |
+| ~~Memory~~ done — verified — analysis record, historical (decision: ADR-0020)                    | ~~10-20n bytes (pointer-heavy, poor cache locality)~~                      |
+| ~~Implementation complexity~~ done — verified — analysis record, historical (decision: ADR-0020) | ~~High (canonize, suffix links, testAndSplit)~~                            |
+| ~~Online/incremental~~ done — verified — analysis record, historical (decision: ADR-0020)        | ~~Yes~~                                                                    |
 
 **Key limitation**: Ukkonen's is inherently sequential. The active point `(s, start, end)` propagates through suffix links across every token. Parallel construction requires a fundamentally different algorithm.
 
@@ -56,29 +56,29 @@ A suffix array (SA) is simply the sorted starting positions of all suffixes — 
 
 **Construction algorithms:**
 
-| Algorithm                     | Year  | Time             | Notes                         |
-| ----------------------------- | ----- | ---------------- | ----------------------------- |
-| ~~DC3/skew (Karkkainen-Sanders)~~ done — verified — analysis record, historical (decision: ADR-0020) | ~~2003~~ | ~~O(n)~~ | ~~Recursive, **parallelizable**~~ |
-| ~~SA-IS (Nong-Zhang-Chan)~~ done — verified — analysis record, historical (decision: ADR-0020) | ~~2009~~ | ~~O(n)~~ | ~~<100 lines, fastest practical~~ |
-| ~~DivSufSort (Mori)~~ done — verified — analysis record, historical (decision: ADR-0020) | ~~~2008~~ | ~~O(n log n) worst~~ | ~~Fastest in practice~~ |
-| ~~libsaiss (Grebnov)~~ done — verified — analysis record, historical (decision: ADR-0020) | ~~2021~~ | ~~O(n)~~ | ~~65% faster than DivSufSort~~ |
+| Algorithm                                                                                            | Year      | Time                 | Notes                             |
+| ---------------------------------------------------------------------------------------------------- | --------- | -------------------- | --------------------------------- |
+| ~~DC3/skew (Karkkainen-Sanders)~~ done — verified — analysis record, historical (decision: ADR-0020) | ~~2003~~  | ~~O(n)~~             | ~~Recursive, **parallelizable**~~ |
+| ~~SA-IS (Nong-Zhang-Chan)~~ done — verified — analysis record, historical (decision: ADR-0020)       | ~~2009~~  | ~~O(n)~~             | ~~<100 lines, fastest practical~~ |
+| ~~DivSufSort (Mori)~~ done — verified — analysis record, historical (decision: ADR-0020)             | ~~~2008~~ | ~~O(n log n) worst~~ | ~~Fastest in practice~~           |
+| ~~libsaiss (Grebnov)~~ done — verified — analysis record, historical (decision: ADR-0020)            | ~~2021~~  | ~~O(n)~~             | ~~65% faster than DivSufSort~~    |
 
 **LCP construction:**
 
-| Algorithm             | Year | Time |
-| --------------------- | ---- | ---- |
-| ~~Kasai (FLAAP)~~ done — verified — analysis record, historical (decision: ADR-0020) | ~~2001~~ | ~~O(n)~~ |
+| Algorithm                                                                                    | Year     | Time     |
+| -------------------------------------------------------------------------------------------- | -------- | -------- |
+| ~~Kasai (FLAAP)~~ done — verified — analysis record, historical (decision: ADR-0020)         | ~~2001~~ | ~~O(n)~~ |
 | ~~Fischer (SA-IS based)~~ done — verified — analysis record, historical (decision: ADR-0020) | ~~2011~~ | ~~O(n)~~ |
 
-| Property                  | Value                                                      |
-| ------------------------- | ---------------------------------------------------------- |
-| ~~Construction time~~ done — verified — analysis record, historical (decision: ADR-0020) | ~~O(n) sequential~~ |
-| ~~Parallel construction~~ done — verified — analysis record, historical (decision: ADR-0020) | ~~**Yes** — Shun-Blelloch (2014): O(n) work, O(log^2 n) span~~ |
-| ~~Search (maximal repeats)~~ done — verified — analysis record, historical (decision: ADR-0020) | ~~O(n) via LCP scan~~ |
-| ~~Memory~~ done — verified — analysis record, historical (decision: ADR-0020) | ~~**8n bytes** (4n SA + 4n LCP) — contiguous arrays~~ |
-| ~~Implementation complexity~~ done — verified — analysis record, historical (decision: ADR-0020) | ~~Moderate (SA-IS <100 lines, Kasai ~30 lines)~~ |
-| ~~Online/incremental~~ done — verified — analysis record, historical (decision: ADR-0020) | ~~**No** — batch construction only~~ |
-| ~~Cache locality~~ done — verified — analysis record, historical (decision: ADR-0020) | ~~Excellent (contiguous int arrays)~~ |
+| Property                                                                                         | Value                                                          |
+| ------------------------------------------------------------------------------------------------ | -------------------------------------------------------------- |
+| ~~Construction time~~ done — verified — analysis record, historical (decision: ADR-0020)         | ~~O(n) sequential~~                                            |
+| ~~Parallel construction~~ done — verified — analysis record, historical (decision: ADR-0020)     | ~~**Yes** — Shun-Blelloch (2014): O(n) work, O(log^2 n) span~~ |
+| ~~Search (maximal repeats)~~ done — verified — analysis record, historical (decision: ADR-0020)  | ~~O(n) via LCP scan~~                                          |
+| ~~Memory~~ done — verified — analysis record, historical (decision: ADR-0020)                    | ~~**8n bytes** (4n SA + 4n LCP) — contiguous arrays~~          |
+| ~~Implementation complexity~~ done — verified — analysis record, historical (decision: ADR-0020) | ~~Moderate (SA-IS <100 lines, Kasai ~30 lines)~~               |
+| ~~Online/incremental~~ done — verified — analysis record, historical (decision: ADR-0020)        | ~~**No** — batch construction only~~                           |
+| ~~Cache locality~~ done — verified — analysis record, historical (decision: ADR-0020)            | ~~Excellent (contiguous int arrays)~~                          |
 
 **Finding maximal repeats with LCP**: Scan the LCP array for local plateaus where `LCP[i] >= threshold`. Each plateau defines a group of suffixes sharing a common prefix of at least that length. This is O(n) and trivially parallelizable (scan disjoint ranges).
 
@@ -88,12 +88,12 @@ Abouelhoda, Kurtz & Ohlebusch (2004) proved that a suffix array augmented with a
 
 The ESA adds a **child table** (encoding parent-child relationships of the virtual suffix tree) and optionally a **suffix link table**. This enables top-down, bottom-up, and suffix-link traversals on array structures.
 
-| Property                   | Value                                                |
-| -------------------------- | ---------------------------------------------------- |
-| ~~Construction~~ done — verified — analysis record, historical (decision: ADR-0020) | ~~O(n)~~ |
-| ~~Memory~~ done — verified — analysis record, historical (decision: ADR-0020) | ~~~12n bytes (SA + LCP + child table)~~ |
-| ~~All suffix tree traversals~~ done — verified — analysis record, historical (decision: ADR-0020) | ~~Supported~~ |
-| ~~Advantage over SA+LCP~~ done — verified — analysis record, historical (decision: ADR-0020) | ~~Enables hierarchical clone detection (nested clones)~~ |
+| Property                                                                                          | Value                                                    |
+| ------------------------------------------------------------------------------------------------- | -------------------------------------------------------- |
+| ~~Construction~~ done — verified — analysis record, historical (decision: ADR-0020)               | ~~O(n)~~                                                 |
+| ~~Memory~~ done — verified — analysis record, historical (decision: ADR-0020)                     | ~~~12n bytes (SA + LCP + child table)~~                  |
+| ~~All suffix tree traversals~~ done — verified — analysis record, historical (decision: ADR-0020) | ~~Supported~~                                            |
+| ~~Advantage over SA+LCP~~ done — verified — analysis record, historical (decision: ADR-0020)      | ~~Enables hierarchical clone detection (nested clones)~~ |
 
 ### 3.4 Winnowing (Fingerprinting)
 
@@ -101,37 +101,37 @@ Schleimer, Wilkerson & Aiken (2003). The algorithm powering **MOSS**.
 
 Pipeline: tokenize -> k-grams -> rolling hash (Karp-Rabin) -> winnow (select minimum hash per window of size w) -> compare fingerprints.
 
-| Property            | Value                                                       |
-| ------------------- | ----------------------------------------------------------- |
-| ~~Construction~~ done — verified — analysis record, historical (decision: ADR-0020) | ~~O(n)~~ |
-| ~~Memory~~ done — verified — analysis record, historical (decision: ADR-0020) | ~~**O(n / (w+1))** — sparse!~~ |
+| Property                                                                                   | Value                                                           |
+| ------------------------------------------------------------------------------------------ | --------------------------------------------------------------- |
+| ~~Construction~~ done — verified — analysis record, historical (decision: ADR-0020)        | ~~O(n)~~                                                        |
+| ~~Memory~~ done — verified — analysis record, historical (decision: ADR-0020)              | ~~**O(n / (w+1))** — sparse!~~                                  |
 | ~~Detection guarantee~~ done — verified — analysis record, historical (decision: ADR-0020) | ~~Any shared substring of length >= t = w + k - 1 is detected~~ |
-| ~~Lossless?~~ done — verified — analysis record, historical (decision: ADR-0020) | ~~**No** — misses clones shorter than t~~ |
-| ~~Implementation~~ done — verified — analysis record, historical (decision: ADR-0020) | ~~~15 lines of core logic~~ |
-| ~~Production usage~~ done — verified — analysis record, historical (decision: ADR-0020) | ~~MOSS, most plagiarism detectors~~ |
+| ~~Lossless?~~ done — verified — analysis record, historical (decision: ADR-0020)           | ~~**No** — misses clones shorter than t~~                       |
+| ~~Implementation~~ done — verified — analysis record, historical (decision: ADR-0020)      | ~~~15 lines of core logic~~                                     |
+| ~~Production usage~~ done — verified — analysis record, historical (decision: ADR-0020)    | ~~MOSS, most plagiarism detectors~~                             |
 
 ### 3.5 Rolling Hash + Bucket Extend (PMD CPD)
 
 What **SonarQube's** copy-paste detector uses. Karp-Rabin rolling hash over token windows, stored in a HashMap (no winnowing/subsampling). Matches in the same bucket are extended by direct token comparison.
 
-| Property         | Value                                            |
-| ---------------- | ------------------------------------------------ |
-| ~~Construction~~ done — verified — analysis record, historical (decision: ADR-0020) | ~~O(n)~~ |
-| ~~Memory~~ done — verified — analysis record, historical (decision: ADR-0020) | ~~O(n) — every window hash is stored~~ |
-| ~~Lossless?~~ done — verified — analysis record, historical (decision: ADR-0020) | ~~Yes for exact token matches at window boundaries~~ |
-| ~~Implementation~~ done — verified — analysis record, historical (decision: ADR-0020) | ~~Simple~~ |
-| ~~Production usage~~ done — verified — analysis record, historical (decision: ADR-0020) | ~~SonarQube CPD, PMD~~ |
+| Property                                                                                | Value                                                |
+| --------------------------------------------------------------------------------------- | ---------------------------------------------------- |
+| ~~Construction~~ done — verified — analysis record, historical (decision: ADR-0020)     | ~~O(n)~~                                             |
+| ~~Memory~~ done — verified — analysis record, historical (decision: ADR-0020)           | ~~O(n) — every window hash is stored~~               |
+| ~~Lossless?~~ done — verified — analysis record, historical (decision: ADR-0020)        | ~~Yes for exact token matches at window boundaries~~ |
+| ~~Implementation~~ done — verified — analysis record, historical (decision: ADR-0020)   | ~~Simple~~                                           |
+| ~~Production usage~~ done — verified — analysis record, historical (decision: ADR-0020) | ~~SonarQube CPD, PMD~~                               |
 
 ### 3.6 AST + Locality Sensitive Hashing (Deckard)
 
 Jiang, Su & Chiu (2007). Computes characteristic vectors for AST subtrees, then uses LSH to cluster similar subtrees.
 
-| Property         | Value                                                    |
-| ---------------- | -------------------------------------------------------- |
-| ~~Construction~~ done — verified — analysis record, historical (decision: ADR-0020) | ~~O(n)~~ |
-| ~~Memory~~ done — verified — analysis record, historical (decision: ADR-0020) | ~~O(n) for vectors + hash buckets~~ |
-| ~~Clone type~~ done — verified — analysis record, historical (decision: ADR-0020) | ~~**Type 3** (near-miss) — finds structurally similar code~~ |
-| ~~Production usage~~ done — verified — analysis record, historical (decision: ADR-0020) | ~~Academic, influenced later tools~~ |
+| Property                                                                                | Value                                                        |
+| --------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
+| ~~Construction~~ done — verified — analysis record, historical (decision: ADR-0020)     | ~~O(n)~~                                                     |
+| ~~Memory~~ done — verified — analysis record, historical (decision: ADR-0020)           | ~~O(n) for vectors + hash buckets~~                          |
+| ~~Clone type~~ done — verified — analysis record, historical (decision: ADR-0020)       | ~~**Type 3** (near-miss) — finds structurally similar code~~ |
+| ~~Production usage~~ done — verified — analysis record, historical (decision: ADR-0020) | ~~Academic, influenced later tools~~                         |
 
 ### 3.7 Inverted Index (SourcererCC)
 
@@ -141,14 +141,14 @@ Sajnani, Saini, Svajlenko et al. (2016). Information-retrieval approach with fil
 
 ## 4. What Production Clone Detectors Actually Use
 
-| Tool              | Core Algorithm        | Notes                                                      |
-| ----------------- | --------------------- | ---------------------------------------------------------- |
-| ~~**CCFinder**~~ done — verified — analysis record, historical (decision: ADR-0020) | ~~Suffix tree~~ | ~~Only major tool using suffix trees; memory issues at scale~~ |
-| ~~**MOSS**~~ done — verified — analysis record, historical (decision: ADR-0020) | ~~Winnowing~~ | ~~The academic standard for plagiarism detection~~ |
-| ~~**SonarQube CPD**~~ done — verified — analysis record, historical (decision: ADR-0020) | ~~Rolling hash + bucket~~ | ~~Production-grade, scales well~~ |
-| ~~**Deckard**~~ done — verified — analysis record, historical (decision: ADR-0020) | ~~AST + LSH~~ | ~~Near-miss clone detection~~ |
-| ~~**SourcererCC**~~ done — verified — analysis record, historical (decision: ADR-0020) | ~~Inverted index~~ | ~~250 MLOC on 12 GB~~ |
-| ~~**Simian**~~ done — verified — analysis record, historical (decision: ADR-0020) | ~~Line-based hash~~ | ~~Simplest, fastest, limited to Type 1/2~~ |
+| Tool                                                                                     | Core Algorithm            | Notes                                                          |
+| ---------------------------------------------------------------------------------------- | ------------------------- | -------------------------------------------------------------- |
+| ~~**CCFinder**~~ done — verified — analysis record, historical (decision: ADR-0020)      | ~~Suffix tree~~           | ~~Only major tool using suffix trees; memory issues at scale~~ |
+| ~~**MOSS**~~ done — verified — analysis record, historical (decision: ADR-0020)          | ~~Winnowing~~             | ~~The academic standard for plagiarism detection~~             |
+| ~~**SonarQube CPD**~~ done — verified — analysis record, historical (decision: ADR-0020) | ~~Rolling hash + bucket~~ | ~~Production-grade, scales well~~                              |
+| ~~**Deckard**~~ done — verified — analysis record, historical (decision: ADR-0020)       | ~~AST + LSH~~             | ~~Near-miss clone detection~~                                  |
+| ~~**SourcererCC**~~ done — verified — analysis record, historical (decision: ADR-0020)   | ~~Inverted index~~        | ~~250 MLOC on 12 GB~~                                          |
+| ~~**Simian**~~ done — verified — analysis record, historical (decision: ADR-0020)        | ~~Line-based hash~~       | ~~Simplest, fastest, limited to Type 1/2~~                     |
 
 **Industry consensus**: Hash-based fingerprinting dominates production. Suffix trees are academically elegant but lose to fingerprinting at scale due to memory pressure. Only CCFinder uses suffix trees, and it hits OOM on large codebases.
 
@@ -167,24 +167,24 @@ Sajnani, Saini, Svajlenko et al. (2016). Information-retrieval approach with fil
 
 ### 5.2 Memory comparison (for N = 200K tokens)
 
-| Approach            | Tree/Array overhead    | Data | []*Node | Total  | vs Current      |
-| ------------------- | ---------------------- | ---- | ------- | ------ | --------------- |
-| ~~Current (Ukkonen)~~ done — verified — analysis record, historical (decision: ADR-0020) | ~~~16-24N (states+trans)~~ | ~~4N~~ | ~~8N~~ | ~~28-36N~~ | ~~baseline~~ |
-| ~~SA + LCP~~ done — verified — analysis record, historical (decision: ADR-0020) | ~~8N (SA + LCP arrays)~~ | ~~4N~~ | ~~8N~~ | ~~20N~~ | ~~**-30 to -44%**~~ |
-| ~~ESA (SA+LCP+child)~~ done — verified — analysis record, historical (decision: ADR-0020) | ~~12N~~ | ~~4N~~ | ~~8N~~ | ~~24N~~ | ~~**-14 to -33%**~~ |
-| ~~Winnowing~~ done — verified — analysis record, historical (decision: ADR-0020) | ~~~0.5N (sparse)~~ | ~~4N~~ | ~~8N~~ | ~~12.5N~~ | ~~**-56 to -65%**~~ |
-| ~~Rolling hash bucket~~ done — verified — analysis record, historical (decision: ADR-0020) | ~~~8N (hash map)~~ | ~~4N~~ | ~~8N~~ | ~~20N~~ | ~~**-30 to -44%**~~ |
+| Approach                                                                                   | Tree/Array overhead        | Data   | []*Node | Total      | vs Current          |
+| ------------------------------------------------------------------------------------------ | -------------------------- | ------ | ------- | ---------- | ------------------- |
+| ~~Current (Ukkonen)~~ done — verified — analysis record, historical (decision: ADR-0020)   | ~~~16-24N (states+trans)~~ | ~~4N~~ | ~~8N~~  | ~~28-36N~~ | ~~baseline~~        |
+| ~~SA + LCP~~ done — verified — analysis record, historical (decision: ADR-0020)            | ~~8N (SA + LCP arrays)~~   | ~~4N~~ | ~~8N~~  | ~~20N~~    | ~~**-30 to -44%**~~ |
+| ~~ESA (SA+LCP+child)~~ done — verified — analysis record, historical (decision: ADR-0020)  | ~~12N~~                    | ~~4N~~ | ~~8N~~  | ~~24N~~    | ~~**-14 to -33%**~~ |
+| ~~Winnowing~~ done — verified — analysis record, historical (decision: ADR-0020)           | ~~~0.5N (sparse)~~         | ~~4N~~ | ~~8N~~  | ~~12.5N~~  | ~~**-56 to -65%**~~ |
+| ~~Rolling hash bucket~~ done — verified — analysis record, historical (decision: ADR-0020) | ~~~8N (hash map)~~         | ~~4N~~ | ~~8N~~  | ~~20N~~    | ~~**-30 to -44%**~~ |
 
 **Critical insight**: The `[]*syntax.Node` (8N) is the **irreducible floor** for all approaches that need position-to-AST mapping. Even a zero-cost tree wouldn't get below 8N. This is the true architectural debt.
 
 ### 5.3 Speed comparison
 
-| Approach          | Construction    | Search (maximal repeats) | Parallelizable?          |
-| ----------------- | --------------- | ------------------------ | ------------------------ |
-| ~~Ukkonen (current)~~ done — verified — analysis record, historical (decision: ADR-0020) | ~~O(n) sequential~~ | ~~O(n) DFS~~ | ~~Search only (done)~~ |
-| ~~SA-IS + LCP~~ done — verified — analysis record, historical (decision: ADR-0020) | ~~O(n) sequential~~ | ~~O(n) LCP scan~~ | ~~**Both** (Shun-Blelloch)~~ |
-| ~~Winnowing~~ done — verified — analysis record, historical (decision: ADR-0020) | ~~O(n)~~ | ~~O(n) hash comparison~~ | ~~Both~~ |
-| ~~Rolling hash~~ done — verified — analysis record, historical (decision: ADR-0020) | ~~O(n)~~ | ~~O(n) bucket scan~~ | ~~Both~~ |
+| Approach                                                                                 | Construction        | Search (maximal repeats) | Parallelizable?              |
+| ---------------------------------------------------------------------------------------- | ------------------- | ------------------------ | ---------------------------- |
+| ~~Ukkonen (current)~~ done — verified — analysis record, historical (decision: ADR-0020) | ~~O(n) sequential~~ | ~~O(n) DFS~~             | ~~Search only (done)~~       |
+| ~~SA-IS + LCP~~ done — verified — analysis record, historical (decision: ADR-0020)       | ~~O(n) sequential~~ | ~~O(n) LCP scan~~        | ~~**Both** (Shun-Blelloch)~~ |
+| ~~Winnowing~~ done — verified — analysis record, historical (decision: ADR-0020)         | ~~O(n)~~            | ~~O(n) hash comparison~~ | ~~Both~~                     |
+| ~~Rolling hash~~ done — verified — analysis record, historical (decision: ADR-0020)      | ~~O(n)~~            | ~~O(n) bucket scan~~     | ~~Both~~                     |
 
 Cache locality advantage of array-based approaches (SA, LCP) over pointer-based (tree) is typically 2-5x in practice due to modern CPU cache hierarchies.
 
@@ -257,14 +257,14 @@ This would extend scalability dramatically (SourcererCC-style) while maintaining
 
 ## 7. Summary: What the Science Says
 
-| Question                          | Answer                                                                              |
-| --------------------------------- | ----------------------------------------------------------------------------------- |
-| ~~Is Ukkonen's the best algorithm?~~ done — verified — analysis record, historical (decision: ADR-0020) | ~~**No** — suffix arrays are superior for batch use cases like clone detection~~ |
+| Question                                                                                                                | Answer                                                                                  |
+| ----------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| ~~Is Ukkonen's the best algorithm?~~ done — verified — analysis record, historical (decision: ADR-0020)                 | ~~**No** — suffix arrays are superior for batch use cases like clone detection~~        |
 | ~~Can construction be parallelized?~~ **Superseded — ADR-0022 adopted contiguous int32 arrays within the suffix tree.** | ~~**Yes, with suffix arrays** (Shun-Blelloch 2014). Ukkonen's cannot be parallelized.~~ |
-| ~~Should we switch?~~ done — decided — stayed with the suffix tree; made memory-compact (ADR-0022) | ~~**Not urgently** — current works, but SA is the clear medium-term upgrade path~~ |
-| ~~What's the real bottleneck?~~ done — Node layout compacted; arena serialization (ADR-0022, AGENTS.md) | ~~**`[]*syntax.Node` (8N bytes)**, not the tree structure itself~~ |
-| ~~What do production tools use?~~ done — verified — analysis record, historical (decision: ADR-0020) | ~~Hash-based fingerprinting (MOSS, SonarQube). Only CCFinder uses suffix trees.~~ |
-| ~~Is there a free lunch?~~ done — verified — analysis record, historical (decision: ADR-0020) | ~~**No** — every approach trades something (memory vs. completeness vs. complexity)~~ |
+| ~~Should we switch?~~ done — decided — stayed with the suffix tree; made memory-compact (ADR-0022)                      | ~~**Not urgently** — current works, but SA is the clear medium-term upgrade path~~      |
+| ~~What's the real bottleneck?~~ done — Node layout compacted; arena serialization (ADR-0022, AGENTS.md)                 | ~~**`[]*syntax.Node` (8N bytes)**, not the tree structure itself~~                      |
+| ~~What do production tools use?~~ done — verified — analysis record, historical (decision: ADR-0020)                    | ~~Hash-based fingerprinting (MOSS, SonarQube). Only CCFinder uses suffix trees.~~       |
+| ~~Is there a free lunch?~~ done — verified — analysis record, historical (decision: ADR-0020)                           | ~~**No** — every approach trades something (memory vs. completeness vs. complexity)~~   |
 
 ---
 

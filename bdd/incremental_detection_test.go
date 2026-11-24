@@ -3,7 +3,6 @@ package bdd
 import (
 	"os"
 	"path/filepath"
-	"time"
 
 	"github.com/LarsArtmann/art-dupl/internal/testutil"
 	. "github.com/onsi/ginkgo/v2"
@@ -137,23 +136,23 @@ func ModifiedTest() {
 			cacheDir := filepath.Join(setup.TmpDir, ".cache", "art-dupl")
 
 			// First run
-			start1 := time.Now()
 			_, err = setup.RunArtDupl("--incremental", "--cache-dir", cacheDir, "-t", "1")
-			duration1 := time.Since(start1)
-
 			Expect(err).ToNot(HaveOccurred())
 
 			// Second run
-			start2 := time.Now()
 			_, err = setup.RunArtDupl("--incremental", "--cache-dir", cacheDir, "-t", "1")
-			duration2 := time.Since(start2)
-
 			Expect(err).ToNot(HaveOccurred())
 
-			// Second run should be faster or similar (cache hit)
-			// Note: For very small files, the difference might be negligible
-			// so we just verify both complete successfully
-			Expect(duration2).To(BeNumerically("<=", duration1*5)) // Allow some variance
+			// The cache-hit contract: --incremental persisted entries that the
+			// second run consumed. The wall-clock assertion this replaces
+			// (duration2 <= duration1*5) was flake-by-design on shared CI
+			// runners: run1 could land unusually fast and a scheduling hiccup
+			// then broke the ratio (macos lane, 2026-11-24). Whether run2 is
+			// actually faster is a benchmark question (docs/benchmarks/), not
+			// a unit-test assertion.
+			entries, err := os.ReadDir(filepath.Join(cacheDir, "files"))
+			Expect(err).ToNot(HaveOccurred())
+			Expect(entries).ToNot(BeEmpty())
 		})
 	})
 

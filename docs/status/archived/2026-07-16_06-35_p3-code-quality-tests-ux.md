@@ -15,6 +15,7 @@
 ### Integration Tests (6 tests, all passing)
 
 <!-- check-rows:ledger -->
+
 | Test                                                                    | What it verifies                                                                                                                  |
 | ----------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
 | `TestEvaluateActionabilityWithLabel_ErrorWrapping`                      | `if err != nil { return fmt.Errorf(...) }` → NonActionable (gets `error-propagation` label, NOT `error-wrapping` — see section d) |
@@ -54,6 +55,7 @@
 - `validateDiffMode` — now includes "(valid: side-by-side, inline; use --diff)"
 
 ### Documentation
+
 <!-- check-rows:ledger -->
 
 | Document                               | What was added                                                                                                                               |

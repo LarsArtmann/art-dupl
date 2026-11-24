@@ -21,6 +21,7 @@ This session was told: "break it down, execute, verify, repeat until done."
 ## A) FULLY DONE
 
 <!-- check-rows:ledger -->
+
 | #  | Item                                                                                       | Verification                                                                                                                                        |
 | -- | ------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 1  | **Removed `tagliatelle` from `.golangci.yml` enable list**                                 | `grep tagliatelle .golangci.yml` returns nothing                                                                                                    |
@@ -41,6 +42,7 @@ This session was told: "break it down, execute, verify, repeat until done."
 ## B) PARTIALLY DONE
 
 <!-- check-rows:ledger -->
+
 | # | Item                                     | What's done                                      | What's missing                                                                                                                 |
 | - | ---------------------------------------- | ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------ |
 | 1 | **Push fix to origin/fork**              | Fix committed locally (`e2401ae6`)               | `origin/fork` still at `52d677d2` (has tagliatelle). Not pushed — per project rules, never push without explicit user request. |
@@ -51,15 +53,15 @@ This session was told: "break it down, execute, verify, repeat until done."
 
 ## C) NOT STARTED
 
-| # | Item                                                   | Why it matters                                                                                                                                                                                                                            |
-| - | ------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| ~~1~~ done — the CHANGELOG carries the entry (maintained continuously) | ~~**CHANGELOG `[Unreleased]` entry for tagliatelle fix**~~ | ~~Post-release fix should be recorded. Currently `[Unreleased]` section is empty/absent.~~ |
-| ~~2~~ done — the living docs are maintained (docs-health cadence; the count gates own the numbers) | ~~**TODO_LIST.md update**~~ | ~~"Last Updated: 2026-07-26" — stale by 2 days and a release. Several items shipped in v0.6.0 (property engine, actionability patterns, denylist rename). The `interface-method` TODO says "pattern #20" but it's actually #3 in the table.~~ |
-| ~~3~~ done — e2401ae6 is on origin/fork | ~~**Push to origin/fork**~~ | ~~Anyone building from origin HEAD gets broken lint.~~ |
-| ~~4~~ done — fixed — lint is 106-linter clean since 2026-09-29 (AGENTS.md); the flaky os.Exit tests were fixed | ~~**Tag strategy decision**~~ | ~~v0.6.0 tag sits on daemon commit `131464da`, not a clean `chore(release)` commit. HEAD is now clean but post-tag. Cut v0.6.1? Move tag? Neither?~~ |
-| ~~5~~ done — fixed — lint is 106-linter clean since 2026-09-29 (AGENTS.md); the flaky os.Exit tests were fixed | ~~**Root cause of daemon re-enabling linters**~~ | ~~5th occurrence. The `scripts/check-disabled-linters.sh` guard is a nix check AND a pre-commit hook, but the daemon bypasses hooks. No investigation of daemon config attempted.~~ |
-| ~~6~~ **Won't implement — won't implement — no feature flag was added.** | ~~**Extractability engine feature flag**~~ | ~~Self-review asked if it should be behind a flag. Not investigated.~~ |
-| ~~7~~ **Won't implement — won't implement — the release lanes ship without bundled binaries.** | ~~**Binary artifact for GitHub release**~~ | ~~v0.6.0 GitHub release has 0 binary artifacts. Users must build from source/nix.~~ |
+| #                                                                                                              | Item                                                       | Why it matters                                                                                                                                                                                                                                |
+| -------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ~~1~~ done — the CHANGELOG carries the entry (maintained continuously)                                         | ~~**CHANGELOG `[Unreleased]` entry for tagliatelle fix**~~ | ~~Post-release fix should be recorded. Currently `[Unreleased]` section is empty/absent.~~                                                                                                                                                    |
+| ~~2~~ done — the living docs are maintained (docs-health cadence; the count gates own the numbers)             | ~~**TODO_LIST.md update**~~                                | ~~"Last Updated: 2026-07-26" — stale by 2 days and a release. Several items shipped in v0.6.0 (property engine, actionability patterns, denylist rename). The `interface-method` TODO says "pattern #20" but it's actually #3 in the table.~~ |
+| ~~3~~ done — e2401ae6 is on origin/fork                                                                        | ~~**Push to origin/fork**~~                                | ~~Anyone building from origin HEAD gets broken lint.~~                                                                                                                                                                                        |
+| ~~4~~ done — fixed — lint is 106-linter clean since 2026-09-29 (AGENTS.md); the flaky os.Exit tests were fixed | ~~**Tag strategy decision**~~                              | ~~v0.6.0 tag sits on daemon commit `131464da`, not a clean `chore(release)` commit. HEAD is now clean but post-tag. Cut v0.6.1? Move tag? Neither?~~                                                                                          |
+| ~~5~~ done — fixed — lint is 106-linter clean since 2026-09-29 (AGENTS.md); the flaky os.Exit tests were fixed | ~~**Root cause of daemon re-enabling linters**~~           | ~~5th occurrence. The `scripts/check-disabled-linters.sh` guard is a nix check AND a pre-commit hook, but the daemon bypasses hooks. No investigation of daemon config attempted.~~                                                           |
+| ~~6~~ **Won't implement — won't implement — no feature flag was added.**                                       | ~~**Extractability engine feature flag**~~                 | ~~Self-review asked if it should be behind a flag. Not investigated.~~                                                                                                                                                                        |
+| ~~7~~ **Won't implement — won't implement — the release lanes ship without bundled binaries.**                 | ~~**Binary artifact for GitHub release**~~                 | ~~v0.6.0 GitHub release has 0 binary artifacts. Users must build from source/nix.~~                                                                                                                                                           |
 
 ---
 
@@ -130,10 +132,10 @@ Nothing in this session was destructive or incorrect. However, here are honest s
 
 5. Update `TODO_LIST.md` — mark completed items, fix "pattern #20" → "#3", update "Last Updated"
 6. Add `check-disabled-linters.sh` as a server-side/receive hook on origin
-~~7. Modernize `b.N` → `b.Loop()` in `extractability_bench_test.go`~~ **Won't implement — won't implement — no feature flag was added.**
-~~8. Update `RELEASE.md` with a "pause daemon or acknowledge auto-commit" step~~ **Won't implement — won't implement — the release lanes ship without bundled binaries.**
-9. Verify commit `7b1e5e60` didn't change anything beyond tagliatelle + whitespace
-10. Add CHANGELOG `[Unreleased]` section if it doesn't exist
+   ~~7. Modernize `b.N` → `b.Loop()` in `extractability_bench_test.go`~~ **Won't implement — won't implement — no feature flag was added.**
+   ~~8. Update `RELEASE.md` with a "pause daemon or acknowledge auto-commit" step~~ **Won't implement — won't implement — the release lanes ship without bundled binaries.**
+7. Verify commit `7b1e5e60` didn't change anything beyond tagliatelle + whitespace
+8. Add CHANGELOG `[Unreleased]` section if it doesn't exist
 
 ### Medium Priority (features/infrastructure)
 
@@ -152,34 +154,34 @@ Nothing in this session was destructive or incorrect. However, here are honest s
 
 21. Clear stale `runtime` LSP diagnostic permanently (may need LSP cache wipe)
 22. Reorder ACTIONABILITY_PATTERNS.md reference table to match priority order (or add a note explaining the thematic ordering)
-~~23. Update ROADMAP.md "22 patterns" mentions to clarify table vs property engine split~~ done — ROADMAP states the current split (30 denylist + 4 property-engine labels; AGENTS.md)
-24. Add `--version` check to release checklist (verify binary prints correct version post-build)
-25. Consider auto-generating AGENTS.md pattern count from code
-26. Add integration test that verifies `.golangci.yml` doesn't contain disabled linters (beyond shell script)
-27. Document the daemon's behavior in RELEASE.md or a new `docs/DAEMON.md`
-28. Add `nix build && ./result/bin/art-dupl version` as a post-fix verification step in release checklist
-29. Consider feature flag for extractability engine (`--no-extractability` or similar)
-30. Review whether the 833-line `.golangci.yml` rewrite in `7b1e5e60` introduced unnecessary complexity
-31. Audit all `.golangci.yml` settings against current codebase needs
-32. Consider adding `tagliatelle` settings block (empty) to prevent future re-enablement confusion
-33. Add CI step that runs `git diff origin/fork..HEAD -- .golangci.yml` before push
-34. Track daemon commit patterns to predict and prevent regressions
-35. Consider git attributes or hooks that reject `.golangci.yml` changes from non-human committers
-36. Add `docs/CONTRIBUTING.md` section on linter configuration policy
-37. Review whether `exhaustruct` exclusion is still needed or if the codebase has evolved
-38. ~~Add property engine ADR cross-reference to CHANGELOG~~ **Won't implement — CHANGELOG is append-only (docs-health canon forbids editing shipped entries); ADR-0017 already cross-referenced from FEATURES.md + docs/ACTIONABILITY_PATTERNS.md.**
-39. Consider splitting `.golangci.yml` into base + override files for easier review
-40. Add test that verifies `AllActionabilityPatterns()` count matches `actionabilityPatternTable` length
-41. Document the daemon's commit message patterns for easier identification
-42. Add `just`/`nix` task for one-command release verification
-43. Consider conventional-commits enforcement for daemon commits
-44. Add release artifact checksums (SHA256) to GitHub releases
-45. Set up `goreleaser` or equivalent for multi-platform binary builds
-46. Add `--no-actionability` flag to `stats`/`baseline`/`check` subcommands (currently root-only)
-47. Review whether the property engine should suppress `low-confidence` clones by default
-48. Add benchmark comparing tagliatelle-enabled vs disabled lint performance
-49. Consider migrating `.golangci.yml` to v2 schema if not already
-50. Celebrate shipping v0.6.0 — it's a real release with real features
+    ~~23. Update ROADMAP.md "22 patterns" mentions to clarify table vs property engine split~~ done — ROADMAP states the current split (30 denylist + 4 property-engine labels; AGENTS.md)
+23. Add `--version` check to release checklist (verify binary prints correct version post-build)
+24. Consider auto-generating AGENTS.md pattern count from code
+25. Add integration test that verifies `.golangci.yml` doesn't contain disabled linters (beyond shell script)
+26. Document the daemon's behavior in RELEASE.md or a new `docs/DAEMON.md`
+27. Add `nix build && ./result/bin/art-dupl version` as a post-fix verification step in release checklist
+28. Consider feature flag for extractability engine (`--no-extractability` or similar)
+29. Review whether the 833-line `.golangci.yml` rewrite in `7b1e5e60` introduced unnecessary complexity
+30. Audit all `.golangci.yml` settings against current codebase needs
+31. Consider adding `tagliatelle` settings block (empty) to prevent future re-enablement confusion
+32. Add CI step that runs `git diff origin/fork..HEAD -- .golangci.yml` before push
+33. Track daemon commit patterns to predict and prevent regressions
+34. Consider git attributes or hooks that reject `.golangci.yml` changes from non-human committers
+35. Add `docs/CONTRIBUTING.md` section on linter configuration policy
+36. Review whether `exhaustruct` exclusion is still needed or if the codebase has evolved
+37. ~~Add property engine ADR cross-reference to CHANGELOG~~ **Won't implement — CHANGELOG is append-only (docs-health canon forbids editing shipped entries); ADR-0017 already cross-referenced from FEATURES.md + docs/ACTIONABILITY_PATTERNS.md.**
+38. Consider splitting `.golangci.yml` into base + override files for easier review
+39. Add test that verifies `AllActionabilityPatterns()` count matches `actionabilityPatternTable` length
+40. Document the daemon's commit message patterns for easier identification
+41. Add `just`/`nix` task for one-command release verification
+42. Consider conventional-commits enforcement for daemon commits
+43. Add release artifact checksums (SHA256) to GitHub releases
+44. Set up `goreleaser` or equivalent for multi-platform binary builds
+45. Add `--no-actionability` flag to `stats`/`baseline`/`check` subcommands (currently root-only)
+46. Review whether the property engine should suppress `low-confidence` clones by default
+47. Add benchmark comparing tagliatelle-enabled vs disabled lint performance
+48. Consider migrating `.golangci.yml` to v2 schema if not already
+49. Celebrate shipping v0.6.0 — it's a real release with real features
 
 ---
 

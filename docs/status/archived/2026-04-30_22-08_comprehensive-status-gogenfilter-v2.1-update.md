@@ -167,11 +167,11 @@ From TODO_LIST.md and FEATURES.md:
 11. Update README with semantic detection defaults
 12. Implement proper CSV output via `encoding/csv`
 13. Split `printer/stats.go` (727 lines)
-~~14. Split `domain/clone.go` (495 lines)~~ superseded — domain/clone.go no longer exists
-15. Increase `internal/filtertest` coverage above 80%
-16. Increase `bdd` coverage above 80%
-17. Archive old `docs/status/` reports (>30 days)
-18. Remove or implement SIMD scaffolding (7 TODOs)
+    ~~14. Split `domain/clone.go` (495 lines)~~ superseded — domain/clone.go no longer exists
+14. Increase `internal/filtertest` coverage above 80%
+15. Increase `bdd` coverage above 80%
+16. Archive old `docs/status/` reports (>30 days)
+17. Remove or implement SIMD scaffolding (7 TODOs)
 
 ### Low (P3)
 

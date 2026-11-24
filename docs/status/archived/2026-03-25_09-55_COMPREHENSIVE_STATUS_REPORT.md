@@ -180,7 +180,7 @@
 
 6. Fix gosec G115 integer overflow warnings
 7. Fix gosec G301/G304/G306 file permission issues
-~~8. Add SARIF output format for CI/CD integration~~ done — SARIF ships with a byte-level golden (AGENTS.md)
+   ~~8. Add SARIF output format for CI/CD integration~~ done — SARIF ships with a byte-level golden (AGENTS.md)
 
 ### Priority 3: Code Quality (5 items)
 

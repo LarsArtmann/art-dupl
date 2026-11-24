@@ -99,9 +99,9 @@
 23. Wrapper-vs-generic reuse (`FooString` + `Foo[T]`) ROADMAP candidate — record if still declined.
 24. Stdlib-hint surface ("use maps.Keys / slices.DeleteFunc") — ROADMAP candidate from Q1, only if the collateral verdict says "spare".
 25. jsonv2 daemon-hardening owner decision (pre-commit jsonv2gate hook vs daemon exclusion list) — recurrences keep landing (the counter discrepancy is itself evidence the bookkeeping is drifting).
-~~26. Commit-or-leave `docs/status/2026-10-11_11-27_sarif-github-visibility-session.md` (foreign session report, still untracked).~~ done — the report is committed (docs/status/2026-10-11_11-27_sarif-github-visibility-session.md exists; verified 2026-11-14)
-27. `-t 1` self-scan shown-group delta for the T12 patterns (session-2 f-next item 12, still unmeasured).
-28. Consider a `TestBlockIsCollectorOnlyAll` unit test pinning the ANY/ALL semantics directly (the inversion bug had no dedicated unit — it was caught incidentally).
+    ~~26. Commit-or-leave `docs/status/2026-10-11_11-27_sarif-github-visibility-session.md` (foreign session report, still untracked).~~ done — the report is committed (docs/status/2026-10-11_11-27_sarif-github-visibility-session.md exists; verified 2026-11-14)
+26. `-t 1` self-scan shown-group delta for the T12 patterns (session-2 f-next item 12, still unmeasured).
+27. Consider a `TestBlockIsCollectorOnlyAll` unit test pinning the ANY/ALL semantics directly (the inversion bug had no dedicated unit — it was caught incidentally).
 
 ## g) QUESTIONS (cannot figure out myself)
 

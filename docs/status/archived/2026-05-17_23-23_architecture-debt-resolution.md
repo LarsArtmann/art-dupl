@@ -160,53 +160,53 @@ Nothing totally fucked up. All changes compile and pass tests. However:
 
 ### P0 — Complete this session's work
 
-| # | Task                                                                    | Impact | Effort |
-| - | ----------------------------------------------------------------------- | ------ | ------ |
-| ~~1~~ done — the FlagValues Changed() tracking landed (commit d437f16 per the completion report) | ~~Generalize `Changed()` tracking for all bool flags in `FlagValues`~~ | ~~High~~ | ~~1h~~ |
-| ~~2~~ done — ClassificationInput landed (commit 87902c3 per the completion report) | ~~Add `ClassificationInput` struct, change `ClassifyClone` signature (#4)~~ | ~~Medium~~ | ~~30min~~ |
-| ~~3~~ done — the Name field landed in the transformer (commit 66cb17b; collectStringLiterals works today) | ~~Add `Name string` to `syntax.Node`, populate in transform.go (#3)~~ | ~~High~~ | ~~2h~~ |
-| ~~4~~ done — actionability identifier matching shipped (printer/actionability/ package) | ~~Use `Name` in `actionability.go` for real identifier matching~~ | ~~High~~ | ~~1h~~ |
-| ~~5~~ done — reflection-merge coverage landed with the config merge suite (commit 1ea1a7b) | ~~Add round-trip merge test for reflection-based `mergeConfig`~~ | ~~Medium~~ | ~~30min~~ |
+| #                                                                                                         | Task                                                                        | Impact     | Effort    |
+| --------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- | ---------- | --------- |
+| ~~1~~ done — the FlagValues Changed() tracking landed (commit d437f16 per the completion report)          | ~~Generalize `Changed()` tracking for all bool flags in `FlagValues`~~      | ~~High~~   | ~~1h~~    |
+| ~~2~~ done — ClassificationInput landed (commit 87902c3 per the completion report)                        | ~~Add `ClassificationInput` struct, change `ClassifyClone` signature (#4)~~ | ~~Medium~~ | ~~30min~~ |
+| ~~3~~ done — the Name field landed in the transformer (commit 66cb17b; collectStringLiterals works today) | ~~Add `Name string` to `syntax.Node`, populate in transform.go (#3)~~       | ~~High~~   | ~~2h~~    |
+| ~~4~~ done — actionability identifier matching shipped (printer/actionability/ package)                   | ~~Use `Name` in `actionability.go` for real identifier matching~~           | ~~High~~   | ~~1h~~    |
+| ~~5~~ done — reflection-merge coverage landed with the config merge suite (commit 1ea1a7b)                | ~~Add round-trip merge test for reflection-based `mergeConfig`~~            | ~~Medium~~ | ~~30min~~ |
 
 ### P1 — Architecture cleanup
 
-| #  | Task                                                                                     | Impact | Effort |
-| -- | ---------------------------------------------------------------------------------------- | ------ | ------ |
-| ~~6~~ done — PrintClones takes domain.ProcessedCloneGroup (printer/printer.go:82) | ~~Change Printer interface to accept `[]ProcessedCloneGroup` instead of `[][]*syntax.Node`~~ | ~~High~~ | ~~4h~~ |
-| ~~7~~ done — CloneRef consolidation landed (AGENTS.md) | ~~Consolidate three parallel Clone types into unified domain types~~ | ~~High~~ | ~~3h~~ |
-| ~~8~~ done — the unexported printer clone type is gone; format DTOs are documented legitimate | ~~Remove `printer.clone` unexported type, use `domain.ProcessedClone` everywhere~~ | ~~Medium~~ | ~~2h~~ |
-| ~~9~~ **Won't implement — won't implement — no NodeCategory field; categories dispatch via decoded base types (ADR-0027).** | ~~Extract `actionability.go` patterns to language-agnostic strategy~~ | ~~Medium~~ | ~~2h~~ |
-| ~~10~~ **Won't implement — won't implement — the AST-constant dependency is deliberate (AGENTS.md category tables).** | ~~Remove `printer/clone_classify.go` direct import of `syntax/golang`~~ | ~~Medium~~ | ~~1h~~ |
+| #                                                                                                                           | Task                                                                                         | Impact     | Effort |
+| --------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | ---------- | ------ |
+| ~~6~~ done — PrintClones takes domain.ProcessedCloneGroup (printer/printer.go:82)                                           | ~~Change Printer interface to accept `[]ProcessedCloneGroup` instead of `[][]*syntax.Node`~~ | ~~High~~   | ~~4h~~ |
+| ~~7~~ done — CloneRef consolidation landed (AGENTS.md)                                                                      | ~~Consolidate three parallel Clone types into unified domain types~~                         | ~~High~~   | ~~3h~~ |
+| ~~8~~ done — the unexported printer clone type is gone; format DTOs are documented legitimate                               | ~~Remove `printer.clone` unexported type, use `domain.ProcessedClone` everywhere~~           | ~~Medium~~ | ~~2h~~ |
+| ~~9~~ **Won't implement — won't implement — no NodeCategory field; categories dispatch via decoded base types (ADR-0027).** | ~~Extract `actionability.go` patterns to language-agnostic strategy~~                        | ~~Medium~~ | ~~2h~~ |
+| ~~10~~ **Won't implement — won't implement — the AST-constant dependency is deliberate (AGENTS.md category tables).**       | ~~Remove `printer/clone_classify.go` direct import of `syntax/golang`~~                      | ~~Medium~~ | ~~1h~~ |
 
 ### P2 — Config system hardening
 
-| #  | Task                                                                                    | Impact | Effort |
-| -- | --------------------------------------------------------------------------------------- | ------ | ------ |
-| ~~11~~ **Won't implement — won't implement — no merge struct tags; the reflection merge design won.** | ~~Add struct tags for merge behavior (`merge:"skip"` / `merge:"always"`)~~ | ~~Low~~ | ~~2h~~ |
-| ~~12~~ **Won't implement — won't implement — no exhaustive property harness; the config package tests cover the merge.** | ~~Add exhaustive config merge property test (all fields, all combinations)~~ | ~~Medium~~ | ~~1h~~ |
-| ~~13~~ **Won't implement — won't implement — no --no-semantic alias exists; the flag set is final.** | ~~Add `--no-semantic` as alias for `--structural` (clearer UX)~~ | ~~Low~~ | ~~15min~~ |
-| ~~14~~ **Won't implement — won't implement — no structural deprecation warning; structural remains a documented mode.** | ~~Deprecation warning when `--structural` is used (suggest it's the power-user mode)~~ | ~~Low~~ | ~~15min~~ |
-| ~~15~~ done — the default flip is documented (docs/adr/0002-semantic-as-default.md + README) | ~~Config migration guide: document that `semantic` default changed from `false` to `true`~~ | ~~Medium~~ | ~~30min~~ |
+| #                                                                                                                        | Task                                                                                        | Impact     | Effort    |
+| ------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------- | ---------- | --------- |
+| ~~11~~ **Won't implement — won't implement — no merge struct tags; the reflection merge design won.**                    | ~~Add struct tags for merge behavior (`merge:"skip"` / `merge:"always"`)~~                  | ~~Low~~    | ~~2h~~    |
+| ~~12~~ **Won't implement — won't implement — no exhaustive property harness; the config package tests cover the merge.** | ~~Add exhaustive config merge property test (all fields, all combinations)~~                | ~~Medium~~ | ~~1h~~    |
+| ~~13~~ **Won't implement — won't implement — no --no-semantic alias exists; the flag set is final.**                     | ~~Add `--no-semantic` as alias for `--structural` (clearer UX)~~                            | ~~Low~~    | ~~15min~~ |
+| ~~14~~ **Won't implement — won't implement — no structural deprecation warning; structural remains a documented mode.**  | ~~Deprecation warning when `--structural` is used (suggest it's the power-user mode)~~      | ~~Low~~    | ~~15min~~ |
+| ~~15~~ done — the default flip is documented (docs/adr/0002-semantic-as-default.md + README)                             | ~~Config migration guide: document that `semantic` default changed from `false` to `true`~~ | ~~Medium~~ | ~~30min~~ |
 
 ### P3 — Testing and documentation
 
-| #  | Task                                                                   | Impact | Effort |
-| -- | ---------------------------------------------------------------------- | ------ | ------ |
+| #                                                                                          | Task                                                                       | Impact     | Effort    |
+| ------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------- | ---------- | --------- |
 | ~~16~~ done — configuration-file override coverage lives in bdd/configuration_file_test.go | ~~BDD test: `--structural=false` overrides `config.json: semantic: true`~~ | ~~Medium~~ | ~~30min~~ |
-| ~~17~~ done — configuration-file override coverage lives in bdd/configuration_file_test.go | ~~BDD test: new Config field is automatically merged by reflection~~ | ~~Medium~~ | ~~30min~~ |
-| ~~18~~ done — README documents semantic as the default | ~~Update README.md: `--semantic` is now default~~ | ~~Medium~~ | ~~15min~~ |
-| ~~19~~ done — HOW_TO_USE documents semantic as the default | ~~Update HOW_TO_USE.md with new default behavior~~ | ~~Low~~ | ~~30min~~ |
-| ~~20~~ done — AGENTS.md documents the detection modes end-to-end | ~~Update AGENTS.md with new default and reflection merge info~~ | ~~Medium~~ | ~~15min~~ |
+| ~~17~~ done — configuration-file override coverage lives in bdd/configuration_file_test.go | ~~BDD test: new Config field is automatically merged by reflection~~       | ~~Medium~~ | ~~30min~~ |
+| ~~18~~ done — README documents semantic as the default                                     | ~~Update README.md: `--semantic` is now default~~                          | ~~Medium~~ | ~~15min~~ |
+| ~~19~~ done — HOW_TO_USE documents semantic as the default                                 | ~~Update HOW_TO_USE.md with new default behavior~~                         | ~~Low~~    | ~~30min~~ |
+| ~~20~~ done — AGENTS.md documents the detection modes end-to-end                           | ~~Update AGENTS.md with new default and reflection merge info~~            | ~~Medium~~ | ~~15min~~ |
 
 ### P4 — Performance and quality
 
-| #  | Task                                                                     | Impact | Effort |
-| -- | ------------------------------------------------------------------------ | ------ | ------ |
-| ~~21~~ done — moot — the reflection merge won; no comparative benchmark was needed | ~~Benchmark reflection-based merge vs old manual merge~~ | ~~Low~~ | ~~30min~~ |
-| ~~22~~ **Won't implement — won't implement — pooling was measured NO-GO for the stream slices (ADR-0022 era); Node pooling was never justified.** | ~~Consider `sync.Pool` for syntax.Node to amortize `Name` field allocation~~ | ~~Low~~ | ~~1h~~ |
-| ~~23~~ done — identifier/filename interning landed as syntax/intern.go (2026-08) | ~~String pool integration for `syntax.Node.Name` field~~ | ~~Low~~ | ~~1h~~ |
-| ~~24~~ done — moot — interning shipped instead; no separate memory profile was needed | ~~Profile memory impact of `Name string` on large codebases~~ | ~~Medium~~ | ~~1h~~ |
-| ~~25~~ **Won't implement — won't implement — exhaustruct is deliberately banned (AGENTS.md Lint Config Guard auto-removes it).** | ~~Add `golangci-lint` `exhaustruct` check for `CloneClassification`~~ | ~~Low~~ | ~~15min~~ |
+| #                                                                                                                                                 | Task                                                                         | Impact     | Effort    |
+| ------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ---------- | --------- |
+| ~~21~~ done — moot — the reflection merge won; no comparative benchmark was needed                                                                | ~~Benchmark reflection-based merge vs old manual merge~~                     | ~~Low~~    | ~~30min~~ |
+| ~~22~~ **Won't implement — won't implement — pooling was measured NO-GO for the stream slices (ADR-0022 era); Node pooling was never justified.** | ~~Consider `sync.Pool` for syntax.Node to amortize `Name` field allocation~~ | ~~Low~~    | ~~1h~~    |
+| ~~23~~ done — identifier/filename interning landed as syntax/intern.go (2026-08)                                                                  | ~~String pool integration for `syntax.Node.Name` field~~                     | ~~Low~~    | ~~1h~~    |
+| ~~24~~ done — moot — interning shipped instead; no separate memory profile was needed                                                             | ~~Profile memory impact of `Name string` on large codebases~~                | ~~Medium~~ | ~~1h~~    |
+| ~~25~~ **Won't implement — won't implement — exhaustruct is deliberately banned (AGENTS.md Lint Config Guard auto-removes it).**                  | ~~Add `golangci-lint` `exhaustruct` check for `CloneClassification`~~        | ~~Low~~    | ~~15min~~ |
 
 ---
 
@@ -243,6 +243,7 @@ ok  github.com/LarsArtmann/art-dupl/printer       0.011s
 ## Files Changed This Session
 
 <!-- check-rows:ledger -->
+
 | File                     | Lines Changed | Description                                                 |
 | ------------------------ | ------------- | ----------------------------------------------------------- |
 | `config/config.go`       | +5/-5         | Semantic default true, updated docs                         |

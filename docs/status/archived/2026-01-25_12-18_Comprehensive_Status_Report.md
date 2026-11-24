@@ -389,25 +389,25 @@
 
 ~~1. **Sed with Newlines**~~ not-do — technique note, no action owed
 
-   ```bash
-   sed -i '' '/pattern/,/pattern/c\
-   newtext\
-   '
-   ```
+```bash
+sed -i '' '/pattern/,/pattern/c\
+newtext\
+'
+```
 
-   - Result: Malformed code, syntax errors
-   - Issue: Newlines unpredictable, breaks function structure
+- Result: Malformed code, syntax errors
+- Issue: Newlines unpredictable, breaks function structure
 
 ~~2. **Sed with Append**~~ not-do — technique note, no action owed
 
-   ```bash
-   sed -i '' '$ a\
-   new function code\
-   '
-   ```
+```bash
+sed -i '' '$ a\
+new function code\
+'
+```
 
-   - Result: Indentation errors, missing braces
-   - Issue: Can't control where code inserts
+- Result: Indentation errors, missing braces
+- Issue: Can't control where code inserts
 
 3. **Perl with Multiple Substitutions**
 
@@ -420,27 +420,27 @@
 
 ~~4. **Python Read/Write**~~ not-do — technique note, no action owed
 
-   ```python
-   with open('file.go', 'r') as f:
-       content = f.read()
-   with open('file.go', 'w') as f:
-       f.write(modified_content)
-   ```
+```python
+with open('file.go', 'r') as f:
+    content = f.read()
+with open('file.go', 'w') as f:
+    f.write(modified_content)
+```
 
-   - Result: "file has been modified since last read" error
-   - Issue: Go tools lock file during editing
+- Result: "file has been modified since last read" error
+- Issue: Go tools lock file during editing
 
 ~~5. **Here-Documents**~~ not-do — technique note, no action owed
 
-   ```bash
-   sed -i '' '470a\
-   new code line 1\
-   new code line 2\
-   '
-   ```
+```bash
+sed -i '' '470a\
+new code line 1\
+new code line 2\
+'
+```
 
-   - Result: Missing newlines, concatenated code
-   - Issue: No way to add actual newlines
+- Result: Missing newlines, concatenated code
+- Issue: No way to add actual newlines
 
 **What I NEED to Know:**
 

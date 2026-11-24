@@ -122,12 +122,12 @@ The documentation update is sitting in the working tree, uncommitted. The code i
 1. **Commit `AGENTS.md`** — it's sitting uncommitted in the working tree
 2. **Fix or disable the auto-committer** — it's producing fabricated commit messages
 3. **Update `CHANGELOG.md`** with the defense-in-depth content check entry
-~~4. **Run `go test -race ./cmd/...`** to verify the new tests under the race detector~~ done — the race lane runs the full suite on every flake check (AGENTS.md)
-5. **Fix the 10 dead `//nolint:exhaustruct` directives** across 7 files (now that exhaustruct is disabled)
-6. **Fix `bdd/type_aware_test.go:14` — `undefined: CreateBDDTestSetup`** — LSP typecheck error, pre-existing
-7. **Fix LSP diagnostics in `cmd/progress_test.go`** — 7 warnings (errcheck, wsl_v5), pre-existing from previous session
-8. **Fix LSP diagnostic in `cmd/accept_directive.go:97`** — mnd magic number 64, pre-existing
-9. **Fix LSP diagnostic in `cmd/accept_directive_test.go:40`** — gci formatting, pre-existing
+   ~~4. **Run `go test -race ./cmd/...`** to verify the new tests under the race detector~~ done — the race lane runs the full suite on every flake check (AGENTS.md)
+4. **Fix the 10 dead `//nolint:exhaustruct` directives** across 7 files (now that exhaustruct is disabled)
+5. **Fix `bdd/type_aware_test.go:14` — `undefined: CreateBDDTestSetup`** — LSP typecheck error, pre-existing
+6. **Fix LSP diagnostics in `cmd/progress_test.go`** — 7 warnings (errcheck, wsl_v5), pre-existing from previous session
+7. **Fix LSP diagnostic in `cmd/accept_directive.go:97`** — mnd magic number 64, pre-existing
+8. **Fix LSP diagnostic in `cmd/accept_directive_test.go:40`** — gci formatting, pre-existing
 
 ### Medium priority (robustness)
 
@@ -162,9 +162,9 @@ The documentation update is sitting in the working tree, uncommitted. The code i
 35. **Consider renaming `filterExcludedGenerated`** to `detectBypassedGenerated` or similar — "excluded" is ambiguous
 36. **Add benchmark** for `filterExcludedGenerated` on large files
 37. **Consider early-exit optimization** — if file doesn't contain "Code generated", skip all marker checks
-~~38. **Add test for binary files** — `strings.Contains` on binary content could have false positives~~ **Won't implement — won't implement — content detection stayed text-oriented; no binary corpus exists.**
-39. **Consider using `bytes.Contains`** instead of `string(content)` conversion for performance
-40. **Review error handling in content read path** — currently returns `true` (include) on read error, which is fail-open
+    ~~38. **Add test for binary files** — `strings.Contains` on binary content could have false positives~~ **Won't implement — won't implement — content detection stayed text-oriented; no binary corpus exists.**
+38. **Consider using `bytes.Contains`** instead of `string(content)` conversion for performance
+39. **Review error handling in content read path** — currently returns `true` (include) on read error, which is fail-open
 
 ### Documentation
 

@@ -140,11 +140,11 @@ No regressions, no broken tests, no data loss. All 29 test packages pass clean.
 18. Add `FileCache.Compact()` that removes orphaned entries (version mismatches, corrupt files)
 19. Add cache integrity check: verify gob deserialization on startup for a sample of entries
 20. Consider content-addressed storage: use the hash as the content, not just the filename
-~~21. Add `FileCache.Stats().HitRate()` helper method~~ done — the hit-rate surface ships via RunCacheStats (stats output hit_rate_pct; AGENTS.md)
-22. Consider per-file-type cache buckets (Go vs templ) for better eviction granularity
-23. Add `--clear-cache` subcommand (currently only `--clear-cache` flag on main command)
-24. Add cache size limit in bytes (not just entry count) — `Config.MaxCacheBytes`
-25. Consider `gob` replacement: `encoding/json/v2` or `msgpack` for smaller/faster serialization
+    ~~21. Add `FileCache.Stats().HitRate()` helper method~~ done — the hit-rate surface ships via RunCacheStats (stats output hit_rate_pct; AGENTS.md)
+21. Consider per-file-type cache buckets (Go vs templ) for better eviction granularity
+22. Add `--clear-cache` subcommand (currently only `--clear-cache` flag on main command)
+23. Add cache size limit in bytes (not just entry count) — `Config.MaxCacheBytes`
+24. Consider `gob` replacement: `encoding/json/v2` or `msgpack` for smaller/faster serialization
 
 ### job/incremental.go
 

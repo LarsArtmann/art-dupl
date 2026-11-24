@@ -24,6 +24,7 @@ Three root-cause bugs were identified and fixed in the semantic clone detection 
 ### Core fixes (committed and pushed)
 
 <!-- check-rows:ledger -->
+
 | Commit    | Description                                      | Impact                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | --------- | ------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `930b91a` | **Node.Fingerprint field + Val() routing**       | Fixed the #1 bug: `serial()` was overwriting `node.Type` with the fingerprint hash, making `DecodeBaseType()` return garbage for ALL statement-level matches. Every actionability pattern that checked `BaseType == golang.IfStmt` etc. was silently broken. Added `Fingerprint int32` field (fits in struct padding, still 64B). `Val()` returns `Fingerprint` for statements, `Type` for non-statements. Original `Type` is preserved. |
@@ -53,6 +54,7 @@ These patterns were ALL broken for statement-level clones because `BaseType` was
 ### Tests added (15 new test cases across 4 files)
 
 <!-- check-rows:ledger -->
+
 | File                                           | Tests | Purpose                                                                                                         |
 | ---------------------------------------------- | ----- | --------------------------------------------------------------------------------------------------------------- |
 | `syntax/fingerprint_test.go`                   | 4     | Fingerprint field behavior, serialization idempotency, non-statement Val(), Clone()                             |
@@ -64,6 +66,7 @@ These patterns were ALL broken for statement-level clones because `BaseType` was
 ### Library research completed
 
 <!-- check-rows:ledger -->
+
 | Library                      | Verdict                        | Reason                                                                                                  |
 | ---------------------------- | ------------------------------ | ------------------------------------------------------------------------------------------------------- |
 | `go/types`                   | **Yes, as opt-in future mode** | Eliminates `a.String()` vs `b.String()` FP class. 10-100x slower. Highest-impact improvement available. |
@@ -211,9 +214,9 @@ The previous session (first session) had one issue that was fixed this session:
 45. **Add LSP integration** for real-time clone detection in editors
 46. **Improve suffix tree memory** usage for very large codebases
 47. **Add parallel suffix tree construction** (currently single-threaded)
-~~48. **Add `--since` flag** to only analyze files changed since a git ref~~ done — struck — tracked on ROADMAP (UX and Defaults: --since scan scope, landed 2026-11-14)
-49. **Add diff mode** - compare two codebases and find clones that exist in one but not the other
-50. **Add machine-learning-based actionability** classification (long-term research)
+    ~~48. **Add `--since` flag** to only analyze files changed since a git ref~~ done — struck — tracked on ROADMAP (UX and Defaults: --since scan scope, landed 2026-11-14)
+48. **Add diff mode** - compare two codebases and find clones that exist in one but not the other
+49. **Add machine-learning-based actionability** classification (long-term research)
 
 ---
 

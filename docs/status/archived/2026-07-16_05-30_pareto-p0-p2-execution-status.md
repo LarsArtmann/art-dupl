@@ -81,18 +81,18 @@ Executed 38 tasks from the comprehensive Pareto roadmap (`docs/planning/2026-07-
 
 ### P2 items skipped:
 
-| ID  | Task                                       | Why Skipped                                |
-| --- | ------------------------------------------ | ------------------------------------------ |
-| ~~T4~~ done — bdd/templ_clone_detection_test.go + templ BDD suite | ~~BDD tests for templ semantic mode~~ | ~~Would need significant fixture setup~~ |
-| ~~T5~~ **Superseded — fuzzing landed on the parser (syntax/templ/fuzz_test.go); normalizer covered by unit/BDD tests.** | ~~Property-based/fuzz test for normalizer~~ | ~~Requires fuzzing framework setup~~ |
-| ~~T6~~ done — bdd/templ_* multi-file fixtures | ~~Integration test: synthetic templ project~~ | ~~Needs multi-file fixture~~ |
-| ~~W1~~ **Superseded — covered by the public-presence QA sessions (resolution banner above).** | ~~Website visual QA~~ | ~~Cannot run browser preview in CLI session~~ |
-| ~~W2~~ done — website/public/og/home.png | ~~OG image generation~~ | ~~Requires image creation tooling~~ |
-| ~~W3~~ done — LandingLayout.astro og:image tags | ~~OG meta tags~~ | ~~Depends on OG image~~ |
-| ~~W4~~ done — astro check runs in .github/workflows/deploy-site.yml | ~~`pnpm dlx astro check` + TS fixes~~ | ~~Website is in subdirectory, separate build~~ |
-| ~~CQ9~~ **Superseded — ADR-0023 settled the Type vs Fingerprint split (DecodeBaseType retained by design).** | ~~Unify Type/Fingerprint model~~ | ~~MEDIUM risk, deferred (needs ADR first)~~ |
-| ~~I10~~ done — CacheVersion ledger in cache/file_cache.go (9 bumps) | ~~Cache versioning for serialization changes~~ | ~~MEDIUM risk, deferred~~ |
-| ~~I11~~ done — Fingerprint round-trips through the incremental cache (AGENTS.md gob boundary) | ~~Store Fingerprint in incremental cache~~ | ~~MEDIUM risk, deferred~~ |
+| ID                                                                                                                      | Task                                           | Why Skipped                                    |
+| ----------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- | ---------------------------------------------- |
+| ~~T4~~ done — bdd/templ_clone_detection_test.go + templ BDD suite                                                       | ~~BDD tests for templ semantic mode~~          | ~~Would need significant fixture setup~~       |
+| ~~T5~~ **Superseded — fuzzing landed on the parser (syntax/templ/fuzz_test.go); normalizer covered by unit/BDD tests.** | ~~Property-based/fuzz test for normalizer~~    | ~~Requires fuzzing framework setup~~           |
+| ~~T6~~ done — bdd/templ_* multi-file fixtures                                                                           | ~~Integration test: synthetic templ project~~  | ~~Needs multi-file fixture~~                   |
+| ~~W1~~ **Superseded — covered by the public-presence QA sessions (resolution banner above).**                           | ~~Website visual QA~~                          | ~~Cannot run browser preview in CLI session~~  |
+| ~~W2~~ done — website/public/og/home.png                                                                                | ~~OG image generation~~                        | ~~Requires image creation tooling~~            |
+| ~~W3~~ done — LandingLayout.astro og:image tags                                                                         | ~~OG meta tags~~                               | ~~Depends on OG image~~                        |
+| ~~W4~~ done — astro check runs in .github/workflows/deploy-site.yml                                                     | ~~`pnpm dlx astro check` + TS fixes~~          | ~~Website is in subdirectory, separate build~~ |
+| ~~CQ9~~ **Superseded — ADR-0023 settled the Type vs Fingerprint split (DecodeBaseType retained by design).**            | ~~Unify Type/Fingerprint model~~               | ~~MEDIUM risk, deferred (needs ADR first)~~    |
+| ~~I10~~ done — CacheVersion ledger in cache/file_cache.go (9 bumps)                                                     | ~~Cache versioning for serialization changes~~ | ~~MEDIUM risk, deferred~~                      |
+| ~~I11~~ done — Fingerprint round-trips through the incremental cache (AGENTS.md gob boundary)                           | ~~Store Fingerprint in incremental cache~~     | ~~MEDIUM risk, deferred~~                      |
 
 ### Entire P3 category NOT started (60 tasks):
 

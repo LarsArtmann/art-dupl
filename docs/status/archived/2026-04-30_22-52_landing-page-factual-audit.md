@@ -130,16 +130,16 @@ Deep audit of every factual claim on the landing page against the actual Go sour
 
 ### Tier 2: Polish & Performance
 
-| #  | Task                                                                    | Effort | Impact    |
-| -- | ----------------------------------------------------------------------- | ------ | --------- |
-| 6  | Create PNG OG image (1200x630)                                          | 15 min | 🟡 Medium |
-| 7  | CSS minification build step                                             | 30 min | 🟡 Medium |
-| 8  | JS minification build step                                              | 15 min | 🟡 Medium |
-| 9  | Self-host Google Fonts (3 files: Syne, DM Sans, IBM Plex Mono)          | 30 min | 🟡 Medium |
-| 10 | Inline critical above-the-fold CSS                                      | 30 min | 🟡 Medium |
-| 11 | Add `Cache-Control` immutable headers for font files in `firebase.json` | 5 min  | 🟡 Medium |
-| ~~12~~ **not-do — the meta tag never landed** |~~Add `<meta name="article:modified_time">`~~|~~2 min~~|~~🟢 Low~~|
-| 13 | Submit sitemap to Google Search Console                                 | 5 min  | 🟢 Low    |
+| #                                             | Task                                                                    | Effort    | Impact     |
+| --------------------------------------------- | ----------------------------------------------------------------------- | --------- | ---------- |
+| 6                                             | Create PNG OG image (1200x630)                                          | 15 min    | 🟡 Medium  |
+| 7                                             | CSS minification build step                                             | 30 min    | 🟡 Medium  |
+| 8                                             | JS minification build step                                              | 15 min    | 🟡 Medium  |
+| 9                                             | Self-host Google Fonts (3 files: Syne, DM Sans, IBM Plex Mono)          | 30 min    | 🟡 Medium  |
+| 10                                            | Inline critical above-the-fold CSS                                      | 30 min    | 🟡 Medium  |
+| 11                                            | Add `Cache-Control` immutable headers for font files in `firebase.json` | 5 min     | 🟡 Medium  |
+| ~~12~~ **not-do — the meta tag never landed** | ~~Add `<meta name="article:modified_time">`~~                           | ~~2 min~~ | ~~🟢 Low~~ |
+| 13                                            | Submit sitemap to Google Search Console                                 | 5 min     | 🟢 Low     |
 
 ### Tier 3: Accessibility & Testing
 

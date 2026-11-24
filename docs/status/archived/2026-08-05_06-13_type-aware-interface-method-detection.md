@@ -107,10 +107,10 @@ clean and functional. The auto-git daemon committed everything correctly.
 ### Code Quality
 
 27. Consider extracting interface scanning into a reusable `PackageInterfaceIndex` type
-~~28. The `interfaceHasMethod` function could be a method on a `PackageInterfaceIndex`~~ not-do — the refactor never happened
-29. Consider whether `InterfaceMethod` should be `InterfaceMethodSource` (enum: none/stdlib/type-aware) for richer `--explain` output
-30. Verify `.go-arch-lint.yml` constraints aren't violated by new field
-31. Check if `InterfaceMethod` needs to be in the SDK's `CloneNode` equivalent (if any)
+    ~~28. The `interfaceHasMethod` function could be a method on a `PackageInterfaceIndex`~~ not-do — the refactor never happened
+28. Consider whether `InterfaceMethod` should be `InterfaceMethodSource` (enum: none/stdlib/type-aware) for richer `--explain` output
+29. Verify `.go-arch-lint.yml` constraints aren't violated by new field
+30. Check if `InterfaceMethod` needs to be in the SDK's `CloneNode` equivalent (if any)
 
 ### Pre-existing Issues Noticed
 
@@ -132,16 +132,16 @@ clean and functional. The auto-git daemon committed everything correctly.
 41. Remove the `commonInterfaceMethodNames` comment that says "A deeper type-aware variant using `go/types` is tracked in ROADMAP" — it's now implemented
 42. The ROADMAP entry for "Interface-aware suppression" should link to ADR-0018
 43. Consider adding ADR-0018 to a docs/adr/README.md index if one exists
-~~44. The `docs/status/2026-08-05_06-03_bool-guard-format-specifier-hardening.md` was auto-committed by the daemon — verify it's accurate~~ done — the report is committed in the tree (verified 2026-11-14)
-45. Verify the auto-git daemon's commit messages accurately describe the changes (commit `7e4c3a11` includes bool-guard and format-specifier work that was pre-existing staged changes, not from this session)
+    ~~44. The `docs/status/2026-08-05_06-03_bool-guard-format-specifier-hardening.md` was auto-committed by the daemon — verify it's accurate~~ done — the report is committed in the tree (verified 2026-11-14)
+44. Verify the auto-git daemon's commit messages accurately describe the changes (commit `7e4c3a11` includes bool-guard and format-specifier work that was pre-existing staged changes, not from this session)
 
 ### Verification
 
 46. Run the full BDD suite (`go test ./bdd/...`) specifically for type-aware tests
 47. Test on a real codebase (e.g., run art-dupl on itself with `--type-aware --explain`)
-~~48. Verify `--type-aware` + `--incremental` works with the new flag~~ done 2026-11-15 — the `typeAwareTag` cache-key isolation (`""`/`"ta"`/`"sg"` in `job/incremental.go`) IS this verification: type-aware runs never reuse syntax-only cache entries, pinned by the param-key tests.
-49. Test with `--type-aware` on a package with compilation errors (graceful fallback)
-50. Run `golangci-lint run --timeout 5m ./...` on the FULL project (not just changed packages)
+    ~~48. Verify `--type-aware` + `--incremental` works with the new flag~~ done 2026-11-15 — the `typeAwareTag` cache-key isolation (`""`/`"ta"`/`"sg"` in `job/incremental.go`) IS this verification: type-aware runs never reuse syntax-only cache entries, pinned by the param-key tests.
+48. Test with `--type-aware` on a package with compilation errors (graceful fallback)
+49. Run `golangci-lint run --timeout 5m ./...` on the FULL project (not just changed packages)
 
 ## g) Questions
 

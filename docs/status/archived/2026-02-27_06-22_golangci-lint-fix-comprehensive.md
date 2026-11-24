@@ -171,8 +171,8 @@ migration/migration.go:132: parameter name 'b' is too short
 11. Rename `cache.CacheKey` to `cache.Key` (revive stuttering)
 12. Fix exhaustruct in `cache/file_cache.go` (6 occurrences)
 13. Fix exhaustruct in `cmd/run_analysis.go` (4 occurrences)
-~~14. Add nolint or fix wrapcheck in `cmd/run_analysis.go:243`~~ done — wrapcheck is configured with ignore-package-globs (AGENTS.md lint config)
-15. Fix nonamedreturns in `cache/file_cache.go:236`
+    ~~14. Add nolint or fix wrapcheck in `cmd/run_analysis.go:243`~~ done — wrapcheck is configured with ignore-package-globs (AGENTS.md lint config)
+14. Fix nonamedreturns in `cache/file_cache.go:236`
 
 ### Lower Priority (Style & Polish)
 

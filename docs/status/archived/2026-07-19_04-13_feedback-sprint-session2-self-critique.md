@@ -207,30 +207,30 @@ I tested default text mode (preview appears) and `--plumbing` (no preview). I di
 ### Immediate fixes for THIS session's defects (highest priority)
 
 1. **Fix em-dashes** in 3 acceptance comments (`—` → `--` or `:`)
-~~2. **Fix gci formatting** in `printer/sort_unified_test.go`~~ done — formatting is treefmt/gofmt-enforced (AGENTS.md format check)
-3. **Fix modernize lint** — switch `firstNonEmptyLine` to `strings.SplitSeq` in `printer/text.go`
-4. **Run `golangci-lint` clean** on all 7 files I changed
-5. **Test `--rich-text` mode** with preview feature
-6. **Investigate the 18 unknown modified files** — `git diff` each one, determine origin
-7. **Decide on acceptance-comment rule conflict** — ask user, or remove comments
+   ~~2. **Fix gci formatting** in `printer/sort_unified_test.go`~~ done — formatting is treefmt/gofmt-enforced (AGENTS.md format check)
+2. **Fix modernize lint** — switch `firstNonEmptyLine` to `strings.SplitSeq` in `printer/text.go`
+3. **Run `golangci-lint` clean** on all 7 files I changed
+4. **Test `--rich-text` mode** with preview feature
+5. **Investigate the 18 unknown modified files** — `git diff` each one, determine origin
+6. **Decide on acceptance-comment rule conflict** — ask user, or remove comments
 
 ### Completing the Tier 1 work properly
 
 8. Update `FEATURES.md` — add "Text output code preview" to DONE
 9. Update `TODO_LIST.md` — check off Tier 1 items from the evaluation
 10. Add `CHANGELOG.md` entry for text preview feature
-~~11. Run `nix build` to produce a real versioned binary (not just `/tmp/`)~~ done — nix build .#art-dupl produces the versioned binary (flake ldflags)
-12. Install the binary to replace the deleted stale one
-13. Add a golden/snapshot test for text output format (regression protection)
+    ~~11. Run `nix build` to produce a real versioned binary (not just `/tmp/`)~~ done — nix build .#art-dupl produces the versioned binary (flake ldflags)
+11. Install the binary to replace the deleted stale one
+12. Add a golden/snapshot test for text output format (regression protection)
 
 ### Tier 2 features from the evaluation (deferred, not started)
 
 14. Design `//art-dupl:accept` directive (code-local suppression, complementary to baseline)
 15. Implement `//art-dupl:accept` scanner in the file-load pipeline
-~~16. Add tests for `//art-dupl:accept` — directive suppresses matching groups~~ done — the accept-directive suite is extensive (AGENTS.md accept-directive bullet)
-17. Design "same-function" clone category (all occurrences in one FuncDecl)
-~~18. Implement same-function detection in clone classification~~ not-do — same-function detection never landed in classification
-~~19. Add `--show-accepted` flag to surface suppressed-by-directive groups~~ done — --show-suppressed surfaces suppressed groups (AGENTS.md)
+    ~~16. Add tests for `//art-dupl:accept` — directive suppresses matching groups~~ done — the accept-directive suite is extensive (AGENTS.md accept-directive bullet)
+16. Design "same-function" clone category (all occurrences in one FuncDecl)
+    ~~18. Implement same-function detection in clone classification~~ not-do — same-function detection never landed in classification
+    ~~19. Add `--show-accepted` flag to surface suppressed-by-directive groups~~ done — --show-suppressed surfaces suppressed groups (AGENTS.md)
 
 ### Tier 3 features from the evaluation (low priority)
 
@@ -244,7 +244,7 @@ I tested default text mode (preview appears) and `--plumbing` (no preview). I di
 
 25. Verify interface-implementation pattern fires at high thresholds (`-t 25`)
 26. Check if compile-time interface assertions (`var _ Iface = (*Type)(nil)`) are detected as clones
-~~27. Verify the "unknown" category fallback — could it use AST node type instead?~~ superseded — classification rides the file-kind-scoped category tables (AGENTS.md ADR-0027)
+    ~~27. Verify the "unknown" category fallback — could it use AST node type instead?~~ superseded — classification rides the file-kind-scoped category tables (AGENTS.md ADR-0027)
 
 ### Performance / robustness
 
@@ -258,8 +258,8 @@ I tested default text mode (preview appears) and `--plumbing` (no preview). I di
 32. Create a pre-edit checklist: `git status` → verify tree → load skill → read file → edit → lint → test
 33. Document the "ask when rules conflict" policy in AGENTS.md (make it structural, not advisory)
 34. Add a CI step that runs `golangci-lint` on changed files only (fast feedback)
-~~35. Add a CI step that runs `art-dupl --semantic -t 25 --plumbing` as a regression gate~~ not-do — the plumbing regression gate never landed; Self-Analysis runs -t 5
-36. Create a golden-file test framework for all output formats (text, rich-text, json, plumbing, sarif, html)
+    ~~35. Add a CI step that runs `art-dupl --semantic -t 25 --plumbing` as a regression gate~~ not-do — the plumbing regression gate never landed; Self-Analysis runs -t 5
+35. Create a golden-file test framework for all output formats (text, rich-text, json, plumbing, sarif, html)
 
 ### Documentation hygiene
 
@@ -356,21 +356,21 @@ All 13 original tasks and every defect in section d are closed. Verified by `doc
 **Section f immediate items — status:**
 
 1. ✅ Em-dashes fixed (6/6)
-~~2. ✅ gci formatting clean (was already fixed in `ab569e6b`)~~ done — formatting is treefmt/gofmt-enforced (AGENTS.md format check)
-3. ✅ modernize/SplitSeq applied (was already fixed in `ab569e6b`)
-4. ✅ `golangci-lint` clean on all changed files
-5. ✅ `--rich-text` preview verified
-6. ✅ "18 unknown files" traced to `DetectionMode` refactor in `ab569e6b`
-7. ✅ Acceptance-comment rule conflict resolved (user verdict: keep, fix em-dashes)
+   ~~2. ✅ gci formatting clean (was already fixed in `ab569e6b`)~~ done — formatting is treefmt/gofmt-enforced (AGENTS.md format check)
+2. ✅ modernize/SplitSeq applied (was already fixed in `ab569e6b`)
+3. ✅ `golangci-lint` clean on all changed files
+4. ✅ `--rich-text` preview verified
+5. ✅ "18 unknown files" traced to `DetectionMode` refactor in `ab569e6b`
+6. ✅ Acceptance-comment rule conflict resolved (user verdict: keep, fix em-dashes)
 
 **Section f "Completing the Tier 1 work properly" — status:**
 
 8. ✅ `FEATURES.md` updated (Text Output row mentions preview; date bumped)
 9. ✅ `TODO_LIST.md` updated (new "Recently Completed (Tier 1 Feedback Sprint)" section)
 10. ✅ `CHANGELOG.md` entry added (4 new entries; date range extended to 2026-07-19)
-~~11. ✅ `nix build` succeeded; `./result/bin/art-dupl version` reports `ab569e6b...-dirty` with the preview feature~~ done — nix build .#art-dupl produces the versioned binary (flake ldflags)
-12. ⏸ Install skipped per user choice (NixOS system-managed binary at `/run/current-system/sw/bin/`)
-13. ✅ Golden test added: `printer/text_golden_test.go` with 3 cases (default, truncated, file fallback) + 3 `.golden` files. All pass idempotently.
+    ~~11. ✅ `nix build` succeeded; `./result/bin/art-dupl version` reports `ab569e6b...-dirty` with the preview feature~~ done — nix build .#art-dupl produces the versioned binary (flake ldflags)
+11. ⏸ Install skipped per user choice (NixOS system-managed binary at `/run/current-system/sw/bin/`)
+12. ✅ Golden test added: `printer/text_golden_test.go` with 3 cases (default, truncated, file fallback) + 3 `.golden` files. All pass idempotently.
 
 **Bonus (this resolution session, beyond the original 13):**
 

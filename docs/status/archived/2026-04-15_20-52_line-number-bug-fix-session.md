@@ -163,20 +163,20 @@ All changes are clean, tested, and backwards compatible. No regressions introduc
 
 ### Nice to Have (Backlog)
 
-| #  | Task                                                                        | Impact | Effort  |
-| -- | --------------------------------------------------------------------------- | ------ | ------- |
-| 14 | Add fuzz tests for `ByteRangeToLines` with property: `endLine >= startLine` | Low    | Low     |
-| 15 | Modernize `lines.go` with `max()` builtin (Go 1.21+)                        | Low    | Trivial |
-| 16 | Clean up 3 old git stashes                                                  | Low    | Trivial |
-| 17 | Add benchmark comparing `offsetToLine` vs `LineIndex` performance           | Low    | Low     |
-| 18 | Add `--strict` mode that errors on TOCTOU file mismatches                   | Low    | Medium  |
-| 19 | Document line number semantics in API docs (exclusive end convention)       | Low    | Low     |
-| 20 | Investigate `config` package coverage (70.4%) — close to threshold          | Low    | Low     |
-| 21 | Investigate `job` package coverage (76.7%) — close to threshold             | Low    | Low     |
-| 22 | Add integration test for `pipeline/pipeline.go` (original bug report file)  | Low    | Medium  |
-| ~~23~~ **struck — the cadence gate owns the docs/status archive wave (in flight)** |~~Review and clean up `docs/status/` — 200+ status reports is excessive~~|~~Low~~|~~Low~~|
-| 24 | Add `CHANGELOG.md` entry for line number bug fix                            | Low    | Trivial |
-| 25 | Consider version bump for bug fix release                                   | Low    | Trivial |
+| #                                                                                  | Task                                                                        | Impact  | Effort  |
+| ---------------------------------------------------------------------------------- | --------------------------------------------------------------------------- | ------- | ------- |
+| 14                                                                                 | Add fuzz tests for `ByteRangeToLines` with property: `endLine >= startLine` | Low     | Low     |
+| 15                                                                                 | Modernize `lines.go` with `max()` builtin (Go 1.21+)                        | Low     | Trivial |
+| 16                                                                                 | Clean up 3 old git stashes                                                  | Low     | Trivial |
+| 17                                                                                 | Add benchmark comparing `offsetToLine` vs `LineIndex` performance           | Low     | Low     |
+| 18                                                                                 | Add `--strict` mode that errors on TOCTOU file mismatches                   | Low     | Medium  |
+| 19                                                                                 | Document line number semantics in API docs (exclusive end convention)       | Low     | Low     |
+| 20                                                                                 | Investigate `config` package coverage (70.4%) — close to threshold          | Low     | Low     |
+| 21                                                                                 | Investigate `job` package coverage (76.7%) — close to threshold             | Low     | Low     |
+| 22                                                                                 | Add integration test for `pipeline/pipeline.go` (original bug report file)  | Low     | Medium  |
+| ~~23~~ **struck — the cadence gate owns the docs/status archive wave (in flight)** | ~~Review and clean up `docs/status/` — 200+ status reports is excessive~~   | ~~Low~~ | ~~Low~~ |
+| 24                                                                                 | Add `CHANGELOG.md` entry for line number bug fix                            | Low     | Trivial |
+| 25                                                                                 | Consider version bump for bug fix release                                   | Low     | Trivial |
 
 ---
 

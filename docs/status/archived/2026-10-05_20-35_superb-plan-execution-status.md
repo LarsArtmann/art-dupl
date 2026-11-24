@@ -164,10 +164,10 @@ fumbles in one micro-task.
 4. Adapter: add `Options.EmitSuppressedAccepted` + `Options.Accepted` predicate.
 5. Mark accepted groups via `WithSuppression{Kind: SuppressionInSource, Rule: RuleCloneDetected, Reason: "//art-dupl:accept directive"}`.
 6. M30: round-trip test `ToSARIFWithOpts(WithIncludeSuppressed())` → `FindingsFromSARIF` preserves suppression.
-~~7. M31: guardrail test — flag off ⇒ ToFindings bytes identical.~~ done — TestEmitSuppressedAcceptedOffIsByteIdentical pins the off path (AGENTS.md)
-8. Provider: `emit-suppressed-accepted` bool Spec option; build AcceptedSet only when on; thread predicate through findingsFromGroups.
-~~9. Provider test: fixture with `//art-dupl:accept` — findings suppressed only when opted in; count unchanged when off.~~ done — the suppression round-trip is pinned (AGENTS.md T06)
-10. M32: docs (AGENTS provider bullet, TODO_LIST) + boundary gate + commit.
+   ~~7. M31: guardrail test — flag off ⇒ ToFindings bytes identical.~~ done — TestEmitSuppressedAcceptedOffIsByteIdentical pins the off path (AGENTS.md)
+7. Provider: `emit-suppressed-accepted` bool Spec option; build AcceptedSet only when on; thread predicate through findingsFromGroups.
+   ~~9. Provider test: fixture with `//art-dupl:accept` — findings suppressed only when opted in; count unchanged when off.~~ done — the suppression round-trip is pinned (AGENTS.md T06)
+8. M32: docs (AGENTS provider bullet, TODO_LIST) + boundary gate + commit.
 
 **Gates & hygiene (immediate):**
 11. Drain the M12 `nix flake check` background job (shell 070); re-run if stale.

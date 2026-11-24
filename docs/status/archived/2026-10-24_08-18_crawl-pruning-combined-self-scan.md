@@ -20,6 +20,7 @@ One real performance defect found and fixed (crawl dir pruning), two run-output 
 ## What the session investigated (4 threads)
 
 <!-- check-rows:ledger -->
+
 | # | Observation from user's run                     | Verdict                                                                                                                                                                                                                            | Action                          |
 | - | ----------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------- |
 | 1 | `crawl 31.837s` for 440 files                   | **Real defect** (cold-cache amplifier): CLI walk filtered excluded entries per-stat but never pruned — descended fully into `.git` (1,112 files), `website/node_modules` (16,240 files), `website/dist`, every gitignored dir      | **Fixed** (3 layers + provider) |

@@ -25,15 +25,16 @@
 ### This Session's Work (7 items)
 
 <!-- check-rows:ledger -->
-| Task                                                | What was done                                                                                                                                                                                                                                                          |
-| --------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| ~~**Remove exhaustruct/tagliatelle from lint config**~~ done — fixed — lint is 106-linter clean since 2026-09-29 (AGENTS.md); the flaky os.Exit tests were fixed | ~~Removed from `.golangci.yml` enable list AND settings section. Eliminated 101 of 108 lint warnings. CI guard script (`scripts/check-disabled-linters.sh`) now passes.~~ |
-| **Remove 5 stub flags (M26-M30)**                   | Removed `--explain`, `--html-out`, `--recommend-threshold`, `--config-format`, `--diff-report` from `cmd/flags.go`, `config/config.go`, `cmd/config_builder.go`. Verified zero orphaned references remain. A flag that does nothing is worse than no flag.             |
-| ~~**Fix all lint warnings**~~ done — fixed — lint is 106-linter clean since 2026-09-29 (AGENTS.md); the flaky os.Exit tests were fixed | ~~Fixed errcheck (gitignore.go `f.Close()`), mnd (magic number constants), gocyclo/nestif (extracted `loadTypeAwareDataIfEnabled`), usetesting (`t.Setenv` replacing `os.Setenv`), wsl_v5 (whitespace), nlreturn, gci formatting, varnamelen. Final count: **0 issues**.~~ |
-| **Complete M24: SDK TypeAware**                     | Added `pkg/artdupl/detector_type_aware_test.go` with 3 tests (clone detection, graceful fallback, default-disabled). Updated `SDK_DESIGN.md` to document TypeAware support.                                                                                            |
-| **Update project documentation**                    | `TODO_LIST.md` (completed items removed), `CHANGELOG.md` ([Unreleased] populated), `FEATURES.md` (CI Integration section + category count), `AGENTS.md` (lint config description fixed, new features documented).                                                      |
-| **Run `nix flake check`**                           | All 9 checks passed: treefmt, format, build, test, race, lint, fmt, disabled-linters, bench.                                                                                                                                                                           |
-| **Run `go test -race` on changed packages**         | `cmd/` and `pkg/artdupl/` both pass with race detector (CGO_ENABLED=1).                                                                                                                                                                                                |
+
+| Task                                                                                                                                                             | What was done                                                                                                                                                                                                                                                              |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ~~**Remove exhaustruct/tagliatelle from lint config**~~ done — fixed — lint is 106-linter clean since 2026-09-29 (AGENTS.md); the flaky os.Exit tests were fixed | ~~Removed from `.golangci.yml` enable list AND settings section. Eliminated 101 of 108 lint warnings. CI guard script (`scripts/check-disabled-linters.sh`) now passes.~~                                                                                                  |
+| **Remove 5 stub flags (M26-M30)**                                                                                                                                | Removed `--explain`, `--html-out`, `--recommend-threshold`, `--config-format`, `--diff-report` from `cmd/flags.go`, `config/config.go`, `cmd/config_builder.go`. Verified zero orphaned references remain. A flag that does nothing is worse than no flag.                 |
+| ~~**Fix all lint warnings**~~ done — fixed — lint is 106-linter clean since 2026-09-29 (AGENTS.md); the flaky os.Exit tests were fixed                           | ~~Fixed errcheck (gitignore.go `f.Close()`), mnd (magic number constants), gocyclo/nestif (extracted `loadTypeAwareDataIfEnabled`), usetesting (`t.Setenv` replacing `os.Setenv`), wsl_v5 (whitespace), nlreturn, gci formatting, varnamelen. Final count: **0 issues**.~~ |
+| **Complete M24: SDK TypeAware**                                                                                                                                  | Added `pkg/artdupl/detector_type_aware_test.go` with 3 tests (clone detection, graceful fallback, default-disabled). Updated `SDK_DESIGN.md` to document TypeAware support.                                                                                                |
+| **Update project documentation**                                                                                                                                 | `TODO_LIST.md` (completed items removed), `CHANGELOG.md` ([Unreleased] populated), `FEATURES.md` (CI Integration section + category count), `AGENTS.md` (lint config description fixed, new features documented).                                                          |
+| **Run `nix flake check`**                                                                                                                                        | All 9 checks passed: treefmt, format, build, test, race, lint, fmt, disabled-linters, bench.                                                                                                                                                                               |
+| **Run `go test -race` on changed packages**                                                                                                                      | `cmd/` and `pkg/artdupl/` both pass with race detector (CGO_ENABLED=1).                                                                                                                                                                                                    |
 
 ### Previous Session's Work (18 items, verified intact)
 
@@ -51,13 +52,13 @@ Nothing is partially done. The 5 stub-flag tasks (M26-M30) were either going to 
 
 These features were deferred. Their stub flags were removed to avoid creating false expectations. They remain in `TODO_LIST.md` as genuine future work.
 
-| Task                                     | Status      | Why deferred                                                                  |
-| ---------------------------------------- | ----------- | ----------------------------------------------------------------------------- |
+| Task                                                                                                                    | Status          | Why deferred                                                                      |
+| ----------------------------------------------------------------------------------------------------------------------- | --------------- | --------------------------------------------------------------------------------- |
 | ~~**M26: YAML config file support**~~ **Won't implement — won't implement — YAML config never added (config is JSON).** | ~~Not started~~ | ~~Requires `yaml.v3` dependency, parsing logic, format detection. 90min effort.~~ |
-| ~~**M27: `--diff-report <baseline>` mode**~~ done — the --diff-report mode ships (AGENTS.md diff-report warns) | ~~Not started~~ | ~~Requires baseline loading, diff comparison, new output format. 90min effort.~~ |
-| ~~**M28: `--explain` flag**~~ done — the --explain flag ships (AGENTS.md) | ~~Not started~~ | ~~Requires explanation generator wired into printer pipeline. 60min effort.~~ |
-| ~~**M29: HTML report improvements**~~ done — the html-out resolution + anchor IDs shipped (AGENTS.md) | ~~Not started~~ | ~~Requires file-writing logic, TTY detection, stable IDs. 60min effort.~~ |
-| ~~**M30: `--recommend-threshold`**~~ done — recommend-threshold ships (cmd/flags.go:170) | ~~Not started~~ | ~~Requires heuristic algorithm based on codebase analysis. 45min effort.~~ |
+| ~~**M27: `--diff-report <baseline>` mode**~~ done — the --diff-report mode ships (AGENTS.md diff-report warns)          | ~~Not started~~ | ~~Requires baseline loading, diff comparison, new output format. 90min effort.~~  |
+| ~~**M28: `--explain` flag**~~ done — the --explain flag ships (AGENTS.md)                                               | ~~Not started~~ | ~~Requires explanation generator wired into printer pipeline. 60min effort.~~     |
+| ~~**M29: HTML report improvements**~~ done — the html-out resolution + anchor IDs shipped (AGENTS.md)                   | ~~Not started~~ | ~~Requires file-writing logic, TTY detection, stable IDs. 60min effort.~~         |
+| ~~**M30: `--recommend-threshold`**~~ done — recommend-threshold ships (cmd/flags.go:170)                                | ~~Not started~~ | ~~Requires heuristic algorithm based on codebase analysis. 45min effort.~~        |
 
 ---
 
@@ -194,19 +195,19 @@ _ = err
 ### Short-term (next 1-2 sessions)
 
 7. **Extend `check-disabled-linters.sh`** to also scan for dead `//nolint:<disabled-linter>` directives in Go files
-~~8. **Document gitignore matcher limitations** in AGENTS.md (missing `**`, char classes, nested `.gitignore`)~~ done — the matcher grew dir-pruning + git semantics (handleWalkEntry; AGENTS.md crawl bullet)
-9. **Document accept directive scanner limitations** in AGENTS.md (line-based, not AST-aware)
-10. **Extract type-aware data loading** to shared helper (deduplicate CLI + SDK)
-11. **Write integration test for `.gitignore` with real-world patterns** (complex `.gitignore` from a real project)
-~~12. **Write integration test for `//art-dupl:accept` with real CI workflow** (accept + baseline interaction)~~ done — the accept-directive suite covers it (internal/accept + bdd tests)
-13. **Consider replacing manual gitignore parser** with `github.com/sabhiram/go-gitignore` library
-14. **Implement M28: `--explain` flag** (show method, pattern, actionability per group)
-15. **Implement M29: HTML report improvements** (file output, TTY detection, stable IDs)
-16. **Implement M30: `--recommend-threshold`** (codebase size + test ratio heuristic)
-17. **Implement M26: YAML config support** (add `yaml.v3`, parse `.artdupl.yml`)
-18. **Implement M27: `--diff-report`** (baseline comparison logic)
-19. **Add `id` attributes to HTML clone group divs** for deep-linking (M29)
-20. **Write SDK integration test** that exercises the full pipeline with TypeAware=true on a multi-file project
+   ~~8. **Document gitignore matcher limitations** in AGENTS.md (missing `**`, char classes, nested `.gitignore`)~~ done — the matcher grew dir-pruning + git semantics (handleWalkEntry; AGENTS.md crawl bullet)
+8. **Document accept directive scanner limitations** in AGENTS.md (line-based, not AST-aware)
+9. **Extract type-aware data loading** to shared helper (deduplicate CLI + SDK)
+10. **Write integration test for `.gitignore` with real-world patterns** (complex `.gitignore` from a real project)
+    ~~12. **Write integration test for `//art-dupl:accept` with real CI workflow** (accept + baseline interaction)~~ done — the accept-directive suite covers it (internal/accept + bdd tests)
+11. **Consider replacing manual gitignore parser** with `github.com/sabhiram/go-gitignore` library
+12. **Implement M28: `--explain` flag** (show method, pattern, actionability per group)
+13. **Implement M29: HTML report improvements** (file output, TTY detection, stable IDs)
+14. **Implement M30: `--recommend-threshold`** (codebase size + test ratio heuristic)
+15. **Implement M26: YAML config support** (add `yaml.v3`, parse `.artdupl.yml`)
+16. **Implement M27: `--diff-report`** (baseline comparison logic)
+17. **Add `id` attributes to HTML clone group divs** for deep-linking (M29)
+18. **Write SDK integration test** that exercises the full pipeline with TypeAware=true on a multi-file project
 
 ### Medium-term (next 1-2 weeks)
 
@@ -214,35 +215,35 @@ _ = err
 22. **Split `printer/` into sub-packages** (~29 files, blocked by circular dep)
 23. **Add AST-aware scanning for accept directives** (eliminate string-literal false positives)
 24. **Add `**` pattern support to gitignore matcher**
-~~25. **Add nested `.gitignore` support** (patterns in subdirectories)~~ done — nested .gitignore support shipped (gitignore.LoadTree, git-style; AGENTS.md)
-26. **Templ Phase 3: expression normalization** for better sensitivity
-27. **Interface-method-aware suppression** at all thresholds
-28. **Branded `NodeType int32`** (deferred, touches gob cache format)
-29. **Add property-based tests** for gitignore pattern matching (fuzzing)
-30. **Add property-based tests** for accept directive matching (fuzzing)
-31. **Profile and optimize type-aware mode** (currently 10-100x slower)
-32. **Add progress reporting to SDK** (currently silent during long analyses)
-33. **Add context cancellation tests** for the accept directive scanner
-34. **Add concurrent access tests** for `AcceptedSet` (multiple goroutines)
-35. **Review all error messages** for user-friendliness (what/why/fix/escape pattern)
+    ~~25. **Add nested `.gitignore` support** (patterns in subdirectories)~~ done — nested .gitignore support shipped (gitignore.LoadTree, git-style; AGENTS.md)
+25. **Templ Phase 3: expression normalization** for better sensitivity
+26. **Interface-method-aware suppression** at all thresholds
+27. **Branded `NodeType int32`** (deferred, touches gob cache format)
+28. **Add property-based tests** for gitignore pattern matching (fuzzing)
+29. **Add property-based tests** for accept directive matching (fuzzing)
+30. **Profile and optimize type-aware mode** (currently 10-100x slower)
+31. **Add progress reporting to SDK** (currently silent during long analyses)
+32. **Add context cancellation tests** for the accept directive scanner
+33. **Add concurrent access tests** for `AcceptedSet` (multiple goroutines)
+34. **Review all error messages** for user-friendliness (what/why/fix/escape pattern)
 
 ### Long-term (next month+)
 
 36. **Multi-language support** (Rust, TypeScript ASTs)
-~~37. **Web UI** for browsing clone reports interactively~~ done — struck — tracked on ROADMAP (IDE and Tooling: Web UI dashboard row)
-38. **IDE integration** (VS Code extension for inline clone highlighting)
-39. **GitHub Actions integration** (pre-built action for PR review)
-40. **Clone trend tracking** (track duplication metrics over time)
-41. **Automatic refactoring suggestions** (AI-assisted deduplication)
-42. **Team dashboards** (duplication metrics per team/area)
-43. **CI performance benchmarks** (track analysis time regression)
-44. **Distribution via Homebrew** (brew install art-dupl)
-45. **Distribution via AUR** (Arch Linux package)
-46. **Semantic diff mode** (show semantic changes between versions)
-47. **Clone severity scoring** (impact-weighted prioritization)
-48. **Test coverage reporting** integrated with clone detection
-49. **Documentation website** (Astro + Starlight)
-50. **Community contribution guide** (CONTRIBUTING.md expansion)
+    ~~37. **Web UI** for browsing clone reports interactively~~ done — struck — tracked on ROADMAP (IDE and Tooling: Web UI dashboard row)
+37. **IDE integration** (VS Code extension for inline clone highlighting)
+38. **GitHub Actions integration** (pre-built action for PR review)
+39. **Clone trend tracking** (track duplication metrics over time)
+40. **Automatic refactoring suggestions** (AI-assisted deduplication)
+41. **Team dashboards** (duplication metrics per team/area)
+42. **CI performance benchmarks** (track analysis time regression)
+43. **Distribution via Homebrew** (brew install art-dupl)
+44. **Distribution via AUR** (Arch Linux package)
+45. **Semantic diff mode** (show semantic changes between versions)
+46. **Clone severity scoring** (impact-weighted prioritization)
+47. **Test coverage reporting** integrated with clone detection
+48. **Documentation website** (Astro + Starlight)
+49. **Community contribution guide** (CONTRIBUTING.md expansion)
 
 ---
 

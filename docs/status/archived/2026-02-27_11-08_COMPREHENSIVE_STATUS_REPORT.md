@@ -194,16 +194,16 @@
 6. 📝 Fix top 10 lint issues (err113, revive, exhaustruct)
 7. 📝 Add tests for cmd/art-dupl package
 8. 📝 Document semantic detection feature properly
-~~9. 📝 Add performance benchmarks for hash detection~~ done — hash detection is benchmarked (docs/benchmarks/; alloc-gate)
-10. 📝 Improve error messages with actionable suggestions
+   ~~9. 📝 Add performance benchmarks for hash detection~~ done — hash detection is benchmarked (docs/benchmarks/; alloc-gate)
+9. 📝 Improve error messages with actionable suggestions
 
 ### P2 - Medium Priority
 
 11. 📝 Add IDE integration prototype (LSP)
 12. 📝 Implement watch mode for continuous monitoring
 13. 📝 Add diff output between versions
-~~14. 📝 Implement baseline file support~~ done — baseline support shipped (baseline/; AGENTS.md check gate)
-~~15. 📝 Add more output formats (SARIF, Checkstyle)~~ done — SARIF shipped; Checkstyle was never added
+    ~~14. 📝 Implement baseline file support~~ done — baseline support shipped (baseline/; AGENTS.md check gate)
+    ~~15. 📝 Add more output formats (SARIF, Checkstyle)~~ done — SARIF shipped; Checkstyle was never added
 
 ### P3 - Nice to Have
 
@@ -219,7 +219,7 @@
 22. 📝 Semantic similarity analysis
 23. 📝 Cross-language clone detection
 24. 📝 Machine learning for false positive reduction
-~~25. 📝 Cloud-based analysis for large monorepos~~ won't implement — cloud analysis is out of scope
+    ~~25. 📝 Cloud-based analysis for large monorepos~~ won't implement — cloud analysis is out of scope
 
 ---
 

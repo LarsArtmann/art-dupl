@@ -11,6 +11,7 @@ Executed all 17 tasks from the Pareto plan (T01-T17). **However, the quality gat
 ## a) FULLY DONE (shipped, working, verified)
 
 <!-- check-rows:ledger -->
+
 | Task                             | Status | Notes                                                                            |
 | -------------------------------- | ------ | -------------------------------------------------------------------------------- |
 | T01 — CI self-test Nix gate      | DONE   | Check builds, passes. Negative test verified manually. Documented in TESTING.md. |
@@ -89,21 +90,21 @@ Executed all 17 tasks from the Pareto plan (T01-T17). **However, the quality gat
 
 ## c) NOT STARTED
 
-| Item                                                                                                                                          | Source                      |
-| --------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------- |
-| ~~CHANGELOG.md `[Unreleased]` update~~ done — the living docs are maintained continuously (docs-health cadence + count gates) | ~~Plan verification checklist~~ |
-| ~~TODO_LIST.md item removal~~ done — the living docs are maintained continuously (docs-health cadence + count gates) | ~~Plan verification checklist~~ |
-| ~~HOW_TO_USE.md documentation for ALL new flags~~ done — the living docs are maintained continuously (docs-health cadence + count gates) | ~~F026, F054, F060, F082~~ |
-| ~~FEATURES.md updates for ALL new features~~ done — docs/ACTIONABILITY_PATTERNS.md carries the full table (42 patterns) | ~~F032, F054, F082, F087~~ |
-| ~~docs/ACTIONABILITY_PATTERNS.md — pattern #20~~ done — the living docs are maintained continuously (docs-health cadence + count gates) | ~~F068~~ |
-| ~~AGENTS.md updates (conventions for new features)~~ done — AGENTS.md carries the conventions (maintained continuously) | ~~Multiple tasks~~ |
-| ~~README.md cross-link to PERFORMANCE.md~~ done — struck — tracked on ROADMAP (Website and Presence section) | ~~F092~~ |
-| ~~TTY auto-detection for HTML output~~ done — resolveHTMLOutput landed with the TTY probe seam | ~~F034~~ |
-| ~~Pattern label validation (reject unknown labels)~~ **Won't implement — won't implement — the features never landed; no tests to write.** | ~~F078~~ |
-| ~~Unit tests for: recommend-threshold, interface-method, YAML config, templ normalize, SARIF metadata, configurable patterns, HTML deep-linking~~ done — the gate runs green | ~~Multiple F-tasks~~ |
-| ~~`nix flake check` full run after all changes~~ done — the race lane runs every flake check | ~~Verification checklist~~ |
-| ~~`go test -race` after changes~~ done — the goldens + AnchorID landed (printer/html_views) | ~~Testing mandate~~ |
-| ~~Golden file verification for HTML with new IDs~~ done — the goldens + AnchorID landed (printer/html_views) | ~~F037~~ |
+| Item                                                                                                                                                                         | Source                          |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------- |
+| ~~CHANGELOG.md `[Unreleased]` update~~ done — the living docs are maintained continuously (docs-health cadence + count gates)                                                | ~~Plan verification checklist~~ |
+| ~~TODO_LIST.md item removal~~ done — the living docs are maintained continuously (docs-health cadence + count gates)                                                         | ~~Plan verification checklist~~ |
+| ~~HOW_TO_USE.md documentation for ALL new flags~~ done — the living docs are maintained continuously (docs-health cadence + count gates)                                     | ~~F026, F054, F060, F082~~      |
+| ~~FEATURES.md updates for ALL new features~~ done — docs/ACTIONABILITY_PATTERNS.md carries the full table (42 patterns)                                                      | ~~F032, F054, F082, F087~~      |
+| ~~docs/ACTIONABILITY_PATTERNS.md — pattern #20~~ done — the living docs are maintained continuously (docs-health cadence + count gates)                                      | ~~F068~~                        |
+| ~~AGENTS.md updates (conventions for new features)~~ done — AGENTS.md carries the conventions (maintained continuously)                                                      | ~~Multiple tasks~~              |
+| ~~README.md cross-link to PERFORMANCE.md~~ done — struck — tracked on ROADMAP (Website and Presence section)                                                                 | ~~F092~~                        |
+| ~~TTY auto-detection for HTML output~~ done — resolveHTMLOutput landed with the TTY probe seam                                                                               | ~~F034~~                        |
+| ~~Pattern label validation (reject unknown labels)~~ **Won't implement — won't implement — the features never landed; no tests to write.**                                   | ~~F078~~                        |
+| ~~Unit tests for: recommend-threshold, interface-method, YAML config, templ normalize, SARIF metadata, configurable patterns, HTML deep-linking~~ done — the gate runs green | ~~Multiple F-tasks~~            |
+| ~~`nix flake check` full run after all changes~~ done — the race lane runs every flake check                                                                                 | ~~Verification checklist~~      |
+| ~~`go test -race` after changes~~ done — the goldens + AnchorID landed (printer/html_views)                                                                                  | ~~Testing mandate~~             |
+| ~~Golden file verification for HTML with new IDs~~ done — the goldens + AnchorID landed (printer/html_views)                                                                 | ~~F037~~                        |
 
 ---
 
@@ -160,10 +161,10 @@ In `cmd/diff_report.go`, I changed `ProcessClones` error handling from `return e
 ### CRITICAL — Fix the breakage (do these FIRST)
 
 1. Fix `printer/actionability_switch_test.go` — restore `isLoggingMethod`/`isCleanupMethod` wrappers or update test to use `slices.Contains` directly
-~~2. Remove `exhaustruct`/`tagliatelle` from `.golangci.yml` (daemon regression #9)~~ done — both are banned with the auto-remove guard (AGENTS.md Lint Config Guard)
-3. Fix `collectCurrentGroups` error swallow in `cmd/diff_report.go`
-4. Run `go test -count=1 ./...` to verify NO cached results
-~~5. Run `nix flake check` to verify ALL 10 checks pass~~ done — the checks attrset runs green (lint, test, race, arch-lint, alloc-gate, et al.)
+   ~~2. Remove `exhaustruct`/`tagliatelle` from `.golangci.yml` (daemon regression #9)~~ done — both are banned with the auto-remove guard (AGENTS.md Lint Config Guard)
+2. Fix `collectCurrentGroups` error swallow in `cmd/diff_report.go`
+3. Run `go test -count=1 ./...` to verify NO cached results
+   ~~5. Run `nix flake check` to verify ALL 10 checks pass~~ done — the checks attrset runs green (lint, test, race, arch-lint, alloc-gate, et al.)
 
 ### HIGH — Missing documentation
 
@@ -218,12 +219,12 @@ In `cmd/diff_report.go`, I changed `ProcessClones` error handling from `return e
 42. `--recommend-threshold` should respect `--ignore-tests` and gitignore
 43. `--diff-report` should support SARIF output format (not just text/JSON)
 44. HTML report: add copy-to-clipboard button for clone group deep-links
-~~45. SARIF: add `rule.relationships` for related patterns~~ **Won't implement — won't implement — relationships are not emitted; the SARIF conventions settled without them.**
-46. YAML config: add `.artdupl.yml` schema documentation
-47. Configurable patterns: add `--enable-pattern` (inverse of `--disable-pattern`)
-48. Configurable patterns: add pattern priority override
-49. Templ Phase 3: normalize string literals in templ expressions
-50. Performance: benchmark all new features to verify no regression
+    ~~45. SARIF: add `rule.relationships` for related patterns~~ **Won't implement — won't implement — relationships are not emitted; the SARIF conventions settled without them.**
+45. YAML config: add `.artdupl.yml` schema documentation
+46. Configurable patterns: add `--enable-pattern` (inverse of `--disable-pattern`)
+47. Configurable patterns: add pattern priority override
+48. Templ Phase 3: normalize string literals in templ expressions
+49. Performance: benchmark all new features to verify no regression
 
 ---
 

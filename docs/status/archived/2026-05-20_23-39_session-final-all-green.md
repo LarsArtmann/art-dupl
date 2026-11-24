@@ -17,6 +17,7 @@
 ### Bugs Fixed (6 total)
 
 <!-- check-rows:ledger -->
+
 | # | Bug                                                      | File                       | Commit    |
 | - | -------------------------------------------------------- | -------------------------- | --------- |
 | 1 | File root End = node count, not byte length              | `transform.go`             | `ab92d64` |
@@ -29,6 +30,7 @@
 ### Tests Added (6 unit + 2 BDD)
 
 <!-- check-rows:ledger -->
+
 | Test                                     | Purpose                                            | Commit    |
 | ---------------------------------------- | -------------------------------------------------- | --------- |
 | `TestFileRootNodeBytePosition`           | File root End must equal content byte length       | `ab92d64` |
@@ -40,6 +42,7 @@
 ### Other Completed Work
 
 <!-- check-rows:ledger -->
+
 | Task                                                                  | Commit    |
 | --------------------------------------------------------------------- | --------- |
 | Pre-existing lint fixes (gci, golines, modernize from gogenfilter v3) | `16a54af` |
@@ -73,18 +76,18 @@ d9a0082 fix(cmd): make --only flag available on stats subcommand
 
 From TODO_LIST.md (priority order):
 
-| #  | Task                                                                    | Impact                 |
-| -- | ----------------------------------------------------------------------- | ---------------------- |
-| ~~1~~ done — domain.ProcessedClone landed; PrintClones consumes it (printer/printer.go:82) | ~~ProcessedClone DTO — decouple Printer from syntax.Node (111 test sites)~~ | ~~Unblocks multi-lang~~ |
-| ~~2~~ done — CloneRef consolidation + printer/actionability/ landed (AGENTS.md, ADR-0027) | ~~Consolidate 3 parallel Clone types~~ | ~~Eliminates split brain~~ |
-| ~~3~~ done — CloneRef consolidation + printer/actionability/ landed (AGENTS.md, ADR-0027) | ~~printer/clone_classify.go decouple from syntax/golang~~ | ~~Multi-language prep~~ |
-| ~~4~~ done — ADR-0022 []TokenValue layout | ~~TokenValue type with validation~~ | ~~Type safety~~ |
-| ~~5~~ done — CSV is an OutputFormat value (config enums; stats + run output paths) | ~~CSV output via encoding/csv~~ | ~~Format compliance~~ |
-| ~~6~~ done — won't implement — the SIMD code was deleted; alloc budgets own memory work (ADR-0022) | ~~SIMD hash implementations (6 TODOs)~~ | ~~Performance~~ |
-| ~~7~~ done — won't implement — alloc budgets own memory work (ADR-0022) | ~~Memory layout optimization~~ | ~~Performance~~ |
-| ~~8~~ done — the pkg/enum shared helpers are adopted (AGENTS.md Enum pattern) | ~~Unify enum patterns~~ | ~~Consistency~~ |
-| ~~9~~ done — struck — tracked on ROADMAP (Architecture: transform.go table-driven handlers) | ~~Refactor syntax/golang/transform.go (355L)~~ | ~~Readability~~ |
-| ~~10~~ done — fixed 2026-11-14 — the archive ritual is running (cadence gate) | ~~Archive old docs/status/ (304 files)~~ | ~~Repo hygiene~~ |
+| #                                                                                                  | Task                                                                        | Impact                     |
+| -------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- | -------------------------- |
+| ~~1~~ done — domain.ProcessedClone landed; PrintClones consumes it (printer/printer.go:82)         | ~~ProcessedClone DTO — decouple Printer from syntax.Node (111 test sites)~~ | ~~Unblocks multi-lang~~    |
+| ~~2~~ done — CloneRef consolidation + printer/actionability/ landed (AGENTS.md, ADR-0027)          | ~~Consolidate 3 parallel Clone types~~                                      | ~~Eliminates split brain~~ |
+| ~~3~~ done — CloneRef consolidation + printer/actionability/ landed (AGENTS.md, ADR-0027)          | ~~printer/clone_classify.go decouple from syntax/golang~~                   | ~~Multi-language prep~~    |
+| ~~4~~ done — ADR-0022 []TokenValue layout                                                          | ~~TokenValue type with validation~~                                         | ~~Type safety~~            |
+| ~~5~~ done — CSV is an OutputFormat value (config enums; stats + run output paths)                 | ~~CSV output via encoding/csv~~                                             | ~~Format compliance~~      |
+| ~~6~~ done — won't implement — the SIMD code was deleted; alloc budgets own memory work (ADR-0022) | ~~SIMD hash implementations (6 TODOs)~~                                     | ~~Performance~~            |
+| ~~7~~ done — won't implement — alloc budgets own memory work (ADR-0022)                            | ~~Memory layout optimization~~                                              | ~~Performance~~            |
+| ~~8~~ done — the pkg/enum shared helpers are adopted (AGENTS.md Enum pattern)                      | ~~Unify enum patterns~~                                                     | ~~Consistency~~            |
+| ~~9~~ done — struck — tracked on ROADMAP (Architecture: transform.go table-driven handlers)        | ~~Refactor syntax/golang/transform.go (355L)~~                              | ~~Readability~~            |
+| ~~10~~ done — fixed 2026-11-14 — the archive ritual is running (cadence gate)                      | ~~Archive old docs/status/ (304 files)~~                                    | ~~Repo hygiene~~           |
 
 ---
 
@@ -109,49 +112,50 @@ From TODO_LIST.md (priority order):
 
 ### P0 — Hygiene (small effort, immediate)
 
-| # | Task                                                              | Effort |
-| - | ----------------------------------------------------------------- | ------ |
-| ~~1~~ done — fixed 2026-11-14 — the archive ritual is running (cadence gate) | ~~Archive old docs/status/ (304 → keep 30 days)~~ | ~~S~~ |
-| ~~2~~ done — .githooks/pre-commit runs the jsonv2gate (2026-10-24) | ~~Fix pre-commit hook: allowlist for existing TODOs and gitleaks FP~~ | ~~S~~ |
-| ~~3~~ done — the CI Self-Analysis gate runs art-dupl on itself | ~~Dogfood: run art-dupl on itself, publish results~~ | ~~S~~ |
+| #                                                                            | Task                                                                  | Effort |
+| ---------------------------------------------------------------------------- | --------------------------------------------------------------------- | ------ |
+| ~~1~~ done — fixed 2026-11-14 — the archive ritual is running (cadence gate) | ~~Archive old docs/status/ (304 → keep 30 days)~~                     | ~~S~~  |
+| ~~2~~ done — .githooks/pre-commit runs the jsonv2gate (2026-10-24)           | ~~Fix pre-commit hook: allowlist for existing TODOs and gitleaks FP~~ | ~~S~~  |
+| ~~3~~ done — the CI Self-Analysis gate runs art-dupl on itself               | ~~Dogfood: run art-dupl on itself, publish results~~                  | ~~S~~  |
 
 ### P1 — Architecture (high impact)
 
-| #  | Task                                                      | Effort |
-| -- | --------------------------------------------------------- | ------ |
-| ~~4~~ done — domain.ProcessedClone landed; PrintClones consumes it (printer/printer.go:82) | ~~Introduce ProcessedClone DTO~~ | ~~L~~ |
-| ~~5~~ done — CloneRef consolidation + printer/actionability/ landed (AGENTS.md, ADR-0027) | ~~Consolidate 3 Clone types → single type~~ | ~~M~~ |
-| ~~6~~ done — CloneRef consolidation + printer/actionability/ landed (AGENTS.md, ADR-0027) | ~~Decouple printer/clone_classify.go from syntax/golang~~ | ~~M~~ |
-| ~~7~~ done — PrintClones takes domain.ProcessedCloneGroup (printer/printer.go:82) | ~~Change Printer interface → []ProcessedCloneGroup~~ | ~~M~~ |
-| ~~8~~ done — the call sites migrated with the DTO | ~~Update 111 test call sites~~ | ~~L~~ |
-| ~~9~~ done — ADR-0022 []TokenValue layout | ~~Implement TokenValue type with validation~~ | ~~M~~ |
-| ~~10~~ done — the pkg/enum shared helpers are adopted (AGENTS.md Enum pattern) | ~~Unify enum patterns~~ | ~~S~~ |
-| ~~11~~ done — struck — tracked on ROADMAP (Architecture: transform.go table-driven handlers) | ~~Refactor syntax/golang/transform.go — extract switch arms~~ | ~~M~~ |
-| ~~12~~ done — fixed — the gopls findings were closed in the 2026-09-29 pass (AGENTS.md) | ~~Fix remaining LSP hints~~ | ~~S~~ |
+| #                                                                                            | Task                                                          | Effort |
+| -------------------------------------------------------------------------------------------- | ------------------------------------------------------------- | ------ |
+| ~~4~~ done — domain.ProcessedClone landed; PrintClones consumes it (printer/printer.go:82)   | ~~Introduce ProcessedClone DTO~~                              | ~~L~~  |
+| ~~5~~ done — CloneRef consolidation + printer/actionability/ landed (AGENTS.md, ADR-0027)    | ~~Consolidate 3 Clone types → single type~~                   | ~~M~~  |
+| ~~6~~ done — CloneRef consolidation + printer/actionability/ landed (AGENTS.md, ADR-0027)    | ~~Decouple printer/clone_classify.go from syntax/golang~~     | ~~M~~  |
+| ~~7~~ done — PrintClones takes domain.ProcessedCloneGroup (printer/printer.go:82)            | ~~Change Printer interface → []ProcessedCloneGroup~~          | ~~M~~  |
+| ~~8~~ done — the call sites migrated with the DTO                                            | ~~Update 111 test call sites~~                                | ~~L~~  |
+| ~~9~~ done — ADR-0022 []TokenValue layout                                                    | ~~Implement TokenValue type with validation~~                 | ~~M~~  |
+| ~~10~~ done — the pkg/enum shared helpers are adopted (AGENTS.md Enum pattern)               | ~~Unify enum patterns~~                                       | ~~S~~  |
+| ~~11~~ done — struck — tracked on ROADMAP (Architecture: transform.go table-driven handlers) | ~~Refactor syntax/golang/transform.go — extract switch arms~~ | ~~M~~  |
+| ~~12~~ done — fixed — the gopls findings were closed in the 2026-09-29 pass (AGENTS.md)      | ~~Fix remaining LSP hints~~                                   | ~~S~~  |
 
 ### P2 — Features
 
-| #  | Task                                        | Effort |
-| -- | ------------------------------------------- | ------ |
-| ~~13~~ done — CSV is an OutputFormat value (config enums; stats + run output paths) | ~~CSV output via encoding/csv~~ | ~~S~~ |
-| ~~14~~ done — superseded — the TODO/Legacy detectors were deleted; only the art-dupl and hash methods remain | ~~Wire TodoDetector through CLI (-m todos)~~ | ~~S~~ |
-| ~~15~~ done — superseded — the TODO/Legacy detectors were deleted; only the art-dupl and hash methods remain | ~~Wire LegacyDetector through CLI (-m legacy)~~ | ~~S~~ |
-| ~~16~~ done — won't implement — the SIMD code was deleted; alloc budgets own memory work (ADR-0022) | ~~SIMD hash implementations~~ | ~~M~~ |
-| ~~17~~ done — won't implement — alloc budgets own memory work (ADR-0022) | ~~Memory layout optimization~~ | ~~M~~ |
+| #                                                                                                            | Task                                            | Effort |
+| ------------------------------------------------------------------------------------------------------------ | ----------------------------------------------- | ------ |
+| ~~13~~ done — CSV is an OutputFormat value (config enums; stats + run output paths)                          | ~~CSV output via encoding/csv~~                 | ~~S~~  |
+| ~~14~~ done — superseded — the TODO/Legacy detectors were deleted; only the art-dupl and hash methods remain | ~~Wire TodoDetector through CLI (-m todos)~~    | ~~S~~  |
+| ~~15~~ done — superseded — the TODO/Legacy detectors were deleted; only the art-dupl and hash methods remain | ~~Wire LegacyDetector through CLI (-m legacy)~~ | ~~S~~  |
+| ~~16~~ done — won't implement — the SIMD code was deleted; alloc budgets own memory work (ADR-0022)          | ~~SIMD hash implementations~~                   | ~~M~~  |
+| ~~17~~ done — won't implement — alloc budgets own memory work (ADR-0022)                                     | ~~Memory layout optimization~~                  | ~~M~~  |
 
 ### P2 — Infrastructure
 
 <!-- check-rows:ledger -->
-| #  | Task                            | Effort |
-| -- | ------------------------------- | ------ |
-| ~~18~~ done — superseded — coverage is tracked by the CI Coverage job; per-package floors moved on | ~~Bump BDD test coverage to 80%+~~ | ~~M~~ |
-| 19 | Add fuzz tests for templ parser | S      |
-| 20 | CI pipeline audit               | S      |
-| 21 | Update FEATURES.md              | S      |
-| ~~22~~ done — the SDK is dogfooded by the BuildFlow provider (pkg/provider; live since 2026-09-25) | ~~SDK dogfooding~~ | ~~M~~ |
-| 23 | Performance benchmarking        | M      |
-| ~~24~~ done — nix flake check is the CI gate (lint + format + race + alloc-gate) | ~~Nix flake check~~ | ~~S~~ |
-| 25 | Update HOW_TO_USE.md FAQ        | S      |
+
+| #                                                                                                  | Task                               | Effort |
+| -------------------------------------------------------------------------------------------------- | ---------------------------------- | ------ |
+| ~~18~~ done — superseded — coverage is tracked by the CI Coverage job; per-package floors moved on | ~~Bump BDD test coverage to 80%+~~ | ~~M~~  |
+| 19                                                                                                 | Add fuzz tests for templ parser    | S      |
+| 20                                                                                                 | CI pipeline audit                  | S      |
+| 21                                                                                                 | Update FEATURES.md                 | S      |
+| ~~22~~ done — the SDK is dogfooded by the BuildFlow provider (pkg/provider; live since 2026-09-25) | ~~SDK dogfooding~~                 | ~~M~~  |
+| 23                                                                                                 | Performance benchmarking           | M      |
+| ~~24~~ done — nix flake check is the CI gate (lint + format + race + alloc-gate)                   | ~~Nix flake check~~                | ~~S~~  |
+| 25                                                                                                 | Update HOW_TO_USE.md FAQ           | S      |
 
 ---
 
@@ -169,6 +173,7 @@ This touches 111 test call sites and 6 printer implementations. Options:
 ## Metrics
 
 <!-- check-rows:ledger -->
+
 | Metric               | Value          |
 | -------------------- | -------------- |
 | Position bugs fixed  | 6              |

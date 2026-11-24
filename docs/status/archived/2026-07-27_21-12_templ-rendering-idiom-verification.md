@@ -117,7 +117,7 @@ The unit-level proof is solid (real AST → real CloneNode → pattern matches),
 17. Add `//art-dupl:accept` directive to `printer/report.templ` line 88 if the pattern is extended to templ and causes false positives there
 18. Consider whether the pattern should also match the inverse shape: `if len(x) > 0 { for ... }` (without else) — common variant
 19. Consider matching `== 0` AND `<= 0` AND `< 1` as empty-check conditions
-~~20. Document in ADR format the decision to keep the pattern `.go`-only (current behavior) vs extending to `.templ` source~~ done — the decision is documented (AGENTS.md templ-children-idiom bullet, .templ filename scoping)
+    ~~20. Document in ADR format the decision to keep the pattern `.go`-only (current behavior) vs extending to `.templ` source~~ done — the decision is documented (AGENTS.md templ-children-idiom bullet, .templ filename scoping)
 
 ### Broader Codebase Health (noticed during this session)
 

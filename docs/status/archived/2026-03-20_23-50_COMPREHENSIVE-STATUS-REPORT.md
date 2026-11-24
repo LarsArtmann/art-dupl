@@ -226,18 +226,18 @@ go/types.(*Checker).builtin-range1
 
 10. Fix gosec G115 integer overflow
 11. Reduce transformer.trans complexity
-~~12. Fix gochecknoglobals (SemanticHashEnabled)~~ done — lint is 106-linter clean (AGENTS.md)
-13. Fix funlen (PrintFooter 87 lines)
-~~14. Add domain type validation tests~~ done — the domain sentinels are cross-alias-tested (AGENTS.md sentinel convention)
-15. Fix varnamelen short variable names
+    ~~12. Fix gochecknoglobals (SemanticHashEnabled)~~ done — lint is 106-linter clean (AGENTS.md)
+12. Fix funlen (PrintFooter 87 lines)
+    ~~14. Add domain type validation tests~~ done — the domain sentinels are cross-alias-tested (AGENTS.md sentinel convention)
+13. Fix varnamelen short variable names
 
 ### P3: Features
 
 16. Threshold type migration
 17. Complete --profile flag
-~~18. Implement CSV output~~ done — CSV is an OutputFormat value (AGENTS.md)
-~~19. Add SARIF format~~ done — SARIF ships with a byte-level golden (AGENTS.md)
-20. Resolve config/domain cycle
+    ~~18. Implement CSV output~~ done — CSV is an OutputFormat value (AGENTS.md)
+    ~~19. Add SARIF format~~ done — SARIF ships with a byte-level golden (AGENTS.md)
+18. Resolve config/domain cycle
 
 ### P4: Architecture
 

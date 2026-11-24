@@ -221,17 +221,17 @@ Nearly identical flag parsing logic duplicated:
 
 ### High Priority (Week 1)
 
-| #  | Task                                | Effort | Impact          | Priority Score |
-| -- | ----------------------------------- | ------ | --------------- | -------------- |
-~~| 6  | Extract flag parsing - Part 1       | 12min  | Maintainability | 10.0           |~~ done 2026-11-15 — flag parsing is extracted: `cmd/flags.go`, `cmd/run_flags.go`, `cmd/config_builder.go` hold it.
-~~| 7  | Extract flag parsing - Part 2       | 12min  | Maintainability | 10.0           |~~ done 2026-11-15 — flag parsing is extracted: `cmd/flags.go`, `cmd/run_flags.go`, `cmd/config_builder.go` hold it.
-~~| 8  | Extract flag parsing - Part 3       | 12min  | Maintainability | 10.0           |~~ done 2026-11-15 — flag parsing is extracted: `cmd/flags.go`, `cmd/run_flags.go`, `cmd/config_builder.go` hold it.
-~~| 9  | Extract flag parsing - Part 4       | 12min  | Maintainability | 10.0           |~~ done 2026-11-15 — flag parsing is extracted: `cmd/flags.go`, `cmd/run_flags.go`, `cmd/config_builder.go` hold it.
-| 10 | Design SemanticHash DI approach     | 20min  | Architecture    | 7.5            |
-| 11 | Add SemanticHash to Config struct   | 15min  | Type safety     | 10.0           |
-| 12 | Wire SemanticHash through transform | 30min  | Testability     | 5.0            |
-| 13 | Update CLI commands for DI          | 15min  | Integration     | 10.0           |
-| ~~14~~ **done — the global is gone from the tree (verified 2026-11-14)** |~~Remove global SemanticHashEnabled~~|~~10min~~|~~Cleanup~~|~~15.0~~|
+| #                                                                        | Task                                  | Effort                        | Impact       | Priority Score  |
+| ------------------------------------------------------------------------ | ------------------------------------- | ----------------------------- | ------------ | --------------- |
+| ~~                                                                       | 6                                     | Extract flag parsing - Part 1 | 12min        | Maintainability |
+| ~~                                                                       | 7                                     | Extract flag parsing - Part 2 | 12min        | Maintainability |
+| ~~                                                                       | 8                                     | Extract flag parsing - Part 3 | 12min        | Maintainability |
+| ~~                                                                       | 9                                     | Extract flag parsing - Part 4 | 12min        | Maintainability |
+| 10                                                                       | Design SemanticHash DI approach       | 20min                         | Architecture | 7.5             |
+| 11                                                                       | Add SemanticHash to Config struct     | 15min                         | Type safety  | 10.0            |
+| 12                                                                       | Wire SemanticHash through transform   | 30min                         | Testability  | 5.0             |
+| 13                                                                       | Update CLI commands for DI            | 15min                         | Integration  | 10.0            |
+| ~~14~~ **done — the global is gone from the tree (verified 2026-11-14)** | ~~Remove global SemanticHashEnabled~~ | ~~10min~~                     | ~~Cleanup~~  | ~~15.0~~        |
 
 ### Medium Priority (Week 2-3)
 

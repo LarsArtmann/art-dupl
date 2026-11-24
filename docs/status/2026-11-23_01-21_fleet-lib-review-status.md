@@ -3,6 +3,7 @@
 **2026-11-23 01:21 · art-dupl @ `20478d4e` (daemon HEAD; run audited consumer pins `cee67b4a` for groups A/B, `fb062def` for group C)**
 
 **Scope — what this report VERIFIED (and how):**
+
 - 7 per-lib reports + dashboard exist and pass the mechanical citation gate: `python3 scripts/citation-sweep.py docs/review/libs/ docs/review/README.md docs/research/README.md` → 9 files, 0 stale, exit 0 (re-run at ship).
 - Group A (go-finding core + toolsdk) claims re-verified by the orchestrator's own commands: 6/6 high-stakes facts reproduced (`git show v1.15.0:detect_result.go`, `SetRunProperty` at report.go:140, `Relativize` at relativize.go:30, provider.go:135/201/221, go.mod:90-91 pins, tag sorts, identifier counts 45/23/3/1); verify block replayed command-by-command; both scores re-derived from stated inputs (15.5/19→82, 7/8→88).
 - Groups B/C: headers, score inputs, and sweep verified; spot-claims checked (G8/T07b staleness re-derived from pipeline tags + changelogs). NOT end-to-end re-read.
@@ -11,6 +12,7 @@
 - Gates at ship: boundary fast profile OK (8s, build+vet+race on internal/config/cmd + lint).
 
 **Scope — what this report did NOT verify (and why):**
+
 - Full-prose re-reads of the 5 NOT-ADOPTED reports (linter-autoconfigure-sdk, go-policy-dsl, go-dag-app, go-linter-sdk, go-compliance) — sampled QC only (headers, scores, sweep, spot-claims); the sweep proves citations resolve, not that every prose claim is true.
 - Library-side claims inherited from subagents without re-derivation: six-sibling adoption of go-linter-sdk, go-compliance hub untagged state, `audit` subpackage details.
 - `nix flake check` / full race suite (only the fast profile ran; this was a docs+script change, no Go source touched).
@@ -70,6 +72,7 @@
 ## f) NEXT 50 (brainstorm, not commitment — TODO vs ROADMAP fuel)
 
 **TODO_LIST-grade (concrete, bounded):**
+
 1. T20a: implement `DetectV2` in `pkg/provider` returning `FilesScanned` from the crawl (P25, at pin, no wire change).
 2. T20b: bump go-finding core `v1.15.0 → v1.16.0` (go get + vendorHash dance + fresh `-count=1` suite).
 3. T20c: `SetRunProperty("art-dupl/threshold"/"mode")` in the `ToReport` lane (after bump).
@@ -131,4 +134,4 @@
 
 ---
 
-*Awaiting instructions. No commit made (harness rule); the auto-commit daemon carries the report.*
+_Awaiting instructions. No commit made (harness rule); the auto-commit daemon carries the report._

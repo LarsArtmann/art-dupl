@@ -24,18 +24,20 @@ art-dupl is in **excellent shape**. This session eliminated **5 of 9 clone group
 ### Clone Groups Eliminated (5 of 9)
 
 <!-- check-rows:ledger -->
-| # | Location                                                        | Fix                                                                                              |
-| - | --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
-| ~~1~~ done — fixed — the config package tests are green today | ~~`config/config_enum_test.go:184/216`~~ | ~~Extracted `mustWriteFile(t, path, content)` helper~~ |
-| 2 | `printer/html_diff.go:177-180/199-202`                          | Extracted `diffWriteErr(filename, line, phase, index, total, err)` function                      |
-| 3 | `bdd/execute.go:53-57` / `cmd/stats_integration_test.go:97-101` | Extracted `testutil.CopyToBuffer(dst, src, done)` — shared goroutine pipe-copy helper            |
-| 4 | `printer/actionability_test.go:49-54/55-60`                     | Extracted `mustFuncDeclWithBody()` helper                                                        |
-| 7 | `internal/testutil/bdd.go:101-107` / `bdd_runners.go:122-128`   | Extracted `appendFlagsToArgs(args, flags)` — shared flag-to-CLI conversion                       |
-| ~~8~~ done — CloneRef consolidation + printer/actionability/ landed (AGENTS.md, ADR-0027) | ~~`printer/clone_classify_test.go:281-286/295-300`~~ | ~~Merged `TestClonePriorityEmoji` + `TestClonePriorityColor` → single `TestClonePriorityAccessors`~~ |
+
+| #                                                                                         | Location                                                        | Fix                                                                                                  |
+| ----------------------------------------------------------------------------------------- | --------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| ~~1~~ done — fixed — the config package tests are green today                             | ~~`config/config_enum_test.go:184/216`~~                        | ~~Extracted `mustWriteFile(t, path, content)` helper~~                                               |
+| 2                                                                                         | `printer/html_diff.go:177-180/199-202`                          | Extracted `diffWriteErr(filename, line, phase, index, total, err)` function                          |
+| 3                                                                                         | `bdd/execute.go:53-57` / `cmd/stats_integration_test.go:97-101` | Extracted `testutil.CopyToBuffer(dst, src, done)` — shared goroutine pipe-copy helper                |
+| 4                                                                                         | `printer/actionability_test.go:49-54/55-60`                     | Extracted `mustFuncDeclWithBody()` helper                                                            |
+| 7                                                                                         | `internal/testutil/bdd.go:101-107` / `bdd_runners.go:122-128`   | Extracted `appendFlagsToArgs(args, flags)` — shared flag-to-CLI conversion                           |
+| ~~8~~ done — CloneRef consolidation + printer/actionability/ landed (AGENTS.md, ADR-0027) | ~~`printer/clone_classify_test.go:281-286/295-300`~~            | ~~Merged `TestClonePriorityEmoji` + `TestClonePriorityColor` → single `TestClonePriorityAccessors`~~ |
 
 ### Clone Groups Retained (4 — Inherent)
 
 <!-- check-rows:ledger -->
+
 | # | Location                                         | Reason                                                                                                                       |
 | - | ------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------- |
 | 5 | `cmd/config_builder.go:15/56`                    | Two public functions with identical parameter/return types — intentional API                                                 |
@@ -130,6 +132,7 @@ All assertions pass but test binary exits non-zero. Cobra calls `os.Exit()` duri
 ### 2. Linter: 20 Issues (UNCHANGED)
 
 <!-- check-rows:ledger -->
+
 | Category    | Count | Location                                      |
 | ----------- | ----- | --------------------------------------------- |
 | errcheck    | 10    | bdd/execute.go, cmd/stats_integration_test.go |
@@ -173,33 +176,34 @@ All assertions pass but test binary exits non-zero. Cobra calls `os.Exit()` duri
 ## f) Top #25 Things We Should Get Done Next
 
 <!-- check-rows:ledger -->
-| #  | Task                                                           | Priority | Effort |
-| -- | -------------------------------------------------------------- | -------- | ------ |
-| 1  | Fix os.Exit test flakiness (bdd + cmd)                         | CRITICAL | M      |
-| 2  | Fix 10 errcheck issues in test code                            | HIGH     | S      |
-| 3  | Extract buildJSONData into smaller functions (gocyclo 16→<10)  | HIGH     | S      |
-| 4  | Extract `--threshold` / `art-dupl` string constants in tests   | LOW      | S      |
-| 5  | Wire TodoDetector and LegacyDetector to CLI `-m` flag          | HIGH     | M      |
-| 6  | Fix 2 exhaustruct issues in testutil                           | LOW      | S      |
-| 7  | Fix 2 err113 issues in testutil                                | LOW      | S      |
-| 8  | Introduce ProcessedClone DTO                                   | HIGH     | L      |
-| 9  | Consolidate 3 parallel Clone types                             | MEDIUM   | L      |
-| 10 | Implement proper CSV output using encoding/csv                 | MEDIUM   | S      |
-| 11 | Implement TokenValue type with validation                      | HIGH     | M      |
-| 12 | Unify enum patterns                                            | MEDIUM   | M      |
-| 13 | Refactor transform.go (369L, 300L switch)                      | MEDIUM   | M      |
-| 14 | Optimize memory layouts for SIMD-friendly structures           | MEDIUM   | L      |
-| 15 | Implement string interning                                     | LOW      | M      |
-| 16 | Wire remaining SIMD TODOs (6 items)                            | LOW      | M      |
-| 17 | Fix ConstantCSSProperty position (upstream)                    | LOW      | S      |
-| 18 | Archive old docs/status/ files                                 | LOW      | S      |
-| 19 | Fix remaining LSP hints                                        | LOW      | S      |
-| 20 | Implement SDK from SDK_DESIGN.md                               | LOW      | XL     |
-| 21 | Add more fuzz tests                                            | LOW      | M      |
-| 22 | Coverage improvement: domain (67%), job (77%), detection (78%) | MEDIUM   | M      |
-| 23 | Add benchmark regression CI                                    | MEDIUM   | S      |
-| ~~24~~ done — won't implement — the single-module layout stands; module splits are major-version work (TODO_LIST PARKED) | ~~Consider modularization~~ | ~~LOW~~ | ~~XL~~ |
-| 25 | Migrate justfile → nix flake                                   | LOW      | M      |
+
+| #                                                                                                                        | Task                                                           | Priority | Effort |
+| ------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------- | -------- | ------ |
+| 1                                                                                                                        | Fix os.Exit test flakiness (bdd + cmd)                         | CRITICAL | M      |
+| 2                                                                                                                        | Fix 10 errcheck issues in test code                            | HIGH     | S      |
+| 3                                                                                                                        | Extract buildJSONData into smaller functions (gocyclo 16→<10)  | HIGH     | S      |
+| 4                                                                                                                        | Extract `--threshold` / `art-dupl` string constants in tests   | LOW      | S      |
+| 5                                                                                                                        | Wire TodoDetector and LegacyDetector to CLI `-m` flag          | HIGH     | M      |
+| 6                                                                                                                        | Fix 2 exhaustruct issues in testutil                           | LOW      | S      |
+| 7                                                                                                                        | Fix 2 err113 issues in testutil                                | LOW      | S      |
+| 8                                                                                                                        | Introduce ProcessedClone DTO                                   | HIGH     | L      |
+| 9                                                                                                                        | Consolidate 3 parallel Clone types                             | MEDIUM   | L      |
+| 10                                                                                                                       | Implement proper CSV output using encoding/csv                 | MEDIUM   | S      |
+| 11                                                                                                                       | Implement TokenValue type with validation                      | HIGH     | M      |
+| 12                                                                                                                       | Unify enum patterns                                            | MEDIUM   | M      |
+| 13                                                                                                                       | Refactor transform.go (369L, 300L switch)                      | MEDIUM   | M      |
+| 14                                                                                                                       | Optimize memory layouts for SIMD-friendly structures           | MEDIUM   | L      |
+| 15                                                                                                                       | Implement string interning                                     | LOW      | M      |
+| 16                                                                                                                       | Wire remaining SIMD TODOs (6 items)                            | LOW      | M      |
+| 17                                                                                                                       | Fix ConstantCSSProperty position (upstream)                    | LOW      | S      |
+| 18                                                                                                                       | Archive old docs/status/ files                                 | LOW      | S      |
+| 19                                                                                                                       | Fix remaining LSP hints                                        | LOW      | S      |
+| 20                                                                                                                       | Implement SDK from SDK_DESIGN.md                               | LOW      | XL     |
+| 21                                                                                                                       | Add more fuzz tests                                            | LOW      | M      |
+| 22                                                                                                                       | Coverage improvement: domain (67%), job (77%), detection (78%) | MEDIUM   | M      |
+| 23                                                                                                                       | Add benchmark regression CI                                    | MEDIUM   | S      |
+| ~~24~~ done — won't implement — the single-module layout stands; module splits are major-version work (TODO_LIST PARKED) | ~~Consider modularization~~                                    | ~~LOW~~  | ~~XL~~ |
+| 25                                                                                                                       | Migrate justfile → nix flake                                   | LOW      | M      |
 
 ---
 
@@ -214,6 +218,7 @@ Both test similar end-to-end scenarios. `bdd/` uses Ginkgo/Gomega with in-proces
 ## Metrics Summary
 
 <!-- check-rows:ledger -->
+
 | Metric                        | Value                                 |
 | ----------------------------- | ------------------------------------- |
 | Go files                      | 214                                   |
@@ -232,6 +237,7 @@ Both test similar end-to-end scenarios. `bdd/` uses Ginkgo/Gomega with in-proces
 ## Session Timeline (2026-05-21)
 
 <!-- check-rows:ledger -->
+
 | Time   | Event                                                              |
 | ------ | ------------------------------------------------------------------ |
 | ~18:00 | Status report, 2 clone groups at t=40                              |
@@ -253,16 +259,17 @@ Both test similar end-to-end scenarios. `bdd/` uses Ginkgo/Gomega with in-proces
 ## New Helpers Extracted This Session
 
 <!-- check-rows:ledger -->
-| Helper                  | Location                         | Used By                                               |
-| ----------------------- | -------------------------------- | ----------------------------------------------------- |
-| ~~`mustWriteFile`~~ done — fixed — the config package tests are green today | ~~config/config_enum_test.go~~ | ~~TestLoadConfig_InvalidJSON, TestSaveConfig_FileExists~~ |
-| `diffWriteErr`          | printer/html_diff.go             | writeDiffComparison (2 sites)                         |
-| `testutil.CopyToBuffer` | internal/testutil/bdd_helpers.go | bdd/execute.go, cmd/stats_integration_test.go         |
-| `mustFuncDeclWithBody`  | printer/actionability_test.go    | TestEvaluateActionability                             |
-| `appendFlagsToArgs`     | internal/testutil/bdd.go         | BuildArgsFromFlags, RunArtDuplWithStdin               |
-| `parseTest` (type)      | syntax/templ/templ_test.go       | 5 test functions                                      |
-| `mustDeferSelectorCall` | printer/actionability_test.go    | TestEvaluateActionability                             |
-| `mustIfErrReturnNil`    | printer/actionability_test.go    | TestEvaluateActionability                             |
+
+| Helper                                                                      | Location                         | Used By                                                   |
+| --------------------------------------------------------------------------- | -------------------------------- | --------------------------------------------------------- |
+| ~~`mustWriteFile`~~ done — fixed — the config package tests are green today | ~~config/config_enum_test.go~~   | ~~TestLoadConfig_InvalidJSON, TestSaveConfig_FileExists~~ |
+| `diffWriteErr`                                                              | printer/html_diff.go             | writeDiffComparison (2 sites)                             |
+| `testutil.CopyToBuffer`                                                     | internal/testutil/bdd_helpers.go | bdd/execute.go, cmd/stats_integration_test.go             |
+| `mustFuncDeclWithBody`                                                      | printer/actionability_test.go    | TestEvaluateActionability                                 |
+| `appendFlagsToArgs`                                                         | internal/testutil/bdd.go         | BuildArgsFromFlags, RunArtDuplWithStdin                   |
+| `parseTest` (type)                                                          | syntax/templ/templ_test.go       | 5 test functions                                          |
+| `mustDeferSelectorCall`                                                     | printer/actionability_test.go    | TestEvaluateActionability                                 |
+| `mustIfErrReturnNil`                                                        | printer/actionability_test.go    | TestEvaluateActionability                                 |
 
 ---
 

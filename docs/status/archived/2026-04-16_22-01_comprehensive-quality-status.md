@@ -23,6 +23,7 @@ completed, and all pre-existing BDD test failures fixed at their root causes.
 All 6 pre-existing BDD test failures identified, root-caused, and fixed:
 
 <!-- check-rows:ledger -->
+
 | Test                                          | Root Cause                                                                                                                  | Fix                                                                                            |
 | --------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
 | `cli_commands_test.go:434` (help examples)    | Help output uses "EXAMPLES" uppercase; test only checked "Example"/"example"                                                | Added `ContainSubstring("EXAMPLES")`                                                           |
@@ -191,33 +192,33 @@ All tests pass. All lint is clean. The codebase compiles and functions correctly
 
 Ranked by **impact × effort ratio** (highest ROI first):
 
-| #  | Task                                                                                                 | Impact | Effort | Category     |
-| -- | ---------------------------------------------------------------------------------------------------- | ------ | ------ | ------------ |
-| ~~1~~ done — `compareByNameThenPos` consolidated (commit 4b228be in this report) | ~~Unify `Pos` type: make `compareByNameThenPos` use `int32` consistently or change `Node.Pos` to `int`~~ | ~~High~~ | ~~Low~~ | ~~Architecture~~ |
-| ~~2~~ done — `internal/testutil/` shared helpers | ~~Extract BDD test fixtures into shared helpers (create-dir-write-run-parse pattern)~~ | ~~High~~ | ~~Medium~~ | ~~Testing~~ |
-| ~~3~~ done — table-driven ranges tests (`printer/stats/stats_ranges_test.go`) | ~~Dedup `pkg/position/lines_test.go` — 18 clones, table-driven refactor~~ | ~~Medium~~ | ~~Low~~ | ~~Testing~~ |
-| 4 **→ bdd setup helpers exist (`bdd/` suite); residue accepted** | Dedup `bdd/semantic_detection_test.go` — 9 clones from repetitive setup | Medium | Low | Testing |
-| 5 **→ detector pipeline refactored in later sessions** | Production clone: `hash/detector.go` + `hash/file_detector.go` + `detector_pipeline.go` (3 clones) | High | Medium | Production |
-| ~~6~~ done — moot — `detection/todos.go` removed | ~~Production clone: `detection/todos.go` — 5 clones from repetitive patterns~~ | ~~High~~ | ~~Medium~~ | ~~Production~~ |
-| 7 **→ transform.go refactor remains open** | Production clone: `syntax/golang/transform.go` — 4 clones from AST handling | High | Medium | Production |
-| ~~8~~ done — diff rendering helpers (`printer/diff.go` refactor, 015e4b7) | ~~Production clone: `printer/diff.go` — 3 clones from diff rendering~~ | ~~Medium~~ | ~~Medium~~ | ~~Production~~ |
-| ~~9~~ **Superseded — ADR-0005 split-brain type unification.** | ~~Eliminate `printer/clone` + `syntax.Node` dual representation~~ | ~~High~~ | ~~High~~ | ~~Architecture~~ |
-| ~~10~~ done — single `errors/` package; `pkg/errors` removed | ~~Merge or clarify `errors/` vs `pkg/errors/` boundary~~ | ~~Medium~~ | ~~Medium~~ | ~~Architecture~~ |
-| ~~11~~ done — moot — `lib/` removed | ~~Complete `lib/` phase-out migration~~ | ~~Medium~~ | ~~Medium~~ | ~~Cleanup~~ |
-| ~~12~~ done — domain tests split by concern | ~~Dedup `domain/domain_types_test.go` — 8 clones from test assertions~~ | ~~Medium~~ | ~~Low~~ | ~~Testing~~ |
-| ~~13~~ done — `internal/filtertest/` shared setup | ~~Dedup `internal/filtertest/` — 5 clones from integration test setup~~ | ~~Medium~~ | ~~Low~~ | ~~Testing~~ |
-| 14 **→ bdd plumbing output accepted** | Dedup `bdd/plumbing_output_test.go` — 8 clones from output parsing | Medium | Low | Testing |
-| 15 **→ SDK test construction patterns accepted** | Dedup `pkg/artdupl/detector_*_test.go` — 11 clones from test construction | Medium | Low | Testing |
-| ~~16~~ done — moot — `internal/enum` removed (helpers in `pkg/enum`) | ~~Dedup `internal/enum/marshal_test.go` — 6 clones from enum serialization~~ | ~~Low~~ | ~~Low~~ | ~~Testing~~ |
-| ~~17~~ done — Coverage job in `.github/workflows/ci.yml` | ~~Add CI coverage gate (`just check-coverage` in GitHub Actions)~~ | ~~High~~ | ~~Low~~ | ~~CI/CD~~ |
-| ~~18~~ done — `performance.yml` benchstat baseline comparison | ~~Add benchmark regression tracking with baseline comparison~~ | ~~Medium~~ | ~~Medium~~ | ~~CI/CD~~ |
-| ~~19~~ done — shared sort-test helpers in `bdd/` | ~~Extract shared setup from `bdd/sorting_test.go` — 5 clones from sort verification~~ | ~~Low~~ | ~~Low~~ | ~~Testing~~ |
-| ~~20~~ done — `internal/testutil/` covers file-test setup | ~~Extract shared setup from `internal/utils/file_test.go` — 6 clones from file tests~~ | ~~Low~~ | ~~Low~~ | ~~Testing~~ |
-| ~~21~~ done — moot — `migration/` removed | ~~Refactor `migration/migration.go` — 2 clones from version handling~~ | ~~Low~~ | ~~Low~~ | ~~Cleanup~~ |
-| 22 **→ chart helpers accepted** | Refactor `printer/stats_visualization.go` — 2 clones from chart rendering | Low | Low | Cleanup |
-| 23 **→ examples reviewed; `examples/` current** | Review `examples/examples_sdk_demo.go` — 2 clones from demo construction | Low | Low | Docs |
-| 24 **→ cmd tests refactored in later sessions** | Audit `cmd/cmd_test.go` + `cmd/cmd_utils_test.go` — 7 clones from command tests | Low | Low | Testing |
-| 25 **→ gogenfilter is a separate repo (fixed there)** | Add fuzz tests for `gogenfilter/pattern.go` (the code we just fixed) | Medium | Medium | Robustness |
+| #                                                                                | Task                                                                                                     | Impact     | Effort     | Category         |
+| -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- | ---------- | ---------- | ---------------- |
+| ~~1~~ done — `compareByNameThenPos` consolidated (commit 4b228be in this report) | ~~Unify `Pos` type: make `compareByNameThenPos` use `int32` consistently or change `Node.Pos` to `int`~~ | ~~High~~   | ~~Low~~    | ~~Architecture~~ |
+| ~~2~~ done — `internal/testutil/` shared helpers                                 | ~~Extract BDD test fixtures into shared helpers (create-dir-write-run-parse pattern)~~                   | ~~High~~   | ~~Medium~~ | ~~Testing~~      |
+| ~~3~~ done — table-driven ranges tests (`printer/stats/stats_ranges_test.go`)    | ~~Dedup `pkg/position/lines_test.go` — 18 clones, table-driven refactor~~                                | ~~Medium~~ | ~~Low~~    | ~~Testing~~      |
+| 4 **→ bdd setup helpers exist (`bdd/` suite); residue accepted**                 | Dedup `bdd/semantic_detection_test.go` — 9 clones from repetitive setup                                  | Medium     | Low        | Testing          |
+| 5 **→ detector pipeline refactored in later sessions**                           | Production clone: `hash/detector.go` + `hash/file_detector.go` + `detector_pipeline.go` (3 clones)       | High       | Medium     | Production       |
+| ~~6~~ done — moot — `detection/todos.go` removed                                 | ~~Production clone: `detection/todos.go` — 5 clones from repetitive patterns~~                           | ~~High~~   | ~~Medium~~ | ~~Production~~   |
+| 7 **→ transform.go refactor remains open**                                       | Production clone: `syntax/golang/transform.go` — 4 clones from AST handling                              | High       | Medium     | Production       |
+| ~~8~~ done — diff rendering helpers (`printer/diff.go` refactor, 015e4b7)        | ~~Production clone: `printer/diff.go` — 3 clones from diff rendering~~                                   | ~~Medium~~ | ~~Medium~~ | ~~Production~~   |
+| ~~9~~ **Superseded — ADR-0005 split-brain type unification.**                    | ~~Eliminate `printer/clone` + `syntax.Node` dual representation~~                                        | ~~High~~   | ~~High~~   | ~~Architecture~~ |
+| ~~10~~ done — single `errors/` package; `pkg/errors` removed                     | ~~Merge or clarify `errors/` vs `pkg/errors/` boundary~~                                                 | ~~Medium~~ | ~~Medium~~ | ~~Architecture~~ |
+| ~~11~~ done — moot — `lib/` removed                                              | ~~Complete `lib/` phase-out migration~~                                                                  | ~~Medium~~ | ~~Medium~~ | ~~Cleanup~~      |
+| ~~12~~ done — domain tests split by concern                                      | ~~Dedup `domain/domain_types_test.go` — 8 clones from test assertions~~                                  | ~~Medium~~ | ~~Low~~    | ~~Testing~~      |
+| ~~13~~ done — `internal/filtertest/` shared setup                                | ~~Dedup `internal/filtertest/` — 5 clones from integration test setup~~                                  | ~~Medium~~ | ~~Low~~    | ~~Testing~~      |
+| 14 **→ bdd plumbing output accepted**                                            | Dedup `bdd/plumbing_output_test.go` — 8 clones from output parsing                                       | Medium     | Low        | Testing          |
+| 15 **→ SDK test construction patterns accepted**                                 | Dedup `pkg/artdupl/detector_*_test.go` — 11 clones from test construction                                | Medium     | Low        | Testing          |
+| ~~16~~ done — moot — `internal/enum` removed (helpers in `pkg/enum`)             | ~~Dedup `internal/enum/marshal_test.go` — 6 clones from enum serialization~~                             | ~~Low~~    | ~~Low~~    | ~~Testing~~      |
+| ~~17~~ done — Coverage job in `.github/workflows/ci.yml`                         | ~~Add CI coverage gate (`just check-coverage` in GitHub Actions)~~                                       | ~~High~~   | ~~Low~~    | ~~CI/CD~~        |
+| ~~18~~ done — `performance.yml` benchstat baseline comparison                    | ~~Add benchmark regression tracking with baseline comparison~~                                           | ~~Medium~~ | ~~Medium~~ | ~~CI/CD~~        |
+| ~~19~~ done — shared sort-test helpers in `bdd/`                                 | ~~Extract shared setup from `bdd/sorting_test.go` — 5 clones from sort verification~~                    | ~~Low~~    | ~~Low~~    | ~~Testing~~      |
+| ~~20~~ done — `internal/testutil/` covers file-test setup                        | ~~Extract shared setup from `internal/utils/file_test.go` — 6 clones from file tests~~                   | ~~Low~~    | ~~Low~~    | ~~Testing~~      |
+| ~~21~~ done — moot — `migration/` removed                                        | ~~Refactor `migration/migration.go` — 2 clones from version handling~~                                   | ~~Low~~    | ~~Low~~    | ~~Cleanup~~      |
+| 22 **→ chart helpers accepted**                                                  | Refactor `printer/stats_visualization.go` — 2 clones from chart rendering                                | Low        | Low        | Cleanup          |
+| 23 **→ examples reviewed; `examples/` current**                                  | Review `examples/examples_sdk_demo.go` — 2 clones from demo construction                                 | Low        | Low        | Docs             |
+| 24 **→ cmd tests refactored in later sessions**                                  | Audit `cmd/cmd_test.go` + `cmd/cmd_utils_test.go` — 7 clones from command tests                          | Low        | Low        | Testing          |
+| 25 **→ gogenfilter is a separate repo (fixed there)**                            | Add fuzz tests for `gogenfilter/pattern.go` (the code we just fixed)                                     | Medium     | Medium     | Robustness       |
 
 ---
 
@@ -243,6 +244,7 @@ Changing `Pos` to `int` would eliminate all conversions but may increase memory 
 ### art-dupl (branch: `fork`, pushed to `origin/fork`)
 
 <!-- check-rows:ledger -->
+
 | Commit    | Description                                                                       |
 | --------- | --------------------------------------------------------------------------------- |
 | `130dc43` | `fix(bdd): fix help examples test and filter pattern tests`                       |
@@ -252,6 +254,7 @@ Changing `Pos` to `int` would eliminate all conversions but may increase memory 
 ### gogenfilter (branch: `master`, pushed to `origin/master`)
 
 <!-- check-rows:ledger -->
+
 | Commit    | Description                                                            |
 | --------- | ---------------------------------------------------------------------- |
 | `32ddc53` | `fix: handle absolute paths in pattern matching and content detection` |
@@ -259,6 +262,7 @@ Changing `Pos` to `int` would eliminate all conversions but may increase memory 
 ### Earlier session commits already pushed (for context):
 
 <!-- check-rows:ledger -->
+
 | Commit    | Description                                                                       |
 | --------- | --------------------------------------------------------------------------------- |
 | `16f7b7f` | `refactor(printer): use isEmptyOrLessThanEmpty in sortClonesByFilename`           |
@@ -278,6 +282,7 @@ Changing `Pos` to `int` would eliminate all conversions but may increase memory 
 ## Metrics
 
 <!-- check-rows:ledger -->
+
 | Metric                            | Value                          |
 | --------------------------------- | ------------------------------ |
 | Go files                          | 236                            |

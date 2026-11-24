@@ -10,37 +10,37 @@
 
 ### Core Infrastructure (100% Complete)
 
-| Feature                    | Status      | Evidence                                |
-| -------------------------- | ----------- | --------------------------------------- |
-| ~~CLI Framework (Fang/Cobra)~~ done — verified — 2026-02-24 snapshot; still accurate per AGENTS.md | ~~✅ Complete~~ | ~~cmd/root.go, cmd/flags.go~~ |
-| ~~Multi-format Output~~ done — verified — 2026-02-24 snapshot; still accurate per AGENTS.md | ~~✅ Complete~~ | ~~Text, HTML, JSON, Plumbing, Stats~~ |
-| ~~Hash Detection Method~~ done — verified — 2026-02-24 snapshot; still accurate per AGENTS.md | ~~✅ Complete~~ | ~~hash/detector.go~~ |
-| ~~Suffix Tree Algorithm~~ done — verified — 2026-02-24 snapshot; still accurate per AGENTS.md | ~~✅ Complete~~ | ~~suffixtree/dupl.go~~ |
-| ~~Configuration System~~ done — verified — 2026-02-24 snapshot; still accurate per AGENTS.md | ~~✅ Complete~~ | ~~config/config.go, JSON support~~ |
-| ~~Domain Types~~ done — verified — 2026-02-24 snapshot; still accurate per AGENTS.md | ~~✅ Complete~~ | ~~domain/ with typed IDs~~ |
-| ~~Sorting Options~~ done — verified — 2026-02-24 snapshot; still accurate per AGENTS.md | ~~✅ Complete~~ | ~~size, occurrence, hash~~ |
-| ~~Smart Filtering~~ done — verified — 2026-02-24 snapshot; still accurate per AGENTS.md | ~~✅ Complete~~ | ~~SQLC, templ, go-enum detection~~ |
-| ~~Semantic Detection~~ done — verified — 2026-02-24 snapshot; still accurate per AGENTS.md | ~~✅ Complete~~ | ~~Recently refined, flag validation added~~ |
-| ~~Incremental Parsing~~ done — verified — 2026-02-24 snapshot; still accurate per AGENTS.md | ~~✅ Complete~~ | ~~Cache system functional~~ |
+| Feature                                                                                            | Status          | Evidence                                    |
+| -------------------------------------------------------------------------------------------------- | --------------- | ------------------------------------------- |
+| ~~CLI Framework (Fang/Cobra)~~ done — verified — 2026-02-24 snapshot; still accurate per AGENTS.md | ~~✅ Complete~~ | ~~cmd/root.go, cmd/flags.go~~               |
+| ~~Multi-format Output~~ done — verified — 2026-02-24 snapshot; still accurate per AGENTS.md        | ~~✅ Complete~~ | ~~Text, HTML, JSON, Plumbing, Stats~~       |
+| ~~Hash Detection Method~~ done — verified — 2026-02-24 snapshot; still accurate per AGENTS.md      | ~~✅ Complete~~ | ~~hash/detector.go~~                        |
+| ~~Suffix Tree Algorithm~~ done — verified — 2026-02-24 snapshot; still accurate per AGENTS.md      | ~~✅ Complete~~ | ~~suffixtree/dupl.go~~                      |
+| ~~Configuration System~~ done — verified — 2026-02-24 snapshot; still accurate per AGENTS.md       | ~~✅ Complete~~ | ~~config/config.go, JSON support~~          |
+| ~~Domain Types~~ done — verified — 2026-02-24 snapshot; still accurate per AGENTS.md               | ~~✅ Complete~~ | ~~domain/ with typed IDs~~                  |
+| ~~Sorting Options~~ done — verified — 2026-02-24 snapshot; still accurate per AGENTS.md            | ~~✅ Complete~~ | ~~size, occurrence, hash~~                  |
+| ~~Smart Filtering~~ done — verified — 2026-02-24 snapshot; still accurate per AGENTS.md            | ~~✅ Complete~~ | ~~SQLC, templ, go-enum detection~~          |
+| ~~Semantic Detection~~ done — verified — 2026-02-24 snapshot; still accurate per AGENTS.md         | ~~✅ Complete~~ | ~~Recently refined, flag validation added~~ |
+| ~~Incremental Parsing~~ done — verified — 2026-02-24 snapshot; still accurate per AGENTS.md        | ~~✅ Complete~~ | ~~Cache system functional~~                 |
 
 ### Testing Infrastructure (90% Complete)
 
-| Component         | Status      | Evidence                                   |
-| ----------------- | ----------- | ------------------------------------------ |
-| ~~BDD Framework~~ done — verified — 2026-02-24 snapshot; still accurate per AGENTS.md | ~~✅ Complete~~ | ~~Ginkgo/Gomega in bdd/~~ |
-| ~~Unit Tests~~ done — verified — 2026-02-24 snapshot; still accurate per AGENTS.md | ~~✅ Complete~~ | ~~80+ test files~~ |
+| Component                                                                                 | Status          | Evidence                                       |
+| ----------------------------------------------------------------------------------------- | --------------- | ---------------------------------------------- |
+| ~~BDD Framework~~ done — verified — 2026-02-24 snapshot; still accurate per AGENTS.md     | ~~✅ Complete~~ | ~~Ginkgo/Gomega in bdd/~~                      |
+| ~~Unit Tests~~ done — verified — 2026-02-24 snapshot; still accurate per AGENTS.md        | ~~✅ Complete~~ | ~~80+ test files~~                             |
 | ~~Integration Tests~~ done — verified — 2026-02-24 snapshot; still accurate per AGENTS.md | ~~✅ Complete~~ | ~~internal/configtest/, internal/filtertest/~~ |
-| ~~Race Detection~~ done — verified — 2026-02-24 snapshot; still accurate per AGENTS.md | ~~✅ Complete~~ | ~~just test-race passes~~ |
-| ~~Benchmarks~~ done — verified — 2026-02-24 snapshot; still accurate per AGENTS.md | ~~✅ Complete~~ | ~~\*\_bench_test.go files~~ |
+| ~~Race Detection~~ done — verified — 2026-02-24 snapshot; still accurate per AGENTS.md    | ~~✅ Complete~~ | ~~just test-race passes~~                      |
+| ~~Benchmarks~~ done — verified — 2026-02-24 snapshot; still accurate per AGENTS.md        | ~~✅ Complete~~ | ~~\*\_bench_test.go files~~                    |
 
 ### Build System (100% Complete)
 
-| Tool              | Status      | Evidence                  |
-| ----------------- | ----------- | ------------------------- |
-| ~~Justfile~~ **Superseded — justfile removed; nix flake is the build.** | ~~✅ Complete~~ | ~~All targets working~~ |
-| ~~Makefile~~ **Superseded — Makefile removed; nix flake is the build.** | ~~✅ Complete~~ | ~~GOEXPERIMENT=jsonv2~~ |
-| ~~CI/CD~~ done — verified — 9 workflows in .github/workflows/ | ~~✅ Complete~~ | ~~GitHub Actions configured~~ |
-| ~~Cross-compilation~~ done — verified — release workflow cross-compiles | ~~✅ Complete~~ | ~~Linux, macOS, Windows~~ |
+| Tool                                                                    | Status          | Evidence                      |
+| ----------------------------------------------------------------------- | --------------- | ----------------------------- |
+| ~~Justfile~~ **Superseded — justfile removed; nix flake is the build.** | ~~✅ Complete~~ | ~~All targets working~~       |
+| ~~Makefile~~ **Superseded — Makefile removed; nix flake is the build.** | ~~✅ Complete~~ | ~~GOEXPERIMENT=jsonv2~~       |
+| ~~CI/CD~~ done — verified — 9 workflows in .github/workflows/           | ~~✅ Complete~~ | ~~GitHub Actions configured~~ |
+| ~~Cross-compilation~~ done — verified — release workflow cross-compiles | ~~✅ Complete~~ | ~~Linux, macOS, Windows~~     |
 
 ---
 
@@ -81,21 +81,21 @@
 
 ### High Priority
 
-| Item                          | Why It Matters     | Effort |
-| ----------------------------- | ------------------ | ------ |
-| ~~Plugin Architecture~~ **NOT-DO — toolsdk provider is the extension point (pkg/provider, ADR-0025).** | ~~Extensibility~~ | ~~High~~ |
-| ~~Web Interface~~ **Won't implement — dropped — no web UI; website is static docs.** | ~~User Experience~~ | ~~High~~ |
-| ~~IDE Integration~~ done — LSP output format (printer/lsp.go) | ~~Developer Adoption~~ | ~~Medium~~ |
-| ~~Formal Performance Benchmarks~~ done — docs/benchmarks/ baselines | ~~Optimization~~ | ~~Medium~~ |
-| ~~Architecture Decision Records~~ done — docs/adr/ holds 29 ADRs | ~~Documentation~~ | ~~Low~~ |
+| Item                                                                                                   | Why It Matters         | Effort     |
+| ------------------------------------------------------------------------------------------------------ | ---------------------- | ---------- |
+| ~~Plugin Architecture~~ **NOT-DO — toolsdk provider is the extension point (pkg/provider, ADR-0025).** | ~~Extensibility~~      | ~~High~~   |
+| ~~Web Interface~~ **Won't implement — dropped — no web UI; website is static docs.**                   | ~~User Experience~~    | ~~High~~   |
+| ~~IDE Integration~~ done — LSP output format (printer/lsp.go)                                          | ~~Developer Adoption~~ | ~~Medium~~ |
+| ~~Formal Performance Benchmarks~~ done — docs/benchmarks/ baselines                                    | ~~Optimization~~       | ~~Medium~~ |
+| ~~Architecture Decision Records~~ done — docs/adr/ holds 29 ADRs                                       | ~~Documentation~~      | ~~Low~~    |
 
 ### Medium Priority
 
-| Item                       | Why It Matters   | Effort |
-| -------------------------- | ---------------- | ------ |
-| ~~HTML Template Enhancements~~ **Superseded — HTML output evolved (views, badges, diff).** | ~~Better UX~~ | ~~Medium~~ |
-| ~~Advanced Sorting Options~~ done — comparator factory sorting (printer/sort_unified.go) | ~~More flexibility~~ | ~~Low~~ |
-| ~~Configuration Migration~~ done — config/config_migrate.go | ~~Version handling~~ | ~~Medium~~ |
+| Item                                                                                       | Why It Matters       | Effort     |
+| ------------------------------------------------------------------------------------------ | -------------------- | ---------- |
+| ~~HTML Template Enhancements~~ **Superseded — HTML output evolved (views, badges, diff).** | ~~Better UX~~        | ~~Medium~~ |
+| ~~Advanced Sorting Options~~ done — comparator factory sorting (printer/sort_unified.go)   | ~~More flexibility~~ | ~~Low~~    |
+| ~~Configuration Migration~~ done — config/config_migrate.go                                | ~~Version handling~~ | ~~Medium~~ |
 
 ---
 
@@ -140,12 +140,12 @@ os.WriteFile(cachePath, data, 0o600)  // Fails - no directory
 
 ### 3. Large Files Exceeding 300-Line Limit 🟠
 
-| File                    | Lines | Status                 |
-| ----------------------- | ----- | ---------------------- |
-| ~~syntax/templ/templ.go~~ done — syntax/templ split (parser.go, transform_*.go) | ~~622~~ | ~~Needs splitting~~ |
-| ~~git/change_detector.go~~ done at `821027b` | ~~361~~ | ~~Needs splitting~~ |
-| ~~domain/coverage_test.go~~ done — verified — test file, acceptable | ~~1278~~ | ~~Test file - acceptable~~ |
-| ~~cmd/cmd_test.go~~ done — verified — test file, acceptable | ~~1070~~ | ~~Test file - acceptable~~ |
+| File                                                                            | Lines    | Status                     |
+| ------------------------------------------------------------------------------- | -------- | -------------------------- |
+| ~~syntax/templ/templ.go~~ done — syntax/templ split (parser.go, transform_*.go) | ~~622~~  | ~~Needs splitting~~        |
+| ~~git/change_detector.go~~ done at `821027b`                                    | ~~361~~  | ~~Needs splitting~~        |
+| ~~domain/coverage_test.go~~ done — verified — test file, acceptable             | ~~1278~~ | ~~Test file - acceptable~~ |
+| ~~cmd/cmd_test.go~~ done — verified — test file, acceptable                     | ~~1070~~ | ~~Test file - acceptable~~ |
 
 ### 4. Uncommitted Changes 🟠
 
@@ -234,48 +234,48 @@ os.WriteFile(cachePath, data, 0o600)  // Fails - no directory
 
 ### 🔴 CRITICAL - Do Today
 
-| # | Task                    | Why               | Effort  | Impact |
-| - | ----------------------- | ----------------- | ------- | ------ |
-| ~~1~~ done at `5009110` | ~~Fix cache.Clear() bug~~ | ~~Breaking test~~ | ~~5 min~~ | ~~HIGH~~ |
+| #                                                      | Task                        | Why                   | Effort      | Impact   |
+| ------------------------------------------------------ | --------------------------- | --------------------- | ----------- | -------- |
+| ~~1~~ done at `5009110`                                | ~~Fix cache.Clear() bug~~   | ~~Breaking test~~     | ~~5 min~~   | ~~HIGH~~ |
 | ~~2~~ done — pure-Go templ parser replaced tree-sitter | ~~Fix templ import issues~~ | ~~Compilation error~~ | ~~1-4 hrs~~ | ~~HIGH~~ |
-| ~~3~~ done — resolved — committed | ~~Commit current changes~~ | ~~Prevent data loss~~ | ~~15 min~~ | ~~HIGH~~ |
-| ~~4~~ done — verified — suite green in CI | ~~Run full test suite~~ | ~~Verify fixes~~ | ~~5 min~~ | ~~HIGH~~ |
+| ~~3~~ done — resolved — committed                      | ~~Commit current changes~~  | ~~Prevent data loss~~ | ~~15 min~~  | ~~HIGH~~ |
+| ~~4~~ done — verified — suite green in CI              | ~~Run full test suite~~     | ~~Verify fixes~~      | ~~5 min~~   | ~~HIGH~~ |
 
 ### 🟡 HIGH PRIORITY - This Week
 
-| #  | Task                                     | Why            | Effort | Impact |
-| -- | ---------------------------------------- | -------------- | ------ | ------ |
-| ~~5~~ done — syntax/templ split (parser.go, transform_*.go) | ~~Split syntax/templ/templ.go~~ | ~~300-line limit~~ | ~~2 hrs~~ | ~~MEDIUM~~ |
-| ~~6~~ done at `821027b` | ~~Split git/change_detector.go~~ | ~~300-line limit~~ | ~~1 hr~~ | ~~MEDIUM~~ |
-| ~~7~~ done — job/buildtree_test.go exists | ~~Add tests for job/buildtree.go~~ | ~~Coverage gap~~ | ~~2 hrs~~ | ~~MEDIUM~~ |
-| ~~8~~ done — detection coverage 91.1% today | ~~Add tests for detection/multidetector.go~~ | ~~Coverage gap~~ | ~~2 hrs~~ | ~~MEDIUM~~ |
-| ~~9~~ done — parallel suffix-tree search (ADR-0019) | ~~Complete worker pool wiring~~ | ~~Performance~~ | ~~2 hrs~~ | ~~HIGH~~ |
-| ~~10~~ done — package docs gated by godoclint | ~~Add package documentation~~ | ~~DX~~ | ~~3 hrs~~ | ~~LOW~~ |
+| #                                                           | Task                                         | Why                | Effort    | Impact     |
+| ----------------------------------------------------------- | -------------------------------------------- | ------------------ | --------- | ---------- |
+| ~~5~~ done — syntax/templ split (parser.go, transform_*.go) | ~~Split syntax/templ/templ.go~~              | ~~300-line limit~~ | ~~2 hrs~~ | ~~MEDIUM~~ |
+| ~~6~~ done at `821027b`                                     | ~~Split git/change_detector.go~~             | ~~300-line limit~~ | ~~1 hr~~  | ~~MEDIUM~~ |
+| ~~7~~ done — job/buildtree_test.go exists                   | ~~Add tests for job/buildtree.go~~           | ~~Coverage gap~~   | ~~2 hrs~~ | ~~MEDIUM~~ |
+| ~~8~~ done — detection coverage 91.1% today                 | ~~Add tests for detection/multidetector.go~~ | ~~Coverage gap~~   | ~~2 hrs~~ | ~~MEDIUM~~ |
+| ~~9~~ done — parallel suffix-tree search (ADR-0019)         | ~~Complete worker pool wiring~~              | ~~Performance~~    | ~~2 hrs~~ | ~~HIGH~~   |
+| ~~10~~ done — package docs gated by godoclint               | ~~Add package documentation~~                | ~~DX~~             | ~~3 hrs~~ | ~~LOW~~    |
 
 ### 🟢 MEDIUM PRIORITY - Next 2 Weeks
 
-| #  | Task                       | Why           | Effort | Impact |
-| -- | -------------------------- | ------------- | ------ | ------ |
-| ~~11~~ done — docs/adr/ holds 29 ADRs | ~~Create ADRs~~ | ~~Documentation~~ | ~~4 hrs~~ | ~~LOW~~ |
-| ~~12~~ done — docs/benchmarks/ baselines | ~~Formalize benchmarks~~ | ~~Performance~~ | ~~3 hrs~~ | ~~MEDIUM~~ |
-| ~~13~~ done — global bools replaced by config.DetectionMode (ADR-0007) | ~~Global state elimination~~ | ~~Architecture~~ | ~~1 day~~ | ~~MEDIUM~~ |
-| ~~14~~ superseded — HTML output evolved (views, badges, diff) | ~~HTML template enhancements~~ | ~~UX~~ | ~~2 hrs~~ | ~~LOW~~ |
-| ~~15~~ done — config/config_migrate.go | ~~Configuration migration~~ | ~~Versioning~~ | ~~4 hrs~~ | ~~MEDIUM~~ |
-| ~~16~~ done — suffixtree/fuzz_test.go + cmd/filter_fuzz_test.go | ~~Add fuzz tests~~ | ~~Robustness~~ | ~~3 hrs~~ | ~~MEDIUM~~ |
-| ~~17~~ done — -race runs in CI | ~~Race condition audit~~ | ~~Stability~~ | ~~2 hrs~~ | ~~MEDIUM~~ |
-| ~~18~~ superseded — --profile stays a hidden flag (cmd/flags.go) | ~~Memory profiling~~ | ~~Performance~~ | ~~2 hrs~~ | ~~MEDIUM~~ |
+| #                                                                      | Task                           | Why               | Effort    | Impact     |
+| ---------------------------------------------------------------------- | ------------------------------ | ----------------- | --------- | ---------- |
+| ~~11~~ done — docs/adr/ holds 29 ADRs                                  | ~~Create ADRs~~                | ~~Documentation~~ | ~~4 hrs~~ | ~~LOW~~    |
+| ~~12~~ done — docs/benchmarks/ baselines                               | ~~Formalize benchmarks~~       | ~~Performance~~   | ~~3 hrs~~ | ~~MEDIUM~~ |
+| ~~13~~ done — global bools replaced by config.DetectionMode (ADR-0007) | ~~Global state elimination~~   | ~~Architecture~~  | ~~1 day~~ | ~~MEDIUM~~ |
+| ~~14~~ superseded — HTML output evolved (views, badges, diff)          | ~~HTML template enhancements~~ | ~~UX~~            | ~~2 hrs~~ | ~~LOW~~    |
+| ~~15~~ done — config/config_migrate.go                                 | ~~Configuration migration~~    | ~~Versioning~~    | ~~4 hrs~~ | ~~MEDIUM~~ |
+| ~~16~~ done — suffixtree/fuzz_test.go + cmd/filter_fuzz_test.go        | ~~Add fuzz tests~~             | ~~Robustness~~    | ~~3 hrs~~ | ~~MEDIUM~~ |
+| ~~17~~ done — -race runs in CI                                         | ~~Race condition audit~~       | ~~Stability~~     | ~~2 hrs~~ | ~~MEDIUM~~ |
+| ~~18~~ superseded — --profile stays a hidden flag (cmd/flags.go)       | ~~Memory profiling~~           | ~~Performance~~   | ~~2 hrs~~ | ~~MEDIUM~~ |
 
 ### 🟢 LOW PRIORITY - Next Month
 
-| #  | Task                       | Why            | Effort  | Impact |
-| -- | -------------------------- | -------------- | ------- | ------ |
-| ~~19~~ NOT-DO — toolsdk provider is the extension point (pkg/provider, ADR-0025) | ~~Plugin architecture design~~ | ~~Extensibility~~ | ~~1 week~~ | ~~HIGH~~ |
-| ~~20~~ Won't implement — no web UI; website is static docs | ~~Web interface prototype~~ | ~~User adoption~~ | ~~1 week~~ | ~~HIGH~~ |
-| ~~21~~ done — LSP output format (printer/lsp.go) | ~~IDE integration research~~ | ~~Developer tool~~ | ~~3 days~~ | ~~MEDIUM~~ |
-| ~~22~~ done — comparator factory sorting (printer/sort_unified.go) | ~~Advanced sorting options~~ | ~~Flexibility~~ | ~~2 hrs~~ | ~~LOW~~ |
-| ~~23~~ done — LRU + allocation budgets (ADR-0022) | ~~Cache eviction policies~~ | ~~Resource mgmt~~ | ~~3 hrs~~ | ~~LOW~~ |
-| ~~24~~ Won't implement — local CLI/SDK only | ~~Distributed analysis~~ | ~~Scale~~ | ~~1 week~~ | ~~HIGH~~ |
-| ~~25~~ superseded — alternatives analyzed, not adopted (ADR-0020) | ~~Machine learning detection~~ | ~~Innovation~~ | ~~2 weeks~~ | ~~HIGH~~ |
+| #                                                                                | Task                           | Why                | Effort      | Impact     |
+| -------------------------------------------------------------------------------- | ------------------------------ | ------------------ | ----------- | ---------- |
+| ~~19~~ NOT-DO — toolsdk provider is the extension point (pkg/provider, ADR-0025) | ~~Plugin architecture design~~ | ~~Extensibility~~  | ~~1 week~~  | ~~HIGH~~   |
+| ~~20~~ Won't implement — no web UI; website is static docs                       | ~~Web interface prototype~~    | ~~User adoption~~  | ~~1 week~~  | ~~HIGH~~   |
+| ~~21~~ done — LSP output format (printer/lsp.go)                                 | ~~IDE integration research~~   | ~~Developer tool~~ | ~~3 days~~  | ~~MEDIUM~~ |
+| ~~22~~ done — comparator factory sorting (printer/sort_unified.go)               | ~~Advanced sorting options~~   | ~~Flexibility~~    | ~~2 hrs~~   | ~~LOW~~    |
+| ~~23~~ done — LRU + allocation budgets (ADR-0022)                                | ~~Cache eviction policies~~    | ~~Resource mgmt~~  | ~~3 hrs~~   | ~~LOW~~    |
+| ~~24~~ Won't implement — local CLI/SDK only                                      | ~~Distributed analysis~~       | ~~Scale~~          | ~~1 week~~  | ~~HIGH~~   |
+| ~~25~~ superseded — alternatives analyzed, not adopted (ADR-0020)                | ~~Machine learning detection~~ | ~~Innovation~~     | ~~2 weeks~~ | ~~HIGH~~   |
 
 ---
 
@@ -327,12 +327,12 @@ This is blocking because:
 
 ## SUMMARY
 
-| Category          | Count | Status        |
-| ----------------- | ----- | ------------- |
-| ~~Fully Done~~ done — verified — 2026-02-24 snapshot, historical | ~~15+~~ | ~~✅ Strong~~ |
-| ~~Partially Done~~ done — verified — 2026-02-24 snapshot, historical | ~~5~~ | ~~🟡 Needs Work~~ |
-| ~~Not Started~~ done — verified — 2026-02-24 snapshot, historical | ~~9~~ | ~~❌ Planned~~ |
-| ~~Totally Fucked Up~~ done — verified — 2026-02-24 snapshot, historical | ~~4~~ | ~~🔴 Critical~~ |
+| Category                                                                | Count   | Status            |
+| ----------------------------------------------------------------------- | ------- | ----------------- |
+| ~~Fully Done~~ done — verified — 2026-02-24 snapshot, historical        | ~~15+~~ | ~~✅ Strong~~     |
+| ~~Partially Done~~ done — verified — 2026-02-24 snapshot, historical    | ~~5~~   | ~~🟡 Needs Work~~ |
+| ~~Not Started~~ done — verified — 2026-02-24 snapshot, historical       | ~~9~~   | ~~❌ Planned~~    |
+| ~~Totally Fucked Up~~ done — verified — 2026-02-24 snapshot, historical | ~~4~~   | ~~🔴 Critical~~   |
 
 **Immediate Action Required:**
 

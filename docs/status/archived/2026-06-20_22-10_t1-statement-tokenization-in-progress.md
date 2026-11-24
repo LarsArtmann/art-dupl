@@ -25,6 +25,7 @@ Binary:    ✅ Manual test confirms statement-level detection works
 
 <!-- rows describe the landed T1 diff (committed in `807e373a`), not open items -->
 <!-- check-rows:ledger -->
+
 | Component                        | File                         | What Changed                                                                                    |
 | -------------------------------- | ---------------------------- | ----------------------------------------------------------------------------------------------- |
 | `Node.Statement` flag            | `syntax/syntax.go`           | New `bool` field marks direct children of block-like nodes                                      |
@@ -40,6 +41,7 @@ Binary:    ✅ Manual test confirms statement-level detection works
 
 <!-- historical Old→New values; default later re-tuned to 5 (ADR-0009) -->
 <!-- check-rows:ledger -->
+
 | Component                      | Old            | New            | Rationale                              |
 | ------------------------------ | -------------- | -------------- | -------------------------------------- |
 | `config.DefaultThreshold`      | 15 (AST nodes) | 1 (statements) | 1 statement ≈ 8-15 old AST node tokens |
@@ -57,6 +59,7 @@ Binary:    ✅ Manual test confirms statement-level detection works
 
 <!-- rows describe landed test fixes, committed in `807e373a` -->
 <!-- check-rows:ledger -->
+
 | File                             | What Changed                                       |
 | -------------------------------- | -------------------------------------------------- |
 | `config/config_test.go`          | Default threshold assertion 15 → 1                 |
@@ -99,6 +102,7 @@ The core algorithm works correctly. The 67 BDD failures are **all fixture/thresh
 
 <!-- all five failure categories resolved by the BDD calibration in `807e373a` -->
 <!-- check-rows:ledger -->
+
 | Category                           | Count | Root Cause                                                                  |
 | ---------------------------------- | ----- | --------------------------------------------------------------------------- |
 | Small fixtures needing threshold 1 | ~30   | Fixtures have 1-2 statements; old threshold 15 was ~2 statements            |
@@ -170,33 +174,34 @@ All Tier S/A/B/C/D/E tasks from the comprehensive plan (`docs/planning/2026-06-2
 
 <!-- rows 15, 16, 25 are genuinely open (see docs-health batch-10 report); the rest are resolved above -->
 <!-- check-rows:ledger -->
-| # | Task | Impact | Effort | Risk | Deps |
-| -- | ---- | ------ | ------ | ---- | ---- |
-| ~~1~~ done at `807e373a` | ~~**Fix remaining 67 BDD test failures** (threshold/fixture calibration)~~ | ~~Critical~~ | ~~60min~~ | ~~Low~~ | ~~—~~ |
-| ~~2~~ done at `807e373a` | ~~**Commit T1 implementation** (core algorithm + threshold rescaling)~~ | ~~Critical~~ | ~~5min~~ | ~~Low~~ | ~~#1~~ |
-| ~~3~~ done at `807e373a` | ~~**Remove `syntax/golang/token_count_test.go`** (temporary debug file)~~ | ~~Low~~ | ~~2min~~ | ~~Low~~ | ~~—~~ |
-| ~~4~~ moot | ~~**Lint check + fix** any new issues from T1 changes~~ | ~~Medium~~ | ~~10min~~ | ~~Low~~ | ~~#2~~ |
-| ~~5~~ done — semantic-mode BDD covers renamed-identifier clones ( `bdd/semantic_detection_test.go` ); clone types pinned in `printer/clone_type_test.go` | ~~**BDD test: Type 2 clone detection** (renamed functions detected as clones)~~ | ~~High~~ | ~~30min~~ | ~~Low~~ | ~~#2~~ |
-| ~~6~~ done — monthly self-scan cadence, `scripts/self-scan.sh` (AGENTS.md, decided 2026-09-22) | ~~**Dogfood art-dupl on itself** at new default threshold~~ | ~~High~~ | ~~20min~~ | ~~Low~~ | ~~#2~~ |
-| ~~7~~ superseded — BuildFlow dogfood gates findings continuously via warnings_budget; no repo baseline file kept | ~~**Create `.art-dupl-baseline.json`** for art-dupl's own source~~ | ~~Medium~~ | ~~10min~~ | ~~Low~~ | ~~#6~~ |
-| ~~8~~ done — AGENTS.md statement-level tokenization section (ADR-0023) | ~~**Update AGENTS.md** with statement-level tokenization docs~~ | ~~Medium~~ | ~~10min~~ | ~~Low~~ | ~~#2~~ |
-| ~~9~~ superseded — HOW_TO_USE.md retired; usage lives in README.md and `docs/archive/USAGE.md` | ~~**Update HOW_TO_USE.md** with new threshold semantics~~ | ~~Medium~~ | ~~10min~~ | ~~Low~~ | ~~#2~~ |
-| ~~10~~ done — FEATURES.md Threshold Control row states statement-count semantics | ~~**Update FEATURES.md** with statement-level detection~~ | ~~Medium~~ | ~~10min~~ | ~~Low~~ | ~~#2~~ |
-| ~~11~~ done — `fnvStep32` / `fingerprintSubtreeInto` helpers in `syntax/syntax.go`; cross-package reuse of golang `hashIdentifierFast` intentionally skipped | ~~**Extract shared FNV helper** (deduplicate `fingerprintSubtree` + `hashIdentifierFast`)~~ | ~~Low~~ | ~~15min~~ | ~~Low~~ | ~~#2~~ |
-| ~~12~~ done — `syntax/templ/` sets Statement=true (see item 4 above) | ~~**Templ statement marking** (port `Statement=true` to `syntax/templ/`)~~ | ~~Medium~~ | ~~40min~~ | ~~Medium~~ | ~~#2~~ |
-| ~~13~~ NOT-DO — `--semantic` / `--structural` / `--exact` flags ship directly; alias never adopted | ~~**`--mode` flag** (alias for semantic/exact/structural)~~ | ~~Medium~~ | ~~15min~~ | ~~Low~~ | ~~—~~ |
-| ~~14~~ NOT-DO — SARIF wire kept parity-trimmed with go-finding (2026-10-11 G1/G2 policy); extractability stays in JSON/text output only | ~~**SARIF: add extractability to properties**~~ | ~~Low~~ | ~~10min~~ | ~~Low~~ | ~~—~~ |
-| 15 | **HTML: clone-type badge** | Medium | 15min | Low | — |
-| 16 | **HTML: extractability column** | Medium | 15min | Low | — |
-| ~~17~~ done — README.md badge row (CI, License, Go Reference, Website) | ~~**README: add badges** (CI, coverage, Go version)~~ | ~~Low~~ | ~~10min~~ | ~~Low~~ | ~~—~~ |
-| ~~18~~ done — `baseline/baseline_test.go` covers empty/missing/duplicate-hash cases | ~~**Baseline edge-case tests** (empty/corrupt/missing/dup)~~ | ~~Medium~~ | ~~15min~~ | ~~Low~~ | ~~—~~ |
-| ~~19~~ done — root `--diff-report` flag ( `cmd/flags.go` ), pinned by `bdd/diff_report_test.go` | ~~**`check --diff` flag** (show what changed since baseline)~~ | ~~Medium~~ | ~~30min~~ | ~~Low~~ | ~~—~~ |
-| ~~20~~ NOT-DO — re-running `art-dupl baseline` re-snapshots ( `cmd/baseline_cmd.go` help text); merge flag never adopted | ~~**`baseline --update` flag** (merge new clones)~~ | ~~Medium~~ | ~~30min~~ | ~~Low~~ | ~~—~~ |
-| ~~21~~ done — SDK `Options.DetectionMethods []DetectionMethod` ( `pkg/artdupl/types.go` ); no Semantic bool ever shipped | ~~**SDK: expose DetectionMode** (replace Semantic bool)~~ | ~~Medium~~ | ~~30min~~ | ~~Low~~ | ~~—~~ |
-| ~~22~~ superseded — DTO decoupling landed instead ( `docs/status/archived/2026-07-01_04-59_post-dto-decoupling.md` ); no ReadOnlyNode interface | ~~**Printer decoupling** (ReadOnlyNode interface)~~ | ~~Medium~~ | ~~80min~~ | ~~Medium~~ | ~~—~~ |
-| ~~23~~ done at `e505886e` (concurrent commit, per `docs/status/archived/2026-07-24_19-48_clone-type-consolidation-status.md`) | ~~**Clone type consolidation** (CloneLocation shared type)~~ | ~~Medium~~ | ~~90min~~ | ~~Medium~~ | ~~#22~~ |
-| ~~24~~ done — type-aware mode ( `--type-aware`, `pkg/artdupl` Options.TypeAware, AGENTS.md) | ~~**go/types normalizer upgrade** (precise scope resolution)~~ | ~~Medium~~ | ~~60min~~ | ~~Medium~~ | ~~#2~~ |
-| 25 | **Performance: profile normalizer overhead** | Medium | 20min | Low | #2 |
+
+| #                                                                                                                                                            | Task                                                                                        | Impact       | Effort    | Risk       | Deps    |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------- | ------------ | --------- | ---------- | ------- |
+| ~~1~~ done at `807e373a`                                                                                                                                     | ~~**Fix remaining 67 BDD test failures** (threshold/fixture calibration)~~                  | ~~Critical~~ | ~~60min~~ | ~~Low~~    | ~~—~~   |
+| ~~2~~ done at `807e373a`                                                                                                                                     | ~~**Commit T1 implementation** (core algorithm + threshold rescaling)~~                     | ~~Critical~~ | ~~5min~~  | ~~Low~~    | ~~#1~~  |
+| ~~3~~ done at `807e373a`                                                                                                                                     | ~~**Remove `syntax/golang/token_count_test.go`** (temporary debug file)~~                   | ~~Low~~      | ~~2min~~  | ~~Low~~    | ~~—~~   |
+| ~~4~~ moot                                                                                                                                                   | ~~**Lint check + fix** any new issues from T1 changes~~                                     | ~~Medium~~   | ~~10min~~ | ~~Low~~    | ~~#2~~  |
+| ~~5~~ done — semantic-mode BDD covers renamed-identifier clones ( `bdd/semantic_detection_test.go` ); clone types pinned in `printer/clone_type_test.go`     | ~~**BDD test: Type 2 clone detection** (renamed functions detected as clones)~~             | ~~High~~     | ~~30min~~ | ~~Low~~    | ~~#2~~  |
+| ~~6~~ done — monthly self-scan cadence, `scripts/self-scan.sh` (AGENTS.md, decided 2026-09-22)                                                               | ~~**Dogfood art-dupl on itself** at new default threshold~~                                 | ~~High~~     | ~~20min~~ | ~~Low~~    | ~~#2~~  |
+| ~~7~~ superseded — BuildFlow dogfood gates findings continuously via warnings_budget; no repo baseline file kept                                             | ~~**Create `.art-dupl-baseline.json`** for art-dupl's own source~~                          | ~~Medium~~   | ~~10min~~ | ~~Low~~    | ~~#6~~  |
+| ~~8~~ done — AGENTS.md statement-level tokenization section (ADR-0023)                                                                                       | ~~**Update AGENTS.md** with statement-level tokenization docs~~                             | ~~Medium~~   | ~~10min~~ | ~~Low~~    | ~~#2~~  |
+| ~~9~~ superseded — HOW_TO_USE.md retired; usage lives in README.md and `docs/archive/USAGE.md`                                                               | ~~**Update HOW_TO_USE.md** with new threshold semantics~~                                   | ~~Medium~~   | ~~10min~~ | ~~Low~~    | ~~#2~~  |
+| ~~10~~ done — FEATURES.md Threshold Control row states statement-count semantics                                                                             | ~~**Update FEATURES.md** with statement-level detection~~                                   | ~~Medium~~   | ~~10min~~ | ~~Low~~    | ~~#2~~  |
+| ~~11~~ done — `fnvStep32` / `fingerprintSubtreeInto` helpers in `syntax/syntax.go`; cross-package reuse of golang `hashIdentifierFast` intentionally skipped | ~~**Extract shared FNV helper** (deduplicate `fingerprintSubtree` + `hashIdentifierFast`)~~ | ~~Low~~      | ~~15min~~ | ~~Low~~    | ~~#2~~  |
+| ~~12~~ done — `syntax/templ/` sets Statement=true (see item 4 above)                                                                                         | ~~**Templ statement marking** (port `Statement=true` to `syntax/templ/`)~~                  | ~~Medium~~   | ~~40min~~ | ~~Medium~~ | ~~#2~~  |
+| ~~13~~ NOT-DO — `--semantic` / `--structural` / `--exact` flags ship directly; alias never adopted                                                           | ~~**`--mode` flag** (alias for semantic/exact/structural)~~                                 | ~~Medium~~   | ~~15min~~ | ~~Low~~    | ~~—~~   |
+| ~~14~~ NOT-DO — SARIF wire kept parity-trimmed with go-finding (2026-10-11 G1/G2 policy); extractability stays in JSON/text output only                      | ~~**SARIF: add extractability to properties**~~                                             | ~~Low~~      | ~~10min~~ | ~~Low~~    | ~~—~~   |
+| 15                                                                                                                                                           | **HTML: clone-type badge**                                                                  | Medium       | 15min     | Low        | —       |
+| 16                                                                                                                                                           | **HTML: extractability column**                                                             | Medium       | 15min     | Low        | —       |
+| ~~17~~ done — README.md badge row (CI, License, Go Reference, Website)                                                                                       | ~~**README: add badges** (CI, coverage, Go version)~~                                       | ~~Low~~      | ~~10min~~ | ~~Low~~    | ~~—~~   |
+| ~~18~~ done — `baseline/baseline_test.go` covers empty/missing/duplicate-hash cases                                                                          | ~~**Baseline edge-case tests** (empty/corrupt/missing/dup)~~                                | ~~Medium~~   | ~~15min~~ | ~~Low~~    | ~~—~~   |
+| ~~19~~ done — root `--diff-report` flag ( `cmd/flags.go` ), pinned by `bdd/diff_report_test.go`                                                              | ~~**`check --diff` flag** (show what changed since baseline)~~                              | ~~Medium~~   | ~~30min~~ | ~~Low~~    | ~~—~~   |
+| ~~20~~ NOT-DO — re-running `art-dupl baseline` re-snapshots ( `cmd/baseline_cmd.go` help text); merge flag never adopted                                     | ~~**`baseline --update` flag** (merge new clones)~~                                         | ~~Medium~~   | ~~30min~~ | ~~Low~~    | ~~—~~   |
+| ~~21~~ done — SDK `Options.DetectionMethods []DetectionMethod` ( `pkg/artdupl/types.go` ); no Semantic bool ever shipped                                     | ~~**SDK: expose DetectionMode** (replace Semantic bool)~~                                   | ~~Medium~~   | ~~30min~~ | ~~Low~~    | ~~—~~   |
+| ~~22~~ superseded — DTO decoupling landed instead ( `docs/status/archived/2026-07-01_04-59_post-dto-decoupling.md` ); no ReadOnlyNode interface              | ~~**Printer decoupling** (ReadOnlyNode interface)~~                                         | ~~Medium~~   | ~~80min~~ | ~~Medium~~ | ~~—~~   |
+| ~~23~~ done at `e505886e` (concurrent commit, per `docs/status/archived/2026-07-24_19-48_clone-type-consolidation-status.md`)                                | ~~**Clone type consolidation** (CloneLocation shared type)~~                                | ~~Medium~~   | ~~90min~~ | ~~Medium~~ | ~~#22~~ |
+| ~~24~~ done — type-aware mode ( `--type-aware`, `pkg/artdupl` Options.TypeAware, AGENTS.md)                                                                  | ~~**go/types normalizer upgrade** (precise scope resolution)~~                              | ~~Medium~~   | ~~60min~~ | ~~Medium~~ | ~~#2~~  |
+| 25                                                                                                                                                           | **Performance: profile normalizer overhead**                                                | Medium       | 20min     | Low        | #2      |
 
 ---
 

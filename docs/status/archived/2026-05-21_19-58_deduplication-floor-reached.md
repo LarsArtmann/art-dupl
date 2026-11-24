@@ -22,6 +22,7 @@ art-dupl has reached its **deduplication floor**. Deep analysis of all 61 clone 
 ## Deduplication Journey This Session
 
 <!-- check-rows:ledger -->
+
 | Threshold | Clone Groups | Status                                          |
 | --------- | ------------ | ----------------------------------------------- |
 | t=40      | 0            | All genuine duplication eliminated              |
@@ -33,6 +34,7 @@ art-dupl has reached its **deduplication floor**. Deep analysis of all 61 clone 
 ### Inherent Clones (Cannot Be Further Deduplicated)
 
 <!-- check-rows:ledger -->
+
 | Location                                         | Pattern                                                          | Why Inherent                                                     |
 | ------------------------------------------------ | ---------------------------------------------------------------- | ---------------------------------------------------------------- |
 | `cmd/config_builder.go:15/56`                    | `BuildConfigFromFlags` / `buildCLIConfig` — identical signatures | Intentional API: public+private with same param types            |
@@ -125,6 +127,7 @@ Categories of "clones" found at t=15 that are **not actionable**:
 ### 2. Linter: 20 Issues (UNCHANGED ALL SESSION)
 
 <!-- check-rows:ledger -->
+
 | Category    | Count | Worst Offender                                                      |
 | ----------- | ----- | ------------------------------------------------------------------- |
 | errcheck    | 10    | syscall.Dup2/Close in bdd/execute.go, cmd/stats_integration_test.go |
@@ -168,33 +171,34 @@ Categories of "clones" found at t=15 that are **not actionable**:
 ## f) Top #25 Things We Should Get Done Next
 
 <!-- check-rows:ledger -->
-| #  | Task                                                           | Priority |
-| -- | -------------------------------------------------------------- | -------- |
-| 1  | Fix os.Exit test flakiness (bdd + cmd)                         | CRITICAL |
-| 2  | Fix 10 errcheck issues in test code                            | HIGH     |
-| 3  | Extract buildJSONData into smaller functions (gocyclo 16→<10)  | HIGH     |
-| 4  | Extract `--threshold` / `art-dupl` string constants in tests   | LOW      |
-| 5  | Wire TodoDetector and LegacyDetector to CLI `-m` flag          | HIGH     |
-| 6  | Fix 2 exhaustruct issues in testutil                           | LOW      |
-| 7  | Fix 2 err113 issues in testutil                                | LOW      |
-| 8  | Introduce ProcessedClone DTO                                   | HIGH     |
-| 9  | Consolidate 3 parallel Clone types                             | MEDIUM   |
-| 10 | Implement proper CSV output using encoding/csv                 | MEDIUM   |
-| 11 | Implement TokenValue type with validation                      | HIGH     |
-| 12 | Unify enum patterns                                            | MEDIUM   |
-| 13 | Refactor transform.go (369L, 300L switch)                      | MEDIUM   |
-| 14 | Optimize memory layouts for SIMD-friendly structures           | MEDIUM   |
-| 15 | Implement string interning                                     | LOW      |
-| 16 | Wire remaining SIMD TODOs (6 items)                            | LOW      |
-| 17 | Fix ConstantCSSProperty position (upstream)                    | LOW      |
-| 18 | Archive old docs/status/ files                                 | LOW      |
-| 19 | Fix remaining LSP hints                                        | LOW      |
-| 20 | Implement SDK from SDK_DESIGN.md                               | LOW      |
-| 21 | Add more fuzz tests                                            | LOW      |
-| 22 | Coverage improvement: domain (67%), job (77%), detection (78%) | MEDIUM   |
-| 23 | Add benchmark regression CI                                    | MEDIUM   |
-| ~~24~~ done — won't implement — the single-module layout stands; module splits are major-version work (TODO_LIST PARKED) | ~~Consider modularization~~ | ~~LOW~~ |
-| 25 | Migrate justfile → nix flake                                   | LOW      |
+
+| #                                                                                                                        | Task                                                           | Priority |
+| ------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------- | -------- |
+| 1                                                                                                                        | Fix os.Exit test flakiness (bdd + cmd)                         | CRITICAL |
+| 2                                                                                                                        | Fix 10 errcheck issues in test code                            | HIGH     |
+| 3                                                                                                                        | Extract buildJSONData into smaller functions (gocyclo 16→<10)  | HIGH     |
+| 4                                                                                                                        | Extract `--threshold` / `art-dupl` string constants in tests   | LOW      |
+| 5                                                                                                                        | Wire TodoDetector and LegacyDetector to CLI `-m` flag          | HIGH     |
+| 6                                                                                                                        | Fix 2 exhaustruct issues in testutil                           | LOW      |
+| 7                                                                                                                        | Fix 2 err113 issues in testutil                                | LOW      |
+| 8                                                                                                                        | Introduce ProcessedClone DTO                                   | HIGH     |
+| 9                                                                                                                        | Consolidate 3 parallel Clone types                             | MEDIUM   |
+| 10                                                                                                                       | Implement proper CSV output using encoding/csv                 | MEDIUM   |
+| 11                                                                                                                       | Implement TokenValue type with validation                      | HIGH     |
+| 12                                                                                                                       | Unify enum patterns                                            | MEDIUM   |
+| 13                                                                                                                       | Refactor transform.go (369L, 300L switch)                      | MEDIUM   |
+| 14                                                                                                                       | Optimize memory layouts for SIMD-friendly structures           | MEDIUM   |
+| 15                                                                                                                       | Implement string interning                                     | LOW      |
+| 16                                                                                                                       | Wire remaining SIMD TODOs (6 items)                            | LOW      |
+| 17                                                                                                                       | Fix ConstantCSSProperty position (upstream)                    | LOW      |
+| 18                                                                                                                       | Archive old docs/status/ files                                 | LOW      |
+| 19                                                                                                                       | Fix remaining LSP hints                                        | LOW      |
+| 20                                                                                                                       | Implement SDK from SDK_DESIGN.md                               | LOW      |
+| 21                                                                                                                       | Add more fuzz tests                                            | LOW      |
+| 22                                                                                                                       | Coverage improvement: domain (67%), job (77%), detection (78%) | MEDIUM   |
+| 23                                                                                                                       | Add benchmark regression CI                                    | MEDIUM   |
+| ~~24~~ done — won't implement — the single-module layout stands; module splits are major-version work (TODO_LIST PARKED) | ~~Consider modularization~~                                    | ~~LOW~~  |
+| 25                                                                                                                       | Migrate justfile → nix flake                                   | LOW      |
 
 ---
 
@@ -209,6 +213,7 @@ This has been the #1 question across ALL status reports this session. The overla
 ## Session Summary (2026-05-21, Full Day)
 
 <!-- check-rows:ledger -->
+
 | Time   | Milestone                                                |
 | ------ | -------------------------------------------------------- |
 | ~18:00 | Status report, 2 clone groups at t=40                    |
@@ -223,20 +228,22 @@ This has been the #1 question across ALL status reports this session. The overla
 ### Helpers Extracted This Session (8 total)
 
 <!-- check-rows:ledger -->
-| Helper                  | Location                         | Eliminated Groups |
-| ----------------------- | -------------------------------- | ----------------- |
-| `mustDeferSelectorCall` | printer/actionability_test.go    | 1 (t=40)          |
-| `mustIfErrReturnNil`    | printer/actionability_test.go    | 1 (t=40)          |
-| `parseTest` (type)      | syntax/templ/templ_test.go       | 1 (t=30)          |
-| ~~`mustWriteFile`~~ done — fixed — the config package tests are green today | ~~config/config_enum_test.go~~ | ~~1 (t=20)~~ |
-| `diffWriteErr`          | printer/html_diff.go             | 1 (t=20)          |
-| `testutil.CopyToBuffer` | internal/testutil/bdd_helpers.go | 1 (t=20)          |
-| `mustFuncDeclWithBody`  | printer/actionability_test.go    | 1 (t=20)          |
-| `appendFlagsToArgs`     | internal/testutil/bdd.go         | 1 (t=20)          |
+
+| Helper                                                                      | Location                         | Eliminated Groups |
+| --------------------------------------------------------------------------- | -------------------------------- | ----------------- |
+| `mustDeferSelectorCall`                                                     | printer/actionability_test.go    | 1 (t=40)          |
+| `mustIfErrReturnNil`                                                        | printer/actionability_test.go    | 1 (t=40)          |
+| `parseTest` (type)                                                          | syntax/templ/templ_test.go       | 1 (t=30)          |
+| ~~`mustWriteFile`~~ done — fixed — the config package tests are green today | ~~config/config_enum_test.go~~   | ~~1 (t=20)~~      |
+| `diffWriteErr`                                                              | printer/html_diff.go             | 1 (t=20)          |
+| `testutil.CopyToBuffer`                                                     | internal/testutil/bdd_helpers.go | 1 (t=20)          |
+| `mustFuncDeclWithBody`                                                      | printer/actionability_test.go    | 1 (t=20)          |
+| `appendFlagsToArgs`                                                         | internal/testutil/bdd.go         | 1 (t=20)          |
 
 ### Metrics (Unchanged Since Last Report)
 
 <!-- check-rows:ledger -->
+
 | Metric                        | Value                        |
 | ----------------------------- | ---------------------------- |
 | Go files                      | 214                          |

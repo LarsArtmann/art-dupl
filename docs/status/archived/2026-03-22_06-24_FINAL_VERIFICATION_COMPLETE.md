@@ -251,9 +251,9 @@ Classification Tests: 48 sub-tests ✅
 
 1. Add `--priority` CLI flag for priority filtering
 2. Add `--category` CLI flag for category filtering
-~~3. Add classification data to JSON output~~ done — JSON carries the classification fields (AGENTS.md --explain)
-4. Write BDD tests for HTML classification display
-5. Update HOW_TO_USE.md documentation
+   ~~3. Add classification data to JSON output~~ done — JSON carries the classification fields (AGENTS.md --explain)
+3. Write BDD tests for HTML classification display
+4. Update HOW_TO_USE.md documentation
 
 ### Short-term (Next Week):
 

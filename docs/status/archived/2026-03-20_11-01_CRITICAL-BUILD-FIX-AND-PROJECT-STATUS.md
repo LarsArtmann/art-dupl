@@ -290,17 +290,19 @@ TestTypeParamsInFuncType: generic_funcs.go:4:1: expected declaration, found Filt
 
 ## PROJECT STATISTICS
 
-| Metric            | Value                                  |
-| ----------------- | -------------------------------------- |
+| Metric | Value |
+| ------ | ----- |
+
 <!-- check-rows:ledger -->
-| **Go Files**      | 232                                    |
-| **Lines of Code** | 47,343                                 |
-| **Test Files**    | ~60+ `*_test.go`                       |
-| **BDD Specs**     | 222                                    |
-| **Packages**      | 30+                                    |
+
+| **Go Files** | 232 |
+| **Lines of Code** | 47,343 |
+| **Test Files** | ~60+ `*_test.go` |
+| **BDD Specs** | 222 |
+| **Packages** | 30+ |
 | **Test Coverage** | Variable (adapter: 97.6%, others vary) |
-| **Build Time**    | ~2s                                    |
-| **Binary Size**   | ~15MB (stripped)                       |
+| **Build Time** | ~2s |
+| **Binary Size** | ~15MB (stripped) |
 
 ### Package Coverage Highlights
 

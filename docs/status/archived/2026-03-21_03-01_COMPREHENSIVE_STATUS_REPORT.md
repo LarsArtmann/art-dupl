@@ -198,15 +198,15 @@ Several linters are disabled in `.golangci.yml`:
 17. Split `runCmd` into smaller, testable functions
 18. Review and consolidate duplicate test helpers
 19. Consider extracting domain types into separate package
-~~20. Optimize `syntax/golang/identifier_hash.go` if needed~~ done — the hashing path was optimized in the ADR-0022 era (AGENTS.md)
+    ~~20. Optimize `syntax/golang/identifier_hash.go` if needed~~ done — the hashing path was optimized in the ADR-0022 era (AGENTS.md)
 
 ### Priority 5: Documentation & Tooling (Next Quarter)
 
 21. Update AGENTS.md with semantic detection architecture
 22. Create architecture decision records (ADRs) for major changes
-~~23. Document the semantic vs structural detection modes~~ done — HOW_TO_USE.md documents the modes (verified 2026-11-14)
-24. Add performance benchmarks for detection methods
-25. Create migration guide for v1.0 release
+    ~~23. Document the semantic vs structural detection modes~~ done — HOW_TO_USE.md documents the modes (verified 2026-11-14)
+23. Add performance benchmarks for detection methods
+24. Create migration guide for v1.0 release
 
 ---
 

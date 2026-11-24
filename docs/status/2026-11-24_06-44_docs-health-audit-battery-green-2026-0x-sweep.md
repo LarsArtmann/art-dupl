@@ -60,7 +60,7 @@ repos, website, or fleet-wide state.
    `baseline-2026-08-16-v3_notes.md:83`, ±4% vs ±19%, p=0.146), baseline version bump (decided at
    code level: stays 1.0, ADR-0029 identity block instead), templ node-type claim (superseded by
    the count gate, 29 re-derived).
-8. **2026-0* archive wave (23 files, 3 dirs)**:
+8. __2026-0_ archive wave (23 files, 3 dirs)_*:
    - `docs/planning/archived/`: both empty 2026-03-20 stubs (duplicated resolution banner
      deduplicated first), both 2026-07-01 sprint-plan HTMLs (HISTORICAL-EXECUTED banners added;
      consumed by the July cycle per `docs/status/archived/2026-07-01_*`), the 2026-07-25

@@ -12,6 +12,7 @@
 ### Infrastructure & Build
 
 <!-- check-rows:ledger -->
+
 | Item                        | Commit    | Details                                            |
 | --------------------------- | --------- | -------------------------------------------------- |
 | Nix flake private dep fix   | `652b325` | Two-phase dummy/replace pattern for gogenfilter    |
@@ -25,6 +26,7 @@
 ### Error Handling Modernization
 
 <!-- check-rows:ledger -->
+
 | Item                            | Commit    | Details                                                         |
 | ------------------------------- | --------- | --------------------------------------------------------------- |
 | `errors.As` → `errors.AsType`   | `4498343` | 3 instances in errors/types.go (Go 1.24+ idiom)                 |
@@ -34,6 +36,7 @@
 ### Type Safety Improvements
 
 <!-- check-rows:ledger -->
+
 | Item                                  | Commit    | Details                                                     |
 | ------------------------------------- | --------- | ----------------------------------------------------------- |
 | `Config.Only` → `config.FileType`     | `8aae71c` | Used existing FileType enum, eliminated matchesOnlyFilter() |
@@ -44,6 +47,7 @@
 ### Structural Improvements
 
 <!-- check-rows:ledger -->
+
 | Item                        | Commit    | Details                                     |
 | --------------------------- | --------- | ------------------------------------------- |
 | `printer/html.go` split     | `24d1902` | 1484L → 4 files (364L + 523L + 315L + 301L) |
@@ -53,6 +57,7 @@
 ### From Parallel Sessions (not by this conversation)
 
 <!-- check-rows:ledger -->
+
 | Item                              | Commit                          | Details                            |
 | --------------------------------- | ------------------------------- | ---------------------------------- |
 | gogenfilter updated to v2.1       | `2a2e9f7`                       | Dependency update                  |
@@ -67,6 +72,7 @@
 ## B) PARTIALLY DONE
 
 <!-- check-rows:ledger -->
+
 | Item                  | Current State                                 | Remaining                                                                       |
 | --------------------- | --------------------------------------------- | ------------------------------------------------------------------------------- |
 | CI pipeline           | `.github/workflows/` exists with 5 workflows  | `art-dupl.yml` uses `go-version: "1.26rc2"` — should be `stable`                |
@@ -80,37 +86,38 @@
 
 ### High Impact, Low Effort
 
-| # | Item                                                     | Effort | Impact                |
-| - | -------------------------------------------------------- | ------ | --------------------- |
-| ~~1~~ done — moot — `GlobalPool` removed from the codebase | ~~Fix `GlobalPool()` data race (`sync.OnceValue`)~~ | ~~5min~~ | ~~High — race condition~~ |
-| ~~2~~ done — `strings.HasSuffix` in `config/filetype.go` (dead helper removed at 5342b858) | ~~Replace hand-rolled `hasSuffix` with `strings.HasSuffix`~~ | ~~2min~~ | ~~Low — code clarity~~ |
-| ~~3~~ done — workflows pin `GO_VERSION`/`go-version-file` (`.github/workflows/`) | ~~Fix CI `go-version: "1.26rc2"` → `stable`~~ | ~~1min~~ | ~~Medium~~ |
-| ~~4~~ done — moot — `Repository` type no longer exists | ~~Type `Repository.Path` as `domain.Filepath`~~ | ~~15min~~ | ~~Medium~~ |
-| ~~5~~ done — moot — `GetStatsData` removed; `buildJSONData` returns concrete `jsonStatsOutput` | ~~Fix `GetStatsData() any` → concrete return type~~ | ~~20min~~ | ~~Medium~~ |
-| ~~6~~ done — `errors.Join` used for multi-error paths (e.g. `internal/testutil/capture.go`) | ~~Use `errors.Join` for multi-rule validation~~ | ~~10min~~ | ~~Low~~ |
+| #                                                                                              | Item                                                         | Effort    | Impact                    |
+| ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------ | --------- | ------------------------- |
+| ~~1~~ done — moot — `GlobalPool` removed from the codebase                                     | ~~Fix `GlobalPool()` data race (`sync.OnceValue`)~~          | ~~5min~~  | ~~High — race condition~~ |
+| ~~2~~ done — `strings.HasSuffix` in `config/filetype.go` (dead helper removed at 5342b858)     | ~~Replace hand-rolled `hasSuffix` with `strings.HasSuffix`~~ | ~~2min~~  | ~~Low — code clarity~~    |
+| ~~3~~ done — workflows pin `GO_VERSION`/`go-version-file` (`.github/workflows/`)               | ~~Fix CI `go-version: "1.26rc2"` → `stable`~~                | ~~1min~~  | ~~Medium~~                |
+| ~~4~~ done — moot — `Repository` type no longer exists                                         | ~~Type `Repository.Path` as `domain.Filepath`~~              | ~~15min~~ | ~~Medium~~                |
+| ~~5~~ done — moot — `GetStatsData` removed; `buildJSONData` returns concrete `jsonStatsOutput` | ~~Fix `GetStatsData() any` → concrete return type~~          | ~~20min~~ | ~~Medium~~                |
+| ~~6~~ done — `errors.Join` used for multi-error paths (e.g. `internal/testutil/capture.go`)    | ~~Use `errors.Join` for multi-rule validation~~              | ~~10min~~ | ~~Low~~                   |
 
 ### Medium Impact, Medium Effort
 
-| #  | Item                                                          | Effort | Impact              |
-| -- | ------------------------------------------------------------- | ------ | ------------------- |
-| ~~7~~ done — moot — `NodeToClone` helper removed | ~~Move `NodeToClone` out of `domain/` (break domain→syntax dep)~~ | ~~30min~~ | ~~High — architecture~~ |
+| #                                                                                          | Item                                                              | Effort    | Impact                  |
+| ------------------------------------------------------------------------------------------ | ----------------------------------------------------------------- | --------- | ----------------------- |
+| ~~7~~ done — moot — `NodeToClone` helper removed                                           | ~~Move `NodeToClone` out of `domain/` (break domain→syntax dep)~~ | ~~30min~~ | ~~High — architecture~~ |
 | ~~8~~ done — no setter methods; concrete `stats` API in `printer/stats/stats_formatter.go` | ~~Simplify `StatsPrinter` interface (8 setters → option struct)~~ | ~~30min~~ | ~~Medium — API design~~ |
-| ~~9~~ done — `printer/sort_unified.go` uses `slices.SortFunc` | ~~`sort.Interface` → `slices.SortFunc`~~ | ~~15min~~ | ~~Low — modernize~~ |
-| ~~10~~ done — `pkg/enum/enum.go` + `config/enum_helpers.go` | ~~Unify enum patterns (domain → config generic helpers)~~ | ~~60min~~ | ~~Medium~~ |
-| ~~11~~ done — moot — `detection/todos.go` removed | ~~Split `detection/todos.go` (TodoDetector + LegacyDetector)~~ | ~~20min~~ | ~~Low~~ |
-| ~~12~~ done — now 337L with `config_io.go`/`config_validate.go` extracted | ~~Split `config/config.go` (391L)~~ | ~~30min~~ | ~~Low~~ |
-| ~~13~~ done — SIMD design documented in `hash/` notes + ADR-0019/0022 | ~~Resolve or document 6 SIMD TODOs~~ | ~~30min~~ | ~~Low~~ |
+| ~~9~~ done — `printer/sort_unified.go` uses `slices.SortFunc`                              | ~~`sort.Interface` → `slices.SortFunc`~~                          | ~~15min~~ | ~~Low — modernize~~     |
+| ~~10~~ done — `pkg/enum/enum.go` + `config/enum_helpers.go`                                | ~~Unify enum patterns (domain → config generic helpers)~~         | ~~60min~~ | ~~Medium~~              |
+| ~~11~~ done — moot — `detection/todos.go` removed                                          | ~~Split `detection/todos.go` (TodoDetector + LegacyDetector)~~    | ~~20min~~ | ~~Low~~                 |
+| ~~12~~ done — now 337L with `config_io.go`/`config_validate.go` extracted                  | ~~Split `config/config.go` (391L)~~                               | ~~30min~~ | ~~Low~~                 |
+| ~~13~~ done — SIMD design documented in `hash/` notes + ADR-0019/0022                      | ~~Resolve or document 6 SIMD TODOs~~                              | ~~30min~~ | ~~Low~~                 |
 
 ### High Impact, High Effort
 
 <!-- check-rows:ledger -->
-| #  | Item                                                           | Effort | Impact |
-| -- | -------------------------------------------------------------- | ------ | ------ |
-| ~~14~~ **Superseded — ADR-0005 split-brain type unification.** | ~~Evaluate `domain.Clone` — is it dead code in runtime pipeline?~~ | ~~60min~~ | ~~High~~ |
-| 15 | Split `syntax/golang/transform.go` (355L, 300L switch)         | 120min | Medium |
-| 16 | Split `cmd/run_analysis.go` (447L)                             | 60min  | Medium |
-| ~~17~~ done — `suffixtree/suffixtree.go` `TokenValue` | ~~Implement TokenValue type (TODO #1 in TODO_LIST.md)~~ | ~~180min~~ | ~~High~~ |
-| ~~18~~ **Superseded — docs-health archival pass 2026-11 (378 files now in `docs/status/archived/`).** | ~~Archive 304 old docs/status/ files~~ | ~~15min~~ | ~~Low~~ |
+
+| #                                                                                                     | Item                                                               | Effort     | Impact   |
+| ----------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ | ---------- | -------- |
+| ~~14~~ **Superseded — ADR-0005 split-brain type unification.**                                        | ~~Evaluate `domain.Clone` — is it dead code in runtime pipeline?~~ | ~~60min~~  | ~~High~~ |
+| 15                                                                                                    | Split `syntax/golang/transform.go` (355L, 300L switch)             | 120min     | Medium   |
+| 16                                                                                                    | Split `cmd/run_analysis.go` (447L)                                 | 60min      | Medium   |
+| ~~17~~ done — `suffixtree/suffixtree.go` `TokenValue`                                                 | ~~Implement TokenValue type (TODO #1 in TODO_LIST.md)~~            | ~~180min~~ | ~~High~~ |
+| ~~18~~ **Superseded — docs-health archival pass 2026-11 (378 files now in `docs/status/archived/`).** | ~~Archive 304 old docs/status/ files~~                             | ~~15min~~  | ~~Low~~  |
 
 ---
 
@@ -167,33 +174,34 @@
 Sorted by impact × effort (highest ROI first):
 
 <!-- check-rows:ledger -->
-| #  | Task                                                           | Impact | Effort | ROI   |
-| -- | -------------------------------------------------------------- | ------ | ------ | ----- |
-| ~~1~~ done — moot — `GlobalPool` removed | ~~Fix `GlobalPool()` data race with `sync.OnceValue`~~ | ~~High~~ | ~~5min~~ | ~~★★★★★~~ |
-| ~~2~~ done — workflows pin `GO_VERSION`/`go-version-file` | ~~Fix CI go-version `1.26rc2` → `stable`~~ | ~~Medium~~ | ~~1min~~ | ~~★★★★★~~ |
-| ~~3~~ done — `strings.HasSuffix` in `config/filetype.go` | ~~Replace `hasSuffix` with `strings.HasSuffix`~~ | ~~Low~~ | ~~2min~~ | ~~★★★★~~ |
-| ~~4~~ done — `errors.Join` idioms in place; `domain/validation.go` removed | ~~Use `errors.Join` for `validateFields`~~ | ~~Medium~~ | ~~10min~~ | ~~★★★★~~ |
-| ~~5~~ done — moot — types removed | ~~Type `Repository.Path` and `SourceFile.Path` as `Filepath`~~ | ~~Medium~~ | ~~15min~~ | ~~★★★★~~ |
-| ~~6~~ done — moot — `SourceFile` type removed | ~~Type `SourceFile.Hash` as `domain.Hash`~~ | ~~Medium~~ | ~~10min~~ | ~~★★★★~~ |
-| ~~7~~ done — moot — `GetStatsData` removed | ~~Fix `GetStatsData()` return type~~ | ~~Medium~~ | ~~20min~~ | ~~★★★~~ |
-| ~~8~~ done — returns concrete `jsonStatsOutput` (`printer/stats/stats_formatter.go:412`) | ~~Fix `buildJSONData()` return type~~ | ~~Medium~~ | ~~15min~~ | ~~★★★~~ |
-| ~~9~~ done — option-based API in `printer/stats/stats_formatter.go` | ~~Simplify `StatsPrinter` with option struct~~ | ~~Medium~~ | ~~30min~~ | ~~★★★~~ |
-| ~~10~~ done — moot — `NodeToClone` removed | ~~Move `NodeToClone` out of `domain/`~~ | ~~High~~ | ~~30min~~ | ~~★★★~~ |
-| ~~11~~ done — moot — `detection/todos.go` removed | ~~Split `detection/todos.go` into separate files~~ | ~~Low~~ | ~~20min~~ | ~~★★~~ |
-| ~~12~~ done — `printer/sort_unified.go` uses `slices.SortFunc` | ~~Modernize `sort.Interface` → `slices.SortFunc`~~ | ~~Low~~ | ~~15min~~ | ~~★★~~ |
-| ~~13~~ **Superseded — ADR-0005 split-brain type unification.** | ~~Evaluate and document `domain.Clone` dead code question~~ | ~~High~~ | ~~60min~~ | ~~★★~~ |
-| ~~14~~ **Superseded — ADR-0005 split-brain type unification.** | ~~Consolidate threshold validation to single source~~ | ~~Medium~~ | ~~30min~~ | ~~★★~~ |
-| ~~15~~ done — `pkg/enum/enum.go` + `config/enum_helpers.go` | ~~Unify enum patterns (domain → config generics)~~ | ~~Medium~~ | ~~60min~~ | ~~★★~~ |
-| ~~16~~ done — now 337L with extracted modules | ~~Split `config/config.go` (391L)~~ | ~~Low~~ | ~~30min~~ | ~~★★~~ |
-| ~~17~~ **Superseded — docs-health archival pass 2026-11.** | ~~Archive old docs/status/ (304 files → ~10)~~ | ~~Low~~ | ~~15min~~ | ~~★~~ |
-| ~~18~~ done — SIMD design documented in `hash/` notes + ADR-0019/0022 | ~~Resolve/document 6 SIMD TODOs~~ | ~~Low~~ | ~~30min~~ | ~~★~~ |
-| ~~19~~ **done — runCmd was split under the gocyclo threshold (AGENTS.md)** |~~Split `cmd/run_analysis.go` (447L)~~|~~Low~~|~~60min~~|~~★~~|
-| 20 | Split `syntax/golang/transform.go` (355L switch)               | Low    | 120min | ★     |
-| ~~21~~ done — `suffixtree/suffixtree.go` `TokenValue` | ~~Implement TokenValue type (TODO #1 in TODO_LIST)~~ | ~~High~~ | ~~180min~~ | ~~★~~ |
-| ~~22~~ **Won't implement — Nix flake + BuildFlow are the adopted tooling; no justfile.** | ~~Add justfile recipe for vendor hash updates~~ | ~~Medium~~ | ~~15min~~ | ~~★~~ |
-| ~~23~~ done at `c0261563` | ~~Fix remaining LSP hints (unnecessary type args, unused params)~~ | ~~Low~~ | ~~20min~~ | ~~★~~ |
-| ~~24~~ done — moot — `Repository` type removed | ~~Type `Repository.LastIndexed` as `time.Time`~~ | ~~Low~~ | ~~10min~~ | ~~★~~ |
-| ~~25~~ **Superseded — ADR-0005 split-brain type unification.** | ~~Investigate `domain.Clone` → `artdupl.Clone` conversion layer~~ | ~~Medium~~ | ~~60min~~ | ~~★~~ |
+
+| #                                                                                        | Task                                                               | Impact     | Effort     | ROI       |
+| ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------ | ---------- | ---------- | --------- |
+| ~~1~~ done — moot — `GlobalPool` removed                                                 | ~~Fix `GlobalPool()` data race with `sync.OnceValue`~~             | ~~High~~   | ~~5min~~   | ~~★★★★★~~ |
+| ~~2~~ done — workflows pin `GO_VERSION`/`go-version-file`                                | ~~Fix CI go-version `1.26rc2` → `stable`~~                         | ~~Medium~~ | ~~1min~~   | ~~★★★★★~~ |
+| ~~3~~ done — `strings.HasSuffix` in `config/filetype.go`                                 | ~~Replace `hasSuffix` with `strings.HasSuffix`~~                   | ~~Low~~    | ~~2min~~   | ~~★★★★~~  |
+| ~~4~~ done — `errors.Join` idioms in place; `domain/validation.go` removed               | ~~Use `errors.Join` for `validateFields`~~                         | ~~Medium~~ | ~~10min~~  | ~~★★★★~~  |
+| ~~5~~ done — moot — types removed                                                        | ~~Type `Repository.Path` and `SourceFile.Path` as `Filepath`~~     | ~~Medium~~ | ~~15min~~  | ~~★★★★~~  |
+| ~~6~~ done — moot — `SourceFile` type removed                                            | ~~Type `SourceFile.Hash` as `domain.Hash`~~                        | ~~Medium~~ | ~~10min~~  | ~~★★★★~~  |
+| ~~7~~ done — moot — `GetStatsData` removed                                               | ~~Fix `GetStatsData()` return type~~                               | ~~Medium~~ | ~~20min~~  | ~~★★★~~   |
+| ~~8~~ done — returns concrete `jsonStatsOutput` (`printer/stats/stats_formatter.go:412`) | ~~Fix `buildJSONData()` return type~~                              | ~~Medium~~ | ~~15min~~  | ~~★★★~~   |
+| ~~9~~ done — option-based API in `printer/stats/stats_formatter.go`                      | ~~Simplify `StatsPrinter` with option struct~~                     | ~~Medium~~ | ~~30min~~  | ~~★★★~~   |
+| ~~10~~ done — moot — `NodeToClone` removed                                               | ~~Move `NodeToClone` out of `domain/`~~                            | ~~High~~   | ~~30min~~  | ~~★★★~~   |
+| ~~11~~ done — moot — `detection/todos.go` removed                                        | ~~Split `detection/todos.go` into separate files~~                 | ~~Low~~    | ~~20min~~  | ~~★★~~    |
+| ~~12~~ done — `printer/sort_unified.go` uses `slices.SortFunc`                           | ~~Modernize `sort.Interface` → `slices.SortFunc`~~                 | ~~Low~~    | ~~15min~~  | ~~★★~~    |
+| ~~13~~ **Superseded — ADR-0005 split-brain type unification.**                           | ~~Evaluate and document `domain.Clone` dead code question~~        | ~~High~~   | ~~60min~~  | ~~★★~~    |
+| ~~14~~ **Superseded — ADR-0005 split-brain type unification.**                           | ~~Consolidate threshold validation to single source~~              | ~~Medium~~ | ~~30min~~  | ~~★★~~    |
+| ~~15~~ done — `pkg/enum/enum.go` + `config/enum_helpers.go`                              | ~~Unify enum patterns (domain → config generics)~~                 | ~~Medium~~ | ~~60min~~  | ~~★★~~    |
+| ~~16~~ done — now 337L with extracted modules                                            | ~~Split `config/config.go` (391L)~~                                | ~~Low~~    | ~~30min~~  | ~~★★~~    |
+| ~~17~~ **Superseded — docs-health archival pass 2026-11.**                               | ~~Archive old docs/status/ (304 files → ~10)~~                     | ~~Low~~    | ~~15min~~  | ~~★~~     |
+| ~~18~~ done — SIMD design documented in `hash/` notes + ADR-0019/0022                    | ~~Resolve/document 6 SIMD TODOs~~                                  | ~~Low~~    | ~~30min~~  | ~~★~~     |
+| ~~19~~ **done — runCmd was split under the gocyclo threshold (AGENTS.md)**               | ~~Split `cmd/run_analysis.go` (447L)~~                             | ~~Low~~    | ~~60min~~  | ~~★~~     |
+| 20                                                                                       | Split `syntax/golang/transform.go` (355L switch)                   | Low        | 120min     | ★         |
+| ~~21~~ done — `suffixtree/suffixtree.go` `TokenValue`                                    | ~~Implement TokenValue type (TODO #1 in TODO_LIST)~~               | ~~High~~   | ~~180min~~ | ~~★~~     |
+| ~~22~~ **Won't implement — Nix flake + BuildFlow are the adopted tooling; no justfile.** | ~~Add justfile recipe for vendor hash updates~~                    | ~~Medium~~ | ~~15min~~  | ~~★~~     |
+| ~~23~~ done at `c0261563`                                                                | ~~Fix remaining LSP hints (unnecessary type args, unused params)~~ | ~~Low~~    | ~~20min~~  | ~~★~~     |
+| ~~24~~ done — moot — `Repository` type removed                                           | ~~Type `Repository.LastIndexed` as `time.Time`~~                   | ~~Low~~    | ~~10min~~  | ~~★~~     |
+| ~~25~~ **Superseded — ADR-0005 split-brain type unification.**                           | ~~Investigate `domain.Clone` → `artdupl.Clone` conversion layer~~  | ~~Medium~~ | ~~60min~~  | ~~★~~     |
 
 ---
 

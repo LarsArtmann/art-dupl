@@ -75,20 +75,20 @@
 
 ## c) NOT STARTED (from the 08-28 report's queue, still open)
 
-| Report task | Item                                                                                     |
-| ----------- | ---------------------------------------------------------------------------------------- |
-| ~~8~~ done — the corpus was re-baselined post-v0.7.0 (AGENTS.md 2026-09-23) | ~~Corpus re-baseline docs (blocked on g2)~~ |
-| ~~10~~ done — the snippet suite covers parsing (TestParseSnippetGoFile*) | ~~`SnippetGoFile` position-clamping edge test (top-level Go in the first bytes)~~ |
-| ~~11~~ done — the owning layers are documented (AGENTS.md templ bullets) | ~~TESTING.md: decide the owning layer for templ behavior tests~~ |
-| ~~13~~ done — ADR-0024 + the jsonv2gate closed the class | ~~jsonv2 recurrence escalation (blocked on g3)~~ |
+| Report task                                                                                                             | Item                                                                                         |
+| ----------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| ~~8~~ done — the corpus was re-baselined post-v0.7.0 (AGENTS.md 2026-09-23)                                             | ~~Corpus re-baseline docs (blocked on g2)~~                                                  |
+| ~~10~~ done — the snippet suite covers parsing (TestParseSnippetGoFile*)                                                | ~~`SnippetGoFile` position-clamping edge test (top-level Go in the first bytes)~~            |
+| ~~11~~ done — the owning layers are documented (AGENTS.md templ bullets)                                                | ~~TESTING.md: decide the owning layer for templ behavior tests~~                             |
+| ~~13~~ done — ADR-0024 + the jsonv2gate closed the class                                                                | ~~jsonv2 recurrence escalation (blocked on g3)~~                                             |
 | ~~14~~ **Won't implement — won't implement — the dump prints type hashes + positions; decoded names were never added.** | ~~`--dump-tokens`: decoded names for templ statement composites (currently bare `11`/`12`)~~ |
-| ~~15~~ done — the 2026-10-30 precision pass evaluated templ groups | ~~Templ-tuned priority evaluation (sample 20 groups from templ-components)~~ |
-| ~~16~~ done — the GoSnippet flag + mixed-kind display landed (AGENTS.md issue #11) | ~~Mixed Go+templ group classification rule: define + test + document~~ |
-| ~~17~~ **Won't implement — won't implement — not implemented; the conservative token fallback covers it.** | ~~`ScriptTemplate.Parameters` expression parsing~~ |
-| ~~19~~ done — docs/SELF_CLEAN_LEDGER.md + the monthly routine (AGENTS.md) | ~~Self-scan ledger for the new templ code (`scripts/self-scan.sh`, due 2026-10-22)~~ |
-| ~~20~~ **Won't implement — won't implement — no snippet cache was added.** | ~~Evaluate caching `ParseSnippet` per (content-hash, kind) — only with bench data~~ |
-| ~~21~~ **Won't implement — won't implement — the website docs live in the website/ pipeline.** | ~~Website templ feature page: mention expression-aware detection~~ |
-| ~~22~~ done — verified 2026-11-14 — inherited parent range mitigates it; templ pinned (AGENTS.md) | ~~Upstream a-h/templ `ConstantCSSProperty` Range check; bump if fixed~~ |
+| ~~15~~ done — the 2026-10-30 precision pass evaluated templ groups                                                      | ~~Templ-tuned priority evaluation (sample 20 groups from templ-components)~~                 |
+| ~~16~~ done — the GoSnippet flag + mixed-kind display landed (AGENTS.md issue #11)                                      | ~~Mixed Go+templ group classification rule: define + test + document~~                       |
+| ~~17~~ **Won't implement — won't implement — not implemented; the conservative token fallback covers it.**              | ~~`ScriptTemplate.Parameters` expression parsing~~                                           |
+| ~~19~~ done — docs/SELF_CLEAN_LEDGER.md + the monthly routine (AGENTS.md)                                               | ~~Self-scan ledger for the new templ code (`scripts/self-scan.sh`, due 2026-10-22)~~         |
+| ~~20~~ **Won't implement — won't implement — no snippet cache was added.**                                              | ~~Evaluate caching `ParseSnippet` per (content-hash, kind) — only with bench data~~          |
+| ~~21~~ **Won't implement — won't implement — the website docs live in the website/ pipeline.**                          | ~~Website templ feature page: mention expression-aware detection~~                           |
+| ~~22~~ done — verified 2026-11-14 — inherited parent range mitigates it; templ pinned (AGENTS.md)                       | ~~Upstream a-h/templ `ConstantCSSProperty` Range check; bump if fixed~~                      |
 
 ## d) TOTALLY FUCKED UP (process cost this session — nothing shipped is broken)
 
@@ -148,22 +148,22 @@
 
 1. ★ Decide + implement File-token drop from the templ stream (kills the `-t 1`
    phantom; CacheVersion 5 → 6).
-~~2. `SnippetGoFile` position-clamp edge test (report task 10).~~ done — the snippet suite covers parsing (syntax/golang/snippet_test.go)
-3. Verify `--type-aware` on templ files end-to-end (snippet expressions + VarType).
-4. Verify `--suggest-generics` on templ files (does candidacy make sense?).
-~~5. Verify combined mode (ADR-0026) merge semantics with templ inputs.~~ done — the corpus was re-baselined post-v0.7.0 (AGENTS.md 2026-09-23)
-6. `FuzzParseBytes`: add ~10 more committed seeds (spread, cond-attr, GoCode,
+   ~~2. `SnippetGoFile` position-clamp edge test (report task 10).~~ done — the snippet suite covers parsing (syntax/golang/snippet_test.go)
+2. Verify `--type-aware` on templ files end-to-end (snippet expressions + VarType).
+3. Verify `--suggest-generics` on templ files (does candidacy make sense?).
+   ~~5. Verify combined mode (ADR-0026) merge semantics with templ inputs.~~ done — the corpus was re-baselined post-v0.7.0 (AGENTS.md 2026-09-23)
+4. `FuzzParseBytes`: add ~10 more committed seeds (spread, cond-attr, GoCode,
    nested components, CSS, switch/fallthrough, else-if chains, hybrid GoCode).
-~~7. Audit OTHER self-scanning test gates for the literal-in-test hazard class (d2).~~ done — the owning layers are documented (AGENTS.md templ bullets)
-8. GoCode inside attribute values — probe whether templ tolerates it and what we emit.
-~~9. Nested component calls `@Card(@Inner())` token behavior test.~~ done — ADR-0024 + the jsonv2gate closed the class
-~~10. else-if chain in templ: full-chain structure test (Go-parity already pinned for~~ **Won't implement — won't implement — the dump prints type hashes + positions; decoded names were never added.**
-    2 links; verify 3+).
-~~11. `ChildrenExpression` (`{ children... }`) test coverage.~~ done — the templ-children-idiom pattern + coverage landed (AGENTS.md issue #7)
-~~12. `RawElement` (style/script blocks) expression handling verification.~~ **Won't implement — won't implement — not implemented; the conservative token fallback covers it.**
-13. CSS class usage `class={ panelStyle().Class() }` handling test.
-~~14. Incremental cache: manually verify v4 entries are actually dropped by~~ done — docs/SELF_CLEAN_LEDGER.md + the monthly routine (AGENTS.md)
-    CacheVersion 6... 5 (one-run check, not assumed).
+   ~~7. Audit OTHER self-scanning test gates for the literal-in-test hazard class (d2).~~ done — the owning layers are documented (AGENTS.md templ bullets)
+5. GoCode inside attribute values — probe whether templ tolerates it and what we emit.
+   ~~9. Nested component calls `@Card(@Inner())` token behavior test.~~ done — ADR-0024 + the jsonv2gate closed the class
+   ~~10. else-if chain in templ: full-chain structure test (Go-parity already pinned for~~ **Won't implement — won't implement — the dump prints type hashes + positions; decoded names were never added.**
+   2 links; verify 3+).
+   ~~11. `ChildrenExpression` (`{ children... }`) test coverage.~~ done — the templ-children-idiom pattern + coverage landed (AGENTS.md issue #7)
+   ~~12. `RawElement` (style/script blocks) expression handling verification.~~ **Won't implement — won't implement — not implemented; the conservative token fallback covers it.**
+6. CSS class usage `class={ panelStyle().Class() }` handling test.
+   ~~14. Incremental cache: manually verify v4 entries are actually dropped by~~ done — docs/SELF_CLEAN_LEDGER.md + the monthly routine (AGENTS.md)
+   CacheVersion 6... 5 (one-run check, not assumed).
 
 **Coverage & verification**
 15. Wire `BenchmarkTemplParse` into the alloc-gate budgets (after more samples).

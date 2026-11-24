@@ -86,31 +86,31 @@
 23. art-dupl: self-scan (`scripts/self-scan.sh -t 1 --type-aware`) post-column changes; ledger decisions.
 24. art-dupl: benchstat vs baseline for the column O(line) scan (alloc-gate unaffected; timing unconfirmed).
 25. CLI SARIF: relatedLocations + region snippet (ledger candidate).
-~~26. CLI SARIF: drop the empty-string `category` property (wire change — deliberate decision needed).~~ done — the category property emits only when non-empty (AGENTS.md SARIF wire conventions)
-27. Consider registering art-dupl in go-finding's LinterRegistry (`RegisterLinterCategory`) for other consumers.
-28. Re-verify upstream go-finding analysis/pipeline tags when T07b lands (working copy was ahead of v1.13.0).
-29. Migrate `.goreleaser.yaml` signs block to cosign `--bundle` style, then unpin cosign (or keep the pin forever — the pin is also supply-chain hygiene).
-30. Watch the recovered release's Homebrew tap + ghcr image legs on the next natural touch (skip_upload means tap intentionally untouched — verify that's still the intent).
-31. BuildFlow: BF2 (now unblocked by tool_options plumbing).
-32. BuildFlow: D12 art-dupl ratchet re-baseline under v0.9.0 (their dossier's own precondition) + ratify.
-33. BuildFlow: fleet `.buildflow.yml` adoption of `tool_options` where thresholds are wanted (after owner's Q2 answer shapes the default).
-34. InboxClean: the pre-existing `templ.KeyValue` generated-code breakage (their session; flagged here with file:line).
-35. auto-deduplicate: pre-existing `duplicate.Duplicate` build breakage (their session; recorded as pre-bump baseline).
-36. code-duplicate-analyzer: pre-existing `internal/errors` test-compile failure (Go 1.27 `interface{Unwrap() error}` no longer satisfies `error`).
-37. gogenfilter v3.6.1 sweep (9 repos) — unchanged TODO_LIST item.
-38. Fleet jsonv2 audit (#14) + filepath.Separator audit (#15) — unchanged.
-39. Branch protection #18 — owner action, 5th reminder (three CI reds tonight were each caught BECAUSE pushes+checks ran).
-40. Website: check whether the pnpm-built docs site needs a v0.9.0 release-note page update (changelog.mdx highlight exists; verify rendering).
-~~41. `docs/status/README.md` (lifecycle explainer for humans) — docs-health P4 #49.~~ done — docs/status/README.md carries the lifecycle explainer (verified 2026-11-14)
-42. Consider whether the daemon's heuristic commit messages on gate-relevant files (jsonutil, go.sum, flake.nix) should trigger a notification — half of tonight's d-section exists because they don't.
-43. HOW_TO_USE: mention `tool_options`/threshold consumer story (BuildFlow) in the provider section (currently README-only).
-44. TODO_LIST: strike/annotate the session-3 NEXT items now done (this report is the harvest source for the monthly pass — due 2026-10-28).
-45. The `-t 1` templ whole-file artifact (documented 2026-10-04): candidate fix = drop the File token from the templ stream + CacheVersion bump — only if it ever bites a consumer.
-46. gopls embedlit stale warning on column_test.go:81 — persisted all session; LSP-restart hygiene note stands (golangci-lint + CI green).
-47. DiscordSync: now that the tag pin killed the moving-ref exception, their `check-moving-refs.sh` art-dupl carve-out can be simplified (their session).
-48. Consider a `scripts/check-release-exists.sh` (tag → `gh release view` → assert assets ≥ N) as the post-release step of RELEASE.md — mechanizes e2.
-49. Sweep remaining `github:LarsArtmann/art-dupl/v0.7.2`-style pins found in the wild (CV was one; re-grep fleet after CV's judgment lands).
-50. Close the loop: strike THIS report's f-items as they land — the next harvest reads it.
+    ~~26. CLI SARIF: drop the empty-string `category` property (wire change — deliberate decision needed).~~ done — the category property emits only when non-empty (AGENTS.md SARIF wire conventions)
+26. Consider registering art-dupl in go-finding's LinterRegistry (`RegisterLinterCategory`) for other consumers.
+27. Re-verify upstream go-finding analysis/pipeline tags when T07b lands (working copy was ahead of v1.13.0).
+28. Migrate `.goreleaser.yaml` signs block to cosign `--bundle` style, then unpin cosign (or keep the pin forever — the pin is also supply-chain hygiene).
+29. Watch the recovered release's Homebrew tap + ghcr image legs on the next natural touch (skip_upload means tap intentionally untouched — verify that's still the intent).
+30. BuildFlow: BF2 (now unblocked by tool_options plumbing).
+31. BuildFlow: D12 art-dupl ratchet re-baseline under v0.9.0 (their dossier's own precondition) + ratify.
+32. BuildFlow: fleet `.buildflow.yml` adoption of `tool_options` where thresholds are wanted (after owner's Q2 answer shapes the default).
+33. InboxClean: the pre-existing `templ.KeyValue` generated-code breakage (their session; flagged here with file:line).
+34. auto-deduplicate: pre-existing `duplicate.Duplicate` build breakage (their session; recorded as pre-bump baseline).
+35. code-duplicate-analyzer: pre-existing `internal/errors` test-compile failure (Go 1.27 `interface{Unwrap() error}` no longer satisfies `error`).
+36. gogenfilter v3.6.1 sweep (9 repos) — unchanged TODO_LIST item.
+37. Fleet jsonv2 audit (#14) + filepath.Separator audit (#15) — unchanged.
+38. Branch protection #18 — owner action, 5th reminder (three CI reds tonight were each caught BECAUSE pushes+checks ran).
+39. Website: check whether the pnpm-built docs site needs a v0.9.0 release-note page update (changelog.mdx highlight exists; verify rendering).
+    ~~41. `docs/status/README.md` (lifecycle explainer for humans) — docs-health P4 #49.~~ done — docs/status/README.md carries the lifecycle explainer (verified 2026-11-14)
+40. Consider whether the daemon's heuristic commit messages on gate-relevant files (jsonutil, go.sum, flake.nix) should trigger a notification — half of tonight's d-section exists because they don't.
+41. HOW_TO_USE: mention `tool_options`/threshold consumer story (BuildFlow) in the provider section (currently README-only).
+42. TODO_LIST: strike/annotate the session-3 NEXT items now done (this report is the harvest source for the monthly pass — due 2026-10-28).
+43. The `-t 1` templ whole-file artifact (documented 2026-10-04): candidate fix = drop the File token from the templ stream + CacheVersion bump — only if it ever bites a consumer.
+44. gopls embedlit stale warning on column_test.go:81 — persisted all session; LSP-restart hygiene note stands (golangci-lint + CI green).
+45. DiscordSync: now that the tag pin killed the moving-ref exception, their `check-moving-refs.sh` art-dupl carve-out can be simplified (their session).
+46. Consider a `scripts/check-release-exists.sh` (tag → `gh release view` → assert assets ≥ N) as the post-release step of RELEASE.md — mechanizes e2.
+47. Sweep remaining `github:LarsArtmann/art-dupl/v0.7.2`-style pins found in the wild (CV was one; re-grep fleet after CV's judgment lands).
+48. Close the loop: strike THIS report's f-items as they land — the next harvest reads it.
 
 ## g) QUESTIONS (cannot be answered from the repo)
 

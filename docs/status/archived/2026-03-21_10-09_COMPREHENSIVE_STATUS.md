@@ -204,11 +204,11 @@ Currently at ~80%. Goal: 85%+ for critical packages.
 
 ### Priority 1-5: Immediate (Today)
 
-| # | Task                      | Effort | Impact | Status          |
-| - | ------------------------- | ------ | ------ | --------------- |
-| ~~1~~ **done — the report is committed (auto-commit daemon)** |~~Commit this status report~~|~~2min~~|~~Low~~|~~In Progress~~|
-| 2 | Push to origin            | 1min   | Medium | Pending         |
-| 3 | Clarify release workflow  | 5min   | High   | Blocked on user |
+| #                                                             | Task                          | Effort   | Impact  | Status          |
+| ------------------------------------------------------------- | ----------------------------- | -------- | ------- | --------------- |
+| ~~1~~ **done — the report is committed (auto-commit daemon)** | ~~Commit this status report~~ | ~~2min~~ | ~~Low~~ | ~~In Progress~~ |
+| 2                                                             | Push to origin                | 1min     | Medium  | Pending         |
+| 3                                                             | Clarify release workflow      | 5min     | High    | Blocked on user |
 
 ### Priority 6-10: This Week
 
