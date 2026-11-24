@@ -25,41 +25,44 @@ HTML=docs/review/libs/index.html
 SHOT=docs/review/libs/index-screenshot.png
 STAMP=docs/review/libs/index-screenshot.sha256
 
-die() { echo "SCREENSHOT STALE: $*" >&2; exit 1; }
+die() {
+	echo "SCREENSHOT STALE: $*" >&2
+	exit 1
+}
 
 # The dashboard is gitignored (`*.html`, .gitignore:22) — flakes and CI
 # checkouts (git-tracked files only) don't carry it. Skip there; enforce
 # wherever the working tree has the file (local dev).
 if [ ! -f "$HTML" ]; then
-  echo "screenshot stamp SKIP: $HTML not in this checkout (gitignored *.html; sandbox/CI)"
-  exit 0
+	echo "screenshot stamp SKIP: $HTML not in this checkout (gitignored *.html; sandbox/CI)"
+	exit 0
 fi
 [ -f "$SHOT" ] || die "$SHOT missing"
 [ -f "$STAMP" ] || die "$STAMP missing"
 
 case "${1:---check}" in
-  --check)
-    expected=$(awk '/^[0-9a-f]{64}/ { print $1; exit }' "$STAMP")
-    [ -n "$expected" ] || die "stamp file has no sha256 line"
-    actual=$(sha256sum "$HTML" | cut -d' ' -f1)
-    if [ "$actual" != "$expected" ]; then
-      die "$HTML changed (sha $actual) after the screenshot was taken (stamp $expected).
+--check)
+	expected=$(awk '/^[0-9a-f]{64}/ { print $1; exit }' "$STAMP")
+	[ -n "$expected" ] || die "stamp file has no sha256 line"
+	actual=$(sha256sum "$HTML" | cut -d' ' -f1)
+	if [ "$actual" != "$expected" ]; then
+		die "$HTML changed (sha $actual) after the screenshot was taken (stamp $expected).
      Regenerate: nix shell nixpkgs#chromium -c bash scripts/check-review-screenshot.sh --regen
      then trim the bottom per the recipe in scripts/check-review-screenshot.sh and re-stamp."
-    fi
-    echo "screenshot stamp OK ($SHOT matches $HTML)"
-    ;;
-  --regen)
-    command -v chromium >/dev/null || die "chromium not on PATH (run via: nix shell nixpkgs#chromium -c bash $0 --regen)"
-    chromium --headless --disable-gpu --no-sandbox --hide-scrollbars \
-      --screenshot="$SHOT" --window-size=1440,4300 \
-      "file://$(pwd)/$HTML" 2>/dev/null
-    echo "captured $SHOT at 1440x4300"
-    echo "NEXT (manual): trim the trailing background below the footer, then:"
-    echo "  sha256sum $HTML > $STAMP"
-    ;;
-  *)
-    echo "usage: $0 [--check|--regen]" >&2
-    exit 2
-    ;;
+	fi
+	echo "screenshot stamp OK ($SHOT matches $HTML)"
+	;;
+--regen)
+	command -v chromium >/dev/null || die "chromium not on PATH (run via: nix shell nixpkgs#chromium -c bash $0 --regen)"
+	chromium --headless --disable-gpu --no-sandbox --hide-scrollbars \
+		--screenshot="$SHOT" --window-size=1440,4300 \
+		"file://$(pwd)/$HTML" 2>/dev/null
+	echo "captured $SHOT at 1440x4300"
+	echo "NEXT (manual): trim the trailing background below the footer, then:"
+	echo "  sha256sum $HTML > $STAMP"
+	;;
+*)
+	echo "usage: $0 [--check|--regen]" >&2
+	exit 2
+	;;
 esac

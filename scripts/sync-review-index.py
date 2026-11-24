@@ -84,7 +84,9 @@ def check_cell(cell: str, tag: str, sha: str) -> str | None:
     """
     m = CELL_RE.match(cell)
     if not m:
-        raise ValueError(f"unparseable version cell (expected `TAG` @ `SHA` prose): {cell}")
+        raise ValueError(
+            f"unparseable version cell (expected `TAG` @ `SHA` prose): {cell}"
+        )
     existing_tag, existing_sha, prose = m.group(1), m.group(2), m.group(3).strip()
     if existing_tag == tag and existing_sha == sha:
         return None
@@ -108,7 +110,7 @@ def main() -> int:
         r"^\|\s*(\S[^|]*?)\s*\|\s*([^|]*?)\s*\|\s*([^|]*?)\s*\|\s*([^|]*?)\s*\|"
         r"\s*([^|]*?)\s*\|\s*\[libs/([^]]+\.md)\]",
         readme_path.read_text(),
-        re.M,
+        re.MULTILINE,
     )
     if not rows:
         print("FATAL: no index rows parsed from", readme_path)
@@ -135,11 +137,15 @@ def main() -> int:
             continue
         new_cell = check_cell(version_cell, tag, sha)
         if new_cell is not None:
-            problems.append(f"{lib}: version cell '{version_cell}' != derived '{tag} @ {sha}'")
+            problems.append(
+                f"{lib}: version cell '{version_cell}' != derived '{tag} @ {sha}'"
+            )
             fixes.append((lib, version_cell, new_cell))
         report_date = re.sub(r"[^0-9-]", "", fields.get("Date", ""))
         if report_date and date_cell != report_date:
-            problems.append(f"{lib}: Date column '{date_cell}' != report Date '{report_date}'")
+            problems.append(
+                f"{lib}: Date column '{date_cell}' != report Date '{report_date}'"
+            )
             fixes.append((lib, date_cell, report_date))
 
     if not problems:
