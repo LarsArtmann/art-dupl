@@ -47,6 +47,7 @@ Nothing catastrophic. One honest execution surprise worth recording:
 ## f) Up to 50 things we should get done next
 
 **erraudit / error-handling follow-ups**
+
 1. Owner decision: sponsor the erraudit `extension` recognizer for duplerrors constructors (parked row, TODO_LIST).
 2. Owner decision: BuildFlow-side erraudit wiring policy if the fleet adopts it as a gate step (parked row).
 3. Code the `errors.Join` seam in `capture.go` (wrap `CopyToBuffer` goroutine errors as IOError before joining).
