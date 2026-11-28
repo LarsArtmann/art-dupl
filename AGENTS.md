@@ -24,7 +24,7 @@ Enduring context that's hard to discover from code. For everything else, see the
 ## Build & Test
 
 ```bash
-templ generate     # run templ generate (required before build if .templ files changed)
+go run github.com/a-h/templ/cmd/templ generate  # generate at the go.mod-pinned templ version (a floating templ CLI emits code newer runtimes cannot compile)
 go build ./...     # build all packages (GOEXPERIMENT=jsonv2 optional since ADR-0024, see below)
 go test ./...      # run all tests
 golangci-lint run --timeout 5m ./...  # lint

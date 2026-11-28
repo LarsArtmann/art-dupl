@@ -64,11 +64,9 @@
           pname = "art-dupl";
           inherit version;
 
-          nativeBuildInputs = [ pkgs.templ ];
-
           src = lib.cleanSource ./.;
 
-          vendorHash = "sha256-47Cw5cIUE5xkLGQju3AVu/zXCKqY7nyS8VrLnAfGtXA=";
+          vendorHash = "sha256-qRCC6gNsaxV/zEXClTKyWFM6tvjHL8yfBpgSQCUkq40=";
           proxyVendor = true;
 
           overrideModAttrs = _old: {
@@ -91,7 +89,11 @@
           };
 
           preBuild = ''
-            templ generate
+            # Generate at the go.mod-pinned templ version: the nixpkgs templ
+            # CLI floats ahead of go.mod and emits code (e.g.
+            # templruntime.NewAttributeExpression) the pinned runtime cannot
+            # compile. tools.go keeps the generator inside the module graph.
+            go run github.com/a-h/templ/cmd/templ generate
             mkdir -p gogenfilter-real
             cp -r ${gogenfilter}/. gogenfilter-real/
             go mod edit -replace=github.com/LarsArtmann/gogenfilter/v3=./gogenfilter-real

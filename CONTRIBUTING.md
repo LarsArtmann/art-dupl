@@ -38,7 +38,7 @@ export GOEXPERIMENT=jsonv2   # Required for encoding/json/v2
 go build ./...               # Build the project
 go test ./...                # Run tests
 golangci-lint run --timeout 5m ./...  # Run linter
-templ generate               # Generate templ code (if .templ files changed)
+go run github.com/a-h/templ/cmd/templ generate  # Generate templ code (go.mod-pinned version; if .templ files changed)
 ```
 
 ## Code Style

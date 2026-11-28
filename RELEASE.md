@@ -9,7 +9,7 @@ Run ALL of these. If any fails, fix before proceeding.
 ```bash
 export GOEXPERIMENT=jsonv2
 
-templ generate                # regenerate templ files
+go run github.com/a-h/templ/cmd/templ generate  # regenerate templ files (go.mod-pinned version)
 go build ./...                # must compile clean
 go test ./...                 # all tests pass
 CGO_ENABLED=1 go test -race ./...  # race detector clean
