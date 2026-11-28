@@ -64,11 +64,6 @@ components:
   printer:
     in: printer/**
 
-  # Build-time tooling pin (keeps the templ generator in the module graph,
-  # see flake.nix preBuild) — imports vendored packages only
-  tools:
-    in: tools.go
-
   # Canonical JSON marshaling helpers (v1 API, v2-era output semantics)
   jsonutil:
     in: internal/jsonutil/**
@@ -312,6 +307,9 @@ exclude:
   - "**/gogenfilter-real/**"
 
 excludeFiles:
+  # Build-time tooling pin (keeps the templ generator in the module graph,
+  # see flake.nix preBuild) — imports vendored packages only, no architecture
+  - "^tools\\.go$"
   - ".*_test\\.go$"
   - ".*_bench_test\\.go$"
   - ".*_integration_test\\.go$"
