@@ -309,7 +309,7 @@ exclude:
 excludeFiles:
   # Build-time tooling pin (keeps the templ generator in the module graph,
   # see flake.nix preBuild) — imports vendored packages only, no architecture
-  - "^/tools\\.go$"
+  - ".*tools\\.go$"
   - ".*_test\\.go$"
   - ".*_bench_test\\.go$"
   - ".*_integration_test\\.go$"
